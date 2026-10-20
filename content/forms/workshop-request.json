@@ -1,0 +1,194 @@
+{
+  "schema": "bss.form/1",
+  "key": "workshop-request",
+  "version": 1,
+  "title": "Request a workshop",
+  "audience": "public",
+  "anonymous": false,
+  "state": "open",
+  "closedMessage": "Workshop requests are paused right now. Email directors@badgersupports.org and we'll reply when requests reopen.",
+  "intro": [
+    "Interactive, peer-led workshops on building connection, practical tools and student well-being, for student organizations, residence halls, classrooms and other campus groups with a mainly student audience. We're happy to tailor the content to your group.",
+    "Please request at least two weeks ahead. Questions? Email directors@badgersupports.org."
+  ],
+  "sections": [
+    {
+      "id": "about_you",
+      "title": "About you and your group",
+      "intro": "Workshops can be provided to campus units, student organizations, classes or friend groups, and to individual students at UW–Madison. If you're requesting for yourself, write “Individual” as your affiliation.",
+      "questions": [
+        {
+          "id": "name",
+          "type": "short",
+          "label": "Your name",
+          "required": true,
+          "autocomplete": "name",
+          "maxLength": 120
+        },
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email",
+          "required": true,
+          "autocomplete": "email",
+          "proposed": "Split out of the original free-text 'Contact Information' so a receipt can be sent."
+        },
+        {
+          "id": "contact_other",
+          "type": "long",
+          "label": "Other contact details",
+          "required": false,
+          "maxLength": 500,
+          "rows": 2,
+          "proposed": "Remainder of the original 'Contact Information' question."
+        },
+        {
+          "id": "affiliation",
+          "type": "short",
+          "label": "Organization or group affiliation",
+          "required": true,
+          "maxLength": 200
+        },
+        {
+          "id": "attendees",
+          "type": "number",
+          "label": "Estimated number of attendees",
+          "required": true,
+          "min": 1,
+          "max": 2000
+        }
+      ]
+    },
+    {
+      "id": "workshop",
+      "title": "Workshop",
+      "intro": "Choose one, or more than one for a blended session.",
+      "questions": [
+        {
+          "id": "topics",
+          "type": "checkboxes",
+          "label": "Which workshop are you requesting?",
+          "required": true,
+          "options": [
+            {
+              "id": "support_network",
+              "label": "Building a support network"
+            },
+            {
+              "id": "stress_self_care",
+              "label": "Stress management and self-care"
+            },
+            {
+              "id": "self_advocacy",
+              "label": "Self-advocacy: advocating for yourself"
+            },
+            {
+              "id": "housing",
+              "label": "Navigating housing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "when_where",
+      "title": "When and where",
+      "intro": "List three dates and times that work for your group. Badger Supports can help reserve a room — say so below and include any accommodations the room needs.",
+      "questions": [
+        {
+          "id": "option_1",
+          "type": "datetime",
+          "label": "First choice",
+          "required": true
+        },
+        {
+          "id": "option_2",
+          "type": "datetime",
+          "label": "Second choice",
+          "required": true
+        },
+        {
+          "id": "option_3",
+          "type": "datetime",
+          "label": "Third choice",
+          "required": true
+        },
+        {
+          "id": "location",
+          "type": "long",
+          "label": "Preferred room or location",
+          "required": true,
+          "maxLength": 1000,
+          "rows": 3,
+          "review": "Required in the Google Form although worded as optional ('If you have a preferred room…')."
+        },
+        {
+          "id": "projection",
+          "type": "choice",
+          "label": "Will your location have projection?",
+          "required": true,
+          "options": [
+            {
+              "id": "yes",
+              "label": "Yes"
+            },
+            {
+              "id": "no",
+              "label": "No"
+            },
+            {
+              "id": "na",
+              "label": "Not applicable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "notes",
+      "title": "About the session",
+      "questions": [
+        {
+          "id": "group_notes",
+          "type": "long",
+          "label": "Anything we should know about your group?",
+          "required": true,
+          "maxLength": 4000,
+          "rows": 4,
+          "review": "Required in the Google Form."
+        },
+        {
+          "id": "access_needs",
+          "type": "long",
+          "label": "Access needs or accommodations for your group",
+          "required": true,
+          "maxLength": 2000,
+          "rows": 3,
+          "review": "Required in the Google Form; respondents with none must type something."
+        }
+      ],
+      "intro": "Tell us about prior experience with wellness programming, how comfortable the group is discussing mental health, and your goals for the session."
+    }
+  ],
+  "confirmation": {
+    "title": "Request received",
+    "body": [
+      "Thank you for your interest in a Badger Supports workshop. A member of our team will reach out within one week to confirm your request."
+    ],
+    "review": "The one-week promise is the Google Form's own wording, not verified with the Programs team."
+  },
+  "workflow": {
+    "connectQueue": "programs.workshop-requests",
+    "owner": "Programs",
+    "receipt": "proposed",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSdBv_pExBwlTtjmNwYH14zm1yN7eUqn7bqffahZ-chePbykVQ",
+    "aliases": [
+      "https://forms.gle/wnucrBLAc4rWZ48K9"
+    ],
+    "read": "Public respondent view, 2026-10-19. Settings, destination sheet and scripts not inspected."
+  }
+}

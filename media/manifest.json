@@ -1,0 +1,994 @@
+{
+  "schema": "bss.media/1",
+  "note": "Metadata only. The image files are NOT in git: real students appear in some of them. `npm run media:fetch` downloads each original with a web source into local/media-originals/ and checks the sha256. A `drive:` source is a cropped copy of a photo in the shared Drive: there is nothing to download, so copy and crop it from the synced Drive and the sha256 check confirms it is the same crop. The build writes resized copies into dist/media/. In production the originals live in the Connect media library (see docs/ARCHITECTURE.md). A `derived:<id>` source is a floor map that ops/room-map.mjs draws from the photo <id>: the build draws it when the original is missing and checks it against the sha256.",
+  "items": [
+    {
+      "id": "m-peer-couch",
+      "program": "peer",
+      "alt": "Four students sitting close together on a couch beside a Badger Supports banner, smiling at the camera.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1644,
+      "height": 1434,
+      "format": "png",
+      "bytes": 3879251,
+      "sha256": "b3dc0496abb182008ba9e3126c4b0c11194c13a2e0df5ff630d559b1d4ca794f",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uMTdG262emqq5SbR7q1yEpLmZPDopZlRLXOB3vdh-NXkje0GyoIVZTmP0xqQWqxecM_CEmu-tIFQf96S4DUSmZo4X0o02Iuzo_qZrqyGP0stIXcCLGXfGvV42_GaAZE1AGn6-0ajmj0N9OUini4yx1dvtNNOjVdM9XXWkAT-L_dIxuTxnH9ru-Pg=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "peer-11.png"
+    },
+    {
+      "id": "m-craft-stickers",
+      "program": "craft",
+      "alt": "Two students at a craft night holding up the stickers and buttons they made.",
+      "focal": [
+        50,
+        35
+      ],
+      "width": 1596,
+      "height": 1502,
+      "format": "png",
+      "bytes": 3794541,
+      "sha256": "a676685789e077cf604f4f08e002560f85551aaefd89860d3d71332cb07cbd60",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72s1K0Dg2FcpWQL-Qb0O1e3nVBPER6nG3h--qytbtq8OYhh1iSoTz3_MzJs6-hieKUNtsxim24M0u23MQKLXG3Z8RBG2Q6VMnBR8Aa6bfw-iTo1rpV9tPxy_ayR5lgZn44lP2zTo9-Vi1b5IUkTJHgm-vYzvSn7GZuTRPxdd4fKN4QVITEdkhiiDmmjTh5M=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "craft-17.png"
+    },
+    {
+      "id": "m-workshop-mindfulness",
+      "program": "workshops",
+      "alt": "Eight students in front of a projected slide reading “3C's Week: Practicing Mindfulness”, each holding up artwork from the session.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 1322,
+      "height": 1250,
+      "format": "png",
+      "bytes": 2943451,
+      "sha256": "f85092b82df6e563abd46e35f9555725babb489824a6c942e86bfe90c9399402",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72t25sGeRxW-cyq5-tcu15FAae-wmmMoH1h7_Tl4xh0h_9qkbgu-f_Xi1rYbpDupUDND9WrgVSKvgftNa7NS-qL6NTvcXhL6GVrG_3FGldQ6bBVGd7VdmLj9lrd2tsLMr2chJBidcIwQEFvpjIFAvPwB1UoJeMz5uHL1ZFTKAZlJ8I2TYpnAiSRlaB7sKmA=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "workshops-23.png"
+    },
+    {
+      "id": "m-peer-circle",
+      "program": "peer",
+      "alt": "Students sitting in a loose circle of couches and chairs during a peer support group.",
+      "focal": [
+        45,
+        55
+      ],
+      "width": 1174,
+      "height": 1122,
+      "format": "png",
+      "bytes": 2347113,
+      "sha256": "c237ae51c28c023f6698ddf0e1120159daacbc0630a637f829439b8521c25cb7",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uAZG4Wn69OAD4LUUbhFLYo7F6728lDUlDMfKZUPIc78Ild-1D7p2JhlkXb-KG3RUopFycWCyZj0TR9sUwdbyquX9XITH35kw-DjN3lpC95_q_9fRiMHPnOmuDXAWRXaf-VTWVPjf5u_cJrdKxZ5JNbjw0m0kPSAvkeILCVU3RqonVfvdeJHWmIa7YXRCo=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "peer-10.png"
+    },
+    {
+      "id": "m-peer-talk",
+      "program": "peer",
+      "alt": "Three students on a couch talking during a peer support group.",
+      "focal": [
+        55,
+        55
+      ],
+      "width": 1234,
+      "height": 1216,
+      "format": "png",
+      "bytes": 2695985,
+      "sha256": "feff54f6aa5bead8fe3d8978f79ad64ee82d639534acded05df591bc07353434",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sImg_1yTVa0R9EH78w6vT1ymB_Vokoh2KnLS-3GNaLk6rr0U-mjS-zgzveaX5CV00wyC0bCFNt5jIvdsYCxaguktFGt-qzdqnegCSmqlmS-0nZvVAfwh4rjxGth73-peZ9YJReQ8qXC1HICZFJBK9n3XJRGGgqROUhQghK2kloDcqgBOWnbrvP0EOe=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "peer-12.png"
+    },
+    {
+      "id": "m-craft-table",
+      "program": "craft",
+      "alt": "A long table of students painting at a craft night, several turning to smile at the camera.",
+      "focal": [
+        45,
+        55
+      ],
+      "width": 1440,
+      "height": 1080,
+      "format": "jpg",
+      "bytes": 201285,
+      "sha256": "1a841469af086497985b98feeb25095ac9e4ec7538ad40c10144dc78fada4ac7",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72s7w9_siqVSI7Th23CPbJ0RZm2tPFMHRDlssClR_nGUjK4-v54w9s7rSIpeaLPRG6D6eMHIrbCSoSSXD8PpkDNzZ1arKJgIbrOpjryVoBeojEv8FyN0nvPS3XzhP5GLU_4zOxwjCBClBU-NgxJ0MeM9pqOSvP0Q-bIyQzGdXkYdapQ31wEKRufYjl_g4Ng=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "A red sweatshirt left of centre may carry a university mark; check at full size before publishing.",
+      "localFile": "craft-20.jpg"
+    },
+    {
+      "id": "m-craft-pair",
+      "program": "craft",
+      "alt": "Two students at a craft night table, one making a peace sign, with bead and rhinestone supplies in front of them.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1364,
+      "height": 1178,
+      "format": "png",
+      "bytes": 2801910,
+      "sha256": "e21dd269135770f445385442b2a304a3a620c641301fc25b87a2a9c6e1f4af1c",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tCaa-fdZU71JdX_t7rAej2H6e2Sv89rALPa5I3XQGdScOeg4-UodvPlWaxTZ8rTd1nn0J91A28pHDDMbCH9EJ6E7vAd7Y7NXd13TLPsno3KeZQuw9eDx48gh-TXdv-rtYqhtOXYt1Ug0tsyIHe9lDM7i6g9hrzH9z_rybxdEosgt3ITE1j2x5oN_4yB-Q=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "craft-19.png"
+    },
+    {
+      "id": "m-craft-friends",
+      "program": "craft",
+      "alt": "Three students smiling together at a craft night table.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1274,
+      "height": 1138,
+      "format": "png",
+      "bytes": 2755456,
+      "sha256": "2cf8b0b73526c41e404aee96ba0fad464390594f338d74f6dbdfbde83e8a3700",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72s1hbvQYcKooXdlMeY5WF2-OyFslFDR0utAYU5Q2jk3u-QHZY4MQ84eyHskEti82cuv2xif88zPJ8H28P2C5nQVeWRCZYM86-A9GegmQNBGlgJbKJMZxBM93S0YNNdwq0CSrOYzleb--8eTpsixKOFX7VAqFKbmf-0z07igMLJ3bxbN_gWBhpyAiLjx=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "craft-15.png"
+    },
+    {
+      "id": "m-workshop-listening",
+      "program": "workshops",
+      "alt": "A peer facilitator presenting a slide titled “Active Listening” during a workshop.",
+      "focal": [
+        60,
+        45
+      ],
+      "width": 1218,
+      "height": 1182,
+      "format": "png",
+      "bytes": 2339566,
+      "sha256": "a82fdcf364525cd9ca12875976486116963d462499c94fbe05c335152cd4bd95",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uOMPaVCBuBL1RQ-dUTBfsZYoC8m-QkPygJYKB4VT08Ty8Q5SGBThEZ7JdHFPjkucZqAkQbcOyBdMGK0NVNGyoRnCtEEmzeX7d4S3ZmfcZlU038r-ZI3j8k5a9yDFBuf5N7Iuq7bumxQkYDTOHylQgN76Am6YgTw5UmbJkFWS6R-f8AyCAzGK9sCWkOWKo=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "The presenter's red shirt carries a small chest logo; check at full size before publishing.",
+      "localFile": "workshops-26.png"
+    },
+    {
+      "id": "m-workshop-room",
+      "program": "workshops",
+      "alt": "A workshop in a seminar room, with students seated around a U-shaped table facing a projected slide.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1024,
+      "height": 768,
+      "format": "jpg",
+      "bytes": 292909,
+      "sha256": "9ff2fe5102c71124b634ee3320d8e0761db4f4bee889e12295b142e2afb71a96",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sQsUGl-BrCx9pW1kzRi9bcA7bQnSqmS0RVsuks3-Mf0bkYak45GfVUdar_PETeeRkaUkDs5taEVhl4uWvQBr5XQ2keSLnk_tMTtaty7eC38yhYdhxVX3ErKBjcen_zBfWbTMdydMlK1BYXOeM6CCfo7Ij71JU4XMlHFkHEhx806HMWlD2GVr_DqyYx=w16383",
+      "sourcePage": "https://www.badgersupports.org/home",
+      "provenance": "Published on the live homepage program carousel; downloaded read-only 2026-10-19.",
+      "compliance": "Checked at contact-sheet size 2026-10-19: no university marks seen. Full-size photo-compliance review still owed.",
+      "localFile": "workshops-28.jpg"
+    },
+    {
+      "id": "m-lcm-banner",
+      "program": "other",
+      "alt": "The Badger Supports pull-up banner standing in the LCM kitchen area.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 769,
+      "height": 820,
+      "format": "jpeg",
+      "bytes": 140717,
+      "sha256": "1e5494698a1b3a62173426cef63899f6db085cc8ee31f6483ac86abaf68ca444",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vvVtA9qqY58arqQSXF03u7h0tbbij9sLXM-IWUqH3EhKk03fEmgEv-5RUUTf1vXAoDXWucuxfwWf6f47B9dT8hjIzkMDm8Tc_Ffgxif15dyxkGVx32kIvqYNGWdmb_OM8n8rH5Mu6NdSc6n0rIT_NF2yIA7vCFgnxE_FiYUzF1ljZNCR_BT3DAG0j6w3GRIb6sjTGY8fb-jt7so7dY4qysOUvPdUaZaALD86ETtus=w1280",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/lcm",
+      "provenance": "Published on the live LCM directions page; downloaded read-only 2026-10-19.",
+      "compliance": "Looked at full size 2026-10-19: the organization’s own banner in an empty room; no people, no university marks. Re-checked 2026-10-20: the banner’s artwork carries clipart-style figures; the owner kept it for now (20 Oct 2026); swappable by link.",
+      "localFile": "lcm-banner.jpg"
+    },
+    {
+      "id": "m-hub-flag",
+      "program": "other",
+      "alt": "A red Badger Supports flag with the hand-and-heart logo and the words “peer-support | education | community”.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 2334,
+      "format": "jpg",
+      "bytes": 356678,
+      "sha256": "1b52687c0ae787d8793db12813cd16ae1945c7095c53e546d1e54eb60cad04c5",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2025-26/2026-02-03 MHH Ops Set/2026-02-03_MHH-Ops-Set_014.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Mental Health Hub ops set, 2026-02-03). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the flag: no faces, wall photos or university marks. The background is out of focus.",
+      "localFile": "hub-flag.jpg"
+    },
+    {
+      "id": "m-paint-hand",
+      "program": "other",
+      "alt": "A red hand with a white heart painted on a window, beside “badger supports”, “Peer Support, education, community” and “@badgersupports”.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 3488,
+      "format": "jpg",
+      "bytes": 1138312,
+      "sha256": "5acb3da315ac849576874d6528b7a2027e34d988a301472c25d9305c45b80fc2",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/2026-09-27 Paint the Town/IMG_2627.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Paint the Town, 2026-09-27). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the painted window: the person at lower left is out. Only the organization's own handle shows.",
+      "localFile": "paint-hand.jpg"
+    },
+    {
+      "id": "m-craft-visionboards",
+      "program": "craft",
+      "alt": "A vision board of magazine cut-outs: a butterfly, a squirrel, the word NATURE and the line “Find peace in the chaos”.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 2784,
+      "format": "jpg",
+      "bytes": 1777108,
+      "sha256": "32a7b9d77a4f1671442cffa427ce55181822f0c3dfc3859f95a05846236184f0",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_021.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Vision Boards, 2026-09-02). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the collage: no people, hands or readable magazine captions.",
+      "localFile": "craft-visionboards.jpg"
+    },
+    {
+      "id": "m-craft-bracelets",
+      "program": "craft",
+      "alt": "Bowls and organizer trays of colorful beads set out for a bracelet-making craft night.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 2151,
+      "format": "jpg",
+      "bytes": 1312204,
+      "sha256": "a1818944e5cadaa48757b6691e1c1d6bcfaef02f9cb46f942e80bc60f9d886dc",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-08-25 Bracelets/IMG_0712.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Bracelets, 2026-08-25). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the beads: no people; the sign-in box and cord spool are out.",
+      "localFile": "craft-bracelets.jpg"
+    },
+    {
+      "id": "m-craft-nostalgic",
+      "program": "craft",
+      "alt": "A half-finished green perler bead design on a clear pegboard, beside a paper plate of green beads.",
+      "focal": [
+        45,
+        55
+      ],
+      "width": 2313,
+      "height": 2428,
+      "format": "jpg",
+      "bytes": 800751,
+      "sha256": "b0c4150132b12fdccee1c0ad8dad064bcdc421df3826dfa49c067f1307df0ec0",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_1915.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Nostalgic Crafts, 2026-09-14). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the pegboard and beads: the phone, markers, tips sheet and furniture maker's mark are out.",
+      "localFile": "craft-nostalgic.jpg"
+    },
+    {
+      "id": "m-craft-bedazzle",
+      "program": "craft",
+      "alt": "Two clear trays of rhinestones sorted by color on a red tablecloth.",
+      "focal": [
+        50,
+        30
+      ],
+      "width": 2400,
+      "height": 4019,
+      "format": "jpg",
+      "bytes": 2174567,
+      "sha256": "f643830854076f73042b1ebf69b99c18f135833900063e93610deb709ec84a67",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-10-06 bedazzle/IMG_5104.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Bedazzling, 2026-10-06). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the trays: the phone and the tips handout with another organization's logo are out.",
+      "localFile": "craft-bedazzle.jpg"
+    },
+    {
+      "id": "m-craft-planter",
+      "program": "craft",
+      "alt": "A small clay pot painted in stripes of light blue, blue, pink and coral, drying on a paper towel beside brushes and a paint plate.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 2169,
+      "format": "jpg",
+      "bytes": 453826,
+      "sha256": "d8228c963e802d65329ce91f9b1c55bc5d0e88bc33c2574122c5041d8a6daddc",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0998.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Plant Painting, 2026-10-14). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the pot: the people in the blurred background are out.",
+      "localFile": "craft-planter.jpg"
+    },
+    {
+      "id": "m-workshop-housing",
+      "program": "workshops",
+      "alt": "A projected slide reading “Welcome to Navigating Housing — A Badger Supports Workshop”, with a drawn house and apartment building.",
+      "focal": [
+        35,
+        50
+      ],
+      "width": 2400,
+      "height": 1023,
+      "format": "jpg",
+      "bytes": 224165,
+      "sha256": "854d44b407f9ac3a0e284042ab5d0ca6c07d9e8811b5df5b3376bd61b687d499",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7586.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Workshop: Navigating Housing, 2026-09-28). Read from the local synced copy, cropped and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "Checked at full size 2026-10-20. Cropped to the slide: the four presenters and the logo strip under it are out.",
+      "localFile": "workshop-housing.jpg"
+    },
+    {
+      "id": "m-people-welcome",
+      "program": "craft",
+      "alt": "Two smiling Badger Supports staff at a welcome table with a Badger Supports tablecloth, a room of students making vision boards behind them.",
+      "focal": [
+        15,
+        60
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 642910,
+      "sha256": "9aa3178aa17dae3d2cce192820c40b11e443090fd3796722b3c208c5a61cb60a",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_011.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Vision Boards, 2026-09-02). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-welcome.jpg"
+    },
+    {
+      "id": "m-people-visionboards",
+      "program": "craft",
+      "alt": "Six students standing together, each holding up the vision board they made.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 3200,
+      "format": "jpg",
+      "bytes": 1025284,
+      "sha256": "05267597f97c3e347077430ad91c7d4c1614e910710d578f94d5cb042e1bb8b1",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_031.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Vision Boards, 2026-09-02). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-visionboards.jpg"
+    },
+    {
+      "id": "m-people-bracelets",
+      "program": "craft",
+      "alt": "Two smiling students at a table by a window, making beaded bracelets.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 3200,
+      "format": "jpg",
+      "bytes": 1210476,
+      "sha256": "e2b4b3d56e43cbeec789b760ff013b641c18729c80d379f2bd66e44ef83920f3",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-08-25 Bracelets/IMG_0713.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Bracelets, 2026-08-25). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-bracelets.jpg"
+    },
+    {
+      "id": "m-people-nostalgic",
+      "program": "craft",
+      "alt": "Two students grinning and showing off the friendship bracelets on their wrists.",
+      "focal": [
+        50,
+        38
+      ],
+      "width": 2400,
+      "height": 3200,
+      "format": "jpg",
+      "bytes": 999411,
+      "sha256": "5595d9a8fbcf6b6018030c4d25694bd0e5311e459f24daa34986931353f8e907",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_2015.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Nostalgic Crafts, 2026-09-14). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-nostalgic.jpg"
+    },
+    {
+      "id": "m-people-perler",
+      "program": "craft",
+      "alt": "Two smiling students at a craft table with perler-bead creations in front of them.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 3200,
+      "format": "jpg",
+      "bytes": 898464,
+      "sha256": "0a1a837cc55b8639a863371284fa4993c6c3de5e3ee23e6b64e16a7ba512d281",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_1970 2.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Nostalgic Crafts, 2026-09-14). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-perler.jpg"
+    },
+    {
+      "id": "m-people-bedazzle",
+      "program": "craft",
+      "alt": "A smiling student holding up a lip gloss tube they bedazzled, students crafting at tables behind them.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 3200,
+      "format": "jpg",
+      "bytes": 927471,
+      "sha256": "3f9bdf60bddc976f1fece3c5b26e8a52e5016adc578c8950f9ce4c0af40edc5b",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-10-06 bedazzle/IMG_5136.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Bedazzle, 2026-10-06). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-bedazzle.jpg"
+    },
+    {
+      "id": "m-people-planter",
+      "program": "craft",
+      "alt": "Two students holding up the flower pots they painted, in a room full of craft tables.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 590380,
+      "sha256": "98481fad0c4778fe8061a7c0ba728e71685240850b1be614db45d926b4eb2d87",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0931.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Plant Painting, 2026-10). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-planter.jpg"
+    },
+    {
+      "id": "m-people-planter-solo",
+      "program": "craft",
+      "alt": "A student in glasses holding a painted pot with a succulent, a paint palette in front of them.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 3200,
+      "format": "jpg",
+      "bytes": 742850,
+      "sha256": "e4e00cac6797b5245e3c9dc73eab2df3e79e5c99165f5abc5e3d8c8d32e70db0",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0964.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Plant Painting, 2026-10). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "people-planter-solo.jpg"
+    },
+    {
+      "id": "m-hub-corner",
+      "program": "peer",
+      "alt": "A corner of the Student Mental Health Hub during its open house: a staff member on a couch, a games shelf and a Fall Craft Nights poster.",
+      "focal": [
+        45,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 559212,
+      "sha256": "866287f56a05e05544ea1ce3a993f46b04369ce91c3240ff27628eed28b87d19",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04032.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub open house, 2026-09-25). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "hub-corner.jpg"
+    },
+    {
+      "id": "m-hub-sea",
+      "program": "peer",
+      "alt": "Two students and a Badger Supports staff member talking in front of the Sea of Support mural at the Student Mental Health Hub.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 487012,
+      "sha256": "4ef410e2d99ec83e18249521f4b964b421c6349bda79eee12d386ffb9abb4834",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04068.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub open house, 2026-09-25). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "hub-sea.jpg"
+    },
+    {
+      "id": "m-hub-peer-poster",
+      "program": "peer",
+      "alt": "A Badger Supports staff member beside posters for peer support groups and a housing workshop at the Student Mental Health Hub.",
+      "focal": [
+        40,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 388642,
+      "sha256": "b0f137565d49bfffa7610e25253ea00ece088158a2c4e3b155a9435a07b93376",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04059.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub open house, 2026-09-25). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "hub-peer-poster.jpg"
+    },
+    {
+      "id": "m-team-openhouse",
+      "program": "other",
+      "alt": "Four smiling people wearing name tags in front of posters at the Student Mental Health Hub open house.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 441451,
+      "sha256": "99de7fe4e13f7bb5f56147debee429490dc72b2ce6a956b38dabd4cb7fa62703",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04099.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub open house, 2026-09-25). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "team-openhouse.jpg"
+    },
+    {
+      "id": "m-workshop-housing-team",
+      "program": "workshops",
+      "alt": "Four presenters standing arm in arm in front of a screen that reads Navigating Housing, a Badger Supports Workshop.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 401718,
+      "sha256": "5eebfb931090ab9501d6f88f4aaa645ee7e175498bdda8c739993373b6259bde",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7593.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Workshop: Navigating Housing, 2026-09-28). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "workshop-housing-team.jpg"
+    },
+    {
+      "id": "m-workshop-herald-room",
+      "program": "workshops",
+      "alt": "Students writing at long tables during a Badger Supports workshop at The Badger Herald.",
+      "focal": [
+        50,
+        70
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 561802,
+      "sha256": "9a58bb4037fa8397293d6d4ac6cdc4ef0b3a4721ffdf838e57f6251b457174dd",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-10-15 Badger Herald Workshop/IMG_8022.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Workshop at The Badger Herald, 2026-10-15). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "workshop-herald-room.jpg"
+    },
+    {
+      "id": "m-workshop-herald-team",
+      "program": "workshops",
+      "alt": "Four smiling students standing together at a Badger Supports workshop at The Badger Herald.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 726629,
+      "sha256": "76d81d3cae1b87a3716a8815023d1f876d2ed3e7a9176b9580ecce49d40f08ba",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-10-15 Badger Herald Workshop/IMG_8030.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Workshop at The Badger Herald, 2026-10-15). Read from the local synced copy, resized and stripped of metadata 2026-10-20; nothing was downloaded.",
+      "compliance": "People pictured; chosen with faces on the owner's ruling of 2026-10-20 (faces wanted; name tags, QR codes, phone screens and UW marks allowed). Owner to confirm the people pictured agreed to their photo being used.",
+      "localFile": "workshop-herald-team.jpg"
+    },
+    {
+      "id": "m-room-sac-pillars",
+      "program": "other",
+      "alt": "The brick-and-stone pillars at the head of East Campus Mall, with the walkway running between them.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 900,
+      "height": 273,
+      "format": "jpeg",
+      "bytes": 105579,
+      "sha256": "4c1236e93e0035e4610d56f0a7ff9397a34f2c3f16a3d99d3c04dce7f8256b4e",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tDyMzlytzg_-E9PBneO0jtlb1_O9wbMoCwfQ7IbiUjY9yiSCEksX1BIiTEs5PSU5mZdVvvZpa93cbSBna_6YdHk-3G6sZaAnsoPaE0Bs5Z7_t9EmT31QyB3Fz-eEXUUZ_GsQP2fGQidZE9XqVe2x498YQDpSgpgs2QhqJVK0dJV5kgM3E0UQXXftBNJ4mHes4kQNYrZYdiJRbxtW4I0n3hgPtxhKHneQ-zTJkM7us=w1280",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/sac-caucus",
+      "provenance": "Published on the live SAC Caucus directions page; captured read-only 2026-10-19, saved with the owner's approval 2026-10-20.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; the pillar carries the university's name. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-sac-pillars.jpg"
+    },
+    {
+      "id": "m-room-sac-entrance",
+      "program": "other",
+      "alt": "The Student Activity Center entrance: a 333 sign and a tall WISCONSIN banner beside the glass doors, with students walking past.",
+      "focal": [
+        55,
+        55
+      ],
+      "width": 1200,
+      "height": 544,
+      "format": "jpeg",
+      "bytes": 184082,
+      "sha256": "3e29b3fbb1101cc7e756b8ec252c0ec61bab096cabea97723a9256e443c340ef",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tdz2sTh8dmOBn8aq4P25Qqf_ISxWUB4BJ8zT3wcettC4foa6PH8XN0FtZP2KYzmum8hsFvFU5bXHs6UVAFckHw-FOV7H-OtjgZZouCut7Jt_909Om_GAGc8IW3OuyZYCqpYmNLStfiJ9sf_xk0Eoxa-sA0DAtBhZqy1NNyWkUq01mk2OPuIgAV4V8YvKbp1mnKeBxvigWzJ7H1APAnxDBzLjjShWfCgYQ72h64NyA=w1280",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/sac-caucus",
+      "provenance": "Published on the live SAC Caucus directions page; captured read-only 2026-10-19, saved with the owner's approval 2026-10-20.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: passers-by seen from a distance; a university banner. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-sac-entrance.jpg"
+    },
+    {
+      "id": "m-room-sac-4th-floor-map",
+      "program": "other",
+      "alt": "Floor plan of the Student Activity Center's 4th floor with the Caucus Room shaded orange.",
+      "focal": [
+        34,
+        79
+      ],
+      "width": 1280,
+      "height": 766,
+      "format": "png",
+      "bytes": 234525,
+      "sha256": "818005524ee6901ddd90a768ad1929eed8f5b701c369a0d7c2104397403a46fd",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sbvI1oohcXsrMSYj923XTuBCPqD4CgdpmjoXA0WH9bIflgH_OuWwFA4mXSPI37FuVZzYREY1EDIMrVMipdHt7V3GKWZtifkyjkXXgT9wscY9-y2KByUSPd1cbPhghsQgkMEaI2wZsC5Lq2Hg14lVLcAxpidmw7ROiY-drQ6Cl6Msy4dVMBEKk_SIG2XimVjnvAG1MpoRuioWVZUVMZnyU2fGUdGSf9UGsYBbql=w1280",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/sac-caucus",
+      "provenance": "Published on the live SAC Caucus directions page; captured read-only 2026-10-19, saved with the owner's approval 2026-10-20.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: a floor plan; no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-sac-4th-floor-map.png"
+    },
+    {
+      "id": "m-room-sac-hearing-map",
+      "program": "other",
+      "alt": "Floor plan of the Student Activity Center's 4th floor with the Hearing Room, 4201, shaded orange.",
+      "focal": [
+        45,
+        79
+      ],
+      "width": 1280,
+      "height": 766,
+      "format": "png",
+      "bytes": 164851,
+      "sha256": "22bf2b0bc295cabbd5779a039c58653265a00199080a5096fcf3cef32e571eeb",
+      "source": "derived:m-room-sac-4th-floor-map",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/sac-caucus",
+      "provenance": "Drawn by ops/room-map.mjs from the SAC 4th-floor plan; the plan's own labels place the room.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: a floor plan; no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-sac-hearing-map.png"
+    },
+    {
+      "id": "m-room-sac-multipurpose-map",
+      "program": "other",
+      "alt": "Floor plan of the Student Activity Center's 4th floor with the Multi-Purpose Room, 4213, shaded orange.",
+      "focal": [
+        9,
+        79
+      ],
+      "width": 1280,
+      "height": 766,
+      "format": "png",
+      "bytes": 164538,
+      "sha256": "5208f90af271a3a3f6cc72926bbab63b2d73e925d1d718f7876945b90a978876",
+      "source": "derived:m-room-sac-4th-floor-map",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/sac-caucus",
+      "provenance": "Drawn by ops/room-map.mjs from the SAC 4th-floor plan; the plan's own labels place the room.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: a floor plan; no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-sac-multipurpose-map.png"
+    },
+    {
+      "id": "m-room-lcm-entrance",
+      "program": "other",
+      "alt": "The brick entrance of the LCM Student Center, with a rainbow You Belong sign above the doors.",
+      "focal": [
+        42,
+        60
+      ],
+      "width": 1280,
+      "height": 855,
+      "format": "png",
+      "bytes": 1915476,
+      "sha256": "51529ba87de09ce246b31e1adf92aa68f54a5f00e3b93326039887df76c12aec",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vj38jhn73vCWvAqvihRXjLeMquh3xVwNCAe9uG07L1hJOqRemF26f7bRyCzMbbK-fRPQXi0Xgb85V42GNy-3ayU79tOGWYGoaOsKNO346jfkoI5e372ryXRVlXPzjoOA0WrBanzzC96qPWhxVeNmmcKxoO9z0Y5Hqi-gMoy_ukRfJ5LMf7UCMC0P3IK7q1RvMot5cx3ZpTaMvLK3syGloByGZbPGE7Zm-Pa3aQ=w1280",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/lcm",
+      "provenance": "Published on the live LCM directions page; captured read-only 2026-10-19, saved with the owner's approval 2026-10-20.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-lcm-entrance.png"
+    },
+    {
+      "id": "m-room-lcm-map",
+      "program": "other",
+      "alt": "Street map with a red star on N Mills St just off University Ave, beside Luther Memorial Church.",
+      "focal": [
+        42,
+        40
+      ],
+      "width": 889,
+      "height": 422,
+      "format": "png",
+      "bytes": 169644,
+      "sha256": "b66f61841477b22e2914fdd0d1363de52a5b950f0ce85e25bb777e62e6b4140f",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72s3k4DeIOV9Df8rJMfFCHLRXHKPRUGgaBVz2kyczxaFPntm8Wsbo8qPn8IJi7DQBokOLGWC5LVZaWYeQiHVP2tYwEYoOLgpSMHLvV7hSbNOi8IaRaI8t3-0G5FxsPBJeu6e20M3R2qJof_FLz7n1P-vw37hHTmrZvMwQPdn9-BhErMxKa_pOK2gI7IsCzsNfbgarXiUWQV1R4JGl6bWs7KQqTlEuM62w67xvNQ5YDw=w1280",
+      "sourcePage": "https://www.badgersupports.org/operations/directions/lcm",
+      "provenance": "Published on the live LCM directions page; captured read-only 2026-10-19, saved with the owner's approval 2026-10-20.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: a street map; no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "room-lcm-map.png"
+    },
+    {
+      "id": "m-hub-3rd-floor-map",
+      "program": "peer",
+      "alt": "Floor plan of the Student Activity Center's 3rd floor with the Mental Health Hub shaded green.",
+      "focal": [
+        65,
+        30
+      ],
+      "width": 1280,
+      "height": 837,
+      "format": "png",
+      "bytes": 192534,
+      "sha256": "b73be67566cc8402e628ddfed9e20d77c62c90c3e9105d96dadbe4dc1b6cc284",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uxU_iZfViUMAqbwi8V7xtrQp5LaCJOa5vSUMtQ0OvyACCQZqoRPTSuS2Kjy-JluKrNUpR3cHPJwIz6NqIxdtAK7SRse0riJOQ0gzX991_kUO53W1m8mLV3AdkpfibLQ1X8fD42cY7ejaxAca3BJBtYaTpgxH2V_BO6jZ90TWKLrYlABvVRYmN3r0mrOkuCemRw7Wd8Efo4dRxVdPGQA-LD272pHyps94wG_zgkuOY=w1280",
+      "sourcePage": "https://www.badgersupports.org/about/mh-hub",
+      "provenance": "Published on the live Mental Health Hub page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: a floor plan; no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "hub-3rd-floor-map.png"
+    },
+    {
+      "id": "m-hub-inside",
+      "program": "peer",
+      "alt": "Two framed views inside the Mental Health Hub: a table and chairs, and a glass wall covered in sticky notes.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 732,
+      "format": "png",
+      "bytes": 1063561,
+      "sha256": "eba1fc912dd4f07041695f89834ec8a0c424c6bf6b6e877ec0480ada6467d772",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sgWB9PCkLJFws7B2w-BDSCRSmZ-WKyAgNRCHxDyGyGKcxF1mbHp4gdp7KjJ3UG-SD10YAAqzXIa_kJCK8Eh8Dn2mHT_97I-ojktB4n-BbwRsmA4o-C2YxriSfX63Sm5INuIAvVUx6fM0vBny3MpUY6K3I9QZuI83tB5lNfJJB80sswj2QdB_W03u65IGyz2c7iKx-WFBAkzC9nbCdgUHjb115KUgTby8ysLW8F=w1280",
+      "sourcePage": "https://www.badgersupports.org/about/mh-hub",
+      "provenance": "Published on the live Mental Health Hub page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "hub-inside.png"
+    },
+    {
+      "id": "m-peer-day-mon",
+      "program": "peer",
+      "alt": "Students at a table covered in pipe cleaners and snacks, making W signs with their hands, under a whiteboard asking people to follow Badger Supports on Instagram.",
+      "focal": [
+        50,
+        42
+      ],
+      "width": 1256,
+      "height": 1468,
+      "format": "jpeg",
+      "bytes": 374547,
+      "sha256": "ae9481bf1ff621a0340d1785ec65ea4684b6349b1b49d7061d617fa694bd0ff9",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tgMNrYeHI_z3dw0VdGa_WD4Q82q6BYuVN_cY8iOHEYzpjx7rkpv05bIbU9DOxWCN0Fuo0qtqisquT6huELKsSBjR4KNN7Xf8av5Yyrzfn43GHhhtlS9uQq_L9opOaVj7sZw1MiJh8N4AjcHbg6FjuGQqRS2OZJAGzq8mNiTzTAS8MkLazSrtFbZlIxrg-MXYPPbLkkDdTSvJx1XyHyws60tuvU6SkVefn4HECS67k=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-day-mon.jpg"
+    },
+    {
+      "id": "m-peer-day-tue",
+      "program": "peer",
+      "alt": "Two students smiling, each holding up a small red heart.",
+      "focal": [
+        50,
+        30
+      ],
+      "width": 1280,
+      "height": 1496,
+      "format": "jpeg",
+      "bytes": 260277,
+      "sha256": "f4b630d6df1608bd327dffc17fee91032c1268b9fe0bc5ed70c8277af3891372",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vxiCsjP5TlSDlENi-2ez3xQKWheRG9c3eGP2CLeHC_lMPp1pYrbENsuomsqC_ZAFR_64pnyZJrG-2VQiywHdxRZZfnXmaVYLIsMMJqT9AG7WJGbxbNZ5cIwet4_ZbMHrtY6V4PRp3arZQQUEiFQXM980oFIzNhwfIPiGuMU9rmx8COhFFNTDbOAY8nmHGh78fme9Tn4B2QM3fSiZg3tuyw9WJjWTZhNSeM61Z9Y8M=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-day-tue.jpg"
+    },
+    {
+      "id": "m-peer-day-wed",
+      "program": "peer",
+      "alt": "A group of students in a room lined with shelves, holding up the pages they colored.",
+      "focal": [
+        45,
+        40
+      ],
+      "width": 1022,
+      "height": 1194,
+      "format": "jpeg",
+      "bytes": 304042,
+      "sha256": "52c4bbac32f119588e14df0d6cfed586c0bde069e5b560c498fbf755b16b8055",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uhJCXBoXDLG8G_AppKD8N1fPdbPG0dLeqEnV0cMqyV7w3uCanZPMuhT-2_Bt5sm742gKwIfXxiF8uOwA5Ox4xTMNfZBdtku_H2sGZeIuIw3xRRYvHzpNuELfOUh81LFYjj8NMx5L0zIMq9pKAQop0MuKgPAx_qDcajis9GH6aaRaYiino2_A2ArCcZkzUPHu7FGsG5LMRf6RscDvCVvShbO-r01xn4olJM1x51GOk=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-day-wed.jpg"
+    },
+    {
+      "id": "m-peer-day-thu",
+      "program": "peer",
+      "alt": "Three students making W signs with their hands behind a table with a decorated cake.",
+      "focal": [
+        50,
+        35
+      ],
+      "width": 717,
+      "height": 838,
+      "format": "png",
+      "bytes": 916890,
+      "sha256": "a224abd36facf33582903e57ea9a3f7b7430b38989ec8270ce6c0e737d85ec14",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vel8ZcqOqHnimlryYNzuHMhzwh1JB5AOp-uDivt7o6WYrDcHCzbQ8e76FtaRUpqBKAJknKIo86wKyLCRXV0xxjdLotwPUWTjAUfmsrNqjTLu2NLV5gPsCyx2D7QaMiFqZc9X2knSe5nxOq0D-lqkFjST96e5T71l0rPl1VHuXriBSAuHM6A-TMtnf7b93QJrnQVB4L3QTavAR7Tr-RkxK-hcP_XTuIRHnszrLz68E=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-day-thu.png"
+    },
+    {
+      "id": "m-peer-question-jar",
+      "program": "peer",
+      "alt": "A red ceramic jar shaped like a flamingo.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 1280,
+      "format": "png",
+      "bytes": 371642,
+      "sha256": "c4f473bb8da8fbdd9b6839b33b44439e83c3127c0b1b229d6999689c1bac07ff",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72v2QA0BuFKvZL2z3BtSMYILUBYTs-jZvkOSY1CxrWEKu0bZr6BSFPjI1IVK-38WDmtsYwNW3D-X0D_Oj3H95gWp7tnI3uodNpuMUZtwFhfhDbTwDN9YfRKVMXlsXnS9m-PZoPNvm1oDTXCoVdhrdBb3_mynTCBaOD-Q9nTCqMTaSSUb_RinY4m0d1FUjeU=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-question-jar.png"
+    },
+    {
+      "id": "m-peer-coloring",
+      "program": "peer",
+      "alt": "Hands holding up finished coloring pages: feathers, a bird among flowers, a whale, an otter and a garden.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1182,
+      "height": 1182,
+      "format": "jpeg",
+      "bytes": 366573,
+      "sha256": "23661ed64d5641438339cde7f6f63285746d9d3fa25ac39dffafa762bd938e10",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vaXCNKNnZxZm8EqcaaiSCygHI7Uhk2-CZLYSbqG6ntzmWe6iHmTfv-J9axibzRFaUSzJJMbVysK-E1gqf1ffkxyppFIeGDxRnMCWMCgueZtdaWCnfu1n1WEUkFI7qt-p4ibPPgrS3sG51xdvHdSECFX3_Y73TrPF5uhi8Y671A7q31bnZYaiNt1eHPruWOIz7XzXe-vyMFzf4o5mxJ4W50x1lM_xZD9lE5SuJJ3UE=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: hands only. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-coloring.jpg"
+    },
+    {
+      "id": "m-peer-ribbon",
+      "program": "peer",
+      "alt": "A Take a Ribbon! card listing 14 awareness ribbons: Substance Abuse & Addiction, ADHD, Childhood Cancer, Suicide, Mental Health, Bipolar Disorder, Depression, Suicide Prevention, OCD & Anxiety, Addiction Recovery, Eating Disorder, Breast Cancer, Sleep Disorders and LGBTQIA+ Suicide, with the Badger Supports logo below.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 1280,
+      "format": "png",
+      "bytes": 1480941,
+      "sha256": "47ba094d96526126045deaaeb01ef4ccbbe76647a31079431650ad57b08fa50f",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uOSt9HbDZm7v9Gm4PwuvjL_ER4-fW7eiSC--k-E-K5rGBBzyu9FsSdO7e7D42ZWWgNqJXdbNALD7_R01hCkTioIkxJmO4WKPb8a34hZ0iz8jPrRELtwGa56sFvuO2dct7ZRRkkYmjxNNbNXLroCTVqqvaLrYztH2tBjygDlayTOXZusj8q3tGiecHvWOndLZqP80zdeLbx_9ISXs3YFri2Q1M2dcxzMbIFUm5InF0=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/peer-support-groups",
+      "provenance": "Published on the live peer support groups page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "peer-ribbon.png"
+    },
+    {
+      "id": "m-involved-staff",
+      "program": "other",
+      "alt": "Four students standing arm in arm and smiling.",
+      "focal": [
+        50,
+        35
+      ],
+      "width": 1280,
+      "height": 707,
+      "format": "jpeg",
+      "bytes": 138392,
+      "sha256": "9541c6d66eae0fb1a7c60657c2333e454721512d0f13387684d4698a248ae728",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vT1FU0xKracVVDMvX5ptKzozHa5HkwK-84Xt1hR3uB-navpzF_mOoiIE0Hc5Y1rj5hMDdDHz2Lki23L5XSNrhAKFIvMg8R02wbIUCbGO9cjs_jdqJo1o0wZhUGL9ZN4mOJxml0aj-TectaIVGVrTrAOjsMJ19b-JLUe-H_o5Cmz4MECLCLbBChQkxKbMqcsQNVJKcMbkafzStrb2tF_uDfNDpPZRGhpEkSYnum=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/get-involved",
+      "provenance": "Published on the live get involved page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "involved-staff.jpg"
+    },
+    {
+      "id": "m-involved-volunteers",
+      "program": "other",
+      "alt": "A large group of about forty students in rows, most making W signs with their hands.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1280,
+      "height": 702,
+      "format": "png",
+      "bytes": 1535118,
+      "sha256": "7e9691718c5da0d44c06f01856b5186129a61db124e6a226d0050a3dd024691f",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72t9i1LJ4-sVj9jLLIkLB45g7LJFtW-GmqJzcb9L0OU7pI3_Kz0aKGSWTncbFLBwHl97qP6BIgtBV3QVceZqPwfPnix2T3VCPv_Sml7vV8zFtGDXypUJ239hfNxrca7BWJeVoS02fDni4MSzBaJVLHfqFqt55rRMxXm_RcqKYTdwmvVs3DQvnQ0VX-kbkMMzSmOn4HV3iSGSZRNoA4p1X_VqSQfOe8fGJ55xWHSE=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/get-involved",
+      "provenance": "Published on the live get involved page; downloaded 2026-10-20 with the owner's approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "involved-volunteers.png"
+    }
+  ]
+}

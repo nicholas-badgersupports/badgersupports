@@ -1,0 +1,109 @@
+/* Every design value, declared once. Sources, read 2026-10-19:
+ *   brand   style.badgersupports.org v1.0 — red #B60000, cream #F2EBE1, charcoal #393737,
+ *           Montserrat body
+ *   rule    Connect's design rules: signed-out chrome has no owner, so a public page uses brand red
+ *           and the neutrals only, no program hue (owner, 2026-10-20: the coloured bars are not Connect's)
+ *   sibling Badger Supports Connect repo/assets/css/tokens.css — #8F0000 dark red, the "Clean"
+ *           paper #FAF7F2, line/rule neutrals, 7px card radius, ledge shadow, motion durations,
+ *           Baloo 2 display face, Caveat for handwriting, self-hosted fonts
+ * Anything not on this list is a defect: ops/check.mjs fails on a colour literal outside this file
+ * (and the generated media/mood rules).
+ */
+
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 400; font-display: swap; src: url("/assets/fonts/montserrat-400.woff2") format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/montserrat-600.woff2") format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 700; font-display: swap; src: url("/assets/fonts/montserrat-700.woff2") format("woff2"); }
+@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/baloo2-600.woff2") format("woff2"); }
+@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 700; font-display: swap; src: url("/assets/fonts/baloo2-700.woff2") format("woff2"); }
+@font-face { font-family: "Caveat"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/caveat-600.woff2") format("woff2"); }
+
+:root {
+  /* brand */
+  --red: #B60000;
+  --red-deep: #8F0000;
+  --cream: #F2EBE1;
+  --cream-soft: #F7F1E8;
+  --paper: #FAF7F2;
+  --paper-deep: #F0EAE0;
+  --ink: #393737;
+  --muted: #5C5755;
+  --line: #E8E0D4;
+  --rule-strong: #CDBBA2;
+  --field: #FFFFFF;
+  --field-border: #6E6763;
+  /* a pale tint of the red, from Connect's executive tint: the ring round a person's photo and the
+     marker stripe under their title (Connect's person card, option H) */
+  --red-tint: #FBECEC;
+
+
+  /* the Wall of Support's paper, light tints of the brand's extended palette */
+  --note-1: #FBE4E2;
+  --note-2: #FCEAD8;
+  --note-3: #F7EFCF;
+  --note-4: #E3F0E5;
+  --note-5: #E3EDF6;
+  --note-6: #ECEBF8;
+
+  /* status */
+  --danger: #B1380B;
+  --danger-tint: #FBEDE6;
+  --ok: #2C5B42;
+  --ok-tint: #E7F2EC;
+  --focus-ring: #1F5E86;
+  --focus-on-red: #F2EBE1;
+
+  /* type */
+  --font-display: "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-body: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-note: "Caveat", "Segoe Print", cursive;
+  --fs-small: .9375rem;
+  --fs-body: 1.0625rem;
+  --fs-lead: clamp(1.125rem, 1.05rem + .35vw, 1.3125rem);
+  --fs-h3: clamp(1.25rem, 1.15rem + .45vw, 1.5rem);
+  --fs-h2: clamp(2.125rem, 1.6rem + 2.2vw, 3.375rem);
+  --fs-h1: clamp(3.25rem, 1.9rem + 5.6vw, 6.25rem);
+  --fs-page: clamp(2.75rem, 1.8rem + 3.6vw, 4.5rem);
+  --fs-note: 1.6rem;
+  --lh-body: 1.6;
+  --lh-display: .92;
+
+  /* space */
+  --s0: .25rem;
+  --s1: .5rem;
+  --s2: .75rem;
+  --s3: 1rem;
+  --s4: 1.5rem;
+  --s5: 2rem;
+  --s6: 3rem;
+  --s7: 4.5rem;
+  --s8: 6.5rem;
+  --gutter: clamp(1rem, .55rem + 2vw, 2.5rem);
+  --page: 76rem;
+  --measure: 62ch;
+  --header-h: 4.5rem;
+
+  /* shape: a scale by element class; bands, strips, header and footer stay square */
+  --r-card: 7px;
+  --r-input: 5px;
+  --r-chip: 999px;
+  --ledge: 0 3px 0 var(--rule-strong);
+  --menu-shadow: var(--ledge), 0 12px 24px -16px rgba(57, 55, 55, .4);
+  --note-shadow: 0 2px 0 rgba(57, 55, 55, .12), 0 10px 18px -14px rgba(57, 55, 55, .5);
+  --dot-line: 2px dotted var(--line);
+  --dot-line-on-red: 2px dotted rgba(242, 235, 225, .45);
+
+  /* paper grain: two dot grids, on the page and on the red */
+  --grain-1: rgba(57, 55, 55, .045);
+  --grain-2: rgba(182, 0, 0, .03);
+  --grain-red-1: rgba(0, 0, 0, .09);
+  --grain-red-2: rgba(255, 255, 255, .05);
+  --dot-line-strong: 3px dotted var(--rule-strong);
+  /* ruled paper, as Connect's: a cream panel meant to read as a page someone writes on */
+  --ruled: rgba(57, 55, 55, .075);
+
+  /* motion */
+  --t-fast: 120ms;
+  --t: 160ms;
+  --t-slow: 200ms;
+  --ease-out: cubic-bezier(.2, .7, .3, 1);
+}

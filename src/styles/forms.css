@@ -1,0 +1,91 @@
+/* Native forms. Labels above controls, errors written as what to do next, one Send button. */
+
+/* The form's title and instructions on a ruled cream sheet that stays beside the questions; the
+   questions fill the rest of the width. One column on a phone. The sheet's text sits on its rules:
+   every line box is one 28px rule tall, and the sheet's padding is whole rules. */
+.form-page { padding-block: var(--s6) var(--s7); }
+.form-page .wrap { display: grid; grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); gap: 0 var(--s6); align-items: start; }
+.form-page .wrap > :not(.form-head) { grid-column: 2; }
+.form-page .wrap > :not(.form-head) + :not(.form-head) { margin-top: var(--s4); }
+.form-head {
+  grid-row: 1 / span 20; position: sticky; top: calc(var(--header-h) + var(--s4));
+  padding: 28px var(--s4) 22px; border-radius: var(--r-card); border-top: 6px solid var(--red);
+  background-color: var(--cream); box-shadow: var(--ledge);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 27px, var(--ruled) 27px 28px);
+}
+.form-head h1 { font-size: 3.1rem; line-height: 56px; color: var(--red); margin-bottom: 28px; }
+.form-head p { line-height: 28px; margin-bottom: 28px; }
+.form-head p:last-child { margin-bottom: 0; }
+@media (max-width: 960px) {
+  .form-page .wrap { grid-template-columns: minmax(0, 1fr); }
+  .form-page .wrap > :not(.form-head) { grid-column: 1; }
+  .form-page .wrap > .form-head + * { margin-top: var(--s5); }
+  .form-head { position: static; grid-row: auto; }
+}
+@media (max-width: 480px) {
+  .form-head h1 { font-size: 2.5rem; line-height: 56px; }
+}
+.bss-form { margin-top: 0; }
+.bss-form > .form-rule:first-child { margin-top: 0; }
+.bss-form fieldset.section { border: 0; margin: 0; padding: var(--s5) 0 var(--s3); border-top: var(--dot-line-strong); min-width: 0; }
+.bss-form fieldset.section[hidden] { display: none; }
+.bss-form legend { padding: 0; font: 700 var(--fs-h3)/1.25 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
+.section-intro { color: var(--muted); margin-bottom: var(--s3); }
+
+.field { display: grid; gap: .4rem; margin-bottom: var(--s4); max-width: 40rem; }
+.field[hidden] { display: none; }
+.field > label, .field > .q-label, .field legend.q-label { font-weight: 700; font-size: 1.0625rem; line-height: 1.4; }
+.optional { font-weight: 400; color: var(--muted); }
+.field input[type="text"], .field input[type="email"], .field input[type="number"], .field input[type="date"],
+.field input[type="datetime-local"], .field textarea, .field select {
+  width: 100%; min-height: 48px; padding: .65rem .8rem; font: 400 1.0625rem/1.4 var(--font-body); color: var(--ink);
+  background: var(--field); border: 2px solid var(--field-border); border-radius: var(--r-input);
+}
+.field input[type="number"] { max-width: 12rem; }
+.field input[type="datetime-local"], .field input[type="date"] { max-width: 20rem; }
+.field textarea { resize: vertical; }
+.field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
+fieldset.field { border: 0; padding: 0; min-width: 0; }
+.choices { display: grid; gap: .25rem; }
+.choice { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: .6rem; align-items: start; min-height: 44px; padding: .55rem .25rem; border-radius: var(--r-input); cursor: pointer; }
+.choice:hover { background: var(--cream); }
+.choice input { width: 1.25rem; height: 1.25rem; margin: .15rem 0 0; accent-color: var(--red); }
+.other-text { margin-left: 2.1rem; max-width: 24rem; }
+
+/* An error marks the control itself, as Connect's do; no bar beside the field. */
+.field.has-error input, .field.has-error textarea, .field.has-error select { border-color: var(--danger); background: var(--danger-tint); }
+.field-error { color: var(--danger); font-weight: 700; font-size: 1rem; display: flex; gap: .4rem; align-items: baseline; margin: 0; }
+.field-error::before { content: "!"; display: inline-grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--danger); color: var(--paper); font-size: .875rem; }
+
+.error-summary { margin: var(--s4) 0; padding: var(--s4); background: var(--danger-tint); border: 2px solid var(--danger); border-radius: var(--r-card); }
+.error-summary:focus { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.error-summary h2 { font: 700 1.25rem/1.3 var(--font-body); color: var(--danger); margin-bottom: var(--s2); }
+.error-summary ul { padding-left: 1.2rem; display: grid; gap: .2rem; }
+.error-summary a { color: var(--danger); font-weight: 700; }
+
+.form-notice { margin: var(--s4) 0; padding: var(--s4); border-radius: var(--r-card); background: var(--paper); border: var(--dot-line-strong); }
+.form-notice h2 { font: 700 1.25rem/1.3 var(--font-body); margin-bottom: var(--s2); }
+.form-notice[hidden] { display: none; }
+
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding-top: var(--s4); border-top: var(--dot-line-strong); }
+.form-actions .btn { min-width: 12rem; }
+.form-status { margin: 0; font-weight: 600; }
+
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.closed-panel, .done-panel { margin-top: var(--s5); padding: var(--s5); border-radius: var(--r-card); background: var(--paper); border: var(--dot-line-strong); box-shadow: var(--ledge); }
+/* A form still on Google Forms: the page is its sheet and one big button, centred in a single column,
+   so no empty second column waits for questions that are not here. */
+.form-page .wrap:has(> .closed-panel.is-elsewhere) { grid-template-columns: minmax(0, 36rem); justify-content: center; }
+.form-page .wrap:has(> .closed-panel.is-elsewhere) > * { grid-column: 1; }
+.form-page .wrap:has(> .closed-panel.is-elsewhere) > .form-head { position: static; grid-row: auto; }
+.closed-panel.is-elsewhere { margin-top: var(--s5); padding: 0; background: none; border: 0; box-shadow: none; text-align: center; }
+.closed-panel.is-elsewhere p { margin: 0; }
+@media (max-width: 480px) { .closed-panel.is-elsewhere .btn { width: 100%; justify-content: center; } }
+.closed-panel h2, .done-panel h2 { font-size: clamp(1.9rem, 1.5rem + 1.5vw, 2.6rem); color: var(--red); margin-bottom: var(--s3); }
+.done-panel .ref { display: inline-block; margin: var(--s2) 0 var(--s3); padding: .35rem .8rem; border-radius: var(--r-card); background: var(--cream); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.done-panel:focus { outline: none; }
+.done-panel h2:focus { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+.kept-answers { margin: var(--s3) 0 0; display: grid; gap: var(--s1) var(--s3); }
+.kept-answers dt { font-weight: 700; }
+.kept-answers dd { margin: 0 0 var(--s2); white-space: pre-wrap; overflow-wrap: anywhere; }

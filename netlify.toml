@@ -1,0 +1,27 @@
+# www.badgersupports.org — Netlify configuration. Nothing here creates a project, publishes or turns
+# anything on: the owner connects the repository and decides every deploy (WORK.md, owner actions).
+#
+# The build below is the PROTOTYPE build (fixtures allowed, noindex everywhere): what a deploy
+# preview would show. What a preview or deploy costs on this account is unverified (docs/ARCHITECTURE.md).
+# Releases are built on the owner's laptop, which holds the photo originals (owner, 20 Oct 2026;
+# docs/DESIGN.md, "Building away from the laptop"). A Netlify build machine has no local/, so there the
+# build stops before encoding and lists every photo whose original is in the shared Drive. The production build
+# (`node ops/build.mjs --production`) refuses to run until Connect's public event export, its public
+# team export and the moderated Wall source exist, and until the pages still on the live site have
+# been rebuilt here.
+
+[build]
+  command = "node ops/build.mjs --fetch-media"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
+  # The API renders no-JavaScript replies with the same assets and words the build used, and
+  # applies the same migrations the local rig does.
+  included_files = [".build/server.json", "netlify/database/migrations/**"]
+  # Build and test tools only. PGlite is refused unless LOCAL_DB=pglite, so it must never ship.
+  external_node_modules = ["@electric-sql/pglite", "playwright", "axe-core", "sharp"]

@@ -1,0 +1,246 @@
+{
+  "schema": "bss.site/1",
+  "name": "Badger Supports",
+  "origin": "https://www.badgersupports.org",
+  "liveOrigin": "https://www.badgersupports.org",
+  "connectOrigin": "https://home.badgersupports.org",
+  "lang": "en",
+  "description": "Badger Supports is a student-led peer support community at UW–Madison: drop-in peer support groups, craft nights and wellness workshops.",
+  "nav": [
+    {
+      "id": "nav-about",
+      "label": "About",
+      "children": [
+        {
+          "id": "nav-what",
+          "label": "What we do",
+          "href": "/about/what-we-do/"
+        },
+        {
+          "id": "nav-team",
+          "label": "Our team",
+          "href": "/about/our-team/"
+        },
+        {
+          "id": "nav-hub",
+          "label": "Student Mental Health Hub",
+          "href": "/directions/sac-mhh/"
+        },
+        {
+          "id": "nav-directions",
+          "label": "Rooms and directions",
+          "href": "/directions/"
+        },
+        {
+          "id": "nav-faq",
+          "label": "FAQ",
+          "href": "/about/faq/"
+        }
+      ]
+    },
+    {
+      "id": "nav-programs",
+      "label": "Programs",
+      "children": [
+        {
+          "id": "nav-groups",
+          "label": "Peer support groups",
+          "href": "/join/peer-support-groups"
+        },
+        {
+          "id": "nav-craft",
+          "label": "Craft nights",
+          "href": "/join/craft-nights"
+        },
+        {
+          "id": "nav-workshops",
+          "label": "Workshops",
+          "href": "/join/request-a-workshop"
+        },
+        {
+          "id": "nav-request",
+          "label": "Request a program",
+          "href": "/request-a-program"
+        }
+      ]
+    },
+    {
+      "id": "nav-initiatives",
+      "label": "Initiatives",
+      "children": [
+        {
+          "id": "nav-housing",
+          "label": "Navigating housing",
+          "href": "/initiatives/housing-hub"
+        },
+        {
+          "id": "nav-cards",
+          "label": "Referral cards",
+          "href": "/initiatives/referral-cards"
+        },
+        {
+          "id": "nav-ribbons",
+          "label": "Colors of Support ribbons",
+          "href": "/initiatives/ribbons"
+        },
+        {
+          "id": "nav-dogs",
+          "label": "Dogs on Call",
+          "href": "/initiatives/dogs-on-call"
+        },
+        {
+          "id": "nav-open-house",
+          "label": "Hub open house",
+          "href": "/initiatives/open-house"
+        }
+      ]
+    },
+    {
+      "id": "nav-resources",
+      "label": "Resources",
+      "href": "/resources"
+    },
+    {
+      "id": "nav-involved",
+      "label": "Join",
+      "children": [
+        {
+          "id": "nav-jobs",
+          "label": "Get involved",
+          "href": "/join/get-involved/"
+        },
+        {
+          "id": "nav-email",
+          "label": "Email list",
+          "href": "/join/email-list"
+        },
+        {
+          "id": "nav-alumni",
+          "label": "Alumni",
+          "href": "/join/alumni"
+        }
+      ]
+    }
+  ],
+  "headerAction": {
+    "label": "Get involved",
+    "href": "/join/get-involved/"
+  },
+  "supportLine": {
+    "enabled": true,
+    "text": "Badger Supports is peer support, not a crisis service. If you or a friend need help now, call the UHS 24/7 crisis line at 608-265-5600 (option 9), call or text 988, or text HOME to 741741.",
+    "links": [
+      {
+        "label": "608-265-5600",
+        "href": "tel:+16082655600"
+      },
+      {
+        "label": "988",
+        "href": "tel:988"
+      }
+    ]
+  },
+  "footer": {
+    "columns": [
+      {
+        "id": "f-org",
+        "title": "Organization",
+        "links": [
+          {
+            "label": "What we do",
+            "href": "/about/what-we-do/"
+          },
+          {
+            "label": "FAQ",
+            "href": "/about/faq/"
+          },
+          {
+            "label": "Press",
+            "href": "/operations/press"
+          },
+          {
+            "label": "Equity and belonging",
+            "href": "/about/equity-belonging/"
+          }
+        ]
+      },
+      {
+        "id": "f-community",
+        "title": "Community",
+        "links": [
+          {
+            "label": "Our team",
+            "href": "/about/our-team/"
+          },
+          {
+            "label": "Resources",
+            "href": "/resources"
+          },
+          {
+            "label": "Request a program",
+            "href": "/request-a-program"
+          },
+          {
+            "label": "Alumni",
+            "href": "/join/alumni"
+          }
+        ]
+      },
+      {
+        "id": "f-contact",
+        "title": "Contact",
+        "links": [
+          {
+            "label": "Rooms and directions",
+            "href": "/directions/"
+          },
+          {
+            "label": "hello@badgersupports.org",
+            "href": "mailto:hello@badgersupports.org"
+          },
+          {
+            "label": "directors@badgersupports.org",
+            "href": "mailto:directors@badgersupports.org"
+          },
+          {
+            "label": "Email list",
+            "href": "/join/email-list"
+          }
+        ]
+      }
+    ],
+    "social": [
+      {
+        "label": "Instagram",
+        "href": "https://www.instagram.com/badgersupports/"
+      },
+      {
+        "label": "TikTok",
+        "href": "https://www.tiktok.com/@badger.supports"
+      },
+      {
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/company/badger-supports/"
+      },
+      {
+        "label": "WIN",
+        "href": "https://win.wisc.edu/organization/badgersupports"
+      }
+    ],
+    "address": "Student Activity Center, 333 East Campus Mall, Suite 3203, Madison, WI 53715",
+    "affiliation": "Badger Supports is an independent, dual-registered student organization with University Health Services – Prevention.",
+    "funding": "Funded in part by the Associated Students of Madison.",
+    "accessibility": "Feedback, questions or accessibility issues: accessibility@badgersupports.org",
+    "accessibilityEmail": "accessibility@badgersupports.org",
+    "legal": [
+      {
+        "label": "Privacy policy and terms",
+        "href": "/operations/privacy-policy"
+      }
+    ],
+    "staffSignIn": {
+      "label": "Director sign-in",
+      "href": "/staff/"
+    }
+  }
+}

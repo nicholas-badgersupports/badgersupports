@@ -1,0 +1,365 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-home",
+  "path": "/",
+  "aliases": [
+    "/home"
+  ],
+  "title": "Badger Supports — peer support at UW–Madison",
+  "description": "Free, student-led peer support groups, craft nights and wellness workshops at UW–Madison.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-home-announce",
+      "type": "announcement",
+      "enabled": true,
+      "endsOn": "2026-11-10",
+      "text": "Navigating Housing in Madison Workshop | Q&A Panel · Tues, November 10 | 5:30–7:00 PM",
+      "link": {
+        "label": "Details",
+        "href": "/initiatives/housing-hub"
+      }
+    },
+    {
+      "id": "b-home-hero",
+      "type": "hero",
+      "title": "badger supports",
+      "tagline": [
+        "peer support",
+        "education",
+        "community"
+      ],
+      "primary": {
+        "label": "Get involved",
+        "href": "/join/get-involved/"
+      },
+      "secondary": {
+        "label": "Drop in this week",
+        "href": "#this-week"
+      },
+      "centre": "you",
+      "circles": [
+        {
+          "media": "m-hub-sea",
+          "label": "peer support groups",
+          "href": "#groups",
+          "icon": "chat",
+          "program": "peer"
+        },
+        {
+          "media": "m-workshop-herald-team",
+          "label": "workshops",
+          "href": "#workshops",
+          "icon": "bulb",
+          "program": "workshops"
+        },
+        {
+          "media": "m-people-nostalgic",
+          "label": "craft nights",
+          "href": "#craft",
+          "icon": "scissors",
+          "program": "craft"
+        }
+      ]
+    },
+    {
+      "id": "b-home-week",
+      "type": "schedule",
+      "anchor": "this-week",
+      "title": "drop in this week",
+      "source": "events-fixture",
+      "days": 7,
+      "later": 3,
+      "laterTitle": "coming up",
+      "home": "sac-mhh",
+      "dropIn": [
+        {
+          "program": "peer",
+          "href": "/join/peer-support-groups/"
+        }
+      ],
+      "connect": {
+        "label": "All events on Badger Supports Connect",
+        "href": "https://home.badgersupports.org/"
+      }
+    },
+    {
+      "id": "b-home-groups",
+      "type": "program",
+      "variant": "feature",
+      "program": "peer",
+      "title": "peer support groups",
+      "lead": "Set aside an hour to reset.",
+      "facts": [
+        {
+          "term": "When",
+          "text": "Mon–Thu, 5–6 PM · Mon also 7–8 PM"
+        },
+        {
+          "term": "Where",
+          "text": "Student Mental Health Hub, Student Activity Center Rm. 3203"
+        },
+        {
+          "term": "Who",
+          "text": "Free, confidential, and open to all UW–Madison students."
+        }
+      ],
+      "photos": [
+        "m-hub-peer-poster"
+      ],
+      "links": [
+        {
+          "label": "Join us for a group",
+          "href": "/join/peer-support-groups"
+        }
+      ],
+      "anchor": "groups"
+    },
+    {
+      "id": "b-home-craft",
+      "type": "program",
+      "variant": "gallery",
+      "program": "craft",
+      "title": "craft nights",
+      "lead": "Need a break from classes?",
+      "upcoming": {
+        "source": "events-fixture",
+        "program": "craft",
+        "count": 2,
+        "label": "Next craft nights"
+      },
+      "photos": [
+        "m-people-visionboards",
+        "m-people-bedazzle",
+        "m-people-perler",
+        "m-people-planter",
+        "m-people-bracelets"
+      ],
+      "links": [
+        {
+          "label": "Craft night schedule",
+          "href": "/join/craft-nights"
+        }
+      ],
+      "anchor": "craft"
+    },
+    {
+      "id": "b-home-workshops",
+      "type": "workshops",
+      "anchor": "workshops",
+      "title": "wellness workshops",
+      "lead": "Interactive sessions led by trained peer facilitators, tailored to your group’s needs.",
+      "photos": [
+        "m-workshop-housing-team",
+        "m-workshop-herald-room"
+      ],
+      "primary": {
+        "label": "Request a workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "items": [
+        {
+          "id": "w-networks",
+          "tab": "Support networks",
+          "title": "Building support networks",
+          "link": {
+            "label": "About this workshop",
+            "href": "/join/request-a-workshop/behind-the-workshop/support-networks"
+          },
+          "goals": [
+            "Find where you give and receive support",
+            "Spot the traits of a strong network",
+            "Map your own network, and where it could grow"
+          ],
+          "activity": {
+            "kind": "network",
+            "prompt": "Who’s in your support network? Open a circle.",
+            "centre": "you",
+            "areas": [
+              {
+                "id": "a-emotional",
+                "label": "Emotional",
+                "text": "Support through empathy, encouragement, and a safe space",
+                "examples": "a close friend, a therapist"
+              },
+              {
+                "id": "a-academic",
+                "label": "Academic",
+                "text": "Support in school or in education",
+                "examples": "a classmate, a professor"
+              },
+              {
+                "id": "a-practical",
+                "label": "Practical",
+                "text": "Support with daily tasks, responsibilities, and logistics",
+                "examples": "a roommate, a neighbor"
+              },
+              {
+                "id": "a-professional",
+                "label": "Professional",
+                "text": "Support with your career path or professional development",
+                "examples": "a mentor, a career counselor"
+              }
+            ]
+          }
+        },
+        {
+          "id": "w-selfcare",
+          "tab": "Self-care",
+          "title": "Stress management and self-care",
+          "link": {
+            "label": "About this workshop",
+            "href": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care"
+          },
+          "goals": [
+            "Find self-care that fits your schedule and energy",
+            "Make it a habit, not a quick fix",
+            "Leave with your own self-care bingo card"
+          ],
+          "activity": {
+            "kind": "bingo",
+            "prompt": "Self-care bingo: pick a time frame, then tick what you do.",
+            "win": "bingo! that’s a line.",
+            "cells": [
+              "Take a walk",
+              "Drink 6 glasses of water",
+              "No coffee after 3 PM",
+              "Call a family member or friend",
+              "Journal once a day",
+              "Phone off an hour before bed",
+              "Deep clean my room",
+              "Go for a bike ride",
+              "Meditate for 20 minutes"
+            ]
+          }
+        },
+        {
+          "id": "w-advocacy",
+          "tab": "Self-advocacy",
+          "title": "Self-advocacy",
+          "goals": [
+            "Define self-advocacy and where it shows up in your life",
+            "Practise the three-part model: assess your needs, know your rights, communicate clearly"
+          ],
+          "activity": {
+            "kind": "choose",
+            "scenario": "Devon has just started a summer internship. Team meetings move fast, and she follows best with written notes, so she keeps missing key details. She sets up a meeting with her supervisor.",
+            "question": "What should Devon say?",
+            "options": [
+              {
+                "id": "o-soft",
+                "tone": "soft",
+                "text": "“I’m not sure if this is really important, but the meetings go kind of quickly for me. It’s probably me not keeping up, but is there anything I could do to follow along better? If not, that’s totally fine.”",
+                "verdict": "Too soft."
+              },
+              {
+                "id": "o-clear",
+                "tone": "clear",
+                "text": "“I want to make sure I’m doing my best work. Written agendas and key takeaways shared after meetings would help me stay on track with the team’s goals.”",
+                "verdict": "Clear and respectful.",
+                "why": "Use “I” statements. Be assertive."
+              },
+              {
+                "id": "o-harsh",
+                "tone": "harsh",
+                "text": "“These meetings are impossible to follow, and I can’t do my job if no one slows down. You all need to start providing written notes or change how you run the meetings.”",
+                "verdict": "Too harsh."
+              }
+            ]
+          }
+        },
+        {
+          "id": "w-housing",
+          "tab": "Housing",
+          "title": "Navigating housing",
+          "link": {
+            "label": "About this workshop",
+            "href": "/join/request-a-workshop/behind-the-workshop/navigating-housing"
+          },
+          "goals": [
+            "Understand timelines, budgets and leases",
+            "Plan with peers and campus resources",
+            "Make housing choices grounded in your values, rights and responsibilities"
+          ],
+          "activity": {
+            "kind": "flip",
+            "prompt": "Terms to know before you sign. Open a card.",
+            "note": "For education only, not legal advice. For help with a lease, talk to the Tenant Resource Center.",
+            "cards": [
+              {
+                "id": "t-shared-private",
+                "term": "Shared private",
+                "text": "Your own bedroom in a shared unit, like one room of a 4-bed, 2-bath apartment."
+              },
+              {
+                "id": "t-joint-several",
+                "term": "Joint and several liability",
+                "text": "Everyone on the lease is responsible for the rent of the whole unit, not just their own share."
+              },
+              {
+                "id": "t-rent-concession",
+                "term": "Rent concession",
+                "text": "A short-term discount that lowers what you pay up front, but not the official rent, which can affect later increases or renewals."
+              },
+              {
+                "id": "t-sublease",
+                "term": "Sublease",
+                "text": "Someone lives in your place while you’re away, but you are still responsible for the rent and any damage."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b-home-wall",
+      "type": "wall",
+      "title": "wall of support",
+      "source": "wall-notes",
+      "show": 8,
+      "more": "Show other notes"
+    },
+    {
+      "id": "b-home-involved",
+      "type": "involve",
+      "title": "get involved",
+      "items": [
+        {
+          "id": "inv-volunteer",
+          "title": "Volunteer",
+          "primary": true,
+          "link": {
+            "label": "Express interest",
+            "href": "/join/get-involved/"
+          },
+          "icon": "hand"
+        },
+        {
+          "id": "inv-staff",
+          "title": "Staff positions",
+          "form": "staff-application",
+          "link": {
+            "label": "About working here",
+            "href": "/join/get-involved/"
+          },
+          "icon": "badge"
+        },
+        {
+          "id": "inv-list",
+          "title": "Email list",
+          "link": {
+            "label": "Join our email list",
+            "href": "/join/email-list"
+          },
+          "icon": "mail"
+        }
+      ],
+      "compact": true
+    },
+    {
+      "id": "b-home-mood",
+      "type": "mood",
+      "title": "how are you feeling today?"
+    }
+  ]
+}

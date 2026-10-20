@@ -1,0 +1,80 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-about-team",
+  "path": "/about/our-team/",
+  "title": "Our Team — Badger Supports",
+  "description": "The students and advisors who run Badger Supports at UW–Madison.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-team-head",
+      "type": "pagehead",
+      "title": "We are Badger Supports!",
+      "primary": {
+        "label": "Get Involved",
+        "href": "/join/get-involved/"
+      },
+      "links": [
+        {
+          "label": "Advisors & Campus Partners",
+          "href": "#b-team-advisors",
+          "icon": "down"
+        }
+      ],
+      "photos": [
+        "m-team-openhouse",
+        "m-people-welcome",
+        "m-workshop-herald-team"
+      ]
+    },
+    {
+      "id": "b-team",
+      "type": "team",
+      "title": "Our Team",
+      "source": "team",
+      "groups": [
+        {
+          "group": "directors",
+          "title": "Staff Directors"
+        },
+        {
+          "group": "associate-directors",
+          "title": "Associate Directors"
+        },
+        {
+          "group": "staff",
+          "title": "General Staff"
+        },
+        {
+          "group": "volunteers",
+          "title": "Volunteers"
+        }
+      ]
+    },
+    {
+      "id": "b-team-cta",
+      "type": "cta",
+      "title": "Interested in Badger Supports Leadership?",
+      "primary": {
+        "label": "Get Involved",
+        "href": "/join/get-involved/"
+      },
+      "photos": [
+        "m-workshop-housing-team"
+      ]
+    },
+    {
+      "id": "b-team-advisors",
+      "type": "team",
+      "anchor": "b-team-advisors",
+      "title": "Advisors & Campus Partners",
+      "source": "team",
+      "groups": [
+        {
+          "group": "advisors"
+        }
+      ],
+      "card": "title"
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+{
+  "schema": "bss.team-fixture/1",
+  "fixture": true,
+  "label": "Sample profiles: every person here is fictional",
+  "provenance": "Typed by hand on 2026-10-20 so the layout can be reviewed; every person is fictional. Production reads Connect's opt-in public profile export (Exchange request PUBLIC-TEAM-PROFILES-2026-10-20); each member writes their own profile in Connect and chooses whether it is public.",
+  "people": [
+    {
+      "id": "tp-0001",
+      "slug": "avery-example",
+      "published": true,
+      "name": "Avery Example",
+      "pronouns": "they/them",
+      "classYear": 2027,
+      "role": "Executive",
+      "title": "Executive Director",
+      "group": "directors",
+      "order": 1,
+      "bio": [
+        "Avery is the Executive Director of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ],
+      "contact": "avery.example@example.org"
+    },
+    {
+      "id": "tp-0002",
+      "slug": "sam-sample",
+      "published": true,
+      "name": "Sam Sample",
+      "pronouns": "she/her",
+      "classYear": 2027,
+      "role": "Managing",
+      "title": "Managing Director",
+      "group": "directors",
+      "order": 2,
+      "bio": [
+        "Sam is the Managing Director of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ],
+      "contact": "sam.sample@example.org"
+    },
+    {
+      "id": "tp-0003",
+      "slug": "jordan-placeholder",
+      "published": true,
+      "name": "Jordan Placeholder",
+      "pronouns": "he/him",
+      "classYear": 2028,
+      "role": "Outreach",
+      "title": "Director of Outreach",
+      "group": "directors",
+      "order": 3,
+      "bio": [
+        "Jordan is the Director of Outreach of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0004",
+      "slug": "riley-testcase",
+      "published": true,
+      "name": "Riley Testcase",
+      "pronouns": "she/her",
+      "classYear": 2028,
+      "role": "Workshops",
+      "title": "Director of Workshops",
+      "group": "directors",
+      "order": 4,
+      "bio": [
+        "Riley is the Director of Workshops of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0005",
+      "slug": "casey-demo",
+      "published": true,
+      "name": "Casey Demo",
+      "pronouns": "he/him",
+      "classYear": 2027,
+      "role": "Craft Nights",
+      "title": "Director of Craft Nights",
+      "group": "directors",
+      "order": 5,
+      "bio": [
+        "Casey is the Director of Craft Nights of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ],
+      "contact": "casey.demo@example.org"
+    },
+    {
+      "id": "tp-0006",
+      "slug": "morgan-fixture",
+      "published": true,
+      "name": "Morgan Fixture",
+      "pronouns": "she/her",
+      "classYear": 2029,
+      "role": "Programs",
+      "title": "Associate Director of Programs",
+      "group": "associate-directors",
+      "order": 1,
+      "bio": [
+        "Morgan is the Associate Director of Programs of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0007",
+      "slug": "quinn-mockup",
+      "published": true,
+      "name": "Quinn Mockup",
+      "pronouns": "they/them",
+      "classYear": 2028,
+      "role": "Wellness & Support",
+      "title": "Associate Director of Wellness & Support",
+      "group": "associate-directors",
+      "order": 2,
+      "bio": [
+        "Quinn is the Associate Director of Wellness & Support of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0008",
+      "slug": "taylor-draft",
+      "published": true,
+      "name": "Taylor Draft",
+      "pronouns": "she/her",
+      "classYear": 2028,
+      "role": "Lead Peer Facilitator",
+      "title": "Lead Peer Facilitator",
+      "group": "staff",
+      "order": 1,
+      "bio": [
+        "Taylor is the Lead Peer Facilitator of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0009",
+      "slug": "rowan-proof",
+      "published": true,
+      "name": "Rowan Proof",
+      "pronouns": "he/him",
+      "classYear": 2029,
+      "role": "Peer Facilitator",
+      "title": "Peer Facilitator",
+      "group": "staff",
+      "order": 2,
+      "bio": [
+        "Rowan is the Peer Facilitator of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0010",
+      "slug": "emerson-standin",
+      "published": true,
+      "name": "Emerson Stand-in",
+      "pronouns": "she/her",
+      "classYear": 2029,
+      "role": "Peer Facilitator",
+      "title": "Peer Facilitator",
+      "group": "staff",
+      "order": 3,
+      "bio": [
+        "Emerson is the Peer Facilitator of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0011",
+      "slug": "parker-sketch",
+      "published": true,
+      "name": "Parker Sketch",
+      "pronouns": "they/them",
+      "classYear": 2030,
+      "role": "Volunteer",
+      "title": "Volunteer",
+      "group": "volunteers",
+      "order": 1,
+      "bio": [
+        "Parker is the Volunteer of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0012",
+      "slug": "hayden-prototype",
+      "published": true,
+      "name": "Hayden Prototype",
+      "pronouns": "he/him",
+      "classYear": 2029,
+      "role": "Volunteer",
+      "title": "Volunteer",
+      "group": "volunteers",
+      "order": 2,
+      "bio": [
+        "Hayden is the Volunteer of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0013",
+      "slug": "dana-specimen",
+      "published": true,
+      "name": "Dana Specimen",
+      "pronouns": "she/her",
+      "credentials": "MS",
+      "role": "Faculty Advisor",
+      "title": "Faculty Advisor",
+      "group": "advisors",
+      "order": 1,
+      "bio": [
+        "Dana is a Faculty Advisor of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ],
+      "contact": "dana.specimen@example.org"
+    },
+    {
+      "id": "tp-0014",
+      "slug": "lee-illustration",
+      "published": true,
+      "name": "Lee Illustration",
+      "pronouns": "he/him",
+      "role": "Campus Partner",
+      "title": "Campus Partner",
+      "group": "advisors",
+      "order": 2,
+      "bio": [
+        "Lee is a Campus Partner of Badger Supports.",
+        "This is a sample profile. On the live site, each member writes their own bio in Connect and chooses whether it is public."
+      ]
+    },
+    {
+      "id": "tp-0099",
+      "slug": "jamie-unlisted",
+      "published": false,
+      "name": "Jamie Unlisted",
+      "pronouns": "she/her",
+      "classYear": 2030,
+      "role": "Volunteer",
+      "title": "Volunteer",
+      "group": "volunteers",
+      "order": 3,
+      "bio": [
+        "A profile its owner has not made public. It gets no card and no page."
+      ]
+    }
+  ]
+}

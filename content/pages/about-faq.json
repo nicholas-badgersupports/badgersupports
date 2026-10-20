@@ -1,0 +1,123 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-about-faq",
+  "path": "/about/faq/",
+  "title": "Frequently Asked Questions — Badger Supports",
+  "description": "Answers about Peer Support Groups and how Badger Supports works.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-faq-head",
+      "type": "pagehead",
+      "title": "Frequently Asked Questions",
+      "primary": {
+        "label": "Join a Group Now",
+        "href": "/join/peer-support-groups/"
+      },
+      "links": [
+        {
+          "label": "Operations",
+          "href": "#b-faq-ops",
+          "icon": "down"
+        }
+      ],
+      "photos": [
+        "m-hub-sea",
+        "m-hub-corner",
+        "m-peer-talk"
+      ]
+    },
+    {
+      "id": "b-faq-groups",
+      "type": "questions",
+      "title": "Peer Support Group",
+      "items": [
+        {
+          "id": "q-group-therapy",
+          "q": "Are Peer Support Groups “Group Therapy”?",
+          "a": "Badger Supports is not a therapy or crisis organization. Our programs, including Peer Support Groups, provide a safe, peer-led space that empowers students to support one another and connect with resources. Peer Facilitators are trained in peer support, but they are not licensed counselors."
+        },
+        {
+          "id": "q-only-uw",
+          "q": "Is Badger Supports only for UW-Madison Students?",
+          "a": "Yes. Our programs are open to undergraduate, graduate, and professional students, including all student identity groups."
+        },
+        {
+          "id": "q-mental-illness",
+          "q": "Are Peer Support Groups only for students with mental illnesses?",
+          "a": "Peer Support Groups are open to all students, because we believe everyone can benefit from building a supportive community. Even if you’re not seeking support right now, showing up for a fellow Badger—or learning how to offer support with confidence and compassion—helps break the stigma, anxiety, and stress surrounding mental health."
+        },
+        {
+          "id": "q-group-size",
+          "q": "How many students are usually in a group?",
+          "a": "Peer Support Groups usually consist of 5-10 students."
+        },
+        {
+          "id": "q-when-where",
+          "q": "When and where do Weekly Groups meet?",
+          "a": "Peer Support Groups are drop-in and commitment-free, making it easy to drop in when it works for you! All groups are held in the Student Mental Health Hub (Rm. 3203 in the Student Activity Center)."
+        }
+      ],
+      "ask": {
+        "label": "Find the Schedule & Locations",
+        "href": "/join/peer-support-groups/",
+        "icon": "pin"
+      }
+    },
+    {
+      "id": "b-faq-ops",
+      "type": "questions",
+      "anchor": "b-faq-ops",
+      "title": "Operations",
+      "items": [
+        {
+          "id": "q-email",
+          "q": "What is Badger Supports’ official email?",
+          "a": [
+            "Our primary email is directors@badgersupports.org. Communications may also be sent to hello@badgersupports.org.",
+            "Staff & volunteers may use their personal @wisc.edu email addresses for communications. View contact information on our team roster."
+          ]
+        },
+        {
+          "id": "q-leader",
+          "q": "How can I get involved as a leader?",
+          "a": "You can learn more on our Get Involved page! If you have specific questions not covered there, please don’t hesitate to contact us at hello@badgersupports.org."
+        },
+        {
+          "id": "q-dual-registration",
+          "q": "What does dual registration with UHS-Prevention mean for Badger Supports?",
+          "a": [
+            "Badger Supports is proud to have a dual-registration advising relationship with University Health Services - Prevention at UW-Madison.",
+            "This advising partnership reflects our shared commitment to strengthening peer-to-peer mental health support on campus. As part of this partnership, UHS-Prevention staff advise our student team to ensure our student-created training reflects accurate information and best practices.",
+            "We do not represent or speak on behalf of UHS-Prevention unless explicitly stated. Badger Supports is an independent Registered Student Organization; and all organizational decisions are made by students.",
+            "For inquiries please contact: directors@badgersupports.org"
+          ]
+        },
+        {
+          "id": "q-support-network",
+          "q": "Are you affiliated with The Support Network?",
+          "a": "No. Badger Supports has no affiliation with any national organization."
+        }
+      ],
+      "ask": {
+        "label": "Our Team",
+        "href": "/about/our-team/",
+        "icon": "arrow"
+      }
+    },
+    {
+      "id": "b-faq-cta",
+      "type": "cta",
+      "title": "Seeing a question not answered?",
+      "body": "Reach out at hello@badgersupports.org. On Wisconsin!",
+      "primary": {
+        "label": "Email Us",
+        "href": "mailto:hello@badgersupports.org",
+        "icon": "mail"
+      },
+      "photos": [
+        "m-people-nostalgic"
+      ]
+    }
+  ]
+}

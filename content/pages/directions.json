@@ -1,0 +1,16 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-directions",
+  "path": "/directions/",
+  "title": "Rooms and directions — Badger Supports",
+  "description": "Where Badger Supports meets, with step-by-step directions to each room.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-dir-rooms",
+      "type": "places",
+      "heading": "h1",
+      "title": "find us"
+    }
+  ]
+}

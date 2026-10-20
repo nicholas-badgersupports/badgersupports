@@ -1,0 +1,63 @@
+{
+  "schema": "bss.mood/1",
+  "provenance": "Moods, colours and messages copied from the public configuration the live mood check-in reads (Apps Script feed, read 2026-10-19). Emoji kept as decoration only; the label is what is announced.",
+  "analytics": "never",
+  "moods": [
+    {
+      "id": "burnt_out",
+      "label": "Burnt out",
+      "emoji": "😓",
+      "color": "#a40000",
+      "messages": [
+        "Sounds like your energy is running low today. Be kind to yourself.",
+        "Rest is still part of getting through the week.",
+        "A slower day is still a valid day."
+      ]
+    },
+    {
+      "id": "overloaded",
+      "label": "Overloaded",
+      "emoji": "📚",
+      "color": "#346b4f",
+      "messages": [
+        "That is a lot at once. One thing at a time is enough.",
+        "You do not have to solve everything today.",
+        "Take a breath. The next small step still counts."
+      ]
+    },
+    {
+      "id": "finding_calm",
+      "label": "Finding calm",
+      "emoji": "🧘",
+      "color": "#304674",
+      "messages": [
+        "Glad things are feeling a little lighter right now.",
+        "Hope you get to hold onto that calm for a while.",
+        "A steady moment can make a real difference."
+      ]
+    },
+    {
+      "id": "getting_there",
+      "label": "Getting there",
+      "emoji": "☕",
+      "color": "#af4129",
+      "messages": [
+        "You are making progress, even if it feels gradual.",
+        "Keep going. Small steps still move you forward.",
+        "You do not have to have it all figured out yet."
+      ]
+    },
+    {
+      "id": "thriving",
+      "label": "Thriving",
+      "emoji": "🌟",
+      "color": "#4f4f7d",
+      "messages": [
+        "Love to hear that things are going well today.",
+        "Keep enjoying the good moments when they come.",
+        "Glad today is treating you well."
+      ]
+    }
+  ],
+  "after": "Peer support groups are entirely drop-in. No sign-up, no commitment, come alone or bring a friend!"
+}

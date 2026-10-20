@@ -1,0 +1,33 @@
+{
+  "schema": "bss.place/1",
+  "id": "lcm",
+  "published": true,
+  "name": "LCM Student Center",
+  "short": "LCM Student Center",
+  "building": "",
+  "where": "Kitchen area",
+  "address": "325 N Mills St, Madison, WI",
+  "links": [],
+  "steps": [
+    {
+      "id": "s-corner",
+      "text": "On the corner of N Mills St and University Ave, next to the Chemistry building.",
+      "photo": "m-room-lcm-map"
+    },
+    {
+      "id": "s-entrance",
+      "text": "Look for the “You Belong” banner and go in through the double doors.",
+      "photo": "m-room-lcm-entrance"
+    },
+    {
+      "id": "s-room",
+      "text": "We set up in the kitchen area. Look for the Badger Supports banner.",
+      "photo": "m-lcm-banner"
+    }
+  ],
+  "note": "Badger Supports is a secular student organization, and we are grateful to the LCM team for welcoming us into the space.",
+  "aliases": [
+    "/operations/directions/lcm"
+  ],
+  "source": "Live page /operations/directions/lcm, read 2026-10-19. Its three pictures (the street map, the entrance, the banner) are the live page’s own, saved with the owner’s approval on 2026-10-20; the owner kept the banner photo for now."
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "bss.place/1",
+  "id": "union-south-marquee",
+  "published": true,
+  "name": "The Marquee",
+  "short": "Union South Marquee",
+  "building": "Union South",
+  "where": "2nd floor",
+  "address": "1308 W Dayton St, Madison, WI 53715",
+  "links": [],
+  "steps": [],
+  "aliases": [],
+  "source": "Named by the September 28 housing workshop in Connect's event list (Marquee Theatre, Union South). Floor and address from union.wisc.edu/visit/union-south, read on 2026-10-20. Published with its address only (owner, 20 Oct 2026: “Show addresses only for Marquee and Tripp”)."
+}

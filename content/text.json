@@ -1,0 +1,764 @@
+{
+  "schema": "bss.text/1",
+  "about": "Every word the site shows that is not already part of a page, a form, the menus or the media list. Keys are permanent; the text is the shipped default, and a published edit from Connect wins over it. Required text cannot be published empty and must keep every {{placeholder}} its default has; text marked optional disappears from the page when published empty.",
+  "groups": [
+    {
+      "id": "page",
+      "label": "Every page"
+    },
+    {
+      "id": "home",
+      "label": "Homepage sections"
+    },
+    {
+      "id": "events",
+      "label": "Event cards"
+    },
+    {
+      "id": "rooms",
+      "label": "Rooms and directions"
+    },
+    {
+      "id": "dates",
+      "label": "Dates and times"
+    },
+    {
+      "id": "forms",
+      "label": "Forms"
+    },
+    {
+      "id": "team",
+      "label": "Team and profiles"
+    },
+    {
+      "id": "system",
+      "label": "Problems"
+    }
+  ],
+  "text": {
+    "page.skip": {
+      "group": "page",
+      "text": "Skip to content",
+      "where": "First link on every page, for keyboard users."
+    },
+    "header.wordmark": {
+      "group": "page",
+      "text": "badger supports",
+      "where": "The name beside the hand, in the header and the footer."
+    },
+    "header.homeSuffix": {
+      "group": "page",
+      "text": "— home",
+      "where": "Read aloud after the name in the header link, so it says where the link goes."
+    },
+    "header.menu": {
+      "group": "page",
+      "text": "Menu",
+      "where": "The menu button on a phone."
+    },
+    "header.navLabel": {
+      "group": "page",
+      "text": "Main",
+      "where": "The main menu's name, read by screen readers."
+    },
+    "link.toConnect": {
+      "group": "page",
+      "text": "(opens Badger Supports Connect)",
+      "where": "Read aloud after every link that leaves for Connect."
+    },
+    "support.label": {
+      "group": "page",
+      "text": "If you need help now",
+      "where": "The crisis-line band's name, read by screen readers. The band's sentence is edited in Site settings."
+    },
+    "footer.socialLabel": {
+      "group": "page",
+      "text": "Badger Supports elsewhere",
+      "where": "The social links' name, read by screen readers."
+    },
+    "footer.legalLabel": {
+      "group": "page",
+      "text": "Legal and staff",
+      "where": "The privacy and sign-in links' name, read by screen readers."
+    },
+    "announce.label": {
+      "group": "page",
+      "text": "Announcement",
+      "where": "The announcement strip's name, read by screen readers."
+    },
+    "proto.title": {
+      "group": "page",
+      "text": "Prototype for review — not the live site.",
+      "where": "Strip at the top of the prototype only. Never shown on the published site."
+    },
+    "proto.body": {
+      "group": "page",
+      "text": "Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Forms save only to a local test database; nothing is emailed or sent to Connect.",
+      "where": "Second sentence of the prototype strip.",
+      "optional": true
+    },
+    "embed.play": {
+      "group": "page",
+      "text": "Play the reel",
+      "where": "Button on an Instagram video; pressing it loads Instagram’s player."
+    },
+    "embed.notice": {
+      "group": "page",
+      "text": "Playing it loads Instagram, which may set its own cookies.",
+      "where": "Under the Play button on an Instagram video."
+    },
+    "embed.open": {
+      "group": "page",
+      "text": "Watch on Instagram",
+      "where": "Link under an Instagram video."
+    },
+    "hero.taglineLabel": {
+      "group": "home",
+      "text": "What we do",
+      "where": "The hero's three-word list, read by screen readers."
+    },
+    "hero.photosLabel": {
+      "group": "home",
+      "text": "Photos from Badger Supports programs",
+      "where": "The hero photos' name, read by screen readers."
+    },
+    "hero.pause": {
+      "group": "home",
+      "text": "Pause",
+      "where": "Button in the corner of the hero's photo circles that stops them drifting."
+    },
+    "hero.play": {
+      "group": "home",
+      "text": "Play",
+      "where": "The same button once the circles are paused; it starts them drifting again."
+    },
+    "schedule.today": {
+      "group": "home",
+      "text": "Today",
+      "where": "Tag on today's date in the timetable."
+    },
+    "schedule.todayPrefix": {
+      "group": "home",
+      "text": "Today,",
+      "where": "Read before today's date by screen readers."
+    },
+    "schedule.placeLink": {
+      "group": "home",
+      "text": "How to find it",
+      "where": "Link under the usual place in the timetable."
+    },
+    "schedule.laterTitle": {
+      "group": "home",
+      "text": "Coming up",
+      "where": "Heading over later events, when the timetable block gives none."
+    },
+    "schedule.signup.none": {
+      "group": "home",
+      "text": "No sign-up",
+      "where": "Beside an event anyone can walk into."
+    },
+    "schedule.dropIn": {
+      "group": "home",
+      "text": "Drop in",
+      "where": "Button beside an event anyone can walk into. Opens the program’s page (peer support groups) or the room’s directions."
+    },
+    "schedule.signup.connect": {
+      "group": "home",
+      "text": "Sign up on Connect",
+      "where": "Link beside an event that needs a sign-up on Connect."
+    },
+    "schedule.signup.link": {
+      "group": "home",
+      "text": "Sign-up needed",
+      "where": "Beside an event that needs a sign-up somewhere else."
+    },
+    "schedule.ended": {
+      "group": "home",
+      "text": "Ended",
+      "where": "Shown on an event once it has finished."
+    },
+    "program.upcomingLabel": {
+      "group": "home",
+      "text": "Next dates",
+      "where": "Heading over a program's next dates, read by screen readers, when the block gives none."
+    },
+    "strip.prev": {
+      "group": "home",
+      "text": "Previous photo",
+      "where": "Button that moves a photo strip back."
+    },
+    "strip.next": {
+      "group": "home",
+      "text": "Next photo",
+      "where": "Button that moves a photo strip on."
+    },
+    "strip.trackLabel": {
+      "group": "home",
+      "text": "{{title}}: photos, scroll sideways for more",
+      "where": "A photo strip's name, read by screen readers. {{title}} is the section heading."
+    },
+    "strip.count": {
+      "group": "home",
+      "text": "{{n}} of {{total}}",
+      "where": "Position in a photo strip."
+    },
+    "wall.more": {
+      "group": "home",
+      "text": "Show other notes",
+      "where": "Button on the Wall of Support, when the block gives none."
+    },
+    "involve.closed": {
+      "group": "home",
+      "text": "Applications closed",
+      "where": "Tag on a way to get involved whose application form is switched off."
+    },
+    "workshops.inWorkshop": {
+      "group": "home",
+      "text": "In the full workshop",
+      "where": "Above the list of what each workshop covers, beside its preview."
+    },
+    "workshops.examples": {
+      "group": "home",
+      "text": "For example: {{who}}",
+      "where": "Under the ways a kind of support shows up, in the support-network preview."
+    },
+    "mood.error": {
+      "group": "home",
+      "text": "Unable to record that just now. Try again in a minute — nothing was saved.",
+      "where": "When a mood tap could not be saved."
+    },
+    "mood.count.one": {
+      "group": "home",
+      "text": "{{n}} Badger has checked in today:",
+      "where": "Above the counts, when one person has checked in."
+    },
+    "mood.count.other": {
+      "group": "home",
+      "text": "{{n}} Badgers have checked in today:",
+      "where": "Above the counts, when more than one has."
+    },
+    "mood.pageTitle": {
+      "group": "home",
+      "text": "thanks for checking in",
+      "where": "Heading of the page shown after a mood tap without JavaScript."
+    },
+    "mood.back": {
+      "group": "home",
+      "text": "Back to the homepage",
+      "where": "Link on that page."
+    },
+    "date.dow.0": {
+      "group": "dates",
+      "text": "Sun",
+      "where": "Short weekday on date blocks (Sunday)."
+    },
+    "date.dow.1": {
+      "group": "dates",
+      "text": "Mon",
+      "where": "Short weekday on date blocks (Monday)."
+    },
+    "date.dow.2": {
+      "group": "dates",
+      "text": "Tue",
+      "where": "Short weekday on date blocks (Tuesday)."
+    },
+    "date.dow.3": {
+      "group": "dates",
+      "text": "Wed",
+      "where": "Short weekday on date blocks (Wednesday)."
+    },
+    "date.dow.4": {
+      "group": "dates",
+      "text": "Thu",
+      "where": "Short weekday on date blocks (Thursday)."
+    },
+    "date.dow.5": {
+      "group": "dates",
+      "text": "Fri",
+      "where": "Short weekday on date blocks (Friday)."
+    },
+    "date.dow.6": {
+      "group": "dates",
+      "text": "Sat",
+      "where": "Short weekday on date blocks (Saturday)."
+    },
+    "date.dowLong.0": {
+      "group": "dates",
+      "text": "Sunday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.dowLong.1": {
+      "group": "dates",
+      "text": "Monday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.dowLong.2": {
+      "group": "dates",
+      "text": "Tuesday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.dowLong.3": {
+      "group": "dates",
+      "text": "Wednesday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.dowLong.4": {
+      "group": "dates",
+      "text": "Thursday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.dowLong.5": {
+      "group": "dates",
+      "text": "Friday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.dowLong.6": {
+      "group": "dates",
+      "text": "Saturday",
+      "where": "Weekday read aloud with a date."
+    },
+    "date.mon.0": {
+      "group": "dates",
+      "text": "Jan",
+      "where": "Short month on date blocks (January)."
+    },
+    "date.mon.1": {
+      "group": "dates",
+      "text": "Feb",
+      "where": "Short month on date blocks (February)."
+    },
+    "date.mon.2": {
+      "group": "dates",
+      "text": "Mar",
+      "where": "Short month on date blocks (March)."
+    },
+    "date.mon.3": {
+      "group": "dates",
+      "text": "Apr",
+      "where": "Short month on date blocks (April)."
+    },
+    "date.mon.4": {
+      "group": "dates",
+      "text": "May",
+      "where": "Short month on date blocks (May)."
+    },
+    "date.mon.5": {
+      "group": "dates",
+      "text": "Jun",
+      "where": "Short month on date blocks (June)."
+    },
+    "date.mon.6": {
+      "group": "dates",
+      "text": "Jul",
+      "where": "Short month on date blocks (July)."
+    },
+    "date.mon.7": {
+      "group": "dates",
+      "text": "Aug",
+      "where": "Short month on date blocks (August)."
+    },
+    "date.mon.8": {
+      "group": "dates",
+      "text": "Sep",
+      "where": "Short month on date blocks (September)."
+    },
+    "date.mon.9": {
+      "group": "dates",
+      "text": "Oct",
+      "where": "Short month on date blocks (October)."
+    },
+    "date.mon.10": {
+      "group": "dates",
+      "text": "Nov",
+      "where": "Short month on date blocks (November)."
+    },
+    "date.mon.11": {
+      "group": "dates",
+      "text": "Dec",
+      "where": "Short month on date blocks (December)."
+    },
+    "date.monLong.0": {
+      "group": "dates",
+      "text": "January",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.1": {
+      "group": "dates",
+      "text": "February",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.2": {
+      "group": "dates",
+      "text": "March",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.3": {
+      "group": "dates",
+      "text": "April",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.4": {
+      "group": "dates",
+      "text": "May",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.5": {
+      "group": "dates",
+      "text": "June",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.6": {
+      "group": "dates",
+      "text": "July",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.7": {
+      "group": "dates",
+      "text": "August",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.8": {
+      "group": "dates",
+      "text": "September",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.9": {
+      "group": "dates",
+      "text": "October",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.10": {
+      "group": "dates",
+      "text": "November",
+      "where": "Month read aloud with a date."
+    },
+    "date.monLong.11": {
+      "group": "dates",
+      "text": "December",
+      "where": "Month read aloud with a date."
+    },
+    "time.am": {
+      "group": "dates",
+      "text": "AM",
+      "where": "After a morning time."
+    },
+    "time.pm": {
+      "group": "dates",
+      "text": "PM",
+      "where": "After an afternoon or evening time."
+    },
+    "form.rule": {
+      "group": "forms",
+      "text": "Every question is required unless it says optional.",
+      "where": "Line above the questions of a form that has required questions.",
+      "optional": true
+    },
+    "form.optional": {
+      "group": "forms",
+      "text": "(optional)",
+      "where": "After the label of a question that can be left empty."
+    },
+    "form.other": {
+      "group": "forms",
+      "text": "Other",
+      "where": "The write-in answer on a question that allows one."
+    },
+    "form.otherLabel": {
+      "group": "forms",
+      "text": "{{label}}: other",
+      "where": "The write-in box's name, read by screen readers."
+    },
+    "form.choose": {
+      "group": "forms",
+      "text": "Choose…",
+      "where": "First line of a drop-down list."
+    },
+    "form.onlyIf": {
+      "group": "forms",
+      "text": "Only if you chose {{options}} above.",
+      "where": "Above a section that only applies after a certain answer. Hidden once JavaScript shows and hides sections itself."
+    },
+    "form.or": {
+      "group": "forms",
+      "text": "or",
+      "where": "Between two answers in that line."
+    },
+    "form.send": {
+      "group": "forms",
+      "text": "Send",
+      "where": "The button at the end of a form, unless the form names its own."
+    },
+    "form.trap": {
+      "group": "forms",
+      "text": "Leave this empty",
+      "where": "A field only automated spam fills in. People never see it."
+    },
+    "form.errors.title": {
+      "group": "forms",
+      "text": "Unable to send yet",
+      "where": "Heading of the box listing answers that need a look."
+    },
+    "form.errors.one": {
+      "group": "forms",
+      "text": "One answer needs a look. Your other answers are kept.",
+      "where": "In that box, for one answer."
+    },
+    "form.errors.many": {
+      "group": "forms",
+      "text": "{{n}} answers need a look. Your other answers are kept.",
+      "where": "In that box, for more than one."
+    },
+    "form.closed.title": {
+      "group": "forms",
+      "text": "This form is closed",
+      "where": "Heading shown instead of a form that is switched off. The sentence under it is each form's own."
+    },
+    "form.elsewhere.go": {
+      "group": "forms",
+      "text": "Fill Out Our Form",
+      "where": "Button on a form's page while the form is still on Google Forms (at launch, until Connect shows submissions). It opens the Google Form."
+    },
+    "form.closedNow.title": {
+      "group": "forms",
+      "text": "This form has closed",
+      "where": "When a form is switched off while someone has it open."
+    },
+    "form.closedNow.body": {
+      "group": "forms",
+      "text": "Your answers were not sent. They are still on this page if you want to copy them.",
+      "where": "Under that heading, with JavaScript.",
+      "optional": true
+    },
+    "form.closedNow.copy": {
+      "group": "forms",
+      "text": "Your answers were not sent. Here is what you wrote, so you can keep a copy:",
+      "where": "Under that heading, without JavaScript, above the person's own answers."
+    },
+    "form.updated.title": {
+      "group": "forms",
+      "text": "This form was updated while it was open",
+      "where": "When the questions changed while someone had the form open."
+    },
+    "form.updated.body": {
+      "group": "forms",
+      "text": "Check the answers marked below. The rest of what you wrote is kept.",
+      "where": "Under that heading.",
+      "optional": true
+    },
+    "form.sending": {
+      "group": "forms",
+      "text": "Sending…",
+      "where": "While a form is being sent."
+    },
+    "form.status.network": {
+      "group": "forms",
+      "text": "Unable to send — check your connection and press Send again. Your answers are kept, and sending again will not create a second request.",
+      "where": "When the connection failed."
+    },
+    "form.status.rateLimited": {
+      "group": "forms",
+      "text": "Unable to send right now — too many requests from this connection. Wait a few minutes, then press Send again. Your answers are kept.",
+      "where": "When one connection has sent too many."
+    },
+    "form.status.serverError": {
+      "group": "forms",
+      "text": "Unable to send — something went wrong on our side. Press Send again in a minute; your answers are kept.",
+      "where": "When the site failed."
+    },
+    "form.done.title": {
+      "group": "forms",
+      "text": "Received",
+      "where": "Heading after sending, when the form gives none of its own."
+    },
+    "form.done.ref": {
+      "group": "forms",
+      "text": "Your reference is {{ref}}",
+      "where": "After sending. {{ref}} is the submission's reference."
+    },
+    "form.error.thisQuestion": {
+      "group": "forms",
+      "text": "this question",
+      "where": "Stands in for a question's label in an error, if it has none."
+    },
+    "form.error.required": {
+      "group": "forms",
+      "text": "Fill in “{{label}}”.",
+      "where": "A required question left empty."
+    },
+    "form.error.requiredChoice": {
+      "group": "forms",
+      "text": "Choose an answer for “{{label}}”.",
+      "where": "A required choice left empty."
+    },
+    "form.error.tooLong": {
+      "group": "forms",
+      "text": "Shorten your answer to {{max}} characters or fewer.",
+      "where": "An answer over the length limit."
+    },
+    "form.error.emailShape": {
+      "group": "forms",
+      "text": "Enter an email address like name@wisc.edu.",
+      "where": "An email address that cannot be one."
+    },
+    "form.error.numberShape": {
+      "group": "forms",
+      "text": "Enter a whole number.",
+      "where": "A number question with something else in it."
+    },
+    "form.error.numberLow": {
+      "group": "forms",
+      "text": "Enter {{min}} or more.",
+      "where": "A number under the question's minimum."
+    },
+    "form.error.numberHigh": {
+      "group": "forms",
+      "text": "Enter {{max}} or fewer.",
+      "where": "A number over the question's maximum."
+    },
+    "form.error.optionUnknown": {
+      "group": "forms",
+      "text": "Choose one of the listed answers.",
+      "where": "An answer that is not one of the choices."
+    },
+    "form.error.tooMany": {
+      "group": "forms",
+      "text": "Choose up to {{max}}.",
+      "where": "Too many boxes ticked."
+    },
+    "form.error.otherMissing": {
+      "group": "forms",
+      "text": "Describe your “Other” answer.",
+      "where": "Other picked with nothing written."
+    },
+    "form.error.dateShape": {
+      "group": "forms",
+      "text": "Enter a date.",
+      "where": "A date question with no real date."
+    },
+    "form.error.datetimeShape": {
+      "group": "forms",
+      "text": "Enter a date and a time.",
+      "where": "A date-and-time question missing one."
+    },
+    "form.error.confirmNeeded": {
+      "group": "forms",
+      "text": "Tick the box to continue.",
+      "where": "A box that must be ticked."
+    },
+    "form.error.other": {
+      "group": "forms",
+      "text": "Check this answer.",
+      "where": "Any other problem with an answer."
+    },
+    "team.all": {
+      "group": "team",
+      "text": "Our Team",
+      "where": "Link back to the team page at the top of each person's profile page."
+    },
+    "team.classOf": {
+      "group": "team",
+      "text": "Class of {{year}}",
+      "where": "After a student's pronouns on their profile page, from the class year in their Connect profile."
+    },
+    "team.connectWith": {
+      "group": "team",
+      "text": "Connect with {{first}}",
+      "where": "The email link on a profile page, shown only when the person chose to publish a contact."
+    },
+    "team.more": {
+      "group": "team",
+      "text": "More of our team",
+      "where": "Heading over the other people in the same group, at the foot of a profile page."
+    },
+    "team.pageTitle": {
+      "group": "team",
+      "text": "{{name}}, {{title}} — Badger Supports",
+      "where": "Browser tab and search result title of a profile page."
+    },
+    "team.pageDescription": {
+      "group": "team",
+      "text": "{{name}} is {{title}} at Badger Supports.",
+      "where": "Search result description of a profile page."
+    },
+    "errors.server.title": {
+      "group": "system",
+      "text": "Something went wrong",
+      "where": "Heading when the site fails while answering."
+    },
+    "errors.server.body": {
+      "group": "system",
+      "text": "Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org.",
+      "where": "Under that heading."
+    },
+    "directions.all": {
+      "group": "rooms",
+      "text": "All rooms",
+      "where": "Link above a room’s name, back to the list of rooms."
+    },
+    "directions.map": {
+      "group": "rooms",
+      "text": "Open in Maps",
+      "where": "The button on a room’s page that opens its address in a map."
+    },
+    "directions.stepsTitle": {
+      "group": "rooms",
+      "text": "How to get there",
+      "where": "Heading over a room’s numbered steps."
+    },
+    "directions.nextHere": {
+      "group": "rooms",
+      "text": "Next here",
+      "where": "Heading over the next events held in a room."
+    },
+    "directions.arrive": {
+      "group": "rooms",
+      "text": "You’re there: {{place}}",
+      "where": "End of the route on a room’s directions."
+    },
+    "directions.ticket": {
+      "group": "rooms",
+      "text": "Directions",
+      "where": "The stub of each room’s ticket on the list of rooms."
+    },
+    "directions.pageTitle": {
+      "group": "rooms",
+      "text": "Directions to {{place}} — Badger Supports",
+      "where": "A room page’s title in the browser tab and in search results."
+    },
+    "directions.pageDescription": {
+      "group": "rooms",
+      "text": "How to find {{place}}: {{address}}.",
+      "where": "A room page’s summary in search results and link previews."
+    },
+    "directions.eventRooms": {
+      "group": "rooms",
+      "text": "Event rooms",
+      "where": "Heading over the rooms events are held in, under the Hub on the list of rooms."
+    },
+    "events.calendar": {
+      "group": "events",
+      "text": "Add to calendar",
+      "where": "On the calendar pill beside Drop in on the next event at the top of a program's page; read by screen readers on the round calendar button on an event card, before the event name. Each opens a calendar file."
+    },
+    "events.next": {
+      "group": "events",
+      "text": "Next up",
+      "where": "Small label over the next event's name at the top of a program's page, when the block gives none."
+    },
+    "events.recentTitle": {
+      "group": "events",
+      "text": "Recent events",
+      "where": "Heading over events that have happened, when the event-card block gives none."
+    },
+    "events.none": {
+      "group": "events",
+      "text": "Nothing is scheduled yet.",
+      "where": "Shown in place of event cards when none are coming up."
+    },
+    "media.linkAlt": {
+      "group": "page",
+      "text": "A photo from a Badger Supports event.",
+      "where": "Read aloud for a pasted photo link that has no description of its own"
+    }
+  }
+}

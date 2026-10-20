@@ -1,0 +1,149 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-get-involved",
+  "path": "/join/get-involved/",
+  "title": "Get involved — Badger Supports",
+  "description": "Volunteer or work at Badger Supports, the student-led peer support community at UW–Madison.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-gi-ways",
+      "type": "involve",
+      "heading": "h1",
+      "title": "get involved",
+      "photos": [
+        "m-team-openhouse",
+        "m-people-welcome",
+        "m-people-planter-solo"
+      ],
+      "items": [
+        {
+          "id": "inv-volunteer",
+          "title": "Volunteer",
+          "primary": true,
+          "text": "A new program starting 2026–2027. Gain hands-on experience hosting workshops, staffing events, and supporting peer programs.",
+          "link": {
+            "label": "Express interest",
+            "href": "https://forms.gle/2pXzV917oPX4VodY7"
+          },
+          "icon": "hand",
+          "more": {
+            "anchor": "volunteering",
+            "photo": "m-involved-volunteers",
+            "title": "Volunteers",
+            "lead": "Volunteers at Badger Supports are a new program offered starting 2026–2027, and they are trained to participate in all areas of our Directorates.",
+            "lists": [
+              {
+                "label": "Volunteers:",
+                "items": [
+                  "Gain hands-on experience hosting workshops, staffing events, and supporting peer programs.",
+                  "Help plan activities, connect students to resources, and build community across campus.",
+                  "Develop skills, strengthen their resumes, connect with professionals, and promote mental health at UW–Madison."
+                ]
+              }
+            ],
+            "after": "New Volunteer Intake revolves around Volunteer Training, which is offered throughout the semester.",
+            "link": {
+              "label": "Express interest & apply here",
+              "href": "https://forms.gle/2pXzV917oPX4VodY7"
+            }
+          }
+        },
+        {
+          "id": "inv-staff",
+          "title": "Staff positions",
+          "form": "staff-application",
+          "text": "Employment at Badger Supports is eligible to all UW–Madison students. Most staff work 5–12 hours a week.",
+          "icon": "badge",
+          "link": {
+            "label": "How hiring works",
+            "href": "#hiring"
+          },
+          "more": {
+            "anchor": "hiring",
+            "photo": "m-involved-staff",
+            "title": "How hiring works",
+            "lead": "As part of the hiring and interview process, Badger Supports requires the following:",
+            "lists": [
+              {
+                "ordered": true,
+                "items": [
+                  "A Letter of Recommendation & Resume",
+                  "Written Application",
+                  "Up to Two Interviews"
+                ]
+              },
+              {
+                "label": "Applicants are also encouraged to submit:",
+                "items": [
+                  "Cover Letter",
+                  "Personal Portfolio (for Communications Roles)"
+                ]
+              }
+            ],
+            "link": {
+              "label": "View our application",
+              "href": "https://forms.gle/QM12SgfBVx6euUCD6"
+            }
+          }
+        },
+        {
+          "id": "inv-list",
+          "title": "Email list",
+          "text": "Stay up-to-date on our latest updates, events, and more.",
+          "link": {
+            "label": "Join our email list",
+            "href": "/join/email-list"
+          },
+          "icon": "mail"
+        }
+      ]
+    },
+    {
+      "id": "b-gi-faq",
+      "type": "questions",
+      "title": "questions",
+      "items": [
+        {
+          "id": "q-what-like",
+          "q": "How is working or volunteering at Badger Supports?",
+          "a": [
+            "Working or volunteering at Badger Supports means joining a student-led team that is goal-oriented and focused on improving campus well-being.",
+            "Your role is designed to complement your career interests or academic studies, offering flexible scheduling, hands-on training, and opportunities to build leadership, communication, and project management skills."
+          ]
+        },
+        {
+          "id": "q-hiring",
+          "q": "Tell me more about your hiring process.",
+          "a": [
+            "Applicants submit a Letter of Recommendation and Resume, complete a Written Application, and may include a Personal Portfolio or Sample that highlights their experience or creativity. Selected candidates are then invited to up to two interviews.",
+            "Interested students do not apply for a specific position. Instead, they share their interests and relevant experiences, and if selected, a role within Badger Supports is offered based on organizational needs and individual fit."
+          ]
+        },
+        {
+          "id": "q-pay",
+          "q": "What is the compensation?",
+          "a": "All Badger Supports Staff Positions are funded by the General Student Services Fund and are paid a flat $15.15 an hour."
+        },
+        {
+          "id": "q-experience",
+          "q": "Do I need prior experience for staff?",
+          "a": "Previous experience through Badger Supports’ volunteer program or similar programs is preferred but not required. Training and mentorship are provided to help all team members succeed and grow within their roles at Badger Supports."
+        },
+        {
+          "id": "q-time",
+          "q": "How much do volunteers or staff typically work?",
+          "a": [
+            "Volunteers can be as involved as they choose, whether through short-term events or long-term projects.",
+            "Staff members typically have set weekly hours and ongoing responsibilities that align with their specific roles and goals within the organization."
+          ]
+        }
+      ],
+      "ask": {
+        "label": "Email us at hello@badgersupports.org",
+        "href": "mailto:hello@badgersupports.org"
+      },
+      "note": "Badger Supports values diversity and is an Equal Opportunity Employer. Accommodations can be requested at accessibility@badgersupports.org."
+    }
+  ]
+}

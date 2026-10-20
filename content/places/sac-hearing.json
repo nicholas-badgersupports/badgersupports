@@ -1,0 +1,35 @@
+{
+  "schema": "bss.place/1",
+  "id": "sac-hearing",
+  "published": true,
+  "name": "Hearing Room",
+  "short": "SAC Hearing Room",
+  "building": "Student Activity Center",
+  "where": "4th floor",
+  "address": "333 E Campus Mall, Madison, WI 53715",
+  "links": [
+    {
+      "label": "SAC hours",
+      "href": "https://asm.wisc.edu/sac/"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-entrance",
+      "text": "Go in by the pillar marked 333, through the double doors with the university’s logo.",
+      "photo": "m-room-sac-entrance"
+    },
+    {
+      "id": "s-floor",
+      "text": "The Hearing Room is on the 4th floor. After exiting the elevator, turn left.",
+      "photo": "m-room-sac-hearing-map"
+    },
+    {
+      "id": "s-room",
+      "text": "It is the room just before the Caucus Room, marked orange on the map.",
+      "photo": null
+    }
+  ],
+  "aliases": [],
+  "source": "Named by the October 7 housing workshop on the live site (SAC Hearing Rm., 4th floor) and in Connect's event list; the live site has no directions for it. Steps are the Caucus Room’s (owner, 20 Oct 2026: “Hearing Room and Multipurpose room can use the Caucus room steps, edit the image of the map to show where the rooms are”); the plan’s own label places the room."
+}

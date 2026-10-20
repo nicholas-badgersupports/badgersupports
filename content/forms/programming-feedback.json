@@ -1,0 +1,100 @@
+{
+  "schema": "bss.form/1",
+  "key": "programming-feedback",
+  "version": 1,
+  "title": "Programming feedback",
+  "audience": "public",
+  "anonymous": true,
+  "state": "open",
+  "closedMessage": "Feedback is paused right now. You can still email hello@badgersupports.org.",
+  "intro": [
+    "Thank you for coming to Badger Supports programming. Your feedback helps us grow, improve and support our team. Your name is optional, and we don't ask for an email."
+  ],
+  "sections": [
+    {
+      "id": "start",
+      "title": "Your feedback",
+      "questions": [
+        { "id": "name", "type": "short", "label": "Your name (optional)", "required": false, "maxLength": 120, "autocomplete": "off" },
+        { "id": "category", "type": "choice", "label": "What is your feedback about?", "required": true, "options": [
+          { "id": "workshop", "label": "A workshop" },
+          { "id": "craft", "label": "A craft night" },
+          { "id": "peer", "label": "A peer support group" },
+          { "id": "general", "label": "A general comment or suggestion" }
+        ] }
+      ]
+    },
+    {
+      "id": "workshop",
+      "title": "Workshop",
+      "intro": "Thank you for attending a Badger Supports workshop. Your feedback helps us improve our workshops and celebrate our facilitators.",
+      "showIf": { "question": "category", "equals": "workshop" },
+      "questions": [
+        { "id": "ws_topic", "type": "choice", "label": "Which workshop did you attend?", "required": true, "allowOther": true, "options": [
+          { "id": "stress_self_care", "label": "Stress management and self-care" },
+          { "id": "support_network", "label": "Building a support network" },
+          { "id": "self_advocacy", "label": "Advocating for yourself (self-advocacy)" },
+          { "id": "housing", "label": "Housing at UW–Madison" }
+        ] },
+        { "id": "ws_learned", "type": "long", "label": "Something you learned, appreciated or want to share", "required": true, "maxLength": 2000 },
+        { "id": "ws_engaging", "type": "long", "label": "One thing that would make this workshop more engaging", "required": true, "maxLength": 2000 },
+        { "id": "ws_useful", "type": "long", "label": "Will the activity be useful to you after the workshop?", "required": true, "maxLength": 2000 },
+        { "id": "ws_suggestions", "type": "long", "label": "Anything we could improve, add or do differently?", "required": true, "maxLength": 2000 }
+      ]
+    },
+    {
+      "id": "craft",
+      "title": "Craft night",
+      "intro": "Thanks for joining a craft night. These events are about connection, creativity and care.",
+      "showIf": { "question": "category", "equals": "craft" },
+      "questions": [
+        { "id": "craft_activity", "type": "choice", "label": "What activity did you do?", "required": true, "allowOther": true, "options": [
+          { "id": "crochet", "label": "Learn to crochet" },
+          { "id": "bracelets_f26", "label": "Bracelet making, fall 2026" },
+          { "id": "vision_f26", "label": "Vision boards, fall 2026" }
+        ] },
+        { "id": "craft_enjoyed", "type": "long", "label": "What did you enjoy? Any suggestions — meeting people, the craft, the instructions, the food?", "required": true, "maxLength": 2000 }
+      ]
+    },
+    {
+      "id": "peer",
+      "title": "Peer support group",
+      "intro": "Thanks for coming to a peer support group. These spaces are student-led and built for honest conversation and mutual support.",
+      "showIf": { "question": "category", "equals": "peer" },
+      "questions": [
+        { "id": "peer_group", "type": "choice", "label": "Which group did you attend?", "required": true, "allowOther": true, "options": [
+          { "id": "monday", "label": "Monday" },
+          { "id": "tuesday", "label": "Tuesday" },
+          { "id": "drop_in", "label": "Drop-in hours" }
+        ] },
+        { "id": "peer_stood_out", "type": "long", "label": "What stood out to you? Anything you'd like to see in the future?", "required": true, "maxLength": 2000 },
+        { "id": "peer_comments", "type": "long", "label": "Other comments", "required": false, "maxLength": 2000 }
+      ]
+    },
+    {
+      "id": "general",
+      "title": "General comment",
+      "showIf": { "question": "category", "equals": "general" },
+      "review": "In the Google Form, choosing 'General Comment / Suggestion' jumps straight to submit, so this section is never shown (schema read 2026-10-19). Shown here as a proposed fix.",
+      "questions": [
+        { "id": "general_comment", "type": "long", "label": "Your comment or suggestion", "required": true, "maxLength": 4000, "review": "Optional in the Google Form; required here only because it is the whole point of this branch — proposed." }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank you",
+    "body": ["Your feedback was received. It goes to the program team without your email address."]
+  },
+  "workflow": {
+    "connectQueue": "programs.feedback",
+    "owner": "Programs",
+    "receipt": "none",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSf3WiosxZWQ7EgZSXqLyGZIGhr-ZoDs2S696BZe0VVxLvBoYA",
+    "aliases": ["https://feedback.badgersupports.org"],
+    "read": "Public respondent view, 2026-10-19."
+  }
+}

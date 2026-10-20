@@ -1,0 +1,155 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-about-what-we-do",
+  "path": "/about/what-we-do/",
+  "title": "What We Do — Badger Supports",
+  "description": "Badger Supports fosters a stronger, more connected UW–Madison by centering peer-to-peer connection.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-wwd-head",
+      "type": "pagehead",
+      "title": "What We Do",
+      "label": "Our Mission",
+      "lead": "Badger Supports fosters a stronger, more connected UW–Madison by centering peer-to-peer connection.",
+      "body": [
+        "We empower students to support themselves, show up for one another, and build bridges to campus resources and communities of support."
+      ],
+      "primary": {
+        "label": "Join a Group!",
+        "href": "/join/peer-support-groups/"
+      },
+      "photos": [
+        "m-peer-couch",
+        "m-people-welcome",
+        "m-craft-friends"
+      ]
+    },
+    {
+      "id": "b-wwd-groups",
+      "type": "expect",
+      "title": "Peer Support Groups",
+      "body": [
+        "Set aside an hour to reset! During Peer Support Groups, there’s no wrong answer, and you can talk about whatever feels most present in your life."
+      ],
+      "items": [
+        {
+          "icon": "bulb",
+          "text": "Academics & Stress: classes, grades, burnout, and balancing work with school."
+        },
+        {
+          "icon": "chat",
+          "text": "Relationships: friendships, roommates, family pressure."
+        },
+        {
+          "icon": "question",
+          "text": "Uncertainty: identity, uncertainty about the future, and housing."
+        }
+      ],
+      "links": [
+        {
+          "label": "View the Schedule",
+          "href": "/join/peer-support-groups/",
+          "icon": "calendar"
+        }
+      ],
+      "photos": [
+        "m-peer-circle",
+        "m-peer-talk"
+      ]
+    },
+    {
+      "id": "b-wwd-craft",
+      "type": "expect",
+      "title": "Craft Nights",
+      "flip": true,
+      "body": [
+        "Need a break from classes? Drop in to a Badger Supports Craft Night! Every other week we host fun, creative events where you can relax, meet new people, and make something cool—like bracelets, vision boards, bedazzled crafts, shrinky dinks, & more!",
+        "No experience needed, no sign-ups required—just show up, hang out, and unwind with fellow Badgers."
+      ],
+      "links": [
+        {
+          "label": "View the Schedule",
+          "href": "/join/craft-nights/",
+          "icon": "calendar"
+        }
+      ],
+      "photos": [
+        "m-craft-table",
+        "m-people-bedazzle"
+      ]
+    },
+    {
+      "id": "b-wwd-workshops",
+      "type": "program",
+      "variant": "topics",
+      "program": "workshops",
+      "title": "Wellness Workshops",
+      "lead": "We offer peer-led workshops by request for individuals, campus departments, and RSOs. Each session is tailored to your group’s goals, creating space for open conversation, mental health awareness, and community care.",
+      "topics": [
+        {
+          "term": "Stress Management & Self-Care",
+          "href": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care/"
+        },
+        {
+          "term": "Navigating Housing",
+          "href": "/join/request-a-workshop/behind-the-workshop/navigating-housing/"
+        },
+        {
+          "term": "Self-Advocacy"
+        },
+        {
+          "term": "Building Support Networks",
+          "href": "/join/request-a-workshop/behind-the-workshop/support-networks/"
+        }
+      ],
+      "photos": [
+        "m-workshop-listening"
+      ],
+      "primary": {
+        "label": "Request a Workshop",
+        "href": "/forms/workshop-request/"
+      }
+    },
+    {
+      "id": "b-wwd-more",
+      "type": "text",
+      "title": "And More!",
+      "body": [
+        "Check out some of our initiatives!"
+      ],
+      "links": [
+        {
+          "label": "Navigating Housing",
+          "href": "/initiatives/housing-hub/"
+        },
+        {
+          "label": "Resource Referral Cards",
+          "href": "/initiatives/referral-cards/"
+        },
+        {
+          "label": "Colors on Campus Ribbons",
+          "href": "/initiatives/ribbons/"
+        },
+        {
+          "label": "Dogs on Call w/ UHS-Prevention",
+          "href": "/initiatives/dogs-on-call/"
+        }
+      ]
+    },
+    {
+      "id": "b-wwd-uhs",
+      "type": "text",
+      "body": [
+        "Badger Supports is an independent, dual-registered student organization with University Health Services - Prevention."
+      ],
+      "links": [
+        {
+          "label": "What dual registration means",
+          "href": "/about/faq/#q-dual-registration",
+          "icon": "question"
+        }
+      ]
+    }
+  ]
+}

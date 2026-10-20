@@ -1,0 +1,20 @@
+{
+  "schema": "bss.wall-fixture/1",
+  "fixture": true,
+  "provenance": "Written for the prototype on 2026-10-19 so the layout can be reviewed. These are not notes anyone left. The live wall shows moderated notes Badgers wrote; production reads them from Connect (Exchange request PUBLIC-RESOURCES-AND-WALL-2026-10-20), and with no source the block renders nothing.",
+  "notes": [
+    "You are allowed to take up space.",
+    "One hard week is not the whole semester.",
+    "Drink some water and text a friend back.",
+    "It's okay to ask for help before it gets big.",
+    "Rest counts as productive.",
+    "Somebody in your class is glad you're there.",
+    "The bus will come. So will the weekend.",
+    "You made it through every bad day so far.",
+    "Grades are information, not a verdict.",
+    "Go outside for five minutes. Really.",
+    "You don't have to have it figured out yet.",
+    "Proud of you for getting out of bed today."
+  ],
+  "label": "Sample notes written for this prototype. The real wall shows notes Badgers left, after moderation."
+}

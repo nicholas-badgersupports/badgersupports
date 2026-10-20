@@ -1,0 +1,21 @@
+{
+  "schema": "bss.form/1",
+  "key": "staff-application",
+  "version": 1,
+  "title": "Staff application",
+  "audience": "public",
+  "anonymous": false,
+  "state": "closed",
+  "closedMessage": "Applications for Fall 2026 are closed. Questions about hiring: hello@badgersupports.org.",
+  "intro": [],
+  "sections": [],
+  "pending": "Questions not yet transcribed: the Google Form is closed and its schema is only readable in the editor (needs an authorized Questions/Settings view). This definition exists so the form can be shown as closed and can never open by accident; it has no questions, and the validator refuses to open a form with none.",
+  "confirmation": { "title": "Application received", "body": [] },
+  "workflow": { "connectQueue": "hiring.applications", "owner": "Executive", "receipt": "proposed", "backup": "proposed" },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSd2uvC8Jx-m2na3onw660uYJvaJBMU9XfwbteZRsuA4OauZJg",
+    "aliases": ["https://forms.gle/QM12SgfBVx6euUCD6"],
+    "read": "Public closed view, 2026-10-19. Same published ID as the Forms directory 'GSSF Staff Application' entry."
+  }
+}

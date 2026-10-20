@@ -1,0 +1,20 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-not-found",
+  "file": "404.html",
+  "path": "/404.html",
+  "title": "Page not found — Badger Supports",
+  "analytics": "none",
+  "noindex": true,
+  "blocks": [
+    {
+      "id": "b-404",
+      "type": "text",
+      "heading": "h1",
+      "title": "we couldn't find that page",
+      "body": [
+        "It may have moved while the site was rebuilt. The menu above has every section, and the homepage has this week's groups and events."
+      ]
+    }
+  ]
+}

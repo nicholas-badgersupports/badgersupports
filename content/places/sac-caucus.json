@@ -1,0 +1,38 @@
+{
+  "schema": "bss.place/1",
+  "id": "sac-caucus",
+  "published": true,
+  "name": "Caucus Room",
+  "short": "SAC Caucus Room",
+  "building": "Student Activity Center",
+  "where": "4th floor",
+  "address": "333 E Campus Mall, Madison, WI 53715",
+  "photo": "m-room-sac-pillars",
+  "links": [
+    {
+      "label": "SAC hours",
+      "href": "https://asm.wisc.edu/sac/"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-entrance",
+      "text": "Go in by the pillar marked 333, through the double doors with the university’s logo.",
+      "photo": "m-room-sac-entrance"
+    },
+    {
+      "id": "s-floor",
+      "text": "The Caucus Room is on the 4th floor. After exiting the elevator, turn left.",
+      "photo": "m-room-sac-4th-floor-map"
+    },
+    {
+      "id": "s-room",
+      "text": "The entrance is directly across from the bubbler.",
+      "photo": null
+    }
+  ],
+  "aliases": [
+    "/operations/directions/sac-caucus"
+  ],
+  "source": "Live page /operations/directions/sac-caucus, read 2026-10-19. Its pictures (the pillars, the entrance, the 4th-floor plan) were saved from the live page with the owner’s approval on 2026-10-20."
+}

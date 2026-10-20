@@ -1,0 +1,30 @@
+{
+  "name": "badgersupports-public-site",
+  "private": true,
+  "type": "module",
+  "description": "www.badgersupports.org \u2014 the public Badger Supports website. Static pages built from versioned content, native forms, one intake API.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node ops/build.mjs",
+    "dev": "node ops/dev-server.mjs",
+    "check": "node ops/check.mjs",
+    "test": "node --test --test-concurrency=1 \"test/*.test.mjs\"",
+    "shots": "node ops/shots.mjs",
+    "a11y": "node ops/a11y.mjs",
+    "capture-live": "node ops/capture-live.mjs",
+    "media:fetch": "node ops/media.mjs --fetch",
+    "editable": "node ops/editable.mjs",
+    "contract": "node ops/contract.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "axe-core": "4.14.0",
+    "playwright": "1.62.1",
+    "sharp": "0.34.4"
+  },
+  "dependencies": {
+    "@netlify/database": "2.0.1"
+  }
+}

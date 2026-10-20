@@ -1,0 +1,78 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-craft-nights",
+  "path": "/join/craft-nights/",
+  "title": "Craft Night Schedule — Badger Supports",
+  "description": "Relax and unwind at free craft nights for UW–Madison students. No sign-ups or experience needed.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-cn-hero",
+      "type": "eventhero",
+      "title": "Craft Nights",
+      "lead": "Relax & unwind at our free craft nights — no sign-ups or experience needed.",
+      "source": "events-fixture",
+      "program": "craft",
+      "photos": [
+        "m-craft-table",
+        "m-people-nostalgic",
+        "m-people-planter-solo"
+      ]
+    },
+    {
+      "id": "b-cn-expect",
+      "type": "expect",
+      "title": "Need a break from classes?",
+      "body": [
+        "Drop in to a Badger Supports Craft Night! Every other week we host fun, creative events where you can relax, meet new people, and make something cool—like bracelets, vision boards, bedazzled crafts, shrinky dinks, & more!"
+      ],
+      "items": [
+        { "icon": "chat", "text": "Drop in alone or with friends — all are welcome!" },
+        { "icon": "scissors", "text": "No experience needed — just show up, hang out, and unwind with fellow Badgers." },
+        { "icon": "badge", "text": "All events are free to UW–Madison students, made possible through the General Student Services Fund grant." }
+      ],
+      "photos": [
+        "m-craft-friends",
+        "m-craft-pair"
+      ]
+    },
+    {
+      "id": "b-cn-next",
+      "type": "events",
+      "title": "Craft Night Schedule",
+      "source": "events-fixture",
+      "program": "craft",
+      "show": "upcoming",
+      "skip": 1,
+      "count": 6
+    },
+    {
+      "id": "b-cn-recent",
+      "type": "events",
+      "title": "Recent craft nights",
+      "source": "events-fixture",
+      "program": "craft",
+      "show": "recent",
+      "recent": 4
+    },
+    {
+      "id": "b-cn-cta",
+      "type": "cta",
+      "title": "Have a Craft Night Suggestion?",
+      "primary": { "label": "Fill Out Our Form", "href": "/forms/programming-feedback/", "icon": "bulb" },
+      "links": [
+        { "label": "Join Our Email List", "href": "/join/email-list/", "icon": "mail" }
+      ],
+      "photos": [
+        "m-craft-stickers"
+      ]
+    },
+    {
+      "id": "b-cn-access",
+      "type": "text",
+      "body": [
+        "Badger Supports is committed to creating an inclusive and accessible event. If you need a reasonable accommodation, please contact accessibility@badgersupports.org. All requests must be made 5 days before an event. We will attempt to implement late requests but cannot guarantee they will be met."
+      ]
+    }
+  ]
+}

@@ -73,6 +73,8 @@ export const CLIENT_TEXT = {
   "strip.js": ["strip.count"],
   "schedule.js": ["schedule.today"],
   "hero.js": ["hero.pause", "hero.play"],
+  "staff.js": ["staff.*"],
+  "edit.js": ["edit.*"],
 };
 
 export function clientTable(table, modules) {

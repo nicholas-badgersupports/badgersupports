@@ -33,6 +33,10 @@
     {
       "id": "system",
       "label": "Problems"
+    },
+    {
+      "id": "staff",
+      "label": "Staff page and edit button"
     }
   ],
   "text": {
@@ -93,7 +97,7 @@
     },
     "proto.body": {
       "group": "page",
-      "text": "Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Forms save only to a local test database; nothing is emailed or sent to Connect.",
+      "text": "Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Anything sent through a form here is a test: nothing is emailed, and nothing reaches the team's real inbox.",
       "where": "Second sentence of the prototype strip.",
       "optional": true
     },
@@ -759,6 +763,416 @@
       "group": "page",
       "text": "A photo from a Badger Supports event.",
       "where": "Read aloud for a pasted photo link that has no description of its own"
+    },
+    "staff.signedInAs": {
+      "group": "staff",
+      "text": "Signed in as {{name}}",
+      "where": "Staff page, top of the tools: who is signed in."
+    },
+    "staff.signedIn": {
+      "group": "staff",
+      "text": "Signed in",
+      "where": "Staff page, top of the tools, when Connect is set not to share first names."
+    },
+    "staff.signOut": {
+      "group": "staff",
+      "text": "Sign out",
+      "where": "Staff page, button beside the name."
+    },
+    "staff.notConfigured": {
+      "group": "staff",
+      "text": "Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first.",
+      "where": "Staff page, in place of the Sign in button when Connect is not set up."
+    },
+    "staff.loadError": {
+      "group": "staff",
+      "text": "Unable to load this right now. Reload the page to try again.",
+      "where": "Staff page, when a list fails to load."
+    },
+    "staff.nothing": {
+      "group": "staff",
+      "text": "Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms.",
+      "where": "Staff page, for someone signed in whose role reaches neither forms nor words."
+    },
+    "staff.forms.title": {
+      "group": "staff",
+      "text": "website forms",
+      "where": "Staff page, heading above the list of forms."
+    },
+    "staff.forms.empty": {
+      "group": "staff",
+      "text": "No forms to show.",
+      "where": "Staff page, when there are no forms your role can read."
+    },
+    "staff.forms.none": {
+      "group": "staff",
+      "text": "No answers yet.",
+      "where": "Staff page, under a form nobody has filled in."
+    },
+    "staff.forms.count.one": {
+      "group": "staff",
+      "text": "{{n}} answer",
+      "where": "Staff page, under a form with one answer."
+    },
+    "staff.forms.count.other": {
+      "group": "staff",
+      "text": "{{n}} answers",
+      "where": "Staff page, under a form with several answers."
+    },
+    "staff.forms.latest": {
+      "group": "staff",
+      "text": "latest {{when}}",
+      "where": "Staff page, after the count: when the newest answer came in."
+    },
+    "staff.forms.state.open": {
+      "group": "staff",
+      "text": "open",
+      "where": "Staff page, label beside a form that takes answers."
+    },
+    "staff.forms.state.closed": {
+      "group": "staff",
+      "text": "closed",
+      "where": "Staff page, label beside a form that is closed."
+    },
+    "staff.delivery.sent": {
+      "group": "staff",
+      "text": "{{n}} in Connect",
+      "where": "Staff page, how many answers reached Connect."
+    },
+    "staff.delivery.waiting": {
+      "group": "staff",
+      "text": "{{n}} waiting to send",
+      "where": "Staff page, how many answers have not gone to Connect yet."
+    },
+    "staff.delivery.failed": {
+      "group": "staff",
+      "text": "{{n}} could not be sent",
+      "where": "Staff page, how many answers failed to reach Connect."
+    },
+    "staff.delivery.off": {
+      "group": "staff",
+      "text": "Connect is not set up for this copy of the site, so answers are kept here and sent once it is.",
+      "where": "Staff page, above the forms when Connect is not set up."
+    },
+    "staff.retry": {
+      "group": "staff",
+      "text": "Send waiting answers now",
+      "where": "Staff page, button under the forms when some have not reached Connect."
+    },
+    "staff.retried": {
+      "group": "staff",
+      "text": "{{sent}} sent, {{failed}} still waiting.",
+      "where": "Staff page, read aloud after pressing the send button."
+    },
+    "staff.answers.show": {
+      "group": "staff",
+      "text": "Show latest answers",
+      "where": "Staff page, button under a form."
+    },
+    "staff.answers.hide": {
+      "group": "staff",
+      "text": "Hide answers",
+      "where": "Staff page, the same button once the answers are showing."
+    },
+    "staff.answers.caption": {
+      "group": "staff",
+      "text": "{{title}}: newest {{shown}} of {{total}}",
+      "where": "Staff page, above a table of answers."
+    },
+    "staff.answers.region": {
+      "group": "staff",
+      "text": "Answers to {{title}}",
+      "where": "Staff page, read aloud for the scrolling table of answers."
+    },
+    "staff.answers.ref": {
+      "group": "staff",
+      "text": "Reference",
+      "where": "Staff page, first column of the answers table."
+    },
+    "staff.answers.received": {
+      "group": "staff",
+      "text": "Received",
+      "where": "Staff page, column for when an answer came in."
+    },
+    "staff.answers.delivery": {
+      "group": "staff",
+      "text": "Connect",
+      "where": "Staff page, column for whether an answer reached Connect."
+    },
+    "staff.answers.none": {
+      "group": "staff",
+      "text": "No answers yet.",
+      "where": "Staff page, when a form's answers are opened and there are none."
+    },
+    "staff.answers.openConnect": {
+      "group": "staff",
+      "text": "Work through answers in Connect",
+      "where": "Staff page, link under the forms."
+    },
+    "staff.row.sent": {
+      "group": "staff",
+      "text": "in Connect",
+      "where": "Staff page, answers table: this answer reached Connect."
+    },
+    "staff.row.pending": {
+      "group": "staff",
+      "text": "waiting",
+      "where": "Staff page, answers table: not sent yet."
+    },
+    "staff.row.failed": {
+      "group": "staff",
+      "text": "not sent yet",
+      "where": "Staff page, answers table: sending failed and will be tried again."
+    },
+    "staff.row.held": {
+      "group": "staff",
+      "text": "held",
+      "where": "Staff page, answers table: kept back on purpose."
+    },
+    "staff.row.cancelled": {
+      "group": "staff",
+      "text": "not sent",
+      "where": "Staff page, answers table: will not be sent."
+    },
+    "staff.edit.title": {
+      "group": "staff",
+      "text": "words on the site",
+      "where": "Staff page, heading above the edit tools."
+    },
+    "staff.edit.how": {
+      "group": "staff",
+      "text": "Open any page of this site and press Edit text in the bottom corner. Every word you can change gets a dotted outline; choose one, change it and save.",
+      "where": "Staff page, how to use the edit button."
+    },
+    "staff.edit.none": {
+      "group": "staff",
+      "text": "Every saved change is already on the site.",
+      "where": "Staff page, when nothing waits to publish."
+    },
+    "staff.edit.waiting.one": {
+      "group": "staff",
+      "text": "{{n}} saved change waits for the next publish.",
+      "where": "Staff page, when one change waits."
+    },
+    "staff.edit.waiting.other": {
+      "group": "staff",
+      "text": "{{n}} saved changes wait for the next publish.",
+      "where": "Staff page, when several changes wait."
+    },
+    "staff.edit.download": {
+      "group": "staff",
+      "text": "Download the edits file",
+      "where": "Staff page, button that saves every change as one file."
+    },
+    "staff.edit.publish": {
+      "group": "staff",
+      "text": "Changes are kept as soon as you save them. Visitors see them after the next publish, which uses this file.",
+      "where": "Staff page, under the download button."
+    },
+    "edit.button": {
+      "group": "staff",
+      "text": "Edit text",
+      "where": "The edit button, bottom corner of every page, for staff who may change words."
+    },
+    "edit.buttonWaiting": {
+      "group": "staff",
+      "text": "Edit text ({{n}} waiting)",
+      "where": "The edit button, when saved changes wait for a publish."
+    },
+    "edit.done": {
+      "group": "staff",
+      "text": "Done editing",
+      "where": "The edit button while words are outlined."
+    },
+    "edit.hint": {
+      "group": "staff",
+      "text": "Choose any outlined words to change them.",
+      "where": "Read aloud and shown when the edit button is pressed."
+    },
+    "edit.region": {
+      "group": "staff",
+      "text": "Edit text",
+      "where": "Read aloud for the edit button's corner."
+    },
+    "edit.dialog.title": {
+      "group": "staff",
+      "text": "change these words",
+      "where": "Heading of the edit box."
+    },
+    "edit.dialog.label": {
+      "group": "staff",
+      "text": "Words",
+      "where": "Label above the box you type in."
+    },
+    "edit.save": {
+      "group": "staff",
+      "text": "Save",
+      "where": "Edit box, save button."
+    },
+    "edit.cancel": {
+      "group": "staff",
+      "text": "Cancel",
+      "where": "Edit box, cancel button."
+    },
+    "edit.revert": {
+      "group": "staff",
+      "text": "Put back the original",
+      "where": "Edit box, button that restores the words the site shipped with."
+    },
+    "edit.original": {
+      "group": "staff",
+      "text": "Original: {{words}}",
+      "where": "Edit box, the words the site shipped with."
+    },
+    "edit.lastBy": {
+      "group": "staff",
+      "text": "Last changed by {{name}}, {{when}}",
+      "where": "Edit box, who saved these words last."
+    },
+    "edit.saving": {
+      "group": "staff",
+      "text": "Saving…",
+      "where": "Edit box, while a change is being saved."
+    },
+    "edit.saved": {
+      "group": "staff",
+      "text": "Saved. Visitors see it now.",
+      "where": "After saving, when the page already shows the change."
+    },
+    "edit.savedWaiting": {
+      "group": "staff",
+      "text": "Saved. Visitors see it after the next publish.",
+      "where": "After saving, when the change waits for a publish."
+    },
+    "edit.waitingNote": {
+      "group": "staff",
+      "text": "A change to these words is saved and waits for the next publish.",
+      "where": "Edit box, when the words have a change waiting."
+    },
+    "edit.conflict": {
+      "group": "staff",
+      "text": "Someone else changed these words while you were editing. Their words are in the box now; change them again if you need to.",
+      "where": "Edit box, when two people edit the same words."
+    },
+    "edit.error.empty": {
+      "group": "staff",
+      "text": "These words cannot be empty.",
+      "where": "Edit box, when the box is empty."
+    },
+    "edit.error.long": {
+      "group": "staff",
+      "text": "That is too long. Keep it under 2,000 characters.",
+      "where": "Edit box, when the words are too long."
+    },
+    "edit.error.markup": {
+      "group": "staff",
+      "text": "Leave out the angle brackets < and >.",
+      "where": "Edit box, when the words contain angle brackets."
+    },
+    "edit.error.placeholder": {
+      "group": "staff",
+      "text": "Keep every part in double curly brackets exactly as it was; the site fills those in.",
+      "where": "Edit box, when a fill-in part was removed."
+    },
+    "edit.error.value": {
+      "group": "staff",
+      "text": "These words cannot be saved as written. Links and web addresses are changed in Connect, not here.",
+      "where": "Edit box, when the words are not allowed."
+    },
+    "edit.error.target": {
+      "group": "staff",
+      "text": "These words cannot be changed here.",
+      "where": "Edit box, when the words are not editable."
+    },
+    "edit.error.failed": {
+      "group": "staff",
+      "text": "Unable to save right now. Try again.",
+      "where": "Edit box, when saving fails."
+    },
+    "edit.error.signedOut": {
+      "group": "staff",
+      "text": "You are signed out. Sign in again on the staff page, then come back.",
+      "where": "Edit button, when the sign-in has ended."
+    },
+    "edit.more": {
+      "group": "staff",
+      "text": "More words",
+      "where": "Button beside Edit text: words that are not on the screen right now."
+    },
+    "edit.more.title": {
+      "group": "staff",
+      "text": "more words",
+      "where": "Heading of the More words list."
+    },
+    "edit.more.find": {
+      "group": "staff",
+      "text": "Find words",
+      "where": "Label of the search box in the More words list."
+    },
+    "edit.more.here": {
+      "group": "staff",
+      "text": "On this page",
+      "where": "More words list, words from this page."
+    },
+    "edit.more.site": {
+      "group": "staff",
+      "text": "On every page",
+      "where": "More words list, menus, footer and shared lines."
+    },
+    "edit.more.none": {
+      "group": "staff",
+      "text": "Nothing matches.",
+      "where": "More words list, when the search finds nothing."
+    },
+    "edit.close": {
+      "group": "staff",
+      "text": "Close",
+      "where": "More words list, close button."
+    },
+    "auth.error.title": {
+      "group": "staff",
+      "text": "Unable to sign in",
+      "where": "Page shown when staff sign-in fails."
+    },
+    "auth.error.unavailable": {
+      "group": "staff",
+      "text": "Staff sign-in is not set up for this copy of the site yet.",
+      "where": "Sign-in problem: Connect is not set up."
+    },
+    "auth.error.state": {
+      "group": "staff",
+      "text": "That sign-in link was already used or did not start here. Start again from the staff page.",
+      "where": "Sign-in problem: the link came back wrong."
+    },
+    "auth.error.expired": {
+      "group": "staff",
+      "text": "That sign-in took too long and ran out. Start again from the staff page.",
+      "where": "Sign-in problem: too slow."
+    },
+    "auth.error.unreachable": {
+      "group": "staff",
+      "text": "Badger Supports Connect did not answer. Try again in a few minutes.",
+      "where": "Sign-in problem: Connect is down."
+    },
+    "auth.error.refused": {
+      "group": "staff",
+      "text": "Connect did not confirm this sign-in. Check you are signed in to Connect with a staff account, then start again.",
+      "where": "Sign-in problem: Connect said no."
+    },
+    "auth.error.rateLimited": {
+      "group": "staff",
+      "text": "Too many sign-in attempts from this connection. Wait a few minutes, then try again.",
+      "where": "Sign-in problem: too many attempts."
+    },
+    "auth.error.failed": {
+      "group": "staff",
+      "text": "Something went wrong signing in. Start again from the staff page.",
+      "where": "Sign-in problem: anything else."
+    },
+    "auth.error.back": {
+      "group": "staff",
+      "text": "Back to the staff page",
+      "where": "Link at the bottom of the sign-in problem page."
     }
   }
 }

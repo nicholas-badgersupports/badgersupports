@@ -324,7 +324,7 @@ export function cellText(def, id, value) {
   return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
 }
 
-function optionLabel(q, v) {
+export function optionLabel(q, v) {
   if (v === OTHER) return "Other";
   const o = q && (q.options || []).find((x) => x.id === v);
   return o ? o.label : String(v);

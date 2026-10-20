@@ -60,3 +60,7 @@ function openTarget() {
 }
 window.addEventListener("hashchange", openTarget);
 openTarget();
+
+/* Someone signed in to the staff page on this browser: load the edit button. It asks the server
+   who that is, and draws nothing for anyone who may not change words (edit.js). */
+if (/(?:^|;\s*)bss_staff_hint=1(?:;|$)/.test(document.cookie)) import("./edit.js");

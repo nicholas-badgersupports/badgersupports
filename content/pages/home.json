@@ -60,7 +60,13 @@
           "icon": "scissors",
           "program": "craft"
         }
-      ]
+      ],
+      "spill": {
+        "title": "Need to vent?",
+        "text": "Spill it to a fellow Badger, in writing.",
+        "label": "Write your SPILL",
+        "href": "https://badgerspill.org/#write"
+      }
     },
     {
       "id": "b-home-week",
@@ -114,6 +120,25 @@
         }
       ],
       "anchor": "groups"
+    },
+    {
+      "id": "b-home-spill",
+      "type": "spill",
+      "title": "Rather write it down?",
+      "body": [
+        "Badger SPILL is our written peer support. Write what’s on your mind, and a trained UW–Madison Student Supporter writes back. It’s confidential.",
+        "Badger SPILL isn’t a crisis service. If you’re in danger, call 911, call or text 988, or call UHS 24/7 at 608-265-5600, option 9."
+      ],
+      "primary": {
+        "label": "Write your SPILL",
+        "href": "https://badgerspill.org/#write"
+      },
+      "links": [
+        {
+          "label": "How Badger SPILL works",
+          "href": "https://badgerspill.org/how-it-works/"
+        }
+      ]
     },
     {
       "id": "b-home-craft",

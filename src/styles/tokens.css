@@ -44,6 +44,16 @@
   --note-5: #E3EDF6;
   --note-6: #ECEBF8;
 
+  /* Badger SPILL's own colours (badger-spill site/assets/css/base.css): its milk blue, its ink, its
+     panel and a pale wash of the blue. Only where SPILL shows: its band, the hero's sticker, the footer. */
+  --spill: #7AAAC6;
+  --spill-ink: #2A374B;
+  --spill-panel: #FFFAF3;
+  --spill-tint: #E4EEF4;
+  --spill-drop: #71B0CF;      /* a drop of milk in a splash */
+  --spill-hover: #8DB8D0;     /* the SPILL button under a pointer */
+  --spill-ripple: #FFFFFFE6;  /* the ring across the puddle */
+
   /* status */
   --danger: #B1380B;
   --danger-tint: #FBEDE6;
@@ -51,6 +61,7 @@
   --ok-tint: #E7F2EC;
   --focus-ring: #1F5E86;
   --focus-on-red: #F2EBE1;
+  --scrim: #39373799;          /* behind the edit dialog: ink at sixty per cent */
 
   /* type */
   --font-display: "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;

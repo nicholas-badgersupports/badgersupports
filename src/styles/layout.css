@@ -88,6 +88,12 @@
 .footer-brand img { width: 34px; }
 .footer-brand .wordmark { font: 700 1.75rem/1 var(--font-display); color: var(--cream); padding-top: .2rem; }
 .footer-brand p { margin: 0; line-height: 1.5; }
+/* Badger SPILL, a Badger Supports program: its logo on a cream chip, so its own colours read on the red */
+.footer-brand .footer-spill { display: inline-flex; align-items: center; gap: var(--s2); align-self: start; padding: .35rem 1rem .35rem .5rem;
+  background: var(--spill-panel); color: var(--spill-ink); border-radius: 14px; font-weight: 700; text-decoration: none; box-shadow: 0 3px 0 var(--ink);
+  transition: translate var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
+.footer-brand .footer-spill:hover { color: var(--spill-ink); text-decoration: none; translate: 0 -2px; box-shadow: 0 5px 0 var(--ink); }
+.footer-brand .footer-spill-logo { width: 6rem; height: auto; }
 .site-footer h2 { font: 700 1rem/1.3 var(--font-body); letter-spacing: .02em; margin-bottom: var(--s2); color: var(--cream); }
 .site-footer ul { list-style: none; display: grid; gap: .1rem; }
 .site-footer ul a { display: inline-flex; min-height: 36px; align-items: center; overflow-wrap: anywhere; }

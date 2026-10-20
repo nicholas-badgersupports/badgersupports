@@ -230,6 +230,10 @@
     "address": "Student Activity Center, 333 East Campus Mall, Suite 3203, Madison, WI 53715",
     "affiliation": "Badger Supports is an independent, dual-registered student organization with University Health Services – Prevention.",
     "funding": "Funded in part by the Associated Students of Madison.",
+    "spill": {
+      "label": "Badger SPILL, our written peer support",
+      "href": "https://badgerspill.org/"
+    },
     "accessibility": "Feedback, questions or accessibility issues: accessibility@badgersupports.org",
     "accessibilityEmail": "accessibility@badgersupports.org",
     "legal": [

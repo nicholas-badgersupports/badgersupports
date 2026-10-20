@@ -15,7 +15,7 @@ From `../../MASTER-PROMPT.md` §1. These came from Nicholas directly.
 | Area | Ruling | Where it shows |
 |---|---|---|
 | Design | "Match the identity, improve layouts now." Keep the deep reds, with a family resemblance to Connect and SPILL. "Lots of trust will be lost if it looks like an AI slop site." | `DESIGN.md`; the tokens come from style.badgersupports.org and Connect |
-| Public login | Bare bones: directors and admins see submissions from the forms they are authorised for. Visitors go to Connect for events. No member portal | `/staff/` refuses everyone until Connect sign-in exists (`netlify/lib/router.mjs`, tier `director`) |
+| Public login | Bare bones: directors and admins see submissions from the forms they are authorised for. Visitors go to Connect for events. No member portal | `/staff/` signs in through Connect and shows the latest answers to a director (`netlify/lib/staff.mjs`); live once Connect's half is pushed |
 | Editing | Through Connect. The public signed-in view is a reading surface with links to Manage in Connect | every block declares its fields (`CONNECT-EDITOR-CONTRACT.md`); the editor is Exchange request `PUBLIC-SITE-EDITOR` |
 | Form scope | Public forms are rebuilt here; internal workflows stay in Connect; SPILL's forms stay with SPILL | `COMMUNICATIONS.md` |
 | Form controls | Closed forms are built too. Every form has an on/off switch and editable questions; an application must not open by accident | each form ships with a `state`; the database switch (`form_state`) wins; the staff application ships `closed` |

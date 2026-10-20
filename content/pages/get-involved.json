@@ -100,6 +100,24 @@
       ]
     },
     {
+      "id": "b-gi-spill",
+      "type": "spill",
+      "title": "Write back as a Student Supporter",
+      "body": [
+        "Badger SPILL’s Student Supporters are trained UW–Madison students who answer what other Badgers write, in writing. Find out what it involves on Badger SPILL’s own site."
+      ],
+      "primary": {
+        "label": "Become a Student Supporter",
+        "href": "https://badgerspill.org/get-involved/"
+      },
+      "links": [
+        {
+          "label": "How Badger SPILL works",
+          "href": "https://badgerspill.org/how-it-works/"
+        }
+      ]
+    },
+    {
       "id": "b-gi-faq",
       "type": "questions",
       "title": "questions",

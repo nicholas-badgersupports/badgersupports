@@ -74,9 +74,10 @@ Each outbox row carries `dedupe_key` = `<kind>:<reference>`, which the table hol
 (`netlify/database/migrations/001_intake/migration.sql`). A retry cannot queue the same work twice. The table
 also allows `mail.notify`; nothing writes one.
 
-**Nothing reads the outbox.** Rows stay `pending` or `held`. `/staff/` refuses everyone until Connect sign-in
-exists. An open form on a live site would gather submissions that no screen shows anyone, which is why the
-forms launch closed (above). Opening one waits on the outbox worker and Connect's queue (`../WORK.md`).
+**Only the Connect row is sent** (20 Oct 2026). `netlify/lib/deliver.mjs` hands each `connect.ingest` row to
+Connect's Website Forms, and a director signed in at `/staff/` reads the latest answers (`ARCHITECTURE.md`, "Staff
+sign-in and Connect"). `sheets.backup` and `mail.receipt` rows stay `pending` or `held`. This has run only against a
+local Connect rig: Connect's half is unpushed and no secret is set, so the forms still launch closed (above).
 
 ## Proposal: who gets told what
 

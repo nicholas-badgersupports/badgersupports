@@ -1,8 +1,11 @@
 # Architecture
 
 How the site is built and served, what the API does, where data lives, and what is not built yet. Every claim
-names the file that makes it true. **Nothing here is deployed**: no Netlify project exists for this site, so
-every statement about Netlify describes what the configuration asks for, not something seen running.
+names the file that makes it true. **Nothing here runs deployed.** The Netlify project `badgersupports-public` exists (20 Oct 2026,
+renamed the same day) with no build, database or function; a draft of the built pages sits behind Netlify's team
+sign-in. `../PUBLIC-SITE-SETUP-2026-10-20/` file 6 puts the prototype build at `badgersupports-public.netlify.app`
+with its database, but has not run. So every statement about Netlify's function and database describes what the
+configuration asks for, not something seen running.
 
 ## The pieces
 
@@ -11,12 +14,14 @@ every statement about Netlify describes what the configuration asks for, not som
 | The build | `ops/build.mjs` | turns `content/` into static pages in `dist/`, plus `.build/server.json` (what the API needs) and `.build/report.json` (what was built) |
 | The API | `netlify/functions/api.mjs` → `netlify/lib/router.mjs` | one function, served at `/api/*` on the same origin as the pages |
 | The database | `netlify/lib/db.mjs`, `netlify/database/migrations/` | Postgres: PGlite on a laptop, Netlify Database when deployed |
+| Connect | `netlify/lib/connect.mjs`, `staff.mjs`, `deliver.mjs`, `edits.mjs` | the only code that talks to Badger Supports Connect: staff sign-in, handing each submission to Connect, and the words staff change with the edit button |
 | The local rig | `ops/dev-server.mjs` | serves `dist/` with `_headers` and `_redirects` applied as Netlify would, and sends `/api/*` into the real function. It talks to no network |
 | The gates | `ops/check.mjs` | `npm run check`; ends in a one-line verdict (`README.md`) |
 
 `netlify.toml` asks for `node ops/build.mjs --fetch-media`, publishes `dist/`, bundles functions with esbuild,
 includes `.build/server.json` and the migrations in the function, and keeps PGlite, Playwright, axe-core and
-sharp out of the bundle. Its build is the **prototype** build: fixtures in, every page `noindex`.
+sharp out of the bundle (`!node_modules/@electric-sql/**`). Its build is the **prototype** build: fixtures in, every
+page `noindex`. Setup file 6 runs it on the laptop through the Netlify CLI; the repository is never linked to Netlify.
 
 ## The build
 
@@ -107,20 +112,34 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | formSubmit | POST | `/api/forms/<key>/submit` | public |
 | moodRead | GET | `/api/mood` | public |
 | moodTap | POST | `/api/mood` | public |
+| authStart | GET | `/api/auth/start` | public |
+| authCallback | GET | `/api/auth/callback` | public |
+| authSignOut | POST | `/api/auth/signout` | public |
+| authStatus | GET | `/api/auth/status` | public |
+| staffMe | GET | `/api/staff/me` | director |
+| staffForms | GET | `/api/staff/forms` | director |
 | staffSubmissions | GET | `/api/staff/forms/<key>/submissions` | director |
+| staffRetry | POST | `/api/staff/outbox/retry` | director |
+| editSource | GET | `/api/staff/edit/source` | director |
+| editSave | POST | `/api/staff/edit/save` | director |
+| editsFile | GET | `/api/staff/edits` | director |
 | staffAny | any | `/api/staff/…` | director |
 
-- **public**: anyone. A POST must come from this site, and is rate-limited.
-- **director**: a director or admin signed in through Connect, reading only the forms their claims name. Connect
-  single sign-on does not exist, so `requireDirector()` answers **401 to everyone**. `/staff/` is a page saying
-  so. The design waits on Exchange request `PUBLIC-SITE-SSO` and `../../MASTER-PROMPT.md` §5.
+- **public**: anyone. A POST must come from this site, and is rate-limited. Sign-in is public because it is how a
+  session starts; its routes share a limit of 30 an hour per connection. `/api/auth/status` always answers 200, so
+  the staff page can ask whether anyone is signed in without the browser logging a refusal for every visitor.
+- **director**: someone signed in through Connect ("Staff sign-in", below). The tier proves a session; each route
+  then checks its scope: `forms.read:<key>` (or `forms.read:*`) to read a form's answers, `site.edit` to change
+  words, `site.publish` to download saved changes for a publish. A super admin sets which tiers carry which scope in
+  Connect (Admin > Website Forms, `adminSetPublicSitePermissions`); a super admin always has all of them. Without a session, `requireDirector()` answers 401 with `configured`, which tells `/staff/` whether
+  signing in can work on this copy at all.
 
 ### What every request goes through
 
 1. No path matches: 404 `not.found`. A path matches with the wrong method: 405.
 2. A POST whose `Sec-Fetch-Site` is not `same-origin` or `none`, or whose `Origin` is another site: 403
    `origin.refused`. A request with neither header passes, and still meets the rate limit and validation.
-3. The director tier: 401, as above.
+3. The director tier: 401 without a session; 403 `staff.forbidden` without the route's scope.
 4. Bodies: at most 64 KiB (413), JSON or URL-encoded only (415), valid JSON (400).
 5. Errors: a known error answers with its own status and code; a missing database or salt answers 503
    `config.missing`; anything else 500 `server.error`. A request that wants JSON, or any `/api/staff` path, gets
@@ -176,6 +195,40 @@ with a submission.**
 **Mood.** `netlify/lib/mood.mjs` adds one to a count for the day and the mood. Nothing records who tapped, and
 nothing is sent to analytics.
 
+## Staff sign-in and Connect
+
+**Signing in** (`netlify/lib/staff.mjs`). This site keeps no accounts, passwords or roster. `/api/auth/start` sets a
+random state in a ten-minute cookie, keeps a PKCE verifier and nonce in `auth_starts`, and sends the browser to
+Connect's `public-sso.html` with the state and the verifier's hash in the fragment. The director signs in there as
+they always do. Connect sends them back to `/api/auth/callback` with a one-time code; the state must match the cookie
+and a start not yet used, and the code is traded server to server for a note Connect signs with `PUBLIC_SSO_SECRET`
+(`connect.mjs`, `verifyAssertion()`). The note gives Connect's own id for the person, their first name (empty when
+Connect's setting says not to share first names) and their scopes. A row in `staff_sessions`, keyed by a hash of the cookie, keeps it for **eight hours**. The cookies are
+HttpOnly, `SameSite=Lax`, and `__Host-` on https. A third cookie, `bss_staff_hint`, says only that someone signed
+in on this browser, so pages know to load the edit button; every staff call checks the real session. Signing out
+ends this site's session only; someone switched off in Connect keeps one already open here until it ends, and
+cannot start another.
+
+**Handing a submission to Connect** (`deliver.mjs`). After a submission is saved and the reply sent, the function
+sends due `connect.ingest` rows to Connect's Website Forms queue, signed with `PUBLIC_SITE_SERVICE_SECRET`. Opening
+`/staff/` sends anything still waiting. A failure backs off and is retried; "Send waiting answers now" on the staff page
+forces it. An anonymous form carries only what it asked, flagged anonymous (`ingestPayload()`). The `sheets.backup` and
+`mail.receipt` rows are still not sent.
+
+**The edit button** (`edits.mjs`, `src/client/edit.js`). A signed-in person with `site.edit` sees **Edit text** at
+the bottom right of any page. A change is a row in `content_edits`, the latest per place, with the words it
+replaced. The shipped files stay the floor. On the local rig a save rebuilds the pages at once; deployed, a change
+waits for the next build, which lays `/api/staff/edits?download=1` (saved as `content/edits.json`) over the files.
+That download needs `site.publish`.
+
+**Trying it on a laptop.** `PORT=8901 node ops/dev-server.mjs --connect=http://127.0.0.1:8903` signs in and
+delivers through a local Connect rig (`PORT=8903 node ops/dev.mjs --seed` in the intranet folder), with that rig's
+demo keys. Three things the rig needs: open it at `127.0.0.1`, never `localhost`, or its same-site check fails;
+the site must be on 8899 or 8901, the two returns it accepts; and its seeded account must change its password
+before it may sign in anywhere else. A script calling the rig's `/api` must send an `Origin` header, or it is
+refused. `../PUBLIC-SITE-SETUP-2026-10-20/` file 5 does all of this on a copy of Connect outside the synced
+folder. **This is a local rig with demo keys and in-memory databases, not a live connection.**
+
 ## The database
 
 ### One seam, two engines
@@ -197,7 +250,7 @@ database (mail, a fetch) happens inside one. That is what the outbox is for.
 ### Migrations
 
 Numbered folders, `netlify/database/migrations/<NNN_name>/migration.sql`, the layout Badger SPILL uses. Each is
-idempotent, and `bss_migrations` records which ran. There is one, `001_intake`:
+idempotent, and `bss_migrations` records which ran. `001_intake`:
 
 | Table | Holds |
 |---|---|
@@ -209,6 +262,14 @@ idempotent, and `bss_migrations` records which ran. There is one, `001_intake`:
 | `mood_daily` | a count per day per mood |
 | `rate_limits` | a count per bucket per window |
 
+`002_staff`:
+
+| Table | Holds |
+|---|---|
+| `auth_starts` | a sign-in gone to Connect and not yet back, keyed by a hash of its state; used once, ten minutes |
+| `staff_sessions` | a signed-in person, keyed by a hash of the cookie: Connect's id, first name, scopes, expiry |
+| `content_edits` | a word changed with the edit button: place, words, the words replaced, who and when |
+
 **To verify before the first deploy.** Badger SPILL found that Netlify's own Git builds skip migrations while a
 platform flag is off, and added `netlify/plugins/migrations-guard` to fail such a build. This site has no guard yet.
 Whether the same holds here is unchecked (`../WORK.md`).
@@ -217,14 +278,15 @@ Whether the same holds here is unchecked (`../WORK.md`).
 
 | Piece | State | Waits on |
 |---|---|---|
-| The outbox worker | rows are written; nothing sends them | an agreed Connect ingestion contract, a verified sender, the Sheets backup design (`COMMUNICATIONS.md`) |
-| Director sign-in | every staff route answers 401 | Connect single sign-on (`PUBLIC-SITE-SSO`) |
-| Editing in Connect | the build accepts published text edits; nothing publishes them | the editor (`PUBLIC-SITE-EDITOR`; the fields are in `CONNECT-EDITOR-CONTRACT.md`) |
+| Connect's half | built in the intranet working tree, uncommitted: `publicsite.mjs`, migration `032_public_site`, `public-sso.html` | the owner running Connect's `_xfer/Public website setup` files: 1 saves the 17 files, 2 sets the keys and the one allowed return (`badgersupports-public.netlify.app`) in both projects, 3 publishes |
+| Receipts and the Sheets backup | `mail.receipt` and `sheets.backup` rows are written; nothing sends them | a verified sender, the Sheets backup design (`COMMUNICATIONS.md`) |
+| Publishing edits | saved edits wait in the database; a build lays them over the files | a deployed site with a database (file 6); who may publish is `site.publish`, set by a super admin |
+| Opening and closing forms from Connect | the switch row works; nothing in Connect writes it | `PUBLIC-SITE-FORMS` |
 | Events, wall, team | fictional fixtures | Connect's exports (above) |
 | The resource viewer | not started | `PUBLIC-RESOURCES-AND-WALL`; `../../MASTER-PROMPT.md` §8 |
 
-**Single owner, proposed.** Until Connect's ingestion contract is agreed, this site owns its submission rows, and
-Connect reads them through the outbox. Nothing here copies Connect's roster (`../../MASTER-PROMPT.md` §5).
+**Single owner, proposed.** This site owns its submission rows, and hands Connect a copy through the outbox.
+Connect's copy is what the team works from. Nothing here copies Connect's roster (`../../MASTER-PROMPT.md` §5).
 
 ## Photos at build time
 
@@ -244,15 +306,22 @@ Each photo is encoded at build time and served from this site (`DESIGN.md`, "Pho
 |---|---|---|
 | `NETLIFY_DB_URL` or `NETLIFY_DATABASE_URL` | the database when deployed | 503 `config.missing` |
 | `RATE_SALT` | rate limits when deployed | 503 `config.missing` on every rate-limited request |
+| `CONNECT_URL` | sign-in and delivery: Connect's origin | sign-in says "not set up"; submissions wait in the outbox |
+| `PUBLIC_SITE_SERVICE_KEY_ID`, `PUBLIC_SITE_SERVICE_SECRET` | signing calls to Connect; the pair Connect lists in its `PUBLIC_SITE_SERVICE_KEYS` | as above |
+| `PUBLIC_SSO_SECRET` | checking Connect's sign-in note; the same value Connect signs with | as above |
 | `LOCAL_DB`, `LOCAL_DB_DIR` | the local rig and tests only | — |
 
-None is set anywhere, because no project exists. Set values never go in a file here.
+None has been set: the project was created empty on 20 Oct 2026. Set values never go in a file here.
 
 ## Cost
 
-**Unverified.** No Netlify project exists, and nobody has read the account's plan. `../../MASTER-PROMPT.md` §11 asks
-that no cost claim be made until the account, plan and current pricing are read from Netlify itself, and that
-older claims that reads or previews are free not be repeated. What the design does to keep usage bounded:
+**Read from Netlify on 20 Oct 2026.** The team is on Pro, 3,000 credits a month (the plan read with the Netlify
+connector; [Credit-based pricing plans](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/)).
+A production deploy costs 15 credits; deploy previews, branch deploys and failed deploys cost 0; bandwidth is 20
+credits a GB and web requests 2 per 10,000 ([How credits work](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/how-credits-work/)).
+Running out pauses every project on the team. **Not verified:** what a draft deploy costs (the billing pages do
+not name drafts) and what the database and function cost in use; `../../MASTER-PROMPT.md` §11 holds any claim
+about those until it is read from Netlify. What the design does to keep usage bounded:
 
 - the pages are static, and hashed assets are cached for a year;
 - photos are encoded once at fixed widths, with no resizing on request;

@@ -42,6 +42,7 @@ const FIELD_TYPES = {
   teamgroups: "the groups to show, in order: each a group (`directors`, `associate-directors`, `staff`, `volunteers` or `advisors`) and, if it needs one, the heading over it",
   person: "one public profile from Connect, by its address name (`slug`)",
   eventquery: "which events to list: source, program, how many",
+  spill: "Badger SPILL beside its logo: a short line (`title`), an optional second line (`text`), and one link (`label` and `href`, to badgerspill.org)",
   number: "a whole number",
   boolean: "on or off",
   choice: "one of the listed values",

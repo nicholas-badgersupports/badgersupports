@@ -114,6 +114,86 @@
   .hub-3 .hub-tag { left: auto; right: -4%; --tx: 0; bottom: 6%; }
 }
 
+/* ============ Badger SPILL: its logo, moving as it does on badgerspill.org ============
+   The picture twice, cut along the edge of the milk: the bottle with the cow tips about its mouth (the
+   first layer's transform-origin) and the milk stretches from where it leaves the mouth (the second's).
+   Copied unchanged from Badger SPILL (badger-spill site/assets/css/base.css), so the logo moves the same
+   on both sites; src/client/spill-logo.js does the moving. The picture's own class moves to the stage,
+   so the logo keeps its size and place. */
+.logo-stage { position: relative; display: inline-block; aspect-ratio: 240 / 164; line-height: 0; user-select: none; -webkit-user-select: none; }
+.logo-stage > .logo-layer { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; margin: 0; padding: 0; border: 0; pointer-events: none;
+  will-change: transform; -webkit-user-drag: none; }
+.logo-bottle { transform-origin: 81.25% 70.12%;
+  clip-path: polygon(0 0, 100% 0, 100% 69.51%, 83.89% 69.51%, 83.47% 69.21%, 83.33% 69.11%, 82.64% 68.9%, 81.94% 68.7%, 81.25% 68.29%, 80.56% 67.68%, 79.86% 66.67%,
+    79.17% 66.46%, 78.47% 66.87%, 77.92% 67.68%, 77.64% 68.7%, 77.78% 69.51%, 78.06% 70.73%, 78.19% 71.95%, 78.61% 73.17%, 78.89% 74.39%, 79.31% 75.61%, 79.86% 76.83%,
+    80.42% 78.05%, 80.83% 79.27%, 81.39% 80.49%, 81.67% 81.71%, 81.94% 82.93%, 82.08% 84.15%, 82.08% 85.37%, 81.94% 86.59%, 81.53% 87.8%, 81.11% 89.02%, 80.69% 90.24%,
+    80.42% 91.46%, 80.42% 92.68%, 80.83% 93.9%, 81.53% 95.12%, 82.92% 96.34%, 83.33% 97.56%, 83.89% 100%, 0 100%); }
+.logo-milk { transform-origin: 78.47% 67.07%;
+  clip-path: polygon(100% 69.51%, 83.89% 69.51%, 83.47% 69.21%, 83.33% 69.11%, 82.64% 68.9%, 81.94% 68.7%, 81.25% 68.29%, 80.56% 67.68%, 79.86% 66.67%, 79.17% 66.46%,
+    78.47% 66.87%, 77.92% 67.68%, 77.64% 68.7%, 77.78% 69.51%, 78.06% 70.73%, 78.19% 71.95%, 78.61% 73.17%, 78.89% 74.39%, 79.31% 75.61%, 79.86% 76.83%, 80.42% 78.05%,
+    80.83% 79.27%, 81.39% 80.49%, 81.67% 81.71%, 81.94% 82.93%, 82.08% 84.15%, 82.08% 85.37%, 81.94% 86.59%, 81.53% 87.8%, 81.11% 89.02%, 80.69% 90.24%, 80.42% 91.46%,
+    80.42% 92.68%, 80.83% 93.9%, 81.53% 95.12%, 82.92% 96.34%, 83.33% 97.56%, 83.89% 100%, 100% 100%); }
+.logo-stage.is-playful { cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+/* the puddle's ripple and drops; the milk's own colour, since they are part of the picture */
+.logo-ripple { position: absolute; left: 79.28%; top: 86.43%; width: 22%; aspect-ratio: 4 / 1; border: 2px solid var(--spill-ripple); border-radius: 50%; pointer-events: none; }
+.logo-drop { position: absolute; top: 83%; width: 3.4%; aspect-ratio: 3 / 4; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--spill-drop); pointer-events: none; }
+
+/* SPILL's own way in, in its colours: a milk-blue pill with an ink edge and ledge, as on its site. */
+.hero-spill .go, .spill-band .go { background: var(--spill-panel); border-color: var(--spill-ink); color: var(--spill-ink); box-shadow: 0 3px 0 var(--spill-ink); }
+.hero-spill .go .go-ic, .spill-band .go .go-ic { background: var(--spill-ink); color: var(--spill-panel); }
+.spill-band .go:hover { color: var(--spill-ink); box-shadow: 0 5px 0 var(--spill-ink); }
+.spill-band .go:active { box-shadow: 0 1px 0 var(--spill-ink); }
+
+/* In the hero: a sticker under the buttons. The whole sticker is one link to SPILL's writing page;
+   pointing at it lifts it and the logo glugs. */
+.hero-spill {
+  display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); align-items: center; gap: var(--s1) var(--s3);
+  max-width: 31rem; margin-top: var(--s5); padding: var(--s2) var(--s4) var(--s2) var(--s2);
+  background: var(--spill-panel); color: var(--spill-ink); text-decoration: none;
+  border: 2px solid var(--spill-ink); border-radius: 18px; box-shadow: 0 5px 0 var(--red-deep);
+  rotate: -1.2deg;
+  transition: translate var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), rotate var(--t) var(--ease-out);
+}
+.hero-spill:hover { color: var(--spill-ink); text-decoration: none; translate: 0 -3px; rotate: 0deg; box-shadow: 0 8px 0 var(--red-deep); }
+.hero-spill:active { translate: 0 2px; box-shadow: 0 2px 0 var(--red-deep); }
+.hero-spill-logo { width: 9.5rem; height: auto; }
+.hero-spill-words { display: grid; justify-items: start; gap: .15rem; }
+.hero-spill-title { font: 700 1.6rem/1 var(--font-display); padding-top: .2rem; }
+.hero-spill-text { font-weight: 600; line-height: 1.35; }
+.hero-spill .go { margin-top: var(--s1); }
+.hero-spill:hover .go { translate: 0 -2px; box-shadow: 0 5px 0 var(--spill-ink); }
+
+/* A band of its own, on the page's ground: SPILL's panel with its logo, which plays a move each
+   time it is pressed. */
+.spill-band { background: var(--spill-tint); padding-block: var(--s7); }
+.spill-card {
+  display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); align-items: center; gap: var(--s5) var(--s6);
+  padding: var(--s5) var(--s6); background: var(--spill-panel); color: var(--spill-ink);
+  border: 2px solid var(--spill-ink); border-radius: 18px; box-shadow: 0 6px 0 var(--spill-ink);
+}
+.spill-band-logo { width: 100%; max-width: 20rem; height: auto; justify-self: center; }
+.spill-words h2 { color: var(--spill-ink); margin-bottom: var(--s3); }
+.spill-words p { font-size: var(--fs-lead); line-height: 1.5; }
+.spill-words p + p { margin-top: var(--s2); }
+.spill-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); margin-top: var(--s5); }
+.spill-band .btn { background: var(--spill); border-color: var(--spill-ink); color: var(--spill-ink); border-radius: 999px; box-shadow: 0 4px 0 var(--spill-ink); }
+.spill-band .btn:hover { background: var(--spill-hover); color: var(--spill-ink); translate: 0 -2px; box-shadow: 0 6px 0 var(--spill-ink); }
+.spill-band .btn:active { translate: 0 2px; box-shadow: 0 1px 0 var(--spill-ink); }
+.spill-band :focus-visible { outline-color: var(--focus-ring); }
+
+@media (max-width: 860px) {
+  .spill-card { grid-template-columns: minmax(0, 1fr); padding: var(--s4); }
+  .spill-band-logo { max-width: 14rem; }
+  .spill-band { padding-block: var(--s6); }
+}
+@media (max-width: 480px) {
+  .hero-spill { grid-template-columns: 6.5rem minmax(0, 1fr); padding-right: var(--s3); }
+  .hero-spill-logo { width: 6.5rem; }
+  .hero-spill-title { font-size: 1.35rem; }
+  .hero-spill-text { font-size: var(--fs-small); }
+  .spill-band .btn { width: 100%; }
+}
+
 /* ============ this week: a timetable, not a calendar widget ============ */
 .week .wrap { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: var(--s6); }
 .week-head { align-self: start; position: sticky; top: calc(var(--header-h) + var(--s4)); }
@@ -1089,4 +1169,69 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
   .profile-main { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
   .profile-photo { width: 12rem; }
   .profile-photo .monogram { font-size: 4rem; }
+}
+
+/* staff page (staff.js draws everything below the sign-in button) */
+.staff h1 { font-size: var(--fs-page); margin-bottom: var(--s4); }
+.staff .text-body { max-width: var(--measure); }
+.staff-signin { margin-top: var(--s5); }
+.staff-app { margin-top: var(--s5); max-width: 60rem; }
+.staff-who { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); }
+.staff-who p { margin: 0; font-weight: 600; }
+.staff-part { margin-top: var(--s6); padding-top: var(--s5); border-top: var(--dot-line-strong); }
+.staff-part h2 { color: var(--red); margin-bottom: var(--s4); }
+.staff-part > p + p { margin-top: var(--s2); }
+.staff-note { padding: var(--s3) var(--s4); border: var(--dot-line-strong); border-radius: var(--r-card); background: var(--cream-soft); color: var(--ink); }
+.staff-forms { list-style: none; margin: 0 0 var(--s4); padding: 0; display: grid; gap: var(--s3); }
+.staff-form { min-width: 0; padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); box-shadow: var(--ledge); }
+.staff-form h3 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-bottom: var(--s2); }
+.staff-form > p { margin: 0 0 var(--s2); }
+.staff-chip { display: inline-block; padding: .15rem .65rem; border-radius: var(--r-chip); font: 600 var(--fs-small)/1.4 var(--font-body); }
+.staff-chip.is-open { background: var(--ok-tint); color: var(--ok); }
+.staff-chip.is-closed { background: var(--cream); color: var(--muted); }
+.staff-delivery { color: var(--ok); font-weight: 600; }
+.staff-delivery.is-failing { color: var(--danger); }
+.staff-answers { margin-top: var(--s3); }
+.staff-table { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-input); background: var(--paper); }
+.staff-table:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.staff-table table { border-collapse: collapse; min-width: 100%; font-size: var(--fs-small); }
+.staff-table caption { text-align: left; padding: var(--s2) var(--s3); color: var(--muted); }
+.staff-table th, .staff-table td { padding: var(--s2) var(--s3); border-top: 1px solid var(--line); text-align: left; vertical-align: top; max-width: 28rem; }
+.staff-table thead th { background: var(--cream-soft); white-space: nowrap; }
+
+/* the edit button (edit.js): a bar in the corner, and the words under it outlined while it is on */
+.edit-ui { position: fixed; right: var(--s4); bottom: var(--s4); z-index: 40; display: grid; justify-items: end; gap: var(--s2); max-width: calc(100vw - 2 * var(--s4)); font-family: var(--font-body); }
+.edit-bar { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--s2); }
+.edit-bar .btn { box-shadow: var(--menu-shadow); }
+.edit-more-button { background: var(--paper); }
+.edit-live { margin: 0; padding: var(--s2) var(--s3); border-radius: var(--r-card); background: var(--ink); color: var(--cream); font-size: var(--fs-small); max-width: 26rem; }
+.edit-live:empty { display: none; }
+.edit-more { width: min(26rem, calc(100vw - 2 * var(--s4))); max-height: min(60vh, 32rem); overflow-y: auto; padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); box-shadow: var(--menu-shadow); }
+.edit-more h2 { font-size: var(--fs-h3); margin-bottom: var(--s3); }
+.edit-more h3 { font-size: var(--fs-body); margin: var(--s4) 0 var(--s2); color: var(--red); }
+.edit-more label { display: block; font-weight: 600; margin-bottom: var(--s1); }
+.edit-find { width: 100%; min-height: 44px; padding: .5rem .75rem; border: 1px solid var(--field-border); border-radius: var(--r-input); background: var(--field); font: inherit; }
+.edit-more-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s1); }
+.edit-pick { display: block; width: 100%; min-height: 44px; padding: var(--s2) var(--s3); border: 1px solid var(--line); border-radius: var(--r-input); background: var(--cream-soft); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.edit-pick:hover { border-color: var(--red); }
+.edit-pick-where { display: block; color: var(--muted); font-size: var(--fs-small); }
+.edit-more .btn { margin-top: var(--s3); }
+.edit-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
+.edit-dialog::backdrop { background: var(--scrim); }
+.edit-form { display: grid; gap: var(--s3); padding: var(--s5); }
+.edit-form h2 { font-size: var(--fs-h3); }
+.edit-where { margin: 0; color: var(--muted); font-size: var(--fs-small); }
+.edit-form label { font-weight: 600; }
+.edit-form textarea { width: 100%; min-height: 8rem; padding: .6rem .75rem; border: 1px solid var(--field-border); border-radius: var(--r-input); background: var(--field); font: inherit; line-height: 1.5; resize: vertical; }
+.edit-original, .edit-by { margin: 0; color: var(--muted); font-size: var(--fs-small); }
+.edit-status { margin: 0; font-weight: 600; }
+.edit-status:empty { display: none; }
+.edit-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.is-editing [data-edit-target] { outline: 2px dashed var(--focus-ring); outline-offset: 3px; cursor: text; }
+.is-editing [data-edit-target]:hover { outline-style: solid; background: var(--cream-soft); }
+.is-editing [data-edit-target]:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+@media (max-width: 560px) {
+  .edit-ui { right: var(--s2); bottom: var(--s2); left: var(--s2); max-width: none; }
+  .edit-bar { justify-content: stretch; }
+  .edit-bar .btn { flex: 1 1 auto; }
 }

@@ -9,6 +9,7 @@
 
 import { html, raw, attrs, jsonIsland } from "./html.mjs";
 import { BLOCKS, liveBlocks } from "./registry.mjs";
+import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
 
@@ -65,6 +66,7 @@ function footer(ctx) {
       <p>${f.address}</p>
       <p>${f.affiliation}</p>
       <p>${f.funding}</p>
+      ${f.spill ? link(ctx, f.spill.href, html`${spillLogo("footer-spill-logo", "6rem")}<span>${f.spill.label}</span>`, { class: "footer-spill" }) : ""}
     </div>
     ${f.columns.map((c) => html`<div><h2>${c.title}</h2><ul>${c.links.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}</ul></div>`)}
   </div>
@@ -87,7 +89,7 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   const blocks = body ? [] : liveBlocks(page, ctx.today);
   const top = blocks.filter((b) => BLOCKS[b.type].placement === "top");
   const main = blocks.filter((b) => BLOCKS[b.type].placement !== "top");
-  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...extra])];
+  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
   const a = ctx.assets;
   const canonical = ctx.site.origin + page.path;
   const preload = page.preloadImage ? html`<link rel="preload" as="image" href="${page.preloadImage.href}" imagesrcset="${page.preloadImage.srcset}" imagesizes="${page.preloadImage.sizes}" type="${page.preloadImage.type}" fetchpriority="high">` : "";

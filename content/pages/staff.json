@@ -2,19 +2,19 @@
   "schema": "bss.page/1",
   "id": "pg-staff",
   "path": "/staff/",
-  "title": "Director sign-in — Badger Supports",
+  "title": "Staff sign-in — Badger Supports",
   "analytics": "none",
   "noindex": true,
   "blocks": [
     {
-      "id": "b-staff-signin",
-      "type": "text",
-      "heading": "h1",
-      "title": "director sign-in",
+      "id": "b-staff",
+      "type": "staff",
+      "title": "staff sign-in",
       "body": [
-        "Directors and admins sign in here with their Badger Supports Connect account to read submissions to the forms they are responsible for. Everything else — editing pages, forms and emails, and working through submissions — happens in Connect.",
-        "Sign-in is not available yet. It opens once Connect provides single sign-on for this site; until then this page and every staff address refuse everyone."
-      ]
+        "Directors and admins sign in here with their Badger Supports Connect account. Signed in, you can read the answers to the forms your role covers, check that each one reached Connect, and change the words on any page of this site with the Edit text button.",
+        "Working through answers — replying, assigning, closing — happens in Connect, under Website Forms."
+      ],
+      "signIn": "Sign in with Connect"
     }
   ]
 }

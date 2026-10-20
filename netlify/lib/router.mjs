@@ -2,20 +2,32 @@
  * load a route with no tier (netlify-backend-local-first: a forgotten wrapper is how a private
  * read ships public). Tiers:
  *   public    anyone; posts must come from this site's own pages and are rate-limited
- *   director  a director or admin signed in through Connect, for the forms their claims name.
- *             Connect single sign-on does not exist yet, so this tier refuses everyone (401).
+ *   director  someone signed in through Connect (staff.mjs). The tier only proves a session; each
+ *             route then checks the scope it needs: forms.read:<key> to read a form's answers,
+ *             site.edit to change words with the edit button, site.publish to see the changes
+ *             waiting and download the file a publish needs. Which roles hold which is a super
+ *             admin's setting in Connect (Website Forms), not this site's.
+ *
+ * Sign-in itself (/api/auth/*) is public: it is how a session starts. Its failures are pages,
+ * since a person lands on them, not a script.
  */
 
 import { json, htmlResponse, wantsJson, readBody, sameOrigin, connectionHash, rateLimit, HttpError } from "./http.mjs";
 import { currentForm, submit, answersForPerson } from "./intake.mjs";
 import { recordMood, moodCounts } from "./mood.mjs";
 import { serverContent } from "./content.mjs";
+import { connectConfig } from "./connect.mjs";
+import { deliverDue } from "./deliver.mjs";
+import { startSignIn, finishSignIn, sessionFrom, signOut, can } from "./staff.mjs";
+import { formsFor, latestAnswers } from "./answers.mjs";
+import { editSource, editEntry, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
 import { formSection } from "../../src/render/blocks/form.mjs";
 import { html } from "../../src/render/html.mjs";
 import { readRaw } from "../../src/shared/forms.mjs";
+import { clientTable } from "../../src/shared/text.mjs";
 
 export const TIERS = new Set(["public", "director"]);
 
@@ -41,10 +53,26 @@ const formReply = (status, def, inner) => {
   return page(status, p, (ctx) => formSection(def, inner(ctx), { id: p.blockId, title: p.blockTitle }), ["form.js"]);
 };
 
-/* No session can exist until Connect single sign-on does. When it does, this verifies the
-   session and returns its claims; until then it refuses, and so does every director route. */
-async function requireDirector() {
-  throw new HttpError(401, "auth.unavailable");
+/* The signed-in person, or 401. configured tells the staff page whether signing in can work on
+   this copy of the site at all. */
+async function requireDirector(req) {
+  const who = await sessionFrom(req);
+  if (!who) throw new HttpError(401, "auth.required", { configured: !!connectConfig() });
+  return who;
+}
+
+function need(who, scope) {
+  if (!can(who, scope)) throw new HttpError(403, "staff.forbidden");
+}
+
+const readsForms = (who) => who.scopes.some((s) => s.startsWith("forms.read:"));
+
+/* Work that should not hold up the reply. Netlify keeps the function alive for it (waitUntil); a
+   local server simply carries on. A failure is logged, never shown to the person waiting. */
+function afterReply(context, work) {
+  const done = Promise.resolve().then(work).catch((e) => console.error("after reply:", e));
+  context?.waitUntil?.(done);
+  return done;
 }
 
 async function formState(req, [key]) {
@@ -65,6 +93,7 @@ async function formSubmit(req, [key], context) {
     return formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
   }
   const r = await submit(key, body);
+  if (r.ok && !r.duplicate && !r.trapped) afterReply(context, () => deliverDue({ limit: 5 }));
   if (asJson) {
     if (r.ok) return json(200, { ok: true, ref: r.ref });
     if (r.error === "form.closed") return json(409, { ok: false, error: r.error, closedMessage: r.closedMessage });
@@ -101,20 +130,121 @@ async function moodTap(req, _m, context) {
 </div></section>`);
 }
 
+async function authLimit(req, context) {
+  await rateLimit(`auth:${connectionHash(req, context)}`, 30, 3600);
+}
+
+async function authStart(req, _m, context) {
+  await authLimit(req, context);
+  return startSignIn(req);
+}
+
+async function authCallback(req, _m, context) {
+  await authLimit(req, context);
+  return finishSignIn(req);
+}
+
+const authSignOut = (req) => signOut(req, { asJson: wantsJson(req) });
+
+/* Whether anyone is signed in here, always 200, so the staff page can ask without the browser
+   logging a refusal for every visitor who is not staff. */
+const authStatus = async (req) => json(200, { ok: true, signedIn: !!(await sessionFrom(req)), configured: !!connectConfig() });
+
+async function staffMe(req, _m, _c, who) {
+  const canEdit = can(who, "site.edit");
+  const canPublish = can(who, "site.publish");
+  return json(200, {
+    ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who),
+    connectUrl: connectConfig()?.url || null,
+    waiting: canEdit || canPublish ? await waitingCount() : 0,
+    text: clientTable(serverContent().text, ["edit.js"]),
+  });
+}
+
+/* Opening the staff page also sends anything still waiting to reach Connect. */
+async function staffForms(req, _m, context, who) {
+  const r = await formsFor(who);
+  afterReply(context, () => deliverDue({ limit: 5 }));
+  return json(200, { ok: true, ...r });
+}
+
+async function staffSubmissions(req, [key], _c, who) {
+  need(who, `forms.read:${key}`);
+  const r = await latestAnswers(key);
+  if (!r) throw new HttpError(404, "form.unknown");
+  return json(200, { ok: true, ...r });
+}
+
+async function staffRetry(req, _m, _c, who) {
+  if (!readsForms(who)) throw new HttpError(403, "staff.forbidden");
+  const r = await deliverDue({ limit: 20, force: true });
+  return json(200, { ok: true, ...r, ...(await formsFor(who)) });
+}
+
+async function editSourceRoute(req, _m, _c, who) {
+  need(who, "site.edit");
+  return json(200, { ok: true, entries: await editSource(new URL(req.url).searchParams.get("page")) });
+}
+
+/* A local copy rebuilds the pages after a save (context.afterEdit, ops/dev-server.mjs), so the
+   change shows at once there; on Netlify it waits for the next publish. */
+async function editSave(req, _m, context, who) {
+  need(who, "site.edit");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  const r = await saveEdit(who, body);
+  if (r.changed) await context?.afterEdit?.();
+  return json(200, { ok: true, changed: r.changed, entry: await editEntry(body.target), waiting: await waitingCount() });
+}
+
+/* ?download=1 is the file a publish lays over the site: saved as content/edits.json. Changing words
+   and handing them to a publish are separate permissions, so this needs site.publish. */
+async function editsFileRoute(req, _m, _c, who) {
+  need(who, "site.publish");
+  const file = await editsFile();
+  if (new URL(req.url).searchParams.get("download") !== "1") return json(200, { ok: true, ...file, waiting: await waitingCount() });
+  return new Response(`${JSON.stringify(file, null, 2)}\n`, { status: 200, headers: {
+    "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff",
+    "content-disposition": 'attachment; filename="edits.json"',
+  } });
+}
+
 export const ROUTES = [
   { name: "health", method: "GET", pattern: /^\/api\/health$/, tier: "public", run: async () => json(200, { ok: true }) },
   { name: "formState", method: "GET", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/state$/, tier: "public", run: formState },
   { name: "formSubmit", method: "POST", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/submit$/, tier: "public", run: formSubmit },
   { name: "moodRead", method: "GET", pattern: /^\/api\/mood$/, tier: "public", run: moodRead },
   { name: "moodTap", method: "POST", pattern: /^\/api\/mood$/, tier: "public", run: moodTap },
-  { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },
+  { name: "authStart", method: "GET", pattern: /^\/api\/auth\/start$/, tier: "public", run: authStart },
+  { name: "authCallback", method: "GET", pattern: /^\/api\/auth\/callback$/, tier: "public", run: authCallback },
+  { name: "authSignOut", method: "POST", pattern: /^\/api\/auth\/signout$/, tier: "public", run: authSignOut },
+  { name: "authStatus", method: "GET", pattern: /^\/api\/auth\/status$/, tier: "public", run: authStatus },
+  { name: "staffMe", method: "GET", pattern: /^\/api\/staff\/me$/, tier: "director", run: staffMe },
+  { name: "staffForms", method: "GET", pattern: /^\/api\/staff\/forms$/, tier: "director", run: staffForms },
+  { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },
+  { name: "staffRetry", method: "POST", pattern: /^\/api\/staff\/outbox\/retry$/, tier: "director", run: staffRetry },
+  { name: "editSource", method: "GET", pattern: /^\/api\/staff\/edit\/source$/, tier: "director", run: editSourceRoute },
+  { name: "editSave", method: "POST", pattern: /^\/api\/staff\/edit\/save$/, tier: "director", run: editSave },
+  { name: "editsFile", method: "GET", pattern: /^\/api\/staff\/edits$/, tier: "director", run: editsFileRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },
 ];
 
 for (const r of ROUTES) if (!TIERS.has(r.tier)) throw new Error(`route ${r.name} declares no tier`);
 
-function errorReply(req, status, code) {
-  if (wantsJson(req) || new URL(req.url).pathname.startsWith("/api/staff")) return json(status, { ok: false, error: code });
+/* What a person reads when signing in goes wrong, by error code. */
+const AUTH_WHY = { "auth.unavailable": "unavailable", "auth.state": "state", "auth.expired": "expired", "auth.unreachable": "unreachable", "auth.refused": "refused", "rate.limited": "rateLimited" };
+
+function errorReply(req, status, code, extra = {}) {
+  const { pathname } = new URL(req.url);
+  if (wantsJson(req) || pathname.startsWith("/api/staff")) return json(status, { ok: false, error: code, ...extra });
+  if (pathname.startsWith("/api/auth/")) {
+    const why = AUTH_WHY[code] || "failed";
+    return page(status, { id: "pg-auth", path: "/staff/", titleKey: "auth.error.title" }, (ctx) => html`<section class="band" aria-labelledby="auth-h"><div class="wrap">
+  <h1 id="auth-h">${ctx.t("auth.error.title")}</h1>
+  <p>${ctx.t(`auth.error.${why}`)}</p>
+  <p><a href="/staff/">${ctx.t("auth.error.back")}</a></p>
+</div></section>`);
+  }
   return page(status, { id: "pg-error", path: "/", titleKey: "errors.server.title" }, (ctx) => html`<section class="band" aria-labelledby="err-h"><div class="wrap">
   <h1 id="err-h">${ctx.t("errors.server.title")}</h1>
   <p>${ctx.t("errors.server.body")}</p>
@@ -128,10 +258,10 @@ export async function handle(req, context) {
   if (!route) return json(matches.length ? 405 : 404, { ok: false, error: matches.length ? "method.not-allowed" : "not.found" });
   try {
     if (route.method === "POST" && !sameOrigin(req)) throw new HttpError(403, "origin.refused");
-    if (route.tier === "director") await requireDirector(req);
-    return await route.run(req, pathname.match(route.pattern).slice(1), context);
+    const who = route.tier === "director" ? await requireDirector(req) : null;
+    return await route.run(req, pathname.match(route.pattern).slice(1), context, who);
   } catch (e) {
-    if (e instanceof HttpError) return errorReply(req, e.status, e.code);
+    if (e instanceof HttpError) return errorReply(req, e.status, e.code, e.extra);
     if (e?.code === "config.missing") return errorReply(req, 503, "config.missing");
     console.error(`api ${route.name}:`, e);
     return errorReply(req, 500, "server.error");

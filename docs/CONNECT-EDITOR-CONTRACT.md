@@ -37,7 +37,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 
 ### Hero — `hero`
 
-Reads: nothing but its own fields · analytics: `page` · photos load eager · browser module `hero.js`
+Reads: nothing but its own fields · analytics: `page` · photos load eager · browser modules `hero.js`, `spill-logo.js`
 
 | Field | Type | |
 |---|---|---|
@@ -48,6 +48,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager · b
 | `secondary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 | `centre` | one line of text |  |
 | `circles` | up to three photo circles, each with a photo (a library photo or a pasted link), a label, an address and an icon |  |
+| `spill` | Badger SPILL beside its logo: a short line (`title`), an optional second line (`text`), and one link (`label` and `href`, to badgerspill.org) |  |
 
 ### Event timetable — `schedule`
 
@@ -310,6 +311,27 @@ Reads: nothing but its own fields · analytics: `none` · photos load lazy
 | `items` | words, in order: each its text, or its `text` and a `size` (1 small, 2 medium, 3 large) | **required** |
 | `note` | one line of text |  |
 
+### Badger SPILL — `spill`
+
+Reads: nothing but its own fields · analytics: `page` · photos load lazy · browser module `spill-logo.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `body` | one or more paragraphs |  |
+| `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon | **required** |
+| `links` | several links, in order |  |
+
+### Staff sign-in and tools — `staff`
+
+Reads: nothing but its own fields · analytics: `none` · photos load eager · browser module `staff.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `body` | one or more paragraphs | **required** |
+| `signIn` | one line of text | **required** |
+
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
@@ -394,7 +416,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 
 ## Every other word (`content/text.json`)
 
-144 keys. Keys are permanent. Required text cannot be published empty and must keep each
+226 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -412,7 +434,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `footer.legalLabel` | Legal and staff | The privacy and sign-in links' name, read by screen readers. |  |
 | `announce.label` | Announcement | The announcement strip's name, read by screen readers. |  |
 | `proto.title` | Prototype for review — not the live site. | Strip at the top of the prototype only. Never shown on the published site. |  |
-| `proto.body` | Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Forms save only to a local test database; nothing is emailed or sent to Connect. | Second sentence of the prototype strip. | optional |
+| `proto.body` | Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Anything sent through a form here is a test: nothing is emailed, and nothing reaches the team's real inbox. | Second sentence of the prototype strip. | optional |
 | `embed.play` | Play the reel | Button on an Instagram video; pressing it loads Instagram’s player. |  |
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
@@ -580,6 +602,93 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 |---|---|---|---|
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
+
+### Staff page and edit button (82)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `staff.signedInAs` | Signed in as {{name}} | Staff page, top of the tools: who is signed in. | `{{name}}` |
+| `staff.signedIn` | Signed in | Staff page, top of the tools, when Connect is set not to share first names. |  |
+| `staff.signOut` | Sign out | Staff page, button beside the name. |  |
+| `staff.notConfigured` | Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first. | Staff page, in place of the Sign in button when Connect is not set up. |  |
+| `staff.loadError` | Unable to load this right now. Reload the page to try again. | Staff page, when a list fails to load. |  |
+| `staff.nothing` | Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms. | Staff page, for someone signed in whose role reaches neither forms nor words. |  |
+| `staff.forms.title` | website forms | Staff page, heading above the list of forms. |  |
+| `staff.forms.empty` | No forms to show. | Staff page, when there are no forms your role can read. |  |
+| `staff.forms.none` | No answers yet. | Staff page, under a form nobody has filled in. |  |
+| `staff.forms.count.one` | {{n}} answer | Staff page, under a form with one answer. | `{{n}}` |
+| `staff.forms.count.other` | {{n}} answers | Staff page, under a form with several answers. | `{{n}}` |
+| `staff.forms.latest` | latest {{when}} | Staff page, after the count: when the newest answer came in. | `{{when}}` |
+| `staff.forms.state.open` | open | Staff page, label beside a form that takes answers. |  |
+| `staff.forms.state.closed` | closed | Staff page, label beside a form that is closed. |  |
+| `staff.delivery.sent` | {{n}} in Connect | Staff page, how many answers reached Connect. | `{{n}}` |
+| `staff.delivery.waiting` | {{n}} waiting to send | Staff page, how many answers have not gone to Connect yet. | `{{n}}` |
+| `staff.delivery.failed` | {{n}} could not be sent | Staff page, how many answers failed to reach Connect. | `{{n}}` |
+| `staff.delivery.off` | Connect is not set up for this copy of the site, so answers are kept here and sent once it is. | Staff page, above the forms when Connect is not set up. |  |
+| `staff.retry` | Send waiting answers now | Staff page, button under the forms when some have not reached Connect. |  |
+| `staff.retried` | {{sent}} sent, {{failed}} still waiting. | Staff page, read aloud after pressing the send button. | `{{sent}}` `{{failed}}` |
+| `staff.answers.show` | Show latest answers | Staff page, button under a form. |  |
+| `staff.answers.hide` | Hide answers | Staff page, the same button once the answers are showing. |  |
+| `staff.answers.caption` | {{title}}: newest {{shown}} of {{total}} | Staff page, above a table of answers. | `{{title}}` `{{shown}}` `{{total}}` |
+| `staff.answers.region` | Answers to {{title}} | Staff page, read aloud for the scrolling table of answers. | `{{title}}` |
+| `staff.answers.ref` | Reference | Staff page, first column of the answers table. |  |
+| `staff.answers.received` | Received | Staff page, column for when an answer came in. |  |
+| `staff.answers.delivery` | Connect | Staff page, column for whether an answer reached Connect. |  |
+| `staff.answers.none` | No answers yet. | Staff page, when a form's answers are opened and there are none. |  |
+| `staff.answers.openConnect` | Work through answers in Connect | Staff page, link under the forms. |  |
+| `staff.row.sent` | in Connect | Staff page, answers table: this answer reached Connect. |  |
+| `staff.row.pending` | waiting | Staff page, answers table: not sent yet. |  |
+| `staff.row.failed` | not sent yet | Staff page, answers table: sending failed and will be tried again. |  |
+| `staff.row.held` | held | Staff page, answers table: kept back on purpose. |  |
+| `staff.row.cancelled` | not sent | Staff page, answers table: will not be sent. |  |
+| `staff.edit.title` | words on the site | Staff page, heading above the edit tools. |  |
+| `staff.edit.how` | Open any page of this site and press Edit text in the bottom corner. Every word you can change gets a dotted outline; choose one, change it and save. | Staff page, how to use the edit button. |  |
+| `staff.edit.none` | Every saved change is already on the site. | Staff page, when nothing waits to publish. |  |
+| `staff.edit.waiting.one` | {{n}} saved change waits for the next publish. | Staff page, when one change waits. | `{{n}}` |
+| `staff.edit.waiting.other` | {{n}} saved changes wait for the next publish. | Staff page, when several changes wait. | `{{n}}` |
+| `staff.edit.download` | Download the edits file | Staff page, button that saves every change as one file. |  |
+| `staff.edit.publish` | Changes are kept as soon as you save them. Visitors see them after the next publish, which uses this file. | Staff page, under the download button. |  |
+| `edit.button` | Edit text | The edit button, bottom corner of every page, for staff who may change words. |  |
+| `edit.buttonWaiting` | Edit text ({{n}} waiting) | The edit button, when saved changes wait for a publish. | `{{n}}` |
+| `edit.done` | Done editing | The edit button while words are outlined. |  |
+| `edit.hint` | Choose any outlined words to change them. | Read aloud and shown when the edit button is pressed. |  |
+| `edit.region` | Edit text | Read aloud for the edit button's corner. |  |
+| `edit.dialog.title` | change these words | Heading of the edit box. |  |
+| `edit.dialog.label` | Words | Label above the box you type in. |  |
+| `edit.save` | Save | Edit box, save button. |  |
+| `edit.cancel` | Cancel | Edit box, cancel button. |  |
+| `edit.revert` | Put back the original | Edit box, button that restores the words the site shipped with. |  |
+| `edit.original` | Original: {{words}} | Edit box, the words the site shipped with. | `{{words}}` |
+| `edit.lastBy` | Last changed by {{name}}, {{when}} | Edit box, who saved these words last. | `{{name}}` `{{when}}` |
+| `edit.saving` | Saving… | Edit box, while a change is being saved. |  |
+| `edit.saved` | Saved. Visitors see it now. | After saving, when the page already shows the change. |  |
+| `edit.savedWaiting` | Saved. Visitors see it after the next publish. | After saving, when the change waits for a publish. |  |
+| `edit.waitingNote` | A change to these words is saved and waits for the next publish. | Edit box, when the words have a change waiting. |  |
+| `edit.conflict` | Someone else changed these words while you were editing. Their words are in the box now; change them again if you need to. | Edit box, when two people edit the same words. |  |
+| `edit.error.empty` | These words cannot be empty. | Edit box, when the box is empty. |  |
+| `edit.error.long` | That is too long. Keep it under 2,000 characters. | Edit box, when the words are too long. |  |
+| `edit.error.markup` | Leave out the angle brackets < and >. | Edit box, when the words contain angle brackets. |  |
+| `edit.error.placeholder` | Keep every part in double curly brackets exactly as it was; the site fills those in. | Edit box, when a fill-in part was removed. |  |
+| `edit.error.value` | These words cannot be saved as written. Links and web addresses are changed in Connect, not here. | Edit box, when the words are not allowed. |  |
+| `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
+| `edit.error.failed` | Unable to save right now. Try again. | Edit box, when saving fails. |  |
+| `edit.error.signedOut` | You are signed out. Sign in again on the staff page, then come back. | Edit button, when the sign-in has ended. |  |
+| `edit.more` | More words | Button beside Edit text: words that are not on the screen right now. |  |
+| `edit.more.title` | more words | Heading of the More words list. |  |
+| `edit.more.find` | Find words | Label of the search box in the More words list. |  |
+| `edit.more.here` | On this page | More words list, words from this page. |  |
+| `edit.more.site` | On every page | More words list, menus, footer and shared lines. |  |
+| `edit.more.none` | Nothing matches. | More words list, when the search finds nothing. |  |
+| `edit.close` | Close | More words list, close button. |  |
+| `auth.error.title` | Unable to sign in | Page shown when staff sign-in fails. |  |
+| `auth.error.unavailable` | Staff sign-in is not set up for this copy of the site yet. | Sign-in problem: Connect is not set up. |  |
+| `auth.error.state` | That sign-in link was already used or did not start here. Start again from the staff page. | Sign-in problem: the link came back wrong. |  |
+| `auth.error.expired` | That sign-in took too long and ran out. Start again from the staff page. | Sign-in problem: too slow. |  |
+| `auth.error.unreachable` | Badger Supports Connect did not answer. Try again in a few minutes. | Sign-in problem: Connect is down. |  |
+| `auth.error.refused` | Connect did not confirm this sign-in. Check you are signed in to Connect with a staff account, then start again. | Sign-in problem: Connect said no. |  |
+| `auth.error.rateLimited` | Too many sign-in attempts from this connection. Wait a few minutes, then try again. | Sign-in problem: too many attempts. |  |
+| `auth.error.failed` | Something went wrong signing in. Start again from the staff page. | Sign-in problem: anything else. |  |
+| `auth.error.back` | Back to the staff page | Link at the bottom of the sign-in problem page. |  |
 
 ## Also edited in Connect
 

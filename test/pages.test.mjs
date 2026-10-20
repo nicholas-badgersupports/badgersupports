@@ -1,7 +1,8 @@
 /* The pieces of the homepage and the peer support groups page that other suites do not reach: the
    workshop previews, the Drop in links, the peer page's week and word cloud, the reel that loads
    nothing from Instagram until pressed,
-   the Hub's old address, the calendar files, the one-red palette and the hero's Pause button. */
+   the Hub's old address, the calendar files, the one-red palette, the hero's Pause button and Badger
+   SPILL's logo. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -62,10 +63,11 @@ test("Drop in sends a peer support group to its page and anything else to its ro
   assert.ok(drops.some(([, t]) => t !== "Peer support group"), "a non-group event is in the fixture week");
 });
 
-test("the peer support groups page keeps the live page's order: drop in, the week, the Hub, the talk, the activities, why/what/how, a request", () => {
+test("the peer support groups page keeps the live page's order: drop in, the week, the Hub, the talk, the activities, why/what/how, Badger SPILL, a request", () => {
   const page = read("join/peer-support-groups/index.html");
   const ids = [...page.matchAll(/data-block="(b-pg-[a-z]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(ids, ["b-pg-intro", "b-pg-days", "b-pg-hub", "b-pg-talk", "b-pg-activities", "b-pg-how", "b-pg-request", "b-pg-note"]);
+  // Badger SPILL is the one addition to the live page's order (owner, 20 Oct 2026)
+  assert.deepEqual(ids, ["b-pg-intro", "b-pg-days", "b-pg-hub", "b-pg-talk", "b-pg-activities", "b-pg-how", "b-pg-spill", "b-pg-request", "b-pg-note"]);
   assert.match(page, /<section class="directions band is-section" id="get-directions"[^>]*data-block="b-pg-hub">/);
   assert.equal([...page.matchAll(/<h1[ >]/g)].length, 1);
   assert.match(block(page, "b-pg-intro"), /href="[^"]*\/join\/email-list\/?"[^>]*><span class="go-label">Join Our Email List</, "the email list, as the live hero has it (the live page until ours is built)");
@@ -210,4 +212,28 @@ test("an email address in a pill or a closed notice is kept whole, may break bef
   assert.match(page, /<span class="door-text door-closed">[^<]*<span class="addr">hello<wbr>@badgersupports\.org<\/span>\.<\/span>/, "the closed staff door");
   assert.equal(String(html`${breakAtSign("a<b@c")}`), '<span class="addr">a&lt;b<wbr>@c</span>');
   assert.equal(breakAtSign("no address"), "no address");
+});
+
+test("Badger SPILL shows in the hero, in its own band and in every footer, as its own logo that its own motion moves", () => {
+  const home = read("index.html");
+  const hero = block(home, "b-home-hero");
+  const sticker = hero.match(/<a href="https:\/\/badgerspill\.org\/#write"[^>]*class="hero-spill"[\s\S]*?<\/a>/);
+  assert.ok(sticker, "the hero's sticker is one link to SPILL's writing page");
+  assert.match(sticker[0], /<img class="spill-logo hero-spill-logo" src="\/assets\/brand\/spill-logo-wide-480\.webp"[^>]* alt="" [^>]*loading="eager">/, "the logo has no words of its own and loads with the hero");
+  assert.match(sticker[0], /<span class="hero-spill-title">Need to vent\?<\/span>/);
+  assert.match(home, /<script type="module" src="\/assets\/js\/[a-z0-9]+\/spill-logo\.js">/);
+  for (const [page, id] of [["index.html", "b-home-spill"], ["join/peer-support-groups/index.html", "b-pg-spill"], ["join/get-involved/index.html", "b-gi-spill"]]) {
+    const band = block(read(page), id);
+    assert.match(band, /<section class="spill-band"/, page);
+    assert.match(band, /<img class="spill-logo spill-band-logo"[^>]* alt="" [^>]*loading="lazy">/, page);
+    assert.match(band, /href="https:\/\/badgerspill\.org\//, page);
+  }
+  // every page's footer, so every page loads the motion
+  const about = read("about/faq/index.html");
+  assert.match(about, /class="footer-spill"[\s\S]*?class="spill-logo footer-spill-logo"/);
+  assert.match(about, /\/spill-logo\.js">/);
+  for (const w of [240, 480, 720]) assert.ok(fs.existsSync(path.join(OUT, `assets/brand/spill-logo-wide-${w}.webp`)), `${w}w`);
+  // the cut along the milk is Badger SPILL's own, character for character
+  const css = fs.readFileSync(path.join(ROOT, "src/styles/blocks.css"), "utf8");
+  for (const sel of [".logo-bottle", ".logo-milk"]) assert.match(css, new RegExp(`^\\${sel} \\{ transform-origin: [0-9.]+% [0-9.]+%;\\n  clip-path: polygon\\(`, "m"), sel);
 });

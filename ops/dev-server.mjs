@@ -4,8 +4,17 @@
  *   node ops/dev-server.mjs                 # build, then serve on PORT (default 8899)
  *   node ops/dev-server.mjs --no-build      # serve the last build
  *   node ops/dev-server.mjs --today=2026-10-20
+ *   PORT=8901 node ops/dev-server.mjs --connect=http://127.0.0.1:8903
+ *                                          # sign in and send forms through a local Connect rig
+ *                                          # (its `PORT=8903 node ops/dev.mjs --seed`): the shared
+ *                                          # keys are its demo ones. Write 127.0.0.1, not localhost:
+ *                                          # that rig dates every request as 127.0.0.1, so a page
+ *                                          # opened at localhost fails its same-site check. PORT
+ *                                          # 8899 or 8901, the two returns that rig accepts.
  *
- * Nothing here talks to the network: no Netlify, no Connect, no email.
+ * Nothing here talks to the network: no Netlify, no email, and Connect only when --connect names
+ * a local rig. A word saved with the edit button rebuilds the pages at once, so the change shows
+ * on the next load; on Netlify it waits for a publish.
  */
 
 import http from "node:http";
@@ -16,6 +25,19 @@ import url from "node:url";
 process.env.LOCAL_DB ||= "pglite";
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
+const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=").slice(1).join("=");
+
+/* The demo keys a local Connect rig signs with (its ops/fixtures/demo-account.json). Local values
+   only: Connect's real keys live in Netlify's settings and never on this disk. */
+const CONNECT_FIXTURE = path.resolve(ROOT, "../../BSS Intranet Transfer v23/ops/fixtures/demo-account.json");
+
+function useLocalConnect(origin) {
+  const u = new URL(origin);
+  if (!["localhost", "127.0.0.1"].includes(u.hostname)) throw new Error(`--connect takes a local rig only, not ${origin}`);
+  const keys = JSON.parse(fs.readFileSync(process.env.CONNECT_FIXTURE || CONNECT_FIXTURE, "utf8"));
+  process.env.CONNECT_URL = u.origin;
+  for (const k of ["PUBLIC_SITE_SERVICE_KEY_ID", "PUBLIC_SITE_SERVICE_SECRET", "PUBLIC_SSO_SECRET"]) process.env[k] ||= keys[k];
+}
 
 const TYPES = {
   ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8",
@@ -44,8 +66,16 @@ function parseRedirects() {
 
 const matches = (pattern, p) => (pattern.endsWith("*") ? p.startsWith(pattern.slice(0, -1)) : p === pattern);
 
-export async function startServer({ port = Number(process.env.PORT) || 8899 } = {}) {
+export async function startServer({ port = Number(process.env.PORT) || 8899, today = null } = {}) {
   const { handle } = await import("../netlify/lib/router.mjs");
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  const { editsFile } = await import("../netlify/lib/edits.mjs");
+  const { build } = await import("./build.mjs");
+  // The pages as staff left them: every saved edit laid over the files, as a publish would.
+  const afterEdit = async () => {
+    await build({ today, edits: (await editsFile()).edits });
+    useContent(null);
+  };
   const headerRules = parseHeaders();
   const redirects = parseRedirects();
 
@@ -56,8 +86,11 @@ export async function startServer({ port = Number(process.env.PORT) || 8899 } = 
         const chunks = [];
         for await (const c of req) chunks.push(c);
         const request = new Request(u, { method: req.method, headers: req.headers, body: ["GET", "HEAD"].includes(req.method) ? undefined : Buffer.concat(chunks) });
-        const response = await handle(request, { ip: req.socket.remoteAddress });
-        res.writeHead(response.status, Object.fromEntries(response.headers));
+        const response = await handle(request, { ip: req.socket.remoteAddress, afterEdit });
+        const headers = Object.fromEntries(response.headers);
+        const cookies = response.headers.getSetCookie();
+        if (cookies.length) headers["set-cookie"] = cookies;
+        res.writeHead(response.status, headers);
         res.end(Buffer.from(await response.arrayBuffer()));
         return;
       }
@@ -87,13 +120,15 @@ export async function startServer({ port = Number(process.env.PORT) || 8899 } = 
 }
 
 if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+  const today = arg("today") || null;
+  if (arg("connect")) useLocalConnect(arg("connect"));
   if (!process.argv.includes("--no-build")) {
     const { build } = await import("./build.mjs");
-    const today = process.argv.find((a) => a.startsWith("--today="))?.split("=")[1];
     const r = await build({ today });
     console.log(`built ${r.pages.length} pages for ${r.today}`);
   }
   const port = Number(process.env.PORT) || 8899;
-  await startServer({ port });
-  console.log(`http://127.0.0.1:${port}/  (database: PGlite in memory; nothing leaves this machine)`);
+  await startServer({ port, today });
+  const connect = process.env.CONNECT_URL ? `Connect: ${process.env.CONNECT_URL}` : "no Connect";
+  console.log(`http://localhost:${port}/  (database: PGlite in memory; ${connect}; nothing else leaves this machine)`);
 }

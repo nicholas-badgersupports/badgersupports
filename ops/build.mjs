@@ -8,6 +8,9 @@
  *                                            # each page linking its Google Form (--production does this too)
  *   node ops/build.mjs --text-edits=FILE     # apply published text edits ({ key: text }) over
  *                                            # content/text.json, as Connect's publish will
+ *   node ops/build.mjs --edits=FILE          # lay words changed with the edit button over the
+ *                                            # content (src/shared/edits.mjs); without the flag the
+ *                                            # build reads content/edits.json when there is one
  *   node ops/build.mjs --fetch-media         # download any photo original missing from local/
  *                                            # (sha256-checked) and fetch any linked photo not
  *                                            # yet in local/media-links/, as a Netlify build must
@@ -23,7 +26,8 @@
  *   dist/calendar/<event>.ics one calendar file per upcoming dated event (src/render/ics.mjs)
  *   dist/_headers, _redirects, robots.txt
  *   .build/server.json        what the intake API needs to render a page: asset names, site
- *                             content, form definitions. Bundled into the function.
+ *                             content, form definitions, and every editable word as built and as
+ *                             shipped (for the edit button). Bundled into the function.
  *   .build/report.json        pages, links still pointing at the live site, image weights
  */
 
@@ -42,6 +46,7 @@ import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
 import { definitionProblems, launchForms } from "../src/shared/forms.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
+import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
 import { teamProblems, personPages, publicPeople, teamRedirects, GROUPS, TEAM_PATH } from "../src/render/team.mjs";
 import { buildMedia, buildLinks, linkPlaceholders, loadManifest } from "./media.mjs";
@@ -55,8 +60,14 @@ const readJson = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 const readDir = (p) => fs.readdirSync(path.join(ROOT, p)).filter((f) => f.endsWith(".json")).sort();
 const hash = (s, n = 10) => crypto.createHash("sha256").update(s).digest("hex").slice(0, n);
 
+/* The edits file a build lays over the content when it is given none: content/edits.json, if any. */
+export function shippedEdits() {
+  const f = path.join(ROOT, "content/edits.json");
+  return fs.existsSync(f) ? readEditsFile(JSON.parse(fs.readFileSync(f, "utf8"))) : {};
+}
+
 /* Everything the build and the API read, loaded and checked. Throws with the full list. */
-export function loadContent({ production = false, launch = production, textEdits = {} } = {}) {
+export function loadContent({ production = false, launch = production, textEdits = {}, edits = shippedEdits() } = {}) {
   const site = readJson("content/site.json");
   const textRegistry = readJson("content/text.json");
   const routes = readJson("content/routes.json").routes;
@@ -84,10 +95,17 @@ export function loadContent({ production = false, launch = production, textEdits
     forms[def.key] = def;
   }
 
+  // Words changed with the edit button go over the files before anything is checked, so an edited
+  // page is held to the same rules. The files stay the floor: the edit button can put them back.
+  const files = readDir("content/pages").map((f) => ({ f, page: readJson(`content/pages/${f}`) }));
+  const floorText = Object.fromEntries(Object.entries(textRegistry.text).map(([k, v]) => [k, v.text]));
+  const floor = { site: structuredClone(site), pages: files.map((x) => structuredClone(x.page)) };
+  const overlay = applyEdits(edits, { site, pages: files.map((x) => x.page), text: floorText });
+  textEdits = { ...textEdits, ...overlay.textEdits };
+
   const ids = new Set();
   const paths = new Set();
-  for (const f of readDir("content/pages")) {
-    const page = readJson(`content/pages/${f}`);
+  for (const { f, page } of files) {
     const at = `content/pages/${f}`;
     if (page.schema !== "bss.page/1") problems.push(`${at}: schema must be bss.page/1`);
     if (!/^pg-[a-z0-9-]{2,60}$/.test(page.id || "")) problems.push(`${at}: page id must look like pg-something`);
@@ -161,7 +179,31 @@ export function loadContent({ production = false, launch = production, textEdits
   for (const p of roomPages) if (paths.has(p.path)) throw new Error(`content/places: ${p.path} is also a page in content/pages`);
   const peoplePages = personPages(team, makeT(text));
   for (const p of peoplePages) if (paths.has(p.path)) throw new Error(`content/fixtures/team.json: ${p.path} is also a page in content/pages`);
-  return { site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages], places, events, wall, team, textRegistry, text };
+  return {
+    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages], places, events, wall, team, textRegistry, text,
+    editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
+    edits: { applied: overlay.applied, skipped: overlay.problems },
+  };
+}
+
+/* Every word the edit button can change: { target: { shown, floor?, where? } }, floor only where
+   an edit moved it, where (from text.json) for lines that are not part of a page's own content.
+   Rooms and people pages are made from their own records, and are edited there. */
+function editableWords(built, floor, registry) {
+  const floorOf = new Map([
+    ...floor.pages.flatMap((p) => pageStrings(p).map((s) => [s.target, s.value])),
+    ...siteStrings(floor.site).map((s) => [s.target, s.value]),
+    ...textStrings(floor.text).map((s) => [s.target, s.value]),
+  ]);
+  const out = {};
+  const shown = [...built.pages.flatMap(pageStrings), ...siteStrings(built.site), ...textStrings(built.text)];
+  for (const s of shown) {
+    const f = floorOf.get(s.target);
+    if (f === undefined) continue;
+    out[s.target] = f === s.value ? { shown: s.value } : { shown: s.value, floor: f };
+    if (s.target.startsWith("text:")) out[s.target].where = registry.text[s.target.slice(5)].where;
+  }
+  return out;
 }
 
 function copyDir(from, to) {
@@ -253,9 +295,9 @@ export function cutoverProblems({ routes, pages, builtPaths, pendingLinks }) {
   ];
 }
 
-export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, log = () => {} } = {}) {
+export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, edits = undefined, log = () => {} } = {}) {
   const prototype = !production;
-  const content = loadContent({ production, launch, textEdits });
+  const content = loadContent({ production, launch, textEdits, edits });
   const day = today || chicagoDate();
 
   if (!out.startsWith(ROOT + path.sep)) throw new Error(`refusing to write outside the project: ${out}`);
@@ -344,7 +386,7 @@ export async function build({ production = false, launch = production, today = n
   // What the intake API needs to render a page the same way the build did.
   const server = {
     schema: "bss.server/1", prototype, assets, site: content.site, routes: content.routes, builtPaths,
-    forms: content.forms, mood: content.mood, media: allMedia, text: content.text,
+    forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
     formPages: Object.fromEntries(content.pages.flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null }]))),
   };
   fs.mkdirSync(serverDir, { recursive: true });
@@ -352,6 +394,7 @@ export async function build({ production = false, launch = production, today = n
 
   const report = {
     today: day, prototype, launch,
+    edits: content.edits,
     pages: pageReport,
     calendar: calendar.map((r) => icsPath(r.event)),
     css: { name: cssName, bytes: Buffer.byteLength(css) },
@@ -380,11 +423,13 @@ if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
       media: !process.argv.includes("--no-media"),
       fetchMedia: process.argv.includes("--fetch-media"),
       textEdits: arg("text-edits") ? JSON.parse(fs.readFileSync(path.resolve(arg("text-edits")), "utf8")) : {},
+      edits: arg("edits") ? readEditsFile(JSON.parse(fs.readFileSync(path.resolve(arg("edits")), "utf8"))) : undefined,
       log: process.argv.includes("--verbose") ? console.log : () => {},
     });
     console.log(`built ${r.pages.length} pages for ${r.today}${r.prototype ? " (prototype)" : ""}${r.launch ? ", forms as at launch" : ""}`);
     console.log(`  css ${r.css.bytes} B · js ${Object.values(r.js).reduce((a, b) => a + b, 0)} B · ${r.media.variants} image variants (${r.media.encoded} newly encoded)`);
     console.log(`  ${r.pendingLinks.length} internal links still point at the live site · ${r.redirectsWaiting.length} redirects wait for their page`);
+    if (r.edits.applied.length || r.edits.skipped.length) console.log(`  ${r.edits.applied.length} edited words laid over the files${r.edits.skipped.length ? `; skipped ${r.edits.skipped.length}: ${r.edits.skipped.join(", ")}` : ""}`);
   } catch (e) {
     console.error(e.message);
     process.exit(1);

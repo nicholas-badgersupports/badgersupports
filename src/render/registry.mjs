@@ -38,12 +38,14 @@ import eventhero from "./blocks/eventhero.mjs";
 import expect from "./blocks/expect.mjs";
 import cta from "./blocks/cta.mjs";
 import team from "./blocks/team.mjs";
+import staff from "./blocks/staff.mjs";
 import person from "./blocks/person.mjs";
 import pagehead from "./blocks/pagehead.mjs";
 import cards from "./blocks/cards.mjs";
 import words from "./blocks/words.mjs";
+import spill from "./blocks/spill.mjs";
 
-export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words].map((b) => [b.type, b]));
+export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, spill, staff].map((b) => [b.type, b]));
 
 /* Every problem a page's blocks have against the declarations. The build refuses a page with any. */
 export function blockProblems(page) {

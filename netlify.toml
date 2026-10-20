@@ -1,5 +1,8 @@
-# www.badgersupports.org — Netlify configuration. Nothing here creates a project, publishes or turns
-# anything on: the owner connects the repository and decides every deploy (WORK.md, owner actions).
+# www.badgersupports.org — Netlify configuration. Nothing here publishes or turns anything on. The
+# owner deploys from the laptop with the setup files (WORK.md, owner actions): the draft (file 4) uploads
+# dist/ alone; the main address (file 6) runs this build on the laptop through Netlify's command line,
+# which also creates the Netlify Database and applies netlify/database/migrations/. The repository is
+# never linked to Netlify, so nothing builds on Netlify's machines.
 #
 # The build below is the PROTOTYPE build (fixtures allowed, noindex everywhere): what a deploy
 # preview would show. What a preview or deploy costs on this account is unverified (docs/ARCHITECTURE.md).
@@ -22,6 +25,8 @@
   node_bundler = "esbuild"
   # The API renders no-JavaScript replies with the same assets and words the build used, and
   # applies the same migrations the local rig does.
-  included_files = [".build/server.json", "netlify/database/migrations/**"]
-  # Build and test tools only. PGlite is refused unless LOCAL_DB=pglite, so it must never ship.
-  external_node_modules = ["@electric-sql/pglite", "playwright", "axe-core", "sharp"]
+  # PGlite is the local rig's database (LOCAL_DB=pglite) and must never ship. The packer traces its
+  # import anyway, so the "!" line is what keeps it out: measured 20 October 2026, the bundle drops
+  # from 20 MB to 2 MB and the API still answers. The other three are build and test tools.
+  included_files = [".build/server.json", "netlify/database/migrations/**", "!node_modules/@electric-sql/**"]
+  ignored_node_modules = ["@electric-sql/pglite", "playwright", "axe-core", "sharp"]

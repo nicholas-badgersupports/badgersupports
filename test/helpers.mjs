@@ -12,7 +12,7 @@ export async function freshServer({ textEdits = {} } = {}) {
   const c = loadContent({ textEdits });
   useContent({
     schema: "bss.server/1", prototype: true, site: c.site, routes: c.routes, builtPaths: c.pages.map((p) => p.path),
-    forms: c.forms, mood: c.mood, media: c.media, text: c.text, assets: { css: "/assets/css/test.css", js: { "site.js": "/s.js", "form.js": "/f.js", "mood.js": "/m.js" } },
+    forms: c.forms, mood: c.mood, media: c.media, text: c.text, editable: c.editable, assets: { css: "/assets/css/test.css", js: { "site.js": "/s.js", "form.js": "/f.js", "mood.js": "/m.js" } },
     formPages: { "workshop-request": { id: "pg-form-workshop-request", path: "/forms/workshop-request/", title: "Request a workshop — Badger Supports", blockId: "b-form-workshop", blockTitle: "request a workshop" } },
   });
   return db;

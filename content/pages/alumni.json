@@ -1,0 +1,42 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-alumni",
+  "path": "/join/alumni/",
+  "title": "Badger Supports Alumni — Badger Supports",
+  "description": "We value all alumni from both our predecessor, Badger Support Network, and our current organization, Badger Supports.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-al-head",
+      "type": "pagehead",
+      "title": "Badger Supports Alumni",
+      "lead": "We value all alumni from both our predecessor, Badger Support Network, and our current organization, Badger Supports. Alumni remain an important part of our community, and we love staying connected.",
+      "body": [
+        "Please share your email through our email list to receive updates, opportunities, and invitations to future events."
+      ],
+      "primary": {
+        "label": "Join Our Email List",
+        "href": "/join/email-list/"
+      },
+      "links": [
+        {
+          "label": "Share Your Testimonial",
+          "href": "https://forms.gle/AFMihiPYpqUpeALJ8",
+          "icon": "out"
+        },
+        {
+          "label": "View our Current Leadership",
+          "href": "/about/our-team/"
+        },
+        {
+          "label": "hello@badgersupports.org",
+          "href": "mailto:hello@badgersupports.org",
+          "icon": "mail"
+        }
+      ],
+      "photos": [
+        "m-involved-volunteers"
+      ]
+    }
+  ]
+}

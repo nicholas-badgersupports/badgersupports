@@ -21,8 +21,8 @@ and SPILL's forms stay with SPILL.
 | 3 | Workshop request | a Google Form from `/join/request-a-workshop` | **built**: `/forms/workshop-request/` |
 | 4 | Referral card design survey | a Google Form from `/initiatives/referral-cards` | not built; to be rebuilt natively |
 | 5 | Mailing list | a Google Form, and a whole-page embed at `/join/email-list` | not built; links go to the live page. See "The mailing list" |
-| 6 | Staff application | a closed Google Form | **built closed**: its closing message shows on Get involved. Its questions are not transcribed |
-| 7 | Volunteer interest | a Google Form that answered 401 to a signed-out request | not built; Get involved links to the Google Form as it is |
+| 6 | Staff application | a closed Google Form | **built closed**: its closing message shows on Get involved. Questions transcribed 21 Oct, not yet built (`Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md`) |
+| 7 | Volunteer application | a Google Form that answers 401 signed out, because Google requires sign-in on a form with uploads | not built; Get involved links to the Google Form as it is. Questions transcribed 21 Oct, same handoff |
 | 8 | Alumni testimonial | a Google Form that answered 401 | not built; to investigate (publication consent, a missing sign-up embed) |
 | 9 | Programming feedback | a Google Form behind `feedback.badgersupports.org` | **built**: `/forms/programming-feedback/`, anonymous |
 

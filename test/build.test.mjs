@@ -5,8 +5,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
-import { build, ROOT, loadContent, cutoverProblems } from "../ops/build.mjs";
+import { build, ROOT, loadContent, cutoverProblems, redirectsFile } from "../ops/build.mjs";
 import { INLINE_JS } from "../src/render/layout.mjs";
+import { resolveLink } from "../src/render/context.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build");
 let report;
@@ -67,12 +68,24 @@ test("links to pages not built yet go to the live site, never to a dead local pa
     if (p.startsWith("/assets/") || p.startsWith("/media/") || p === "/") continue;
     assert.ok(report.pages.some((x) => x.path === p), `local link to unbuilt ${p}`);
   }
-  assert.match(html, /href="https:\/\/www\.badgersupports\.org\/initiatives\/ribbons-%E0%B1%A8%E0%A7%8E"/, "a renamed live page is reached by its real address");
+  const card = read("initiatives/referral-cards/index.html");
+  assert.match(card, /href="\/initiatives\/student-activity-center\/"/, "a page once left on the live site is linked here once it is built");
+  const ctx = { site: { connectOrigin: "https://connect.example.org", liveOrigin: "https://www.badgersupports.org" }, builtPaths: new Set(["/"]), pendingLinks: new Set(), liveFor: new Map([["/initiatives/little-hearts/", "/initiatives/little-hearts"]]) };
+  assert.deepEqual(resolveLink(ctx, "/initiatives/little-hearts/"), { href: "https://www.badgersupports.org/initiatives/little-hearts", pending: true }, "an unbuilt page is reached by its live address");
+  assert.deepEqual([...ctx.pendingLinks], ["/initiatives/little-hearts/"]);
 });
 
 test("old addresses move only once their page exists", () => {
-  assert.match(read("_redirects"), /^\/home {2}\/ {2}301$/m);
-  assert.ok(report.redirectsWaiting.some((r) => r.startsWith("/resources/health")));
+  const file = read("_redirects");
+  assert.match(file, /^\/home {2}\/ {2}301$/m);
+  assert.match(file, /^\/initiatives\/ribbons-%E0%B1%A8%E0%A7%8E {2}\/initiatives\/ribbons\/ {2}301$/m, "a renamed live page moves to its plain address");
+  assert.match(file, /^\/resources\/health {2}\/resources\/\?topic=health {2}301$/m, "an old resource page opens its topic");
+  const routes = [{ live: "/resources/health", path: "/resources/", disposition: "replace" }];
+  const before = redirectsFile(routes, [], new Set());
+  assert.equal(before.text.trim(), "");
+  assert.deepEqual(before.waiting, ["/resources/health -> /resources/?topic=health"]);
+  const after = redirectsFile(routes, [], new Set(["/resources/"]));
+  assert.deepEqual(after.waiting, []);
 });
 
 test("a production build refuses hand-typed fixtures", () => {
@@ -83,12 +96,19 @@ test("a production build refuses anything still left on the live site", () => {
   const content = loadContent();
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
   const left = cutoverProblems({ routes: content.routes, pages: content.pages, builtPaths, pendingLinks: report.pendingLinks.map((l) => l.path) });
-  assert.ok(left.some((p) => p.includes(" /initiatives/little-hearts (investigate)")), "an address with no destination yet");
-  assert.ok(left.some((p) => p.includes(" /resources/health (replace)")), "a redirect still waiting for its page");
-  assert.ok(left.some((p) => p.includes(" /resources/, which")), "a link to a page not built");
+  assert.deepEqual(left, [], "every live address is answered");
+  assert.match(cutoverProblems({ routes: [{ live: "/x", path: null, disposition: "investigate" }], pages: [], builtPaths: [], pendingLinks: [] })[0], / \/x \(investigate\) has no page/, "an address with no destination yet");
+  const retired = redirectsFile(content.routes, [], new Set(builtPaths)).text;
+  assert.match(retired, /^\/initiatives\/little-hearts  \/directions\/sac-mhh\/  301$/m, "a retired page 301s to the page the owner named");
+  assert.match(retired, /^\/join\/leadership  \/join\/get-involved\/  301$/m);
+  assert.ok(!left.some((p) => p.includes("student-activity-center")), "a hidden page the owner kept is answered");
+  assert.match(cutoverProblems({ routes: [], pages: [], builtPaths: [], pendingLinks: ["/x/"] })[0], / \/x\/, which/, "a link to a page not built");
+  assert.ok(!left.some((p) => p.includes(" /resources/health ")), "an old resource page whose topic is built is answered");
   assert.ok(!left.some((p) => p.includes(" /about/mh-hub ")), "an old address whose page is built is answered");
   assert.ok(!left.some((p) => p.includes(" /home ")), "a redirect to a built page is answered");
   const one = [{ live: "/a", path: "/a/", disposition: "keep" }];
   assert.deepEqual(cutoverProblems({ routes: one, pages: [], builtPaths: ["/a/"], pendingLinks: [] }), []);
   assert.equal(cutoverProblems({ routes: one, pages: [], builtPaths: [], pendingLinks: [] }).length, 1);
+  const moved = [{ live: "/b", path: "/c/", disposition: "replace" }];
+  assert.match(cutoverProblems({ routes: moved, pages: [], builtPaths: [], pendingLinks: [] })[0], / \/b \(replace\) has no page/, "a redirect still waiting for its page");
 });

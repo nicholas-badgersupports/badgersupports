@@ -96,7 +96,7 @@ it go to the live page:
 - `resolveLink()` (`src/render/context.mjs`) sends a link to an unbuilt internal page to the same path on the
   live site, marked `data-pending`. No link is ever `#`.
 
-The last build wrote 9 redirects, held 6 back and left 16 pending pages (`research/ROUTES.md`).
+The build of 20 Oct 2026 wrote 17 redirects, held none back and left no pending pages (`research/ROUTES.md`).
 
 ## The API
 

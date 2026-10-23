@@ -1,7 +1,7 @@
 {
   "schema": "bss.events-fixture/1",
   "fixture": true,
-  "provenance": "Typed by hand on 2026-10-19 from the public pages www.badgersupports.org/join/peer-support-groups, /join/craft-nights, /initiatives/housing-hub and /initiatives/dogs-on-call. Not live data and not verified with the program teams. Production reads Connect's public event export (Exchange request PUBLIC-EVENTS-EXPORT-2026-10-20). Craft nights (titles, taglines, notes, times, rooms) copied from www.badgersupports.org/join/craft-nights as read on 2026-10-20, emoji left out. Past craft night photos are people at those nights, picked from the Badger Supports shared Drive on 2026-10-20. Housing workshops of 2026-09-28, 2026-10-07 and 2026-10-13 added on 2026-10-20 from the live housing page and the dates, times and rooms in Connect's event list; the 2026-09-28 room is in Connect's list only.",
+  "provenance": "Typed by hand on 2026-10-19 from the public pages www.badgersupports.org/join/peer-support-groups, /join/craft-nights, /initiatives/housing-hub and /initiatives/dogs-on-call. Not live data and not verified with the program teams. Production reads Connect's public event export (Exchange request PUBLIC-EVENTS-EXPORT-2026-10-20). Craft nights (titles, taglines, notes, times, rooms) copied from www.badgersupports.org/join/craft-nights as read on 2026-10-20, emoji left out. Past craft night photos are people at those nights, picked from the Badger Supports shared Drive on 2026-10-20. Housing workshops of 2026-09-28, 2026-10-07 and 2026-10-13 added on 2026-10-20 from the live housing page and the dates, times and rooms in Connect's event list; the 2026-09-28 room is in Connect's list only. Dogs on Call visits of 2026-09-25 and 2026-10-01 added on 2026-10-20 from the live dogs-on-call page's Fall 2026 list.",
   "timezone": "America/Chicago",
   "recurring": [
     {
@@ -102,6 +102,18 @@
       "media": "m-people-perler"
     },
     {
+      "id": "dogs-2026-09-25",
+      "program": "other",
+      "title": "Dogs on Call",
+      "note": "Therapy dogs at the Hub, with UHS–Prevention.",
+      "date": "2026-09-25",
+      "start": "12:00",
+      "end": "13:30",
+      "place": "sac-mhh",
+      "signup": "none",
+      "href": "/initiatives/dogs-on-call"
+    },
+    {
       "id": "housing-2026-09-28",
       "program": "workshops",
       "title": "Navigating housing in Madison",
@@ -112,6 +124,18 @@
       "place": "union-south-marquee",
       "signup": "none",
       "href": "/initiatives/housing-hub"
+    },
+    {
+      "id": "dogs-2026-10-01",
+      "program": "other",
+      "title": "Dogs on Call",
+      "note": "Therapy dogs at the Hub, with UHS–Prevention.",
+      "date": "2026-10-01",
+      "start": "18:30",
+      "end": "20:00",
+      "place": "sac-mhh",
+      "signup": "none",
+      "href": "/initiatives/dogs-on-call"
     },
     {
       "id": "craft-2026-10-06",

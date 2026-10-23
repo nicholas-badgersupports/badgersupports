@@ -1,9 +1,11 @@
 /* A row of photo cards, each its own small poster: a photo of people, a title in the display face,
-   one or two lines in bold (a time, a slogan) and one quieter line, then at most one link. Two
-   variants, so a page that uses both does not show the same row twice:
+   one or two lines in bold (a time, a slogan) and one quieter line, then at most one link. Three
+   variants, so a page that uses two does not show the same row twice:
      days        — portrait photos, four a row: one card a day, its times in bold (the peer support
                    groups' week, as the live page lays it out)
      activities  — square photos, three a row: what happens in a group
+     whole       — each picture at its own shape, never cropped, two a row: a printed card or a slide
+                   whose words must stay whole
    A card without a photo shows its icon, when it names one, large on the red tint; no other photo
    stands in for a missing one. */
 
@@ -15,12 +17,12 @@ import { picture } from "../media.mjs";
 export default {
   type: "cards",
   label: "Photo cards",
-  fields: { variant: "choice:days|activities!", title: "text!", lead: "text", items: "cards!", links: "link[]" },
+  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", items: "cards!", links: "link[]" },
   data: [],
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
-    const sizes = b.variant === "days" ? "(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), 17rem" : "(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), 23rem";
+    const sizes = `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
     return html`<section class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}

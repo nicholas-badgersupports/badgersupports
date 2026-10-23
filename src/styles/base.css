@@ -16,6 +16,8 @@ body {
   background-size: 7px 7px, 11px 11px;
   background-position: 0 0, 3px 5px;
   text-rendering: optimizeLegibility;
+  /* a long address in running text breaks rather than push a phone screen sideways */
+  overflow-wrap: break-word;
 }
 img { max-width: 100%; height: auto; display: block; }
 picture { display: block; }

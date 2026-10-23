@@ -1,0 +1,4062 @@
+{
+  "schema": "bss.resources-fixture/1",
+  "fixture": true,
+  "label": "Sample list: Connect’s records for the resources the current site lists. A director has not approved them for the public site yet.",
+  "provenance": "Projected from Connect's shipped catalog (netlify/lib/builtin-resources.mjs, sourceDate 2026-08-01) with the same mapping as projectResource(). Connect may hold a newer runtime catalog in its database; this file is the shipped floor. The ids are the live site's four resource pages matched to Connect by link and name; see docs/research/RESOURCES-VIEWER-2026-10-20.md.",
+  "sourceUpdatedAt": "2026-08-01",
+  "resources": [
+    {
+      "id": "988-suicide-crisis-lifeline",
+      "name": "988 Suicide & Crisis Lifeline",
+      "aka": "suicide;suicidal;kill myself;hurt myself;self harm;988",
+      "summary": "Call or text 988 for immediate crisis support if you are thinking about suicide or need help staying safe.",
+      "bestFor": "Immediate help with suicide, self-harm, or a mental health crisis.",
+      "nextStep": "Text 988 for support.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "Text 988",
+        "channel": "text",
+        "url": "https://988lifeline.org/"
+      },
+      "url": "https://988lifeline.org/",
+      "contact": {
+        "phone": "988",
+        "email": null,
+        "text": "Text 988",
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": "24/7",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": "Spanish",
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "safety_survivor_support"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "phone",
+        "text",
+        "chat"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "access-community-health-centers",
+      "name": "Access Community Health Centers",
+      "aka": null,
+      "summary": "Get medical, dental, behavioral health, and pharmacy care at community clinics in the Madison area.",
+      "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
+      "nextStep": "Call 608-443-5480; medical and behavioral health appointments.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-443-5480",
+        "channel": "call",
+        "url": "https://accesscommunityhealthcenters.org/services/behavioral-health/"
+      },
+      "url": "https://accesscommunityhealthcenters.org/services/behavioral-health/",
+      "contact": {
+        "phone": "608-443-5480",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "2202 South Park Street, Madison, WI 53713",
+        "campus": "madison_community"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "physical_health",
+      "modality": [
+        "in_person",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "alcoholics-anonymous",
+      "name": "Madison Area Intergroup Central Office",
+      "aka": "Alcoholics Anonymous;AA",
+      "summary": "Find Alcoholics Anonymous meetings and recovery support through the Madison Area Intergroup.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-222-8989; 24-hour hotline.",
+      "limitations": "Eligibility: anyone seeking help with alcohol use.",
+      "action": {
+        "label": "Call 608-222-8989",
+        "channel": "call",
+        "url": "https://aamadisonwi.org/meetings/"
+      },
+      "url": "https://aamadisonwi.org/meetings/",
+      "contact": {
+        "phone": "608-222-8989",
+        "email": "info@aamadisonwi.org",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "2820 Walton Commons, Madison, WI 53718, Suite 101",
+        "campus": "madison_community"
+      },
+      "hours": "24/7 hotline; meeting times vary",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone seeking help with alcohol use",
+      "languages": "Spanish meetings listed",
+      "accessibility": "wheelchair-accessible meetings listed",
+      "categories": [
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "allied-food-pantry",
+      "name": "Allied Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Allied Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: residents of ZIP codes 53711, 53713, and 53719; no ID required.",
+      "action": {
+        "label": "View Allied Food Pantry",
+        "channel": "view",
+        "url": "https://alliedfoodpantry.wixsite.com/allied-food-pantry"
+      },
+      "url": "https://alliedfoodpantry.wixsite.com/allied-food-pantry",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "4619 Jenewein Road, Madison, WI 53711",
+        "campus": "madison_community"
+      },
+      "hours": "Wed 10am–noon and 6–7:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "residents of ZIP codes 53711, 53713, and 53719; no ID required",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "asian-pacific-islander-desi-american-student-cen",
+      "name": "Asian Pacific Islander Desi American Student Center",
+      "aka": null,
+      "summary": "Find community, programs, and support for Asian Pacific Islander Desi American students.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-262-4503.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-4503",
+        "channel": "call",
+        "url": "https://msc.wisc.edu/cultural-centers/apidasc/"
+      },
+      "url": "https://msc.wisc.edu/cultural-centers/apidasc/",
+      "contact": {
+        "phone": "608-262-4503",
+        "email": "msc@studentaffairs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706, Red Gym",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "career_employment",
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "faculty_staff"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "badger-recovery",
+      "name": "Badger Recovery",
+      "aka": null,
+      "summary": "Badger Recovery is a program for students in or considering recovery from substance use.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Email recovery@uhs.wisc.edu to ask about access and next steps.",
+      "limitations": "Eligibility: UW–Madison students in or seeking recovery.",
+      "action": {
+        "label": "Email Badger Recovery",
+        "channel": "email",
+        "url": "https://www.uhs.wisc.edu/badger-recovery/"
+      },
+      "url": "https://www.uhs.wisc.edu/badger-recovery/",
+      "contact": {
+        "phone": null,
+        "email": "recovery@uhs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715, 8808",
+        "campus": "on_campus"
+      },
+      "hours": "Fall 2026: Mon 7–8pm; Wed 6–7pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students in or seeking recovery",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "physical_health",
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "badgerfare",
+      "name": "Badger FARE Program",
+      "aka": "BadgerFare",
+      "summary": "Get campus and community food support through the Badger FARE Program.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: eligible UW–Madison students experiencing food insecurity.",
+      "action": {
+        "label": "View Badger FARE Program",
+        "channel": "view",
+        "url": "https://osas.wisc.edu/badger-fare-program/"
+      },
+      "url": "https://osas.wisc.edu/badger-fare-program/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": "up to $75 on Wiscard once per academic year"
+      },
+      "eligibility": "eligible UW–Madison students experiencing food insecurity",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "basic-needs-resources",
+      "name": "Basic Needs Student Support",
+      "aka": "Basic Needs Resources;basic needs navigator;food housing money help;not sure where to start;emergency needs;legal help",
+      "summary": "Connect with campus support for food, housing, health coverage, finances, and other basic needs.",
+      "bestFor": "Finding the right campus or community resource when you are unsure where to begin.",
+      "nextStep": "Email basic.needs@finaid.wisc.edu to ask about access and next steps.",
+      "limitations": null,
+      "action": {
+        "label": "Email Basic Needs Student Support",
+        "channel": "email",
+        "url": "https://basicneeds.students.wisc.edu/"
+      },
+      "url": "https://basicneeds.students.wisc.edu/",
+      "contact": {
+        "phone": null,
+        "email": "basic.needs@finaid.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "food_essential_needs",
+        "housing",
+        "legal_rights",
+        "parenting_child_care",
+        "navigation_general"
+      ],
+      "primaryCategory": "navigation_general",
+      "modality": [
+        "virtual",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "bayview-food-pantry",
+      "name": "Bayview Food Pantry",
+      "aka": null,
+      "summary": "Get free groceries through Bayview Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: anyone; once per week.",
+      "action": {
+        "label": "View Bayview Food Pantry",
+        "channel": "view",
+        "url": "https://bayviewfoundation.org/food-pantry/"
+      },
+      "url": "https://bayviewfoundation.org/food-pantry/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "103 La Mariposa Lane, Madison, WI 53715",
+        "campus": "madison_community"
+      },
+      "hours": "Mon 8:30am–6pm; Wed noon–8pm; Thu 8:30am–6pm; Fri noon–6pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone; once per week",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "bethel-food-pantry",
+      "name": "Bethel Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Bethel Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-257-3577.",
+      "limitations": "Eligibility: people needing food assistance.",
+      "action": {
+        "label": "Call 608-257-3577",
+        "channel": "call",
+        "url": "https://www.bethel-madison.org/ministries/serving/bethel-food-pantry/"
+      },
+      "url": "https://www.bethel-madison.org/ministries/serving/bethel-food-pantry/",
+      "contact": {
+        "phone": "608-257-3577",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "312 Wisconsin Avenue, Madison, WI 53703",
+        "campus": "madison_community"
+      },
+      "hours": "Mon, Wed, Fri 1–3pm; Tue 3–4:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people needing food assistance",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "bipoc-mental-health-resource-guide",
+      "name": "BIPOC Mental Health Resource Guide",
+      "aka": null,
+      "summary": "Find mental health information and resources created with Black, Indigenous, and people of color in mind.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "View BIPOC Mental Health Resource Guide",
+        "channel": "view",
+        "url": "https://drive.google.com/file/d/1oQXUu4Oild9WhpfpED-PC9KuAhGySN4i/view"
+      },
+      "url": "https://drive.google.com/file/d/1oQXUu4Oild9WhpfpED-PC9KuAhGySN4i/view",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "black-cultural-center",
+      "name": "Black Cultural Center",
+      "aka": null,
+      "summary": "Find community, programs, and academic and social support for Black students at UW–Madison.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-262-4503.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-4503",
+        "channel": "call",
+        "url": "https://msc.wisc.edu/cultural-centers/black-cultural-center/"
+      },
+      "url": "https://msc.wisc.edu/cultural-centers/black-cultural-center/",
+      "contact": {
+        "phone": "608-262-4503",
+        "email": "msc@studentaffairs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706, Red Gym",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "technology_access",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "career-exploration-center",
+      "name": "Career Exploration Center",
+      "aka": "CEC",
+      "summary": "Find the CEC empowers all undergraduate students to strategically explore their career and academic options.",
+      "bestFor": "Jobs, internships, resumes, interviews, or career planning.",
+      "nextStep": "Call 608-265-4497.",
+      "limitations": "Eligibility: UW–Madison undergraduate students.",
+      "action": {
+        "label": "Call 608-265-4497",
+        "channel": "call",
+        "url": "https://cec.wisc.edu/"
+      },
+      "url": "https://cec.wisc.edu/",
+      "contact": {
+        "phone": "608-265-4497",
+        "email": "cec@wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1155 Observatory Drive, Madison, WI 53706, 114 Ingraham Hall",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 8:30am–4:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison undergraduate students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "career_employment"
+      ],
+      "primaryCategory": "career_employment",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "undergraduates",
+        "graduate_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "counseling-psychology-training-clinic",
+      "name": "Counseling Psychology Training Clinic",
+      "aka": null,
+      "summary": "CPTC provides high-quality, cost-efficient, and multiculturally competent psychological and mental health services.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-265-8779.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-265-8779",
+        "channel": "call",
+        "url": "https://counselingpsych.education.wisc.edu/clinic-and-outreach/cptc/"
+      },
+      "url": "https://counselingpsych.education.wisc.edu/clinic-and-outreach/cptc/",
+      "contact": {
+        "phone": "608-265-8779",
+        "email": "cptc@education.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1025 West Johnson Street, Madison, WI 53706, Education Building 312",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "couple-partner-counseling",
+      "name": "Couple/Partner Counseling",
+      "aka": null,
+      "summary": "Couples and partners can attend therapy at UHS in a confidential setting to address relationship challenges, improve communication, and understand interpersonal dynamics.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-265-5600; use option 2.",
+      "limitations": "Eligibility: at least one partner must be a UW–Madison student.",
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/mental-health/couple-partner/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/couple-partner/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "at least one partner must be a UW–Madison student",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "crisis-text-line",
+      "name": "Crisis Text Line",
+      "aka": "text a crisis counselor;crisis text;text home 741741;741741",
+      "summary": "Text HOME to 741741 to connect with a trained crisis counselor by text.",
+      "bestFor": "Crisis support by text.",
+      "nextStep": "Text HOME to 741741 for support.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "Text HOME to 741741",
+        "channel": "text",
+        "url": "https://www.crisistextline.org/"
+      },
+      "url": "https://www.crisistextline.org/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": "Text HOME to 741741",
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": "24/7",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "safety_survivor_support",
+        "identity_belonging"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "text",
+        "chat"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "dane-county-rape-crisis-center",
+      "name": "RCC: Sexual Violence Resource Center",
+      "aka": "RCC;Dane County Rape Crisis Center;rape crisis",
+      "summary": "Get survivor-centered support, advocacy, and information after sexual violence.",
+      "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
+      "nextStep": "Text 608-251-7273 for support.",
+      "limitations": "Eligibility: survivors of sexual violence and their support people.",
+      "action": {
+        "label": "Text 608-251-7273",
+        "channel": "text",
+        "url": "https://www.thercc.org/"
+      },
+      "url": "https://www.thercc.org/",
+      "contact": {
+        "phone": "608-251-5126",
+        "email": "info@thercc.org",
+        "text": "Text 608-251-7273",
+        "booking": null
+      },
+      "location": {
+        "where": "960 Rise Lane, Madison, WI 53714",
+        "campus": "madison_community"
+      },
+      "hours": null,
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "survivors of sexual violence and their support people",
+      "languages": "Spanish",
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "safety_survivor_support",
+        "identity_belonging"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "in_person",
+        "phone",
+        "text",
+        "email"
+      ],
+      "audience": [
+        "survivors"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "doit-computer-lending-program",
+      "name": "Computer Lending Program",
+      "aka": "long term laptop loan;need a computer for class;computer lending",
+      "summary": "Request a longer-term computer loan when you do not have reliable access to a computer for school.",
+      "bestFor": "Computer, account, software, printing, or digital-skills help.",
+      "nextStep": "Call 608-264-4357.",
+      "limitations": "Eligibility: active UW–Madison students, staff, and faculty with NetID and Wiscard.",
+      "action": {
+        "label": "Call 608-264-4357",
+        "channel": "call",
+        "url": "https://it.wisc.edu/services/computer-lending-program/"
+      },
+      "url": "https://it.wisc.edu/services/computer-lending-program/",
+      "contact": {
+        "phone": "608-264-4357",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1210 West Dayton Street, Madison, WI 53706",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 7:45am–5pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "active UW–Madison students, staff, and faculty with NetID and Wiscard",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "technology_access",
+        "food_essential_needs"
+      ],
+      "primaryCategory": "technology_access",
+      "modality": [
+        "in_person",
+        "phone"
+      ],
+      "audience": [
+        "students",
+        "faculty_staff"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "domestic-abuse-intervention-services",
+      "name": "Domestic Abuse Intervention Services",
+      "aka": "DAIS;partner hurting me;safety plan",
+      "summary": "Get support, safety planning, advocacy, and shelter options related to domestic or intimate partner violence.",
+      "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
+      "nextStep": "Text 608-420-4638 for support.",
+      "limitations": "Eligibility: people affected by domestic violence.",
+      "action": {
+        "label": "Text 608-420-4638",
+        "channel": "text",
+        "url": "https://abuseintervention.org/"
+      },
+      "url": "https://abuseintervention.org/",
+      "contact": {
+        "phone": "608-251-4445",
+        "email": null,
+        "text": "Text 608-420-4638",
+        "booking": null
+      },
+      "location": {
+        "where": "2102 Fordem Avenue, Madison, WI 53704",
+        "campus": "madison_community"
+      },
+      "hours": "24/7 help line",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people affected by domestic violence",
+      "languages": "interpreter services available",
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "mental_emotional_health",
+        "safety_survivor_support",
+        "legal_rights",
+        "identity_belonging"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "in_person",
+        "phone",
+        "text"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "eating-disorders",
+      "name": "Eating Concerns",
+      "aka": "Eating Disorders",
+      "summary": "Students with concerns about eating, exercise, and body image at UHS can seek an Eating Disorder Assessment or specialized care.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-265-5600; use option 2.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/mental-health/eating-disorders/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/eating-disorders/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "physical_health",
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "emergency-support",
+      "name": "Emergency Support",
+      "aka": null,
+      "summary": "Get emergency financial support options for enrolled UW–Madison students facing unexpected essential expenses.",
+      "bestFor": "Paying for school or handling an unexpected expense.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: currently enrolled UW–Madison students with emergency financial needs.",
+      "action": {
+        "label": "View Emergency Support",
+        "channel": "view",
+        "url": "https://financialaid.wisc.edu/emergencysupport/"
+      },
+      "url": "https://financialaid.wisc.edu/emergencysupport/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "currently enrolled UW–Madison students with emergency financial needs",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "food_essential_needs",
+        "housing"
+      ],
+      "primaryCategory": "financial_support",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "students",
+        "limited_income"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "extended-hands-pantry",
+      "name": "Extended Hands Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Extended Hands Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-219-2985.",
+      "limitations": "Eligibility: Dane County residents.",
+      "action": {
+        "label": "Call 608-219-2985",
+        "channel": "call",
+        "url": "https://www.extendedhandspantry.org/services"
+      },
+      "url": "https://www.extendedhandspantry.org/services",
+      "contact": {
+        "phone": "608-219-2985",
+        "email": "info@extendedhandspantry.org",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "6402 Schroeder Road, Madison, WI 53711",
+        "campus": "madison_community"
+      },
+      "hours": "Mon–Tue 2–6pm; Fri 10am–1pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "Dane County residents",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "first-generation-badgers",
+      "name": "First-Generation and Limited-Income Services",
+      "aka": "FGLI Services;First-Generation Badgers;first generation student support;first gen;FGLI;limited income student",
+      "summary": "Find programs, community, and guidance for first-generation and limited-income students.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Email fgli@students.wisc.edu to ask about access and next steps.",
+      "limitations": "Eligibility: first-generation and limited-income UW–Madison students.",
+      "action": {
+        "label": "Email First-Generation and Limited-Income Services",
+        "channel": "email",
+        "url": "https://fgli.wisc.edu/"
+      },
+      "url": "https://fgli.wisc.edu/",
+      "contact": {
+        "phone": null,
+        "email": "fgli@students.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "first-generation and limited-income UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "first_generation",
+        "limited_income"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "food-recovery-network",
+      "name": "Food Recovery Network",
+      "aka": null,
+      "summary": "Find free community meals made with recovered food through the Food Recovery Network.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: UW–Madison community.",
+      "action": {
+        "label": "View Food Recovery Network",
+        "channel": "view",
+        "url": "https://www.instagram.com/frnuwmadison/"
+      },
+      "url": "https://www.instagram.com/frnuwmadison/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison community",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "foodshare",
+      "name": "FoodShare",
+      "aka": null,
+      "summary": "FoodShare is a government program that gives cash benefits on a card that can be used for groceries.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: income-eligible Wisconsin residents.",
+      "action": {
+        "label": "View FoodShare",
+        "channel": "view",
+        "url": "https://basicneeds.students.wisc.edu/foodshare/"
+      },
+      "url": "https://basicneeds.students.wisc.edu/foodshare/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "income-eligible Wisconsin residents",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students",
+        "limited_income"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "free-food-alert",
+      "name": "Free Food Alert",
+      "aka": null,
+      "summary": "Free Food Alert is a voluntary program that helps feed hungry people and takes action against food waste.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the online tool and follow the published instructions.",
+      "limitations": "Eligibility: UW–Madison students, faculty, and staff.",
+      "action": {
+        "label": "Use Free Food Alert",
+        "channel": "use_online",
+        "url": "https://sustainability.wisc.edu/free-food-alert/"
+      },
+      "url": "https://sustainability.wisc.edu/free-food-alert/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students, faculty, and staff",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "navigation_general"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "students",
+        "faculty_staff"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "free-meditation-and-mindfulness-sessions",
+      "name": "Free meditation and mindfulness sessions",
+      "aka": "Runs during term only; check in ten minutes early.",
+      "summary": "Free half-hour guided meditation sessions on campus with nothing to prepare and no experience required.",
+      "bestFor": "a short reset in the middle of a hard day",
+      "nextStep": "Register online, or simply turn up to the next session.",
+      "limitations": "Runs during term only; check in ten minutes early.",
+      "action": {
+        "label": "Register for a session",
+        "channel": "web",
+        "url": "https://recwell.wisc.edu/mindfulness/"
+      },
+      "url": "https://recwell.wisc.edu/mindfulness/",
+      "contact": {
+        "phone": "608-262-8244",
+        "email": "wellbeing@recwell.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "Nicholas Recreation Center and Bakke Recreation & Wellbeing Center",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": null
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual"
+      ],
+      "audience": [
+        "students",
+        "undergraduates",
+        "graduate_students"
+      ],
+      "verifiedAt": "2026-08-01"
+    },
+    {
+      "id": "fritz-food-pantry-goodman-community-center",
+      "name": "Fritz Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Fritz Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-241-1574.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "Call 608-241-1574",
+        "channel": "call",
+        "url": "https://www.goodmancenter.org/community-services/fritz-food-pantry"
+      },
+      "url": "https://www.goodmancenter.org/community-services/fritz-food-pantry",
+      "contact": {
+        "phone": "608-241-1574",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "149 Waubesa Street, Madison, WI 53704",
+        "campus": "madison_community"
+      },
+      "hours": "Tue 9am–noon; Wed 5:30–8pm; Thu noon–3pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "gender-and-sexuality-campus-center",
+      "name": "Gender and Sexuality Campus Center",
+      "aka": "GSCC;LGBTQ community;queer student center;trans community",
+      "summary": "Find LGBTQ+ community, programs, advocacy, and support at UW–Madison.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-265-3344.",
+      "limitations": "Eligibility: UW–Madison students and campus community.",
+      "action": {
+        "label": "Call 608-265-3344",
+        "channel": "call",
+        "url": "https://lgbt.wisc.edu/"
+      },
+      "url": "https://lgbt.wisc.edu/",
+      "contact": {
+        "phone": "608-265-3344",
+        "email": "lgbtq@studentaffairs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706, Red Gym 137",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 9am–5pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students and campus community",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging",
+        "navigation_general"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "good-shepherd-food-pantry",
+      "name": "Good Shepherd Lutheran Church Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Good Shepherd Lutheran Church Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-271-6633.",
+      "limitations": "Eligibility: people in the extended neighborhood service area.",
+      "action": {
+        "label": "Call 608-271-6633",
+        "channel": "call",
+        "url": "https://gslcwi.com/connect/care-assistance/foodpantry/"
+      },
+      "url": "https://gslcwi.com/connect/care-assistance/foodpantry/",
+      "contact": {
+        "phone": "608-271-6633",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "5701 Raymond Road, Madison, WI 53711",
+        "campus": "madison_community"
+      },
+      "hours": "Thu 9:30am–noon and 5:30–7pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people in the extended neighborhood service area",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "grace-episcopal-church-food-pantry",
+      "name": "Grace Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Grace Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-255-5147.",
+      "limitations": "Eligibility: people needing food assistance.",
+      "action": {
+        "label": "Call 608-255-5147",
+        "channel": "call",
+        "url": "https://www.gracechurchmadison.org/grace-food-pantry"
+      },
+      "url": "https://www.gracechurchmadison.org/grace-food-pantry",
+      "contact": {
+        "phone": "608-255-5147",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "116 West Washington Avenue, Madison, WI 53703",
+        "campus": "madison_community"
+      },
+      "hours": "Tue–Thu 1–3pm; 1st and 3rd Sat 10am–noon",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people needing food assistance",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "greater-university-tutoring-service",
+      "name": "Greater University Tutoring Service",
+      "aka": "GUTS",
+      "summary": "Get free peer tutoring, study-skills help, language practice, and academic support through GUTS.",
+      "bestFor": "Tutoring, writing, study strategies, or help with a class.",
+      "nextStep": "Call 608-263-5666.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-263-5666",
+        "channel": "call",
+        "url": "https://guts.wisc.edu/"
+      },
+      "url": "https://guts.wisc.edu/",
+      "contact": {
+        "phone": "608-263-5666",
+        "email": "guts@rso.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715, 3111",
+        "campus": "on_campus"
+      },
+      "hours": "Fall: Mon 10am–4pm; Tue 12–4pm; Wed 10am–1pm; Thu 10am–4pm; Fri 11am–4pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning"
+      ],
+      "primaryCategory": "academic_learning",
+      "modality": [
+        "in_person",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "gynecology",
+      "name": "Gynecology",
+      "aka": null,
+      "summary": "UHS offers a range of gynecology services, including contraception, pregnancy counseling and referrals, STI screenings, and abortion follow-up.",
+      "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
+      "nextStep": "Call 608-265-5600.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/medical/gynecology/"
+      },
+      "url": "https://www.uhs.wisc.edu/medical/gynecology/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging",
+        "navigation_general"
+      ],
+      "primaryCategory": "physical_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "hiv-post-exposure-prevention",
+      "name": "HIV Post-Exposure Prevention",
+      "aka": null,
+      "summary": "UHS identifies high-risk situations for HIV/STI infection and emphasizes the importance of starting antiviral medication within 72 hours post-exposure.",
+      "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
+      "nextStep": "Call 608-265-5600; same-day appointment or after-hours advice.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/medical/hiv-post-exposure-prevention/"
+      },
+      "url": "https://www.uhs.wisc.edu/medical/hiv-post-exposure-prevention/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": "yes",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "physical_health",
+      "modality": [
+        "in_person",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "inclusive-therapists",
+      "name": "Inclusive Therapists",
+      "aka": null,
+      "summary": "Search a mental health directory centered on social justice, identity, and culturally responsive care.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": null,
+      "action": {
+        "label": "View Inclusive Therapists",
+        "channel": "view",
+        "url": "https://www.inclusivetherapists.com/"
+      },
+      "url": "https://www.inclusivetherapists.com/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access",
+        "navigation_general"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "indigenous-student-center",
+      "name": "Indigenous Student Center",
+      "aka": null,
+      "summary": "Find community, programs, and academic, professional, and social support for Indigenous students.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-262-4503.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-4503",
+        "channel": "call",
+        "url": "https://msc.wisc.edu/cultural-centers/indigenous-student-center/"
+      },
+      "url": "https://msc.wisc.edu/cultural-centers/indigenous-student-center/",
+      "contact": {
+        "phone": "608-262-4503",
+        "email": "msc@studentaffairs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "215 North Brooks Street, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": "card access required",
+      "categories": [
+        "academic_learning",
+        "technology_access",
+        "career_employment",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "international-student-services",
+      "name": "International Student Services",
+      "aka": "ISS",
+      "summary": "Get immigration advising, programs, and support for navigating life as an international student at UW–Madison.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-262-2044.",
+      "limitations": "Eligibility: UW–Madison international students and scholars.",
+      "action": {
+        "label": "Call 608-262-2044",
+        "channel": "call",
+        "url": "https://iss.wisc.edu/"
+      },
+      "url": "https://iss.wisc.edu/",
+      "contact": {
+        "phone": "608-262-2044",
+        "email": "iss@iss.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "702 Langdon Street, Madison, WI 53706, Suite 130",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 8:30am–4pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison international students and scholars",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "identity_belonging",
+        "navigation_general"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "virtual",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "international_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "islamic-center-of-madison",
+      "name": "Islamic Center of Madison Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Islamic Center of Madison Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-395-7706.",
+      "limitations": "Eligibility: people needing food assistance.",
+      "action": {
+        "label": "Call 608-395-7706",
+        "channel": "call",
+        "url": "https://www.islamiccenterofmadison.org/activities/"
+      },
+      "url": "https://www.islamiccenterofmadison.org/activities/",
+      "contact": {
+        "phone": "608-395-7706",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "21 North Orchard Street, Madison, WI 53715",
+        "campus": "madison_community"
+      },
+      "hours": "Wed noon–6pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people needing food assistance",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "journey-mental-health",
+      "name": "Journey Mental Health Center",
+      "aka": null,
+      "summary": "Journey Mental Health Center is a nonprofit agency providing mental health and substance use disorder services in Dane and Columbia Counties.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-280-2700; 608-280-2600 for 24/7 crisis support.",
+      "limitations": "Eligibility: Dane and Columbia County residents.",
+      "action": {
+        "label": "Call 608-280-2700",
+        "channel": "call",
+        "url": "https://www.journeymhc.org/"
+      },
+      "url": "https://www.journeymhc.org/",
+      "contact": {
+        "phone": "608-280-2700",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "25 Kessel Court, Madison, WI 53711, Suite 105",
+        "campus": "madison_community"
+      },
+      "hours": null,
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "Dane and Columbia County residents",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "phone"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "kennedy-heights-community-center-food-pantry",
+      "name": "Kennedy Heights Community Center Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Kennedy Heights Community Center Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-244-0767.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "Call 608-244-0767",
+        "channel": "call",
+        "url": "https://www.khcommunitycenter.org/"
+      },
+      "url": "https://www.khcommunitycenter.org/",
+      "contact": {
+        "phone": "608-244-0767",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "199 Kennedy Heights, Madison, WI 53704",
+        "campus": "madison_community"
+      },
+      "hours": "Every other Mon 9–11am",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "lakeview-lutheran-church-food-pantry",
+      "name": "Lakeview Lutheran Church Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Lakeview Lutheran Church Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-244-6181.",
+      "limitations": "Eligibility: people needing food assistance.",
+      "action": {
+        "label": "Call 608-244-6181",
+        "channel": "call",
+        "url": "https://lakeviewlutheranchurch.org/food-pantry"
+      },
+      "url": "https://lakeviewlutheranchurch.org/food-pantry",
+      "contact": {
+        "phone": "608-244-6181",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "4001 Mandrake Road, Madison, WI 53704",
+        "campus": "madison_community"
+      },
+      "hours": "Mon 4–6pm during daylight saving time; 2–4pm otherwise",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people needing food assistance",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "latinx-cultural-center",
+      "name": "Latine Cultural Center",
+      "aka": null,
+      "summary": "Find community, programs, and academic, professional, and social support for Latine students.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-262-4503.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-4503",
+        "channel": "call",
+        "url": "https://msc.wisc.edu/cultural-centers/latine-cultural-center/"
+      },
+      "url": "https://msc.wisc.edu/cultural-centers/latine-cultural-center/",
+      "contact": {
+        "phone": "608-262-4503",
+        "email": "msc@studentaffairs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706, Red Gym",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "career_employment",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "law-for-learners",
+      "name": "Law For Learners",
+      "aka": null,
+      "summary": "Law For Learners is a free, confidential legal support service for all Universities of Wisconsin students.",
+      "bestFor": "Legal, immigration, tenant, conduct, or rights questions.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: Universities of Wisconsin students.",
+      "action": {
+        "label": "View Law For Learners",
+        "channel": "view",
+        "url": "https://www.lawforlearners.com/home"
+      },
+      "url": "https://www.lawforlearners.com/home",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "madison_community"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "Universities of Wisconsin students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "legal_rights",
+        "navigation_general"
+      ],
+      "primaryCategory": "legal_rights",
+      "modality": [
+        "virtual",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "lgbt-national-help-center",
+      "name": "LGBT National Help Center",
+      "aka": null,
+      "summary": "Connect with LGBTQ+ peer support through national hotlines and online groups.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 888-843-4564.",
+      "limitations": "Eligibility: LGBTQ+ people of all ages.",
+      "action": {
+        "label": "Call 888-843-4564",
+        "channel": "call",
+        "url": "https://lgbthotline.org/national-hotline/"
+      },
+      "url": "https://lgbthotline.org/national-hotline/",
+      "contact": {
+        "phone": "888-843-4564",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": "Mon–Fri 2–11pm ET; Sat noon–5pm ET",
+      "afterHours": "yes",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "LGBTQ+ people of all ages",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging",
+        "navigation_general"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "phone"
+      ],
+      "audience": [
+        "lgbtqia_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "lussier-community-education-center",
+      "name": "Lussier Community Education Center Food Pantry",
+      "aka": null,
+      "summary": "Get free groceries through Lussier Community Education Center Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-833-4979.",
+      "limitations": "Eligibility: anyone; no ID required; up to four visits per month.",
+      "action": {
+        "label": "Call 608-833-4979",
+        "channel": "call",
+        "url": "https://lcecmadison.org/pantry/"
+      },
+      "url": "https://lcecmadison.org/pantry/",
+      "contact": {
+        "phone": "608-833-4979",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "55 South Gammon Road, Madison, WI 53717",
+        "campus": "madison_community"
+      },
+      "hours": "Wed 7–8pm; Sat 11am–noon",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone; no ID required; up to four visits per month",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "mcburney-disability-resource-center",
+      "name": "McBurney Disability Resource Center",
+      "aka": "disability accommodations;McBurney",
+      "summary": "Request disability-related academic accommodations and access support at UW–Madison.",
+      "bestFor": "Academic accommodations or disability access support.",
+      "nextStep": "Call 608-263-2741.",
+      "limitations": "Eligibility: UW–Madison students with disabilities.",
+      "action": {
+        "label": "Call 608-263-2741",
+        "channel": "call",
+        "url": "https://mcburney.wisc.edu/"
+      },
+      "url": "https://mcburney.wisc.edu/",
+      "contact": {
+        "phone": "608-263-2741",
+        "email": "info@mcburney.wisc.edu",
+        "text": "Text 608-225-7956",
+        "booking": null
+      },
+      "location": {
+        "where": "702 West Johnson Street, Madison, WI 53715, Suite 2104",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 8:30am–4pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students with disabilities",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "disability_access",
+        "navigation_general"
+      ],
+      "primaryCategory": "disability_access",
+      "modality": [
+        "in_person",
+        "phone",
+        "text",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "disabled_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "meadowwood-neighborhood-center",
+      "name": "Meadowood Neighborhood Center Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Meadowood Neighborhood Center Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-467-8360.",
+      "limitations": "Eligibility: community members.",
+      "action": {
+        "label": "Call 608-467-8360",
+        "channel": "call",
+        "url": "https://www.mscr.org/meadowood-neighborhood-center/"
+      },
+      "url": "https://www.mscr.org/meadowood-neighborhood-center/",
+      "contact": {
+        "phone": "608-467-8360",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "5740 Raymond Road, Madison, WI 53711",
+        "campus": "madison_community"
+      },
+      "hours": "Tue 6–7:30pm; Thu 10–11am for seniors; Sat noon–2:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "community members",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "mental-health-services",
+      "name": "Mental Health Services",
+      "aka": "therapy;therapist;counselor;counselling;someone to talk to;mental health appointment",
+      "summary": "Find UHS counseling, psychiatry, groups, workshops, and 24/7 crisis support for UW–Madison students.",
+      "bestFor": "Ongoing counseling, psychiatry, groups, workshops, or crisis support.",
+      "nextStep": "Call 608-265-5600; use option 2 for appointments; option 9 for 24/7 crisis support.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/mental-health/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Wed 8:30am–5pm; Thu 9:30am–5pm; Fri 8:30am–5pm",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "food_essential_needs",
+        "physical_health",
+        "mental_emotional_health",
+        "safety_survivor_support",
+        "identity_belonging",
+        "navigation_general"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "mhs-let-s-talk",
+      "name": "Drop-in Support at Let’s Talk",
+      "aka": "MHS: Let's Talk!;Let’s Talk;talk to someone today;same day support;brief counseling;drop in counselor;let's talk",
+      "summary": "Talk with a UHS provider in a no-cost, 20–25 minute drop-in session about stress, relationships, school, or other concerns.",
+      "bestFor": "A brief conversation with a mental health provider without starting ongoing counseling.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": null,
+      "action": {
+        "label": "View Drop-in Support at Let’s Talk",
+        "channel": "view",
+        "url": "https://www.uhs.wisc.edu/mental-health/lets-talk/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/lets-talk/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "physical_health",
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "multicultural-student-center",
+      "name": "Multicultural Student Center",
+      "aka": "MSC",
+      "summary": "Find identity-centered programs, advocacy, community, and support through the Multicultural Student Center.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-262-4503.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-4503",
+        "channel": "call",
+        "url": "https://msc.wisc.edu/"
+      },
+      "url": "https://msc.wisc.edu/",
+      "contact": {
+        "phone": "608-262-4503",
+        "email": "msc@studentaffairs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706, Red Gym, 2nd floor",
+        "campus": "on_campus"
+      },
+      "hours": "Academic year: Mon–Thu 9am–10pm; Fri 9am–5pm; summer Mon–Fri 9am–5pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "nami-dane-county-support-groups",
+      "name": "NAMI Dane County Support Groups",
+      "aka": null,
+      "summary": "Find free mental health support groups for people living in Dane County.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: Dane County residents.",
+      "action": {
+        "label": "View NAMI Dane County Support Groups",
+        "channel": "view",
+        "url": "https://www.namidanecounty.org/support"
+      },
+      "url": "https://www.namidanecounty.org/support",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "madison_community"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "Dane County residents",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "lgbtqia_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "national-queer-and-trans-therapists-of-color-net",
+      "name": "National Queer and Trans Therapists of Color Network",
+      "aka": "NQTTCN",
+      "summary": "Find a directory and healing-justice resources for queer and trans people of color.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: queer and trans people of color seeking therapists.",
+      "action": {
+        "label": "View service details",
+        "channel": "view",
+        "url": "https://nqttcn.com/directory/"
+      },
+      "url": "https://nqttcn.com/directory/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": "queer and trans people of color seeking therapists",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "lgbtqia_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "neighborhood-house-food-pantry",
+      "name": "Neighborhood House Community Center Food Pantry",
+      "aka": null,
+      "summary": "Get free groceries through Neighborhood House Community Center Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-255-5337.",
+      "limitations": "Eligibility: anyone; no ID required; once per week.",
+      "action": {
+        "label": "Call 608-255-5337",
+        "channel": "call",
+        "url": "https://www.neighborhoodhousemadison.org/food-pantry"
+      },
+      "url": "https://www.neighborhoodhousemadison.org/food-pantry",
+      "contact": {
+        "phone": "608-255-5337",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "29 South Mills Street, Madison, WI 53715",
+        "campus": "madison_community"
+      },
+      "hours": "Tue 4–7pm; Wed–Thu noon–2pm and 4–7pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone; no ID required; once per week",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "nutrition-access-program",
+      "name": "Nutrition Access Program",
+      "aka": null,
+      "summary": "Find housing Dining’s Nutrition Access Program (formerly known as UW Frozen Meals Program) diverts unserved food from our dining locations and turn them into frozen.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": null,
+      "action": {
+        "label": "View Nutrition Access Program",
+        "channel": "view",
+        "url": "https://www.housing.wisc.edu/dining/food-recovery/"
+      },
+      "url": "https://www.housing.wisc.edu/dining/food-recovery/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": "SAC Mon–Thu 10am–10pm, Sat 10am–8pm; Pres House Mon 6–7pm, Thu 3–5pm; The Crossing Mon–Thu 10am–8pm, Fri 10am–4pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "off-campus-mental-health-care",
+      "name": "Off-Campus Mental Health Care",
+      "aka": null,
+      "summary": "UHS provides off-campus mental health care support for UW–Madison students needing long-term, frequent, or specialized treatment.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-265-5600; use option 2.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/mental-health/off-campus-mental-health-care/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/off-campus-mental-health-care/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "phamily-dinner-at-pres-house",
+      "name": "PHamily Dinner",
+      "aka": null,
+      "summary": "Find free community dinner for UW–Madison students at Pres House.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": null,
+      "action": {
+        "label": "View PHamily Dinner",
+        "channel": "view",
+        "url": "https://preshouse.org/community/phamily-dinner/"
+      },
+      "url": "https://preshouse.org/community/phamily-dinner/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "731 State Street, Madison, WI 53703",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "identity_belonging"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "prevention-services",
+      "name": "Prevention Services",
+      "aka": null,
+      "summary": "Find UHS training, consultation, and campus resources for suicide prevention and student mental health.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-265-5600; use option 9 for 24/7 mental health crisis support.",
+      "limitations": "Eligibility: UW–Madison community.",
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/prevention/"
+      },
+      "url": "https://www.uhs.wisc.edu/prevention/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison community",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "safety_survivor_support",
+        "navigation_general"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "psychiatric-and-primary-care-services",
+      "name": "Psychiatric Services",
+      "aka": "Psychiatric and Primary Care Services",
+      "summary": "UHS offers outpatient psychiatric care focused on evaluation and medication management.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-265-5600; use option 2.",
+      "limitations": "Eligibility: enrolled UW–Madison students.",
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/mental-health/psychiatry/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/psychiatry/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free;prescription costs separate"
+      },
+      "eligibility": "enrolled UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "psychiatric-services",
+      "name": "Psychiatric Services, S.C.",
+      "aka": null,
+      "summary": "Get counseling, psychiatric evaluation, medication management, and other mental health care in the Madison area.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-238-9354.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-238-9354",
+        "channel": "call",
+        "url": "https://psychsvcs.com/"
+      },
+      "url": "https://psychsvcs.com/",
+      "contact": {
+        "phone": "608-238-9354",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "2727 Marshall Court, Madison, WI 53705",
+        "campus": "madison_community"
+      },
+      "hours": "Mon–Thu 7:30am–6pm; Fri 7:30am–5pm",
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "phone"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "psychology-research-and-training-clinic",
+      "name": "Psychology Research and Training Clinic",
+      "aka": null,
+      "summary": "Get outpatient therapy for concerns such as anxiety, depression, stress, relationships, eating, or substance use.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-262-5925.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-5925",
+        "channel": "call",
+        "url": "https://psych.wisc.edu/graduate-program/clinical-psychology-program/research-and-training-clinic/"
+      },
+      "url": "https://psych.wisc.edu/graduate-program/clinical-psychology-program/research-and-training-clinic/",
+      "contact": {
+        "phone": "608-262-5925",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1202 West Johnson Street, Madison, WI 53706, 351",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Thu 9am–5pm",
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "psychology-today",
+      "name": "Psychology Today",
+      "aka": null,
+      "summary": "Search Psychology Today’s therapist directory by location, specialty, insurance, identity, and service format.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "View Psychology Today",
+        "channel": "view",
+        "url": "https://www.psychologytoday.com/us/therapists"
+      },
+      "url": "https://www.psychologytoday.com/us/therapists",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging",
+        "disability_access",
+        "navigation_general"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "recwell",
+      "name": "Mindfulness",
+      "aka": "Rec Well Mindfulness;RecWell",
+      "summary": "Get rec Well mindfulness programs and resources support stress reduction and wellbeing through practices such as meditation and mindful breathing.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-262-8244.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-8244",
+        "channel": "call",
+        "url": "https://recwell.wisc.edu/mindfulness/"
+      },
+      "url": "https://recwell.wisc.edu/mindfulness/",
+      "contact": {
+        "phone": "608-262-8244",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "recwell-wellbeing-workshops",
+      "name": "Wellbeing Workshops",
+      "aka": null,
+      "summary": "Get rec Well workshops on practical wellbeing topics and healthy habits for UW–Madison students.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-262-8244.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-8244",
+        "channel": "call",
+        "url": "https://recwell.wisc.edu/wellbeing-workshops/"
+      },
+      "url": "https://recwell.wisc.edu/wellbeing-workshops/",
+      "contact": {
+        "phone": "608-262-8244",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "recwell-wellness-coaching",
+      "name": "Wellness Coaching",
+      "aka": null,
+      "summary": "Get peer-to-peer coaching to reflect on wellbeing, set goals, build self-awareness, and develop skills across eight dimensions of wellbeing.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Call 608-262-8244.",
+      "limitations": null,
+      "action": {
+        "label": "Call 608-262-8244",
+        "channel": "call",
+        "url": "https://recwell.wisc.edu/wellnesscoaching/"
+      },
+      "url": "https://recwell.wisc.edu/wellnesscoaching/",
+      "contact": {
+        "phone": "608-262-8244",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "saint-marks-food-pantry",
+      "name": "St. Mark’s Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through St. Mark’s Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-256-8463.",
+      "limitations": "Eligibility: people needing food assistance.",
+      "action": {
+        "label": "Call 608-256-8463",
+        "channel": "call",
+        "url": "https://stmarksmadison.org/food-pantry.aspx"
+      },
+      "url": "https://stmarksmadison.org/food-pantry.aspx",
+      "contact": {
+        "phone": "608-256-8463",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "605 Spruce Street, Madison, WI 53715",
+        "campus": "madison_community"
+      },
+      "hours": "Tue 10am–noon; Thu 5:15–7:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people needing food assistance",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "saint-vincents-food-pantry",
+      "name": "St. Vincent de Paul Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through St. Vincent de Paul Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-257-0919.",
+      "limitations": "Eligibility: Dane County residents; photo ID required; once every two weeks.",
+      "action": {
+        "label": "Call 608-257-0919",
+        "channel": "call",
+        "url": "https://svdpmadison.org/program/food-pantry/"
+      },
+      "url": "https://svdpmadison.org/program/food-pantry/",
+      "contact": {
+        "phone": "608-257-0919",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "2033 Fish Hatchery Road, Madison, WI 53713",
+        "campus": "madison_community"
+      },
+      "hours": "Mon–Tue and Fri 10:30am–2:30pm; Thu 2:30–6pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "Dane County residents; photo ID required; once every two weeks",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "slow-food-uw",
+      "name": "Slow Food UW",
+      "aka": null,
+      "summary": "Find community meals and sustainable-food programs through Slow Food UW.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Email slowfooduw@gmail.com to ask about access and next steps.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "Email Slow Food UW",
+        "channel": "email",
+        "url": "https://slowfood-uw.org/cafe-2-3/"
+      },
+      "url": "https://slowfood-uw.org/cafe-2-3/",
+      "contact": {
+        "phone": null,
+        "email": "slowfooduw@gmail.com",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1127 University Avenue, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": "Mon 6:30–7:30pm; Wed noon–1pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person",
+        "email"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "social-justice-center-willy-street-pantr",
+      "name": "Willy Street Pantry",
+      "aka": null,
+      "summary": "Get free groceries through Willy Street Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-227-0206.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "Call 608-227-0206",
+        "channel": "call",
+        "url": "https://socialjusticecenter.org/programs/pantry/"
+      },
+      "url": "https://socialjusticecenter.org/programs/pantry/",
+      "contact": {
+        "phone": "608-227-0206",
+        "email": "hello@socialjusticecenter.org",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1202 Williamson Street, Madison, WI 53703",
+        "campus": "madison_community"
+      },
+      "hours": "Mon and Fri 1–3pm; Wed pop-up 4–5:30pm; Little Free Pantry 24/7",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "solomons-food-pantry",
+      "name": "Solomon’s Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Solomon’s Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-249-4555.",
+      "limitations": "Eligibility: people needing food assistance.",
+      "action": {
+        "label": "Call 608-249-4555",
+        "channel": "call",
+        "url": "https://www.ssmorriscommunityamec.com/"
+      },
+      "url": "https://www.ssmorriscommunityamec.com/",
+      "contact": {
+        "phone": "608-249-4555",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "3511 Milwaukee Street, Madison, WI 53714",
+        "campus": "madison_community"
+      },
+      "hours": "1st and 3rd Sat 9am–1pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people needing food assistance",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "space-to-heal",
+      "name": "Space To Heal",
+      "aka": null,
+      "summary": "Find therapy focused on the mental health needs and experiences of college students.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the booking page to make an appointment.",
+      "limitations": null,
+      "action": {
+        "label": "Book Space To Heal",
+        "channel": "book",
+        "url": "https://aasiyah-clark.clientsecure.me/"
+      },
+      "url": "https://thespacetoheal.com/",
+      "contact": {
+        "phone": "414-939-HOPE",
+        "email": null,
+        "text": null,
+        "booking": "https://aasiyah-clark.clientsecure.me/"
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual",
+        "phone"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "student-health-insurance-plan",
+      "name": "Student Health Insurance Plan",
+      "aka": "SHIP",
+      "summary": "The Student Health Insurance Plan (SHIP) provides comprehensive health coverage for UW–Madison students and scholars.",
+      "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
+      "nextStep": "Call 608-265-5232.",
+      "limitations": "Eligibility: eligible UW–Madison students and scholars. Cost: insurance.",
+      "action": {
+        "label": "Call 608-265-5232",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/ship/"
+      },
+      "url": "https://www.uhs.wisc.edu/ship/",
+      "contact": {
+        "phone": "608-265-5232",
+        "email": "shipmail@uhs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715, 8th floor",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 8am–4pm",
+      "afterHours": null,
+      "cost": {
+        "code": "varies",
+        "note": "insurance"
+      },
+      "eligibility": "eligible UW–Madison students and scholars",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "physical_health"
+      ],
+      "primaryCategory": "physical_health",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "tenant-resource-center",
+      "name": "Tenant Resource Center",
+      "aka": "lease problem;landlord problem;security deposit;rent help;eviction;tenant rights",
+      "summary": "Get help understanding leases, deposits, repairs, eviction, and other rental issues.",
+      "bestFor": "Lease, landlord, deposit, repair, eviction, or rental questions.",
+      "nextStep": "Call 608-292-5608; UW office; Spanish: 608-257-0006 option 1.",
+      "limitations": "Eligibility: UW–Madison students and Dane County tenants.",
+      "action": {
+        "label": "Call 608-292-5608",
+        "channel": "call",
+        "url": "https://www.tenantresourcecenter.org/uw_madison_office"
+      },
+      "url": "https://www.tenantresourcecenter.org/uw_madison_office",
+      "contact": {
+        "phone": "608-292-5608",
+        "email": "uw@tenantresourcecenter.org",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715, Student Activity Center 3158",
+        "campus": "madison_community"
+      },
+      "hours": "Tue and Thu 10am–6pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students and Dane County tenants",
+      "languages": "Spanish",
+      "accessibility": null,
+      "categories": [
+        "housing",
+        "legal_rights",
+        "navigation_general"
+      ],
+      "primaryCategory": "housing",
+      "modality": [
+        "in_person",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "the-keep-food-pantry",
+      "name": "The Keep Food Pantry",
+      "aka": null,
+      "summary": "Get free groceries through The Keep Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-258-3160.",
+      "limitations": "Eligibility: UW–Madison, Edgewood College, and Madison College students, staff, and faculty.",
+      "action": {
+        "label": "Call 608-258-3160",
+        "channel": "call",
+        "url": "https://www.luthermem.org/food-pantry/"
+      },
+      "url": "https://www.luthermem.org/food-pantry/",
+      "contact": {
+        "phone": "608-258-3160",
+        "email": "food.pantry.lmc@gmail.com",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "1021 University Avenue, Madison, WI 53715",
+        "campus": "madison_community"
+      },
+      "hours": "Thu 2:30–5:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison, Edgewood College, and Madison College students, staff, and faculty",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "students",
+        "faculty_staff"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "the-open-seat",
+      "name": "The Open Seat",
+      "aka": "can't afford food;toiletries",
+      "summary": "Get groceries and personal-care items through UW–Madison’s student food pantry.",
+      "bestFor": "Groceries or personal-care items for a UW–Madison student.",
+      "nextStep": "Open the booking page to make an appointment.",
+      "limitations": "Eligibility: any UW–Madison student.",
+      "action": {
+        "label": "Book The Open Seat",
+        "channel": "book",
+        "url": "https://calendly.com/openseat-asm/drop-in-hours"
+      },
+      "url": "https://basicneeds.students.wisc.edu/the-open-seat/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": "https://calendly.com/openseat-asm/drop-in-hours"
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715, Student Activity Center 3136",
+        "campus": "on_campus"
+      },
+      "hours": "Fall: Mon 2–6pm; Tue 10am–1pm; Thu 2–8pm; Fri 2–6pm; Eagle Heights: Wed 5–6:30pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "any UW–Madison student",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "the-people-s-farm",
+      "name": "The People's Farm",
+      "aka": null,
+      "summary": "The People's Farm is a student organization focused on sustainable agriculture.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: UW–Madison community.",
+      "action": {
+        "label": "View The People's Farm",
+        "channel": "view",
+        "url": "https://www.the-peoples-farm.com/"
+      },
+      "url": "https://www.the-peoples-farm.com/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison community",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs",
+        "identity_belonging"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "the-river-food-pantry-curbside-pickup",
+      "name": "The River Food Pantry",
+      "aka": "The River Food Pantry Curbside Pickup",
+      "summary": "Get groceries through The River Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-442-8815.",
+      "limitations": "Eligibility: Dane County residents; once per week.",
+      "action": {
+        "label": "Call 608-442-8815",
+        "channel": "call",
+        "url": "https://www.riverfoodpantry.org/new-building-updates/"
+      },
+      "url": "https://www.riverfoodpantry.org/new-building-updates/",
+      "contact": {
+        "phone": "608-442-8815",
+        "email": "info@riverfoodpantry.org",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "3301 Packers Avenue, Madison, WI 53704",
+        "campus": "madison_community"
+      },
+      "hours": "Tue 9am–3pm; Wed noon–6pm; Thu 9am–noon; Fri 9am–3pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "Dane County residents; once per week",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "the-trans-lifeline",
+      "name": "The Trans Lifeline",
+      "aka": null,
+      "summary": "Call a peer-support hotline run by and for trans people seeking connection or crisis support.",
+      "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
+      "nextStep": "Call 877-565-8860.",
+      "limitations": "Eligibility: transgender and questioning callers.",
+      "action": {
+        "label": "Call 877-565-8860",
+        "channel": "call",
+        "url": "https://translifeline.org/hotline/"
+      },
+      "url": "https://translifeline.org/hotline/",
+      "contact": {
+        "phone": "877-565-8860",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": "Mon–Fri noon–8pm CT",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "transgender and questioning callers",
+      "languages": "Spanish",
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "mental_emotional_health",
+        "identity_belonging",
+        "safety_survivor_support"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "phone"
+      ],
+      "audience": [
+        "lgbtqia_students",
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "the-trevor-project",
+      "name": "The Trevor Project",
+      "aka": null,
+      "summary": "The Trevor Project offers 24/7 crisis support and information for LGBTQ young people.",
+      "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
+      "nextStep": "Text START to 678678 for support.",
+      "limitations": "Eligibility: LGBTQ+ young people.",
+      "action": {
+        "label": "Text START to 678678",
+        "channel": "text",
+        "url": "https://www.thetrevorproject.org/get-help/"
+      },
+      "url": "https://www.thetrevorproject.org/get-help/",
+      "contact": {
+        "phone": "866-488-7386",
+        "email": null,
+        "text": "Text START to 678678",
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": "24/7",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "LGBTQ+ young people",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging",
+        "safety_survivor_support"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "phone",
+        "text",
+        "chat"
+      ],
+      "audience": [
+        "lgbtqia_students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "therapy-for-black-girls",
+      "name": "Therapy for Black Girls",
+      "aka": null,
+      "summary": "Therapy for Black Girls presents mental health topics in a way that feels accessible and relevant to help Black women take the step to see a therapist.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": "Eligibility: anyone.",
+      "action": {
+        "label": "View Therapy for Black Girls",
+        "channel": "view",
+        "url": "https://therapyforblackgirls.com/"
+      },
+      "url": "https://therapyforblackgirls.com/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": "anyone",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "therapy-for-black-men",
+      "name": "Therapy for Black Men",
+      "aka": null,
+      "summary": "Therapy for Black Men provides proactive, multiculturally competent care to men of color.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": null,
+      "action": {
+        "label": "View Therapy for Black Men",
+        "channel": "view",
+        "url": "https://therapyforblackmen.org/"
+      },
+      "url": "https://therapyforblackmen.org/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": null,
+        "campus": "national"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "unknown",
+        "note": null
+      },
+      "eligibility": null,
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "uhs-24-7-mental-health-crisis-support-line",
+      "name": "24/7 Mental Health Crisis Support Line",
+      "aka": null,
+      "summary": "Get licensed mental health professionals provide immediate crisis support and consultation by phone, 24 hours a day.",
+      "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
+      "nextStep": "Call 608-265-5600; use option 9.",
+      "limitations": "Eligibility: UW–Madison students, friends, family, and concerned community members.",
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/call-for-help/"
+      },
+      "url": "https://www.uhs.wisc.edu/call-for-help/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": "24/7",
+      "afterHours": "24_7",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students, friends, family, and concerned community members",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "mental_emotional_health",
+        "safety_survivor_support"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "phone"
+      ],
+      "audience": [
+        "students",
+        "general_public"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "uhs-mhs-workshops",
+      "name": "Wellness Workshops",
+      "aka": null,
+      "summary": "Get UHS wellness workshops help students build skills for wellbeing, including topics such as procrastination, test anxiety, loneliness, mindfulness, and stress.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the official page for current access details.",
+      "limitations": null,
+      "action": {
+        "label": "View Wellness Workshops",
+        "channel": "view",
+        "url": "https://www.uhs.wisc.edu/mental-health/wellness-workshops/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/wellness-workshops/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "mental_emotional_health"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "in_person",
+        "virtual"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "university-survivor-services",
+      "name": "Survivor Services",
+      "aka": "sexual assault help;survivor advocate;stalking help;harassment support",
+      "summary": "Get confidential support, advocacy, and help understanding options after sexual assault, dating violence, stalking, or harassment.",
+      "bestFor": "Confidential support and options after sexual assault, violence, stalking, or harassment.",
+      "nextStep": "Call 608-265-5600; use option 3.",
+      "limitations": "Eligibility: UW–Madison student survivors.",
+      "action": {
+        "label": "Call 608-265-5600",
+        "channel": "call",
+        "url": "https://www.uhs.wisc.edu/survivor-services/"
+      },
+      "url": "https://www.uhs.wisc.edu/survivor-services/",
+      "contact": {
+        "phone": "608-265-5600",
+        "email": "survivorservices@uhs.wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "333 East Campus Mall, Madison, WI 53715",
+        "campus": "on_campus"
+      },
+      "hours": null,
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison student survivors",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "physical_health",
+        "mental_emotional_health",
+        "safety_survivor_support",
+        "identity_belonging"
+      ],
+      "primaryCategory": "safety_survivor_support",
+      "modality": [
+        "in_person",
+        "virtual",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "survivors"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "university-veteran-services",
+      "name": "University Veteran Services",
+      "aka": "UVS",
+      "summary": "Get education-benefit guidance, transition support, and community for military-connected students.",
+      "bestFor": "Community, identity-based support, peer connection, or belonging.",
+      "nextStep": "Call 608-265-4628.",
+      "limitations": "Eligibility: military-connected UW–Madison students.",
+      "action": {
+        "label": "Call 608-265-4628",
+        "channel": "call",
+        "url": "https://veterans.wisc.edu/"
+      },
+      "url": "https://veterans.wisc.edu/",
+      "contact": {
+        "phone": "608-265-4628",
+        "email": "veterans@wisc.edu",
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "716 Langdon Street, Madison, WI 53706, Red Gym 301",
+        "campus": "on_campus"
+      },
+      "hours": "Mon–Fri 9am–4pm",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "military-connected UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "financial_support",
+        "identity_belonging"
+      ],
+      "primaryCategory": "identity_belonging",
+      "modality": [
+        "virtual",
+        "phone",
+        "email"
+      ],
+      "audience": [
+        "students",
+        "military_connected"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "uwill-individual-counseling",
+      "name": "Uwill",
+      "aka": "Uwill / Individual Counseling",
+      "summary": "Get no-cost virtual counseling by video, phone, chat, or message, including night and weekend appointments.",
+      "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
+      "nextStep": "Open the booking page to make an appointment.",
+      "limitations": null,
+      "action": {
+        "label": "Book Uwill",
+        "channel": "book",
+        "url": "https://app.uwill.com/"
+      },
+      "url": "https://www.uhs.wisc.edu/mental-health/uwill/",
+      "contact": {
+        "phone": null,
+        "email": null,
+        "text": null,
+        "booking": "https://app.uwill.com/"
+      },
+      "location": {
+        "where": null,
+        "campus": "on_campus"
+      },
+      "hours": "Flexible hours including nights and weekends",
+      "afterHours": "yes",
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "UW–Madison students",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "academic_learning",
+        "mental_emotional_health",
+        "identity_belonging"
+      ],
+      "primaryCategory": "mental_emotional_health",
+      "modality": [
+        "virtual",
+        "phone",
+        "chat"
+      ],
+      "audience": [
+        "students"
+      ],
+      "verifiedAt": "2026-07-28"
+    },
+    {
+      "id": "wil-mar-neighborhood-center",
+      "name": "Wil-Mar Neighborhood Center Food Pantry",
+      "aka": null,
+      "summary": "Get groceries through Wil-Mar Neighborhood Center Food Pantry.",
+      "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
+      "nextStep": "Call 608-257-4576.",
+      "limitations": "Eligibility: people in the service area.",
+      "action": {
+        "label": "Call 608-257-4576",
+        "channel": "call",
+        "url": "https://wil-mar.org/services"
+      },
+      "url": "https://wil-mar.org/services",
+      "contact": {
+        "phone": "608-257-4576",
+        "email": null,
+        "text": null,
+        "booking": null
+      },
+      "location": {
+        "where": "953 Jenifer Street, Madison, WI 53703",
+        "campus": "madison_community"
+      },
+      "hours": "Wed 9am–noon",
+      "afterHours": null,
+      "cost": {
+        "code": "free",
+        "note": "free"
+      },
+      "eligibility": "people in the service area",
+      "languages": null,
+      "accessibility": null,
+      "categories": [
+        "food_essential_needs"
+      ],
+      "primaryCategory": "food_essential_needs",
+      "modality": [
+        "in_person"
+      ],
+      "audience": [],
+      "verifiedAt": "2026-07-28"
+    }
+  ]
+}

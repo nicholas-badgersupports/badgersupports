@@ -1,0 +1,148 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-request-a-program",
+  "path": "/request-a-program/",
+  "title": "Request a Program — Badger Supports",
+  "description": "Programs are available for free to any UW–Madison student or student group.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-rp-head",
+      "type": "pagehead",
+      "title": "Request a Program",
+      "lead": "Programs are available for free to any UW–Madison student or student group.",
+      "photos": [
+        "m-workshop-herald-team",
+        "m-peer-circle",
+        "m-workshop-room"
+      ]
+    },
+    {
+      "id": "b-rp-workshops",
+      "type": "program",
+      "variant": "topics",
+      "program": "workshops",
+      "title": "Wellness Workshops",
+      "lead": "Sessions are fully tailored to the requesting audience.",
+      "body": [
+        "Interactive, customized educational sessions on:"
+      ],
+      "topics": [
+        {
+          "term": "Stress Management & Self-Care",
+          "href": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care/"
+        },
+        {
+          "term": "Building Support Networks",
+          "href": "/join/request-a-workshop/behind-the-workshop/support-networks/"
+        },
+        {
+          "term": "Self-Advocacy"
+        },
+        {
+          "term": "& More!"
+        }
+      ],
+      "photos": [
+        "m-program-support-networks"
+      ],
+      "primary": {
+        "label": "Request a Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "links": [
+        {
+          "label": "Learn more on our workshops page",
+          "href": "/join/request-a-workshop/"
+        }
+      ]
+    },
+    {
+      "id": "b-rp-groups",
+      "type": "expect",
+      "title": "Peer Support Groups",
+      "body": [
+        "Confidential, judgement-free space to talk about whatever’s on your mind.",
+        "Topics, activities, & length can be tailored by request!"
+      ],
+      "links": [
+        {
+          "label": "Request a Peer Support Group",
+          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform",
+          "icon": "out"
+        }
+      ],
+      "photos": [
+        "m-program-paintings",
+        "m-peer-talk"
+      ]
+    },
+    {
+      "id": "b-rp-training",
+      "type": "expect",
+      "title": "Volunteer Training",
+      "flip": true,
+      "body": [
+        "Learn how to support your friends & classmates! This training adapts Badger Supports’ peer support framework for any student or student group.",
+        "Get familiar with campus resources & gain hands-on practice in active listening, confidentiality, inclusive practices, & more."
+      ],
+      "links": [
+        {
+          "label": "Request a Volunteer Training",
+          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform",
+          "icon": "out"
+        }
+      ],
+      "photos": [
+        "m-program-audience",
+        "m-involved-volunteers"
+      ]
+    },
+    {
+      "id": "b-rp-housing",
+      "type": "expect",
+      "title": "Navigating Housing in Madison Workshop",
+      "body": [
+        "Get a head start on Madison’s early and fast-paced leasing season. Sessions are tailored to the requesting audience’s needs!"
+      ],
+      "links": [
+        {
+          "label": "Request a Navigating Housing Workshop",
+          "href": "/forms/workshop-request/"
+        },
+        {
+          "label": "Learn more on our housing page!",
+          "href": "/initiatives/housing-hub/"
+        }
+      ],
+      "photos": [
+        "m-workshop-panel",
+        "m-workshop-housing-team"
+      ]
+    },
+    {
+      "id": "b-rp-spill",
+      "type": "spill",
+      "title": "Badger SPILL",
+      "body": [
+        "Need to vent to a fellow Badger? Spill it!",
+        "Badger SPILL is written peer support from Badger Supports. Write what’s on your mind, whenever it’s on your mind, and a trained UW–Madison Student Supporter writes back. It’s confidential.",
+        "Badger SPILL does not provide crisis support. If you or a friend are in a crisis, please call 911 or the UHS 24/7 Mental Health Crisis Line: 608-265-5600, option 9."
+      ],
+      "primary": {
+        "label": "Submit a Spill",
+        "href": "https://badgerspill.org/#write"
+      },
+      "links": [
+        {
+          "label": "UHS 24/7 Mental Health Crisis Line",
+          "href": "https://www.uhs.wisc.edu/call-for-help/"
+        },
+        {
+          "label": "How Badger SPILL works",
+          "href": "https://badgerspill.org/how-it-works/"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-open-house",
+  "path": "/initiatives/open-house/",
+  "title": "Student Mental Health Hub Open House — Badger Supports",
+  "description": "Snacks, therapy dogs, crafts, & FUN! At the second semesterly Student Mental Health Hub Open House, students explored the space & learned how to get involved in peer support!",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-oh-head",
+      "type": "pagehead",
+      "title": "Student Mental Health Hub Open House",
+      "lead": "Snacks, therapy dogs, crafts, & FUN!",
+      "body": [
+        "Hosted on Friday, September 25th",
+        "12:00 PM – 8:00 PM | 333 E. Campus Mall Rm. 3203"
+      ],
+      "links": [
+        {
+          "label": "Directions to the Student Mental Health Hub",
+          "href": "#get-directions",
+          "icon": "down"
+        }
+      ],
+      "photos": [
+        "m-openhouse-hub-table",
+        "m-openhouse-cow-toys",
+        "m-openhouse-stickers"
+      ]
+    },
+    {
+      "id": "b-oh-recap",
+      "type": "expect",
+      "title": "At the second semesterly Student Mental Health Hub Open House, students explored the space & learned how to get involved in peer support!",
+      "items": [
+        {
+          "icon": "pencil",
+          "text": "Add to our Wall of Support!"
+        },
+        {
+          "icon": "star",
+          "text": "Grab free stickers!"
+        },
+        {
+          "icon": "hand",
+          "text": "Adopt a stress cow :)"
+        },
+        {
+          "icon": "bulb",
+          "text": "Learn more about the Student Mental Health Hub!"
+        },
+        {
+          "icon": "scissors",
+          "text": "Add to communal art!"
+        }
+      ],
+      "photos": [
+        "m-openhouse-counter",
+        "m-openhouse-garden-wall"
+      ]
+    },
+    {
+      "id": "b-oh-activities",
+      "type": "program",
+      "variant": "topics",
+      "program": "peer",
+      "title": "Activities & Events",
+      "topics": [
+        {
+          "term": "Dogs on Call · 12:00–1:30 PM",
+          "href": "/initiatives/dogs-on-call/",
+          "text": "Pet therapy dogs!"
+        },
+        {
+          "term": "Make a Button or Ribbon",
+          "text": "Get crafty, show solidarity with a variety of causes, & express your personality with a custom button!"
+        },
+        {
+          "term": "Freebies & Giveaways!",
+          "text": "Take a cow or cheese stress toy or mini duck! Or, pick up one of our famous Snoopy stickers!"
+        },
+        {
+          "term": "Community Art Project",
+          "text": "Make your mark & contribute to communal art!"
+        },
+        {
+          "term": "Free Resources",
+          "text": "Pick up a Resource Referral Card, Navigating Housing in Madison toolkit, & more!"
+        },
+        {
+          "term": "Learn How to Get Involved!",
+          "href": "/join/get-involved/",
+          "text": "Get connected with Badger Supports & the American Foundation for Suicide Prevention and learn about upcoming events!"
+        }
+      ],
+      "photos": [
+        "m-paint-hand"
+      ],
+      "links": [
+        {
+          "label": "See More Dogs on Call Visits!",
+          "href": "/initiatives/dogs-on-call/"
+        }
+      ]
+    },
+    {
+      "id": "b-oh-hub",
+      "type": "directions",
+      "anchor": "get-directions",
+      "heading": "h2",
+      "title": "Directions to the Student Mental Health Hub",
+      "place": "sac-mhh"
+    },
+    {
+      "id": "b-oh-access",
+      "type": "text",
+      "title": "Accommodation Requests",
+      "body": [
+        "To request a disability-related accommodation, email accessibility@badgersupports.org."
+      ],
+      "links": [
+        {
+          "label": "accessibility@badgersupports.org",
+          "href": "mailto:accessibility@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    }
+  ]
+}

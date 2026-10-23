@@ -1,0 +1,224 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-request-a-workshop",
+  "path": "/join/request-a-workshop/",
+  "title": "Request a Workshop — Badger Supports",
+  "description": "Badger Supports workshops help groups build connection and individuals gain practical tools for everyday challenges. Led by trained student Peer Facilitators.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-rw-head",
+      "type": "pagehead",
+      "title": "Request a Workshop",
+      "lead": "Badger Supports workshops help groups build connection and individuals gain practical tools for everyday challenges. Led by trained student Peer Facilitators, each session includes interactive activities and open discussion. If your group has specific goals or needs, please share them when requesting—we’re happy to adjust the content or format.",
+      "primary": {
+        "label": "Request a Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "photos": [
+        "m-workshop-herald-team",
+        "m-workshop-room",
+        "m-workshop-housing-team"
+      ]
+    },
+    {
+      "id": "b-rw-networks",
+      "type": "expect",
+      "title": "Building Support Networks",
+      "body": [
+        "Strengthen the support systems within your group and beyond"
+      ],
+      "items": [
+        {
+          "icon": "check",
+          "text": "Identify and grow your personal and group support systems"
+        },
+        {
+          "icon": "check",
+          "text": "Build a culture of care, trust, and connection"
+        },
+        {
+          "icon": "check",
+          "text": "Practice reaching out and showing up for one another"
+        }
+      ],
+      "links": [
+        {
+          "label": "Behind the Workshop",
+          "href": "/join/request-a-workshop/behind-the-workshop/support-networks/"
+        }
+      ],
+      "photos": [
+        "m-workshop-herald-room",
+        "m-workshop-supplies"
+      ]
+    },
+    {
+      "id": "b-rw-selfcare",
+      "type": "expect",
+      "title": "Stress Management & Self Care",
+      "flip": true,
+      "body": [
+        "Support your group’s well-being by building shared tools and habits"
+      ],
+      "items": [
+        {
+          "icon": "check",
+          "text": "Understand stress and burnout and how they show up across your group"
+        },
+        {
+          "icon": "check",
+          "text": "Learn realistic self-care strategies and practical ways to build healthy habits"
+        },
+        {
+          "icon": "check",
+          "text": "Build group norms that respect boundaries and avoid burnout"
+        }
+      ],
+      "links": [
+        {
+          "label": "Behind the Workshop",
+          "href": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care/"
+        }
+      ],
+      "photos": [
+        "m-workshop-mindfulness"
+      ]
+    },
+    {
+      "id": "b-rw-advocacy",
+      "type": "expect",
+      "title": "Self Advocacy",
+      "body": [
+        "Empower your group members to speak up and support one another"
+      ],
+      "items": [
+        {
+          "icon": "check",
+          "text": "Practice self advocacy skills that improve communication and confidence"
+        },
+        {
+          "icon": "check",
+          "text": "Know your rights and how to advocate for them"
+        },
+        {
+          "icon": "check",
+          "text": "Strengthen your group’s ability to navigate challenges together"
+        }
+      ],
+      "photos": [
+        "m-peer-talk"
+      ]
+    },
+    {
+      "id": "b-rw-housing",
+      "type": "expect",
+      "title": "Navigating Housing",
+      "flip": true,
+      "items": [
+        {
+          "icon": "check",
+          "text": "Feel equipped to explore housing options, compare locations, and make informed choices"
+        },
+        {
+          "icon": "check",
+          "text": "Get comfortable asking landlords and property managers the questions that matter"
+        },
+        {
+          "icon": "check",
+          "text": "Learn the essentials of tenant rights so you can advocate when something doesn’t feel right"
+        },
+        {
+          "icon": "check",
+          "text": "Build teamwork skills that help with shared decisions, budgets, and healthy roommate dynamics"
+        }
+      ],
+      "links": [
+        {
+          "label": "Behind the Workshop",
+          "href": "/join/request-a-workshop/behind-the-workshop/navigating-housing/"
+        }
+      ],
+      "photos": [
+        "m-workshop-housing",
+        "m-workshop-panel"
+      ]
+    },
+    {
+      "id": "b-rw-training",
+      "type": "expect",
+      "title": "Volunteer Training",
+      "body": [
+        "Build peer support skills, including active listening, follow-up questions, and actionable resource referrals.",
+        "Learn how to support friends and peers!"
+      ],
+      "links": [
+        {
+          "label": "Request volunteer training here!",
+          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform",
+          "icon": "out"
+        }
+      ],
+      "photos": [
+        "m-workshop-w-signs",
+        "m-workshop-listening"
+      ]
+    },
+    {
+      "id": "b-rw-faq",
+      "type": "questions",
+      "title": "Workshop FAQs",
+      "items": [
+        {
+          "id": "q-rw-how",
+          "q": "How to Request",
+          "a": [
+            "Request a workshop via our workshop request form.",
+            "For additional inquiries please email directors@badgersupports.org"
+          ]
+        },
+        {
+          "id": "q-rw-who",
+          "q": "Who Can Request",
+          "a": "Available to Registered Student Organizations, residence halls, classrooms, individual students, groups of students, and campus departments that primarily serve student audiences."
+        }
+      ],
+      "ask": {
+        "label": "Request a Workshop",
+        "href": "/forms/workshop-request/"
+      }
+    },
+    {
+      "id": "b-rw-feedback",
+      "type": "cta",
+      "title": "Testimonials & Feedback",
+      "body": "Badger Supports is always looking to grow and improve. If you have feedback, suggestions, or a story to share, we’d love to hear from you. Please take a moment to fill out our feedback form.",
+      "primary": {
+        "label": "Feedback Form",
+        "href": "/forms/programming-feedback/"
+      },
+      "links": [
+        {
+          "label": "directors@badgersupports.org",
+          "href": "mailto:directors@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    },
+    {
+      "id": "b-rw-access",
+      "type": "text",
+      "title": "Accommodation Requests",
+      "body": [
+        "Badger Supports values inclusion and access for all participants and is pleased to provide reasonable accommodations for any Badger Supports workshop. Please contact accessibility@badgersupports.org to make a reasonable accommodation request. Requests must be submitted 5 days prior to the workshop."
+      ],
+      "links": [
+        {
+          "label": "accessibility@badgersupports.org",
+          "href": "mailto:accessibility@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    }
+  ]
+}

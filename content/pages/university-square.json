@@ -1,0 +1,108 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-university-square",
+  "path": "/initiatives/university-square/",
+  "title": "University Square — Badger Supports",
+  "description": "University Square: W Johnson Street, E Campus Mall and University Ave.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-us-head",
+      "type": "pagehead",
+      "title": "University Square"
+    },
+    {
+      "id": "b-us-sides",
+      "type": "directory",
+      "title": "University Square Directory",
+      "groups": [
+        {
+          "id": "south",
+          "title": "South",
+          "label": "W Johnson Street",
+          "items": [
+            {
+              "name": "Office of Student Conduct & Community Standards",
+              "address": "724 W Johnson St, Madison, WI",
+              "href": "https://conduct.students.wisc.edu"
+            },
+            {
+              "name": "Office of Admissions & Recruitment",
+              "address": "702 W Johnson St",
+              "href": "https://admissions.wisc.edu"
+            },
+            {
+              "name": "McBurney & Disability Resource Center",
+              "address": "702 W Johnson St #2104",
+              "href": "https://mcburney.wisc.edu"
+            }
+          ]
+        },
+        {
+          "id": "west",
+          "title": "West",
+          "label": "E Campus Mall",
+          "items": [
+            {
+              "name": "Student Activity Center",
+              "address": "333 East Campus Mall",
+              "href": "/initiatives/student-activity-center/"
+            },
+            {
+              "name": "Walgreens",
+              "address": "311 E Campus Mall",
+              "href": "https://www.walgreens.com"
+            },
+            {
+              "name": "Anytime Fitness",
+              "address": "301 E Campus Mall",
+              "href": "https://www.anytimefitness.com"
+            },
+            {
+              "name": "Milio's Sandwiches",
+              "address": "377 E Campus Mall",
+              "href": "https://milios.com"
+            },
+            {
+              "name": "US Bank",
+              "address": "389 E Campus Mall",
+              "href": "https://www.usbank.com/index.html"
+            },
+            {
+              "name": "Pitaya",
+              "address": "341 E Campus Mall",
+              "href": "https://pitaya.com"
+            }
+          ]
+        },
+        {
+          "id": "north",
+          "title": "North",
+          "label": "University Ave",
+          "items": [
+            {
+              "name": "Madison Fresh",
+              "address": "703 University Ave",
+              "href": "https://freshmadisonmarket.com"
+            },
+            {
+              "name": "Senjoy",
+              "address": "785 University Ave",
+              "href": "https://order.online/business/senjoy-chinese-cuisine-12821207"
+            },
+            {
+              "name": "Madison Nail Lounge",
+              "address": "795 University Ave",
+              "href": "https://madisonnaillounge.com"
+            },
+            {
+              "name": "Valentia Coffee",
+              "address": "799 University Ave",
+              "href": "https://www.valentiacoffee.com"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

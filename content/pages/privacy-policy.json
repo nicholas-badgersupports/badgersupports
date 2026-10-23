@@ -1,0 +1,205 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-privacy-policy",
+  "path": "/operations/privacy-policy/",
+  "title": "Privacy Policy — Badger Supports",
+  "description": "Badger Supports’ data collection, use, and disclosure practices for badgersupports.org and the programs, events, and services we operate.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-pp-head",
+      "type": "pagehead",
+      "title": "Privacy Policy",
+      "lead": "Effective date / last updated: July 18, 2026",
+      "body": [
+        "Thank you for visiting badgersupports.org. Badger Supports (“we,” “us,” or “our”) is a registered student organization (RSO) at the University of Wisconsin–Madison. We are committed to protecting your privacy and, for that reason, have adopted this Privacy Policy to explain our data collection, use, and disclosure practices for badgersupports.org and the programs, events, and services we operate (collectively, the “Services”).",
+        "As used in this Privacy Policy, “Personal Information” means information that can identify, or reasonably be linked to, an individual — for example, your name, email address, or the contents of a form you submit. “Non-Personal Information” means information that does not, on its own, identify an individual, such as aggregated usage statistics."
+      ]
+    },
+    {
+      "id": "b-pp-consent",
+      "type": "text",
+      "title": "1. Consent",
+      "body": [
+        "By accessing or using the Services, you consent to this Privacy Policy. If you do not agree with this Privacy Policy, please do not access or use the Services."
+      ]
+    },
+    {
+      "id": "b-pp-collection",
+      "type": "text",
+      "title": "2. Collection of Your Personal Information",
+      "body": [
+        "We collect Personal Information only when you choose to provide it, including when you:",
+        "Join our email list or one of our groups, in which case we collect your name and email address;",
+        "Submit a form through the Services (such as a workshop request, feedback, or get-involved form), in which case we collect the information you enter, which may include your name, email address, campus affiliation, and the contents of your message;",
+        "Provide photos, videos, or other content to us for use in our programs or communications.",
+        "We do not require you to create an account to use the Services, and we do not collect payment information through the Services."
+      ]
+    },
+    {
+      "id": "b-pp-automated",
+      "type": "text",
+      "title": "3. Information We Collect by Automated Means",
+      "body": [
+        "When you access the Services, certain Non-Personal Information is collected automatically:",
+        "(a) Google Analytics. We use Google Analytics, a web analytics service provided by Google LLC (“Google”), to understand how visitors use the Services — for example, which pages are viewed, how visitors arrive at the site, how long they stay, the links they click, visitors’ general location (such as city or region), and the type of device and browser used. Google Analytics uses first-party cookies and similar technologies to distinguish visits. Google states that Google Analytics does not log or store IP addresses. This information is made available to us only in aggregated form; it does not identify you to us, and we do not attempt to identify individual visitors from it. Google Analytics retains user-level data for a limited period (no more than 14 months) before automatic deletion. We use Google Analytics for measurement purposes only; we do not use Google Analytics advertising features, remarketing, or ad personalization. Google’s collection and processing of this data is described in Google’s own policies, including “How Google uses information from sites or apps that use our services,” available at policies.google.com/technologies/partner-sites, and Google’s Privacy Policy, available at policies.google.com/privacy.",
+        "(b) Google Search Console. We use Google Search Console, a webmaster tool provided by Google, to receive aggregated information from Google about how the Services appear and perform in Google Search results (for example, which search queries led visitors to the site, impressions, and clicks). Google Search Console does not place cookies on your device through the Services, does not collect information from you when you visit the Services, and does not identify individual visitors to us.",
+        "(c) Hosting and server data. The Services are hosted on Google Sites, part of Google Workspace. Google may collect standard log and device information and may set functional cookies in connection with hosting the Services, as described in Google’s policies. We do not set advertising or cross-site tracking cookies of our own.",
+        "(d) Interactive features. Certain features of the Services operate without collecting Personal Information: the mood check-in records only the mood selected, the page on which it was selected, and the time of the selection — no name, account, or other identifying information — and results are displayed only as same-day aggregate totals; the Wall of Support and event countdown display content only and collect no information from you; and the Resource Finder runs in your browser, does not request or store Personal Information, and links to independent campus and community services."
+      ],
+      "links": [
+        {
+          "label": "policies.google.com/technologies/partner-sites",
+          "href": "https://policies.google.com/technologies/partner-sites",
+          "icon": "out"
+        },
+        {
+          "label": "policies.google.com/privacy",
+          "href": "https://policies.google.com/privacy",
+          "icon": "out"
+        }
+      ]
+    },
+    {
+      "id": "b-pp-use",
+      "type": "text",
+      "title": "4. How We Use Your Information",
+      "body": [
+        "We may use the information we collect to:",
+        "Provide, operate, maintain, and improve the Services and our peer-support programs, groups, and events;",
+        "Send you updates, announcements, and newsletters through our email list, where you have asked us to;",
+        "Respond to your inquiries, submissions, and requests;",
+        "Monitor and analyze usage of the Services in aggregate, so we can improve them;",
+        "Protect the security and integrity of the Services and the safety of our members and community;",
+        "Meet our obligations as a registered student organization at the University of Wisconsin–Madison; and",
+        "Comply with applicable legal obligations."
+      ]
+    },
+    {
+      "id": "b-pp-disclosure",
+      "type": "text",
+      "title": "5. Disclosure of Your Information",
+      "body": [
+        "We do not sell, rent, or trade your Personal Information. We may disclose your Personal Information only in the following circumstances:",
+        "Service providers. We disclose information to service providers who perform functions on our behalf and who may use it only to provide those services to us. Our current service providers are: Google (Google Workspace, Google Sites, Google Forms, Google Analytics, and Google Search Console), which hosts the Services and our email, documents, forms, and site statistics (privacy policy); and our email-list tool, which stores the address you provide so we can send updates.",
+        "Legal requirements. We may disclose information when we believe in good faith that disclosure is required or permitted by law, regulation, legal process, or applicable University of Wisconsin–Madison policy, including to respond to lawful requests by public authorities.",
+        "Safety. We may disclose information when we believe disclosure is reasonably necessary to protect the rights, property, or safety of our members, our community, or others.",
+        "With your consent. We may disclose information for any other purpose with your consent or at your direction.",
+        "Organizational changes. If Badger Supports reorganizes or forms a successor organization, information may be transferred to that successor, which will remain bound by this Privacy Policy or one materially consistent with it.",
+        "We may share aggregated or de-identified Non-Personal Information (such as overall site usage statistics) that does not identify you."
+      ],
+      "links": [
+        {
+          "label": "policies.google.com/privacy",
+          "href": "https://policies.google.com/privacy",
+          "icon": "out"
+        }
+      ]
+    },
+    {
+      "id": "b-pp-confidentiality",
+      "type": "text",
+      "title": "6. Confidentiality and Peer Support",
+      "body": [
+        "Peer support depends on trust. Information shared within a Badger Supports peer-support group is treated as confidential within the group, subject to narrow exceptions on which our peer supporters are trained: risk of harm to yourself or others, or circumstances in which university policy or law requires action. Peer supporters are students, not clinicians, and the Services are not a substitute for professional medical or mental-health care."
+      ]
+    },
+    {
+      "id": "b-pp-cookies",
+      "type": "text",
+      "title": "7. Cookies; Your Tracking Choices",
+      "body": [
+        "A “cookie” is a small data file placed on your device that helps a website function and measure how it is used. The cookies set in connection with the Services are described in Section 3. You have the following choices:",
+        "Browser settings. Most browsers accept cookies by default. You can set your browser to refuse or delete cookies; core features of the Services will work without them.",
+        "Google Analytics opt-out. You can opt out of Google Analytics across websites by installing the Google Analytics opt-out browser add-on, available at tools.google.com/dlpage/gaoptout.",
+        "Do Not Track. Some browsers transmit “Do Not Track” signals. Like many websites, the Services do not currently respond to Do Not Track signals; however, as described above, we do not engage in advertising or cross-site tracking."
+      ],
+      "links": [
+        {
+          "label": "tools.google.com/dlpage/gaoptout",
+          "href": "https://tools.google.com/dlpage/gaoptout",
+          "icon": "out"
+        }
+      ]
+    },
+    {
+      "id": "b-pp-choices",
+      "type": "text",
+      "title": "8. Your Choices; Access, Correction, and Deletion",
+      "body": [
+        "You may unsubscribe from our email list at any time by following the instructions in any message or by contacting us. You may request access to, correction of, or deletion of the Personal Information we hold about you by emailing hello@badgersupports.org. We will honor reasonable requests unless we are required to retain information by law or university policy or have a legitimate operational need to retain it, and we will respond within a reasonable time."
+      ],
+      "links": [
+        {
+          "label": "hello@badgersupports.org",
+          "href": "mailto:hello@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    },
+    {
+      "id": "b-pp-states",
+      "type": "text",
+      "title": "9. Residents of Certain States",
+      "body": [
+        "Some U.S. states have enacted consumer privacy laws (such as the California Consumer Privacy Act) that grant residents specific rights with respect to their personal information. Those laws generally apply to businesses that exceed revenue or data-volume thresholds. As a student organization, we do not believe the Services are currently subject to those laws. Regardless of where you live, you may exercise the choices described in Section 8, and we will honor reasonable requests."
+      ]
+    },
+    {
+      "id": "b-pp-children",
+      "type": "text",
+      "title": "10. Children’s Privacy",
+      "body": [
+        "The Services are directed to university students and the campus community and are not directed to children under 13 years of age. We do not knowingly collect Personal Information from children under 13. In accordance with the Children’s Online Privacy Protection Act (COPPA), if you believe a child under 13 has provided us Personal Information, please contact us and we will promptly delete it."
+      ]
+    },
+    {
+      "id": "b-pp-security",
+      "type": "text",
+      "title": "11. Information Security",
+      "body": [
+        "We use reasonable administrative, technical, and physical measures designed to protect Personal Information, including transmission of data over encrypted connections (HTTPS/TLS) and access limited to organization leaders who need it. However, no method of transmission or storage is completely secure, and we cannot guarantee absolute security."
+      ]
+    },
+    {
+      "id": "b-pp-third-party",
+      "type": "text",
+      "title": "12. Third-Party Websites",
+      "body": [
+        "The Services contain links to third-party websites, including campus and community resources. Any information you provide on a linked site is provided directly to that third party and is subject to that third party’s privacy policy. We are not responsible for the content or the privacy and security practices of third-party websites, and we encourage you to review their policies before providing them with information."
+      ]
+    },
+    {
+      "id": "b-pp-us-processing",
+      "type": "text",
+      "title": "13. United States Processing",
+      "body": [
+        "We are based in the United States, and the Services are directed to the UW–Madison campus community. Information we collect is processed and stored in the United States and is governed by U.S. and Wisconsin law. If you access the Services from outside the United States, you consent to the processing and storage of your information in the United States."
+      ]
+    },
+    {
+      "id": "b-pp-changes",
+      "type": "text",
+      "title": "14. Changes to This Privacy Policy",
+      "body": [
+        "We may update this Privacy Policy from time to time by posting the updated policy on this page with a new “Last updated” date. Material changes will be noted on the Services. We encourage you to review this page periodically. Your continued use of the Services after an updated policy is posted constitutes your acceptance of the changes."
+      ]
+    },
+    {
+      "id": "b-pp-contact",
+      "type": "text",
+      "title": "15. Questions and Contacting Us",
+      "body": [
+        "If you have questions about this Privacy Policy or our privacy practices, contact:",
+        "Badger Supports at 333 East Campus Mall, Suite 3203 Madison, WI 53715 Email: hello@badgersupports.org"
+      ],
+      "links": [
+        {
+          "label": "hello@badgersupports.org",
+          "href": "mailto:hello@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    }
+  ]
+}

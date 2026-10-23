@@ -1,0 +1,63 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-email-list",
+  "path": "/join/email-list/",
+  "title": "Join Our Email List — Badger Supports",
+  "description": "Join our email list to stay up-to-date on our latest updates, events, and more! Badger Supports sends out updates about every two weeks.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-el-head",
+      "type": "pagehead",
+      "title": "Join Our Email List",
+      "lead": "Join our email list to stay up-to-date on our latest updates, events, and more!",
+      "body": [
+        "At Badger Supports, we create peer to peer spaces to talk about mental health, connect with others, and feel less alone. Whether you’re in a group, workshop, or craft night, you’re part of a community that gets it.",
+        "Badger Supports sends out updates about every two weeks."
+      ],
+      "primary": {
+        "label": "Join Our Email List",
+        "href": "https://forms.gle/THmnT9QCdeeaoZx38",
+        "icon": "out"
+      },
+      "photos": [
+        "m-people-visionboards",
+        "m-peer-day-tue",
+        "m-craft-stickers"
+      ]
+    },
+    {
+      "id": "b-el-add",
+      "type": "expect",
+      "title": "Add Yourself (Optional)",
+      "items": [
+        {
+          "icon": "mail",
+          "text": "Send an email to badgersupports+subscribe@g-groups.wisc.edu."
+        },
+        {
+          "icon": "calendar",
+          "text": "Within a minute or two, you’ll receive an email to confirm your membership."
+        },
+        {
+          "icon": "pencil",
+          "text": "To complete your subscription to the email list, reply to the email you received and send a blank email. Do not use the option of clicking the ‘Join This Group’ button."
+        },
+        {
+          "icon": "check",
+          "text": "You will receive a confirmation email once you have replied to the email and have joined the group."
+        }
+      ],
+      "links": [
+        {
+          "label": "Email badgersupports+subscribe@g-groups.wisc.edu",
+          "href": "mailto:badgersupports+subscribe@g-groups.wisc.edu",
+          "icon": "mail"
+        }
+      ],
+      "photos": [
+        "m-craft-friends"
+      ]
+    }
+  ]
+}

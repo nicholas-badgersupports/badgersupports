@@ -1,0 +1,59 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-resources",
+  "path": "/resources/",
+  "title": "Resources — Badger Supports",
+  "description": "General student resources, basic needs, health resources and identity based resources, on and off campus.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-res-head",
+      "type": "pagehead",
+      "title": "Resources",
+      "label": "Call for Help: Mental Health Crisis Support:",
+      "lead": "You Are Not Alone.",
+      "primary": {
+        "label": "608-265-5600 (option 9)",
+        "href": "tel:+16082655600"
+      }
+    },
+    {
+      "id": "b-res-list",
+      "type": "resources",
+      "title": "Browse by Topic",
+      "source": "resources",
+      "topics": [
+        { "id": "mental-health", "label": "Mental Health & Wellbeing", "category": "mental_emotional_health", "aliases": ["health"] },
+        { "id": "basic-needs", "label": "Basic Needs", "category": "food_essential_needs" },
+        { "id": "housing", "label": "Housing", "category": "housing" },
+        { "id": "safety", "label": "Safety & Survivor Support", "category": "safety_survivor_support" },
+        { "id": "financial", "label": "Financial Support", "category": "financial_support" },
+        { "id": "physical-health", "label": "Physical Health", "category": "physical_health" },
+        { "id": "academic", "label": "Academic Support", "category": "academic_learning" },
+        { "id": "community", "label": "Community & Involvement", "category": "identity_belonging", "aliases": ["identity-based"] },
+        { "id": "student-assistance", "label": "Student Assistance", "category": "navigation_general" },
+        { "id": "career", "label": "Career & Employment", "category": "career_employment" },
+        { "id": "family-care", "label": "Child & Family Care", "category": "parenting_child_care" },
+        { "id": "legal", "label": "Legal Services", "category": "legal_rights" },
+        { "id": "disability", "label": "Disability & Accessibility", "category": "disability_access" },
+        { "id": "technology", "label": "Technology", "category": "technology_access" },
+        { "id": "transportation", "label": "Transportation", "category": "transportation" },
+        { "id": "research", "label": "Research & Creative Work", "category": "research_creation" }
+      ]
+    },
+    {
+      "id": "b-res-feedback",
+      "type": "text",
+      "body": [
+        "For requests or feedback on this resource list, please email us."
+      ],
+      "links": [
+        {
+          "label": "directors@badgersupports.org",
+          "href": "mailto:directors@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-dogs-on-call",
+  "path": "/initiatives/dogs-on-call/",
+  "title": "Dogs on Call — Badger Supports",
+  "description": "Dogs on Call at the Student Mental Health Hub. Every session is free and drop-in. All are welcome!",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-dc-hero",
+      "type": "eventhero",
+      "title": "Dogs on Call",
+      "lead": "At the Student Mental Health Hub",
+      "source": "events-fixture",
+      "program": "other",
+      "photos": [
+        "m-dogs-corgi",
+        "m-dogs-black-dog",
+        "m-openhouse-golden-retriever"
+      ]
+    },
+    {
+      "id": "b-dc-visits",
+      "type": "events",
+      "title": "Fall 2026 Visits",
+      "source": "events-fixture",
+      "program": "other",
+      "show": "upcoming",
+      "skip": 1,
+      "count": 6
+    },
+    {
+      "id": "b-dc-about",
+      "type": "text",
+      "body": [
+        "Every session is FREE & drop-in. All are welcome!",
+        "Dogs on Call is brought to the Student Mental Health Hub in collaboration with Badger Supports and UHS-Prevention.",
+        "Find other campus visits on the Dogs on Call Calendar."
+      ],
+      "links": [
+        {
+          "label": "Dogs on Call Calendar",
+          "href": "https://dogsoncall.org/calendar-of-events/",
+          "icon": "out"
+        },
+        {
+          "label": "UHS-Prevention",
+          "href": "https://www.uhs.wisc.edu/prevention/",
+          "icon": "out"
+        }
+      ]
+    },
+    {
+      "id": "b-dc-hub",
+      "type": "directions",
+      "anchor": "get-directions",
+      "heading": "h2",
+      "title": "Directions to the Student Mental Health Hub",
+      "place": "sac-mhh"
+    }
+  ]
+}

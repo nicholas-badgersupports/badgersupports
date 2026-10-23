@@ -37,6 +37,10 @@
     {
       "id": "staff",
       "label": "Staff page and edit button"
+    },
+    {
+      "id": "resources",
+      "label": "Resource list"
     }
   ],
   "text": {
@@ -1173,6 +1177,166 @@
       "group": "staff",
       "text": "Back to the staff page",
       "where": "Link at the bottom of the sign-in problem page."
+    },
+    "resources.search.label": {
+      "group": "resources",
+      "text": "Resource Search",
+      "where": "On the resource list: the label over the search box."
+    },
+    "resources.search.hint": {
+      "group": "resources",
+      "text": "Search by need, service, or organization, such as food, housing, or counseling.",
+      "where": "On the resource list: the line under the search label."
+    },
+    "resources.search.clear": {
+      "group": "resources",
+      "text": "Clear Search",
+      "where": "On the resource list: the button beside the search box once something is typed."
+    },
+    "resources.topics.all": {
+      "group": "resources",
+      "text": "All Topics",
+      "where": "On the resource list: the first topic button, which shows every resource."
+    },
+    "resources.count.all": {
+      "group": "resources",
+      "text": "{{n}} Resources",
+      "where": "On the resource list: how many resources there are, when nothing is chosen."
+    },
+    "resources.count.one": {
+      "group": "resources",
+      "text": "1 Resource",
+      "where": "On the resource list: the count when the list holds one resource."
+    },
+    "resources.count.some": {
+      "group": "resources",
+      "text": "Showing {{shown}} of {{total}} Resources",
+      "where": "On the resource list: the count after a topic or a search narrows the list."
+    },
+    "resources.relaxed": {
+      "group": "resources",
+      "text": "No exact match. Showing resources that begin with your search words.",
+      "where": "On the resource list: shown when nothing matched the search exactly and the list falls back to words that begin the same way."
+    },
+    "resources.none.title": {
+      "group": "resources",
+      "text": "No Resources Match Your Search.",
+      "where": "On the resource list: the heading when a search finds nothing."
+    },
+    "resources.none.body": {
+      "group": "resources",
+      "text": "Try another search term or browse by topic.",
+      "where": "On the resource list: the line under that heading."
+    },
+    "resources.none.reset": {
+      "group": "resources",
+      "text": "Start Over",
+      "where": "On the resource list: the button that clears the search and the topic."
+    },
+    "resources.cost.free": {
+      "group": "resources",
+      "text": "Free",
+      "where": "On the resource list: the cost chip on a card."
+    },
+    "resources.cost.covered": {
+      "group": "resources",
+      "text": "Free for Students",
+      "where": "On the resource list: the cost chip on a card."
+    },
+    "resources.cost.reduced": {
+      "group": "resources",
+      "text": "Reduced Cost",
+      "where": "On the resource list: the cost chip on a card."
+    },
+    "resources.cost.paid": {
+      "group": "resources",
+      "text": "Paid",
+      "where": "On the resource list: the cost chip on a card."
+    },
+    "resources.cost.varies": {
+      "group": "resources",
+      "text": "Cost Varies",
+      "where": "On the resource list: the cost chip on a card."
+    },
+    "resources.cost.unknown": {
+      "group": "resources",
+      "text": "Cost Not Specified",
+      "where": "On the resource list: the cost chip on a card whose record gives no cost."
+    },
+    "resources.where.onCampus": {
+      "group": "resources",
+      "text": "On Campus",
+      "where": "On the resource list: the place chip on a card."
+    },
+    "resources.where.madison": {
+      "group": "resources",
+      "text": "In Madison",
+      "where": "On the resource list: the place chip on a card."
+    },
+    "resources.where.national": {
+      "group": "resources",
+      "text": "National",
+      "where": "On the resource list: the place chip on a card."
+    },
+    "resources.fit": {
+      "group": "resources",
+      "text": "Recommended For",
+      "where": "On the resource list: the words before who a resource suits, on each card."
+    },
+    "resources.more": {
+      "group": "resources",
+      "text": "Additional Details",
+      "where": "On the resource list: the button on a card that opens the rest of its record."
+    },
+    "resources.view": {
+      "group": "resources",
+      "text": "View Details",
+      "where": "On the resource list: a card's button when its record's own button label is a phone number, starts with Call, is long or is missing."
+    },
+    "resources.close": {
+      "group": "resources",
+      "text": "Close",
+      "where": "On the resource list: the button that closes Additional Details."
+    },
+    "resources.detail.phone": {
+      "group": "resources",
+      "text": "Phone:",
+      "where": "On the resource list: a line in Additional Details."
+    },
+    "resources.detail.email": {
+      "group": "resources",
+      "text": "Email:",
+      "where": "On the resource list: a line in Additional Details."
+    },
+    "resources.detail.hours": {
+      "group": "resources",
+      "text": "Hours:",
+      "where": "On the resource list: a line in Additional Details."
+    },
+    "resources.detail.where": {
+      "group": "resources",
+      "text": "Location:",
+      "where": "On the resource list: a line in Additional Details."
+    },
+    "resources.detail.who": {
+      "group": "resources",
+      "text": "Eligibility:",
+      "where": "On the resource list: a line in Additional Details."
+    },
+    "resources.detail.cost": {
+      "group": "resources",
+      "text": "Cost:",
+      "where": "On the resource list: a line in Additional Details."
+    },
+    "resources.scope": {
+      "group": "resources",
+      "text": "Details change. Check the official page before relying on hours, availability or eligibility.",
+      "where": "On the resource list: the note under the list."
+    },
+    "resources.updated": {
+      "group": "resources",
+      "text": "Last Updated {{monLong}} {{dom}}, {{year}}",
+      "where": "On the resource list: the date the list was last checked, after the note under the list."
     }
   }
 }

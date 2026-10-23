@@ -40,11 +40,11 @@ uses them:
 
 | Disposition | Routes | Means here |
 |---|---|---|
-| keep | 11 | the same address; the page is carried over |
+| keep | 13 | the same address; the page is carried over |
 | improve | 7 | the same address; the page is redesigned |
-| replace | 9 | a new address or a new kind of page; the old address 301s to it |
+| replace | 11 | a new address or a new kind of page; the old address 301s to it |
 | redirect | 4 | the live address itself is a quirk of Google Sites; it 301s to a plain one |
-| investigate | 4 | no destination until the owner says whether the page is current |
+| investigate | 0 | no destination until the owner says whether the page is current |
 | new | 4 | no live address |
 | **total** | **39** | |
 
@@ -62,29 +62,29 @@ uses them:
 | replace | team-member pattern | `/about/our-team/<slug>/` | pattern | See "Team-member addresses" |
 | redirect | `/about/f-a-q` | `/about/faq/` | yes | |
 | replace | `/about/mh-hub` | `/directions/sac-mhh/` | yes | The Hub's room page, also shown on the peer support groups page |
-| redirect | `/equity-belonging/equity-belonging` | `/about/equity-belonging/` | no | A doubled path |
-| keep | `/initiatives/dogs-on-call` | same, with `/` | no | Event dates to come from Connect's public export |
-| keep | `/initiatives/housing-hub` | same | no | |
-| improve | `/initiatives/open-house` | same | no | The countdown embed becomes a dated announcement block |
-| keep | `/initiatives/referral-cards` | same | no | Its Google Form is to be rebuilt natively |
-| redirect | `/initiatives/ribbons-౨ৎ` | `/initiatives/ribbons/` | no | Two decorative non-Latin characters in the path |
-| investigate | `/initiatives/little-hearts` | | no | Not in the live menu |
-| investigate | `/initiatives/student-activity-center` | | no | Not in the live menu |
-| investigate | `/initiatives/university-square` | | no | Not in the live menu |
-| keep | `/join/alumni` | same | no | Its form is restricted to badgersupports.org accounts today |
+| redirect | `/equity-belonging/equity-belonging` | `/about/equity-belonging/` | yes | A doubled path |
+| keep | `/initiatives/dogs-on-call` | same, with `/` | yes | Visit dates from the event fixture, typed from the live page, until Connect's public export |
+| keep | `/initiatives/housing-hub` | same | yes | Dates from the event fixture, as Dogs on Call |
+| improve | `/initiatives/open-house` | same | yes | The countdown embed became a dated lead |
+| keep | `/initiatives/referral-cards` | same | yes | Still links its Google Form; a native one is to come |
+| redirect | `/initiatives/ribbons-౨ৎ` | `/initiatives/ribbons/` | yes | Two decorative non-Latin characters in the path |
+| replace | `/initiatives/little-hearts` | `/directions/sac-mhh/` | yes | Not in the live menu. Retired 20 Oct 2026 at the owner's word: a 301 to the Hub, where the hearts are picked up |
+| keep | `/initiatives/student-activity-center` | same, with `/` | yes | Not in the live menu, nor here. The Student Services Tower Directory, floor by floor; the referral cards link it. Rebuilt 20 Oct 2026 at the owner's word |
+| keep | `/initiatives/university-square` | same, with `/` | yes | Not in the live menu, nor here. Each place on the square; the Student Activity Center page links it. Rebuilt 20 Oct 2026 at the owner's word |
+| keep | `/join/alumni` | same | yes | Links its form, which is restricted to badgersupports.org accounts today. The live list of alumni names is left out |
 | keep | `/join/craft-nights` | same | yes | |
-| replace | `/join/email-list` | same | no | A native form replaces the Google Form (`../COMMUNICATIONS.md`) |
+| replace | `/join/email-list` | same | yes | Still the Google Form and the subscribe address; a native form is to replace them (`../COMMUNICATIONS.md`) |
 | improve | `/join/get-involved` | same | yes | The header's and the homepage's Get involved button |
-| investigate | `/join/leadership` | | no | Not in the live menu; says recruitment is paused |
+| replace | `/join/leadership` | `/join/get-involved/` | yes | Not in the live menu; says recruitment is paused. Retired 20 Oct 2026 at the owner's word: a 301 to Get involved |
 | improve | `/join/peer-support-groups` | same | yes | |
-| keep | `/join/request-a-workshop` | same | no | Its Google Form is now `/forms/workshop-request/` |
-| keep | three Behind the Workshop pages | same | no | Under `/join/request-a-workshop/behind-the-workshop/`: support-networks, stress-management-self-care, navigating-housing. Not in the live menu |
-| keep | `/operations/press` | same | no | |
-| improve | `/operations/privacy-policy` | same | no | Needs the owner's and a legal review before launch |
+| keep | `/join/request-a-workshop` | same | yes | Its Google Form is now `/forms/workshop-request/` |
+| keep | three Behind the Workshop pages | same | yes | Under `/join/request-a-workshop/behind-the-workshop/`: support-networks, stress-management-self-care, navigating-housing. Not in the live menu |
+| keep | `/operations/press` | same | yes | Each article's title and date; the excerpts are left out, because they name real people |
+| improve | `/operations/privacy-policy` | same | yes | The live words, unchanged. They still describe Google Sites, Google Analytics and Google Forms: the owner's and a legal review before launch |
 | replace | `/operations/directions/sac-caucus` | `/directions/sac-caucus/` | yes | A room record |
 | replace | `/operations/directions/lcm` | `/directions/lcm/` | yes | A room record |
-| keep | `/request-a-program` | same | no | |
-| replace | `/resources/general`, `/basic-needs`, `/health`, `/identity-based` | `/resources/` | no | Four rows: one viewer, and each old path 301s to `?topic=` |
+| keep | `/request-a-program` | same | yes | The peer group and volunteer training requests still open their Google Form |
+| replace | `/resources/general`, `/basic-needs`, `/health`, `/identity-based` | `/resources/` | yes | Four rows: one list, and each old path 301s to `?topic=` (`RESOURCES-VIEWER-2026-10-20.md`) |
 | new | | `/forms/workshop-request/` | yes | |
 | new | | `/forms/programming-feedback/` | yes | Anonymous |
 | new | | `/staff/` | yes | Refuses everyone until Connect sign-in exists |
@@ -104,45 +104,40 @@ repository. The inventory is `PEOPLE-ROUTES-2026-10-19.md`, beside the repositor
 
 ## Redirects written today
 
-`dist/_redirects`, built 20 Oct 2026, has 9 lines:
+`dist/_redirects`, built 20 Oct 2026, has 17 lines:
 
 | From | To |
 |---|---|
 | `/home` | `/` |
 | `/about/f-a-q` | `/about/faq/` |
 | `/about/mh-hub` | `/directions/sac-mhh/` |
+| `/equity-belonging/equity-belonging` | `/about/equity-belonging/` |
+| `/initiatives/ribbons-%E0%B1%A8%E0%A7%8E` | `/initiatives/ribbons/` |
+| `/initiatives/little-hearts` | `/directions/sac-mhh/` |
+| `/join/leadership` | `/join/get-involved/` |
 | `/operations/directions/sac-caucus` | `/directions/sac-caucus/` |
 | `/operations/directions/lcm` | `/directions/lcm/` |
+| `/resources/general` | `/resources/?topic=general` |
+| `/resources/basic-needs` | `/resources/?topic=basic-needs` |
+| `/resources/health` | `/resources/?topic=health` |
+| `/resources/identity-based` | `/resources/?topic=identity-based` |
 | `/about/our-team/{group}/*`, four lines | `/about/our-team/` |
 
-Each line is a 301.
+Each line is a 301. The ribbons line is the live path percent-encoded.
 
 ## Redirects waiting for their page
 
 A route marked `redirect`, or `replace` with a new path, writes its 301 only once the page at the new path is
 built (`redirectsFile()`, `ops/build.mjs`). Until then it is listed in `.build/report.json` under
-`redirectsWaiting`. Six wait today:
-
-| From | To |
-|---|---|
-| `/equity-belonging/equity-belonging` | `/about/equity-belonging/` |
-| `/initiatives/ribbons-౨ৎ` | `/initiatives/ribbons/` |
-| `/resources/general` | `/resources/?topic=general` |
-| `/resources/basic-needs` | `/resources/?topic=basic-needs` |
-| `/resources/health` | `/resources/?topic=health` |
-| `/resources/identity-based` | `/resources/?topic=identity-based` |
+`redirectsWaiting`. None waits today.
 
 ## Links that still go to the live site
 
 A link to a path this site does not build goes to the live page instead, marked `data-pending`
-(`resolveLink()`, `src/render/context.mjs`). Today the build reports 16:
-
-- **13 on every page**, from the menu or the footer: `/about/equity-belonging/`, `/initiatives/dogs-on-call/`,
-  `/initiatives/housing-hub/`, `/initiatives/open-house/`, `/initiatives/referral-cards/`,
-  `/initiatives/ribbons/`, `/join/alumni/`, `/join/email-list/`, `/join/request-a-workshop/`,
-  `/operations/press/`, `/operations/privacy-policy/`, `/request-a-program/` and `/resources/`. The last goes
-  to the live `/resources/general`.
-- **3 on two pages**, `/` and `/about/what-we-do/`: the three Behind the Workshop pages.
+(`resolveLink()`, `src/render/context.mjs`). Today the build reports none. The last was the referral cards page's
+"Student Services Tower Directory" link, answered when `/initiatives/student-activity-center/` was built on 20 Oct
+2026. The test "links to pages not built yet go to the live site, never to a dead local path" checks the rule
+with a made-up path.
 
 ## The switch
 
@@ -155,26 +150,22 @@ answering there. Two things would then break:
 So `node ops/build.mjs --production` refuses to build while either remains (`cutoverProblems()`,
 `ops/build.mjs`; the test "a production build refuses anything still left on the live site",
 `test/build.test.mjs`). The prototype build does not run this check; its `.build/report.json` lists only the
-pending links and the waiting redirects. Run against the content on 20 Oct 2026, the check finds 39:
+pending links and the waiting redirects. Run against the content on 20 Oct 2026, the check found 39 in the
+morning and finds none now:
 
-| What is left | Disposition | Count |
-|---|---|---|
-| Live addresses with no page | investigate | 4 |
-| | redirect | 2 |
-| | replace | 5: the four resources pages and `/join/email-list` |
-| | keep | 10 |
-| | improve | 2: `/initiatives/open-house` and `/operations/privacy-policy` |
-| **Live addresses, total** | | **23** |
-| Links to pages not built | | 16 |
-| **Total** | | **39** |
+| What is left | Count |
+|---|---|
+| Live addresses with no page | 0 |
+| Links to pages not built | 0 |
+| **Total** | **0** |
 
-Eleven live addresses are answered: `/`, `/home`, `/about/what-we-do`, `/about/our-team`, `/about/f-a-q`,
-`/about/mh-hub`, `/join/craft-nights`, `/join/get-involved`, `/join/peer-support-groups`,
-`/operations/directions/sac-caucus` and `/operations/directions/lcm`. The team-member pattern is not counted;
-its catch-alls answer it.
+Every live address is answered: 34 by a page built here, of which 13 are reached through a 301. The
+team-member pattern is not counted; its catch-alls answer it. Of the four hidden pages, the owner had Student
+Activity Center and University Square rebuilt, and Little Hearts and Leadership retired with a 301 each (20 Oct).
+A production build still refuses for another reason: the hand-typed fixtures, until Connect's exports exist.
 
-An `investigate` page that the owner retires still needs an answer. The check has no "gone" disposition, so
-that page would need a 301 to a page that exists. That is a **proposal**.
+A page the owner retires still needs an answer. The check has no "gone" disposition, so a retired page 301s to
+a page that exists, as Little Hearts and Leadership do (the owner's choice, 20 Oct).
 
 ## Other badgersupports.org addresses the live pages link to
 
@@ -201,7 +192,7 @@ and `content/forms/programming-feedback.json` records it under `source.aliases`.
   on 20 Oct 2026.
 - **Links from outside the site**: search results, printed material, Instagram, Connect and old emails. No
   referrer data was read; the GA4 property is not verified (`../ANALYTICS.md`).
-- **Whether Netlify matches the ribbons path.** Once its page is built, `redirectsFile()` will write it
-  percent-encoded (`encodeURI`). Test it on a deploy preview before relying on it.
+- **Whether Netlify matches the ribbons path.** `redirectsFile()` writes it percent-encoded (`encodeURI`).
+  Test it on a deploy preview before relying on it.
 - **The live site after 19 Oct 2026.** A page added or renamed since then is not in this map.
 - **The Google My Maps embed** on the live resources pages.

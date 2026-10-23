@@ -1,0 +1,55 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-btw-support-networks",
+  "path": "/join/request-a-workshop/behind-the-workshop/support-networks/",
+  "title": "Behind the Workshop: Building Support Networks — Badger Supports",
+  "description": "Building Support Networks: creating a foundation for personal growth, resilience, and long-term success.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-btw-sn-head",
+      "type": "pagehead",
+      "label": "Behind the Workshop",
+      "title": "Building Support Networks",
+      "lead": "Creating a foundation for personal growth, resilience, and long-term success.",
+      "body": [
+        "Building Support Networks was created in collaboration with the 2025-2026 Badger Supports Programs Team."
+      ],
+      "links": [
+        {
+          "label": "Request a Workshop",
+          "href": "/join/request-a-workshop/",
+          "icon": "back"
+        }
+      ],
+      "photos": [
+        "m-workshop-herald-room"
+      ]
+    },
+    {
+      "id": "b-btw-sn-quote",
+      "type": "text",
+      "title": "Behind the Workshop",
+      "body": [
+        "“Coming into college, I had heard some cliche advice about growing support networks, but I didn’t know how to implement it.",
+        "After completing this workshop, I hope participants are able to identify different types of support in their own lives and use the advice to grow their own support networks. Everyone needs to know that it is okay to ask for support in all different aspects of their lives and to learn how to do so from the workshop.",
+        "It is crucial that all students know they are not alone during their time at school. College can be very isolating for some and knowing what resources are available for them is important. The skills and information shared will set students up for success not just in college but beyond as well.”",
+        "— Programs Coordinator, 2025"
+      ]
+    },
+    {
+      "id": "b-btw-sn-slide",
+      "type": "cta",
+      "title": "The Circle of Support",
+      "body": "The creator’s favorite slide is “The Circle of Support.” It visually represents how different types of support connect to form your overall network, placing you at the center and showing the many people, communities, and resources that surround and strengthen you. It’s a powerful reminder that support is all around, even when it’s easy to overlook.",
+      "primary": {
+        "label": "Request This Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "photos": [
+        "m-btw-support-networks-slide"
+      ],
+      "whole": true
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-referral-cards",
+  "path": "/initiatives/referral-cards/",
+  "title": "Resource Referral Cards — Badger Supports",
+  "description": "Resource Referral Cards make it easier to get connected with resources on and off campus.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-rc-head",
+      "type": "pagehead",
+      "title": "Resource Referral Cards",
+      "lead": "Resource Referral Cards make it easier to get connected with resources on and off campus. Each card highlights a specific type of support, such as mental health, housing, or financial help, and includes a QR code that links directly to more detailed resources online."
+    },
+    {
+      "id": "b-rc-cards",
+      "type": "cards",
+      "variant": "whole",
+      "title": "Our Resource Referral Cards",
+      "items": [
+        {
+          "id": "d-rc-financial",
+          "title": "Financial Resources",
+          "photo": "m-referral-card-wish",
+          "icon": "jar"
+        },
+        {
+          "id": "d-rc-housing",
+          "title": "Navigating Housing",
+          "photo": "m-referral-card-housing",
+          "icon": "pin",
+          "link": {
+            "label": "Navigating Housing Resources",
+            "href": "/initiatives/housing-hub/#resources"
+          }
+        },
+        {
+          "id": "d-rc-333",
+          "title": "333 East Campus Mall",
+          "photo": "m-referral-card-sac",
+          "icon": "bulb",
+          "link": {
+            "label": "Student Services Tower Directory",
+            "href": "/initiatives/student-activity-center"
+          }
+        },
+        {
+          "id": "d-rc-basic-needs",
+          "title": "Basic Needs",
+          "photo": "m-referral-card-basic-needs",
+          "icon": "hand",
+          "link": {
+            "label": "UW Basic Needs Website",
+            "href": "https://basicneeds.students.wisc.edu"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b-rc-propose",
+      "type": "cta",
+      "title": "Propose A New Resource Card By Completing Our Survey",
+      "primary": {
+        "label": "Complete Our Survey",
+        "href": "https://forms.gle/eYdEzbosWkjfUQyN8",
+        "icon": "out"
+      }
+    }
+  ]
+}

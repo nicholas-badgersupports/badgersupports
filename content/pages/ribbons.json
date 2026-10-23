@@ -1,0 +1,122 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-ribbons",
+  "path": "/initiatives/ribbons/",
+  "title": "Colors of Support Solidarity Ribbons — Badger Supports",
+  "description": "Colors of Support is a campus-wide ribbon initiative by Badger Supports that brings visibility, connection, and care to UW–Madison.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-rb-head",
+      "type": "pagehead",
+      "title": "Colors of Support Solidarity Ribbons",
+      "lead": "Colors of Support is a campus-wide ribbon initiative by Badger Supports that brings visibility, connection, and care to UW–Madison. Each ribbon represents a different cause or experience—from mental health and recovery to pride, advocacy, and awareness.",
+      "body": [
+        "By picking up and wearing a ribbon, you show solidarity and remind others they are not alone. Display it on your backpack or jacket!",
+        "Free ribbons are available at the Student Mental Health Hub, the Student Activity Center, and at some Badger Supports events. More pickup locations coming soon!"
+      ],
+      "links": [
+        {
+          "label": "Directions to the Student Mental Health Hub",
+          "href": "/directions/sac-mhh/",
+          "icon": "pin"
+        }
+      ],
+      "photos": [
+        "m-peer-ribbon"
+      ]
+    },
+    {
+      "id": "b-rb-causes",
+      "type": "words",
+      "title": "Some of Our Causes",
+      "items": [
+        {
+          "text": "Substance Abuse & Addiction",
+          "size": 2
+        },
+        {
+          "text": "ADHD",
+          "size": 2
+        },
+        {
+          "text": "Childhood Cancer",
+          "size": 2
+        },
+        {
+          "text": "Suicide",
+          "size": 2
+        },
+        {
+          "text": "Mental Health",
+          "size": 2
+        },
+        {
+          "text": "Bipolar Disorder",
+          "size": 2
+        },
+        {
+          "text": "Depression",
+          "size": 2
+        },
+        {
+          "text": "Suicide Prevention",
+          "size": 2
+        },
+        {
+          "text": "OCD & Anxiety",
+          "size": 2
+        },
+        {
+          "text": "Addiction Recovery",
+          "size": 2
+        },
+        {
+          "text": "Eating Disorder",
+          "size": 2
+        },
+        {
+          "text": "Breast Cancer",
+          "size": 2
+        },
+        {
+          "text": "Sleep Disorders",
+          "size": 2
+        },
+        {
+          "text": "LGBTQIA+ Suicide",
+          "size": 2
+        }
+      ]
+    },
+    {
+      "id": "b-rb-making",
+      "type": "expect",
+      "title": "Ribbon Making at Peer Support Groups!",
+      "links": [
+        {
+          "label": "Peer Support Groups",
+          "href": "/join/peer-support-groups/"
+        }
+      ],
+      "photos": [
+        "m-openhouse-ribbon-bowls",
+        "m-ribbons-bowls"
+      ]
+    },
+    {
+      "id": "b-rb-pickup",
+      "type": "cta",
+      "title": "Ribbon Pickup",
+      "body": "Fill out the form to request a ribbon station near you. Student orgs, departments, and campus units are welcome to host.",
+      "primary": {
+        "label": "Request a Ribbon Station",
+        "href": "https://forms.gle/GgfggAR7nRVSXrZPA",
+        "icon": "out"
+      },
+      "photos": [
+        "m-ribbons-table"
+      ]
+    }
+  ]
+}

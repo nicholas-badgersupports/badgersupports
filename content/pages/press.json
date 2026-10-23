@@ -1,0 +1,99 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-press",
+  "path": "/operations/press/",
+  "title": "Press — Badger Supports",
+  "description": "Badger Supports and Badger Support Network in the Badger Herald and The Daily Cardinal.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-pr-head",
+      "type": "pagehead",
+      "title": "Press",
+      "links": [
+        {
+          "label": "Press Inquiries",
+          "href": "mailto:hello@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
+    },
+    {
+      "id": "b-pr-herald",
+      "type": "cards",
+      "variant": "activities",
+      "title": "From the Badger Herald",
+      "items": [
+        {
+          "id": "pr-herald-housing",
+          "icon": "pin",
+          "title": "Navigating Housing Workshop provides UW students with housing search resources",
+          "lines": [
+            "September 17, 2025"
+          ],
+          "link": {
+            "label": "Read the Article",
+            "href": "https://badgerherald.com/news/campus/2025/09/17/navigating-housing-workshop-provides-uw-students-with-housing-search-resources/"
+          }
+        },
+        {
+          "id": "pr-herald-spm",
+          "icon": "ribbon",
+          "title": "Badger Supports to create safe space for Suicide Prevention Month",
+          "lines": [
+            "September 5, 2025"
+          ],
+          "link": {
+            "label": "Read the Article",
+            "href": "https://badgerherald.com/news/campus/2025/09/05/badger-supports-to-create-safe-space-for-suicide-prevention-month/"
+          }
+        },
+        {
+          "id": "pr-herald-advocates",
+          "icon": "hand",
+          "title": "Self-advocates: UW students with disabilities fight for access, inclusion on campus",
+          "lines": [
+            "February 4, 2025"
+          ],
+          "link": {
+            "label": "Read the Article",
+            "href": "https://badgerherald.com/features/2025/02/04/self-advocates-uw-students-with-disabilities-fight-for-access-inclusion-on-campus/"
+          }
+        },
+        {
+          "id": "pr-herald-founder",
+          "icon": "chat",
+          "title": "People of UW-Madison: Badger Support Network founder explains the importance of mental health advocacy",
+          "lines": [
+            "September 20, 2021"
+          ],
+          "link": {
+            "label": "Read the Article",
+            "href": "https://badgerherald.com/features/2021/09/20/people-of-uw-madison-badger-support-network-founder-explains-the-importance-of-mental-health-advocacy/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b-pr-cardinal",
+      "type": "cards",
+      "variant": "activities",
+      "title": "From The Daily Cardinal",
+      "items": [
+        {
+          "id": "pr-cardinal-crisis",
+          "icon": "chat",
+          "title": "Campus organizations help UW-Madison students with mental health crisis",
+          "lines": [
+            "September 2024"
+          ],
+          "text": "Two UW-Madison student organizations hope to help students facing mental health issues through peer-to-peer support.",
+          "link": {
+            "label": "Read the Article",
+            "href": "https://www.dailycardinal.com/article/2024/09/uw-madison-students-wrestle-with-suicide-prevention-campus-organizations-have-stepped-up-to-help"
+          }
+        }
+      ]
+    }
+  ]
+}

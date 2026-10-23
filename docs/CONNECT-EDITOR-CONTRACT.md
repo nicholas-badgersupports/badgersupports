@@ -58,7 +58,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 |---|---|---|
 | `title` | one line of text | **required** |
 | `intro` | one line of text |  |
-| `source` | a named data source (events, wall notes, team) | **required** |
+| `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `days` | a whole number |  |
 | `later` | a whole number |  |
 | `laterTitle` | one line of text |  |
@@ -96,7 +96,7 @@ Reads: `wallNotes` · analytics: `none` · photos load lazy · browser module `w
 |---|---|---|
 | `title` | one line of text | **required** |
 | `intro` | one line of text |  |
-| `source` | a named data source (events, wall notes, team) | **required** |
+| `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `show` | a whole number |  |
 | `more` | one line of text |  |
 
@@ -204,7 +204,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 | `heading` | one of `h1`, `h2` |  |
 | `lead` | one line of text |  |
 | `note` | one line of text |  |
-| `source` | a named data source (events, wall notes, team) | **required** |
+| `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 | `count` | a whole number |  |
 | `recent` | a whole number |  |
@@ -224,7 +224,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
 | `nextLabel` | one line of text |  |
-| `source` | a named data source (events, wall notes, team) | **required** |
+| `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 
@@ -252,6 +252,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon | **required** |
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
+| `whole` | on or off |  |
 
 ### Team — `team`
 
@@ -263,7 +264,7 @@ Reads: `team` · analytics: `page` · photos load lazy
 | `heading` | one of `h1`, `h2` |  |
 | `lead` | one line of text |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
-| `source` | a named data source (events, wall notes, team) | **required** |
+| `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `groups` | the groups to show, in order: each a group (`directors`, `associate-directors`, `staff`, `volunteers` or `advisors`) and, if it needs one, the heading over it | **required** |
 | `card` | one of `role`, `title` |  |
 
@@ -295,7 +296,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|
-| `variant` | one of `days`, `activities` | **required** |
+| `variant` | one of `days`, `activities`, `whole` | **required** |
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
 | `items` | cards, each with an id, a title, short lines shown in bold (a time, a slogan), one quieter line of text, an optional photo (a library photo or a pasted link), an optional icon shown when there is no photo, and an optional link | **required** |
@@ -331,6 +332,28 @@ Reads: nothing but its own fields · analytics: `none` · photos load eager · b
 | `title` | one line of text | **required** |
 | `body` | one or more paragraphs | **required** |
 | `signIn` | one line of text | **required** |
+
+### Resource list — `resources`
+
+Reads: `resources` · analytics: `none` · photos load lazy · browser module `resources.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `source` | a named data source (events, wall notes, team, resources) | **required** |
+| `topics` | topics, in order: each an `id` (the address word, `?topic=`), a `label`, one of Connect's sixteen resource categories (`category`), and optional old address words (`aliases`) that open it; a topic no resource carries is not shown | **required** |
+
+### Directory — `directory`
+
+Reads: nothing but its own fields · analytics: `none` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `groups` | groups in order, each with an id, a heading, an optional second line and its places: each a name, an optional address and an optional link | **required** |
+| `links` | several links, in order |  |
 
 ## Icons
 
@@ -416,7 +439,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 
 ## Every other word (`content/text.json`)
 
-226 keys. Keys are permanent. Required text cannot be published empty and must keep each
+258 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -689,6 +712,43 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `auth.error.rateLimited` | Too many sign-in attempts from this connection. Wait a few minutes, then try again. | Sign-in problem: too many attempts. |  |
 | `auth.error.failed` | Something went wrong signing in. Start again from the staff page. | Sign-in problem: anything else. |  |
 | `auth.error.back` | Back to the staff page | Link at the bottom of the sign-in problem page. |  |
+
+### Resource list (32)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `resources.search.label` | Resource Search | On the resource list: the label over the search box. |  |
+| `resources.search.hint` | Search by need, service, or organization, such as food, housing, or counseling. | On the resource list: the line under the search label. |  |
+| `resources.search.clear` | Clear Search | On the resource list: the button beside the search box once something is typed. |  |
+| `resources.topics.all` | All Topics | On the resource list: the first topic button, which shows every resource. |  |
+| `resources.count.all` | {{n}} Resources | On the resource list: how many resources there are, when nothing is chosen. | `{{n}}` |
+| `resources.count.one` | 1 Resource | On the resource list: the count when the list holds one resource. |  |
+| `resources.count.some` | Showing {{shown}} of {{total}} Resources | On the resource list: the count after a topic or a search narrows the list. | `{{shown}}` `{{total}}` |
+| `resources.relaxed` | No exact match. Showing resources that begin with your search words. | On the resource list: shown when nothing matched the search exactly and the list falls back to words that begin the same way. |  |
+| `resources.none.title` | No Resources Match Your Search. | On the resource list: the heading when a search finds nothing. |  |
+| `resources.none.body` | Try another search term or browse by topic. | On the resource list: the line under that heading. |  |
+| `resources.none.reset` | Start Over | On the resource list: the button that clears the search and the topic. |  |
+| `resources.cost.free` | Free | On the resource list: the cost chip on a card. |  |
+| `resources.cost.covered` | Free for Students | On the resource list: the cost chip on a card. |  |
+| `resources.cost.reduced` | Reduced Cost | On the resource list: the cost chip on a card. |  |
+| `resources.cost.paid` | Paid | On the resource list: the cost chip on a card. |  |
+| `resources.cost.varies` | Cost Varies | On the resource list: the cost chip on a card. |  |
+| `resources.cost.unknown` | Cost Not Specified | On the resource list: the cost chip on a card whose record gives no cost. |  |
+| `resources.where.onCampus` | On Campus | On the resource list: the place chip on a card. |  |
+| `resources.where.madison` | In Madison | On the resource list: the place chip on a card. |  |
+| `resources.where.national` | National | On the resource list: the place chip on a card. |  |
+| `resources.fit` | Recommended For | On the resource list: the words before who a resource suits, on each card. |  |
+| `resources.more` | Additional Details | On the resource list: the button on a card that opens the rest of its record. |  |
+| `resources.view` | View Details | On the resource list: a card's button when its record's own button label is a phone number, starts with Call, is long or is missing. |  |
+| `resources.close` | Close | On the resource list: the button that closes Additional Details. |  |
+| `resources.detail.phone` | Phone: | On the resource list: a line in Additional Details. |  |
+| `resources.detail.email` | Email: | On the resource list: a line in Additional Details. |  |
+| `resources.detail.hours` | Hours: | On the resource list: a line in Additional Details. |  |
+| `resources.detail.where` | Location: | On the resource list: a line in Additional Details. |  |
+| `resources.detail.who` | Eligibility: | On the resource list: a line in Additional Details. |  |
+| `resources.detail.cost` | Cost: | On the resource list: a line in Additional Details. |  |
+| `resources.scope` | Details change. Check the official page before relying on hours, availability or eligibility. | On the resource list: the note under the list. |  |
+| `resources.updated` | Last Updated {{monLong}} {{dom}}, {{year}} | On the resource list: the date the list was last checked, after the note under the list. | `{{monLong}}` `{{dom}}` `{{year}}` |
 
 ## Also edited in Connect
 

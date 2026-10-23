@@ -989,6 +989,519 @@
       "provenance": "Published on the live get involved page; downloaded 2026-10-20 with the owner's approval.",
       "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
       "localFile": "involved-volunteers.png"
+    },
+    {
+      "id": "m-dogs-corgi",
+      "program": "other",
+      "alt": "A fluffy corgi lying flat on the carpet while students sit around it and pet it.",
+      "focal": [
+        47,
+        58
+      ],
+      "width": 1280,
+      "height": 1008,
+      "format": "png",
+      "bytes": 1734772,
+      "sha256": "bee17a3b94196358567cc6c37cb7496aeeca27c6f87e9249b4e41c5f4eb28271",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tM3cDQt9PfRqfHlwxgkYEAw3A4pKKjkB4t0D3XCfsYpU8NIZKToy7y5MOYuOwSiRi8lvjZ1gh0vJ_dayA7ZKSOOI6Q9GxWNoOGkXoa3SuGHhs67VCclB9hGlPdK7jri-cH4-6eJjoQwtvwp3CbwEifflX3wYVcrAo6axM85X3Qq7oE64-7v695T5Rcnlk_uco-OMq6WxK0iAjauxH9WEQ4o5CDfUf3es72j8V20YY=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/dogs-on-call",
+      "provenance": "Published on the live Dogs on Call page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, no faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "dogs-corgi.png"
+    },
+    {
+      "id": "m-dogs-black-dog",
+      "program": "other",
+      "alt": "A black dog resting its head on a student’s shoe, lying on a red plaid blanket.",
+      "focal": [
+        40,
+        55
+      ],
+      "width": 1280,
+      "height": 1013,
+      "format": "jpg",
+      "bytes": 268223,
+      "sha256": "d23812341f3927656d485238586b78eb7b2c6d0044ec79c3abd21c248f91e6c7",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sIu9V3lfiIRuhgNN2bC6tONLyzXY4aiquLVo_Anf-jtpKOkHYe3SkYoWymZh-hA3ZOxadqqRTRroUH77zcKa0ARL-_rQvCsHvUgxNro33K_BuH3gY8t8ccemlBrN_6jnQT8gmdbZBOIhiyVxZMFtgx1pmq7c8-uF0anegoCmqVl469UMO9Q8x769USzVFc6UWM7CE-AYX6CSuA_-Cc4f5MROToJwfOHW-U7KPVL4Q=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/dogs-on-call",
+      "provenance": "Published on the live Dogs on Call page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, no faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "dogs-black-dog.jpg"
+    },
+    {
+      "id": "m-openhouse-counter",
+      "program": "other",
+      "alt": "The Hub’s counter laid out for the open house: a free stickers sign, a Take a Duck! sign, peer support group and Instagram cards, and a neon “badgers” sign on the wall.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 1280,
+      "height": 572,
+      "format": "jpg",
+      "bytes": 238012,
+      "sha256": "97aa3f7324b5d1e896332438516872e70ab9de17d93cc98e49f5373bfea24336",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72upq0Rd20Lvs-Z2iq22Ozrjx4F5Wc2ubYDrzKrPSuyt9israzwFuXFBygJhrEdhlluRwhdOAg3ab_99hQ4RTpjnlSVIsIFuglGLyX57Va9WO0Y4l8ZxvHnX3oPyQDqjQKgEaK-fFDKJebOU4WsiXrOBgyYzoiG6x9zKos2-okXu6_LMHxrPriRq4Lw7Vkh_lT_NXq6aIAxDMJE7TZAsFCLUFBa6usv47OAdtW-N=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-counter.jpg"
+    },
+    {
+      "id": "m-openhouse-golden-retriever",
+      "program": "other",
+      "alt": "Students sitting on the floor and petting a smiling golden retriever.",
+      "focal": [
+        45,
+        35
+      ],
+      "width": 776,
+      "height": 593,
+      "format": "png",
+      "bytes": 694473,
+      "sha256": "00cc65f6c1448c8ff6f3c46ed10b8269c253e0364bb24071518302d5355fe3be",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vswYEZOF_zXAKNcQOtgLiS1wvlQiDZy-Mi8M9mxFrpu7qeYEz1p5v-Wzh8SKQNJE7qeOtt2DaZm6x2wHhM9WgAzWVGtB2NGqgnunuX-RrH8p2UeJ11KTnGwR2ubdkgeho_kizEjWayk5qWUgdpDXWEgTjhbkgHb3QgyVnH4TrEpjsWRjRHkkNxGa5lpK0ml96VtlPKCreaKom1yTr5BBpS7k5eCJZ8YghTVZLEY4s=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, no faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-golden-retriever.png"
+    },
+    {
+      "id": "m-openhouse-ribbon-bowls",
+      "program": "other",
+      "alt": "Bowls of teal, light green and blue ribbon and a bowl of safety pins around a Make & Take a Ribbon! card: OCD & Anxiety Awareness, Mental Health Awareness and Depression Awareness.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 947,
+      "height": 758,
+      "format": "png",
+      "bytes": 1224540,
+      "sha256": "20681cf582fb9d8a9ac061365b80ceb28e62145f619b3f16e4d83ed983f61043",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uDE0Y36ZRaO2XVUXsdhVL7E1a2vfuQfmyEvufcKm7Ebsld1W5SnYSNhlOshBtNq4-TQsuCYQUzxH79sL8IWkDZkIGM6yr0BOaw3HvGSjdK_d8ogu6zfGtHbNAFR29auGnX5EHyTBNFvBh6aBDDz2ugDMtPYAqSFnmTemOmobZm0xVYe2vCLix9M93omit56z4P_UW85VW9To0bJoYSGt9euphZd4C-Z7mt_QJM=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-ribbon-bowls.png"
+    },
+    {
+      "id": "m-openhouse-cow-toys",
+      "program": "other",
+      "alt": "A heap of white stress-toy cows with pink noses, each printed with the Badger Supports logo.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1104,
+      "height": 1074,
+      "format": "jpg",
+      "bytes": 146068,
+      "sha256": "3abd61ec86dee55fd490e4bcb5d2515e1c8f55f94f756480e1c521dd28c337ce",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tFj78El5K-l1nDdxyLPL35faXDxzQY6jLVX1-jz2bDv2K9JMfqCa4AV6L_zUd3kDqX9HxJIsWUO7rqC5ASPggo1peFNC6izrj8cKTPHirqbs5QHH3dlx9cuiY09Pn8yl30vte7Hvjo0EQC1SuEOI4Hm1IXRF90gLUnABGePEe6dVntL8f6knwvz1s-6KSdlb8JwpT_1ExvJSWlUz02i3lWPW6gSYM82a-OLGXPr-8=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Checked at full size 2026-10-20: no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-cow-toys.jpg"
+    },
+    {
+      "id": "m-openhouse-stickers",
+      "program": "other",
+      "alt": "Nine stickers on a dark board, among them “Mad Town”, “It’s OK to not be OK”, “taking it easy”, “You are evolving” and “After rain comes rainbows”.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1164,
+      "height": 1133,
+      "format": "png",
+      "bytes": 2140382,
+      "sha256": "aa2d0a0fbf0feb75ef9980b55edd561b72fc28cf85ba4c4bc8f1b45b2d481bca",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uevlVVAM1nscOXVYMkkZBsxNBsJJliJ-7Z6os7NZt68V1LdR3S1iJoThG_X_oSJ7jzrKqkCDVBFIhLoLlQFflVunP5vA-mOi5A8SsFn1jzU4RnTfuGJAzRGRT4Rq5iapIpOAjeFXLEWRlzdc3FlfvL--KFsGmK4zDnz7Scg9WPQiqGpoiKVGJ5q3dI7dEnk4q68m_8y8RSRpsxQbfW_9kZfcxp1T2t_RVgWwPv=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-stickers.png"
+    },
+    {
+      "id": "m-openhouse-garden-wall",
+      "program": "other",
+      "alt": "Two students drawing flowers on a paper wall headed “add a flower to our Garden of Support”.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 558,
+      "height": 456,
+      "format": "png",
+      "bytes": 339040,
+      "sha256": "3014318af70b276be5665e0e88e114066a26ce350cdceb3d4683a799f528575c",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72s6rkgEiD79huuybVHTottAqs7es18vjjD5zDGZ5U_LKmIBFkNsubaT7-umW1smH90_9iIgBefsQsrapB4bS32dh-mCjfXu7ZF1Wiem7AnYqBDqvDJFvgr-7fDyC5iFB0BGefEZwSOrsFI8azXJSocF7JgqSnUFz1Jpc-payGPtsRzq9zMYbXdutMdYkrkC9b2-QZT07lAuH3pMjBj7dvH3UQYaHgqbIhkr1P_CbRs=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, no faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-garden-wall.png"
+    },
+    {
+      "id": "m-openhouse-hub-table",
+      "program": "other",
+      "alt": "Eight people standing behind a Badger Supports table under the Student Mental Health Hub sign.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1129,
+      "height": 992,
+      "format": "png",
+      "bytes": 1627995,
+      "sha256": "560f17fb344de311b11c0273000983cda40640b7624abe6c93b311cb3bca1b62",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72v4r1vYLSt8blY_joFj_jvcJFuv6Rdohmhgfc2vJeasneWQro-ZJRw4U2czafov4l00bDpoGW0Vgx-Y0TLfawY3Ppvsnt1GERKFwT3jeesP564UIN2eWSRGJQShWitwKQ4bhDIcUKbhnT2OGtv5FJSXi9W_lNzTT_Z3ltkbSQB5ZXTcnfgdPoXLnVP2mww1A1VgbnyAR-6aYCoIltLxpmE_Xd4MM-sj_gVQSedVe1E=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/open-house",
+      "provenance": "Published on the live open house page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Checked at full size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "openhouse-hub-table.png"
+    },
+    {
+      "id": "m-housing-tenant-center",
+      "program": "workshops",
+      "alt": "A session in a meeting room, beside a slide headed Tenant Resource Center.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 407,
+      "height": 440,
+      "format": "png",
+      "bytes": 171439,
+      "sha256": "2c76d4c4b11a26f8e07f0fe49f01c736fde750facaf958424a93bb4ad0cd6ae6",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72sr7TLqIjI2OXFawdTdun-tC8GFU7GECjES4T03mIYQg_gbAI-CvJTYOLk5vmdDTN_08ImppetGVcf7Q_UPWzTF5eLWzAfHrlJavekwHxFNu_qJrGv-Tb6sYhzRgee2hwzPOZlMsU9Wfv0yEskzIY8mBb9FQuOKGlK5Bd7x6zlzXBHu1kTRClWls5iV3EhhLGn9nQKCzNvpmlcnnIfoT74cqnIRt_XVUKwltPvsj7g=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/housing-hub",
+      "provenance": "Published on the live Navigating Housing page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "housing-tenant-center.png"
+    },
+    {
+      "id": "m-housing-handouts",
+      "program": "workshops",
+      "alt": "Two people holding up Navigating Housing Toolkit sheets beside a Badger Supports banner and a table of flyers.",
+      "focal": [
+        65,
+        40
+      ],
+      "width": 1024,
+      "height": 575,
+      "format": "jpg",
+      "bytes": 127332,
+      "sha256": "a0e5e5f99808c8579f91a8fbf48a396d824e994409a3df7ee47dc2ae06b2c302",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tBWX3m8lSnqrgDEk8FIve0pQeq2D5enBW5wDwc7bfMvWMSQP5BrGnV5hMkaaM8VdodhB4LsUEEEa9hRJ20SifZpWQmbsDFuwPn_kAGRt1g8kFzmjAll6FKGBs5wHwtcmzGJqi2K1y2tIvUmp0aikRMWZAMaYcOE9mgIS8nTBicOn9A2hBGiSw6iKxduk3Aaq24gyt0AGisEXgPC_CrGj5nA_43-oyFqWr0D7CyvQU=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/housing-hub",
+      "provenance": "Published on the live Navigating Housing page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Checked at full size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "housing-handouts.jpg"
+    },
+    {
+      "id": "m-housing-panel",
+      "program": "workshops",
+      "alt": "A panel seated at a long red table at the front of a lecture hall.",
+      "focal": [
+        55,
+        50
+      ],
+      "width": 513,
+      "height": 288,
+      "format": "png",
+      "bytes": 173709,
+      "sha256": "e2392d4230fa4309ef9780bd78f6df5babb6bdc7b9cd749feb58afb52656e72d",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vG8W7NzRID-gwVe5fRAljs0VwxZRqM5fR-ODEi0_Lww12t4buplZAGg1A55BsfI92U7vC9zac--11GlK51D2zilooiLj4ZiUonEfv2P7GG1z-H1YcGIVf1pQQuOca6aNeni7dK730U-xUc3yJ7PiM62G3Hn9SvRDVWsmXwvE4Hv6vEqQJIbF19ttO39WHo9uIj871TvbfirtBiDT2WGn3Ge8cFu5_69dOxxR6ZUpg=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/housing-hub",
+      "provenance": "Published on the live Navigating Housing page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Checked at full size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "housing-panel.png"
+    },
+    {
+      "id": "m-referral-card-wish",
+      "program": "other",
+      "alt": "A Badger Supports Resource Referral Card: Wisconsin Scholarship Hub (WiSH). Financial Resources: Make UW-Madison Affordable & Sustainable. Year-Round! Merit & Need Based. Program Specific! Don’t forget to sign in. A QR code for the WiSH Scholarship Hub.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 719,
+      "format": "png",
+      "bytes": 237335,
+      "sha256": "3aa43945f103d264c9c81ffa4bd7874ff131d05d3e67a8f48b89c859c8c63d48",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tKQv9irEbc77nPfXDC_9YlNc-ktYqepj4sboyiqaweKuPde1HVpCj42Kk_W6MArf3TPEH9i9vpnzScoY9k2-g1JMXDVQ2ssE7PcsFkWVtwV5ifvMq7paT3utfRU9qbuTiAN5J3ZxB1IHMO4cgHuWFaV6gTCqUzIuIZj-uIQrFD-y-Pp_L6NwOV25tzsbd08xtC6k4wuEByN_8BAexEpivyvhq8QRcuZvxI-1m2v6A=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/referral-cards",
+      "provenance": "Published on the live referral cards page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "referral-card-2.png"
+    },
+    {
+      "id": "m-referral-card-housing",
+      "program": "other",
+      "alt": "A Badger Supports Resource Referral Card: Navigating Housing. Finding housing is a challenge at UW, but it doesn’t have to be! Campus Resources, Navigating Housing Toolkit, Housing Advocate Contacts. A QR code for the Badger Supports Housing Hub, above a view of campus buildings.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 719,
+      "format": "png",
+      "bytes": 538679,
+      "sha256": "778ca1ca48c06a953a4e2407ce9fb721e88daac527732758c813c4af2771383e",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uvJh0Y68msMQqC7sLx1LOh4f9zvePKXsthTjLQUMuLSmcQixLpRe6-83vV4ZrP1SY-6LPL9zLrAXGKn2bgFLjMI97LrzzpcD5lcLUfUTpMlML-pvh4n1e34MSC1YbQ5bq2wdQVGG2U1h9IXRoiGLyCv1C3Id8HhF3YwAulfN08Zz0VNwtrG2UOVj32SIq-q2PKkO7BShltmnCa-QJuYhfPXqSfvcPLJ0CMKQ=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/referral-cards",
+      "provenance": "Published on the live referral cards page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "referral-card-3.png"
+    },
+    {
+      "id": "m-referral-card-sac",
+      "program": "other",
+      "alt": "A Badger Supports Resource Referral Card: Student Services, East Campus Mall. Student Activity Center, floors 3–4; The Open Seat Food Pantry, floor 3; University Health Services, floors 5–8; Office of Student Financial Aid, floor 9; Office of the Registrar, floor 10; and more. A QR code to view the SAC directory.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 726,
+      "format": "png",
+      "bytes": 700672,
+      "sha256": "87ef90521cfb4303460be9a8b11345379cb797fdfe0806e474ed2a36eb711b2c",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tAtZO4cKrZ-sDw_5Ftlqaro468uhj_JJ0w6HeHkywuGEgMQk6QzSw8VL4e4CRs2LvWszZOpv1GJKJ2O8a4eqg8EzacDLCzjxk_Q40JFtHHcsY3YLOiN5bquYGc6S8B35x_Ma7T7T358TjgpweRS8DsaluiXILLzPhlLonYSChuPSuaqX6Ja96rlnefM39qxAI1D8nknwcjt3K6g00ihzrrDpX0xhwWLV1X-0mFLHo=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/referral-cards",
+      "provenance": "Published on the live referral cards page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "referral-card-4.png"
+    },
+    {
+      "id": "m-referral-card-basic-needs",
+      "program": "other",
+      "alt": "A Badger Supports Resource Referral Card: Basic Needs Student Support. Help for Meeting Basic Needs for Overall Success: Food Resources, Clothing Resources, Child Care, and more! A QR code for the Basic Needs website, beside crates of fruit and vegetables.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 719,
+      "format": "png",
+      "bytes": 564870,
+      "sha256": "f6832cc2ab2cebb9e96ae7dad2fc4e559de81580fd40280268721cb1a8b38e06",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uI_XT0x2j4PfoAY7iNhBeIipPrwy0IUTBjBjcPavCOTjJy3RHNTbU1gePYAgiSWYyk-B0F6F7I8OKxobGhADbNB5u0f5d-njpPTFyu2GxckTwdqjq2-t6W0Lp05ABi16oP1lniMXHHg3IDr__fX-rpsbW42XGhyYY5zoQ5tOQRj1MgKbr9I4L1Mcxz7YN-Z4VGNrh6wEYQkXx-6HIJYJghoAk2Oew_vnwrUjFIiTk=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/referral-cards",
+      "provenance": "Published on the live referral cards page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "referral-card-5.png"
+    },
+    {
+      "id": "m-ribbons-bowls",
+      "program": "peer",
+      "alt": "Four red bowls of ribbon in blues, greens and cream.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 768,
+      "height": 768,
+      "format": "jpg",
+      "bytes": 133483,
+      "sha256": "3d8e228a0373a9cb4c05db91a76b1cacde7cad4d4be4e99ed6d16a28e103313d",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vdOmAgNDq_fHJylsDmtFLEm9H9Z7j7C8nn29SZvvBVIDcPYLHg54K5jrfEyIh4pjej7skA8FO9i5MAf-Q-p-A7OJKvSBcV8IiNEWLOzG8TT-RkB8wvndYc91ky9DF5Lwto_LOHR9SIcqzKDbeM0iKU52qG93qRxJ3fZQB5AnATFChMUixNi-PBwBiL8XroBAftFW5qE3LOLMPb4q6yy5arLGlII3iEcOLrPVfyGzY=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/ribbons-%E0%B1%A8%E0%A7%8E",
+      "provenance": "Published on the live ribbons page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "ribbons-bowls.jpg"
+    },
+    {
+      "id": "m-ribbons-table",
+      "program": "peer",
+      "alt": "A table heaped with awareness ribbons of every color, under a Take a Ribbon! card and two event flyers.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 615,
+      "height": 615,
+      "format": "jpg",
+      "bytes": 135597,
+      "sha256": "eaa927604766560f3548b757ecdcce8f37521c4a2d7dba802d06286a26a3f1bb",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72u6u-ZgghHNkrKH8tEpsJUoBMWCC9RefqoViCplJ7GofOTpXyKW5peRqXaRIJf4Gjzkr6k8TY-5YS4ZfNACkQcWbinCzZcU2WyY-ji_vU2Wna1igUh5ew3Ua6g2hri8ExSYThNXopISB55cU-mOHEb_34ZaphcpixnyPFTt7BiJnDlZ3g8r5eZofd62ZxJSxUlgdeuOVaDX_3yWHGldLc-9fTHbdTvFub5pEJid2Y8=w1280",
+      "sourcePage": "https://www.badgersupports.org/initiatives/ribbons-%E0%B1%A8%E0%A7%8E",
+      "provenance": "Published on the live ribbons page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "ribbons-table.jpg"
+    },
+    {
+      "id": "m-workshop-w-signs",
+      "program": "workshops",
+      "alt": "About forty students posing in rows and making W signs with their hands, in a white-walled room.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1280,
+      "height": 743,
+      "format": "jpg",
+      "bytes": 152507,
+      "sha256": "00ba3dc9905bd11d0be331ada86475e18ccd4b9606b564a784d22f1cac7c8c0f",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vk55TNJRFJDWKGHBBW2eqNrrBwo8fpEn_U6dKH7nhI6g_GQLsDZvCUlJ90hNiG9uZzmEOz8bMxbGHwLWWXQB5bjhkYwDfediMGassWT8BcIjQao8fihMJx1wQKl0g1FOzJKsu6oe5XOgDAMgZRNZA6-Yca9W8LV4d0KRVkPIwqhaxizrWkT9VEKC-mzWx7ikH3_GCoCgsoiDnknHCUBxr0YNZLmS_6gvpXZtu54XM=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/request-a-workshop",
+      "provenance": "Published on the live request a workshop page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "workshop-w-signs.jpg"
+    },
+    {
+      "id": "m-workshop-supplies",
+      "program": "workshops",
+      "alt": "Workshop supplies on a table: cups of markers, a tray of scissors, and a stack of sheets of animal drawings.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 1280,
+      "format": "png",
+      "bytes": 2391136,
+      "sha256": "56a35e2d6aa6af105798cfdae1b32dc53ec880848aae88bcb0897dab91d94b9f",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uo-SXT8CKtp9csN4M5Gsa5kTI-1mosjqAzn9YEiV2jsp66wiMuJHqLtPqAKvFLCEJ23IljoTVhm48MEJbfnnCl6JxExlVrz7jOLx2pTfIXCCV-pIDSLP8eYzrWUwDQFWBMWAx_Z7UKFr8kJwZI6Nt7B5MT00c1pIk4OiSByUxyVueITP-Jv4lhO6DlnWbaC6mWVLr9UNgUFE2W4Cw4sRNXR8pn86fQNhvWKE9WZqs=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/request-a-workshop",
+      "provenance": "Published on the live request a workshop page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "workshop-supplies.png"
+    },
+    {
+      "id": "m-workshop-panel",
+      "program": "workshops",
+      "alt": "Five panelists making W signs at a red table draped with the Badger Supports dog banner.",
+      "focal": [
+        50,
+        60
+      ],
+      "width": 1280,
+      "height": 1280,
+      "format": "jpg",
+      "bytes": 280048,
+      "sha256": "fdf1357aa02ec33f1bd0c98391ab97a61dfd080d0750704c6d1617d04f25dd2e",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uj-mjElp9WNkvqOwfRAAFTWpt0ZxOFp6I7YWxLfCeZO1JrALGk8rmsrwIKQU2MAILO1qdMEOWoW1zhXyV9uMq6s0T7blBjNTjgyxk76cOxSACbZVdV58Xo1t01_2fpH5UlKz4yehHOUD0oNVfH4U8DGfofJSOWVkziTqFWQDepVvFz2MHi32TtSEMW6xHCNyKJAS6IO2PB19FqGPn63BJJRBrsN5rF0k8mb8Tg=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/request-a-workshop",
+      "provenance": "Published on the live request a workshop page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "workshop-panel.jpg"
+    },
+    {
+      "id": "m-btw-support-networks-slide",
+      "program": "workshops",
+      "alt": "A slide headed “Lets Visualize!”: circles labeled Professional, Academic, Emotional and Practical around “You”, with notes: “Long term support are your big circles!”, “Short term support are the smaller circles.”, “Some short-termers may become part of your long term support!” and “Meeting people in classes and orgs grows your short-term network.”",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 704,
+      "format": "png",
+      "bytes": 658597,
+      "sha256": "bdbac0014be449b378a18d592b475d6e419ac7a8cdb0e016790645b906641fd1",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72v874STihossdL5aBLAW7MLElMlCrWqr3EG84T2-_giAa0YAhi0REKOT6Ppkw24YjeE_kflqHvnlCVJDMc0Dk7SP-MXcc6AZfeIXpxJqL1nAo6sllMquzO8gV-QBL4Dpv2ePNTlEne5PCuqqvqhKCodetjl0yRUvZW95WoBQO847Bs8YLeRBexNM9r6WgHHdsT6aNULpf7vHEEjL_-q68cUqpzH42nn_5AqVzXgg3Y=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/request-a-workshop/behind-the-workshop/support-networks",
+      "provenance": "Published on the live Behind the Workshop: Support Networks page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "btw-support-networks-slide.png"
+    },
+    {
+      "id": "m-btw-stress-slide",
+      "program": "workshops",
+      "alt": "A slide headed “Not a Quick Fix”, beside a drawing of a child in a yellow raincoat walking a dog in the rain: “We know that self-care can’t eliminate all our problems, but… Self-care activities can create moments of relief and help reduce burnout during stressful times. Over time, consistent self-care builds a stronger foundation for well-being.”",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 704,
+      "format": "png",
+      "bytes": 339407,
+      "sha256": "40a9afd8351230b9cb48f323db311211b392773cd02711037a3c62f8c7fc1e0c",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72uO9TElOYynoTQ2bfUzq5f_CuDDeFqiQEg1I62TmvgCe30qivweYBcSn4-CIvRJ1XhycXMkCPUXyRXuUAmnVIQVitj91RoNlo2KcX7-CugfymIoFgsX6WEBVm7Rdb4AISQfzjzwAWQ6-2dTcFYpEhggn3YU4jxcqDMsf48Z5fAv9Ybu5_HfzO1N-d9que3hZ6vEY67EA2ShitrrwuzI7jBhwi-5w69M5kwK6nU5mFU=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/request-a-workshop/behind-the-workshop/stress-management-self-care",
+      "provenance": "Published on the live Behind the Workshop: Stress Management & Self-Care page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "btw-stress-slide.png"
+    },
+    {
+      "id": "m-btw-housing-slide",
+      "program": "workshops",
+      "alt": "A slide asking “Can you spot the bedroom with no window?” beside an apartment floor plan with one bedroom outlined: “Check the floor plan, since not all clearly label which rooms lack windows.”",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1280,
+      "height": 704,
+      "format": "png",
+      "bytes": 194296,
+      "sha256": "e006b65b8cd68a896fe47f2bec312b48abd2e6564357d6a26b659f649f7bf101",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72tBI-uK_Ap2gVsQfHFcAo8VUgX_7zcpvptKUzdzQUvpScPckJUpSfaBcQckws6yTl_CtKefmIFtPGC900kiriwvU2ZOzRmLl7l7lU0QUTa1wPp239aKSXFDgQJQM2YomVx3ckjUZ6_4mvalSPlIhHucArXORpa61YR03rC54UCWGlBm-WQRgtrVLzBTkXxJ3HfJXkOg1xik5wu4vYvkFJ5Ez6Mv-IfFtMTihz-VKYQ=w1280",
+      "sourcePage": "https://www.badgersupports.org/join/request-a-workshop/behind-the-workshop/navigating-housing",
+      "provenance": "Published on the live Behind the Workshop: Navigating Housing page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: no people; words in the picture are carried by the alt text. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "btw-housing-slide.png"
+    },
+    {
+      "id": "m-program-support-networks",
+      "program": "workshops",
+      "alt": "A large group of students in front of a projected slide reading Building Support Networks.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 967,
+      "height": 994,
+      "format": "png",
+      "bytes": 1245727,
+      "sha256": "c0245dafda7f8ce244d5aea1fc951298ccbe6e502c1e0b50fd8a24057952a2c4",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72u3-NpPmCQTia2F_RVg8rpKMWKvWalRaXfOUJuwkB4Mbu6beKoHFrnKRMZIvnhJogE0eTrRPAWShOE6o60cYyeI6rYelIUNHWlAgQZVTW477cWKsU7jmO_fc9R1RLO42WNo80khPnGBjdo_NNoU8hBhPyAiAhL8NqDGE3my2xMtuHr8J2bP7diJfzYPNY-ZPziuwklacNAPgegEYXkLkqgnIlb3UzfXqJ_3OvFR=w1280",
+      "sourcePage": "https://www.badgersupports.org/request-a-program",
+      "provenance": "Published on the live request a program page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "program-support-networks.png"
+    },
+    {
+      "id": "m-program-paintings",
+      "program": "peer",
+      "alt": "Six students in the Hub holding up their paintings.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1139,
+      "height": 1048,
+      "format": "jpg",
+      "bytes": 296342,
+      "sha256": "3086e67f1c5f68f17beee962b589e245a48e0c0cc264068a9066c68520413b5c",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72v4fg2d6S2caJvMHauUDw9gd0micm2wCwVg7CwRvzUBxeWlGX0VaRhakO1QHGtSw5zl23TUfIysUD6egenIB2y22ffAMQJamRJ_WVi16v9u3IbCel-zZfe4OJ3W7zMFgDe4PnsZTMIXswtZtYcZ-oPzeECBv6Ilad2xFSyA6i1vIfeHRHwtho_bwCJjS9dLUoeJhiMp6GlgF10KVqXHHMbSb8gxSzc_TvHnE96nhb8=w1280",
+      "sourcePage": "https://www.badgersupports.org/request-a-program",
+      "provenance": "Published on the live request a program page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "program-paintings.jpg"
+    },
+    {
+      "id": "m-program-audience",
+      "program": "other",
+      "alt": "Students at long tables listening during a workshop, with binders open in front of them.",
+      "focal": [
+        45,
+        50
+      ],
+      "width": 1261,
+      "height": 1088,
+      "format": "png",
+      "bytes": 1460610,
+      "sha256": "dadb21a9ce696c09f0e74ce3fa2d7b7ce27379ce3c93e7f467871c2697c6b328",
+      "source": "https://lh7-us.googleusercontent.com/sitesv-images-rt/AMxu72vF9fehAgU68WcNnuWAQdVUaYKpF8BbCl8kYdjtZIsbu0K09soXM0atDBT2atMxol2lJ906HpUXhxgoT5JbCtbZPWNwqLUvTgJZ6z5oHUy3KGjAnrqD_64GoJZ1aHHipiZDz_LHr0_AwtDVGber1peyqoFZHlzOtqQ_uuRz4jQWt3GxItm6IEkdFviKbMFblCoxxolWfGSI-IOdEJgtvM6c4SVUx1dxZhSJrzA5=w1280",
+      "sourcePage": "https://www.badgersupports.org/request-a-program",
+      "provenance": "Published on the live request a program page; downloaded 2026-10-20 with the owner’s approval.",
+      "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
+      "localFile": "program-audience.png"
     }
   ]
 }

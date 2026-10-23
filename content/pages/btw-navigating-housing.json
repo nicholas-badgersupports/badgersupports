@@ -1,0 +1,61 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-btw-navigating-housing",
+  "path": "/join/request-a-workshop/behind-the-workshop/navigating-housing/",
+  "title": "Behind the Workshop: Navigating Housing — Badger Supports",
+  "description": "Navigating Housing: a roadmap toward confidence, clarity, and leases that do exactly what you expect.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-btw-nh-head",
+      "type": "pagehead",
+      "label": "Behind the Workshop",
+      "title": "Navigating Housing",
+      "lead": "A roadmap toward confidence, clarity, and leases that do exactly what you expect.",
+      "body": [
+        "Navigating Housing was developed in partnership with the 2025 to 2026 Badger Supports Programs Team."
+      ],
+      "links": [
+        {
+          "label": "Navigating Housing in Madison",
+          "href": "/initiatives/housing-hub/"
+        },
+        {
+          "label": "Request a Workshop",
+          "href": "/join/request-a-workshop/",
+          "icon": "back"
+        }
+      ],
+      "photos": [
+        "m-workshop-housing",
+        "m-workshop-housing-team"
+      ]
+    },
+    {
+      "id": "b-btw-nh-quote",
+      "type": "text",
+      "title": "Behind the Workshop",
+      "body": [
+        "“When I first entered the housing world, I kept hearing advice like ‘shop around’ or ‘read carefully.’ I smiled, pretended I understood, and then toured a place with a bedroom that felt like a converted storage unit. I signed anyway. That experience is exactly why Navigating Housing exists.",
+        "My goal is for students to leave this workshop feeling capable instead of confused. I want participants to know how to ask smart questions, spot red flags before they become daily frustrations, and feel in control rather than rushed.",
+        "The housing hunt can feel chaotic, especially when everyone seems to be signing early or saying ‘leases go fast.’ You are not the only one navigating unfamiliar terms, odd layouts, and tour-day awkwardness. There are rights, resources, and strategies that make the process easier, and you deserve to know them.",
+        "If this workshop helps someone avoid a room shaped like a triangle, a mysterious utility fee, or a lease that reads like a puzzle, then it has done what it needs to do. The confidence you build here follows you well beyond sophomore year and supports every housing step you take next.”",
+        "— Executive Director, 2025"
+      ]
+    },
+    {
+      "id": "b-btw-nh-slide",
+      "type": "cta",
+      "title": "Can You Spot the Bedroom Window?",
+      "body": "The creator’s favorite slide is titled “Can you spot the bedroom window.” The floor plan featured is from their sophomore year room in an LZ Management property. Studying a floor plan matters because it helps renters understand how a space actually functions. A layout can reveal things that photos and staged tours do not capture, such as natural light, airflow, closet access, shared walls, and the practicality of moving furniture. Floor plans also help students identify red flags like interior bedrooms, unclear fire exits, oddly placed utilities, or misleading room dimensions. Reviewing the layout early supports better decision making, clearer expectations, and fewer surprises after signing the lease.",
+      "primary": {
+        "label": "Request This Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "photos": [
+        "m-btw-housing-slide"
+      ],
+      "whole": true
+    }
+  ]
+}

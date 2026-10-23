@@ -75,6 +75,7 @@ export const CLIENT_TEXT = {
   "hero.js": ["hero.pause", "hero.play"],
   "staff.js": ["staff.*"],
   "edit.js": ["edit.*"],
+  "resources.js": ["resources.count.*"],
 };
 
 export function clientTable(table, modules) {

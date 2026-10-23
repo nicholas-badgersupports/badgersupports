@@ -13,6 +13,7 @@ import { workshopProblems } from "../src/render/blocks/workshops.mjs";
 import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
 import { wordProblems } from "../src/render/blocks/words.mjs";
+import { directoryProblems } from "../src/render/blocks/directory.mjs";
 import { eventIcs } from "../src/render/ics.mjs";
 import { html, breakAtSign } from "../src/render/html.mjs";
 
@@ -107,6 +108,22 @@ test("a cards or words block that is missing a part fails the build instead of s
   assert.deepEqual(wordProblems({ id: "b", items: ["Stress", { text: "Housing", size: 3 }] }), []);
   assert.ok(wordProblems({ id: "b", items: [{ text: "Housing", size: 4 }] }).some((x) => /1, 2 or 3/.test(x)));
   assert.ok(wordProblems({ id: "b", items: [""] }).some((x) => /needs its text/.test(x)));
+});
+
+test("a directory keeps every office's own link and address, and refuses a group with no places", () => {
+  const sac = block(read("initiatives/student-activity-center/index.html"), "b-sac-floors");
+  assert.equal(sac.match(/class="dy-group"/g).length, 9, "floors 3 to 11");
+  assert.match(sac, /href="\/directions\/sac-mhh\/"/, "the Hub opens its room page");
+  assert.match(sac, /href="https:\/\/asm\.wisc\.edu\/sac\/"/);
+  const us = block(read("initiatives/university-square/index.html"), "b-us-sides");
+  assert.match(us, /href="\/initiatives\/student-activity-center\/"[^]*?333 East Campus Mall/, "the square links the tower");
+  assert.ok(!/data-pending/.test(sac + us));
+  const g = { id: "floor-3", title: "Floor 3", items: [{ name: "Print & Resource Center", href: "https://soli.wisc.edu" }] };
+  assert.deepEqual(directoryProblems({ id: "b", groups: [g] }), []);
+  assert.ok(directoryProblems({ id: "b", groups: [g, g] }).some((x) => /duplicate id/.test(x)));
+  assert.ok(directoryProblems({ id: "b", groups: [{ ...g, items: [] }] }).some((x) => /at least one place/.test(x)));
+  assert.ok(directoryProblems({ id: "b", groups: [{ ...g, items: [{ name: "" }] }] }).some((x) => /needs a name/.test(x)));
+  assert.ok(directoryProblems({ id: "b", groups: [] }).some((x) => /at least one group/.test(x)));
 });
 
 test("the reel loads nothing from Instagram until it is pressed, and the policy allows only its frame", () => {

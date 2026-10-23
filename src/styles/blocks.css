@@ -433,10 +433,12 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
 .cards--days .card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cards--whole .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6) var(--s5); }
 .card { display: flex; flex-direction: column; gap: var(--s3); }
 .card .photo { border-radius: var(--r-card); box-shadow: 0 6px 0 var(--red-deep); }
 .cards--days .photo { aspect-ratio: 4 / 5; }
 .cards--activities .photo { aspect-ratio: 1 / 1; }
+.cards--whole .photo img { height: auto; }
 .card-words { display: flex; flex-direction: column; flex: 1; align-items: flex-start; }
 .card h3 { font: 700 clamp(1.6rem, 1.3rem + 1vw, 2.1rem)/1.1 var(--font-display); color: var(--red); margin-bottom: var(--s1); }
 .card-line { margin: 0; font-weight: 700; font-size: var(--fs-lead); }
@@ -454,7 +456,7 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
 .card:not(.has-photo) .card-line { font-size: var(--fs-body); font-weight: 600; }
 @media (max-width: 960px) { .cards--days .card-list, .cards--activities .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) {
-  .cards--days .card-list, .cards--activities .card-list { grid-template-columns: minmax(0, 1fr); }
+  .cards--days .card-list, .cards--activities .card-list, .cards--whole .card-list { grid-template-columns: minmax(0, 1fr); }
   /* On a phone a day is a row, its photo beside its times, so the week is one screen and not four. */
   .cards--days .card.has-photo { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); align-items: start; }
   .cards--days .card h3 { font-size: var(--fs-h3); }
@@ -465,6 +467,22 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
   .cards--days .card.has-photo { display: flex; }
   .cards--days .photo { aspect-ratio: 3 / 2; }
 }
+
+/* ============ a directory: a building floor by floor, or a square side by side ============ */
+.directory h2 { color: var(--red); margin-bottom: var(--s4); }
+.directory .lead { margin: calc(-1 * var(--s2)) 0 var(--s4); font-size: var(--fs-lead); }
+.dy-groups { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: var(--s5) var(--s4); padding: 0; }
+.dy-group { padding-top: var(--s3); border-top: var(--dot-line-strong); }
+.dy-group h3 { display: grid; gap: .15rem; margin-bottom: var(--s2); }
+.dy-title { font: 700 var(--fs-h3)/1.1 var(--font-display); color: var(--red); }
+.dy-label { font: 700 var(--fs-small)/1.3 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
+.dy-items { list-style: none; display: grid; gap: var(--s2); padding: 0; margin: 0; }
+.dy-items li { display: grid; gap: .1rem; }
+/* the mark follows the last word, so a name on two lines does not push it to the far edge */
+.dy-items a { justify-self: start; min-height: 24px; font-weight: 600; }
+.dy-items .go-ic { display: inline-block; width: 1.1em; height: 1.1em; margin-left: .35em; vertical-align: -.15em; color: var(--red); stroke-width: 2.3; }
+.dy-name { font-weight: 600; }
+.dy-addr { font-size: var(--fs-small); color: var(--muted); }
 
 /* ============ the word cloud: what Badgers bring to a group ============ */
 .words { background: var(--paper-deep); }
@@ -1000,6 +1018,10 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
 .feature-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s3); padding-top: var(--s3); border-top: var(--dot-line); }
 .evcard.is-feature .evcard-chip { font-size: var(--fs-body); padding: .55rem 1rem; }
 .evcard.is-feature.is-past .btn, .evcard.is-feature.is-past .go { display: none; }
+/* the featured card sits on the red band, where fading it turns its date pink and unreadable; once its
+   event has ended it stays at full strength, drops "Next up", and its Ended tag and missing buttons say so */
+.evcard.is-feature.is-past { opacity: 1; }
+.evcard.is-feature.is-past .feature-label { display: none; }
 
 /* what to expect: two people photos, one large and one tucked over its corner, beside the words;
    each point on a dotted rule behind a round red mark */
@@ -1014,6 +1036,7 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
 .expect-words > p { max-width: var(--measure); font-size: var(--fs-lead); }
 .expect-points { list-style: none; margin-top: var(--s4); border-bottom: var(--dot-line-strong); }
 .expect-points li { display: flex; gap: var(--s3); align-items: center; padding-block: var(--s3); border-top: var(--dot-line-strong); font-weight: 600; }
+.expect-points li > span { min-width: 0; overflow-wrap: anywhere; }
 .ic.expect-ic { width: 2.75rem; height: 2.75rem; padding: .65rem; border-radius: 50%; background: var(--red); color: var(--cream); stroke-width: 2.3; }
 
 /* the schedule after the hero, and the nights that have happened on a deeper paper band */
@@ -1042,6 +1065,10 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
 .cta .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s6); align-items: center; padding-block: var(--s7); }
 .cta.has-photo .wrap { grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); }
 .cta-photo { aspect-ratio: 1 / 1; border-radius: 50%; border: 6px solid var(--cream); }
+/* whole: a slide or a card at its own shape, beside the words, never cropped */
+.cta.has-photo.is-whole .wrap { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.cta.is-whole .cta-photo { aspect-ratio: auto; border-radius: var(--r-card); }
+.cta.is-whole .cta-photo img { height: auto; }
 .cta h2 { font-size: var(--fs-h2); color: var(--cream); }
 .cta .lead { margin-top: var(--s2); max-width: var(--measure); }
 .cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); margin-top: var(--s5); }
@@ -1067,8 +1094,9 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
   .events-block.is-upcoming .wrap > *, .events-block.is-upcoming .wrap > .evlist-head { grid-column: 1; grid-row: auto; }
   .expect.has-photos .wrap { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
   .expect-photos { grid-template-rows: auto var(--s5) auto; }
-  .cta.has-photo .wrap { grid-template-columns: minmax(0, 1fr); gap: var(--s4); padding-block: var(--s6); }
+  .cta.has-photo .wrap, .cta.has-photo.is-whole .wrap { grid-template-columns: minmax(0, 1fr); gap: var(--s4); padding-block: var(--s6); }
   .cta-photo { width: 8rem; }
+  .cta.is-whole .cta-photo { width: auto; }
   .cta-actions .btn { width: 100%; justify-content: center; }
 }
 
@@ -1234,4 +1262,62 @@ a.door-link:active { translate: 0 4px; box-shadow: 0 2px 0 var(--red-deep); }
   .edit-ui { right: var(--s2); bottom: var(--s2); left: var(--s2); max-width: none; }
   .edit-bar { justify-content: stretch; }
   .edit-bar .btn { flex: 1 1 auto; }
+}
+
+/* the resource list: Connect's Find a Resource card in this site's colours */
+.resources h2 { color: var(--red); margin-bottom: var(--s3); }
+.resources .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
+.res-tools { display: grid; gap: var(--s4); margin-bottom: var(--s4); }
+.res-topics { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.res-topic-btn { min-height: 44px; padding: .35rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out); }
+.res-topic-btn:hover { border-color: var(--red); }
+.res-topic-btn[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--cream); }
+/* on a phone the fourteen topics are one row that slides, out to the screen's edges, so the first
+   resources still show on the first screen; a topic cut at the edge says there are more */
+@media (max-width: 640px) {
+  .res-topics { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * var(--gutter)); padding: 4px var(--gutter) var(--s2); scroll-padding-inline: var(--gutter); scrollbar-width: thin; }
+  .res-topic-btn { flex: none; white-space: nowrap; }
+}
+.res-search { max-width: var(--measure); }
+.res-search label { display: block; font-weight: 700; }
+.res-hint { margin: var(--s1) 0 var(--s2); color: var(--muted); font-size: var(--fs-small); }
+.res-search-row { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.res-search-row input { flex: 1 1 16rem; min-height: 44px; padding: .5rem .75rem; border: 1px solid var(--field-border); border-radius: var(--r-input); background: var(--field); color: var(--ink); font: inherit; }
+.res-status { margin-bottom: var(--s3); }
+.res-count { margin: 0; font-weight: 700; }
+.res-relaxed { margin: var(--s1) 0 0; color: var(--muted); font-size: var(--fs-small); }
+.res-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: var(--s4); }
+.res-card { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); border-radius: var(--r-card); background: var(--paper); box-shadow: var(--ledge); }
+.res-card h3 { font-size: var(--fs-h3); line-height: 1.2; color: var(--red); margin: 0; }
+.res-what, .res-fit { margin: 0; }
+.res-fit { color: var(--muted); font-size: var(--fs-small); }
+.res-lead { font-weight: 700; color: var(--ink); }
+.res-tags { display: flex; flex-wrap: wrap; gap: var(--s1); margin: 0; }
+.res-tag { display: inline-flex; align-items: center; padding: .1rem .6rem; border-radius: var(--r-chip); background: var(--paper-deep); color: var(--muted); font-size: var(--fs-small); font-weight: 700; line-height: 1.6; }
+.res-tag.res-topic { background: var(--red-tint); color: var(--red-deep); }
+.res-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin-top: auto; padding-top: var(--s2); }
+.res-go { white-space: nowrap; }
+.res-tel { margin: 0; font-weight: 700; }
+.res-more { flex-basis: 100%; }
+.res-more > summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--red); font-weight: 700; cursor: pointer; }
+.res-more > summary:hover { color: var(--red-deep); text-decoration: underline; }
+.res-more-body { display: grid; gap: var(--s1); padding-top: var(--s2); font-size: var(--fs-small); }
+.res-more-body p, .res-dialog-body p { margin: 0; overflow-wrap: anywhere; }
+.res-none { padding: var(--s4); border: var(--dot-line-strong); border-radius: var(--r-card); max-width: var(--measure); }
+.res-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
+.res-none p { margin: 0 0 var(--s2); }
+.res-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
+.res-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); max-height: min(40rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
+.res-dialog::backdrop { background: var(--scrim); }
+.res-dialog-head { position: sticky; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); padding: var(--s4) var(--s4) var(--s2) var(--s5); background: var(--paper); }
+.res-dialog-head h2 { margin: 0; padding-top: var(--s1); font-size: var(--fs-h3); line-height: 1.2; }
+.res-close { flex: none; }
+.res-dialog-body { display: grid; gap: var(--s2); padding: 0 var(--s5) var(--s5); }
+.res-dialog-body .res-more-body { padding-top: 0; font-size: var(--fs-body); }
+.res-dialog-foot { margin: var(--s2) 0 0; }
+.res-pinned { overflow: hidden; }
+@media (max-width: 560px) {
+  .res-dialog { width: 100%; max-width: 100%; max-height: 85dvh; margin: auto 0 0; border-radius: var(--r-card) var(--r-card) 0 0; }
+  .res-dialog-head { padding-left: var(--s4); }
+  .res-dialog-body { padding: 0 var(--s4) var(--s5); }
 }

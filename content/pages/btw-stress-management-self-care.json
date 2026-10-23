@@ -1,0 +1,55 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-btw-stress-management-self-care",
+  "path": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care/",
+  "title": "Behind the Workshop: Stress Management & Self Care — Badger Supports",
+  "description": "Stress Management & Self Care: combating stress through consistent, practical self-care.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-btw-sc-head",
+      "type": "pagehead",
+      "label": "Behind the Workshop",
+      "title": "Stress Management & Self Care",
+      "lead": "Combating stress through consistent, practical self-care.",
+      "body": [
+        "Stress Management & Self Care was created in collaboration with the 2025-2026 Badger Supports Programs Team."
+      ],
+      "links": [
+        {
+          "label": "Request a Workshop",
+          "href": "/join/request-a-workshop/",
+          "icon": "back"
+        }
+      ],
+      "photos": [
+        "m-workshop-mindfulness"
+      ]
+    },
+    {
+      "id": "b-btw-sc-quote",
+      "type": "text",
+      "title": "Behind the Workshop",
+      "body": [
+        "“I was inspired to create this workshop because I have personally struggled with managing stress in academic and professional settings. Knowing that many college students have faced similar challenges, I wanted to address stress management and self care through an educational lens.",
+        "The increasing number of responsibilities that college students must juggle make effective self care strategies more important than ever. The purpose of the Stress Management & Self Care Workshop is to help college students identify sources of stress in their lives, recognize when a stressor is harmful and can cause burnout, and apply practical self care strategies.",
+        "If there is one thing that I hope participants take away, it is that the best self care strategies are not excessively complicated, expensive, or ‘aesthetic.’ Instead, self care should take the form of consistent and practical activities that ‘fuel’ us to engage with stressors in our lives. To this end, self care strategies can be relaxing, but they can also be productive or energizing.”",
+        "— Programs Coordinator, 2025"
+      ]
+    },
+    {
+      "id": "b-btw-sc-slide",
+      "type": "cta",
+      "title": "Not a Quick Fix",
+      "body": "The creator’s favorite slide is “Not a Quick Fix.” This slide highlights that self care strategies can’t solve all of our problems, but they can help us manage them more effectively and prevent burnout.",
+      "primary": {
+        "label": "Request This Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "photos": [
+        "m-btw-stress-slide"
+      ],
+      "whole": true
+    }
+  ]
+}

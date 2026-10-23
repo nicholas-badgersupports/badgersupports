@@ -18,7 +18,7 @@ const STRUCTURAL = new Set([
   "id", "type", "href", "media", "icon", "anchor", "form", "variant", "heading", "place", "person", "program",
   "path", "schema", "analytics", "photo", "photos", "aliases", "home", "kind", "group", "card", "show", "source",
   "tone", "endsOn", "file", "lang", "connectOrigin", "liveOrigin", "origin", "url", "accessibilityEmail",
-  "description",
+  "description", "category",
 ]);
 /* The parts of site.json a visitor reads on every page. */
 const SITE_PARTS = ["nav", "headerAction", "supportLine", "footer"];

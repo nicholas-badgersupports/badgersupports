@@ -1,0 +1,195 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-student-activity-center",
+  "path": "/initiatives/student-activity-center/",
+  "title": "Student Activity Center — Badger Supports",
+  "description": "Student Services Tower Directory: 333 East Campus Mall, University Square, floor by floor.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-sac-head",
+      "type": "pagehead",
+      "title": "333 East Campus Mall",
+      "label": "University Square",
+      "links": [
+        {
+          "label": "University Square Directory",
+          "href": "/initiatives/university-square/"
+        }
+      ]
+    },
+    {
+      "id": "b-sac-floors",
+      "type": "directory",
+      "title": "Student Services Tower Directory",
+      "groups": [
+        {
+          "id": "floor-3",
+          "title": "Floor 3",
+          "label": "Student Activity Center",
+          "items": [
+            {
+              "name": "Student Mental Health Hub",
+              "href": "/directions/sac-mhh/"
+            },
+            {
+              "name": "Open Seat Food Pantry",
+              "href": "https://basicneeds.students.wisc.edu/the-open-seat/"
+            },
+            {
+              "name": "SOLI RSO Advising",
+              "href": "https://soli.wisc.edu"
+            },
+            {
+              "name": "Print & Resource Center",
+              "href": "https://soli.wisc.edu/about-print-resource-center/"
+            }
+          ]
+        },
+        {
+          "id": "floor-4",
+          "title": "Floor 4",
+          "label": "Student Activity Center",
+          "items": [
+            {
+              "name": "Associated Students of Madison",
+              "href": "https://asm.wisc.edu"
+            },
+            {
+              "name": "WSUM 91.7 FM",
+              "href": "https://wsum.org"
+            },
+            {
+              "name": "RSO Offices",
+              "href": "https://asm.wisc.edu/sac/"
+            }
+          ]
+        },
+        {
+          "id": "floor-5",
+          "title": "Floor 5",
+          "label": "UHS Medical Services (Primary Care)",
+          "items": [
+            {
+              "name": "Primary Care"
+            },
+            {
+              "name": "Athletic Training & Physical Therapy"
+            },
+            {
+              "name": "Lab & Radiology"
+            }
+          ]
+        },
+        {
+          "id": "floor-6",
+          "title": "Floor 6",
+          "label": "UHS Medical Services (Primary Care)",
+          "items": [
+            {
+              "name": "Allergy Immunotherapy & Immunizations"
+            },
+            {
+              "name": "Gynecology"
+            },
+            {
+              "name": "Nutrition"
+            },
+            {
+              "name": "Occupational Medicine & Safety Glasses"
+            },
+            {
+              "name": "Psychiatry"
+            },
+            {
+              "name": "Sexual Health"
+            },
+            {
+              "name": "Travel"
+            }
+          ]
+        },
+        {
+          "id": "floor-7",
+          "title": "Floor 7",
+          "label": "Mental Health Services",
+          "items": [
+            {
+              "name": "UHS Crisis Services"
+            },
+            {
+              "name": "UHS Individual, Couples, & Group Counseling"
+            },
+            {
+              "name": "UHS Survivor Services"
+            },
+            {
+              "name": "Rape Crisis Center Campus Office"
+            }
+          ]
+        },
+        {
+          "id": "floor-8",
+          "title": "Floor 8",
+          "label": "UHS Prevention / Administration / General",
+          "items": [
+            {
+              "name": "UHS Prevention"
+            },
+            {
+              "name": "UHS Billing"
+            },
+            {
+              "name": "Health Information Management"
+            },
+            {
+              "name": "Student Health Insurance Program (SHIP)"
+            }
+          ]
+        },
+        {
+          "id": "floor-9",
+          "title": "Floor 9",
+          "label": "Office of Student Financial Aid",
+          "items": [
+            {
+              "name": "Office of Student Financial Aid"
+            },
+            {
+              "name": "Student Success Through Applied Research (SSTAR)"
+            }
+          ]
+        },
+        {
+          "id": "floor-10",
+          "title": "Floor 10",
+          "label": "Office of the Registrar",
+          "items": [
+            {
+              "name": "Bursar's Office"
+            },
+            {
+              "name": "Bursar's Tuition Payments & Accounts"
+            },
+            {
+              "name": "SOLI Leadership Advising"
+            }
+          ]
+        },
+        {
+          "id": "floor-11",
+          "title": "Floor 11",
+          "label": "Office of the Registrar",
+          "items": [
+            {
+              "name": "Residence For Tuition"
+            },
+            {
+              "name": "Student Services"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

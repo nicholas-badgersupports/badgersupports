@@ -179,6 +179,18 @@ the first two and wrote the third.
 | The LCM banner photo, with clipart-style figures on the banner | "Keep for now" | kept; swappable by link like every photo |
 | The four draft rooms | "Hearing Room and Multipurpose room can use the Caucus room steps, edit the image of the map to show where the rooms are. Show addresses only for Marquee and Tripp" | all seven rooms published. Hearing and Multipurpose: the Caucus steps, each with its own copy of the floor plan, orange moved onto the room (`ops/room-map.mjs`). Marquee and Tripp: the address card alone, centred. A step photo keeps its own shape, so a map is never cut at its edges |
 
+### Answers on the remaining pages, 20 Oct 2026 (Owner)
+
+Asked after the 16 remaining pages were built. The owner picked the recommended option for the first and third,
+and wrote the second. Little Hearts and Leadership were asked about once the rest was built (last row).
+
+| Question | Answer | Built |
+|---|---|---|
+| The 27 recommended live images | "Yes, all 27" | all 27 saved to `local/media-originals/` (18.2 MB), metadata only in `media/manifest.json`, placed on 10 pages. The 10 left to the owner's call are not downloaded (`research/LIVE-IMAGES-2026-10-20.md`) |
+| The four hidden live pages | "Rebuild SAC and University Square" | both built at their live addresses and left out of the menu, as live, with the new `directory` block. Little Hearts and Leadership were asked about next (`research/ROUTES.md`) |
+| Connect's 86 resource records, with directors@badgersupports.org as the list's "email us" | "Approve it" | recorded. The list stays marked a sample until a director approves the records in Connect; the five live entries Connect lacks still wait (`research/RESOURCES-VIEWER-2026-10-20.md`) |
+| Little Hearts and Leadership | "Redirect both" | a 301 each: Little Hearts to the Hub (`/directions/sac-mhh/`), where the hearts are picked up; Leadership, which said only that recruitment is paused, to Get involved. No live address is left without an answer (`research/ROUTES.md`) |
+
 ## 3. Rules carried over (Rule)
 
 | Rule | From | Here |
@@ -211,3 +223,17 @@ the first two and wrote the third.
 | Photo originals stay in the gitignored `local/`, and the manifest holds metadata only. The Drive folder is named but never linked | the repository is public | `media/manifest.json` |
 | Receipts are queued as held (`sender-unverified`) until a sender is verified; `directors@badgersupports.org` is the proposed sender | §7: Nicholas's own account is never the fallback | `COMMUNICATIONS.md` |
 | The staff application ships closed, with its Fall 2026 message | an application must not open by accident | flip the switch in Connect once it exists |
+| The four live resource pages become one `/resources/`, and each old address 301s to it with its topic | one list with search; the old addresses keep working | `content/routes.json`; `research/RESOURCES-VIEWER-2026-10-20.md` |
+| A resource card's button says View Details when its label would call, text or email; the number or address stays on the card | the button always opens the record's web page, so a label that promises a call would mislead | `src/render/blocks/resources.mjs` |
+| A number spelt in letters ("414-939-HOPE") dials each letter as its keypad digit | Connect's link keeps digits only and would dial six | `src/render/blocks/resources.mjs` |
+| On a phone the resource topics are one sliding row, after the search | the list starts higher on a small screen | `src/styles/blocks.css` |
+| The 988 Suicide & Crisis Lifeline entry gives 988, call or text (Connect's record), not the live page's old toll-free number | 988 is the number the Lifeline publishes | `content/fixtures/resources.json` |
+| The featured event card, once its event has ended, stays at full strength and drops "Next up" | faded on the red band, its date turned pink and unreadable | `src/styles/blocks.css` |
+| Press shows each article's outlet, title and date, without the live excerpts | the excerpts name real people, and this repository is public | `content/pages/press.json` |
+| Alumni leaves out the live year-by-year list of leadership alumni | it names real people | `content/pages/alumni.json` |
+| Behind the Workshop credits the 2025 to 2026 Programs Team, not the student who made each deck, and shows no portraits | they name and show real people | `content/pages/btw-*.json` |
+| The ribbons' 14 causes are typed from the "Take a Ribbon!" card | the live page's list is a picture | `content/pages/ribbons.json` |
+| A slide or a referral card is shown whole, never cropped: the call-to-action's `whole` field and the cards block's `whole` variant | a circle or a crop would cut the words in the picture | `src/render/blocks/cta.mjs`, `cards.mjs` |
+| A building's or a block's directory is its own block, `directory`: groups in order, each place with its own name, address and link | a card has one link, and a floor of the Student Activity Center has up to four offices with their own | `src/render/blocks/directory.mjs` |
+| Student Activity Center and University Square correct two live spellings: "Financial" (live: "Finanical") and "Milio's Sandwiches" (live: "Milo"), after the shop's own link and photo | they are typos | `content/pages/student-activity-center.json`, `university-square.json` |
+| A page whose live form is a Google Form keeps linking it until its native form exists (alumni, email list, referral cards, ribbons, request a program, and request a workshop's volunteer training) | the native forms launch closed (Launch, 20 Oct 2026); a native form for each is queue items 12–14 | each page's `content/pages/*.json` |

@@ -32,7 +32,8 @@
   width: 2rem; height: 2rem; padding: .44rem; border-radius: 50%;
   background: var(--red); color: var(--cream); stroke-width: 2.3; flex: none;
 }
-.go-label { min-width: 0; }
+/* a label that is an address (an email, a web page) breaks where it must rather than push the page sideways */
+.go-label { min-width: 0; overflow-wrap: anywhere; }
 .go:hover, a.door-link:hover .door-go { color: var(--red); text-decoration: none; translate: 0 -2px; box-shadow: 0 5px 0 var(--red-deep); }
 .go:active, a.door-link:active .door-go { translate: 0 2px; box-shadow: 0 1px 0 var(--red-deep); }
 /* back: the badge leads */

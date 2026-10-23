@@ -1,0 +1,50 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-equity-belonging",
+  "path": "/about/equity-belonging/",
+  "title": "Statement on Equity & Belonging — Badger Supports",
+  "description": "Badger Supports is dedicated to empowering students at the University of Wisconsin–Madison by fostering inclusive communities that support each individual’s identity, mental health, and daily life.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-eb-head",
+      "type": "pagehead",
+      "title": "Badger Supports Statement on Equity & Belonging",
+      "body": [
+        "Badger Supports is dedicated to empowering students at the University of Wisconsin–Madison by fostering inclusive communities that support each individual’s identity, mental health, and daily life. Badger Supports’ commitment to Diversity, Equity, and Inclusion is one of the cornerstones to our mission to cultivate an inclusive environment for students of diverse races, ethnicities, religions, genders, sexual orientations, nationalities, citizenship statuses, socioeconomic backgrounds, and abilities.",
+        "Diversity also extends beyond traditional categories such as race, ethnicity, religion, sexual orientation, and ability, encompassing a broad array of dimensions including values, hobbies, interests, and personal backgrounds. We acknowledge that the diversity within our community is a vital asset that enriches our collective strength and enhances our capacity to support one another.",
+        "We recognize that access to mental health resources has historically been, and continues to be, unequal across various identities. Badger Supports remains open to all students, regardless of their identity, at the University of Wisconsin–Madison. We are dedicated to ensuring equitable mental health opportunities for all members of the student body. To achieve this, we actively pursue partnerships with other student organizations and campus resources that share our commitment to diversity and inclusion in mental health advocacy.",
+        "Badger Supports commits to the necessary education, conversations, self-reflection, and revisions that will reflect our ongoing process of continuing to foster an inclusive, diverse, and welcoming community. We will continue efforts to provide an affirming, safe source of support for students of all identities.",
+        "We will continue striving towards a just and equitable environment for all representatives of the University of Wisconsin–Madison student body."
+      ],
+      "photos": [
+        "m-people-welcome",
+        "m-peer-couch",
+        "m-craft-friends"
+      ]
+    },
+    {
+      "id": "b-eb-body",
+      "type": "text",
+      "title": "Equity and Belonging",
+      "body": [
+        "At Badger Supports, our mission is to create a resilient community that supports each other’s identity, mental health, and well-being. We aim to reduce the stigmas and barriers that prevent open discussions about health and well-being.",
+        "Equity speaks to our commitment of fair access to opportunities, resources and knowledge, recognizing and addressing the unique challenges faced by individuals from diverse backgrounds.",
+        "Belonging is a step in focusing on the individual’s experience of feeling accepted, valued, and connected. It’s about creating a community where the individual feels they are an integral part of the whole, the Badger Community. When people feel they belong, they are more likely to express their identities, seek support, and contribute to their own well-being and the communities.",
+        "By focusing on Equity and Belonging, we hope to foster diversity and ensure that inclusion is a lived experience. When people feel they belong, they are more comfortable discussing their mental health and seeking help, that is part of the mission of Badger Supports, to reduce social stigmas and barriers.",
+        "Equity & Belonging reflects our commitment to not just include diverse voices but ensuring that every member of our community feels they matter and can thrive. It represents our dedication to build a supportive, inclusive, and resilient community, a core value of Badger Supports."
+      ]
+    },
+    {
+      "id": "b-eb-cta",
+      "type": "cta",
+      "title": "For inquiries",
+      "body": "Contact directors@badgersupports.org",
+      "primary": {
+        "label": "Email Us",
+        "href": "mailto:directors@badgersupports.org",
+        "icon": "mail"
+      }
+    }
+  ]
+}

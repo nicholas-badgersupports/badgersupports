@@ -44,8 +44,10 @@ import pagehead from "./blocks/pagehead.mjs";
 import cards from "./blocks/cards.mjs";
 import words from "./blocks/words.mjs";
 import spill from "./blocks/spill.mjs";
+import resources from "./blocks/resources.mjs";
+import directory from "./blocks/directory.mjs";
 
-export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, spill, staff].map((b) => [b.type, b]));
+export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, spill, staff, resources, directory].map((b) => [b.type, b]));
 
 /* Every problem a page's blocks have against the declarations. The build refuses a page with any. */
 export function blockProblems(page) {

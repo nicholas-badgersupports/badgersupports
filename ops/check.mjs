@@ -82,15 +82,20 @@ const rel = (f) => path.relative(ROOT, f);
 
 /* 4. Nothing private in the repository: no addresses but the organisation's and examples, no
    phone numbers but the crisis lines, no credentials, no staff profile paths (names stay out of
-   this public repo). */
+   this public repo). The resource list is Connect's directory of public services: every address
+   and number in it is a service's own public line, so only the credential scan reads it. The
+   email list's subscribe address is the organisation's own, printed on its Join Our Email List form. */
 {
   const problems = [];
-  const okEmail = /@(badgersupports\.org|example\.org|example\.com)$|^name@wisc\.edu$/;
+  const okEmail = /@(badgersupports\.org|example\.org|example\.com)$|^name@wisc\.edu$|^badgersupports\+subscribe@g-groups\.wisc\.edu$/;
   const okPhone = new Set(["608-265-5600", "6082655600", "741741"]);
+  const directory = path.join(ROOT, "content", "fixtures", "resources.json");
   for (const f of repoFiles) {
     const text = fs.readFileSync(f, "utf8");
-    for (const m of text.matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g)) if (!okEmail.test(m[0])) problems.push(`${rel(f)}: address ${m[0]}`);
-    for (const m of text.matchAll(/\b(?:\+?1[ -.]?)?\(?\d{3}\)?[ -.]\d{3}[ -.]\d{4}\b/g)) if (!okPhone.has(m[0].replace(/^\+?1[ -.]?/, "").replace(/[() .]/g, "-").replace(/^-|-(?=-)/g, ""))) problems.push(`${rel(f)}: phone ${m[0]}`);
+    if (f !== directory) {
+      for (const m of text.matchAll(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g)) if (!okEmail.test(m[0])) problems.push(`${rel(f)}: address ${m[0]}`);
+      for (const m of text.matchAll(/\b(?:\+?1[ -.]?)?\(?\d{3}\)?[ -.]\d{3}[ -.]\d{4}\b/g)) if (!okPhone.has(m[0].replace(/^\+?1[ -.]?/, "").replace(/[() .]/g, "-").replace(/^-|-(?=-)/g, ""))) problems.push(`${rel(f)}: phone ${m[0]}`);
+    }
     if (/AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|xox[bpa]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY|sk-[A-Za-z0-9]{20,}|postgres(ql)?:\/\/[^\s"']+:[^\s"']+@/.test(text)) problems.push(`${rel(f)}: looks like a credential`);
     for (const m of text.matchAll(/\/about\/our-team\/(advisors|directors|general-staff|volunteers)\/[a-z]/g)) problems.push(`${rel(f)}: staff profile path ${m[0]}…`);
   }

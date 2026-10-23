@@ -40,6 +40,8 @@ import { workshopProblems } from "../src/render/blocks/workshops.mjs";
 import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
 import { wordProblems } from "../src/render/blocks/words.mjs";
+import { resourceProblems } from "../src/render/blocks/resources.mjs";
+import { directoryProblems } from "../src/render/blocks/directory.mjs";
 import { ICONS } from "../src/render/icons.mjs";
 import { makeContext, chicagoDate } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
@@ -143,6 +145,8 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "workshops") for (const p of workshopProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "cards") for (const p of cardProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "words") for (const p of wordProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
+    if (b.type === "directory") for (const p of directoryProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
+    if (b.type === "resources") for (const p of resourceProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "embed") for (const p of embedProblems(b)) problems.push(`content/pages: ${page.id}.${b.id}: ${p}`);
     if (b.type === "program" && b.embed) for (const p of embedProblems(b.embed)) problems.push(`content/pages: ${page.id}.${b.id}: video ${p}`);
     if (b.type === "program" && !b.photos?.length && !(b.variant === "feature" && b.embed) && b.variant !== "topics") problems.push(`content/pages: ${page.id}.${b.id}: a ${b.variant} section needs photos${b.variant === "feature" ? " or a video" : ""}`);
@@ -160,6 +164,10 @@ export function loadContent({ production = false, launch = production, textEdits
   for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`content/fixtures/team.json: ${p}`);
   photos({ people: publicPeople(team) }, "content/fixtures/team.json");
   const slugs = new Set(publicPeople(team).map((p) => p.slug));
+  // Resources: Connect's resource records, projected as its projectResource() does.
+  const resources = readJson("content/fixtures/resources.json");
+  if (!Array.isArray(resources.resources)) problems.push("content/fixtures/resources.json: resources is a list");
+  else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`content/fixtures/resources.json: resources[${i}] needs an id and a name`);
   for (const page of pages) for (const b of page.blocks || []) {
     if (b.type === "team") for (const g of b.groups || []) if (!GROUPS.includes(g.group)) problems.push(`content/pages: ${page.id}.${b.id}: each group is one of ${GROUPS.join(", ")}`);
     if (b.type === "person" && !slugs.has(b.person)) problems.push(`content/pages: ${page.id}.${b.id} names "${b.person}", who has no public profile`);
@@ -169,6 +177,7 @@ export function loadContent({ production = false, launch = production, textEdits
     if (events.fixture) problems.push("production: the event timetable would come from a hand-typed fixture; it needs Connect's public event export");
     if (wall.fixture) problems.push("production: the Wall of Support would show sample notes; it needs the moderated source");
     if (team.fixture) problems.push("production: the team would come from a hand-typed fixture; it needs Connect's public profile export");
+    if (resources.fixture) problems.push("production: the resource list would come from a sample; it needs Connect's approved public resource export");
   }
   // At launch every open form is served closed, linking its Google Form (src/shared/forms.mjs).
   const served = launch ? launchForms(forms) : forms;
@@ -180,7 +189,7 @@ export function loadContent({ production = false, launch = production, textEdits
   const peoplePages = personPages(team, makeT(text));
   for (const p of peoplePages) if (paths.has(p.path)) throw new Error(`content/fixtures/team.json: ${p.path} is also a page in content/pages`);
   return {
-    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages], places, events, wall, team, textRegistry, text,
+    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages], places, events, wall, team, resources, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
   };
@@ -263,7 +272,7 @@ function headersFile({ prototype }) {
 
 /* Live addresses that move get a 301 — but only once the page they move to exists. Until then
    they stay on the live site and are listed in the report as waiting. */
-function redirectsFile(routes, pages, built) {
+export function redirectsFile(routes, pages, built) {
   const lines = [];
   const waiting = [];
   const topic = { "/resources/basic-needs": "basic-needs", "/resources/health": "health", "/resources/identity-based": "identity-based", "/resources/general": "general" };
@@ -344,6 +353,9 @@ export async function build({ production = false, launch = production, today = n
     mood: content.mood,
     forms: content.forms,
     places: content.places,
+    resources: content.resources.resources,
+    resourcesSample: content.resources.fixture ? content.resources.label : null,
+    resourcesUpdated: content.resources.sourceUpdatedAt,
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
   const pending = new Map();

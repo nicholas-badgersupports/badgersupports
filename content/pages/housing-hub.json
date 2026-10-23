@@ -1,0 +1,218 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-housing-hub",
+  "path": "/initiatives/housing-hub/",
+  "title": "Navigating Housing in Madison — Badger Supports",
+  "description": "Connect with information & trusted resources and submit anonymous questions in a peer-led, low-pressure setting.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-hh-hero",
+      "type": "eventhero",
+      "title": "Navigating Housing in Madison",
+      "lead": "Connect with information & trusted resources and submit anonymous questions in a peer-led, low-pressure setting.",
+      "source": "events-fixture",
+      "program": "workshops",
+      "photos": [
+        "m-workshop-housing-team",
+        "m-hub-peer-poster",
+        "m-workshop-room"
+      ]
+    },
+    {
+      "id": "b-hh-intro",
+      "type": "expect",
+      "title": "Thinking about off-campus housing next year?",
+      "body": [
+        "Get a head start on Madison’s early & fast-paced leasing season at a Navigating Housing workshop & panel!"
+      ],
+      "items": [
+        {
+          "icon": "pencil",
+          "text": "Free & Drop-in Workshops: No registration necessary!"
+        },
+        {
+          "icon": "chat",
+          "text": "Workshop | Q&A Panel w/ Students & Local Housing Professionals"
+        }
+      ],
+      "photos": [
+        "m-workshop-housing",
+        "m-housing-handouts"
+      ]
+    },
+    {
+      "id": "b-hh-next",
+      "type": "events",
+      "title": "Free & Drop-in Workshops",
+      "source": "events-fixture",
+      "program": "workshops",
+      "show": "upcoming",
+      "skip": 1,
+      "count": 6
+    },
+    {
+      "id": "b-hh-cover",
+      "type": "program",
+      "variant": "topics",
+      "program": "workshops",
+      "title": "We’ll Cover",
+      "topics": [
+        {
+          "term": "Budgeting"
+        },
+        {
+          "term": "Leases"
+        },
+        {
+          "term": "Madison-Specific Timelines"
+        },
+        {
+          "term": "Common Pitfalls"
+        },
+        {
+          "term": "Roommates"
+        },
+        {
+          "term": "Campus Resource(s)"
+        },
+        {
+          "term": "& Much More!"
+        }
+      ],
+      "photos": [
+        "m-workshop-herald-room"
+      ],
+      "primary": {
+        "label": "View the presentation!",
+        "href": "https://canva.link/navigatinghousingweb"
+      }
+    },
+    {
+      "id": "b-hh-panel",
+      "type": "expect",
+      "title": "Panels Feature",
+      "flip": true,
+      "items": [
+        {
+          "text": "UW-Madison Students"
+        },
+        {
+          "text": "UW Off-Campus Housing Services"
+        },
+        {
+          "text": "Tenant Resource Center"
+        },
+        {
+          "text": "Property Management Professionals"
+        }
+      ],
+      "links": [
+        {
+          "label": "UW Off-Campus Housing Services",
+          "href": "https://www.housing.wisc.edu/undergraduate/off-campus/",
+          "icon": "out"
+        },
+        {
+          "label": "Tenant Resource Center",
+          "href": "https://www.tenantresourcecenter.org/",
+          "icon": "out"
+        }
+      ],
+      "photos": [
+        "m-workshop-herald-team",
+        "m-housing-panel"
+      ]
+    },
+    {
+      "id": "b-hh-resources",
+      "type": "program",
+      "anchor": "resources",
+      "variant": "topics",
+      "program": "workshops",
+      "title": "Resources",
+      "topics": [
+        {
+          "term": "Download the Toolkit",
+          "href": "http://toolkit.badgersupports.org",
+          "text": "Clarify your needs & wants · Make a plan · Find housing with confidence!"
+        },
+        {
+          "term": "Madison Gas & Electric",
+          "href": "https://www.mge.com/my-account/energy-service/estimate-energy-costs",
+          "text": "Estimate your energy cost!"
+        },
+        {
+          "term": "Alliant Energy",
+          "href": "https://www.alliantenergy.com/account-and-billing/average-energy-use",
+          "text": "Estimate average energy usage!"
+        },
+        {
+          "term": "Neighborhood Map",
+          "href": "https://www.cityofmadison.com/dpced/planning/neighborhoods",
+          "text": "Explore Madison Neighborhoods!"
+        },
+        {
+          "term": "Bus Pass Pickup",
+          "href": "https://transportation.wisc.edu/commuter-solutions/bus/student-bus-pass-program/",
+          "text": "Pick up your unlimited-ride UW Student Bus Pass!"
+        },
+        {
+          "term": "Campus Area Housing",
+          "href": "https://offcampushousing.wisc.edu/listing",
+          "text": "Discover Off-Campus Housing listings!"
+        },
+        {
+          "term": "Tenant Resource Center",
+          "href": "https://www.tenantresourcecenter.org/uw_madison_office",
+          "text": "See UW Student Resources, including office hours!"
+        },
+        {
+          "term": "“Quick and Dirty Guide to Renting in Madison”",
+          "href": "https://www.tenantresourcecenter.org/quick_and_dirty_guide_to_renting_in_madison",
+          "text": "From the Tenant Resource Center"
+        },
+        {
+          "term": "Roommate Agreement",
+          "href": "https://d3n8a8pro7vhmx.cloudfront.net/tenantresourcecenter/pages/58/attachments/original/1380043053/roommate_agreement_form.pdf?1380043053",
+          "text": "From the Tenant Resource Center"
+        }
+      ],
+      "photos": [
+        "m-housing-tenant-center"
+      ]
+    },
+    {
+      "id": "b-hh-more",
+      "type": "cta",
+      "title": "Have more questions or want extra guidance?",
+      "body": "Drop in to a Peer Support Group to connect with other Badgers and hear about their off-campus housing experiences. Request a tailored Navigating Housing workshop for your RSO, department, or yourself!",
+      "primary": {
+        "label": "Request a Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "links": [
+        {
+          "label": "Peer Support Groups",
+          "href": "/join/peer-support-groups/"
+        }
+      ],
+      "photos": [
+        "m-peer-circle"
+      ]
+    },
+    {
+      "id": "b-hh-apply",
+      "type": "text",
+      "body": [
+        "If this initiative inspires you to want to help make a difference and improve student life, consider joining our organizing team."
+      ],
+      "links": [
+        {
+          "label": "Get Involved",
+          "href": "/join/get-involved/"
+        }
+      ]
+    }
+  ]
+}

@@ -1,25 +1,37 @@
 # www.badgersupports.org — Netlify configuration. Nothing here publishes or turns anything on. The
-# owner deploys from the laptop with the setup files (WORK.md, owner actions): the draft (file 4) uploads
-# dist/ alone; the main address (file 6) runs this build on the laptop through Netlify's command line,
-# which also creates the Netlify Database and applies netlify/database/migrations/. The repository is
-# never linked to Netlify, so nothing builds on Netlify's machines.
+# owner publishes from the laptop with ../PUBLISH-WEBSITE-2026-10-23.command, which runs the production
+# build below on the laptop through Netlify's command line (`--context production`); that also creates the
+# Netlify Database and applies netlify/database/migrations/. The repository is never linked to Netlify, so
+# nothing builds on Netlify's machines.
 #
-# The build below is the PROTOTYPE build (fixtures allowed, noindex everywhere): what a deploy
-# preview would show. What a preview or deploy costs on this account is unverified (docs/ARCHITECTURE.md).
-# Releases are built on the owner's laptop, which holds the photo originals (owner, 20 Oct 2026;
-# docs/DESIGN.md, "Building away from the laptop"). A Netlify build machine has no local/, so there the
-# build stops before encoding and lists every photo whose original is in the shared Drive. The production build
-# (`node ops/build.mjs --production`) refuses to run until Connect's public event export, its public
-# team export and the moderated Wall source exist, and until the pages still on the live site have
-# been rebuilt here.
+# Two builds (owner, 23 Oct 2026: "have it be the live site, I want it to be actually connected to Connect"):
+#   production  `--production`: the live site. Events and resources are read from Connect when it builds
+#               (ops/connect-feed.mjs), with CONNECT_URL, PUBLIC_SITE_SERVICE_KEY_ID and
+#               PUBLIC_SITE_SERVICE_SECRET, which must be visible to builds as well as to functions. If Connect
+#               cannot be read, nothing is built and the deploy already online stays. Forms are served closed,
+#               each linking its Google Form (owner, 20 Oct); pages are indexable.
+#   otherwise   the prototype build (hand-typed fixtures, noindex everywhere): what a deploy preview shows,
+#               and what the publish file's one-off database preview uses.
+# What a preview or deploy costs on this account is unverified (docs/ARCHITECTURE.md). Releases are built on
+# the owner's laptop, which holds the photo originals (owner, 20 Oct 2026; docs/DESIGN.md, "Building away from
+# the laptop"). A Netlify build machine has no local/, so there the build stops before encoding and lists
+# every photo whose original is in the shared Drive.
 
 [build]
   command = "node ops/build.mjs --fetch-media"
   publish = "dist"
   functions = "netlify/functions"
 
+[context.production]
+  command = "node ops/build.mjs --production --fetch-media"
+
 [build.environment]
   NODE_VERSION = "22"
+
+# Stops a deploy whose build didn't pack every migration, before it publishes (netlify/plugins/migrations-guard).
+# Badger SPILL's guard: on 16 October 2026 three of its builds carried none and published code ahead of the database.
+[[plugins]]
+  package = "./netlify/plugins/migrations-guard"
 
 [functions]
   node_bundler = "esbuild"

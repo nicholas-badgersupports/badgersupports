@@ -1,9 +1,10 @@
 Montserrat: Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)
-Baloo 2: Copyright 2019 The Baloo 2 Project Authors (https://github.com/EkType/Baloo2)
-Caveat: Copyright 2014 The Caveat Project Authors (https://github.com/googlefonts/caveat)
 
-The .woff2 files in this folder are subset copies of these families, taken from Badger Supports
-Connect (repo/assets/fonts, 19 October 2026), which cut them to a 232-codepoint Latin set.
+The .woff2 files in this folder are subset copies of Montserrat, the brand's one web face (the style
+guide at style.badgersupports.org). 400, 600 and 700 were taken from Badger Supports Connect
+(repo/assets/fonts, 19 October 2026), which cut them to a 232-codepoint Latin set; 800 was taken
+from the Badger Supports design system on 23 October 2026. Baloo 2 and Caveat, used until then, are
+off-brand and no longer ship.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

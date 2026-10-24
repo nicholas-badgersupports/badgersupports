@@ -1,0 +1,31 @@
+{
+  "schema": "bss.connect-feed/1",
+  "about": "How the site reads Connect's public event list (ops/connect-feed.mjs). Connect sends each event's type, title, date, times and the room in the words it was saved with; this file says which program each type belongs to, which events make up a page's series, and which words name which room here. Nothing in it is an event: the events are whatever a director ticks in Connect, Admin > Resources > Public Website List.",
+  "types": {
+    "craft": { "program": "craft", "href": "/join/craft-nights" },
+    "peergroup": { "program": "peer", "href": "/join/peer-support-groups" },
+    "workshop": { "program": "workshops" }
+  },
+  "otherProgram": "other",
+  "series": [
+    { "id": "dogs-on-call", "words": ["dogs on call"], "href": "/initiatives/dogs-on-call" },
+    { "id": "housing-hub", "words": ["housing"], "href": "/initiatives/housing-hub" }
+  ],
+  "weekly": {
+    "program": "peer",
+    "title": "Peer support group",
+    "place": "sac-mhh",
+    "href": "/join/peer-support-groups",
+    "review": "Connect's weekly rows are its peer support groups, titled with the directorate's name and often with no room. The site titles them as its own pages do, and places a row with no room at the Student Mental Health Hub, where the live peer support page says the groups meet."
+  },
+  "rooms": [
+    { "place": "sac-mhh", "words": ["student mental health hub", "mental health hub", "sac 3203", "student activity center 3203"] },
+    { "place": "sac-caucus", "words": ["sac caucus", "caucus room"] },
+    { "place": "sac-hearing", "words": ["sac hearing", "hearing room sac", "hearing room student activity center"] },
+    { "place": "sac-multipurpose", "words": ["sac multipurpose", "multipurpose room sac", "multipurpose room student activity center"] },
+    { "place": "union-south-marquee", "words": ["union south marquee", "marquee union south", "the marquee"] },
+    { "place": "memorial-union-tripp", "words": ["tripp commons"] },
+    { "place": "lcm", "words": ["lcm student center", "lcm"] }
+  ],
+  "review": "Proposed 23 Oct 2026 (overnight run, decision 2.4). Words are matched whole, case and punctuation ignored, longest first; a room that matches nothing is shown in Connect's words with no link. The room names are Connect's own (its saved rooms include 'SAC Caucus Room' and 'Student Mental Health Hub, Student Activity Center 3203'). 'Hearing room' and 'multipurpose room' match only with the building named, since other buildings have rooms by those names."
+}

@@ -1,7 +1,8 @@
 /* The shell: announcement strip, header and navigation, support line, footer. */
 
 /* ---------- announcement ---------- */
-.announce { background: var(--red-deep); color: var(--cream); font-size: var(--fs-small); }
+/* the brand red on crumpled paper, as every coloured block (tokens.css, --tex-block); outside <main>, so always red */
+.announce { background: var(--tex-block); background-blend-mode: normal, multiply; color: var(--cream); font-size: var(--fs-small); }
 .announce .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s1) var(--s3); padding-block: var(--s1); text-align: center; }
 .announce p { margin: 0; max-width: none; font-weight: 600; }
 .announce a { color: var(--cream); font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
@@ -12,13 +13,13 @@
 .site-header {
   position: sticky; top: 0; z-index: 20;
   background: var(--paper);
-  border-bottom: var(--dot-line-strong);
+  border-bottom: var(--rule-line);
 }
 .site-header .wrap { display: flex; align-items: center; gap: var(--s4); min-height: var(--header-h); }
 .brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--red); text-decoration: none; margin-right: auto; }
 .brand:hover { color: var(--red); text-decoration: none; }
 .brand img { width: 30px; height: auto; }
-.brand span { font: 700 1.6rem/1 var(--font-display); letter-spacing: -.01em; padding-top: .2rem; }
+.brand span { font: 800 1.6rem/1 var(--font-display); letter-spacing: -.01em; padding-top: .2rem; }
 
 .nav { display: flex; align-items: center; }
 .nav > ul { display: flex; align-items: center; gap: var(--s1); list-style: none; }
@@ -51,18 +52,21 @@
 }
 @media (max-width: 860px) {
   .site-header .wrap { flex-wrap: wrap; gap: 0 var(--s2); }
+  /* the wordmark is 8.7em wide at 800, so on a phone it scales with the screen and keeps the Menu
+     button beside it: 17.5px at 320 wide, its full 1.6rem from about 400 */
+  .brand span { font-size: clamp(1rem, (100vw - 9.5rem) / 9.6, 1.6rem); }
   /* without JavaScript the navigation stays open, as a wrapped list under the brand */
   .nav { width: 100%; }
   .nav > ul { flex-wrap: wrap; gap: 0; padding-bottom: var(--s1); }
   .nav .sub { position: static; box-shadow: none; border: 0; background: transparent; padding: 0 0 var(--s1) var(--s3); min-width: 0; }
   .js .menu-toggle {
     display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 .9rem;
-    border: 2px solid var(--ink); border-radius: var(--r-card); background: transparent; color: var(--ink);
+    border: 2px solid var(--ink); border-radius: var(--r-chip); background: transparent; color: var(--ink);
     font: 700 1rem var(--font-body); cursor: pointer;
   }
   .js .menu-toggle[aria-expanded="true"] { background: var(--ink); color: var(--paper); }
   .js .nav { display: none; }
-  .js .nav.is-open { display: block; max-height: calc(100dvh - var(--header-h)); overflow-y: auto; border-top: var(--dot-line); }
+  .js .nav.is-open { display: block; max-height: calc(100dvh - var(--header-h)); overflow-y: auto; border-top: var(--hairline); }
   .js .nav.is-open > ul { flex-direction: column; align-items: stretch; padding-block: var(--s2) var(--s4); }
   .js .nav.is-open a, .js .nav.is-open summary { width: 100%; font-size: 1.0625rem; }
 }
@@ -78,7 +82,7 @@
 .support-line :focus-visible { outline-color: var(--focus-on-red); }
 
 /* ---------- footer ---------- */
-.site-footer { background: var(--red-deep); color: var(--cream); font-size: var(--fs-small); }
+.site-footer { background: var(--tex-block); background-blend-mode: normal, multiply; color: var(--cream); font-size: var(--fs-small); }
 .site-footer a { color: var(--cream); }
 .site-footer a:hover { color: var(--cream); text-decoration-thickness: 2px; }
 .site-footer :focus-visible { outline-color: var(--focus-on-red); }
@@ -86,7 +90,7 @@
 .footer-brand { display: flex; flex-direction: column; gap: var(--s3); }
 .footer-brand .brand-row { display: flex; align-items: center; gap: .6rem; }
 .footer-brand img { width: 34px; }
-.footer-brand .wordmark { font: 700 1.75rem/1 var(--font-display); color: var(--cream); padding-top: .2rem; }
+.footer-brand .wordmark { font: 800 1.75rem/1 var(--font-display); color: var(--cream); padding-top: .2rem; }
 .footer-brand p { margin: 0; line-height: 1.5; }
 /* Badger SPILL, a Badger Supports program: its logo on a cream chip, so its own colours read on the red */
 .footer-brand .footer-spill { display: inline-flex; align-items: center; gap: var(--s2); align-self: start; padding: .35rem 1rem .35rem .5rem;
@@ -94,10 +98,10 @@
   transition: translate var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
 .footer-brand .footer-spill:hover { color: var(--spill-ink); text-decoration: none; translate: 0 -2px; box-shadow: 0 5px 0 var(--ink); }
 .footer-brand .footer-spill-logo { width: 6rem; height: auto; }
-.site-footer h2 { font: 700 1rem/1.3 var(--font-body); letter-spacing: .02em; margin-bottom: var(--s2); color: var(--cream); }
+.site-footer h2 { font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; margin-bottom: var(--s2); color: var(--cream); }
 .site-footer ul { list-style: none; display: grid; gap: .1rem; }
 .site-footer ul a { display: inline-flex; min-height: 36px; align-items: center; overflow-wrap: anywhere; }
-.footer-bottom { border-top: var(--dot-line-on-red); padding-block: var(--s4) var(--s5); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); justify-content: space-between; align-items: center; }
+.footer-bottom { border-top: var(--hairline-on-red); padding-block: var(--s4) var(--s5); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); justify-content: space-between; align-items: center; }
 .footer-bottom p { margin: 0; max-width: none; }
 .footer-bottom ul { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
 .social { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); list-style: none; }

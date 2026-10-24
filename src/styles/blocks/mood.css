@@ -1,0 +1,25 @@
+/* The mood check-in (src/render/blocks/mood.mjs). Its colours are generated from content/widgets/mood.json and follow
+   every stylesheet. */
+.mood { padding-block: var(--s6); border-top: var(--rule-line); }
+.mood .wrap { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: var(--s3) var(--s6); align-items: start; }
+.mood h2 { font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem); color: var(--accent); margin-bottom: var(--s2); }
+.mood-options { display: flex; flex-wrap: wrap; gap: var(--s2); border: 0; margin: 0; padding: 0; }
+.mood-options legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.mood-btn {
+  display: inline-flex; align-items: center; gap: .5rem; min-height: 48px; padding: .4rem 1.05rem .4rem .8rem;
+  border: 2px solid var(--mood, var(--ink)); border-radius: var(--r-card); background: var(--paper); color: var(--ink);
+  font: 600 1rem var(--font-body); cursor: pointer;
+  transition: background-color var(--t) var(--ease-out), border-width var(--t-fast) var(--ease-out);
+}
+.mood-btn:hover { background: color-mix(in srgb, var(--mood, var(--ink)) 12%, var(--paper)); }
+.mood-btn[aria-pressed="true"] { background: var(--mood); color: var(--paper); }
+.mood-btn .e { font-size: 1.25rem; line-height: 1; }
+.mood-result { margin-top: var(--s4); padding: var(--s4); background: var(--paper); border: var(--rule-line); border-radius: var(--r-card); max-width: 46rem; }
+.mood-result[hidden] { display: none; }
+.mood-result .msg { font: 700 1.35rem/1.3 var(--font-body); margin-bottom: var(--s3); }
+.mood-bars { list-style: none; display: grid; gap: .35rem; margin: var(--s3) 0; }
+.mood-bars li { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr) 2.5rem; gap: var(--s2); align-items: center; font-size: var(--fs-small); }
+.mood-bars .bar { height: .7rem; border-radius: var(--r-chip); background: var(--line); overflow: hidden; }
+.mood-bars .bar span { display: block; height: 100%; background: var(--mood, var(--ink)); }
+.mood-bars .n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+@media (max-width: 860px) { .mood .wrap { grid-template-columns: 1fr; } }

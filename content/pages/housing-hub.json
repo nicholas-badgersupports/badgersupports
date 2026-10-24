@@ -11,8 +11,9 @@
       "type": "eventhero",
       "title": "Navigating Housing in Madison",
       "lead": "Connect with information & trusted resources and submit anonymous questions in a peer-led, low-pressure setting.",
-      "source": "events-fixture",
+      "source": "events",
       "program": "workshops",
+      "series": "housing-hub",
       "photos": [
         "m-workshop-housing-team",
         "m-hub-peer-poster",
@@ -45,8 +46,9 @@
       "id": "b-hh-next",
       "type": "events",
       "title": "Free & Drop-in Workshops",
-      "source": "events-fixture",
+      "source": "events",
       "program": "workshops",
+      "series": "housing-hub",
       "show": "upcoming",
       "skip": 1,
       "count": 6
@@ -84,7 +86,7 @@
         "m-workshop-herald-room"
       ],
       "primary": {
-        "label": "View the presentation!",
+        "label": "View the Presentation!",
         "href": "https://canva.link/navigatinghousingweb"
       }
     },

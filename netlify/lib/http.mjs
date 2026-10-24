@@ -39,6 +39,28 @@ export async function readBody(req) {
   throw new HttpError(415, "body.type");
 }
 
+/* A file's bytes, as they came. More than max is refused before reading when the length is
+   declared, and while reading when it is not: the reader stops at the first chunk past it. */
+export async function readBytes(req, max) {
+  const len = Number(req.headers.get("content-length") || 0);
+  if (len > max) throw new HttpError(413, "file.tooBig");
+  if (!req.body) return Buffer.alloc(0);
+  const parts = [];
+  let n = 0;
+  const reader = req.body.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    n += value.byteLength;
+    if (n > max) {
+      await reader.cancel().catch(() => {});
+      throw new HttpError(413, "file.tooBig");
+    }
+    parts.push(Buffer.from(value));
+  }
+  return Buffer.concat(parts, n);
+}
+
 /* A post must come from a page on this site. Browsers send Origin on every POST, and
    Sec-Fetch-Site where they support it; a request with neither is a script, which the rate
    limiter and validation still govern. */

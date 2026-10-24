@@ -13,7 +13,7 @@
  * 20 Oct 2026: "Badger SPILL represented ... in the hero element on the front page").
  */
 
-import { html } from "../html.mjs";
+import { html, attrs } from "../html.mjs";
 import { link } from "../context.mjs";
 import { picture } from "../media.mjs";
 import { icon } from "../icons.mjs";
@@ -38,7 +38,7 @@ export default {
     ${b.spill ? link(ctx, b.spill.href, html`${spillLogo("hero-spill-logo", "(max-width: 480px) 8rem, 10rem", { eager: true })}<span class="hero-spill-words"><span class="hero-spill-title">${b.spill.title}</span>${b.spill.text ? html`<span class="hero-spill-text">${b.spill.text}</span>` : ""}<span class="go go--light"><span class="go-label">${b.spill.label}</span>${icon("out", "go-ic")}</span></span>`, { class: "hero-spill" }) : ""}
   </div>
   ${circles.length ? html`<div class="network" data-network>
-    <ul class="network-list" aria-label="${ctx.t("hero.photosLabel")}">${circles.map((c, i) => html`<li class="hub hub-${i + 1}">${link(ctx, c.href, html`<span class="hub-photo">${picture(ctx, c.media, { sizes: i === 0 ? "(max-width: 860px) 52vw, 19rem" : "(max-width: 860px) 44vw, 16rem", eager: i === 0, alt: "" })}</span><span class="hub-tag"><span>${c.label}</span>${icon(c.icon || "arrow", "go-ic")}</span>`, { class: "hub-link" })}</li>`)}</ul>
+    <ul class="network-list" aria-label="${ctx.t("hero.photosLabel")}">${circles.map((c, i) => html`<li${attrs({ class: `hub hub-${i + 1}`, "data-program": ctx.programOf(c.href) })}>${link(ctx, c.href, html`<span class="hub-photo">${picture(ctx, c.media, { sizes: i === 0 ? "(max-width: 860px) 52vw, 19rem" : "(max-width: 860px) 44vw, 16rem", eager: i === 0, alt: "" })}</span><span class="hub-tag"><span>${c.label}</span>${icon(c.icon || "arrow", "go-ic")}</span>`, { class: "hub-link" })}</li>`)}</ul>
     ${b.centre ? html`<p class="hub-you" aria-hidden="true">${b.centre}</p>` : ""}
     <span class="bubble bubble-1" aria-hidden="true"></span><span class="bubble bubble-2" aria-hidden="true"></span><span class="bubble bubble-3" aria-hidden="true"></span><span class="bubble bubble-4" aria-hidden="true"></span>
     <button type="button" class="still" data-still hidden>${icon("pause", "still-pause")}${icon("play", "still-play")}<span>${ctx.t("hero.pause")}</span></button>

@@ -297,7 +297,7 @@ test("a director reads only the forms Connect lets them read, edits only with si
     [get("/api/staff/forms/programming-feedback/submissions", { cookie }), "another form's answers"],
     [get("/api/staff/edit/source?page=pg-home", { cookie }), "the edit button's words"],
     [get("/api/staff/edits", { cookie }), "the edits file"],
-    [staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to content", value: "Skip ahead" }, cookie), "saving an edit"],
+    [staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" }, cookie), "saving an edit"],
   ]) {
     const res = await handle(req, ip());
     assert.equal(res.status, 403, label);
@@ -326,11 +326,11 @@ test("a director reads only the forms Connect lets them read, edits only with si
   assert.deepEqual([pm.name, pm.canEdit, pm.canPublish, pm.canRead], ["", false, true, false]);
   assert.equal((await handle(get("/api/staff/edits?download=1", { cookie: pb.cookie }), ip())).status, 200);
   assert.equal((await handle(get("/api/staff/edit/source?page=pg-home", { cookie: pb.cookie }), ip())).status, 403);
-  assert.equal((await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to content", value: "Skip ahead" }, pb.cookie), ip())).status, 403);
+  assert.equal((await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" }, pb.cookie), ip())).status, 403);
 
   // A made-up session is nobody, and a post from another site is refused before anything else.
   assert.equal((await handle(get("/api/staff/me", { cookie: `bss_staff=${"A".repeat(43)}` }), ip())).status, 401);
-  const forged = await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to content", value: "Skip ahead" }, e.cookie, { origin: "http://elsewhere.test" }), ip());
+  const forged = await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" }, e.cookie, { origin: "http://elsewhere.test" }), ip());
   assert.equal(forged.status, 403);
   assert.equal((await forged.json()).error, "origin.refused");
 });
@@ -487,7 +487,7 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   // A local copy rebuilds after each save; a save that changes nothing does not.
   let rebuilt = 0;
   const ctx = { ...ip(), afterEdit: async () => { rebuilt++; } };
-  await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to content", value: "Skip to the page" }, cookie), ctx);
+  await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip to the page" }, cookie), ctx);
   await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to the page" }, cookie), ctx);
   assert.equal(rebuilt, 1);
 });
@@ -535,7 +535,7 @@ test("the download is the file a publish lays over the site, and the built pages
   const again = await (await handle(get("/api/staff/edits", { cookie }), ip())).json();
   assert.deepEqual(again.edits, file.edits);
   // And putting one back after the publish carries the undo in the next file.
-  await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to content" }, cookie), ip());
+  await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to Content" }, cookie), ip());
   const undo = await (await handle(get("/api/staff/edits", { cookie }), ip())).json();
   assert.equal(undo.edits["text:page.skip"], undefined);
   assert.equal(undo.waiting, 1);

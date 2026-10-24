@@ -5,7 +5,8 @@
    next events) keeps the second column. The room's record (content/places/) holds every
    word; the build makes this page for every published room (src/render/places.mjs). Another page
    can carry the same directions as a section (heading h2, with its own title): the peer support
-   groups page does, for the Hub. */
+   groups page does, for the Hub. The next events sit in their own part (data-live), which schedule.js
+   swaps alone when Connect's list changes between publishes. */
 
 import { html } from "../html.mjs";
 import { link, go } from "../context.mjs";
@@ -20,6 +21,7 @@ export default {
   label: "Directions to a room",
   fields: { place: "place!", heading: "choice:h1|h2", title: "text" },
   data: ["places", "events"],
+  refresh: true,
   analytics: "page",
   loading: "eager",
   render(b, ctx) {
@@ -49,10 +51,10 @@ export default {
     <p class="dir-arrive">${icon("pin")}<span>${ctx.t("directions.arrive", { place: p.name })}</span></p>
     ${p.arrivePhoto ? html`<div class="dir-arrive-photo photo">${picture(ctx, p.arrivePhoto, { sizes: "(max-width: 860px) calc(100vw - 5rem), 26rem" })}</div>` : ""}` : ""}
     ${p.note ? html`<p class="dir-note">${p.note}</p>` : ""}
-    ${next.length ? html`${page ? html`<h2 class="dir-title">${ctx.t("directions.nextHere")}</h2>` : html`<h3 class="dir-title">${ctx.t("directions.nextHere")}</h3>`}<ul class="next-list">${next.map((r) => {
+    <div class="dir-next" data-live="next">${next.length ? html`${page ? html`<h2 class="dir-title">${ctx.t("directions.nextHere")}</h2>` : html`<h3 class="dir-title">${ctx.t("directions.nextHere")}</h3>`}<ul class="next-list">${next.map((r) => {
       const d = dateParts(r.date, ctx.t);
-      return html`<li><div class="dateblock" aria-hidden="true"><span class="dow">${d.dow}</span><span class="dom">${d.dom}</span><span class="mon">${d.mon}</span></div><div><strong>${r.href ? link(ctx, r.href, r.title) : r.title}</strong><span><span class="sr-only">${d.dowLong}, ${d.monLong} ${d.dom}, </span>${timeRange(r.start, r.end, ctx.t)}</span></div></li>`;
-    })}</ul>` : ""}
+      return html`<li><div class="dateblock" aria-hidden="true"><span class="dow">${d.dow}</span><span class="dom">${d.dom}</span><span class="mon">${d.mon}</span></div><div><strong>${r.href && !ctx.here(r.href) ? link(ctx, r.href, r.title) : r.title}</strong><span><span class="sr-only">${d.dowLong}, ${d.monLong} ${d.dom}, </span>${timeRange(r.start, r.end, ctx.t)}</span></div></li>`;
+    })}</ul>` : ""}</div>
   </div>` : ""}
 </div></section>`;
   },

@@ -1,0 +1,175 @@
+{
+  "schema": "bss.form/1",
+  "key": "program-request",
+  "version": 1,
+  "title": "Request a Peer Support Group or Volunteer Training",
+  "audience": "public",
+  "anonymous": false,
+  "state": "closed",
+  "closedMessage": "Requests for a peer support group, a volunteer training or a collaboration are on Google Forms for now. Questions: hello@badgersupports.org.",
+  "intro": [
+    "Badger Supports offers peer-led trainings and support spaces that can be requested by student organizations, campus units, or individual students.",
+    "Use this form to request a Volunteer Training, a Peer Support Group, or to explore a collaboration with our team.",
+    "We'll review your request and someone from our team will reach out to you!",
+    "Questions? Contact us at hello@badgersupports.org"
+  ],
+  "review": "Built closed (decision 3.1), from Google's public view of 23 Oct 2026; Request a Program and the workshop page still link the Google Form. Words are Google's; the pin emoji before 'Questions?' is left out. Google's form is one page with no section titles; both titles are ours. Google's closing block sits above Submit; here it is the confirmation. Four questions say '(if applicable)', '(if known)' or ask 'Any…?' yet are required in Google's form; they are kept required, each with a note, until Programs says otherwise. The closing message is ours.",
+  "sections": [
+    {
+      "id": "about_you",
+      "title": "About You",
+      "questions": [
+        {
+          "id": "name",
+          "type": "short",
+          "label": "Name",
+          "required": true,
+          "autocomplete": "name",
+          "maxLength": 120
+        },
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email Address",
+          "required": true,
+          "autocomplete": "email"
+        },
+        {
+          "id": "on_behalf",
+          "type": "choice",
+          "label": "Are you submitting this request on behalf of:",
+          "required": true,
+          "allowOther": true,
+          "options": [
+            {
+              "id": "student_org",
+              "label": "A student organization"
+            },
+            {
+              "id": "campus_office",
+              "label": "A UW department or campus office"
+            },
+            {
+              "id": "individual",
+              "label": "Yourself (individual student)"
+            }
+          ]
+        },
+        {
+          "id": "organization",
+          "type": "short",
+          "label": "Organization or Department Name (if applicable)",
+          "required": true,
+          "autocomplete": "organization",
+          "maxLength": 200,
+          "help": "These programs can be provided to campus units, student organizations, classes, or friend groups, as well as to individual students at UW–Madison. Please specify your group affiliation or note if you are requesting as an individual.",
+          "review": "Required in the Google Form although worded '(if applicable)'; an individual types that they are one, as the help asks."
+        }
+      ]
+    },
+    {
+      "id": "request",
+      "title": "Your Request",
+      "questions": [
+        {
+          "id": "request_type",
+          "type": "checkboxes",
+          "label": "What type of request are you making?",
+          "required": true,
+          "allowOther": true,
+          "options": [
+            {
+              "id": "volunteer_training",
+              "label": "Volunteer Training (for your group or team)"
+            },
+            {
+              "id": "peer_support_group",
+              "label": "Peer Support Group (for you, your members or community)"
+            },
+            {
+              "id": "collaboration",
+              "label": "Collaboration or Co-hosted Event"
+            }
+          ]
+        },
+        {
+          "id": "group_size",
+          "type": "choice",
+          "label": "Estimated Group Size",
+          "required": true,
+          "options": [
+            {
+              "id": "size_1_5",
+              "label": "1–5"
+            },
+            {
+              "id": "size_6_10",
+              "label": "6–10"
+            },
+            {
+              "id": "size_11_20",
+              "label": "11–20"
+            },
+            {
+              "id": "size_20_plus",
+              "label": "20+"
+            }
+          ]
+        },
+        {
+          "id": "dates",
+          "type": "short",
+          "label": "Preferred Dates or Timeframe",
+          "required": true,
+          "maxLength": 200
+        },
+        {
+          "id": "location",
+          "type": "short",
+          "label": "Preferred Location or Building (if known)",
+          "required": true,
+          "maxLength": 200,
+          "help": "Badger Supports can assist with reserving a room for your event. If you would like us to handle the reservation, please indicate that below and include any required accommodations.",
+          "review": "Required in the Google Form although worded '(if known)'."
+        },
+        {
+          "id": "access_needs",
+          "type": "long",
+          "label": "Any accessibility or accommodation needs?",
+          "required": true,
+          "maxLength": 2000,
+          "rows": 3,
+          "review": "Required in the Google Form; respondents with none must type something."
+        },
+        {
+          "id": "notes",
+          "type": "long",
+          "label": "Anything else you’d like us to know?",
+          "required": true,
+          "maxLength": 4000,
+          "rows": 4,
+          "help": "(e.g., prior experience with wellness programming, comfort level discussing mental health, goals for the session)",
+          "review": "Required in the Google Form although it reads as optional."
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank you for your interest in a Badger Supports Program!",
+    "body": [
+      "Our Peer Support Groups and volunteer trainings are flexible, student-centered, and tailored to your goals. A team member will reach out to confirm your request and coordinate next steps."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "programs.program-requests",
+    "owner": "Programs",
+    "receipt": "proposed",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w",
+    "aliases": [],
+    "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Google's title for the file begins 'LIVE PROG:'."
+  }
+}

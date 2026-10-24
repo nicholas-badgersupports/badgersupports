@@ -1,0 +1,12 @@
+/* The word cloud (src/render/blocks/words.mjs): what Badgers bring to a group. */
+.words { background: var(--paper-deep); }
+.words h2 { color: var(--accent); text-align: center; margin-inline: auto; max-width: 22ch; margin-bottom: var(--s5); }
+.word-cloud { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--s2) var(--s3); padding: 0; max-width: 60rem; margin-inline: auto; }
+.word-cloud li { font-family: var(--font-display); font-weight: 800; line-height: 1.1; text-transform: uppercase; letter-spacing: .02em; border-radius: var(--r-chip); padding: .35em .9em .25em; }
+.word-cloud .w-1 { font-size: var(--fs-body); }
+.word-cloud .w-2 { font-size: var(--fs-h3); }
+.word-cloud .w-3 { font-size: clamp(2rem, 1.5rem + 2vw, 3rem); }
+.word-cloud .tone-1 { background: var(--accent); color: var(--cream); }
+.word-cloud .tone-2 { border: 2px solid var(--accent); color: var(--accent); background: var(--paper); }
+.word-cloud .tone-3 { background: var(--accent-tint); color: var(--ink); }
+.words-note { margin: var(--s4) auto 0; text-align: center; color: var(--muted); }

@@ -1,0 +1,15 @@
+/* A directory (src/render/blocks/directory.mjs): a building floor by floor, or a square side by side. */
+.directory h2 { color: var(--accent); margin-bottom: var(--s4); }
+.directory .lead { margin: calc(-1 * var(--s2)) 0 var(--s4); font-size: var(--fs-lead); }
+.dy-groups { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: var(--s5) var(--s4); padding: 0; }
+.dy-group { padding-top: var(--s3); border-top: var(--rule-line); }
+.dy-group h3 { display: grid; gap: .15rem; margin-bottom: var(--s2); }
+.dy-title { font: 800 var(--fs-h3)/1.1 var(--font-display); color: var(--accent); }
+.dy-label { font: 700 var(--fs-small)/1.3 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
+.dy-items { list-style: none; display: grid; gap: var(--s2); padding: 0; margin: 0; }
+.dy-items li { display: grid; gap: .1rem; }
+/* the mark follows the last word, so a name on two lines does not push it to the far edge */
+.dy-items a { justify-self: start; min-height: 24px; font-weight: 600; }
+.dy-items .go-ic { display: inline-block; width: 1.1em; height: 1.1em; margin-left: .35em; vertical-align: -.15em; color: var(--accent); stroke-width: 2.3; }
+.dy-name { font-weight: 600; }
+.dy-addr { font-size: var(--fs-small); color: var(--muted); }

@@ -1,0 +1,78 @@
+{
+  "schema": "bss.form/1",
+  "key": "email-list",
+  "version": 1,
+  "title": "Join Our Email List",
+  "audience": "public",
+  "anonymous": false,
+  "state": "closed",
+  "closedMessage": "The email list sign-up is on Google Forms for now, and you can add yourself by email from the Email List page. Questions: hello@badgersupports.org.",
+  "intro": [
+    "At Badger Supports, we create peer to peer spaces to talk about mental health, connect with others, and feel less alone. Whether you're in a group, workshop, or craft night, you're part of a community that gets it.",
+    "Join our email list to stay up-to-date on our latest updates, events, and more!"
+  ],
+  "review": "Built closed (decision 3.1), from Google's public view of 23 Oct 2026; the Email List page still links the Google Form. Words are Google's, with these changes. Google's form is one page. 'Your Email' is our section title; 'Add Yourself (Optional)' is Google's 'Add Yourself (OPTIONAL)' in the page's Title Case. Google's four numbered steps stay numbered; its first, 'CLICK HERE to send an email to …', reads as the Email List page's does ('Send an email to …'), with the address as a link below the steps, and Google's bold and asterisks on 'Do not use the option…' are dropped. 'All set! Click submit!' is dropped: the button says Send. The confirmation is ours. It says the request is received and the person is not on the list yet, because the site knows only that: whether they are invited, pending or subscribed is known to the Google Group, and to Connect once someone records it (WORK.md item 12). How a request reaches the group today is the owner's step 7. No receipt: the site never emails an address no one has confirmed.",
+  "sections": [
+    {
+      "id": "email",
+      "title": "Your Email",
+      "questions": [
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email",
+          "required": true,
+          "help": "Add your email below to join our mailing list. Badger Supports sends out updates about every two weeks.",
+          "autocomplete": "email",
+          "review": "Google's is a short-answer box marked Email; this one checks the address is an email address. The help is Google's."
+        }
+      ]
+    },
+    {
+      "id": "add_yourself",
+      "title": "Add Yourself (Optional)",
+      "intro": [
+        {
+          "list": [
+            "Send an email to badgersupports+subscribe@g-groups.wisc.edu.",
+            "Within a minute or two, you’ll receive an email to confirm your membership.",
+            "To complete your subscription to the email list, reply to the email you received and send a blank email. Do not use the option of clicking the ‘Join This Group’ button.",
+            "You will receive a confirmation email once you have replied to the email and have joined the group."
+          ],
+          "ordered": true
+        },
+        {
+          "links": [
+            {
+              "href": "mailto:badgersupports+subscribe@g-groups.wisc.edu",
+              "label": "Email badgersupports+subscribe@g-groups.wisc.edu"
+            }
+          ]
+        }
+      ],
+      "questions": []
+    }
+  ],
+  "confirmation": {
+    "title": "Request Received",
+    "body": [
+      "Thank you. We have your request to join the Badger Supports email list.",
+      "You are not on the list yet. You will hear from Google Groups when you are.",
+      "To join straight away, send an email to badgersupports+subscribe@g-groups.wisc.edu and reply to the email you receive."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "executive.email-list",
+    "owner": "Executive",
+    "receipt": "none",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSfpuM2wXEj7JKlfX1wYwbCisFXu_-OtsOSu-qPQOLAVAqluvg",
+    "aliases": [
+      "https://forms.gle/THmnT9QCdeeaoZx38"
+    ],
+    "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Google's form name begins EXEC, so the owner is Executive; Connect keeps only the leaders' newsletter list today, so the queue is a proposal."
+  }
+}

@@ -17,8 +17,8 @@ export const EDITS_SCHEMA = "bss.edits/1";
 const STRUCTURAL = new Set([
   "id", "type", "href", "media", "icon", "anchor", "form", "variant", "heading", "place", "person", "program",
   "path", "schema", "analytics", "photo", "photos", "aliases", "home", "kind", "group", "card", "show", "source",
-  "tone", "endsOn", "file", "lang", "connectOrigin", "liveOrigin", "origin", "url", "accessibilityEmail",
-  "description", "category",
+  "tone", "startsOn", "endsOn", "file", "lang", "connectOrigin", "liveOrigin", "origin", "url", "accessibilityEmail",
+  "description", "category", "series",
 ]);
 /* The parts of site.json a visitor reads on every page. */
 const SITE_PARTS = ["nav", "headerAction", "supportLine", "footer"];

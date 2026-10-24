@@ -5,13 +5,14 @@
   "title": "Craft Night Schedule — Badger Supports",
   "description": "Relax and unwind at free craft nights for UW–Madison students. No sign-ups or experience needed.",
   "analytics": "public",
+  "program": "craft",
   "blocks": [
     {
       "id": "b-cn-hero",
       "type": "eventhero",
       "title": "Craft Nights",
       "lead": "Relax & unwind at our free craft nights — no sign-ups or experience needed.",
-      "source": "events-fixture",
+      "source": "events",
       "program": "craft",
       "photos": [
         "m-craft-table",
@@ -40,7 +41,7 @@
       "id": "b-cn-next",
       "type": "events",
       "title": "Craft Night Schedule",
-      "source": "events-fixture",
+      "source": "events",
       "program": "craft",
       "show": "upcoming",
       "skip": 1,
@@ -49,8 +50,8 @@
     {
       "id": "b-cn-recent",
       "type": "events",
-      "title": "Recent craft nights",
-      "source": "events-fixture",
+      "title": "Recent Craft Nights",
+      "source": "events",
       "program": "craft",
       "show": "recent",
       "recent": 4

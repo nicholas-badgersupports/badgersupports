@@ -26,7 +26,20 @@ export const QUESTION_TYPES = {
   date:       { input: "date" },
   datetime:   { input: "datetime-local" },
   confirm:    { input: "checkbox" },
+  /* Added for the two applications (WORK.md item 14). A phone number is never refused for its
+     format. A ranking gives each option a different place, first choice first. A file is one PDF
+     that goes up in its own request before Send (netlify/lib/files.mjs); the answer names it by
+     fileId and never carries it. */
+  tel:        { input: "tel",            max: 40 },
+  links:      { input: "textarea",       maxItems: 5 },
+  rank:       { input: "select",         options: true },
+  file:       { input: "file",           maxBytes: 3 * 1024 * 1024, accept: "application/pdf" },
 };
+
+export const LINK_MAX = 2000;
+export const FILE_ID_RE = /^[A-Za-z0-9_-]{32}$/;
+/* Types whose answer is not one value a condition could test. */
+const UNCONDITIONAL = new Set(["links", "rank", "file"]);
 
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]{1,64}@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -76,6 +89,7 @@ export function definitionProblems(def) {
   if (!String(def.title || "").trim()) add("title-missing", "title");
   if (!["open", "closed"].includes(def.state)) add("state-unknown", "state");
   if (def.state === "closed" && !String(def.closedMessage || "").trim()) add("closed-message-missing", "closedMessage");
+  if (proseProblem(def.intro)) add("prose-shape", "intro");
   if (!Array.isArray(def.sections)) { add("sections-missing", "sections"); return problems; }
 
   const seenSections = new Set();
@@ -86,6 +100,8 @@ export function definitionProblems(def) {
     if (!ID_RE.test(String(section.id || ""))) add("section-id-shape", at);
     if (seenSections.has(section.id)) add("section-id-duplicate", at);
     seenSections.add(section.id);
+    if (!String(section.title || "").trim()) add("section-title-missing", at);
+    if (proseProblem(section.intro)) add("prose-shape", `${at}.intro`);
     if (section.showIf) conditionProblems(section.showIf, seen, at, add);
     for (const q of section.questions || []) {
       const qat = `${at}.${q.id}`;
@@ -107,6 +123,14 @@ export function definitionProblems(def) {
       if (q.allowOther && !["choice", "checkboxes"].includes(q.type)) add("other-not-allowed", qat);
       if (q.type === "number" && q.min != null && q.max != null && q.min > q.max) add("number-range", qat);
       if (q.maxLength != null && !(Number.isInteger(q.maxLength) && q.maxLength > 0)) add("max-length-shape", qat);
+      if (proseProblem(q.help)) add("prose-shape", `${qat}.help`);
+      if (q.confidential != null && typeof q.confidential !== "boolean") add("confidential-shape", qat);
+      // A confirmation's checkbox words, when its label is a heading above it rather than the words.
+      if (q.confirmText != null && (q.type !== "confirm" || !words(q.confirmText))) add("confirm-text-shape", qat);
+      if (q.type === "links" && q.maxLinks != null && !(Number.isInteger(q.maxLinks) && q.maxLinks >= 1 && q.maxLinks <= 10)) add("max-links-shape", qat);
+      if (q.type === "rank" && (q.options || []).length < 2) add("rank-needs-two-options", qat);
+      // An anonymous form keeps no name with its answers; a resume would carry one.
+      if (q.type === "file" && def.anonymous) add("file-on-anonymous-form", qat);
       if (q.showIf) conditionProblems(q.showIf, seen, qat, add);
       seen.set(q.id, q);
       answerable++;
@@ -118,9 +142,38 @@ export function definitionProblems(def) {
   return problems;
 }
 
+/* Words longer than a line (a form's intro, a section's intro, a question's help) are prose: one
+   paragraph as a string, or a list of parts. A part is a paragraph (a string), { heading },
+   { list, ordered } or { links: [{ href, label }] }. Plain words only: the renderer adds the
+   markup, so nothing an editor types becomes HTML. True when the shape is wrong. */
+export function proseProblem(v) {
+  if (v == null || typeof v === "string") return false;
+  return !Array.isArray(v) || !v.every(prosePartOk);
+}
+
+const words = (x) => typeof x === "string" && x.trim() !== "";
+function prosePartOk(p) {
+  if (typeof p === "string") return true;
+  if (!p || typeof p !== "object" || Array.isArray(p)) return false;
+  const keys = Object.keys(p);
+  if ("heading" in p) return keys.length === 1 && words(p.heading);
+  if ("list" in p) return keys.every((k) => k === "list" || k === "ordered") && Array.isArray(p.list) && p.list.length > 0 && p.list.every(words) && (p.ordered == null || typeof p.ordered === "boolean");
+  if ("links" in p) return keys.length === 1 && Array.isArray(p.links) && p.links.length > 0 && p.links.every((l) => l && typeof l === "object" && /^(\/|#|https:\/\/|mailto:)/.test(String(l.href || "")) && words(l.label));
+  return false;
+}
+
+/* The paragraphs of a piece of prose as plain text, for a place with no room for markup (the
+   closed page's kept answers, a receipt). Headings and list items become their own lines. */
+export function proseText(v) {
+  if (v == null) return [];
+  if (typeof v === "string") return [v];
+  return v.flatMap((p) => (typeof p === "string" ? [p] : p.heading ? [p.heading] : p.list ? p.list : p.links ? p.links.map((l) => l.label) : []));
+}
+
 function conditionProblems(cond, seen, at, add) {
   const target = seen.get(cond.question);
   if (!target) { add("condition-target-unknown-or-later", at); return; }
+  if (UNCONDITIONAL.has(target.type)) { add("condition-target-type", at); return; }
   const ops = ["equals", "in", "includes"].filter((k) => k in cond);
   if (ops.length !== 1) { add("condition-operator", at); return; }
   const optionIds = new Set((target.options || []).map((o) => o.id));
@@ -165,7 +218,9 @@ export function visibility(def, answers) {
 /* ------------------------------------------------------------------ reading raw input */
 
 /* Turns what arrived — URLSearchParams-like pairs from a no-JS POST, or a JSON object from the
-   enhanced form — into one shape: strings, and arrays for checkboxes. Unknown keys are ignored. */
+   enhanced form — into one shape: strings, arrays for checkboxes and files, and for a ranking an
+   object of option id to rank, read from its one select per option ("<id>.<option>"). Unknown
+   keys are ignored. */
 export function readRaw(def, input) {
   const get = (k) => {
     if (input == null) return undefined;
@@ -173,13 +228,14 @@ export function readRaw(def, input) {
       const all = input.getAll(k);
       return all.length === 0 ? undefined : all.length === 1 ? all[0] : all;
     }
-    return input[k];
+    return Object.hasOwn(input, k) ? input[k] : undefined;
   };
   const raw = {};
   for (const { q } of allQuestions(def)) {
     let v = get(q.id);
-    if (q.type === "checkboxes") v = v == null ? [] : Array.isArray(v) ? v : [v];
-    else if (Array.isArray(v)) v = v[0];
+    if (q.type === "checkboxes" || q.type === "file") v = v == null ? [] : Array.isArray(v) ? v : [v];
+    else if (q.type === "rank") v = v != null && typeof v === "object" ? v : Object.fromEntries((q.options || []).map((o) => [o.id, get(`${q.id}.${o.id}`)]).filter(([, x]) => x != null));
+    else if (Array.isArray(v) && q.type !== "links") v = v[0];
     raw[q.id] = v;
     if (q.allowOther) {
       const other = get(`${q.id}${OTHER}`);
@@ -203,14 +259,13 @@ export function validateAnswers(def, raw) {
   for (const { q } of allQuestions(def)) {
     if (!vis.questions.has(q.id)) continue;
     const v = typed[q.id];
-    const empty = v == null || v === "" || (Array.isArray(v) && v.length === 0);
-    if (empty) {
+    if (isEmpty(v)) {
       if (q.required) errors[q.id] = "required";
       continue;
     }
     const code = typeProblem(q, v);
     if (code) { errors[q.id] = code; answers[q.id] = v; continue; }
-    answers[q.id] = v;
+    answers[q.id] = q.type === "rank" ? rankOrder(q, v) : v;
     if (q.allowOther) {
       const picked = Array.isArray(v) ? v.includes(OTHER) : v === OTHER;
       const other = clean({ type: "short", maxLength: 200 }, raw[`${q.id}${OTHER}`]);
@@ -224,12 +279,46 @@ export function validateAnswers(def, raw) {
   return { ok: Object.keys(errors).length === 0, answers, errors };
 }
 
+const isEmpty = (v) => v == null || v === "" || (Array.isArray(v) ? v.length === 0 : typeof v === "object" && Object.keys(v).length === 0);
+
+/* A ranking as option ids, first choice first. Accepts the object the form sends or a list. */
+export function rankOrder(q, v) {
+  if (Array.isArray(v)) return v.map(String);
+  const r = rankFrom(q, v);
+  return (q.options || []).filter((o) => Object.hasOwn(r, o.id)).sort((a, b) => Number(r[a.id]) - Number(r[b.id])).map((o) => o.id);
+}
+
+/* Option id -> rank as a string, for the options that have one. Reads only the definition's own
+   options, so a key that is not one of them is ignored rather than trusted. */
+function rankFrom(q, v) {
+  const out = {};
+  if (v == null || typeof v !== "object") return out;
+  for (const o of q.options || []) {
+    let x = Array.isArray(v) ? (v.includes(o.id) ? v.indexOf(o.id) + 1 : null) : Object.hasOwn(v, o.id) ? v[o.id] : null;
+    if (Array.isArray(x)) x = x[0];
+    const s = x == null ? "" : String(x).trim();
+    if (s) out[o.id] = s;
+  }
+  return out;
+}
+
+function httpsLink(s) {
+  if (/\s/.test(s) || !/^https:\/\//i.test(s)) return false;
+  try {
+    const u = new URL(s);
+    return u.protocol === "https:" && /^[^.]+(\.[^.]+)+$/.test(u.hostname) && !u.username && !u.password;
+  } catch { return false; }
+}
+
 function clean(q, v) {
-  if (v == null) return q.type === "checkboxes" ? [] : "";
+  if (q.type === "rank") return rankFrom(q, v);
+  if (v == null) return ["checkboxes", "file", "links"].includes(q.type) ? [] : "";
   if (q.type === "checkboxes") {
     const arr = (Array.isArray(v) ? v : [v]).map((x) => String(x));
     return [...new Set(arr)];
   }
+  if (q.type === "file") return [...new Set((Array.isArray(v) ? v : [v]).map((x) => String(x).trim()).filter(Boolean))];
+  if (q.type === "links") return (Array.isArray(v) ? v.map(String) : String(v).split(/\r\n?|\n/)).map((s) => s.trim()).filter(Boolean);
   let s = String(v).replace(/\r\n?/g, "\n");
   s = q.type === "long" ? s.replace(/[ \t]+$/gm, "").trim() : s.replace(/\s+/g, " ").trim();
   if (q.type === "email") s = s.toLowerCase();
@@ -242,7 +331,7 @@ function typeProblem(q, v) {
   const ids = new Set((q.options || []).map((o) => o.id));
   if (q.allowOther) ids.add(OTHER);
   switch (q.type) {
-    case "short": case "long": case "email": {
+    case "short": case "long": case "email": case "tel": {
       const max = q.maxLength || t.max;
       if (v.length > max) return "too-long";
       if (q.type === "email" && !EMAIL_RE.test(v)) return "email-shape";
@@ -267,6 +356,20 @@ function typeProblem(q, v) {
       return DATETIME_RE.test(v) && realDate(v.slice(0, 10)) ? null : "datetime-shape";
     case "confirm":
       return v === "yes" ? null : "confirm-needed";
+    case "links":
+      if (v.length > (q.maxLinks || t.maxItems)) return "links-too-many";
+      if (v.some((s) => s.length > LINK_MAX)) return "link-too-long";
+      return v.every(httpsLink) ? null : "link-shape";
+    case "rank": {
+      const n = (q.options || []).length;
+      const ranks = Object.values(v);
+      if (ranks.some((r) => !/^\d+$/.test(r) || Number(r) < 1 || Number(r) > n)) return "rank-shape";
+      if (new Set(ranks.map(Number)).size !== ranks.length) return "rank-repeated";
+      return ranks.length === n ? null : "rank-incomplete";
+    }
+    case "file":
+      if (v.length > 1) return "files-too-many";
+      return v.every((x) => FILE_ID_RE.test(x)) ? null : "file-shape";
     default:
       return "type-unknown";
   }
@@ -283,7 +386,20 @@ function realDate(s) {
 export function errorText(code, q, t) {
   const label = (q && q.label) || t("form.error.thisQuestion");
   switch (code) {
-    case "required": return q && QUESTION_TYPES[q.type]?.options ? t("form.error.requiredChoice", { label }) : t("form.error.required", { label });
+    case "required":
+      if (q?.type === "file") return t("form.error.requiredFile", { label });
+      if (q?.type === "rank") return t("form.error.requiredRank", { label });
+      return q && QUESTION_TYPES[q.type]?.options ? t("form.error.requiredChoice", { label }) : t("form.error.required", { label });
+    case "links-too-many": return t("form.error.linksTooMany", { max: q.maxLinks || QUESTION_TYPES.links.maxItems });
+    case "link-too-long": return t("form.error.linkTooLong", { max: LINK_MAX.toLocaleString("en-US") });
+    case "link-shape": return t("form.error.linkShape");
+    case "rank-shape": return t("form.error.rankShape", { max: (q.options || []).length });
+    case "rank-repeated": return t("form.error.rankRepeated");
+    // A required ranking cannot be left blank, so it is not offered as a way out.
+    case "rank-incomplete": return q.required ? t("form.error.requiredRank", { label }) : t("form.error.rankIncomplete");
+    case "file-shape": return t("form.error.fileShape");
+    case "file-missing": return t("form.error.fileMissing");
+    case "files-too-many": return t("form.error.filesTooMany");
     case "too-long": return t("form.error.tooLong", { max: (q && (q.maxLength || QUESTION_TYPES[q.type]?.max)) || 200 });
     case "email-shape": return t("form.error.emailShape");
     case "number-shape": return t("form.error.numberShape");
@@ -302,25 +418,51 @@ export function errorText(code, q, t) {
 /* ------------------------------------------------------------------ backups and exports */
 
 /* One column per question, in definition order, by ID. Old answers keep their column when a
-   label changes; a retired question keeps its column because the backup reads every version. */
+   label changes; a retired question keeps its column because the backup reads every version.
+   A confidential question's column says so: its answers go to Connect and nowhere else (not the
+   backup, logs or analytics), and whatever copies answers onward has to skip it. */
 export function answerColumns(def) {
   const cols = [];
   for (const { q } of allQuestions(def)) {
-    cols.push({ id: q.id, label: q.label, type: q.type });
-    if (q.allowOther) cols.push({ id: `${q.id}${OTHER}`, label: `${q.label} (other)`, type: "short" });
+    cols.push({ id: q.id, label: q.label, type: q.type, ...(q.confidential ? { confidential: true } : {}) });
+    if (q.allowOther) cols.push({ id: `${q.id}${OTHER}`, label: `${q.label} (other)`, type: "short", ...(q.confidential ? { confidential: true } : {}) });
   }
   return cols;
 }
 
-/* A cell for a spreadsheet or CSV. Option IDs become labels; anything that a spreadsheet would
-   read as a formula is prefixed with an apostrophe, because the answers are untrusted. */
+/* An answer as the words a person reads: a string, or a list of strings for an answer in parts.
+   Option IDs become labels, a ranking reads "1. Programs" first choice first, links stay as they
+   were typed, and a file reads as its name and size — never its contents. Connect's copy, the
+   backup and the staff page all use this, so they say the same thing. */
+export function answerWords(q, v) {
+  if (v == null) return "";
+  // A file record reads as a file even where its question has since been retired.
+  const type = q?.type || (Array.isArray(v) && v.length && v.every(isFileRecord) ? "file" : null);
+  switch (type) {
+    case "rank": return rankOrder(q, v).map((id, i) => `${i + 1}. ${optionLabel(q, id)}`);
+    case "file": return (Array.isArray(v) ? v : [v]).map((f) => (isFileRecord(f) ? `${f.name} (${sizeWords(f.bytes)})` : String(f)));
+    case "links": return Array.isArray(v) ? v.map(String) : String(v).split("\n");
+    default:
+      if (Array.isArray(v)) return v.map((x) => optionLabel(q, x));
+      return q && QUESTION_TYPES[q.type]?.options ? optionLabel(q, v) : String(v);
+  }
+}
+
+const isFileRecord = (f) => !!f && typeof f === "object" && typeof f.name === "string" && Number.isFinite(f.bytes);
+
+export function sizeWords(bytes) {
+  const n = Number(bytes) || 0;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/* A cell for a spreadsheet or CSV, from answerWords: parts joined with "; ", links one per line.
+   Anything that a spreadsheet would read as a formula is prefixed with an apostrophe, because the
+   answers are untrusted. */
 export function cellText(def, id, value) {
   const q = id.endsWith(OTHER) ? null : questionById(def, id);
-  let s;
-  if (value == null) s = "";
-  else if (Array.isArray(value)) s = value.map((v) => optionLabel(q, v)).join("; ");
-  else if (q && QUESTION_TYPES[q.type]?.options) s = optionLabel(q, value);
-  else s = String(value);
+  const w = value == null ? "" : answerWords(q, value);
+  const s = Array.isArray(w) ? w.join(q?.type === "links" ? "\n" : "; ") : w;
   return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
 }
 

@@ -111,6 +111,7 @@
       "end": "13:30",
       "place": "sac-mhh",
       "signup": "none",
+      "series": "dogs-on-call",
       "href": "/initiatives/dogs-on-call"
     },
     {
@@ -123,6 +124,7 @@
       "end": "19:30",
       "place": "union-south-marquee",
       "signup": "none",
+      "series": "housing-hub",
       "href": "/initiatives/housing-hub"
     },
     {
@@ -135,6 +137,7 @@
       "end": "20:00",
       "place": "sac-mhh",
       "signup": "none",
+      "series": "dogs-on-call",
       "href": "/initiatives/dogs-on-call"
     },
     {
@@ -162,6 +165,7 @@
       "end": "19:00",
       "place": "sac-hearing",
       "signup": "none",
+      "series": "housing-hub",
       "href": "/initiatives/housing-hub"
     },
     {
@@ -174,6 +178,7 @@
       "end": "19:00",
       "place": "sac-caucus",
       "signup": "none",
+      "series": "housing-hub",
       "href": "/initiatives/housing-hub"
     },
     {
@@ -215,6 +220,7 @@
       "end": "20:00",
       "place": "sac-mhh",
       "signup": "none",
+      "series": "dogs-on-call",
       "href": "/initiatives/dogs-on-call"
     },
     {
@@ -227,6 +233,7 @@
       "end": "19:00",
       "place": "sac-caucus",
       "signup": "none",
+      "series": "housing-hub",
       "href": "/initiatives/housing-hub"
     },
     {
@@ -253,6 +260,7 @@
       "end": "20:00",
       "place": "sac-mhh",
       "signup": "none",
+      "series": "dogs-on-call",
       "href": "/initiatives/dogs-on-call"
     }
   ]

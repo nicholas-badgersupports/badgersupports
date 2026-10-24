@@ -8,7 +8,7 @@
    under the doors as one panel each, never on the compact list, with the live page's photo of that
    way in on top when it has one. */
 
-import { html, breakAtSign } from "../html.mjs";
+import { html, attrs, breakAtSign } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
@@ -41,7 +41,7 @@ export default {
       ${!b.compact && closed && form.closedMessage ? html`<span class="door-text door-closed">${breakAtSign(form.closedMessage)}</span>` : ""}
       ${it.link ? html`<span class="door-go"><span class="go-label">${it.link.label}</span>${icon(away ? "out" : "arrow", "go-ic")}</span>` : ""}`;
     const door = it.link ? link(ctx, it.link.href, inner, { class: "door-link" }) : html`<div class="door-link">${inner}</div>`;
-    return html`<li class="${it.primary && !closed ? "door is-primary" : "door"}">${door}</li>`;
+    return html`<li${attrs({ class: it.primary && !closed ? "door is-primary" : "door", "data-program": ctx.programOf(it.link?.href) })}>${door}</li>`;
   })}</ul>
   ${more.length ? html`<div class="door-more">${more.map(moreHtml(ctx))}</div>` : ""}
 </div></section>`;

@@ -2,9 +2,10 @@
   "schema": "bss.page/1",
   "id": "pg-peer-groups",
   "path": "/join/peer-support-groups/",
-  "title": "Peer support groups — Badger Supports",
+  "title": "Peer Support Groups — Badger Supports",
   "description": "Free drop-in peer support groups for UW–Madison students, Monday to Thursday at the Student Mental Health Hub.",
   "analytics": "public",
+  "program": "peer",
   "blocks": [
     {
       "id": "b-pg-intro",
@@ -12,7 +13,7 @@
       "variant": "feature",
       "program": "peer",
       "heading": "h1",
-      "title": "drop in to a peer support group",
+      "title": "Drop In to a Peer Support Group",
       "lead": "College can be stressful — come find support and yap it out!",
       "body": [
         "Peer Support Groups are entirely drop-in.",
@@ -21,7 +22,7 @@
         "Psst, even if you arrive late, don’t be shy — come in!"
       ],
       "links": [
-        { "label": "Get directions", "href": "#get-directions", "icon": "pin" },
+        { "label": "Get Directions", "href": "#get-directions", "icon": "pin" },
         { "label": "Join Our Email List", "href": "/join/email-list/", "icon": "mail" }
       ],
       "embed": {
@@ -34,7 +35,7 @@
       "id": "b-pg-days",
       "type": "cards",
       "variant": "days",
-      "title": "join us for a group!",
+      "title": "Join Us for a Group!",
       "items": [
         {
           "id": "monday",
@@ -42,7 +43,7 @@
           "lines": ["5:00–6:00 PM", "7:00–8:00 PM"],
           "text": "@ Student Activity Center Rm. 3203",
           "photo": "m-peer-day-mon",
-          "link": { "label": "Get directions", "href": "#get-directions", "icon": "pin" }
+          "link": { "label": "Get Directions", "href": "#get-directions", "icon": "pin" }
         },
         {
           "id": "tuesday",
@@ -50,7 +51,7 @@
           "lines": ["5:00–6:00 PM"],
           "text": "@ Student Activity Center Rm. 3203",
           "photo": "m-peer-day-tue",
-          "link": { "label": "Get directions", "href": "#get-directions", "icon": "pin" }
+          "link": { "label": "Get Directions", "href": "#get-directions", "icon": "pin" }
         },
         {
           "id": "wednesday",
@@ -58,7 +59,7 @@
           "lines": ["5:00–6:00 PM"],
           "text": "@ Student Activity Center Rm. 3203",
           "photo": "m-peer-day-wed",
-          "link": { "label": "Get directions", "href": "#get-directions", "icon": "pin" }
+          "link": { "label": "Get Directions", "href": "#get-directions", "icon": "pin" }
         },
         {
           "id": "thursday",
@@ -66,7 +67,7 @@
           "lines": ["5:00–6:00 PM"],
           "text": "@ Student Activity Center Rm. 3203",
           "photo": "m-peer-day-thu",
-          "link": { "label": "Get directions", "href": "#get-directions", "icon": "pin" }
+          "link": { "label": "Get Directions", "href": "#get-directions", "icon": "pin" }
         }
       ]
     },
@@ -75,13 +76,13 @@
       "type": "directions",
       "anchor": "get-directions",
       "heading": "h2",
-      "title": "get directions",
+      "title": "Get Directions",
       "place": "sac-mhh"
     },
     {
       "id": "b-pg-talk",
       "type": "words",
-      "title": "in peer support groups, Badgers talk about:",
+      "title": "In peer support groups, Badgers talk about:",
       "items": [
         { "text": "Stress", "size": 2 },
         "Homesickness",
@@ -104,7 +105,7 @@
       "id": "b-pg-activities",
       "type": "cards",
       "variant": "activities",
-      "title": "some example group activities!",
+      "title": "Some Example Group Activities!",
       "items": [
         {
           "id": "question-jar",
@@ -126,7 +127,7 @@
           "lines": ["Contribute to our campus-wide awareness ribbon campaign!"],
           "icon": "ribbon",
           "photo": "m-peer-ribbon",
-          "link": { "label": "Learn more", "href": "/initiatives/ribbons/" }
+          "link": { "label": "Learn More", "href": "/initiatives/ribbons/" }
         }
       ]
     },
@@ -135,7 +136,7 @@
       "type": "program",
       "variant": "topics",
       "program": "peer",
-      "title": "what a group is like",
+      "title": "What a Group Is Like",
       "lead": "Free, confidential, and open to all UW–Madison students.",
       "topics": [
         { "term": "Why", "text": "Peer Support Groups give you a steady space to be heard, to listen, and to connect with fellow students who understand what it means to thrive at UW." },
@@ -153,12 +154,12 @@
         "Badger SPILL isn’t a crisis service. If you’re in danger, call 911, call or text 988, or call UHS 24/7 at 608-265-5600, option 9."
       ],
       "primary": {
-        "label": "Write your SPILL",
+        "label": "Write Your SPILL",
         "href": "https://badgerspill.org/#write"
       },
       "links": [
         {
-          "label": "How Badger SPILL works",
+          "label": "How Badger SPILL Works",
           "href": "https://badgerspill.org/how-it-works/"
         }
       ]
@@ -174,7 +175,7 @@
     {
       "id": "b-pg-note",
       "type": "text",
-      "title": "good to know",
+      "title": "Good to Know",
       "body": [
         "Peer support groups are not a substitute for ongoing counseling and do not provide mental health treatment. Facilitators listen to shared concerns, support reflection and problem solving, and help participants experience what peer support can feel like in a supportive, student led setting.",
         "Badger Supports value inclusion and access for all participants and are pleased to provide reasonable accommodations for any Badger Support Peer Support Group. Please contact accessibility@badgersupports.org to make a reasonable accommodation request. Requests should be made 3 days before any peer support group."

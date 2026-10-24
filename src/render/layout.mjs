@@ -8,7 +8,7 @@
  */
 
 import { html, raw, attrs, jsonIsland } from "./html.mjs";
-import { BLOCKS, liveBlocks } from "./registry.mjs";
+import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
@@ -89,7 +89,10 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   const blocks = body ? [] : liveBlocks(page, ctx.today);
   const top = blocks.filter((b) => BLOCKS[b.type].placement === "top");
   const main = blocks.filter((b) => BLOCKS[b.type].placement !== "top");
-  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
+  // A page built from Connect's events with a block that can show them again asks for them between
+  // publishes; schedule.js does the asking (netlify/lib/live-events.mjs answers).
+  const refreshing = ctx.liveEvents && blocks.some(refreshes);
+  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(refreshing ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
   const a = ctx.assets;
   const canonical = ctx.site.origin + page.path;
   const preload = page.preloadImage ? html`<link rel="preload" as="image" href="${page.preloadImage.href}" imagesrcset="${page.preloadImage.srcset}" imagesizes="${page.preloadImage.sizes}" type="${page.preloadImage.type}" fetchpriority="high">` : "";
@@ -109,7 +112,7 @@ ${page.description ? html`<meta property="og:description" content="${page.descri
 <meta name="theme-color" content="#B60000">
 <link rel="icon" href="/assets/brand/bss-hand-red.png" type="image/png">
 <link rel="preload" href="/assets/fonts/montserrat-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/baloo2-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
 ${preload}
 <link rel="stylesheet" href="${a.css}">
 <script>${raw(INLINE_JS)}</script>
@@ -117,13 +120,13 @@ ${preload}
 ${clients.map((c) => html`<script type="module" src="${a.js[c]}"></script>`)}
 ${Object.keys(clientTable(ctx.t.table, clients)).length ? jsonIsland("bss-text", clientTable(ctx.t.table, clients)) : ""}
 </head>
-<body${attrs({ "data-page": page.id, "data-analytics": page.analytics || "public", "data-status": status })}>
+<body${attrs({ "data-page": page.id, "data-analytics": page.analytics || "public", "data-status": status, "data-refresh": refreshing ? "events" : null })}>
 <a class="skip" href="#main">${ctx.t("page.skip")}</a>
 ${protoNotice(ctx)}
-${top.map((b) => BLOCKS[b.type].render(b, ctx))}
+${top.map((b) => renderBlock(b, ctx))}
 ${header(ctx, page.path)}
-<main id="main" tabindex="-1">
-${body ?? main.map((b) => BLOCKS[b.type].render(b, ctx))}
+<main${attrs({ id: "main", tabindex: "-1", "data-program": page.program })}>
+${body ?? main.map((b) => renderBlock(b, ctx))}
 </main>
 ${supportLine(ctx)}
 ${footer(ctx)}

@@ -1,11 +1,25 @@
-/* Every design value, declared once. Sources, read 2026-10-19:
- *   brand   style.badgersupports.org v1.0 — red #B60000, cream #F2EBE1, charcoal #393737,
- *           Montserrat body
- *   rule    Connect's design rules: signed-out chrome has no owner, so a public page uses brand red
- *           and the neutrals only, no program hue (owner, 2026-10-20: the coloured bars are not Connect's)
- *   sibling Badger Supports Connect repo/assets/css/tokens.css — #8F0000 dark red, the "Clean"
- *           paper #FAF7F2, line/rule neutrals, 7px card radius, ledge shadow, motion durations,
- *           Baloo 2 display face, Caveat for handwriting, self-hosted fonts
+/* Every design value, declared once. Sources, read 23 Oct 2026:
+ *   brand   style.badgersupports.org v1.0 (owner, 23 Oct 2026: "be careful not to deviate from the
+ *           badger supports brand"). Primaries red #B60000, cream #F2EBE1, charcoal #393737; accents
+ *           khaki #A99A6F and blue #0479A8 (links); the light and dark rainbow, where each topic has a
+ *           light shade for fills and a dark one for text and small details: peer support green,
+ *           workshops blue, craft night lilac. Montserrat for every word on the web: the headline face,
+ *           More Sugar, is set in Canva and "there is no web version", and a third typeface is avoided.
+ *           Corners round (~20pt), soft, never sharp. Backgrounds are never a flat fill: a paper
+ *           texture in the topic colour. Contrast at least 4.5:1, tap targets 44px.
+ *   system  the brand design system (Admin/Design/Badger Supports design system, src/tokens/tokens.css
+ *           and its components): the radius scale (sm 8, md 20 the default, lg 32 for cards and
+ *           panels, pill for buttons); the poster headline is Montserrat at its heaviest, uppercase and
+ *           tight; a button is a flat pill with no shadow; the two CC0 paper textures in
+ *           /assets/brand/ (TEXTURES-LICENCE.txt).
+ *   guide   the style guide page's own CSS: white cards on the cream with a 1px line #E2D8C6 and the
+ *           softest lift, an uppercase 800 eyebrow over a heading.
+ *   rule    the header, footer and announcements are brand red. Each program wears its own colour
+ *           (owner, 23 Oct 2026: "peer support groups should be green, craft nights should be purple"),
+ *           which on the brand's own rainbow is the peer green and the craft lilac; workshops wear the
+ *           workshops blue. A section takes its colour from data-program on itself or an ancestor;
+ *           everything inside draws in --accent, --accent-deep, --accent-tint and --accent-wash, so
+ *           the red is only the default.
  * Anything not on this list is a defect: ops/check.mjs fails on a colour literal outside this file
  * (and the generated media/mood rules).
  */
@@ -13,36 +27,76 @@
 @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 400; font-display: swap; src: url("/assets/fonts/montserrat-400.woff2") format("woff2"); }
 @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/montserrat-600.woff2") format("woff2"); }
 @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 700; font-display: swap; src: url("/assets/fonts/montserrat-700.woff2") format("woff2"); }
-@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/baloo2-600.woff2") format("woff2"); }
-@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 700; font-display: swap; src: url("/assets/fonts/baloo2-700.woff2") format("woff2"); }
-@font-face { font-family: "Caveat"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/caveat-600.woff2") format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 800; font-display: swap; src: url("/assets/fonts/montserrat-800.woff2") format("woff2"); }
 
 :root {
-  /* brand */
+  /* brand primaries and accents */
   --red: #B60000;
-  --red-deep: #8F0000;
   --cream: #F2EBE1;
-  --cream-soft: #F7F1E8;
-  --paper: #FAF7F2;
-  --paper-deep: #F0EAE0;
   --ink: #393737;
-  --muted: #5C5755;
-  --line: #E8E0D4;
-  --rule-strong: #CDBBA2;
+  --khaki: #A99A6F;            /* decoration only: as text it fails 4.5 on the cream */
+  --blue: #0479A8;             /* links on white; on the textured cream it measures 3.69, so --link */
+
+  /* grounds. The page is the cream, under the coldpress paper; a card is white, as on the style
+     guide's own page; --paper-deep is khaki at 8% over white, the second ground a band alternates to */
+  --ground: #F2EBE1;
+  --paper: #FFFFFF;
+  --paper-deep: #EDE6DA;
+  --cream-soft: #F7F2EA;       /* the cream halfway to white: a table head, a quiet note */
+  --muted: #544F4B;
+  --line: #E2D8C6;             /* the style guide's own card line */
+  --rule-strong: #CEC2A8;      /* khaki at half over the cream: a rule that parts two halves */
   --field: #FFFFFF;
   --field-border: #6E6763;
-  /* a pale tint of the red, from Connect's executive tint: the ring round a person's photo and the
-     marker stripe under their title (Connect's person card, option H) */
-  --red-tint: #FBECEC;
 
+  /* the red set. --red-deep is the web's hover and press shade (the red at 80%), never a fill at rest.
+     The tint is the brand's light red at 20% over white, the band an inner page's heading sits on.
+     Measured, textured at the veil below: the red on it 5.00, muted 5.76; flat 5.56. */
+  --red-deep: #920000;
+  --red-light: #CF5655;
+  --red-tint: #FADFDA;
+  --red-wash: #FADFDA;
 
-  /* the Wall of Support's paper, light tints of the brand's extended palette */
-  --note-1: #FBE4E2;
-  --note-2: #FCEAD8;
-  --note-3: #F7EFCF;
-  --note-4: #E3F0E5;
-  --note-5: #E3EDF6;
-  --note-6: #ECEBF8;
+  /* program colours, from the brand's rainbow: the dark shade is the colour (text, buttons, small
+     details), the light shade is for big fills, the tint (light shade at about 25% over white) is the
+     band under a page's heading. --*-deep is the dark shade at 80%, the hover. Measured: the dark on
+     its textured tint 4.64 (peer), 5.68 (craft), 6.79 (workshops); cream on the dark 5.28, 6.46, 7.87;
+     the dark on white 6.25, 7.64, 9.32. */
+  --peer: #346B4F;
+  --peer-deep: #2A563F;
+  --peer-light: #71AF7D;
+  --peer-tint: #DDEEE1;
+  --peer-wash: #DDEEE1;
+  --craft: #4F4F7D;
+  --craft-deep: #3F3F64;
+  --craft-light: #A7A7D8;
+  --craft-tint: #E8E8F5;
+  --craft-wash: #E8E8F5;
+  --workshops: #304674;
+  --workshops-deep: #26385D;
+  --workshops-light: #98BAD5;
+  --workshops-tint: #DCEAF3;
+  --workshops-wash: #DCEAF3;
+
+  /* the colour a section draws in: brand red unless a program says otherwise */
+  --accent: var(--red);
+  --accent-deep: var(--red-deep);
+  --accent-light: var(--red-light);
+  --accent-tint: var(--red-tint);
+  --accent-wash: var(--red-wash);
+
+  /* a link: the brand's links are blue. The workshops blue holds 4.5 on every ground here (7.05 on the
+     textured cream); the brand blue only on white */
+  --link: #304674;
+  --link-deep: #26385D;
+
+  /* the Wall of Support's paper: tints of the brand's light rainbow, red to lilac */
+  --note-1: #FADFDA;
+  --note-2: #FBE8D6;
+  --note-3: #FBECC0;
+  --note-4: #DDEEE1;
+  --note-5: #DCEAF3;
+  --note-6: #E8E8F5;
 
   /* Badger SPILL's own colours (badger-spill site/assets/css/base.css): its milk blue, its ink, its
      panel and a pale wash of the blue. Only where SPILL shows: its band, the hero's sticker, the footer. */
@@ -54,29 +108,31 @@
   --spill-hover: #8DB8D0;     /* the SPILL button under a pointer */
   --spill-ripple: #FFFFFFE6;  /* the ring across the puddle */
 
-  /* status */
-  --danger: #B1380B;
+  /* status. The danger is the brand's dark orange: 5.82 on white, 5.08 on its tint, 4.24 on the
+     textured cream, so its words sit on white or on its tint, never on the bare page */
+  --danger: #AF4129;
   --danger-tint: #FBEDE6;
-  --ok: #2C5B42;
-  --ok-tint: #E7F2EC;
-  --focus-ring: #1F5E86;
+  --ok: var(--peer);
+  --ok-tint: var(--peer-tint);
+  --focus-ring: #304674;
   --focus-on-red: #F2EBE1;
   --scrim: #39373799;          /* behind the edit dialog: ink at sixty per cent */
 
-  /* type */
-  --font-display: "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
+  /* type: Montserrat only. A headline is Montserrat at its heaviest, uppercase and tight (the design
+     system's DisplayHeading); 800 is the heaviest cut shipped here */
   --font-body: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-note: "Caveat", "Segoe Print", cursive;
+  --font-display: var(--font-body);
+  --fw-display: 800;
   --fs-small: .9375rem;
   --fs-body: 1.0625rem;
   --fs-lead: clamp(1.125rem, 1.05rem + .35vw, 1.3125rem);
   --fs-h3: clamp(1.25rem, 1.15rem + .45vw, 1.5rem);
-  --fs-h2: clamp(2.125rem, 1.6rem + 2.2vw, 3.375rem);
-  --fs-h1: clamp(3.25rem, 1.9rem + 5.6vw, 6.25rem);
-  --fs-page: clamp(2.75rem, 1.8rem + 3.6vw, 4.5rem);
-  --fs-note: 1.6rem;
+  --fs-h2: clamp(1.625rem, 1.2rem + 1.7vw, 2.625rem);
+  --fs-h1: clamp(2.25rem, 1.45rem + 3.6vw, 4.5rem);
+  --fs-page: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+  --fs-note: 1.125rem;
   --lh-body: 1.6;
-  --lh-display: .92;
+  --lh-display: .95;
 
   /* space */
   --s0: .25rem;
@@ -93,28 +149,65 @@
   --measure: 62ch;
   --header-h: 4.5rem;
 
-  /* shape: a scale by element class; bands, strips, header and footer stay square */
-  --r-card: 7px;
-  --r-input: 5px;
+  /* shape, the design system's scale: --r-card is the brand default (20), --r-panel is for cards,
+     info panels and photo cards (32), --r-input the small mark (8). Bands, header and footer stay
+     square: they run edge to edge. */
+  --r-card: 20px;
+  --r-panel: 32px;
+  --r-input: 8px;
   --r-chip: 999px;
+  /* the height of SPILL's double wave (src/render/wave.mjs), not drawn on this site since 23 Oct 2026 */
+  --wave-h: clamp(22px, 1rem + 1.6vw, 42px);
+  /* shadows: a button has none (the design system's Button). A card on the page has the style guide's
+     own soft lift; something that floats over the page (a menu, a note on the wall) has a deeper one. */
+  --lift: 0 2px 10px rgba(80, 60, 20, .06);
   --ledge: 0 3px 0 var(--rule-strong);
-  --menu-shadow: var(--ledge), 0 12px 24px -16px rgba(57, 55, 55, .4);
+  --menu-shadow: 0 1px 2px rgba(57, 55, 55, .12), 0 16px 36px -16px rgba(57, 55, 55, .45);
   --note-shadow: 0 2px 0 rgba(57, 55, 55, .12), 0 10px 18px -14px rgba(57, 55, 55, .5);
-  --dot-line: 2px dotted var(--line);
-  --dot-line-on-red: 2px dotted rgba(242, 235, 225, .45);
+  /* rules: solid, in the paper's own neutrals. --hairline parts the items of one list or edges a card;
+     --rule-line parts two halves of one thing; --hairline-on-red is the same on a coloured block */
+  --hairline: 1px solid var(--line);
+  --rule-line: 2px solid var(--rule-strong);
+  --hairline-on-red: 2px solid rgba(242, 235, 225, .3);
 
-  /* paper grain: two dot grids, on the page and on the red */
-  --grain-1: rgba(57, 55, 55, .045);
-  --grain-2: rgba(182, 0, 0, .03);
-  --grain-red-1: rgba(0, 0, 0, .09);
-  --grain-red-2: rgba(255, 255, 255, .05);
-  --dot-line-strong: 3px dotted var(--rule-strong);
-  /* ruled paper, as Connect's: a cream panel meant to read as a page someone writes on */
-  --ruled: rgba(57, 55, 55, .075);
+  /* paper. Coldpress under a light ground, crumpled under a coloured block, both multiplied into the
+     colour beneath and veiled with that colour: 70% on a light ground, 50% on a coloured block. At
+     70% the darkest point of the coldpress darkens the ground to 95%, and every pairing above is
+     measured at that point. ops/a11y.mjs checks the page with each textured ground at that point. */
+  --tex-paper: url("/assets/brand/paper-coldpress.jpg");
+  --tex-crumpled: url("/assets/brand/paper-crumpled.jpg");
+  --tex-size: 384px;
+  /* the two light grounds, whole: use as `background: var(--tex-ground); background-blend-mode: normal, multiply;` */
+  --tex-ground:
+    linear-gradient(color-mix(in srgb, var(--ground) 70%, transparent), color-mix(in srgb, var(--ground) 70%, transparent)),
+    var(--tex-paper) 0 0 / var(--tex-size) var(--ground);
+  --tex-deep:
+    linear-gradient(color-mix(in srgb, var(--paper-deep) 70%, transparent), color-mix(in srgb, var(--paper-deep) 70%, transparent)),
+    var(--tex-paper) 0 0 / var(--tex-size) var(--paper-deep);
 
   /* motion */
   --t-fast: 120ms;
   --t: 160ms;
   --t-slow: 200ms;
   --ease-out: cubic-bezier(.2, .7, .3, 1);
+}
+
+/* A program's colour, wherever data-program names it: a page's <main>, a section, a timetable row, a
+   circle in the hero. The nearest one wins, so a craft row on the peer page is still lilac. */
+[data-program="peer"] { --accent: var(--peer); --accent-deep: var(--peer-deep); --accent-light: var(--peer-light); --accent-tint: var(--peer-tint); --accent-wash: var(--peer-wash); }
+[data-program="craft"] { --accent: var(--craft); --accent-deep: var(--craft-deep); --accent-light: var(--craft-light); --accent-tint: var(--craft-tint); --accent-wash: var(--craft-wash); }
+[data-program="workshops"] { --accent: var(--workshops); --accent-deep: var(--workshops-deep); --accent-light: var(--workshops-light); --accent-tint: var(--workshops-tint); --accent-wash: var(--workshops-wash); }
+[data-program="other"] { --accent: var(--red); --accent-deep: var(--red-deep); --accent-light: var(--red-light); --accent-tint: var(--red-tint); --accent-wash: var(--red-wash); }
+
+/* The paper in a section's own colour. A var() inside a custom property is resolved where the property
+   is declared, so these are declared again wherever data-program sets the accent: a coloured block is
+   the crumpled paper under its accent at 50%, a light band the coldpress under its wash at 70%. Use as
+   `background: var(--tex-block); background-blend-mode: normal, multiply;`. */
+:root, [data-program] {
+  --tex-block:
+    linear-gradient(color-mix(in srgb, var(--accent) 50%, transparent), color-mix(in srgb, var(--accent) 50%, transparent)),
+    var(--tex-crumpled) 0 0 / var(--tex-size) var(--accent);
+  --tex-wash:
+    linear-gradient(color-mix(in srgb, var(--accent-wash) 70%, transparent), color-mix(in srgb, var(--accent-wash) 70%, transparent)),
+    var(--tex-paper) 0 0 / var(--tex-size) var(--accent-wash);
 }

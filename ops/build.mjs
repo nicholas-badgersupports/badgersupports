@@ -2,8 +2,10 @@
  *
  *   node ops/build.mjs                       # the prototype: fixtures allowed, noindex everywhere
  *   node ops/build.mjs --today=2026-10-20    # pin "today" (screenshots, tests)
- *   node ops/build.mjs --production          # refuses fixtures, and anything still left on the
- *                                            # live site (cutoverProblems); nothing runs this yet
+ *   node ops/build.mjs --production          # the published site: events and resources from
+ *                                            # Connect (no build without it), no sample notes or
+ *                                            # people, and nothing still left on the live site
+ *                                            # (cutoverProblems)
  *   node ops/build.mjs --launch              # the prototype with the forms as they launch: closed,
  *                                            # each page linking its Google Form (--production does this too)
  *   node ops/build.mjs --text-edits=FILE     # apply published text edits ({ key: text }) over
@@ -11,6 +13,8 @@
  *   node ops/build.mjs --edits=FILE          # lay words changed with the edit button over the
  *                                            # content (src/shared/edits.mjs); without the flag the
  *                                            # build reads content/edits.json when there is one
+ *   node ops/build.mjs --connect             # read the events and resources from Connect, as
+ *                                            # --production always does (ops/connect-feed.mjs)
  *   node ops/build.mjs --fetch-media         # download any photo original missing from local/
  *                                            # (sha256-checked) and fetch any linked photo not
  *                                            # yet in local/media-links/, as a Netlify build must
@@ -35,7 +39,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import url from "node:url";
-import { blockProblems, BLOCKS } from "../src/render/registry.mjs";
+import { blockProblems, BLOCKS, refreshes } from "../src/render/registry.mjs";
 import { workshopProblems } from "../src/render/blocks/workshops.mjs";
 import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
@@ -43,20 +47,35 @@ import { wordProblems } from "../src/render/blocks/words.mjs";
 import { resourceProblems } from "../src/render/blocks/resources.mjs";
 import { directoryProblems } from "../src/render/blocks/directory.mjs";
 import { ICONS } from "../src/render/icons.mjs";
-import { makeContext, chicagoDate } from "../src/render/context.mjs";
+import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
 import { definitionProblems, launchForms } from "../src/shared/forms.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
 import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
+import { formPreviewPages } from "../src/render/blocks/form.mjs";
 import { teamProblems, personPages, publicPeople, teamRedirects, GROUPS, TEAM_PATH } from "../src/render/team.mjs";
 import { buildMedia, buildLinks, linkPlaceholders, loadManifest } from "./media.mjs";
 import { nextDated } from "../src/render/events.mjs";
 import { eventIcs, icsPath } from "../src/render/ics.mjs";
+import { feedConfig, feedRuleProblems, readConnectFeed, seriesIds } from "./connect-feed.mjs";
 
 export const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const CSS_ORDER = ["tokens.css", "base.css", "layout.css", "blocks.css", "forms.css", "motion.css"];
+
+/* The block stylesheets, as paths under src/styles/. Each block that declares `styles` names a file in
+   src/styles/blocks/, and every file there belongs to a block: a missing or orphaned one stops the build. */
+export function blockStyles(dir = path.join(ROOT, "src/styles/blocks"), blocks = BLOCKS) {
+  const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".css")) : [];
+  const named = Object.values(blocks).filter((b) => b.styles).map((b) => [b.type, b.styles]);
+  const problems = [
+    ...named.filter(([, f]) => !files.includes(f)).map(([t, f]) => `block ${t} names styles ${f}, which is not in src/styles/blocks/`),
+    ...files.filter((f) => !named.some(([, n]) => n === f)).map((f) => `src/styles/blocks/${f} belongs to no block: name it in a block's \`styles\`, or move its rules to blocks.css`),
+  ];
+  if (problems.length) throw new Error(problems.join("\n"));
+  return named.map(([, f]) => `blocks/${f}`);
+}
 
 const readJson = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 const readDir = (p) => fs.readdirSync(path.join(ROOT, p)).filter((f) => f.endsWith(".json")).sort();
@@ -68,8 +87,10 @@ export function shippedEdits() {
   return fs.existsSync(f) ? readEditsFile(JSON.parse(fs.readFileSync(f, "utf8"))) : {};
 }
 
-/* Everything the build and the API read, loaded and checked. Throws with the full list. */
-export function loadContent({ production = false, launch = production, textEdits = {}, edits = shippedEdits() } = {}) {
+/* Everything the build and the API read, loaded and checked. Throws with the full list.
+   `feed` is Connect's public lists as ops/connect-feed.mjs maps them ({ events, resources }); without
+   it the events and resources are the hand-typed fixtures, which a production build refuses. */
+export function loadContent({ production = false, launch = production, textEdits = {}, edits = shippedEdits(), feed = null } = {}) {
   const site = readJson("content/site.json");
   const textRegistry = readJson("content/text.json");
   const routes = readJson("content/routes.json").routes;
@@ -117,6 +138,7 @@ export function loadContent({ production = false, launch = production, textEdits
     if (paths.has(page.path)) problems.push(`${at}: duplicate path ${page.path}`);
     paths.add(page.path);
     if (!page.title) problems.push(`${at}: needs a title`);
+    if (page.program !== undefined && !PROGRAMS.includes(page.program)) problems.push(`${at}: program is one of ${PROGRAMS.join(", ")}, or left out for brand red`);
     for (const p of blockProblems(page)) problems.push(`${at}: ${p}`);
     for (const b of page.blocks || []) {
       if (b.type === "form" && !forms[b.form]) problems.push(`${at}: block ${b.id} names form "${b.form}", which has no definition`);
@@ -154,20 +176,33 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "hero") for (const c of b.circles || []) if (!c.media || !c.label || !c.href) problems.push(`content/pages: ${page.id}.${b.id}: each circle needs a photo, a label and an address`);
   }
 
-  const events = readJson("content/fixtures/events.json");
-  for (const p of eventPlaceProblems(events, places)) problems.push(`content/fixtures/events.json: ${p}`);
-  photos(events, "content/fixtures/events.json");
-  events.places = eventPlaces(places);
-  const wall = readJson("content/fixtures/wall-notes.json");
+  // Events: Connect's public list when the build read it, else the fixture. A room Connect names in
+  // words that match no room here comes with the list as a place of its own, shown unlinked.
+  const feedRules = readJson("content/connect-feed.json");
+  for (const p of feedRuleProblems(feedRules, places)) problems.push(`content/connect-feed.json: ${p}`);
+  const eventsAt = feed?.events ? "Connect's public event list" : "content/fixtures/events.json";
+  const events = feed?.events ? structuredClone(feed.events) : readJson("content/fixtures/events.json");
+  const rooms = events.rooms || {};
+  delete events.rooms;
+  for (const p of eventPlaceProblems(events, { ...places, ...rooms })) problems.push(`${eventsAt}: ${p}`);
+  const series = seriesIds(feedRules);
+  for (const e of events.dated || []) if (e.series && !series.includes(e.series)) problems.push(`${eventsAt}: ${e.id} is in series "${e.series}"; the series are ${series.join(", ")} (content/connect-feed.json)`);
+  for (const page of pages) for (const b of page.blocks || []) if (b.series && !series.includes(b.series)) problems.push(`content/pages: ${page.id}.${b.id} names series "${b.series}"; the series are ${series.join(", ")} (content/connect-feed.json)`);
+  photos(events, eventsAt);
+  events.places = { ...eventPlaces(places), ...rooms };
+  // The wall's moderated source and Connect's profile export do not exist yet. A published site shows
+  // neither sample: the wall renders nothing and the team page its words without people.
+  const wall = production ? { schema: "bss.wall-fixture/1", fixture: false, notes: [] } : readJson("content/fixtures/wall-notes.json");
   // The team: Connect's opt-in public profiles (src/render/team.mjs). Each published one gets a page.
-  const team = readJson("content/fixtures/team.json");
+  const team = production ? { schema: "bss.team-fixture/1", fixture: false, people: [] } : readJson("content/fixtures/team.json");
   for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`content/fixtures/team.json: ${p}`);
   photos({ people: publicPeople(team) }, "content/fixtures/team.json");
   const slugs = new Set(publicPeople(team).map((p) => p.slug));
   // Resources: Connect's resource records, projected as its projectResource() does.
-  const resources = readJson("content/fixtures/resources.json");
-  if (!Array.isArray(resources.resources)) problems.push("content/fixtures/resources.json: resources is a list");
-  else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`content/fixtures/resources.json: resources[${i}] needs an id and a name`);
+  const resourcesAt = feed?.resources ? "Connect's public resource list" : "content/fixtures/resources.json";
+  const resources = feed?.resources ? structuredClone(feed.resources) : readJson("content/fixtures/resources.json");
+  if (!Array.isArray(resources.resources)) problems.push(`${resourcesAt}: resources is a list`);
+  else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`${resourcesAt}: resources[${i}] needs an id and a name`);
   for (const page of pages) for (const b of page.blocks || []) {
     if (b.type === "team") for (const g of b.groups || []) if (!GROUPS.includes(g.group)) problems.push(`content/pages: ${page.id}.${b.id}: each group is one of ${GROUPS.join(", ")}`);
     if (b.type === "person" && !slugs.has(b.person)) problems.push(`content/pages: ${page.id}.${b.id} names "${b.person}", who has no public profile`);
@@ -175,8 +210,6 @@ export function loadContent({ production = false, launch = production, textEdits
   if (production) {
     // Fixtures are typed by hand for review. A published site reads Connect, or shows nothing.
     if (events.fixture) problems.push("production: the event timetable would come from a hand-typed fixture; it needs Connect's public event export");
-    if (wall.fixture) problems.push("production: the Wall of Support would show sample notes; it needs the moderated source");
-    if (team.fixture) problems.push("production: the team would come from a hand-typed fixture; it needs Connect's public profile export");
     if (resources.fixture) problems.push("production: the resource list would come from a sample; it needs Connect's approved public resource export");
   }
   // At launch every open form is served closed, linking its Google Form (src/shared/forms.mjs).
@@ -188,8 +221,11 @@ export function loadContent({ production = false, launch = production, textEdits
   for (const p of roomPages) if (paths.has(p.path)) throw new Error(`content/places: ${p.path} is also a page in content/pages`);
   const peoplePages = personPages(team, makeT(text));
   for (const p of peoplePages) if (paths.has(p.path)) throw new Error(`content/fixtures/team.json: ${p.path} is also a page in content/pages`);
+  // A closed form's review page, on the prototype only (src/render/blocks/form.mjs).
+  const previewPages = production ? [] : formPreviewPages(forms, makeT(text));
+  for (const p of previewPages) if (paths.has(p.path)) throw new Error(`content/forms: ${p.path} is also a page in content/pages`);
   return {
-    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages], places, events, wall, team, resources, textRegistry, text,
+    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, resources, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
   };
@@ -304,9 +340,44 @@ export function cutoverProblems({ routes, pages, builtPaths, pendingLinks }) {
   ];
 }
 
-export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, edits = undefined, log = () => {} } = {}) {
+/* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
+const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
+/* ... and the sections of one page, so a circle to "#craft" wears the craft section's colour. */
+const sectionPrograms = (page) => (page.blocks || []).filter((b) => PROGRAMS.includes(b.program)).map((b) => [`#${b.anchor || b.id}`, b.program]);
+
+/* What the events refresh (netlify/lib/live-events.mjs) needs to render a page's event blocks again
+   from Connect's current list: those blocks as the build had them, the rules that map Connect's list,
+   the rooms, and the list the build used, which it answers with when Connect cannot be read. A page
+   built from the fixture answers with the fixture, so a prototype never calls Connect. */
+export function eventsForServer(content, { connect }) {
+  const pages = {};
+  for (const page of content.pages) {
+    const blocks = (page.blocks || []).filter(refreshes);
+    if (blocks.length) pages[page.id] = { path: page.path, blocks, sections: sectionPrograms(page) };
+  }
+  return {
+    source: connect ? "connect" : "fixture",
+    rules: connect ? readJson("content/connect-feed.json") : null,
+    built: content.events,
+    placeNames: eventPlaces(content.places),
+    places: content.places,
+    programs: [...pagePrograms(content.pages)],
+    pages,
+  };
+}
+
+/* `connect` reads Connect's public events and resources (ops/connect-feed.mjs) in place of the
+   fixtures; production always does, and refuses to build when Connect cannot be read, so the site
+   already published stays up. `connectConfig` is for tests: Connect's address, key and a fetch. */
+export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, edits = undefined, connect = production, connectConfig = undefined, log = () => {} } = {}) {
   const prototype = !production;
-  const content = loadContent({ production, launch, textEdits, edits });
+  let feed = null;
+  if (connect) {
+    feed = await readConnectFeed(connectConfig === undefined ? feedConfig() : connectConfig, JSON.parse(fs.readFileSync(path.join(ROOT, "content/connect-feed.json"), "utf8")));
+    if (feed.problem) throw Object.assign(new Error(`Connect: ${feed.problem}. Nothing was built.`), { problems: [feed.problem] });
+    for (const d of feed.dropped) log(`connect: left out ${d}`);
+  }
+  const content = loadContent({ production, launch, textEdits, edits, feed });
   const day = today || chicagoDate();
 
   if (!out.startsWith(ROOT + path.sep)) throw new Error(`refusing to write outside the project: ${out}`);
@@ -317,11 +388,12 @@ export async function build({ production = false, launch = production, today = n
   // Photos: the library's variants, then every linked photo (fetched once into local/media-links/).
   // Without photos (tests, --no-media) a linked photo renders from its cached record or a placeholder.
   const mediaResult = media ? await buildMedia(path.join(out, "media"), { fetchMissing: fetchMedia, log }) : { files: [], encoded: 0 };
-  const linkResult = media ? await buildLinks(content.links, path.join(out, "media"), { fetchMissing: fetchMedia, log }) : { items: linkPlaceholders(content.links), files: [], encoded: 0, fetched: 0 };
+  const linkResult = media ? await buildLinks(content.links, path.join(out, "media"), { fetchMissing: fetchMedia, production, log }) : { items: linkPlaceholders(content.links), files: [], encoded: 0, fetched: 0 };
   const allMedia = { ...content.media, items: [...content.media.items, ...linkResult.items] };
 
-  // Styles: one file, named by its content.
-  const css = CSS_ORDER.map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n")
+  // Styles: one file, named by its content. A block's own rules (its `styles`, in src/styles/blocks/) follow the
+  // shared blocks.css, in the library's order.
+  const css = CSS_ORDER.flatMap((f) => (f === "blocks.css" ? [f, ...blockStyles()] : [f])).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n")
     + "\n/* generated: photo focal points */\n" + mediaCss(allMedia.items)
     + "/* generated: mood colours (content/widgets/mood.json) */\n" + moodCss(content.mood);
   const cssName = `site.${hash(css)}.css`;
@@ -358,10 +430,11 @@ export async function build({ production = false, launch = production, today = n
     resourcesUpdated: content.resources.sourceUpdatedAt,
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
+  const programs = pagePrograms(content.pages);
   const pending = new Map();
   const pageReport = [];
   for (const page of content.pages) {
-    const ctx = makeContext({ site: content.site, media: allMedia, builtPaths, routes: content.routes, data, text: content.text, today: day, prototype, assets });
+    const ctx = makeContext({ site: content.site, media: allMedia, builtPaths, programs: new Map([...programs, ...sectionPrograms(page)]), routes: content.routes, data, text: content.text, today: day, prototype, assets, liveEvents: !!feed, path: page.path || null });
     const html = String(renderPage(ctx, page));
     const file = page.file ? path.join(out, page.file) : path.join(out, page.path, "index.html");
     fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -376,7 +449,7 @@ export async function build({ production = false, launch = production, today = n
   for (const r of calendar) {
     const file = path.join(out, icsPath(r.event));
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, eventIcs(r, { place: content.places[r.placeId] || null, origin: content.site.origin, stamp }));
+    fs.writeFileSync(file, eventIcs(r, { place: content.places[r.placeId] || (r.place ? { name: r.place.name } : null), origin: content.site.origin, stamp }));
   }
 
   if (production) {
@@ -395,10 +468,11 @@ export async function build({ production = false, launch = production, today = n
     fs.writeFileSync(path.join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`);
   }
 
-  // What the intake API needs to render a page the same way the build did.
+  // What the API needs to render a page, and a page's event blocks, the same way the build did.
   const server = {
     schema: "bss.server/1", prototype, assets, site: content.site, routes: content.routes, builtPaths,
     forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
+    events: eventsForServer(content, { connect: !!feed }),
     formPages: Object.fromEntries(content.pages.flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null }]))),
   };
   fs.mkdirSync(serverDir, { recursive: true });
@@ -406,6 +480,7 @@ export async function build({ production = false, launch = production, today = n
 
   const report = {
     today: day, prototype, launch,
+    connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, dropped: feed.dropped, version: feed.version } : null,
     edits: content.edits,
     pages: pageReport,
     calendar: calendar.map((r) => icsPath(r.event)),
@@ -434,11 +509,13 @@ if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
       today: arg("today") || null,
       media: !process.argv.includes("--no-media"),
       fetchMedia: process.argv.includes("--fetch-media"),
+      connect: process.argv.includes("--production") || process.argv.includes("--connect"),
       textEdits: arg("text-edits") ? JSON.parse(fs.readFileSync(path.resolve(arg("text-edits")), "utf8")) : {},
       edits: arg("edits") ? readEditsFile(JSON.parse(fs.readFileSync(path.resolve(arg("edits")), "utf8"))) : undefined,
       log: process.argv.includes("--verbose") ? console.log : () => {},
     });
     console.log(`built ${r.pages.length} pages for ${r.today}${r.prototype ? " (prototype)" : ""}${r.launch ? ", forms as at launch" : ""}`);
+    console.log(r.connect ? `  from Connect: ${r.connect.events} events, ${r.connect.weekly} weekly groups, ${r.connect.resources} resources${r.connect.dropped.length ? `; left out ${r.connect.dropped.length} (--verbose names them)` : ""}` : "  events and resources from the hand-typed fixtures");
     console.log(`  css ${r.css.bytes} B · js ${Object.values(r.js).reduce((a, b) => a + b, 0)} B · ${r.media.variants} image variants (${r.media.encoded} newly encoded)`);
     console.log(`  ${r.pendingLinks.length} internal links still point at the live site · ${r.redirectsWaiting.length} redirects wait for their page`);
     if (r.edits.applied.length || r.edits.skipped.length) console.log(`  ${r.edits.applied.length} edited words laid over the files${r.edits.skipped.length ? `; skipped ${r.edits.skipped.length}: ${r.edits.skipped.join(", ")}` : ""}`);

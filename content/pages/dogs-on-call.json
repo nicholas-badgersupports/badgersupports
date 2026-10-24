@@ -11,8 +11,9 @@
       "type": "eventhero",
       "title": "Dogs on Call",
       "lead": "At the Student Mental Health Hub",
-      "source": "events-fixture",
+      "source": "events",
       "program": "other",
+      "series": "dogs-on-call",
       "photos": [
         "m-dogs-corgi",
         "m-dogs-black-dog",
@@ -23,8 +24,9 @@
       "id": "b-dc-visits",
       "type": "events",
       "title": "Fall 2026 Visits",
-      "source": "events-fixture",
+      "source": "events",
       "program": "other",
+      "series": "dogs-on-call",
       "show": "upcoming",
       "skip": 1,
       "count": 6

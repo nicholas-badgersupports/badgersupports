@@ -14,7 +14,7 @@ export default {
   type: "person",
   label: "Profile",
   fields: { person: "person!" },
-  data: ["team"],
+  data: ["team", "teamSample"],
   analytics: "page",
   loading: "eager",
   render(b, ctx) {

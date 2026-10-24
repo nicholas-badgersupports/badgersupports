@@ -8,13 +8,9 @@ body {
   font-family: var(--font-body);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
-  /* paper grain: two dot fields at 7px and 11px, as on Connect */
-  background-color: var(--paper);
-  background-image:
-    radial-gradient(var(--grain-1) 1px, transparent 1.3px),
-    radial-gradient(var(--grain-2) 1px, transparent 1.3px);
-  background-size: 7px 7px, 11px 11px;
-  background-position: 0 0, 3px 5px;
+  /* the brand's paper: the cream under the coldpress texture, veiled at 70% (tokens.css, "paper") */
+  background: var(--tex-ground);
+  background-blend-mode: normal, multiply;
   text-rendering: optimizeLegibility;
   /* a long address in running text breaks rather than push a phone screen sideways */
   overflow-wrap: break-word;
@@ -25,17 +21,18 @@ figure { margin: 0; }
 /* a block that sets its own display must still disappear when a script hides it */
 [hidden] { display: none !important; }
 h1, h2, h3 { margin: 0; font-weight: 700; }
-h1, h2 { font-family: var(--font-display); line-height: var(--lh-display); letter-spacing: -.01em; }
+/* the poster headline: Montserrat at its heaviest, uppercase and tight (the design system's DisplayHeading) */
+h1, h2 { font-family: var(--font-display); font-weight: var(--fw-display); text-transform: uppercase; line-height: var(--lh-display); letter-spacing: -.01em; }
 h2 { font-size: var(--fs-h2); }
 h3 { font-size: var(--fs-h3); line-height: 1.25; }
 p { margin: 0 0 var(--s3); max-width: var(--measure); text-wrap: pretty; }
 h1, h2, h3 { text-wrap: balance; }
 p:last-child { margin-bottom: 0; }
 ul, ol { margin: 0; padding: 0; }
-a { color: var(--red); text-decoration-thickness: 1px; text-underline-offset: .18em; }
-a:hover { color: var(--red-deep); text-decoration-thickness: 2px; }
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { color: var(--link-deep); text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; border-radius: 2px; }
-::selection { background: var(--red); color: var(--cream); }
+::selection { background: var(--accent); color: var(--cream); }
 /* an email address from breakAtSign(): kept on one line unless it is wider than its box */
 .addr { display: inline-block; max-width: 100%; }
 
@@ -55,22 +52,27 @@ a:hover { color: var(--red-deep); text-decoration-thickness: 2px; }
 .lead { font-size: var(--fs-lead); line-height: 1.5; }
 .small { font-size: var(--fs-small); }
 
-/* ---------- buttons: one emphasised per block; secondary is outlined; links stay links ---------- */
+/* ---------- buttons: one family of pills (SPILL's rule: one main button per screen) ----------
+   The main button is filled in the section's colour; every other way on is the outlined .go pill
+   (motion.css), and a link in running text stays a link. Flat, as the brand design system's Button:
+   no shadow, the deep shade under a pointer. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--s1);
-  min-height: 44px; padding: .7rem 1.25rem;
-  border: 2px solid var(--red); border-radius: var(--r-card);
-  background: var(--red); color: var(--cream);
+  min-height: 44px; padding: .75rem 1.5rem;
+  border: 2px solid var(--accent); border-radius: var(--r-chip);
+  background: var(--accent); color: var(--cream);
   font: 700 1rem/1.2 var(--font-body); text-decoration: none; cursor: pointer;
-  box-shadow: 0 3px 0 var(--red-deep);
-  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), background-color var(--t) var(--ease-out);
+  transition: background-color var(--t) var(--ease-out), border-color var(--t) var(--ease-out), color var(--t) var(--ease-out);
 }
-.btn:hover { color: var(--cream); background: var(--red-deep); text-decoration: none; }
-.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--red-deep); }
-.btn--big { min-height: 60px; padding: 1rem 2.25rem; font-size: 1.25rem; }
-.btn--quiet { background: transparent; color: var(--red); box-shadow: none; }
-.btn--quiet:hover { background: var(--cream); color: var(--red-deep); }
-.btn[disabled], .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; transform: none; }
+.btn:hover { color: var(--cream); background: var(--accent-deep); border-color: var(--accent-deep); text-decoration: none; }
+.btn--big { min-height: 60px; padding: 1rem 2.4rem; font-size: 1.25rem; }
+/* the quiet button is the cream pill with a border, for a form's second action */
+.btn--quiet { background: var(--cream); color: var(--accent); }
+.btn--quiet:hover { background: var(--cream); color: var(--accent-deep); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+
+/* the eyebrow over a heading: the style guide's own, 800 and uppercase */
+.eyebrow { font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 
 /* arrow for a link that leaves for Connect */
 .to-connect::after {

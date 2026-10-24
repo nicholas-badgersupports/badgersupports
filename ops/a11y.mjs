@@ -3,7 +3,7 @@
  *   BASE=http://127.0.0.1:8911 node ops/a11y.mjs
  *
  * 1. axe-core (WCAG 2.0–2.2 A and AA rules) on every built page at 1280, 390 and 320 wide.
- * 2. Keyboard: the first Tab reaches "Skip to content".
+ * 2. Keyboard: the first Tab reaches the skip link (found by its target, since its words are editable).
  * 3. The workshop request, filled in and sent with JavaScript on: a mistake is announced and
  *    focused, the corrected form sends, and the confirmation shows a reference.
  * 4. The programming feedback form: choosing a category opens only that branch.
@@ -34,6 +34,20 @@ for (const p of PAGES) {
     const ctx = await browser.newContext({ viewport: { width, height: 900 }, bypassCSP: true });
     const page = await ctx.newPage();
     await page.goto(BASE + p, { waitUntil: "networkidle" });
+    // axe cannot read colour through a background image, so the paper textures (tokens.css,
+    // "paper") are taken off and each light ground is darkened to the texture's darkest
+    // measured tone (each channel x .950): the worst case a line of text can sit on. A coloured
+    // block loses only its texture, which leaves its flat accent, the lightest case under cream.
+    await page.addStyleTag({ content: "*, *::before, *::after { background-image: none !important; }" });
+    await page.evaluate(() => {
+      const root = document.documentElement;
+      for (const name of ["--ground", "--paper-deep", "--red-wash", "--peer-wash", "--craft-wash", "--workshops-wash"]) {
+        const hex = getComputedStyle(root).getPropertyValue(name).trim().match(/^#([0-9a-f]{6})$/i);
+        if (!hex) continue;
+        const dim = [0, 2, 4].map((i) => Math.round(parseInt(hex[1].slice(i, i + 2), 16) * 0.95).toString(16).padStart(2, "0"));
+        root.style.setProperty(name, "#" + dim.join(""));
+      }
+    });
     await page.addScriptTag({ content: AXE });
     const r = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"] } })).violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.length}× ${v.nodes[0]?.target?.join(" ")}`));
     if (r.length) fail(`axe ${p} @${width}: ${r.join(" | ")}`);
@@ -47,8 +61,8 @@ for (const p of PAGES) {
   const page = await ctx.newPage();
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
   await page.keyboard.press("Tab");
-  const first = await page.evaluate(() => document.activeElement?.textContent?.trim());
-  (first === "Skip to content" ? pass : fail)(`first Tab reaches the skip link (got "${first}")`);
+  const first = await page.evaluate(() => ({ skip: document.activeElement?.matches("a.skip[href='#main']"), text: document.activeElement?.textContent?.trim() }));
+  (first.skip ? pass : fail)(`first Tab reaches the skip link (got "${first.text}")`);
   await ctx.close();
 }
 

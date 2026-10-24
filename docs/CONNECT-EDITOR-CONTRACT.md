@@ -17,11 +17,12 @@ it with the reasons listed, so an editor can show the same reasons before a dire
 | `title, description` | the browser tab and search result |
 | `analytics` | `public` or `none` (docs/ANALYTICS.md) |
 | `noindex` | keep this page out of search engines |
-| `blocks` | the page's blocks, in order; each has a permanent `b-…` id, a type below, and `enabled` |
+| `program` | the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (red); left out, brand red. The header, footer and announcements stay red on every page |
+| `blocks` | the page's blocks, in order; each has a permanent `b-…` id, a type below, `enabled`, and optional `startsOn` / `endsOn` |
 
 ## Blocks
 
-Every block can be turned off with `enabled: false`; a block that lists `startsOn` / `endsOn` shows only between those dates.
+Every block can be turned off with `enabled: false`, and dated with `startsOn` / `endsOn` (`YYYY-MM-DD`, both optional): it shows from the first day to the last, both included, Chicago time. A date takes effect when the site is built, so a block ending on the 10th shows until the next publish after it.
 Required fields are marked **required**.
 
 ### Announcement strip — `announcement`
@@ -32,8 +33,6 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 |---|---|---|
 | `text` | one line of text | **required** |
 | `link` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
-| `startsOn` | a calendar date |  |
-| `endsOn` | a calendar date |  |
 
 ### Hero — `hero`
 
@@ -90,7 +89,7 @@ Reads: `events` · analytics: `page` · photos load lazy · browser modules `str
 
 ### Wall of Support — `wall`
 
-Reads: `wallNotes` · analytics: `none` · photos load lazy · browser module `wall.js`
+Reads: `wallNotes`, `wallSample` · analytics: `none` · photos load lazy · browser module `wall.js`
 
 | Field | Type | |
 |---|---|---|
@@ -206,6 +205,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 | `note` | one line of text |  |
 | `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
+| `series` | a page's own events, by the id of a series in content/connect-feed.json (`dogs-on-call`, `housing-hub`): Connect's events whose titles carry that series' words; it wins over `program` |  |
 | `count` | a whole number |  |
 | `recent` | a whole number |  |
 | `upcomingTitle` | one line of text |  |
@@ -226,6 +226,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 | `nextLabel` | one line of text |  |
 | `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
+| `series` | a page's own events, by the id of a series in content/connect-feed.json (`dogs-on-call`, `housing-hub`): Connect's events whose titles carry that series' words; it wins over `program` |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 
 ### What to expect — `expect`
@@ -256,7 +257,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 
 ### Team — `team`
 
-Reads: `team` · analytics: `page` · photos load lazy
+Reads: `team`, `teamSample` · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|
@@ -270,7 +271,7 @@ Reads: `team` · analytics: `page` · photos load lazy
 
 ### Profile — `person`
 
-Reads: `team` · analytics: `page` · photos load eager
+Reads: `team`, `teamSample` · analytics: `page` · photos load eager
 
 | Field | Type | |
 |---|---|---|
@@ -335,7 +336,7 @@ Reads: nothing but its own fields · analytics: `none` · photos load eager · b
 
 ### Resource list — `resources`
 
-Reads: `resources` · analytics: `none` · photos load lazy · browser module `resources.js`
+Reads: `resources`, `resourcesSample`, `resourcesUpdated` · analytics: `none` · photos load lazy · browser module `resources.js`
 
 | Field | Type | |
 |---|---|---|
@@ -373,6 +374,10 @@ Every photo slot — a block's photos, a hero circle, a room, a direction step, 
 A link must start with `https://`. A Google Drive file link works when the file is shared as *Anyone with the link*;
 a Drive folder link is refused. The build refuses a link that does not answer with a photo, and names it. A linked
 photo with no description is read aloud as the text key `media.linkAlt`.
+
+The published site fetches a link only from these hosts and their subdomains:
+`drive.google.com`, `docs.google.com`, `googleusercontent.com`, `badgersupports.org`, `supportbadgers.org`, `badgerspill.org`.
+A link anywhere else, or one that redirects anywhere else, stops the build. An editor should refuse it when it is pasted.
 
 ## Rooms and directions (`bss.place/1`, `content/places/`)
 
@@ -424,11 +429,11 @@ Every form has an open/closed switch that the server enforces (a stale tab that 
 and keeps the answers), a version that rises with every published change, stable question ids, sections that
 may show only when an earlier answer holds, and a workflow (Connect queue, owner, receipt, backup). Question types:
 
-| Type | Shows as | Has options | Longest answer |
+| Type | Shows as | Has options | Limit |
 |---|---|---|---|
-| `short` | text |  | 200 |
-| `long` | textarea |  | 4000 |
-| `email` | email |  | 254 |
+| `short` | text |  | 200 characters |
+| `long` | textarea |  | 4000 characters |
+| `email` | email |  | 254 characters |
 | `number` | number |  |  |
 | `choice` | radio | yes |  |
 | `select` | select | yes |  |
@@ -436,17 +441,43 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `date` | date |  |  |
 | `datetime` | datetime-local |  |  |
 | `confirm` | checkbox |  |  |
+| `tel` | tel |  | 40 characters |
+| `links` | textarea |  | 5 links, https only, one per line |
+| `rank` | select | yes |  |
+| `file` | file |  | one PDF, 3 MB |
+
+A question has an `id`, a `type`, a `label` and may have:
+
+| Field | What it does |
+|---|---|
+| `required` | true: the form will not send without an answer |
+| `help` | prose under the label (see below) |
+| `options` | `[{ id, label }]` for a type with options; ids are permanent |
+| `allowOther` | `choice` and `checkboxes` only: adds an Other with its own words |
+| `showIf` | `{ question, equals | in | includes }` on an earlier question; not on `links`, `rank` or `file` |
+| `maxLength, min, max, maxSelected` | tighter limits than the type's own |
+| `maxLinks` | `links` only: 1 to 10 |
+| `confirmText` | `confirm` only: the checkbox's words, when the label is a heading above them |
+| `confidential` | true: the answer goes to Connect only; the site's staff page, backups, logs and analytics leave it out |
+
+A ranking arrives in Connect as `["1. Programs", …]` and is kept as option ids, first choice first. A file answer
+arrives as `"name (size)"` with a `files` list naming each file's `fileId`, `bytes` and `sha256`; the bytes are
+collected separately and never sent in an answer. A file question is refused on an anonymous form.
+
+**Prose** (a form's or section's `intro`, a question's `help`) is a string, or a list of parts: a paragraph, `{ heading }`,
+`{ list, ordered }` or `{ links: [{ href, label }] }`. Links start `https://`, `mailto:`, `/` or `#`. Plain words only:
+the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-258 keys. Keys are permanent. Required text cannot be published empty and must keep each
+289 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
-| `page.skip` | Skip to content | First link on every page, for keyboard users. |  |
+| `page.skip` | Skip to Content | First link on every page, for keyboard users. |  |
 | `header.wordmark` | badger supports | The name beside the hand, in the header and the footer. |  |
 | `header.homeSuffix` | — home | Read aloud after the name in the header link, so it says where the link goes. |  |
 | `header.menu` | Menu | The menu button on a phone. |  |
@@ -458,12 +489,12 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `announce.label` | Announcement | The announcement strip's name, read by screen readers. |  |
 | `proto.title` | Prototype for review — not the live site. | Strip at the top of the prototype only. Never shown on the published site. |  |
 | `proto.body` | Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Anything sent through a form here is a test: nothing is emailed, and nothing reaches the team's real inbox. | Second sentence of the prototype strip. | optional |
-| `embed.play` | Play the reel | Button on an Instagram video; pressing it loads Instagram’s player. |  |
+| `embed.play` | Play the Reel | Button on an Instagram video; pressing it loads Instagram’s player. |  |
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
 | `media.linkAlt` | A photo from a Badger Supports event. | Read aloud for a pasted photo link that has no description of its own |  |
 
-### Homepage sections (27)
+### Homepage sections (29)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -473,50 +504,55 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `hero.play` | Play | The same button once the circles are paused; it starts them drifting again. |  |
 | `schedule.today` | Today | Tag on today's date in the timetable. |  |
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
-| `schedule.placeLink` | How to find it | Link under the usual place in the timetable. |  |
-| `schedule.laterTitle` | Coming up | Heading over later events, when the timetable block gives none. |  |
-| `schedule.signup.none` | No sign-up | Beside an event anyone can walk into. |  |
-| `schedule.dropIn` | Drop in | Button beside an event anyone can walk into. Opens the program’s page (peer support groups) or the room’s directions. |  |
-| `schedule.signup.connect` | Sign up on Connect | Link beside an event that needs a sign-up on Connect. |  |
-| `schedule.signup.link` | Sign-up needed | Beside an event that needs a sign-up somewhere else. |  |
+| `schedule.placeLink` | How to Find It | Link under the usual place in the timetable. |  |
+| `schedule.laterTitle` | Coming Up | Heading over later events, when the timetable block gives none. |  |
+| `schedule.signup.none` | No Sign-Up | Beside an event anyone can walk into. |  |
+| `schedule.dropIn` | Drop In | Button beside an event anyone can walk into. Opens the program’s page (peer support groups) or the room’s directions. |  |
+| `schedule.signup.connect` | Sign Up on Connect | Link beside an event that needs a sign-up on Connect. |  |
+| `schedule.signup.link` | Sign-Up Needed | Beside an event that needs a sign-up somewhere else. |  |
 | `schedule.ended` | Ended | Shown on an event once it has finished. |  |
-| `program.upcomingLabel` | Next dates | Heading over a program's next dates, read by screen readers, when the block gives none. |  |
+| `schedule.none` | Nothing is on the calendar this week. | In the timetable when Connect lists nothing for the next seven days. |  |
+| `schedule.noneMore` | Peer support groups and craft nights show up here as soon as they are scheduled. | Second line under an empty week in the timetable. |  |
+| `program.upcomingLabel` | Next Dates | Heading over a program's next dates, read by screen readers, when the block gives none. |  |
 | `strip.prev` | Previous photo | Button that moves a photo strip back. |  |
 | `strip.next` | Next photo | Button that moves a photo strip on. |  |
 | `strip.trackLabel` | {{title}}: photos, scroll sideways for more | A photo strip's name, read by screen readers. {{title}} is the section heading. | `{{title}}` |
 | `strip.count` | {{n}} of {{total}} | Position in a photo strip. | `{{n}}` `{{total}}` |
-| `wall.more` | Show other notes | Button on the Wall of Support, when the block gives none. |  |
-| `involve.closed` | Applications closed | Tag on a way to get involved whose application form is switched off. |  |
-| `workshops.inWorkshop` | In the full workshop | Above the list of what each workshop covers, beside its preview. |  |
+| `wall.more` | Show Other Notes | Button on the Wall of Support, when the block gives none. |  |
+| `involve.closed` | Applications Closed | Tag on a way to get involved whose application form is switched off. |  |
+| `workshops.inWorkshop` | In the Full Workshop | Above the list of what each workshop covers, beside its preview. |  |
 | `workshops.examples` | For example: {{who}} | Under the ways a kind of support shows up, in the support-network preview. | `{{who}}` |
 | `mood.error` | Unable to record that just now. Try again in a minute — nothing was saved. | When a mood tap could not be saved. |  |
 | `mood.count.one` | {{n}} Badger has checked in today: | Above the counts, when one person has checked in. | `{{n}}` |
 | `mood.count.other` | {{n}} Badgers have checked in today: | Above the counts, when more than one has. | `{{n}}` |
-| `mood.pageTitle` | thanks for checking in | Heading of the page shown after a mood tap without JavaScript. |  |
-| `mood.back` | Back to the homepage | Link on that page. |  |
+| `mood.pageTitle` | Thanks for Checking In | Heading of the page shown after a mood tap without JavaScript. |  |
+| `mood.back` | Back to the Homepage | Link on that page. |  |
 
-### Event cards (4)
+### Event cards (7)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
-| `events.calendar` | Add to calendar | On the calendar pill beside Drop in on the next event at the top of a program's page; read by screen readers on the round calendar button on an event card, before the event name. Each opens a calendar file. |  |
-| `events.next` | Next up | Small label over the next event's name at the top of a program's page, when the block gives none. |  |
-| `events.recentTitle` | Recent events | Heading over events that have happened, when the event-card block gives none. |  |
+| `events.calendar` | Add to Calendar | On the calendar pill beside Drop in on the next event at the top of a program's page; read by screen readers on the round calendar button on an event card, before the event name. Each opens a calendar file. |  |
+| `events.next` | Next Up | Small label over the next event's name at the top of a program's page, when the block gives none. |  |
+| `events.recentTitle` | Recent Events | Heading over events that have happened, when the event-card block gives none. |  |
 | `events.none` | Nothing is scheduled yet. | Shown in place of event cards when none are coming up. |  |
+| `calendar.gone.title` | That event is not coming up any more | Heading on the page an Add to Calendar button opens when the event has happened, moved or been taken off since the page was loaded. |  |
+| `calendar.gone.body` | It may have happened already, or moved to another day. The timetable has what is coming up. | Under that heading. |  |
+| `calendar.gone.back` | See What’s Coming Up | Link under it, to the home page and its timetable. |  |
 
 ### Rooms and directions (9)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
-| `directions.all` | All rooms | Link above a room’s name, back to the list of rooms. |  |
+| `directions.all` | All Rooms | Link above a room’s name, back to the list of rooms. |  |
 | `directions.map` | Open in Maps | The button on a room’s page that opens its address in a map. |  |
-| `directions.stepsTitle` | How to get there | Heading over a room’s numbered steps. |  |
-| `directions.nextHere` | Next here | Heading over the next events held in a room. |  |
+| `directions.stepsTitle` | How to Get There | Heading over a room’s numbered steps. |  |
+| `directions.nextHere` | Next Here | Heading over the next events held in a room. |  |
 | `directions.arrive` | You’re there: {{place}} | End of the route on a room’s directions. | `{{place}}` |
 | `directions.ticket` | Directions | The stub of each room’s ticket on the list of rooms. |  |
 | `directions.pageTitle` | Directions to {{place}} — Badger Supports | A room page’s title in the browser tab and in search results. | `{{place}}` |
 | `directions.pageDescription` | How to find {{place}}: {{address}}. | A room page’s summary in search results and link previews. | `{{place}}` `{{address}}` |
-| `directions.eventRooms` | Event rooms | Heading over the rooms events are held in, under the Hub on the list of rooms. |  |
+| `directions.eventRooms` | Event Rooms | Heading over the rooms events are held in, under the Hub on the list of rooms. |  |
 
 ### Dates and times (40)
 
@@ -563,7 +599,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (40)
+### Forms (65)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -607,17 +643,43 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `form.error.datetimeShape` | Enter a date and a time. | A date-and-time question missing one. |  |
 | `form.error.confirmNeeded` | Tick the box to continue. | A box that must be ticked. |  |
 | `form.error.other` | Check this answer. | Any other problem with an answer. |  |
+| `form.rankLabel` | {{option}}: rank | The name of each drop-down in a ranking question, read by screen readers. {{option}} is the row it ranks. | `{{option}}` |
+| `form.error.requiredFile` | Upload a PDF for “{{label}}”. | A required file left empty. | `{{label}}` |
+| `form.error.requiredRank` | Give every row a rank for “{{label}}”. | A required ranking left empty or half done. | `{{label}}` |
+| `form.error.linkShape` | Put one link on each line, starting with https:// | A links answer with a line that is not a whole web address. |  |
+| `form.error.linkTooLong` | Shorten each link to {{max}} characters or fewer. | A link longer than the limit. | `{{max}}` |
+| `form.error.linksTooMany` | Give up to {{max}} links. | More links than the question allows. | `{{max}}` |
+| `form.error.rankShape` | Choose a rank from 1 to {{max}} for each row. | A rank outside the list (only possible without the page's own drop-downs). | `{{max}}` |
+| `form.error.rankRepeated` | Give each row a different rank. | Two rows given the same rank. |  |
+| `form.error.rankIncomplete` | Give every row a rank, or leave them all blank. | An optional ranking with some rows ranked and some not. |  |
+| `form.error.fileShape` | Choose the file again. | A file answer the site cannot read. |  |
+| `form.error.fileMissing` | Choose your file again — the upload did not reach us. | A file answer whose upload is missing or expired. |  |
+| `form.error.filesTooMany` | Upload one file only. | More than one file for one question. |  |
+| `form.upload.uploading` | Uploading {{name}}… | Under a file question while the chosen file goes up. | `{{name}}` |
+| `form.upload.done` | Uploaded: {{name}} | Under a file question once the file is safely up. | `{{name}}` |
+| `form.upload.notPdf` | That file is not a PDF. Save it as a PDF, then choose it again. | When the chosen file is not a PDF. |  |
+| `form.upload.tooBig` | That file is over {{max}} MB. Choose a PDF of {{max}} MB or less. | When the chosen file is too large. | `{{max}}` `{{max}}` |
+| `form.upload.failed` | The upload did not go through. Choose the file again. | When the upload failed for any other reason. |  |
+| `form.upload.wait` | Wait for your file to finish uploading, then press Send. | When Send is pressed while a file is still going up. |  |
+| `form.upload.needsScript` | Uploading a file needs JavaScript. Turn it on in your browser, then reload this page. | Under a file question when the browser runs no JavaScript. |  |
+| `form.preview.title` | Preview Only | Heading of the note above a closed form shown for review, on the preview pages of the prototype site. |  |
+| `form.preview.body` | This form is closed. This page shows it as it will look when it opens, so it can be checked. Nothing typed here is sent. | The note above a closed form shown for review, on the preview pages of the prototype site. |  |
+| `form.preview.sent` | Preview only: these answers pass every check. Nothing was sent. | Under the Send button of a form preview once the answers would have been accepted. |  |
+| `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
+| `form.preview.pageTitle` | Preview: {{form}} — Badger Supports | The browser-tab title of a closed form's preview page on the prototype site. | `{{form}}` |
+| `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
 
-### Team and profiles (6)
+### Team and profiles (7)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `team.all` | Our Team | Link back to the team page at the top of each person's profile page. |  |
 | `team.classOf` | Class of {{year}} | After a student's pronouns on their profile page, from the class year in their Connect profile. | `{{year}}` |
 | `team.connectWith` | Connect with {{first}} | The email link on a profile page, shown only when the person chose to publish a contact. | `{{first}}` |
-| `team.more` | More of our team | Heading over the other people in the same group, at the foot of a profile page. |  |
+| `team.more` | More of Our Team | Heading over the other people in the same group, at the foot of a profile page. |  |
 | `team.pageTitle` | {{name}}, {{title}} — Badger Supports | Browser tab and search result title of a profile page. | `{{name}}` `{{title}}` |
 | `team.pageDescription` | {{name}} is {{title}} at Badger Supports. | Search result description of a profile page. | `{{name}}` `{{title}}` |
+| `team.none` | Profiles of our directors, staff and volunteers appear here as each person chooses to share theirs. | Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does. |  |
 
 ### Problems (2)
 
@@ -632,55 +694,55 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 |---|---|---|---|
 | `staff.signedInAs` | Signed in as {{name}} | Staff page, top of the tools: who is signed in. | `{{name}}` |
 | `staff.signedIn` | Signed in | Staff page, top of the tools, when Connect is set not to share first names. |  |
-| `staff.signOut` | Sign out | Staff page, button beside the name. |  |
+| `staff.signOut` | Sign Out | Staff page, button beside the name. |  |
 | `staff.notConfigured` | Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first. | Staff page, in place of the Sign in button when Connect is not set up. |  |
 | `staff.loadError` | Unable to load this right now. Reload the page to try again. | Staff page, when a list fails to load. |  |
 | `staff.nothing` | Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms. | Staff page, for someone signed in whose role reaches neither forms nor words. |  |
-| `staff.forms.title` | website forms | Staff page, heading above the list of forms. |  |
+| `staff.forms.title` | Website Forms | Staff page, heading above the list of forms. |  |
 | `staff.forms.empty` | No forms to show. | Staff page, when there are no forms your role can read. |  |
 | `staff.forms.none` | No answers yet. | Staff page, under a form nobody has filled in. |  |
 | `staff.forms.count.one` | {{n}} answer | Staff page, under a form with one answer. | `{{n}}` |
 | `staff.forms.count.other` | {{n}} answers | Staff page, under a form with several answers. | `{{n}}` |
 | `staff.forms.latest` | latest {{when}} | Staff page, after the count: when the newest answer came in. | `{{when}}` |
-| `staff.forms.state.open` | open | Staff page, label beside a form that takes answers. |  |
-| `staff.forms.state.closed` | closed | Staff page, label beside a form that is closed. |  |
+| `staff.forms.state.open` | Open | Staff page, label beside a form that takes answers. |  |
+| `staff.forms.state.closed` | Closed | Staff page, label beside a form that is closed. |  |
 | `staff.delivery.sent` | {{n}} in Connect | Staff page, how many answers reached Connect. | `{{n}}` |
 | `staff.delivery.waiting` | {{n}} waiting to send | Staff page, how many answers have not gone to Connect yet. | `{{n}}` |
 | `staff.delivery.failed` | {{n}} could not be sent | Staff page, how many answers failed to reach Connect. | `{{n}}` |
 | `staff.delivery.off` | Connect is not set up for this copy of the site, so answers are kept here and sent once it is. | Staff page, above the forms when Connect is not set up. |  |
-| `staff.retry` | Send waiting answers now | Staff page, button under the forms when some have not reached Connect. |  |
+| `staff.retry` | Send Waiting Answers Now | Staff page, button under the forms when some have not reached Connect. |  |
 | `staff.retried` | {{sent}} sent, {{failed}} still waiting. | Staff page, read aloud after pressing the send button. | `{{sent}}` `{{failed}}` |
-| `staff.answers.show` | Show latest answers | Staff page, button under a form. |  |
-| `staff.answers.hide` | Hide answers | Staff page, the same button once the answers are showing. |  |
+| `staff.answers.show` | Show Latest Answers | Staff page, button under a form. |  |
+| `staff.answers.hide` | Hide Answers | Staff page, the same button once the answers are showing. |  |
 | `staff.answers.caption` | {{title}}: newest {{shown}} of {{total}} | Staff page, above a table of answers. | `{{title}}` `{{shown}}` `{{total}}` |
 | `staff.answers.region` | Answers to {{title}} | Staff page, read aloud for the scrolling table of answers. | `{{title}}` |
 | `staff.answers.ref` | Reference | Staff page, first column of the answers table. |  |
 | `staff.answers.received` | Received | Staff page, column for when an answer came in. |  |
 | `staff.answers.delivery` | Connect | Staff page, column for whether an answer reached Connect. |  |
 | `staff.answers.none` | No answers yet. | Staff page, when a form's answers are opened and there are none. |  |
-| `staff.answers.openConnect` | Work through answers in Connect | Staff page, link under the forms. |  |
-| `staff.row.sent` | in Connect | Staff page, answers table: this answer reached Connect. |  |
-| `staff.row.pending` | waiting | Staff page, answers table: not sent yet. |  |
-| `staff.row.failed` | not sent yet | Staff page, answers table: sending failed and will be tried again. |  |
-| `staff.row.held` | held | Staff page, answers table: kept back on purpose. |  |
-| `staff.row.cancelled` | not sent | Staff page, answers table: will not be sent. |  |
-| `staff.edit.title` | words on the site | Staff page, heading above the edit tools. |  |
+| `staff.answers.openConnect` | Work Through Answers in Connect | Staff page, link under the forms. |  |
+| `staff.row.sent` | In Connect | Staff page, answers table: this answer reached Connect. |  |
+| `staff.row.pending` | Waiting | Staff page, answers table: not sent yet. |  |
+| `staff.row.failed` | Not Sent Yet | Staff page, answers table: sending failed and will be tried again. |  |
+| `staff.row.held` | Held | Staff page, answers table: kept back on purpose. |  |
+| `staff.row.cancelled` | Not Sent | Staff page, answers table: will not be sent. |  |
+| `staff.edit.title` | Words on the Site | Staff page, heading above the edit tools. |  |
 | `staff.edit.how` | Open any page of this site and press Edit text in the bottom corner. Every word you can change gets a dotted outline; choose one, change it and save. | Staff page, how to use the edit button. |  |
 | `staff.edit.none` | Every saved change is already on the site. | Staff page, when nothing waits to publish. |  |
 | `staff.edit.waiting.one` | {{n}} saved change waits for the next publish. | Staff page, when one change waits. | `{{n}}` |
 | `staff.edit.waiting.other` | {{n}} saved changes wait for the next publish. | Staff page, when several changes wait. | `{{n}}` |
-| `staff.edit.download` | Download the edits file | Staff page, button that saves every change as one file. |  |
+| `staff.edit.download` | Download the Edits File | Staff page, button that saves every change as one file. |  |
 | `staff.edit.publish` | Changes are kept as soon as you save them. Visitors see them after the next publish, which uses this file. | Staff page, under the download button. |  |
-| `edit.button` | Edit text | The edit button, bottom corner of every page, for staff who may change words. |  |
-| `edit.buttonWaiting` | Edit text ({{n}} waiting) | The edit button, when saved changes wait for a publish. | `{{n}}` |
-| `edit.done` | Done editing | The edit button while words are outlined. |  |
+| `edit.button` | Edit Text | The edit button, bottom corner of every page, for staff who may change words. |  |
+| `edit.buttonWaiting` | Edit Text ({{n}} waiting) | The edit button, when saved changes wait for a publish. | `{{n}}` |
+| `edit.done` | Done Editing | The edit button while words are outlined. |  |
 | `edit.hint` | Choose any outlined words to change them. | Read aloud and shown when the edit button is pressed. |  |
-| `edit.region` | Edit text | Read aloud for the edit button's corner. |  |
-| `edit.dialog.title` | change these words | Heading of the edit box. |  |
+| `edit.region` | Edit Text | Read aloud for the edit button's corner. |  |
+| `edit.dialog.title` | Change These Words | Heading of the edit box. |  |
 | `edit.dialog.label` | Words | Label above the box you type in. |  |
 | `edit.save` | Save | Edit box, save button. |  |
 | `edit.cancel` | Cancel | Edit box, cancel button. |  |
-| `edit.revert` | Put back the original | Edit box, button that restores the words the site shipped with. |  |
+| `edit.revert` | Put Back the Original | Edit box, button that restores the words the site shipped with. |  |
 | `edit.original` | Original: {{words}} | Edit box, the words the site shipped with. | `{{words}}` |
 | `edit.lastBy` | Last changed by {{name}}, {{when}} | Edit box, who saved these words last. | `{{name}}` `{{when}}` |
 | `edit.saving` | Saving… | Edit box, while a change is being saved. |  |
@@ -696,11 +758,11 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
 | `edit.error.failed` | Unable to save right now. Try again. | Edit box, when saving fails. |  |
 | `edit.error.signedOut` | You are signed out. Sign in again on the staff page, then come back. | Edit button, when the sign-in has ended. |  |
-| `edit.more` | More words | Button beside Edit text: words that are not on the screen right now. |  |
-| `edit.more.title` | more words | Heading of the More words list. |  |
-| `edit.more.find` | Find words | Label of the search box in the More words list. |  |
-| `edit.more.here` | On this page | More words list, words from this page. |  |
-| `edit.more.site` | On every page | More words list, menus, footer and shared lines. |  |
+| `edit.more` | More Words | Button beside Edit text: words that are not on the screen right now. |  |
+| `edit.more.title` | More Words | Heading of the More words list. |  |
+| `edit.more.find` | Find Words | Label of the search box in the More words list. |  |
+| `edit.more.here` | On This Page | More words list, words from this page. |  |
+| `edit.more.site` | On Every Page | More words list, menus, footer and shared lines. |  |
 | `edit.more.none` | Nothing matches. | More words list, when the search finds nothing. |  |
 | `edit.close` | Close | More words list, close button. |  |
 | `auth.error.title` | Unable to sign in | Page shown when staff sign-in fails. |  |
@@ -711,7 +773,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `auth.error.refused` | Connect did not confirm this sign-in. Check you are signed in to Connect with a staff account, then start again. | Sign-in problem: Connect said no. |  |
 | `auth.error.rateLimited` | Too many sign-in attempts from this connection. Wait a few minutes, then try again. | Sign-in problem: too many attempts. |  |
 | `auth.error.failed` | Something went wrong signing in. Start again from the staff page. | Sign-in problem: anything else. |  |
-| `auth.error.back` | Back to the staff page | Link at the bottom of the sign-in problem page. |  |
+| `auth.error.back` | Back to the Staff Page | Link at the bottom of the sign-in problem page. |  |
 
 ### Resource list (32)
 

@@ -23,7 +23,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import url from "node:url";
 import sharp from "sharp";
-import { variantWidths, variantName } from "../src/render/media.mjs";
+import { variantWidths, variantName, privateHost, photoHostOk } from "../src/render/media.mjs";
 import { drawRoomMap, ROOM_MAPS } from "./room-map.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
@@ -32,6 +32,7 @@ const CACHE = path.join(ROOT, "local", "media-cache");
 const LINKS = path.join(ROOT, "local", "media-links");
 const MAX_BYTES = 25 * 1024 * 1024;
 const FETCH_MS = 30000;
+const MAX_HOPS = 5;
 const QUALITY = { avif: 50, webp: 72, jpg: 76 };
 
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
@@ -146,8 +147,26 @@ export function fetchableUrl(link) {
   return link;
 }
 
-async function fetchLink(link) {
-  const res = await fetch(fetchableUrl(link), { redirect: "follow", signal: AbortSignal.timeout(FETCH_MS), headers: { "User-Agent": "Mozilla/5.0 (BSS media fetch)" } });
+/* Redirects are followed one at a time so each address is checked before it is asked: a published
+   build gives the pasted link's own rules (https, no private address, a host on PHOTO_HOSTS) to
+   every address it is sent on to, or an allowed host could hand the fetch to any server. */
+async function fetchLink(link, { production = false } = {}) {
+  const signal = AbortSignal.timeout(FETCH_MS);
+  let at = new URL(fetchableUrl(link)), res;
+  for (let hop = 0; ; hop++) {
+    res = await fetch(at, { redirect: "manual", signal, headers: { "User-Agent": "Mozilla/5.0 (BSS media fetch)" } });
+    if (res.status < 300 || res.status > 399 || !res.headers.get("location")) break;
+    await res.body?.cancel();
+    if (hop === MAX_HOPS) throw new Error(`redirected more than ${MAX_HOPS} times`);
+    at = new URL(res.headers.get("location"), at);
+    const refused = !/^https?:$/.test(at.protocol) ? "is not a web address"
+      : !production ? null
+      : at.protocol !== "https:" ? "does not start with https://"
+      : at.username || at.password ? "carries a user name or password"
+      : privateHost(at.hostname) ? "is a private address"
+      : !photoHostOk(at.hostname) ? `is on ${at.hostname}, which a published build does not fetch from` : null;
+    if (refused) throw new Error(`redirected to ${/^https?:$/.test(at.protocol) ? at.origin : at.protocol}, which ${refused}`);
+  }
   if (!res.ok) throw new Error(`answered ${res.status}`);
   const type = (res.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
   if (!type.startsWith("image/")) throw new Error(`is a ${type || "page"}, not a photo. Right-click the photo and copy its image address; for Google Drive, share the file as "Anyone with the link" and paste the file's link`);
@@ -160,7 +179,7 @@ async function fetchLink(link) {
 /* Fetch (once) and encode every linked photo.
    links: [{ id, link, alt, focal }] from photoRef(). Returns { items, files, encoded, fetched }, where
    items are manifest-shaped entries for the context, the stylesheet and the server. */
-export async function buildLinks(links, outDir, { fetchMissing = false, log = () => {}, cacheDir = LINKS, encodeDir = CACHE } = {}) {
+export async function buildLinks(links, outDir, { fetchMissing = false, production = false, log = () => {}, cacheDir = LINKS, encodeDir = CACHE } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
   const items = [], files = [];
   let encoded = 0, fetched = 0;
@@ -171,7 +190,7 @@ export async function buildLinks(links, outDir, { fetchMissing = false, log = ()
     if (fs.existsSync(img)) buf = fs.readFileSync(img);
     else if (!fetchMissing) throw new Error(`photo link ${r.link} has not been fetched yet. Run: node ops/build.mjs --fetch-media`);
     else {
-      try { buf = await fetchLink(r.link); } catch (e) { throw new Error(`photo link ${r.link} ${e.name === "TimeoutError" ? "did not answer in 30 seconds" : e.message}`); }
+      try { buf = await fetchLink(r.link, { production }); } catch (e) { throw new Error(`photo link ${r.link} ${e.name === "TimeoutError" ? "did not answer in 30 seconds" : e.message}`); }
       fetched++;
       log(`fetched ${r.link}`);
     }

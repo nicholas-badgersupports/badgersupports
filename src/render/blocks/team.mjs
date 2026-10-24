@@ -25,19 +25,23 @@ export function personCard(ctx, p, card = "role") {
 }
 
 /* A page with two team blocks (the team, then its advisors) says the people are samples once,
-   in the first. */
+   in the first. With nobody published yet, the first says so in a line and the rest are left out. */
 const noted = new WeakSet();
+const emptied = new WeakSet();
 
 export default {
   type: "team",
   label: "Team",
   fields: { title: "text!", heading: "choice:h1|h2", lead: "text", photos: "media[]", source: "source!", groups: "teamgroups!", card: "choice:role|title" },
-  data: ["team"],
+  data: ["team", "teamSample"],
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
     const people = publicPeople(ctx.data.team);
     const groups = (b.groups || []).map((g) => ({ ...g, people: people.filter((p) => p.group === g.group) })).filter((g) => g.people.length);
+    const none = !groups.length;
+    if (none && emptied.has(ctx)) return "";
+    if (none) emptied.add(ctx);
     const [photo] = b.photos || [];
     const note = ctx.data.teamSample && !noted.has(ctx);
     if (note) noted.add(ctx);
@@ -49,6 +53,7 @@ export default {
       ${h}
       ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
       ${note ? html`<p class="sample-note">${ctx.data.teamSample}</p>` : ""}
+      ${none ? html`<p class="team-none">${ctx.t("team.none")}</p>` : ""}
     </div>
     ${photo ? html`<div class="photo team-photo">${picture(ctx, photo, { sizes: "(max-width: 860px) calc(100vw - 2rem), 34rem", eager: b.heading === "h1" })}</div>` : ""}
   </header>

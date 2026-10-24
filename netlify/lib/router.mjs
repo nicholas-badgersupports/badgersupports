@@ -12,8 +12,9 @@
  * since a person lands on them, not a script.
  */
 
-import { json, htmlResponse, wantsJson, readBody, sameOrigin, connectionHash, rateLimit, HttpError } from "./http.mjs";
+import { json, htmlResponse, wantsJson, readBody, readBytes, sameOrigin, connectionHash, rateLimit, HttpError } from "./http.mjs";
 import { currentForm, submit, answersForPerson } from "./intake.mjs";
+import { fileQuestion, fileName, isPdfType, storeFile } from "./files.mjs";
 import { recordMood, moodCounts } from "./mood.mjs";
 import { serverContent } from "./content.mjs";
 import { connectConfig } from "./connect.mjs";
@@ -21,12 +22,13 @@ import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, saveEdit, editsFile, waitingCount } from "./edits.mjs";
+import { eventSections, calendarFile } from "./live-events.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
 import { formSection } from "../../src/render/blocks/form.mjs";
 import { html } from "../../src/render/html.mjs";
-import { readRaw } from "../../src/shared/forms.mjs";
+import { readRaw, QUESTION_TYPES } from "../../src/shared/forms.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
 
 export const TIERS = new Set(["public", "director"]);
@@ -50,7 +52,7 @@ function formPage(def) {
 
 const formReply = (status, def, inner) => {
   const p = formPage(def);
-  return page(status, p, (ctx) => formSection(def, inner(ctx), { id: p.blockId, title: p.blockTitle }), ["form.js"]);
+  return page(status, p, (ctx) => formSection(def, inner(ctx), { id: p.blockId, title: p.blockTitle, ctx }), ["form.js"]);
 };
 
 /* The signed-in person, or 401. configured tells the staff page whether signing in can work on
@@ -90,7 +92,7 @@ async function formSubmit(req, [key], context) {
     if (e.code !== "rate.limited" || asJson) throw e;
     const f = await currentForm(key);
     if (!f) throw new HttpError(404, "form.unknown");
-    return formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
+    return formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
   }
   const r = await submit(key, body);
   if (r.ok && !r.duplicate && !r.trapped) afterReply(context, () => deliverDue({ limit: 5 }));
@@ -103,10 +105,24 @@ async function formSubmit(req, [key], context) {
   if (r.error === "form.closed") return formReply(409, r.def, (ctx) => renderClosed(r.def, ctx.t, { title: ctx.t("form.closedNow.title"), answers: answersForPerson(r.def, r.raw) }));
   const changed = r.versionSeen && r.versionSeen !== r.version;
   return formReply(422, r.def, (ctx) => renderForm(r.def, {
-    t: ctx.t, values: r.raw, errors: r.errors,
+    t: ctx.t, ctx, values: r.raw, errors: r.errors,
     notice: changed ? { title: ctx.t("form.updated.title"), text: ctx.t("form.updated.body") } : null,
     idemKey: typeof body.get === "function" ? body.get("_key") || "" : body._key || "",
   }));
+}
+
+/* One PDF for a file question, as soon as it is chosen (netlify/lib/files.mjs). Answered in JSON
+   only: the page that uploads is the one with JavaScript, and without it the page says a file
+   needs it. The checks cost nothing before the bytes are read. There is no route back out. */
+async function formFile(req, [key], context) {
+  await rateLimit(`file:${key}:${connectionHash(req, context)}`, 20, 3600);
+  const form = await currentForm(key);
+  if (!form) throw new HttpError(404, "form.unknown");
+  const qn = fileQuestion(form, new URL(req.url).searchParams.get("q"));
+  if (!isPdfType(req.headers.get("content-type"))) throw new HttpError(415, "file.notPdf");
+  const bytes = await readBytes(req, QUESTION_TYPES.file.maxBytes);
+  const fileId = await storeFile(form, qn, { name: fileName(req.headers.get("x-file-name")), bytes });
+  return json(200, { ok: true, fileId });
 }
 
 async function moodRead() {
@@ -209,10 +225,38 @@ async function editsFileRoute(req, _m, _c, who) {
   } });
 }
 
+/* The events between publishes (live-events.mjs). The same answer serves everyone, so the CDN holds
+   it: five minutes when it came from Connect, half a minute when Connect could not be read and it is
+   the publish's list. A query string is refused rather than ignored, so nobody can ask past the
+   cache to Connect. */
+const LIVE_CACHE = { "cache-control": "public, max-age=60", "netlify-cdn-cache-control": "public, durable, s-maxage=300, stale-while-revalidate=600" };
+const STALE_CACHE = { "cache-control": "public, max-age=30", "netlify-cdn-cache-control": "public, s-maxage=30" };
+
+function noQuery(req) {
+  if (new URL(req.url).search) throw new HttpError(400, "query.refused");
+}
+
+async function eventsPage(req, [pageId]) {
+  noQuery(req);
+  const r = await eventSections(pageId);
+  if (!r) throw new HttpError(404, "not.found");
+  return json(200, { ok: true, today: r.today, blocks: r.blocks }, r.stale ? STALE_CACHE : LIVE_CACHE);
+}
+
+async function eventCalendar(req, [eventId]) {
+  noQuery(req);
+  const r = await calendarFile(eventId);
+  if (!r) throw new HttpError(404, "not.found");
+  return new Response(r.text, { status: 200, headers: { "content-type": "text/calendar; charset=utf-8", "x-content-type-options": "nosniff", ...(r.stale ? STALE_CACHE : LIVE_CACHE) } });
+}
+
 export const ROUTES = [
   { name: "health", method: "GET", pattern: /^\/api\/health$/, tier: "public", run: async () => json(200, { ok: true }) },
   { name: "formState", method: "GET", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/state$/, tier: "public", run: formState },
   { name: "formSubmit", method: "POST", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/submit$/, tier: "public", run: formSubmit },
+  { name: "formFile", method: "POST", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/files$/, tier: "public", run: formFile },
+  { name: "eventsPage", method: "GET", pattern: /^\/api\/events\/(pg-[a-z0-9-]{2,80})$/, tier: "public", run: eventsPage },
+  { name: "eventCalendar", method: "GET", pattern: /^\/api\/calendar\/([A-Za-z0-9_-]{1,120})\.ics$/, tier: "public", run: eventCalendar },
   { name: "moodRead", method: "GET", pattern: /^\/api\/mood$/, tier: "public", run: moodRead },
   { name: "moodTap", method: "POST", pattern: /^\/api\/mood$/, tier: "public", run: moodTap },
   { name: "authStart", method: "GET", pattern: /^\/api\/auth\/start$/, tier: "public", run: authStart },
@@ -236,7 +280,14 @@ const AUTH_WHY = { "auth.unavailable": "unavailable", "auth.state": "state", "au
 
 function errorReply(req, status, code, extra = {}) {
   const { pathname } = new URL(req.url);
-  if (wantsJson(req) || pathname.startsWith("/api/staff")) return json(status, { ok: false, error: code, ...extra });
+  if (wantsJson(req) || pathname.startsWith("/api/staff") || pathname.startsWith("/api/events/") || /^\/api\/forms\/[^/]+\/files$/.test(pathname)) return json(status, { ok: false, error: code, ...extra });
+  if (pathname.startsWith("/api/calendar/") && status === 404) {
+    return page(status, { id: "pg-calendar-gone", path: "/", titleKey: "calendar.gone.title" }, (ctx) => html`<section class="band" aria-labelledby="cal-h"><div class="wrap">
+  <h1 id="cal-h">${ctx.t("calendar.gone.title")}</h1>
+  <p>${ctx.t("calendar.gone.body")}</p>
+  <p><a href="/">${ctx.t("calendar.gone.back")}</a></p>
+</div></section>`);
+  }
   if (pathname.startsWith("/api/auth/")) {
     const why = AUTH_WHY[code] || "failed";
     return page(status, { id: "pg-auth", path: "/staff/", titleKey: "auth.error.title" }, (ctx) => html`<section class="band" aria-labelledby="auth-h"><div class="wrap">

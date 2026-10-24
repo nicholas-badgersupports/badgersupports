@@ -43,10 +43,11 @@ export function timeRange(start, end, t) {
     const h12 = ((h + 11) % 12) + 1;
     return { text: m ? `${h12}:${String(m).padStart(2, "0")}` : `${h12}`, ap: h < 12 ? t("time.am") : t("time.pm") };
   };
+  // a no-break space keeps "PM" with its hour when a narrow date column wraps the line
   const a = fmt(start);
-  if (!end) return `${a.text} ${a.ap}`;
+  if (!end) return `${a.text}\u00a0${a.ap}`;
   const b = fmt(end);
-  return a.ap === b.ap ? `${a.text}–${b.text} ${b.ap}` : `${a.text} ${a.ap}–${b.text} ${b.ap}`;
+  return a.ap === b.ap ? `${a.text}–${b.text}\u00a0${b.ap}` : `${a.text}\u00a0${a.ap}–${b.text}\u00a0${b.ap}`;
 }
 
 function row(src, e, date) {
@@ -55,6 +56,7 @@ function row(src, e, date) {
   return {
     id: `${e.id}@${date}`,
     program: e.program || "other",
+    series: e.series || null,
     title: e.title,
     short: e.short || e.title,
     note: e.note || null,
@@ -92,19 +94,28 @@ export function rowsBetween(src, from, days) {
   return out.sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
 }
 
-/* The next `count` dated (one-off) events on or after `from`, optionally for one program. */
-export function nextDated(src, from, count, program = null) {
+/* Which events a block asks for: `which` is a program, or { program, series }. A series (a page's own
+   events, such as Dogs on Call; content/connect-feed.json) wins over the program; neither is every event. */
+function wanted(which) {
+  const w = which && typeof which === "object" ? which : { program: which };
+  return (e) => (w.series ? e.series === w.series : !w.program || e.program === w.program);
+}
+
+/* The next `count` dated (one-off) events on or after `from`, optionally for one program or series. */
+export function nextDated(src, from, count, which = null) {
+  const keep = wanted(which);
   return (src.dated || [])
-    .filter((e) => e.date >= from && (!program || e.program === program))
+    .filter((e) => e.date >= from && keep(e))
     .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))
     .slice(0, count)
     .map((e) => row(src, e, e.date));
 }
 
-/* The `count` most recent dated events before `before`, newest first, optionally for one program. */
-export function lastDated(src, before, count, program = null) {
+/* The `count` most recent dated events before `before`, newest first, optionally for one program or series. */
+export function lastDated(src, before, count, which = null) {
+  const keep = wanted(which);
   return (src.dated || [])
-    .filter((e) => e.date < before && (!program || e.program === program))
+    .filter((e) => e.date < before && keep(e))
     .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start))
     .slice(0, count)
     .map((e) => row(src, e, e.date));

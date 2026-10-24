@@ -11,6 +11,7 @@ export default {
   label: "Directory",
   fields: { title: "text!", lead: "text", groups: "directory!", links: "link[]" },
   data: [],
+  styles: "directory.css",
   analytics: "none",
   loading: "lazy",
   render(b, ctx) {

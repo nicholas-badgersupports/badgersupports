@@ -12,6 +12,7 @@ export default {
   label: "Word cloud",
   fields: { title: "text!", items: "words!", note: "text" },
   data: [],
+  styles: "words.css",
   analytics: "none",
   loading: "lazy",
   render(b, ctx) {

@@ -13,7 +13,7 @@
 import { q, many } from "./db.mjs";
 import { serverContent } from "./content.mjs";
 import { connectConfig, deliverForm } from "./connect.mjs";
-import { answerColumns, questionById, optionLabel, OTHER } from "../../src/shared/forms.mjs";
+import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES } from "../../src/shared/forms.mjs";
 
 const MAX_WAIT_MINUTES = 6 * 60;
 let inflight = Promise.resolve();
@@ -28,15 +28,25 @@ export async function definitionFor(key, version) {
 }
 
 /* What Connect stores: every column the form can have, and each answer as the words the person
-   chose rather than option ids. Anonymous forms carry nothing that was not asked. */
+   chose rather than option ids (answerWords: a ranking reads "1. Programs", a file its name and
+   size). Anonymous forms carry nothing that was not asked. A form with files also lists them —
+   question, id, name, type, size and digest, never the bytes — so Connect knows what to collect;
+   a column that is confidential says so. An answer chosen from options also comes as its option
+   ids (a ranking first choice first), because labels can be edited and ids cannot: Connect maps
+   by those, and shows the words. */
 export function ingestPayload(sub, def) {
-  const columns = answerColumns(def).map((c) => ({ id: c.id, label: c.label }));
+  const columns = answerColumns(def).map((c) => ({ id: c.id, label: c.label, ...(c.confidential ? { confidential: true } : {}) }));
   const answers = {};
+  const files = [];
+  const optionIds = {};
   for (const [id, v] of Object.entries(sub.answers || {})) {
     const q = id.endsWith(OTHER) ? null : questionById(def, id);
-    if (Array.isArray(v)) answers[id] = v.map((x) => optionLabel(q, x));
-    else if (q && (q.options || []).length) answers[id] = optionLabel(q, v);
-    else answers[id] = v;
+    answers[id] = answerWords(q, v);
+    if (q && QUESTION_TYPES[q.type]?.options && v != null) optionIds[id] = q.type === "rank" ? rankOrder(q, v) : v;
+    if (q?.type !== "file") continue;
+    for (const f of Array.isArray(v) ? v : []) {
+      if (f && typeof f === "object") files.push({ question: id, fileId: f.fileId, name: f.name, type: f.type, bytes: f.bytes, sha256: f.sha256 });
+    }
   }
   return {
     ref: sub.ref,
@@ -47,6 +57,8 @@ export function ingestPayload(sub, def) {
     anonymous: !!sub.anonymous,
     columns,
     answers,
+    ...(Object.keys(optionIds).length ? { optionIds } : {}),
+    ...(files.length ? { files } : {}),
   };
 }
 

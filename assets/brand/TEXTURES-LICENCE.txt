@@ -1,0 +1,10 @@
+paper-coldpress.jpg  Cold-press white art paper grain, ambientCG "Paper 001".
+paper-crumpled.jpg   Crumpled white paper, ambientCG "Paper 003".
+
+Both are CC0 1.0 Universal (public domain dedication; no attribution required), from ambientCG
+(https://ambientcg.com, formerly CC0 Textures): https://creativecommons.org/publicdomain/zero/1.0/
+
+Copied on 23 October 2026 from the Badger Supports design system (Admin/Design/Badger Supports
+design system/src/tokens/paper.css, which lists each texture's source and licence). Only these two
+and the public-domain kraft tile may go in this public repository; the design system's Pexels and
+Unsplash textures may not, because their licences do not allow redistribution as files.

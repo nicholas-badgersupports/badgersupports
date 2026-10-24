@@ -18,7 +18,13 @@ export function chicagoDate(d = new Date()) {
 
 /* text: the resolved word table (src/shared/text.mjs resolveText) — every word a renderer prints
    that is not page content comes from ctx.t. */
-export function makeContext({ site, media, builtPaths, routes = [], data = {}, text, today, prototype = false, assets = {} }) {
+/* The programs that wear a colour of their own (src/styles/tokens.css); anything else is brand red. */
+export const PROGRAMS = ["peer", "craft", "workshops"];
+
+/* liveEvents: the events came from Connect, so between publishes the page asks Connect's current list
+   again (src/render/layout.mjs, netlify/lib/live-events.mjs) and a calendar button opens the file the
+   API writes from it (src/render/ics.mjs calendarHref), not the one written at the last publish. */
+export function makeContext({ site, media, builtPaths, programs = new Map(), routes = [], data = {}, text, today, prototype = false, assets = {}, liveEvents = false, path = null }) {
   const mediaById = new Map((media?.items || []).map((m) => [m.id, m]));
   return {
     site,
@@ -28,11 +34,26 @@ export function makeContext({ site, media, builtPaths, routes = [], data = {}, t
     today: today || chicagoDate(),
     prototype,
     assets,
+    liveEvents,
     builtPaths: new Set(builtPaths || []),
     // A new path that replaces several live pages (the resource viewer) links to the first listed.
     liveFor: routes.reduce((m, r) => (r.path && r.live && !r.path.includes("{") && !m.has(r.path) ? m.set(r.path, r.live) : m), new Map()),
     pendingLinks: new Set(),
+    // The page being rendered, so a list on it does not link back to it (W3C technique G128).
+    path,
     link(href) { return resolveLink(this, href); },
+    here(href) {
+      const r = resolveLink(this, href);
+      return !!this.path && !r.external && !r.pending && r.href === this.path;
+    },
+    // The program whose colour a link's page (or a section of this page) wears, or null: a circle or
+    // door to the peer page is green.
+    programOf(href) {
+      if (href?.startsWith("#")) return programs.get(href) || null;
+      if (!href || !href.startsWith("/")) return null;
+      const p = href.split(/[?#]/)[0];
+      return programs.get(p === "/" ? "/" : p.replace(/\/?$/, "/")) || null;
+    },
   };
 }
 

@@ -71,6 +71,13 @@ function details(r, ctx) {
   return out;
 }
 
+/* The button's words. View Details on sixty cards would be sixty links a screen reader lists alike,
+   so a reader also hears whose details they are (WCAG 2.4.4's best practice). */
+function button(r, ctx) {
+  const label = buttonLabel(r.action, ctx);
+  return label === ctx.t("resources.view") ? html`${label}<span class="sr-only">: ${r.name}</span>` : label;
+}
+
 function card(r, ctx, topicOf) {
   const href = r.action?.url || r.url;
   const phone = r.contact?.phone;
@@ -83,7 +90,7 @@ function card(r, ctx, topicOf) {
     ${r.bestFor ? html`<p class="res-fit"><span class="res-lead">${ctx.t("resources.fit")}</span> ${r.bestFor}</p>` : ""}
     <p class="res-tags">${topic ? html`<span class="res-tag res-topic">${topic}</span>` : ""}<span class="res-tag">${ctx.t(`resources.cost.${COST[r.cost?.code] || "unknown"}`)}</span>${where ? html`<span class="res-tag">${ctx.t(`resources.where.${where}`)}</span>` : ""}</p>
     <div class="res-foot">
-      ${href ? link(ctx, href, buttonLabel(r.action, ctx), { class: "btn res-go", icon: "out" }) : ""}
+      ${href ? link(ctx, href, button(r, ctx), { class: "btn res-go", icon: "out" }) : ""}
       ${phone ? html`<p class="res-tel"><a href="${tel(phone)}">${phone}</a></p>` : ""}
       ${more.length ? html`<details class="res-more"><summary>${ctx.t("resources.more")}</summary><div class="res-more-body">${more}</div></details>` : ""}
     </div>
@@ -94,7 +101,7 @@ export default {
   type: "resources",
   label: "Resource list",
   fields: { title: "text!", lead: "text", source: "source!", topics: "resourcetopics!" },
-  data: ["resources"],
+  data: ["resources", "resourcesSample", "resourcesUpdated"],
   client: "resources.js",
   analytics: "none",
   loading: "lazy",

@@ -19,14 +19,16 @@ behaviour. Here is where each one is, and how far the build holds it:
 | schema | `fields`: each field's type, `"!"` for required | the build refuses a page whose block lacks a required field or carries one not declared (`blockProblems()`, `src/render/registry.mjs`) |
 | renderer | `render(block, ctx)`, returning `html`…`` | `src/render/html.mjs` escapes every value put into the template, except output of another `html`…`` and `raw()`, which the code uses only on strings it made itself |
 | assets | `client`: an optional browser module in `src/client/` | the build stops if the file is not in `src/client/` (`ops/build.mjs`, where it copies the browser modules) and loads it only on pages that use the block |
-| | styles | **not declared.** A block's rules go in the shared `src/styles/blocks.css` |
-| dependencies | `data`: the named data sources it reads from `ctx.data` | **listed, not enforced.** The contract prints it; nothing stops a block reading another source |
+| | `styles`: an optional stylesheet in `src/styles/blocks/` | the build puts it right after `blocks.css`, and stops if a named file is missing or a file there belongs to no block (`blockStyles()`, `ops/build.mjs`). A block without one keeps its rules in `blocks.css` |
+| dependencies | `data`: the named data sources it reads from `ctx.data` | the build stops when a block reads, or asks for, a source it did not declare, naming the block and the source (`renderBlock()`, `src/render/registry.mjs`) |
 | analytics behaviour | `analytics`: `page` or `none` | `ANALYTICS.md`. Nothing is sent today |
 | permissions | none | **not declared.** No block reads a session. A per-block permission is a **proposal** that waits on Connect sign-in |
 | | `loading`: `eager` or `lazy` | whether its photos may load before they are near the screen |
+| | `refresh`: `true`, or a function of the block | a block that shows Connect's events. On a page built from Connect it is rendered again by `/api/events/<page>` and swapped in as the page loads (`ARCHITECTURE.md`, "Events between publishes"). Mark the parts that change with `data-live="<name>"` so only those are swapped; a block without them is replaced whole. `test/live-events.test.mjs` holds the answer to the published page, byte for byte |
 
-`ctx.data` holds `events`, `wallNotes`, `wallSample`, `team`, `teamSample`, `mood`, `forms` and `places`
-(`ops/build.mjs`, where `ctx` is made).
+`ctx.data` holds `events`, `wallNotes`, `wallSample`, `team`, `teamSample`, `mood`, `forms`, `places`,
+`resources`, `resourcesSample` and `resourcesUpdated` (`ops/build.mjs`, where `ctx` is made; `test/blocks.test.mjs`
+holds every block to that list).
 
 **Editors never add code.** An editor fills a block's fields; they cannot write HTML or a script. Where a page
 needs something from another site, it is a controlled embed: the `embed` block takes only an Instagram address,
@@ -62,11 +64,15 @@ Example: `content/pages/about-faq.json`, the FAQ page, built in this session.
 2. **Add blocks.** Each one is `{ "id": "b-…", "type": "…", …its fields }`. The FAQ page has a `pagehead`
    (`b-faq-head`) and `questions` blocks, each question `{ "id": "q-…", "q": "…", "a": "…" }`.
    - A block id is `b-` and 2 to 60 of a–z, 0–9 and hyphens, unique on its page.
-   - A block may carry only its declared fields, plus `id`, `type`, `enabled` and `anchor`.
-     `CONNECT-EDITOR-CONTRACT.md` lists every block's fields.
+   - A block may carry only its declared fields, plus `id`, `type`, `enabled`, `anchor`, `startsOn` and
+     `endsOn` (`COMMON_FIELDS`, `src/render/registry.mjs`). `CONNECT-EDITOR-CONTRACT.md` lists every block's
+     fields.
    - `"enabled": false` hides a block without deleting it.
-   - `startsOn` and `endsOn` (dates) hide a block outside those dates, but only on a block that declares them.
-     Today that is `announcement` alone.
+   - `startsOn` and `endsOn`, each `YYYY-MM-DD` and both optional, show any block from the first day to the
+     last, both included, Chicago time. The build refuses a date that is not a real day and a start after the
+     end. A date takes effect when the site is built: a block ending on the 10th shows until the next publish
+     after it. A block that declares `refresh`, on a page built from Connect, hides the day after its `endsOn`
+     without a publish; a block whose `startsOn` comes after the publish still waits for the next one.
    - Every `icon` must be one the site draws (the build lists them if one is not).
    - A photo slot takes a library id, an `https://` link, or `{ "link", "alt", "focal" }` (`DESIGN.md`, "A
      photo slot").
@@ -95,11 +101,12 @@ session. These are every file it touched:
 |---|---|
 | `src/render/blocks/pagehead.mjs` | new: the module |
 | `src/render/registry.mjs` | one `import` line, and `pagehead` added to `BLOCKS` |
-| `src/styles/blocks.css` | its rules, under its own heading |
+| `src/styles/blocks.css` | its rules, under its own heading (a block added now would name its own file instead: §4) |
 | `docs/CONNECT-EDITOR-CONTRACT.md` | regenerated by `npm run contract`, not written by hand |
 | `content/pages/*.json` | the pages that use it |
 
-No other block, and no other part of the build, changed. The one shared file is `blocks.css`.
+No other block, and no other part of the build, changed. The one shared file was `blocks.css`; since 23 Oct a
+block can keep its rules in a file of its own, so a new block touches no shared stylesheet.
 
 ### 1. The module
 
@@ -163,8 +170,12 @@ from this site only.
 
 ### 4. Styles
 
-Add the block's rules to `src/styles/blocks.css` under a heading of its own, using tokens from
-`src/styles/tokens.css`. Gate 3 of `npm run check` refuses a colour literal outside `tokens.css` and any type
+Put the block's rules in `src/styles/blocks/<type>.css` and name it in `styles` (`wall`, `directory`, `words`
+and `mood` do). The build adds the file right after `blocks.css`, in the order of `BLOCKS`, so a rule there
+wins over a shared one of the same weight. A rule two blocks share stays in `blocks.css` (`.sample-note` does).
+The other blocks still keep their rules in `blocks.css` under a heading each; move one when that block is next
+worked on, and compare computed styles before and after, as the 23 Oct move did (`OVERNIGHT-RUN-2026-10-23.md`
+§5). Use tokens from `src/styles/tokens.css`. Gate 3 of `npm run check` refuses a colour literal outside `tokens.css` and any type
 under 14 px. Give the block a shape of its own; the owner asked that pages not look alike (`DESIGN.md`, "Page
 shapes").
 
@@ -177,6 +188,34 @@ shapes").
 5. `node ops/check.mjs --browser`. It builds, runs every test, takes screenshots at 1280, 390 and 320 px, and
    runs the accessibility check on every page. Read its output, not only its exit code.
 
+## Adding a form or a question type
+
+A form is a file in `content/forms/<key>.json` (schema `bss.form/1`): sections of questions, a `state`, a closed
+message, and a `workflow` that says where its answers go. `definitionProblems()` in `src/shared/forms.mjs` is the
+rule book; the build and the server both refuse a definition that breaks it. The question types and their limits
+are `QUESTION_TYPES` in that file, and the editor contract lists them in plain words. Since 23 Oct there are four
+more: `tel` (a phone number, no format forced), `links` (up to five https links, one per line), `rank` (each
+option given a different place) and `file` (one PDF of at most 3 MB, never on an anonymous form).
+
+**A new form** ships `closed`. A prototype build gives a closed form with questions a preview page at
+`/forms/<key>/preview/`, which checks answers in the browser and sends nothing. To open one: a page in
+`content/pages/` with a `form` block (as `workshop-request.json` has), a row in `content/routes.json`, the door
+link that pointed at the Google Form, and `state: "open"`. A `--launch` build still turns every open form into a link
+to its Google Form (`launchForms()`; `../WORK.md`, Decisions, "Launch").
+
+**A question may be marked `confidential`.** Its answer goes to Connect only: the staff page here leaves it out, and
+the Sheets backup must too.
+
+**A new question type** touches, in order:
+
+1. `QUESTION_TYPES` and its limits, then `definitionProblems()` for any rule of its own.
+2. `readRaw()` (how the answer is read from a form), `clean()` and `typeProblem()` under `validateAnswers()` and their
+   error codes, `errorText()` with a `form.error.*` key in `content/text.json`, and `answerWords()` (what Connect shows).
+3. `control()` in `src/render/form.mjs`, and `publicDefinition()` if the browser needs a new field.
+4. `src/client/form.js` only if the control needs more than the shared checks.
+5. `ops/contract.mjs`'s `limit()`, then `npm run contract`.
+6. Tests: `test/forms.test.mjs` for the rule, `test/applications.test.mjs` shows one per type end to end.
+
 ## What is still to build
 
 | Missing | Why it matters | Where it is asked |
@@ -185,6 +224,5 @@ shapes").
 | Publishing | one versioned bundle that records who published it | Exchange `PUBLIC-SITE-EDITOR` |
 | Drafts, preview, restore | §10 asks for revisions; today the repository's history is the only one | Exchange `PUBLIC-SITE-EDITOR-REVISIONS` |
 | Connect sign-in | needed before any per-block or per-page permission | Exchange `PUBLIC-SITE-SSO` |
-| Enforced `data` | a block can read a source it did not declare | `../WORK.md` |
-| Dates on every block | `startsOn` and `endsOn` work only on `announcement` | `../WORK.md` |
-| A block's own stylesheet | every block's rules share `blocks.css` | `../WORK.md` |
+| A dated block changing on its day | dates take effect at the next build, not at midnight; only an event block on a page built from Connect hides after its `endsOn` between publishes | a scheduled build, which would deploy without the owner (run log §7, decision 7.1) |
+| The rest of `blocks.css` split by block | 4 blocks have their own file; the others share `blocks.css` | move each when it is next worked on (§4) |

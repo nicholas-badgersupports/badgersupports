@@ -13,12 +13,12 @@
       "children": [
         {
           "id": "nav-what",
-          "label": "What we do",
+          "label": "What We Do",
           "href": "/about/what-we-do/"
         },
         {
           "id": "nav-team",
-          "label": "Our team",
+          "label": "Our Team",
           "href": "/about/our-team/"
         },
         {
@@ -28,7 +28,7 @@
         },
         {
           "id": "nav-directions",
-          "label": "Rooms and directions",
+          "label": "Rooms and Directions",
           "href": "/directions/"
         },
         {
@@ -44,12 +44,12 @@
       "children": [
         {
           "id": "nav-groups",
-          "label": "Peer support groups",
+          "label": "Peer Support Groups",
           "href": "/join/peer-support-groups"
         },
         {
           "id": "nav-craft",
-          "label": "Craft nights",
+          "label": "Craft Nights",
           "href": "/join/craft-nights"
         },
         {
@@ -59,7 +59,7 @@
         },
         {
           "id": "nav-request",
-          "label": "Request a program",
+          "label": "Request a Program",
           "href": "/request-a-program"
         }
       ]
@@ -70,17 +70,17 @@
       "children": [
         {
           "id": "nav-housing",
-          "label": "Navigating housing",
+          "label": "Navigating Housing",
           "href": "/initiatives/housing-hub"
         },
         {
           "id": "nav-cards",
-          "label": "Referral cards",
+          "label": "Referral Cards",
           "href": "/initiatives/referral-cards"
         },
         {
           "id": "nav-ribbons",
-          "label": "Colors of Support ribbons",
+          "label": "Colors of Support Ribbons",
           "href": "/initiatives/ribbons"
         },
         {
@@ -90,7 +90,7 @@
         },
         {
           "id": "nav-open-house",
-          "label": "Hub open house",
+          "label": "Hub Open House",
           "href": "/initiatives/open-house"
         }
       ]
@@ -106,12 +106,12 @@
       "children": [
         {
           "id": "nav-jobs",
-          "label": "Get involved",
+          "label": "Get Involved",
           "href": "/join/get-involved/"
         },
         {
           "id": "nav-email",
-          "label": "Email list",
+          "label": "Email List",
           "href": "/join/email-list"
         },
         {
@@ -123,7 +123,7 @@
     }
   ],
   "headerAction": {
-    "label": "Get involved",
+    "label": "Get Involved",
     "href": "/join/get-involved/"
   },
   "supportLine": {
@@ -147,7 +147,7 @@
         "title": "Organization",
         "links": [
           {
-            "label": "What we do",
+            "label": "What We Do",
             "href": "/about/what-we-do/"
           },
           {
@@ -159,7 +159,7 @@
             "href": "/operations/press"
           },
           {
-            "label": "Equity and belonging",
+            "label": "Equity and Belonging",
             "href": "/about/equity-belonging/"
           }
         ]
@@ -169,7 +169,7 @@
         "title": "Community",
         "links": [
           {
-            "label": "Our team",
+            "label": "Our Team",
             "href": "/about/our-team/"
           },
           {
@@ -177,7 +177,7 @@
             "href": "/resources"
           },
           {
-            "label": "Request a program",
+            "label": "Request a Program",
             "href": "/request-a-program"
           },
           {
@@ -191,7 +191,7 @@
         "title": "Contact",
         "links": [
           {
-            "label": "Rooms and directions",
+            "label": "Rooms and Directions",
             "href": "/directions/"
           },
           {
@@ -203,7 +203,7 @@
             "href": "mailto:directors@badgersupports.org"
           },
           {
-            "label": "Email list",
+            "label": "Email List",
             "href": "/join/email-list"
           }
         ]
@@ -238,12 +238,12 @@
     "accessibilityEmail": "accessibility@badgersupports.org",
     "legal": [
       {
-        "label": "Privacy policy and terms",
+        "label": "Privacy Policy and Terms",
         "href": "/operations/privacy-policy"
       }
     ],
     "staffSignIn": {
-      "label": "Director sign-in",
+      "label": "Director Sign-In",
       "href": "/staff/"
     }
   }

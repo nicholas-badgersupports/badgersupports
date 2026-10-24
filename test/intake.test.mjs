@@ -64,6 +64,11 @@ test("a form closed while a tab is open refuses the send and gives the answers b
 
 test("an application with no questions cannot be switched open", async () => {
   await freshServer();
+  const { serverContent } = await import("../netlify/lib/content.mjs");
+  const v3 = structuredClone(serverContent().forms["staff-application"]);
+  v3.version += 1;
+  for (const s of v3.sections) s.questions = [];
+  await q("INSERT INTO form_versions (form_key, version, definition, published_by) VALUES ('staff-application', $1, $2::jsonb, 'test')", [v3.version, JSON.stringify(v3)]);
   await q("INSERT INTO form_state (form_key, state, changed_by) VALUES ('staff-application', 'open', 'test')");
   const state = await (await handle(get("/api/forms/staff-application/state"), ip())).json();
   assert.equal(state.state, "closed");
@@ -150,7 +155,7 @@ test("a mood tap adds one to today's count and records nothing about who tapped"
   const cols = (await many("SELECT column_name FROM information_schema.columns WHERE table_name = 'mood_daily'")).map((r) => r.column_name).sort();
   assert.deepEqual(cols, ["day", "mood", "n"]);
   const page = await handle(post("/api/mood", { mood: "thriving" }, { json: false }), ip());
-  assert.match(await page.text(), /thanks for checking in/);
+  assert.match(await page.text(), /Thanks for Checking In/);
 });
 
 test("with no database configured the API fails closed", async () => {

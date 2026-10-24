@@ -2,10 +2,10 @@
   "schema": "bss.page/1",
   "id": "pg-form-programming-feedback",
   "path": "/forms/programming-feedback/",
-  "title": "Programming feedback — Badger Supports",
+  "title": "Programming Feedback — Badger Supports",
   "description": "Tell the Badger Supports program team how a workshop, craft night or peer support group went. Your name is optional.",
   "analytics": "public",
   "blocks": [
-    { "id": "b-form-feedback", "type": "form", "form": "programming-feedback", "title": "programming feedback" }
+    { "id": "b-form-feedback", "type": "form", "form": "programming-feedback", "title": "Programming Feedback" }
   ]
 }

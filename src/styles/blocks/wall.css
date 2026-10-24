@@ -1,0 +1,21 @@
+/* The Wall of Support (src/render/blocks/wall.mjs): notes on the paper ground, each tilted a little (a note on a wall is the one tilt the brand keeps). The sample note above
+   the notes is shared, in blocks.css. */
+.wall { background: var(--tex-ground); background-blend-mode: normal, multiply; border-top: var(--rule-line); }
+.wall-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s5); }
+.wall-head h2 { color: var(--accent); }
+.wall-head p { margin: var(--s1) 0 0; font-size: var(--fs-lead); }
+.notes { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s5) var(--s4); padding-top: var(--s2); }
+.note {
+  position: relative; min-height: 8.5rem; display: grid; place-items: center; text-align: center;
+  padding: var(--s4) var(--s3) var(--s3); background: var(--note-1); color: var(--ink);
+  font: 600 var(--fs-note)/1.35 var(--font-body); overflow-wrap: anywhere;
+  box-shadow: var(--note-shadow);
+  rotate: var(--tilt, -1deg);
+}
+.note:nth-child(6n+2) { background: var(--note-2); --tilt: 1.5deg; }
+.note:nth-child(6n+3) { background: var(--note-3); --tilt: -.5deg; }
+.note:nth-child(6n+4) { background: var(--note-4); --tilt: 2deg; }
+.note:nth-child(6n+5) { background: var(--note-5); --tilt: -2deg; }
+.note:nth-child(6n+6) { background: var(--note-6); --tilt: 1deg; }
+@media (max-width: 960px) { .notes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .notes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4) var(--s3); } .note { min-height: 7rem; font-size: 1rem; } }

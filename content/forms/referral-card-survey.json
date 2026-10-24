@@ -1,0 +1,287 @@
+{
+  "schema": "bss.form/1",
+  "key": "referral-card-survey",
+  "version": 1,
+  "title": "Resource Referral Card Design Survey",
+  "audience": "public",
+  "anonymous": false,
+  "state": "closed",
+  "closedMessage": "The card design survey is on Google Forms for now. Questions: hello@badgersupports.org.",
+  "intro": [
+    "Badger Supports is expanding our Resource Referral Card series — quick, pocket-sized guides that connect students to support and services across campus. We want your input on what kinds of resources we should feature next, how you’d describe them, and what information you’d want most clearly highlighted.",
+    "Please fill out this survey for each unique Resource Referral Card you would like to see!"
+  ],
+  "review": "Built closed (decision 3.1), from Google's public view of 23 Oct 2026; the Referral Cards page still links the Google Form. Words are Google's, with one slip corrected in the thanks ('the Badger Support's' → 'the Badger Supports'). Google's form is one page with no section title; 'Your Card Idea' is ours. Google's closing block sits above its last question; here it is the confirmation. 'Other' is a plain choice in Google's form, with no box to type in, and stays one. The closing message is ours.",
+  "sections": [
+    {
+      "id": "card",
+      "title": "Your Card Idea",
+      "questions": [
+        {
+          "id": "resource",
+          "type": "long",
+          "label": "If you could create a Resource Referral Card for a specific campus resource or a group of related resources, what would you choose?",
+          "required": false,
+          "maxLength": 2000,
+          "rows": 3,
+          "help": "Examples: “UHS Mental Health Services,” “Campus food and basic needs programs,” “Conflict resolution and conduct support,” “Transfer and nontraditional student resources,” etc."
+        },
+        {
+          "id": "importance",
+          "type": "long",
+          "label": "What makes this resource or topic important for students to know about?",
+          "required": false,
+          "maxLength": 2000,
+          "rows": 3
+        },
+        {
+          "id": "category",
+          "type": "choice",
+          "label": "Which general category does this resource fit into?",
+          "required": false,
+          "options": [
+            {
+              "id": "mental_health",
+              "label": "Mental Health & Wellness"
+            },
+            {
+              "id": "academic",
+              "label": "Academic & Advising"
+            },
+            {
+              "id": "financial",
+              "label": "Financial & Basic Needs"
+            },
+            {
+              "id": "identity",
+              "label": "Identity & Belonging"
+            },
+            {
+              "id": "physical_health",
+              "label": "Physical Health"
+            },
+            {
+              "id": "safety",
+              "label": "Safety & Conduct"
+            },
+            {
+              "id": "social",
+              "label": "Social Connection & Involvement"
+            },
+            {
+              "id": "career",
+              "label": "Career & Professional Development"
+            },
+            {
+              "id": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "id": "audience",
+          "type": "checkboxes",
+          "label": "Who would most benefit from this resource or card? (Select all that apply)",
+          "required": false,
+          "options": [
+            {
+              "id": "first_year",
+              "label": "First-year students"
+            },
+            {
+              "id": "transfer",
+              "label": "Transfer students"
+            },
+            {
+              "id": "graduate",
+              "label": "Graduate/professional students"
+            },
+            {
+              "id": "international",
+              "label": "International students"
+            },
+            {
+              "id": "in_crisis",
+              "label": "Students in crisis"
+            },
+            {
+              "id": "community",
+              "label": "Students looking for community"
+            },
+            {
+              "id": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "id": "three_words",
+          "type": "short",
+          "label": "If you could describe this resource in 3 words, what would they be? (Example: “Approachable, confidential, inclusive”)",
+          "required": false,
+          "maxLength": 200
+        },
+        {
+          "id": "feel",
+          "type": "checkboxes",
+          "label": "How would you want the card to feel when someone reads it? (Select all that apply)",
+          "required": false,
+          "options": [
+            {
+              "id": "supportive",
+              "label": "Supportive"
+            },
+            {
+              "id": "informative",
+              "label": "Informative"
+            },
+            {
+              "id": "empowering",
+              "label": "Empowering"
+            },
+            {
+              "id": "calm",
+              "label": "Calm/reassuring"
+            },
+            {
+              "id": "motivating",
+              "label": "Motivating"
+            },
+            {
+              "id": "friendly",
+              "label": "Friendly/peer-like"
+            },
+            {
+              "id": "professional",
+              "label": "Professional/credible"
+            },
+            {
+              "id": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "id": "most_visible",
+          "type": "checkboxes",
+          "label": "What information should be most visible on the card? (Rank or select up to 3)",
+          "required": false,
+          "options": [
+            {
+              "id": "when_where",
+              "label": "When and where to access the resource"
+            },
+            {
+              "id": "cost",
+              "label": "Cost or eligibility (e.g., free, open to all students)"
+            },
+            {
+              "id": "confidentiality",
+              "label": "Confidentiality or privacy details"
+            },
+            {
+              "id": "getting_started",
+              "label": "How to get started or what to expect"
+            },
+            {
+              "id": "qr_code",
+              "label": "QR code or website for more info"
+            },
+            {
+              "id": "contact",
+              "label": "Contact information (email/phone)"
+            },
+            {
+              "id": "peer_led",
+              "label": "Connection to peer or student-led support"
+            }
+          ],
+          "review": "The label says up to 3; Google's form does not hold anyone to it, and neither does this one. Adding \"maxSelected\": 3 would."
+        },
+        {
+          "id": "trust",
+          "type": "long",
+          "label": "What makes you more likely to trust or use a campus resource?",
+          "required": false,
+          "maxLength": 2000,
+          "rows": 3,
+          "help": "(Example: “If it feels peer-led,” “If staff are friendly,” “If I know what to expect,” etc.)"
+        },
+        {
+          "id": "where_available",
+          "type": "checkboxes",
+          "label": "Where would you want to see this card available? (Select all that apply)",
+          "required": false,
+          "options": [
+            {
+              "id": "advising",
+              "label": "Advising offices"
+            },
+            {
+              "id": "uhs",
+              "label": "UHS or Mental Health Services"
+            },
+            {
+              "id": "residence_halls",
+              "label": "Residence halls"
+            },
+            {
+              "id": "libraries",
+              "label": "Libraries or study spaces"
+            },
+            {
+              "id": "cultural_centers",
+              "label": "Cultural centers or student org offices"
+            },
+            {
+              "id": "tabling",
+              "label": "Tabling events or peer groups"
+            },
+            {
+              "id": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "id": "design_ideas",
+          "type": "long",
+          "label": "Any design ideas, phrases, or visuals you’d love to see included? (Example: “Icons for quick reading,” “Quotes from students,” “Simple, positive tone,” etc.)",
+          "required": false,
+          "maxLength": 2000,
+          "rows": 3
+        },
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Interested in notifications about this project?",
+          "required": true,
+          "autocomplete": "email",
+          "help": "Please provide your @wisc.edu",
+          "review": "Required in the Google Form, though it reads as a choice: someone who wants no updates must still give an address. Kept required as Google has it; making it optional is one word."
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank you!",
+    "body": [
+      "Thank you for helping shape the Badger Supports Resource Referral Cards!",
+      "Your input will guide how we connect students to resources in ways that feel approachable, inclusive, and relevant."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "programs.referral-card-ideas",
+    "owner": "Programs",
+    "receipt": "none",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSfPOLa-4IjlmB74axm7Xk1vRBxN4GbMnmNAx0cAKC7BG20VDw",
+    "aliases": [
+      "https://forms.gle/eYdEzbosWkjfUQyN8"
+    ],
+    "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Connect files the Referral Cards initiative under Programs (docs/directorates/programs.md)."
+  }
+}

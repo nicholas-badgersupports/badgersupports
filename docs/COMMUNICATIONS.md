@@ -16,20 +16,21 @@ and SPILL's forms stay with SPILL.
 
 | # | Workflow | Live today | In this rebuild |
 |---|---|---|---|
-| 1 | Resource request | a Google Form behind the "Request" link in every footer | not built, and the rebuild's footer does not link it. Proposed: it becomes the resource viewer's Suggest a Resource (§8), also not built |
-| 2 | Peer group, volunteer training or collaboration request | a Google Form from `/request-a-program` and `/join/peer-support-groups` | not built; to become native forms (`content/routes.json`) |
+| 1 | Resource request | a Google Form behind the "Request" link in every footer | **built closed** (23 Oct), from Google's public view, its words kept; previewed at `/forms/resource-request/preview/`. The Colors of Support page still links the Google Form; the rebuild's footer does not link it. It asks for materials, so it is not the resource viewer's Suggest a Resource (§8), which is still not built |
+| 2 | Peer group, volunteer training or collaboration request | a Google Form from `/request-a-program` and `/join/peer-support-groups` | **built closed** (23 Oct), one form as Google has it; previewed at `/forms/program-request/preview/`. Request a Program and Request a Workshop still link the Google Form |
 | 3 | Workshop request | a Google Form from `/join/request-a-workshop` | **built**: `/forms/workshop-request/` |
-| 4 | Referral card design survey | a Google Form from `/initiatives/referral-cards` | not built; to be rebuilt natively |
-| 5 | Mailing list | a Google Form, and a whole-page embed at `/join/email-list` | not built; links go to the live page. See "The mailing list" |
-| 6 | Staff application | a closed Google Form | **built closed**: its closing message shows on Get involved. Questions transcribed 21 Oct, not yet built (`Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md`) |
-| 7 | Volunteer application | a Google Form that answers 401 signed out, because Google requires sign-in on a form with uploads | not built; Get involved links to the Google Form as it is. Questions transcribed 21 Oct, same handoff |
-| 8 | Alumni testimonial | a Google Form that answered 401 | not built; to investigate (publication consent, a missing sign-up embed) |
+| 4 | Referral card design survey | a Google Form from `/initiatives/referral-cards` | **built closed** (23 Oct); previewed at `/forms/referral-card-survey/preview/`. Referral Cards still links the Google Form |
+| 5 | Mailing list | a Google Form, and a whole-page embed at `/join/email-list` | **built closed** (23 Oct), from Google's public view; previewed at `/forms/email-list/preview/`. The Email List page still links the Google Form. See "The mailing list" |
+| 6 | Staff application | a closed Google Form | **built closed**, all 11 sections (23 Oct), from the 21 Oct transcription (`Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md`): its closing message shows on Get involved, and a prototype build previews it at `/forms/staff-application/preview/` |
+| 7 | Volunteer application | a Google Form that answers 401 signed out, because Google requires sign-in on a form with uploads | **built closed**, all 9 sections (23 Oct), same handoff; previewed at `/forms/volunteer-application/preview/`. Get involved still links to the Google Form |
+| 8 | Alumni testimonial | a Google Form that answered 401 | not built: still 401 signed out on 23 Oct, so its questions cannot be read from here. To investigate (publication consent, a missing sign-up embed) |
 | 9 | Programming feedback | a Google Form behind `feedback.badgersupports.org` | **built**: `/forms/programming-feedback/`, anonymous |
+| 10 | Letter of referral / recommendation | a closed Google Form behind `recommend.badgersupports.org` (via `forms.gle/WC3ihM2Ahqz8jC6T7`), linked from the staff application | **built closed** (23 Oct), from a PDF of the form Nicholas supplied; previewed at `/forms/recommendation-letter/preview/` |
 
 The audit's whole-directory check also found internal, personnel and SPILL forms whose questions load publicly.
 That they load is not a reason to publish them here.
 
-## The three forms built
+## The nine forms built
 
 From `content/forms/*.json`. A form's `workflow` block names where its submissions go; none of it is wired to
 anything outside this site yet.
@@ -39,11 +40,29 @@ anything outside this site yet.
 | `workshop-request` | open here; **closed at launch** | no | `programs.workshop-requests` | Programs | proposed | proposed |
 | `programming-feedback` | open here; **closed at launch** | yes | `programs.feedback` | Programs | none | proposed |
 | `staff-application` | **closed** | no | `hiring.applications` | Executive | proposed | proposed |
+| `volunteer-application` | **closed** | no | `hiring.volunteer-applications` (proposed) | Executive | proposed | proposed |
+| `recommendation-letter` | **closed** | no | `hiring.recommendations` (proposed) | Executive | proposed | proposed |
+| `resource-request` | **closed** | no | `engagement.resource-requests` (proposed) | Engagement | proposed | proposed |
+| `program-request` | **closed** | no | `programs.program-requests` (proposed) | Programs | proposed | proposed |
+| `referral-card-survey` | **closed** | no | `programs.referral-card-ideas` (proposed) | Programs | none | proposed |
+| `email-list` | **closed** | no | `executive.email-list` (proposed) | Executive | none | proposed |
+
+The two applications ask for a resume (and the staff one a cover letter) as one PDF of at most 3 MB, kept on
+this site until Connect takes it (`docs/ARCHITECTURE.md`, "Files"). Answers about work study and commitments are
+marked `confidential`: they go to Connect only, never to the staff page here or the backup. The letter form takes a
+recommender's letter the same way, as one PDF; nothing on it is marked confidential, and who reads letters is a
+Connect permission. Connect accepts only a resume and a cover letter today (Exchange request
+`RECOMMENDATION-LETTERS-INTO-CONNECT-2026-10-23`).
 
 **At launch** (owner, 20 Oct 2026): `--production` and `--launch` builds serve every open form closed, its page
 showing one button, "Fill Out Our Form", to the Google Form it replaces (`launchForms()` and `googleFormUrl()` in
 `src/shared/forms.mjs`; `test/launch.test.mjs`). The server reads the same closed definitions. A form already
 closed keeps its own message.
+
+The three request forms (23 Oct) take their owners from Connect's directorate pages: Google titles the resource
+request "COMM", and Communications work sits with Engagement (`docs/directorates/engagement.md` in Connect); the
+program request is "PROG"; Connect files the Referral Cards initiative under Programs (`programs.md`). Each keeps
+Google's required answers, including four on the program request that read as optional (their `review` notes).
 
 The queue names and owners are proposals: Connect has no Forms area yet (Exchange request `PUBLIC-SITE-FORMS`).
 A switch row in the database (`form_state`) wins over a form's shipped `state`, so Connect can open or close a
@@ -92,6 +111,11 @@ The communications matrix asked for by §7. Template names follow Exchange reque
 | Programming feedback | notify | Programs | Connect | as above | proposed |
 | Staff application | receipt | the applicant | `directors@badgersupports.org` | once stored | proposed; the form is closed |
 | Staff application | notify | Executive | Connect | as above | proposed |
+| Volunteer application | receipt, notify | as the staff application | | | proposed; the form is closed |
+| Resource request | receipt, notify | the address given; Engagement | as the workshop request | | proposed; the form is closed |
+| Program request | receipt, notify | the address given; Programs | as the workshop request | | proposed; the form is closed |
+| Referral card survey | receipt | nobody | | | **none**: the address it asks for is for news of the project, not a receipt |
+| Referral card survey | notify | Programs | Connect | as above | proposed; the form is closed |
 
 The rules this keeps:
 
@@ -132,6 +156,17 @@ does **not** prove anyone is on the list.
 A rebuilt request must keep three states apart: **request received**, **confirmation pending** and
 **subscribed**. Only the Google Group knows the last one. List membership is owned by one system, and that is
 not this site (`content/routes.json`). How the request reaches the Group is not yet verified.
+
+**Built closed** (23 Oct, `content/forms/email-list.json`, run log §6). The site's part is the first state only:
+
+- It asks Google's one question, the email address, and shows Google's four steps for joining by email, with
+  the address as a link.
+- Its thank-you page says the request is received and that the person is **not on the list yet**; it never says
+  they are subscribed (`test/applications.test.mjs`).
+- It sends no receipt (`workflow.receipt: "none"`), so the site never emails an address no one has confirmed.
+- The request goes to Connect as an answer like any other, queue `executive.email-list` (proposed). Recording
+  *confirmation pending* and *subscribed* against it is Connect's (Exchange request
+  `PUBLIC-EMAIL-LIST-STATES-2026-10-23`). Owner Executive, from the "EXEC" at the start of Google's form name.
 
 ## Not checked
 

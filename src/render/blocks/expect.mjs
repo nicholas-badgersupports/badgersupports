@@ -1,6 +1,6 @@
 /* What coming is like, for someone who has never been: a heading, a few sentences, and the short
    things a first-timer wants to know before walking in (who can come, whether it costs anything,
-   whether they need to be good at it), each a line with its icon on a dotted rule rather than a
+   whether they need to be good at it), each a line with its icon on a rule rather than a
    row of identical cards. A photo of people at one of the nights stands beside it.
 
    `links` ends it with the ways on, as pills. `flip` puts the photos on the right, so a page that

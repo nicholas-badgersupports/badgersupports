@@ -1,7 +1,9 @@
 /* The top of an ordinary page: its name, what it is in a sentence or two, and the one thing to do
    first as the page's big button, with any other ways on as quieter pills. Photos of people stand
-   beside it, one tall and two small, so a page opens on who is there before what it says. On the
-   paper ground, not the red: the red opening belongs to a program's own page (eventhero).
+   beside it, one tall and two small, so a page opens on who is there before what it says. On a
+   pale band of the page's colour, on the brand's paper texture, with a straight foot (Badger SPILL's
+   waves are SPILL's own mark, so they stay on SPILL's site); the full colour belongs to a program's
+   own page (eventhero).
 
    `label` is a short line above the lead, for wording the old site set as a run-in ("Our
    Mission:"). Every word is the page's own, so every word is editable. */

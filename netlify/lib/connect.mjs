@@ -4,6 +4,8 @@
  *   publicSsoToken    trade the one-time code Connect's sign-in page sent back for a signed note
  *                     of who this is and what they may do here (staff.mjs).
  *   publicFormIngest  hand one submission to Connect's Website Forms queue (deliver.mjs).
+ *   publicEvents      the public event list, which the build reads (ops/connect-feed.mjs) and the
+ *                     events refresh reads again between publishes (live-events.mjs).
  *
  * THE SIGNATURE IS CONNECT'S, BYTE FOR BYTE (its netlify/lib/public-service.mjs):
  * base64url(HMAC-SHA256(secret, ts \n nonce \n POST \n /api \n hex(sha256(raw body)))), in
@@ -31,14 +33,23 @@ export function useConnect(cfg) { override = cfg; }
 
 export function connectConfig() {
   if (override !== undefined && override !== null) return override;
-  const e = process.env;
-  const url = String(e.CONNECT_URL || "").replace(/\/+$/, "");
-  const keyId = String(e.PUBLIC_SITE_SERVICE_KEY_ID || "");
-  const secret = String(e.PUBLIC_SITE_SERVICE_SECRET || "");
-  const ssoSecret = String(e.PUBLIC_SSO_SECRET || "");
-  if (!/^https?:\/\/[^\s/]+$/.test(url) || !keyId || secret.length < 32 || ssoSecret.length < 32) return null;
-  return { url, keyId, secret, ssoSecret, fetch: globalThis.fetch };
+  const cfg = serviceConfig();
+  const ssoSecret = String(process.env.PUBLIC_SSO_SECRET || "");
+  return cfg && ssoSecret.length >= 32 ? { ...cfg, ssoSecret } : null;
 }
+
+/* Connect's address and the service key, without the sign-in secret: enough for the reads the build
+   and the events refresh make. Null when any is missing. */
+export function serviceConfig(env = process.env) {
+  const url = String(env.CONNECT_URL || "").replace(/\/+$/, "");
+  const keyId = String(env.PUBLIC_SITE_SERVICE_KEY_ID || "");
+  const secret = String(env.PUBLIC_SITE_SERVICE_SECRET || "");
+  if (!/^https?:\/\/[^\s/]+$/.test(url) || !keyId || secret.length < 32) return null;
+  return { url, keyId, secret, fetch: globalThis.fetch };
+}
+
+/* The one a test or the local rig installed, else serviceConfig(). */
+export const serviceConfigNow = () => (override !== undefined && override !== null ? override : serviceConfig());
 
 /* ------------------------------------------------------------------ the signature */
 

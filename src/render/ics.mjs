@@ -21,6 +21,12 @@ function fold(line) {
 
 export const icsPath = (eventId) => `/calendar/${eventId}.ics`;
 
+/* Where a card's calendar button goes. A site built from Connect's list points it at the API, which
+   writes the file from Connect's current list (netlify/lib/live-events.mjs), so an event moved or
+   added since the last publish gets the right time; a site built from the fixture keeps the files
+   the build wrote. */
+export const calendarHref = (ctx, eventId) => (ctx.liveEvents ? `/api/calendar/${eventId}.ics` : icsPath(eventId));
+
 /* row: from src/render/events.mjs. place: the room record or null. origin: the site's origin. */
 export function eventIcs(row, { place, origin, stamp }) {
   const where = place ? [place.name, place.building, place.address].filter(Boolean).join(", ") : "";

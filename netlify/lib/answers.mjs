@@ -42,7 +42,8 @@ export async function formsFor(who) {
 
 /* The newest answers to one form, each as the words the person chose, with whether it has reached
    Connect. Columns follow the form as it is now; an answer to a question since retired keeps a
-   column of its own at the end. */
+   column of its own at the end. A confidential answer (an applicant's work study, their other
+   commitments) is not shown here at all: it goes to Connect, whose permissions decide who reads it. */
 export async function latestAnswers(key) {
   const f = await formOrNull(key);
   const rows = await many(
@@ -51,16 +52,19 @@ export async function latestAnswers(key) {
       WHERE s.form_key = $1 ORDER BY s.received_at DESC, s.id DESC LIMIT $2`, [key, LATEST]);
   if (!f && !rows.length) return null;
   const total = (await many("SELECT count(*)::int AS n FROM submissions WHERE form_key = $1", [key]))[0].n;
-  const columns = f ? answerColumns(f.def).map((c) => ({ id: c.id, label: c.label })) : [];
+  const secret = new Set(f ? answerColumns(f.def).filter((c) => c.confidential).map((c) => c.id) : []);
+  const columns = f ? answerColumns(f.def).filter((c) => !secret.has(c.id)).map((c) => ({ id: c.id, label: c.label })) : [];
   const known = new Set(columns.map((c) => c.id));
   const defs = new Map();
   const items = [];
   for (const r of rows) {
     if (!defs.has(r.form_version)) defs.set(r.form_version, (await definitionFor(key, r.form_version)) || f?.def || null);
     const def = defs.get(r.form_version);
+    if (def) for (const c of answerColumns(def)) if (c.confidential) secret.add(c.id);
     const answers = def ? ingestPayload(r, def).answers : r.answers;
     const words = {};
     for (const [id, v] of Object.entries(answers || {})) {
+      if (secret.has(id)) continue;
       words[id] = Array.isArray(v) ? v.join(", ") : String(v);
       if (!known.has(id)) {
         known.add(id);

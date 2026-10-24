@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-get-involved",
   "path": "/join/get-involved/",
-  "title": "Get involved — Badger Supports",
+  "title": "Get Involved — Badger Supports",
   "description": "Volunteer or work at Badger Supports, the student-led peer support community at UW–Madison.",
   "analytics": "public",
   "blocks": [
@@ -10,7 +10,7 @@
       "id": "b-gi-ways",
       "type": "involve",
       "heading": "h1",
-      "title": "get involved",
+      "title": "Get Involved",
       "photos": [
         "m-team-openhouse",
         "m-people-welcome",
@@ -23,7 +23,7 @@
           "primary": true,
           "text": "A new program starting 2026–2027. Gain hands-on experience hosting workshops, staffing events, and supporting peer programs.",
           "link": {
-            "label": "Express interest",
+            "label": "Express Interest",
             "href": "https://forms.gle/2pXzV917oPX4VodY7"
           },
           "icon": "hand",
@@ -44,25 +44,25 @@
             ],
             "after": "New Volunteer Intake revolves around Volunteer Training, which is offered throughout the semester.",
             "link": {
-              "label": "Express interest & apply here",
+              "label": "Express Interest & Apply Here",
               "href": "https://forms.gle/2pXzV917oPX4VodY7"
             }
           }
         },
         {
           "id": "inv-staff",
-          "title": "Staff positions",
+          "title": "Staff Positions",
           "form": "staff-application",
           "text": "Employment at Badger Supports is eligible to all UW–Madison students. Most staff work 5–12 hours a week.",
           "icon": "badge",
           "link": {
-            "label": "How hiring works",
+            "label": "How Hiring Works",
             "href": "#hiring"
           },
           "more": {
             "anchor": "hiring",
             "photo": "m-involved-staff",
-            "title": "How hiring works",
+            "title": "How Hiring Works",
             "lead": "As part of the hiring and interview process, Badger Supports requires the following:",
             "lists": [
               {
@@ -82,17 +82,17 @@
               }
             ],
             "link": {
-              "label": "View our application",
+              "label": "View Our Application",
               "href": "https://forms.gle/QM12SgfBVx6euUCD6"
             }
           }
         },
         {
           "id": "inv-list",
-          "title": "Email list",
+          "title": "Email List",
           "text": "Stay up-to-date on our latest updates, events, and more.",
           "link": {
-            "label": "Join our email list",
+            "label": "Join Our Email List",
             "href": "/join/email-list"
           },
           "icon": "mail"
@@ -102,7 +102,7 @@
     {
       "id": "b-gi-spill",
       "type": "spill",
-      "title": "Write back as a Student Supporter",
+      "title": "Write Back as a Student Supporter",
       "body": [
         "Badger SPILL’s Student Supporters are trained UW–Madison students who answer what other Badgers write, in writing. Find out what it involves on Badger SPILL’s own site."
       ],
@@ -112,7 +112,7 @@
       },
       "links": [
         {
-          "label": "How Badger SPILL works",
+          "label": "How Badger SPILL Works",
           "href": "https://badgerspill.org/how-it-works/"
         }
       ]
@@ -120,7 +120,7 @@
     {
       "id": "b-gi-faq",
       "type": "questions",
-      "title": "questions",
+      "title": "Questions",
       "items": [
         {
           "id": "q-what-like",
@@ -158,7 +158,7 @@
         }
       ],
       "ask": {
-        "label": "Email us at hello@badgersupports.org",
+        "label": "Email Us at hello@badgersupports.org",
         "href": "mailto:hello@badgersupports.org"
       },
       "note": "Badger Supports values diversity and is an Equal Opportunity Employer. Accommodations can be requested at accessibility@badgersupports.org."

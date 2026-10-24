@@ -9,6 +9,7 @@ export default {
   label: "Mood check-in",
   fields: { title: "text!", intro: "text" },
   data: ["mood"],
+  styles: "mood.css",
   client: "mood.js",
   analytics: "none",
   loading: "lazy",

@@ -16,6 +16,7 @@ import { PLACE_SCHEMA } from "../src/render/places.mjs";
 import { TEAM_SCHEMA, TEAM_PATH, GROUPS } from "../src/render/team.mjs";
 import { placeholders } from "../src/shared/text.mjs";
 import { ICONS } from "../src/render/icons.mjs";
+import { PHOTO_HOSTS } from "../src/render/media.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const FILE = path.join(ROOT, "docs", "CONNECT-EDITOR-CONTRACT.md");
@@ -44,6 +45,7 @@ const FIELD_TYPES = {
   teamgroups: "the groups to show, in order: each a group (`directors`, `associate-directors`, `staff`, `volunteers` or `advisors`) and, if it needs one, the heading over it",
   person: "one public profile from Connect, by its address name (`slug`)",
   eventquery: "which events to list: source, program, how many",
+  series: "a page's own events, by the id of a series in content/connect-feed.json (`dogs-on-call`, `housing-hub`): Connect's events whose titles carry that series' words; it wins over `program`",
   spill: "Badger SPILL beside its logo: a short line (`title`), an optional second line (`text`), and one link (`label` and `href`, to badgerspill.org)",
   number: "a whole number",
   boolean: "on or off",
@@ -81,12 +83,13 @@ export function contract() {
     ["title, description", "the browser tab and search result"],
     ["analytics", "`public` or `none` (docs/ANALYTICS.md)"],
     ["noindex", "keep this page out of search engines"],
-    ["blocks", "the page's blocks, in order; each has a permanent `b-…` id, a type below, and `enabled`"],
+    ["program", "the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (red); left out, brand red. The header, footer and announcements stay red on every page"],
+    ["blocks", "the page's blocks, in order; each has a permanent `b-…` id, a type below, `enabled`, and optional `startsOn` / `endsOn`"],
   ]) w(`| \`${f}\` | ${d} |`);
   w();
   w("## Blocks");
   w();
-  w("Every block can be turned off with `enabled: false`; a block that lists `startsOn` / `endsOn` shows only between those dates.");
+  w("Every block can be turned off with `enabled: false`, and dated with `startsOn` / `endsOn` (`YYYY-MM-DD`, both optional): it shows from the first day to the last, both included, Chicago time. A date takes effect when the site is built, so a block ending on the 10th shows until the next publish after it.");
   w("Required fields are marked **required**.");
   w();
   for (const b of Object.values(BLOCKS)) {
@@ -117,6 +120,10 @@ export function contract() {
   w("A link must start with `https://`. A Google Drive file link works when the file is shared as *Anyone with the link*;");
   w("a Drive folder link is refused. The build refuses a link that does not answer with a photo, and names it. A linked");
   w("photo with no description is read aloud as the text key `media.linkAlt`.");
+  w();
+  w("The published site fetches a link only from these hosts and their subdomains:");
+  w(`${PHOTO_HOSTS.map((h) => `\`${h}\``).join(", ")}.`);
+  w("A link anywhere else, or one that redirects anywhere else, stops the build. An editor should refuse it when it is pasted.");
   w();
   w(`## Rooms and directions (\`${PLACE_SCHEMA}\`, \`content/places/\`)`);
   w();
@@ -172,9 +179,34 @@ export function contract() {
   w("and keeps the answers), a version that rises with every published change, stable question ids, sections that");
   w("may show only when an earlier answer holds, and a workflow (Connect queue, owner, receipt, backup). Question types:");
   w();
-  w("| Type | Shows as | Has options | Longest answer |");
+  w("| Type | Shows as | Has options | Limit |");
   w("|---|---|---|---|");
-  for (const [k, v] of Object.entries(QUESTION_TYPES)) w(`| \`${k}\` | ${v.input} | ${v.options ? "yes" : ""} | ${v.max || ""} |`);
+  const limit = (v) => (v.max ? `${v.max} characters` : v.maxItems ? `${v.maxItems} links, https only, one per line` : v.maxBytes ? `one PDF, ${v.maxBytes / (1024 * 1024)} MB` : "");
+  for (const [k, v] of Object.entries(QUESTION_TYPES)) w(`| \`${k}\` | ${v.input} | ${v.options ? "yes" : ""} | ${limit(v)} |`);
+  w();
+  w("A question has an `id`, a `type`, a `label` and may have:");
+  w();
+  w("| Field | What it does |");
+  w("|---|---|");
+  for (const [f, d] of [
+    ["required", "true: the form will not send without an answer"],
+    ["help", "prose under the label (see below)"],
+    ["options", "`[{ id, label }]` for a type with options; ids are permanent"],
+    ["allowOther", "`choice` and `checkboxes` only: adds an Other with its own words"],
+    ["showIf", "`{ question, equals | in | includes }` on an earlier question; not on `links`, `rank` or `file`"],
+    ["maxLength, min, max, maxSelected", "tighter limits than the type's own"],
+    ["maxLinks", "`links` only: 1 to 10"],
+    ["confirmText", "`confirm` only: the checkbox's words, when the label is a heading above them"],
+    ["confidential", "true: the answer goes to Connect only; the site's staff page, backups, logs and analytics leave it out"],
+  ]) w(`| \`${f}\` | ${d} |`);
+  w();
+  w("A ranking arrives in Connect as `[\"1. Programs\", …]` and is kept as option ids, first choice first. A file answer");
+  w("arrives as `\"name (size)\"` with a `files` list naming each file's `fileId`, `bytes` and `sha256`; the bytes are");
+  w("collected separately and never sent in an answer. A file question is refused on an anonymous form.");
+  w();
+  w("**Prose** (a form's or section's `intro`, a question's `help`) is a string, or a list of parts: a paragraph, `{ heading }`,");
+  w("`{ list, ordered }` or `{ links: [{ href, label }] }`. Links start `https://`, `mailto:`, `/` or `#`. Plain words only:");
+  w("the site adds the markup.");
   w();
   w("## Every other word (`content/text.json`)");
   w();

@@ -2,7 +2,7 @@
   "schema": "bss.form/1",
   "key": "workshop-request",
   "version": 1,
-  "title": "Request a workshop",
+  "title": "Request a Workshop",
   "audience": "public",
   "anonymous": false,
   "state": "open",
@@ -14,7 +14,7 @@
   "sections": [
     {
       "id": "about_you",
-      "title": "About you and your group",
+      "title": "About You and Your Group",
       "intro": "Workshops can be provided to campus units, student organizations, classes or friend groups, and to individual students at UW–Madison. If you're requesting for yourself, write “Individual” as your affiliation.",
       "questions": [
         {
@@ -92,7 +92,7 @@
     },
     {
       "id": "when_where",
-      "title": "When and where",
+      "title": "When and Where",
       "intro": "List three dates and times that work for your group. Badger Supports can help reserve a room — say so below and include any accommodations the room needs.",
       "questions": [
         {
@@ -146,7 +146,7 @@
     },
     {
       "id": "notes",
-      "title": "About the session",
+      "title": "About the Session",
       "questions": [
         {
           "id": "group_notes",

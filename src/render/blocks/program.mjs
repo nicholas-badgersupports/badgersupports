@@ -2,7 +2,10 @@
  *   feature  — a large photo and the program's facts as a timetable (peer support groups)
  *   gallery  — the next dates, and a swipeable strip of photos (craft nights)
  *   topics   — a numbered list of what can be requested, and one request button (workshops)
- * Every variant is brand red and the neutrals: a public page has no program hue.
+ * Each wears its program's colour (data-program; src/styles/tokens.css): peer support groups green,
+ * craft nights purple, workshops the brand red (owner, 23 Oct 2026). A gallery listing the next dates
+ * has them in a part of their own (data-live), which schedule.js swaps alone between publishes, so the
+ * photo strip beside it is left as it is.
  */
 
 import { html, attrs } from "../html.mjs";
@@ -46,10 +49,10 @@ function gallery(b, ctx) {
     ${heading(b)}
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
     ${paras(b.body)}
-    ${next.length ? html`<h3 class="sr-only">${b.upcoming.label || ctx.t("program.upcomingLabel")}</h3><ul class="next-list">${next.map((r) => {
+    <div data-live="next">${next.length ? html`<h3 class="sr-only">${b.upcoming.label || ctx.t("program.upcomingLabel")}</h3><ul class="next-list">${next.map((r) => {
       const p = dateParts(r.date, ctx.t);
       return html`<li${attrs({ "data-starts": r.startsAt, "data-ends": r.endsAt })}><div class="dateblock" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span></div><div><strong>${r.short}</strong><span><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${timeRange(r.start, r.end, ctx.t)}${r.place ? ` · ${r.place.name}` : ""}</span></div></li>`;
-    })}</ul>` : ""}
+    })}</ul>` : ""}</div>
     ${links(ctx, b.links)}
   </div>
   <div class="strip" data-strip>
@@ -80,11 +83,12 @@ export default {
   fields: { variant: "choice:feature|gallery|topics!", program: "choice:peer|craft|workshops!", heading: "choice:h1|h2", title: "text!", lead: "text", body: "paragraphs", list: "termlist", facts: "termlist", note: "text", photos: "media[]", embed: "embed", links: "link[]", upcoming: "eventquery", topics: "termlist", primary: "link" },
   data: ["events"],
   client: ["strip.js", "embed.js"],
+  refresh: (b) => !!b.upcoming,
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
     const v = VARIANTS[b.variant];
     if (!v) throw new Error(`${b.id}: unknown program variant ${b.variant}`);
-    return html`<section class="program program--${b.variant}${b.heading === "h1" ? " is-page" : ""} band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}">${v(b, ctx)}</section>`;
+    return html`<section class="program program--${b.variant}${b.heading === "h1" ? " is-page" : ""} band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-program="${b.program}">${v(b, ctx)}</section>`;
   },
 };

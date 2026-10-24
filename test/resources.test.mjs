@@ -59,6 +59,8 @@ test("no button calls, texts or emails: those say View Details, and the number s
   assert.equal(button("access-community-health-centers"), "View Details", "a label that says Call");
   assert.equal(button("slow-food-uw"), "View Details", "Email Slow Food UW opens a web page");
   assert.equal(button("988-suicide-crisis-lifeline"), "View Details", "Text 988 opens a web page");
+  assert.match(card("slow-food-uw"), /View Details<span class="sr-only">: Slow Food UW<\/span><\/span>/, "a reader hears whose details");
+  assert.doesNotMatch(card("foodshare"), /<a [^>]*class="btn res-go"[^>]*>[\s\S]*?sr-only[\s\S]*?<\/a>/, "a label of the record's own needs nothing added");
   assert.match(card("988-suicide-crisis-lifeline"), /Text 988 for support\./, "the text instruction stays");
   assert.match(card("space-to-heal"), /<p class="res-tel"><a href="tel:4149394673">414-939-HOPE<\/a><\/p>/, "letters dial as their keys");
 });

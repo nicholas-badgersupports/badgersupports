@@ -46,7 +46,7 @@
   "text": {
     "page.skip": {
       "group": "page",
-      "text": "Skip to content",
+      "text": "Skip to Content",
       "where": "First link on every page, for keyboard users."
     },
     "header.wordmark": {
@@ -107,7 +107,7 @@
     },
     "embed.play": {
       "group": "page",
-      "text": "Play the reel",
+      "text": "Play the Reel",
       "where": "Button on an Instagram video; pressing it loads Instagram’s player."
     },
     "embed.notice": {
@@ -152,32 +152,32 @@
     },
     "schedule.placeLink": {
       "group": "home",
-      "text": "How to find it",
+      "text": "How to Find It",
       "where": "Link under the usual place in the timetable."
     },
     "schedule.laterTitle": {
       "group": "home",
-      "text": "Coming up",
+      "text": "Coming Up",
       "where": "Heading over later events, when the timetable block gives none."
     },
     "schedule.signup.none": {
       "group": "home",
-      "text": "No sign-up",
+      "text": "No Sign-Up",
       "where": "Beside an event anyone can walk into."
     },
     "schedule.dropIn": {
       "group": "home",
-      "text": "Drop in",
+      "text": "Drop In",
       "where": "Button beside an event anyone can walk into. Opens the program’s page (peer support groups) or the room’s directions."
     },
     "schedule.signup.connect": {
       "group": "home",
-      "text": "Sign up on Connect",
+      "text": "Sign Up on Connect",
       "where": "Link beside an event that needs a sign-up on Connect."
     },
     "schedule.signup.link": {
       "group": "home",
-      "text": "Sign-up needed",
+      "text": "Sign-Up Needed",
       "where": "Beside an event that needs a sign-up somewhere else."
     },
     "schedule.ended": {
@@ -185,9 +185,19 @@
       "text": "Ended",
       "where": "Shown on an event once it has finished."
     },
+    "schedule.none": {
+      "group": "home",
+      "text": "Nothing is on the calendar this week.",
+      "where": "In the timetable when Connect lists nothing for the next seven days."
+    },
+    "schedule.noneMore": {
+      "group": "home",
+      "text": "Peer support groups and craft nights show up here as soon as they are scheduled.",
+      "where": "Second line under an empty week in the timetable."
+    },
     "program.upcomingLabel": {
       "group": "home",
-      "text": "Next dates",
+      "text": "Next Dates",
       "where": "Heading over a program's next dates, read by screen readers, when the block gives none."
     },
     "strip.prev": {
@@ -212,17 +222,17 @@
     },
     "wall.more": {
       "group": "home",
-      "text": "Show other notes",
+      "text": "Show Other Notes",
       "where": "Button on the Wall of Support, when the block gives none."
     },
     "involve.closed": {
       "group": "home",
-      "text": "Applications closed",
+      "text": "Applications Closed",
       "where": "Tag on a way to get involved whose application form is switched off."
     },
     "workshops.inWorkshop": {
       "group": "home",
-      "text": "In the full workshop",
+      "text": "In the Full Workshop",
       "where": "Above the list of what each workshop covers, beside its preview."
     },
     "workshops.examples": {
@@ -247,12 +257,12 @@
     },
     "mood.pageTitle": {
       "group": "home",
-      "text": "thanks for checking in",
+      "text": "Thanks for Checking In",
       "where": "Heading of the page shown after a mood tap without JavaScript."
     },
     "mood.back": {
       "group": "home",
-      "text": "Back to the homepage",
+      "text": "Back to the Homepage",
       "where": "Link on that page."
     },
     "date.dow.0": {
@@ -658,6 +668,131 @@
       "text": "Check this answer.",
       "where": "Any other problem with an answer."
     },
+    "form.rankLabel": {
+      "group": "forms",
+      "text": "{{option}}: rank",
+      "where": "The name of each drop-down in a ranking question, read by screen readers. {{option}} is the row it ranks."
+    },
+    "form.error.requiredFile": {
+      "group": "forms",
+      "text": "Upload a PDF for “{{label}}”.",
+      "where": "A required file left empty."
+    },
+    "form.error.requiredRank": {
+      "group": "forms",
+      "text": "Give every row a rank for “{{label}}”.",
+      "where": "A required ranking left empty or half done."
+    },
+    "form.error.linkShape": {
+      "group": "forms",
+      "text": "Put one link on each line, starting with https://",
+      "where": "A links answer with a line that is not a whole web address."
+    },
+    "form.error.linkTooLong": {
+      "group": "forms",
+      "text": "Shorten each link to {{max}} characters or fewer.",
+      "where": "A link longer than the limit."
+    },
+    "form.error.linksTooMany": {
+      "group": "forms",
+      "text": "Give up to {{max}} links.",
+      "where": "More links than the question allows."
+    },
+    "form.error.rankShape": {
+      "group": "forms",
+      "text": "Choose a rank from 1 to {{max}} for each row.",
+      "where": "A rank outside the list (only possible without the page's own drop-downs)."
+    },
+    "form.error.rankRepeated": {
+      "group": "forms",
+      "text": "Give each row a different rank.",
+      "where": "Two rows given the same rank."
+    },
+    "form.error.rankIncomplete": {
+      "group": "forms",
+      "text": "Give every row a rank, or leave them all blank.",
+      "where": "An optional ranking with some rows ranked and some not."
+    },
+    "form.error.fileShape": {
+      "group": "forms",
+      "text": "Choose the file again.",
+      "where": "A file answer the site cannot read."
+    },
+    "form.error.fileMissing": {
+      "group": "forms",
+      "text": "Choose your file again — the upload did not reach us.",
+      "where": "A file answer whose upload is missing or expired."
+    },
+    "form.error.filesTooMany": {
+      "group": "forms",
+      "text": "Upload one file only.",
+      "where": "More than one file for one question."
+    },
+    "form.upload.uploading": {
+      "group": "forms",
+      "text": "Uploading {{name}}…",
+      "where": "Under a file question while the chosen file goes up."
+    },
+    "form.upload.done": {
+      "group": "forms",
+      "text": "Uploaded: {{name}}",
+      "where": "Under a file question once the file is safely up."
+    },
+    "form.upload.notPdf": {
+      "group": "forms",
+      "text": "That file is not a PDF. Save it as a PDF, then choose it again.",
+      "where": "When the chosen file is not a PDF."
+    },
+    "form.upload.tooBig": {
+      "group": "forms",
+      "text": "That file is over {{max}} MB. Choose a PDF of {{max}} MB or less.",
+      "where": "When the chosen file is too large."
+    },
+    "form.upload.failed": {
+      "group": "forms",
+      "text": "The upload did not go through. Choose the file again.",
+      "where": "When the upload failed for any other reason."
+    },
+    "form.upload.wait": {
+      "group": "forms",
+      "text": "Wait for your file to finish uploading, then press Send.",
+      "where": "When Send is pressed while a file is still going up."
+    },
+    "form.upload.needsScript": {
+      "group": "forms",
+      "text": "Uploading a file needs JavaScript. Turn it on in your browser, then reload this page.",
+      "where": "Under a file question when the browser runs no JavaScript."
+    },
+    "form.preview.title": {
+      "group": "forms",
+      "text": "Preview Only",
+      "where": "Heading of the note above a closed form shown for review, on the preview pages of the prototype site."
+    },
+    "form.preview.body": {
+      "group": "forms",
+      "text": "This form is closed. This page shows it as it will look when it opens, so it can be checked. Nothing typed here is sent.",
+      "where": "The note above a closed form shown for review, on the preview pages of the prototype site."
+    },
+    "form.preview.sent": {
+      "group": "forms",
+      "text": "Preview only: these answers pass every check. Nothing was sent.",
+      "where": "Under the Send button of a form preview once the answers would have been accepted."
+    },
+    "form.preview.file": {
+      "group": "forms",
+      "text": "Preview only: {{name}} would upload here. Nothing was sent.",
+      "where": "Under a file question of a form preview once a PDF is chosen."
+    },
+    "form.preview.pageTitle": {
+      "group": "forms",
+      "text": "Preview: {{form}} — Badger Supports",
+      "where": "The browser-tab title of a closed form's preview page on the prototype site."
+    },
+    "form.preview.pageDescription": {
+      "group": "forms",
+      "text": "{{form}}, shown for review while it is closed.",
+      "where": "The summary of a closed form's preview page on the prototype site."
+    },
     "team.all": {
       "group": "team",
       "text": "Our Team",
@@ -675,7 +810,7 @@
     },
     "team.more": {
       "group": "team",
-      "text": "More of our team",
+      "text": "More of Our Team",
       "where": "Heading over the other people in the same group, at the foot of a profile page."
     },
     "team.pageTitle": {
@@ -687,6 +822,11 @@
       "group": "team",
       "text": "{{name}} is {{title}} at Badger Supports.",
       "where": "Search result description of a profile page."
+    },
+    "team.none": {
+      "group": "team",
+      "text": "Profiles of our directors, staff and volunteers appear here as each person chooses to share theirs.",
+      "where": "Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does."
     },
     "errors.server.title": {
       "group": "system",
@@ -700,7 +840,7 @@
     },
     "directions.all": {
       "group": "rooms",
-      "text": "All rooms",
+      "text": "All Rooms",
       "where": "Link above a room’s name, back to the list of rooms."
     },
     "directions.map": {
@@ -710,12 +850,12 @@
     },
     "directions.stepsTitle": {
       "group": "rooms",
-      "text": "How to get there",
+      "text": "How to Get There",
       "where": "Heading over a room’s numbered steps."
     },
     "directions.nextHere": {
       "group": "rooms",
-      "text": "Next here",
+      "text": "Next Here",
       "where": "Heading over the next events held in a room."
     },
     "directions.arrive": {
@@ -740,28 +880,43 @@
     },
     "directions.eventRooms": {
       "group": "rooms",
-      "text": "Event rooms",
+      "text": "Event Rooms",
       "where": "Heading over the rooms events are held in, under the Hub on the list of rooms."
     },
     "events.calendar": {
       "group": "events",
-      "text": "Add to calendar",
+      "text": "Add to Calendar",
       "where": "On the calendar pill beside Drop in on the next event at the top of a program's page; read by screen readers on the round calendar button on an event card, before the event name. Each opens a calendar file."
     },
     "events.next": {
       "group": "events",
-      "text": "Next up",
+      "text": "Next Up",
       "where": "Small label over the next event's name at the top of a program's page, when the block gives none."
     },
     "events.recentTitle": {
       "group": "events",
-      "text": "Recent events",
+      "text": "Recent Events",
       "where": "Heading over events that have happened, when the event-card block gives none."
     },
     "events.none": {
       "group": "events",
       "text": "Nothing is scheduled yet.",
       "where": "Shown in place of event cards when none are coming up."
+    },
+    "calendar.gone.title": {
+      "group": "events",
+      "text": "That event is not coming up any more",
+      "where": "Heading on the page an Add to Calendar button opens when the event has happened, moved or been taken off since the page was loaded."
+    },
+    "calendar.gone.body": {
+      "group": "events",
+      "text": "It may have happened already, or moved to another day. The timetable has what is coming up.",
+      "where": "Under that heading."
+    },
+    "calendar.gone.back": {
+      "group": "events",
+      "text": "See What’s Coming Up",
+      "where": "Link under it, to the home page and its timetable."
     },
     "media.linkAlt": {
       "group": "page",
@@ -780,7 +935,7 @@
     },
     "staff.signOut": {
       "group": "staff",
-      "text": "Sign out",
+      "text": "Sign Out",
       "where": "Staff page, button beside the name."
     },
     "staff.notConfigured": {
@@ -800,7 +955,7 @@
     },
     "staff.forms.title": {
       "group": "staff",
-      "text": "website forms",
+      "text": "Website Forms",
       "where": "Staff page, heading above the list of forms."
     },
     "staff.forms.empty": {
@@ -830,12 +985,12 @@
     },
     "staff.forms.state.open": {
       "group": "staff",
-      "text": "open",
+      "text": "Open",
       "where": "Staff page, label beside a form that takes answers."
     },
     "staff.forms.state.closed": {
       "group": "staff",
-      "text": "closed",
+      "text": "Closed",
       "where": "Staff page, label beside a form that is closed."
     },
     "staff.delivery.sent": {
@@ -860,7 +1015,7 @@
     },
     "staff.retry": {
       "group": "staff",
-      "text": "Send waiting answers now",
+      "text": "Send Waiting Answers Now",
       "where": "Staff page, button under the forms when some have not reached Connect."
     },
     "staff.retried": {
@@ -870,12 +1025,12 @@
     },
     "staff.answers.show": {
       "group": "staff",
-      "text": "Show latest answers",
+      "text": "Show Latest Answers",
       "where": "Staff page, button under a form."
     },
     "staff.answers.hide": {
       "group": "staff",
-      "text": "Hide answers",
+      "text": "Hide Answers",
       "where": "Staff page, the same button once the answers are showing."
     },
     "staff.answers.caption": {
@@ -910,37 +1065,37 @@
     },
     "staff.answers.openConnect": {
       "group": "staff",
-      "text": "Work through answers in Connect",
+      "text": "Work Through Answers in Connect",
       "where": "Staff page, link under the forms."
     },
     "staff.row.sent": {
       "group": "staff",
-      "text": "in Connect",
+      "text": "In Connect",
       "where": "Staff page, answers table: this answer reached Connect."
     },
     "staff.row.pending": {
       "group": "staff",
-      "text": "waiting",
+      "text": "Waiting",
       "where": "Staff page, answers table: not sent yet."
     },
     "staff.row.failed": {
       "group": "staff",
-      "text": "not sent yet",
+      "text": "Not Sent Yet",
       "where": "Staff page, answers table: sending failed and will be tried again."
     },
     "staff.row.held": {
       "group": "staff",
-      "text": "held",
+      "text": "Held",
       "where": "Staff page, answers table: kept back on purpose."
     },
     "staff.row.cancelled": {
       "group": "staff",
-      "text": "not sent",
+      "text": "Not Sent",
       "where": "Staff page, answers table: will not be sent."
     },
     "staff.edit.title": {
       "group": "staff",
-      "text": "words on the site",
+      "text": "Words on the Site",
       "where": "Staff page, heading above the edit tools."
     },
     "staff.edit.how": {
@@ -965,7 +1120,7 @@
     },
     "staff.edit.download": {
       "group": "staff",
-      "text": "Download the edits file",
+      "text": "Download the Edits File",
       "where": "Staff page, button that saves every change as one file."
     },
     "staff.edit.publish": {
@@ -975,17 +1130,17 @@
     },
     "edit.button": {
       "group": "staff",
-      "text": "Edit text",
+      "text": "Edit Text",
       "where": "The edit button, bottom corner of every page, for staff who may change words."
     },
     "edit.buttonWaiting": {
       "group": "staff",
-      "text": "Edit text ({{n}} waiting)",
+      "text": "Edit Text ({{n}} waiting)",
       "where": "The edit button, when saved changes wait for a publish."
     },
     "edit.done": {
       "group": "staff",
-      "text": "Done editing",
+      "text": "Done Editing",
       "where": "The edit button while words are outlined."
     },
     "edit.hint": {
@@ -995,12 +1150,12 @@
     },
     "edit.region": {
       "group": "staff",
-      "text": "Edit text",
+      "text": "Edit Text",
       "where": "Read aloud for the edit button's corner."
     },
     "edit.dialog.title": {
       "group": "staff",
-      "text": "change these words",
+      "text": "Change These Words",
       "where": "Heading of the edit box."
     },
     "edit.dialog.label": {
@@ -1020,7 +1175,7 @@
     },
     "edit.revert": {
       "group": "staff",
-      "text": "Put back the original",
+      "text": "Put Back the Original",
       "where": "Edit box, button that restores the words the site shipped with."
     },
     "edit.original": {
@@ -1100,27 +1255,27 @@
     },
     "edit.more": {
       "group": "staff",
-      "text": "More words",
+      "text": "More Words",
       "where": "Button beside Edit text: words that are not on the screen right now."
     },
     "edit.more.title": {
       "group": "staff",
-      "text": "more words",
+      "text": "More Words",
       "where": "Heading of the More words list."
     },
     "edit.more.find": {
       "group": "staff",
-      "text": "Find words",
+      "text": "Find Words",
       "where": "Label of the search box in the More words list."
     },
     "edit.more.here": {
       "group": "staff",
-      "text": "On this page",
+      "text": "On This Page",
       "where": "More words list, words from this page."
     },
     "edit.more.site": {
       "group": "staff",
-      "text": "On every page",
+      "text": "On Every Page",
       "where": "More words list, menus, footer and shared lines."
     },
     "edit.more.none": {
@@ -1175,7 +1330,7 @@
     },
     "auth.error.back": {
       "group": "staff",
-      "text": "Back to the staff page",
+      "text": "Back to the Staff Page",
       "where": "Link at the bottom of the sign-in problem page."
     },
     "resources.search.label": {

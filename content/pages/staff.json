@@ -2,14 +2,14 @@
   "schema": "bss.page/1",
   "id": "pg-staff",
   "path": "/staff/",
-  "title": "Staff sign-in — Badger Supports",
+  "title": "Staff Sign-In — Badger Supports",
   "analytics": "none",
   "noindex": true,
   "blocks": [
     {
       "id": "b-staff",
       "type": "staff",
-      "title": "staff sign-in",
+      "title": "Staff Sign-In",
       "body": [
         "Directors and admins sign in here with their Badger Supports Connect account. Signed in, you can read the answers to the forms your role covers, check that each one reached Connect, and change the words on any page of this site with the Edit text button.",
         "Working through answers — replying, assigning, closing — happens in Connect, under Website Forms."

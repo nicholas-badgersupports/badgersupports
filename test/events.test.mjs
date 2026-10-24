@@ -92,15 +92,15 @@ test("a recent night with no photo keeps a small card, and a block with no photo
   assert.match(out, /href="\/calendar\/x-next\.ics"/);
 });
 
-test("a split list with nothing to show renders nothing, and a hero with nothing coming says so", () => {
+test("a split list with nothing to show keeps an empty hidden place, and a hero with nothing coming says so", () => {
   const only = (date) => ({ places: PLACES, dated: [{ id: "x-1", program: "craft", title: "Example Night", date, start: "17:30", end: "19:00", place: "x-room" }] });
   const future = fixtureContext(only("2026-11-01"));
-  assert.equal(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Recent", source: "events", program: "craft", show: "recent" }, future)), "");
-  assert.equal(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Schedule", source: "events", program: "craft", show: "upcoming", skip: 1 }, future)), "");
+  assert.equal(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Recent", source: "events", program: "craft", show: "recent" }, future)), '<section data-block="b-x" hidden></section>');
+  assert.equal(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Schedule", source: "events", program: "craft", show: "upcoming", skip: 1 }, future)), '<section data-block="b-x" hidden></section>');
   assert.match(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Schedule", source: "events", program: "craft", show: "upcoming" }, future)),
-    /<span class="evcard-chip"><svg class="ic" data-i="pin"[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg>Drop in<\/span>/, "a room with no page yet keeps the words, unlinked");
+    /<span class="evcard-chip"><svg class="ic" data-i="pin"[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg>Drop In<\/span>/, "a room with no page yet keeps the words, unlinked");
   const past = fixtureContext(only("2026-10-01"));
   const hero = String(BLOCKS.eventhero.render({ id: "b-x", type: "eventhero", title: "Example Nights", source: "events", program: "craft" }, past));
-  assert.match(hero, /<p class="evlist-none">/);
+  assert.match(hero, /<p class="evlist-none" data-live="next">/);
   assert.doesNotMatch(hero, /is-feature|btn--big/);
 });

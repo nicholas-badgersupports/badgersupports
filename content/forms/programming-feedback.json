@@ -2,7 +2,7 @@
   "schema": "bss.form/1",
   "key": "programming-feedback",
   "version": 1,
-  "title": "Programming feedback",
+  "title": "Programming Feedback",
   "audience": "public",
   "anonymous": true,
   "state": "open",
@@ -13,7 +13,7 @@
   "sections": [
     {
       "id": "start",
-      "title": "Your feedback",
+      "title": "Your Feedback",
       "questions": [
         { "id": "name", "type": "short", "label": "Your name (optional)", "required": false, "maxLength": 120, "autocomplete": "off" },
         { "id": "category", "type": "choice", "label": "What is your feedback about?", "required": true, "options": [
@@ -44,7 +44,7 @@
     },
     {
       "id": "craft",
-      "title": "Craft night",
+      "title": "Craft Night",
       "intro": "Thanks for joining a craft night. These events are about connection, creativity and care.",
       "showIf": { "question": "category", "equals": "craft" },
       "questions": [
@@ -58,7 +58,7 @@
     },
     {
       "id": "peer",
-      "title": "Peer support group",
+      "title": "Peer Support Group",
       "intro": "Thanks for coming to a peer support group. These spaces are student-led and built for honest conversation and mutual support.",
       "showIf": { "question": "category", "equals": "peer" },
       "questions": [
@@ -73,7 +73,7 @@
     },
     {
       "id": "general",
-      "title": "General comment",
+      "title": "General Comment",
       "showIf": { "question": "category", "equals": "general" },
       "review": "In the Google Form, choosing 'General Comment / Suggestion' jumps straight to submit, so this section is never shown (schema read 2026-10-19). Shown here as a proposed fix.",
       "questions": [

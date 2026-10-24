@@ -9,7 +9,7 @@ import path from "node:path";
 import sharp from "sharp";
 import { ROOT } from "../ops/build.mjs";
 import { buildLinks, fetchableUrl, linkPlaceholders } from "../ops/media.mjs";
-import { photoRef, photoProblems, photoSlots, picture, linkId } from "../src/render/media.mjs";
+import { photoRef, photoProblems, photoSlots, picture, linkId, photoHostOk } from "../src/render/media.mjs";
 import { makeContext } from "../src/render/context.mjs";
 
 const DIR = path.join(ROOT, "local", "test-build-links");
@@ -23,6 +23,12 @@ test.before(async () => {
     if (req.url === "/photo.png") return res.writeHead(200, { "Content-Type": "image/png" }).end(png);
     if (req.url === "/page") return res.writeHead(200, { "Content-Type": "text/html" }).end("<!doctype html><p>a page</p>");
     if (req.url === "/fake.jpg") return res.writeHead(200, { "Content-Type": "image/jpeg" }).end("not a photo");
+    if (req.url === "/hop") return res.writeHead(302, { Location: "/photo.png" }).end();
+    if (req.url === "/loop") return res.writeHead(302, { Location: "/loop" }).end();
+    if (req.url === "/to-http") return res.writeHead(302, { Location: `${base}/photo.png` }).end();
+    if (req.url === "/to-other") return res.writeHead(301, { Location: "https://example.org/a.jpg" }).end();
+    if (req.url === "/to-private") return res.writeHead(307, { Location: "https://192.168.1.4/a.jpg" }).end();
+    if (req.url === "/to-file") return res.writeHead(302, { Location: "file:///etc/hosts" }).end();
     res.writeHead(404).end();
   });
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
@@ -62,6 +68,18 @@ test("the build names what is wrong with a photo slot", () => {
   assert.match(p({ link: "https://example.org/a.jpg", alt: 4 }).join(), /alt must be text/);
   assert.match(p({ media: "m-people-welcome" }).join(), /library id, a link/);
   assert.match(p("https://example.org/" + "a".repeat(2000)).join(), /2000/);
+});
+
+test("a published build takes a link only from Google Drive and the organisation's own sites", () => {
+  const p = (ref) => photoProblems(ref, { media: LIB, production: true });
+  for (const ok of ["https://drive.google.com/file/d/1AbC/view", "https://docs.google.com/uc?id=1AbC", "https://lh3.googleusercontent.com/d/1AbC",
+    "https://lh7-us.googleusercontent.com/x", "https://badgersupports.org/a.jpg", "https://home.badgersupports.org/a.jpg",
+    "https://supportbadgers.org/a.jpg", "https://badgerspill.org/a.jpg"]) assert.deepEqual(p(ok), [], ok);
+  assert.match(p("https://example.org/a.jpg").join(), /is on example\.org, which a published build does not fetch from; put the photo in Google Drive/);
+  for (const h of ["evilbadgersupports.org", "badgersupports.org.example.com", "googleusercontent.com.example.com", "drive.google.com.", "photos.google.com"]) assert.equal(photoHostOk(h), false, h);
+  assert.deepEqual(photoProblems("https://example.org/a.jpg", { media: LIB }), [], "a laptop preview fetches from anywhere");
+  assert.deepEqual(p("m-people-welcome"), [], "a library photo has no host");
+  assert.equal(p("https://192.168.1.4/a.jpg").length, 1, "a private address is named once, not twice");
 });
 
 test("every photo slot in a record is found, wherever it sits", () => {
@@ -110,6 +128,20 @@ test("a link that is not a photo is refused by name", async () => {
   await assert.rejects(buildLinks([photoRef(`${base}/missing.jpg`)], out, opts), /missing\.jpg answered 404/);
   await assert.rejects(buildLinks([photoRef(`${base}/fake.jpg`)], out, opts), /fake\.jpg is not a photo this build can read/);
   assert.equal(fs.existsSync(opts.cacheDir) ? fs.readdirSync(opts.cacheDir).length : 0, 0, "nothing refused is kept");
+});
+
+test("a redirect is followed one hop at a time, and a published build checks every hop", async () => {
+  const out = path.join(DIR, "dist3");
+  const opts = { cacheDir: path.join(DIR, "links-hops"), encodeDir: path.join(DIR, "cache"), fetchMissing: true };
+  const [item] = (await buildLinks([photoRef(`${base}/hop`)], out, opts)).items;
+  assert.deepEqual([item.width, item.height], [640, 480], "a relative redirect is followed");
+  await assert.rejects(buildLinks([photoRef(`${base}/loop`)], out, opts), /redirected more than 5 times/);
+  await assert.rejects(buildLinks([photoRef(`${base}/to-file`)], out, opts), /redirected to file:, which is not a web address/);
+  const prod = { ...opts, cacheDir: path.join(DIR, "links-hops-prod"), production: true };
+  await assert.rejects(buildLinks([photoRef(`${base}/to-http`)], out, prod), /redirected to http:\/\/127\.0\.0\.1:\d+, which does not start with https/);
+  await assert.rejects(buildLinks([photoRef(`${base}/to-other`)], out, prod), /redirected to https:\/\/example\.org, which is on example\.org/);
+  await assert.rejects(buildLinks([photoRef(`${base}/to-private`)], out, prod), /which is a private address/);
+  assert.equal(fs.existsSync(prod.cacheDir) ? fs.readdirSync(prod.cacheDir).length : 0, 0, "nothing refused is kept");
 });
 
 test("without photos being built, a link renders from a placeholder and reads its fallback description", () => {

@@ -1,0 +1,96 @@
+{
+  "schema": "bss.form/1",
+  "key": "recommendation-letter",
+  "version": 1,
+  "title": "Letter of Referral / Recommendation Submission",
+  "audience": "public",
+  "anonymous": false,
+  "state": "closed",
+  "closedMessage": "Letters of referral / recommendation open with the staff application. Referrers / Recommenders may email letters and questions to hiring@badgersupports.org.",
+  "intro": [
+    "Please use this section to upload or submit a letter of referral or recommendation in support of the applicant. The letter should briefly describe your relationship to the applicant and provide relevant context regarding their qualifications, character, or readiness for involvement with Badger Supports.",
+    "Letter of Referral / Recommendations are due by April 26th at 11:59pm."
+  ],
+  "review": "Built closed (decision 12), from the PDF Nicholas supplied on 23 Oct 2026: the form recommend.badgersupports.org opens. Words are Google's with decision 10's slips corrected ('contex', 'Letter or Referral'). Google links 'Badger Supports' in the intro; left out. The closing message is ours. Decision 11: dates have no year.",
+  "sections": [
+    {
+      "id": "about_you",
+      "title": "About You",
+      "review": "Google's form is one page with no section titles; both titles are ours.",
+      "questions": [
+        {
+          "id": "name",
+          "type": "short",
+          "label": "Your Name",
+          "required": true,
+          "autocomplete": "name",
+          "maxLength": 120
+        },
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Your Email",
+          "required": true,
+          "autocomplete": "email",
+          "help": "Badger Supports may contact you to verify this letter.",
+          "proposed": "Split out of Google's free-text 'Your Contact Information (Email / Phone #.)', as the workshop request's was, so a receipt can be sent and Connect can match the letter."
+        },
+        {
+          "id": "phone",
+          "type": "tel",
+          "label": "Your Phone Number",
+          "required": false,
+          "autocomplete": "tel",
+          "proposed": "The other half of Google's 'Your Contact Information'. Optional, because the email is required."
+        }
+      ]
+    },
+    {
+      "id": "letter",
+      "title": "Your Letter",
+      "questions": [
+        {
+          "id": "applicant",
+          "type": "short",
+          "label": "This Letter of Referral / Recommendation is For",
+          "required": true,
+          "autocomplete": "off",
+          "maxLength": 120,
+          "help": "Please include their first and last name."
+        },
+        {
+          "id": "letter",
+          "type": "file",
+          "label": "Upload",
+          "required": true,
+          "help": [
+            "PDF only, up to 3 MB.",
+            "A letter in another format may be emailed to hiring@badgersupports.org."
+          ],
+          "review": "Google's help reads 'PDF or Document Only'. This site checks that a file opens as a PDF and accepts nothing else; the second line is the staff form's own email route."
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank you!",
+    "body": [
+      "Badger Supports May Contact You to Verify This Letter of Referral / Recommendation"
+    ]
+  },
+  "workflow": {
+    "connectQueue": "hiring.recommendations",
+    "owner": "Executive",
+    "receipt": "proposed",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSdbwnoLzhEcrffbAWias6lWOT1RD5WmOGSDEWE6CnBqB_Kx4Q",
+    "aliases": [
+      "https://recommend.badgersupports.org/",
+      "https://forms.gle/WC3ihM2Ahqz8jC6T7"
+    ],
+    "read": "PDF of the form, supplied by Nicholas on 23 Oct 2026. Public view the same day: recommend.badgersupports.org redirects through forms.gle/WC3ihM2Ahqz8jC6T7 to this published ID, title 'Letter of Referral / Recommendation Submission', closed. Settings, destination sheet and responses not opened."
+  }
+}

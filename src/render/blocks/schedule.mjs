@@ -4,6 +4,7 @@
 
 import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
+import { icon } from "../icons.mjs";
 import { rowsBetween, nextDated, groupByDate, dateParts, timeRange, addDays } from "../events.mjs";
 
 function dateBlock(ctx, date, today) {
@@ -26,8 +27,8 @@ function signup(ctx, r, dropIn) {
 function eventRow(ctx, r, { withDate = false, dropIn = null } = {}) {
   const p = dateParts(r.date, ctx.t);
   const when = timeRange(r.start, r.end, ctx.t);
-  const title = r.href ? link(ctx, r.href, r.title) : r.title;
-  return html`<li${attrs({ class: "ev", "data-starts": r.startsAt, "data-ends": r.endsAt })}>
+  const title = r.href && !ctx.here(r.href) ? link(ctx, r.href, r.title) : r.title;
+  return html`<li${attrs({ class: "ev", "data-program": r.program, "data-starts": r.startsAt, "data-ends": r.endsAt })}>
     <span class="ev-time">${withDate ? html`<span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>` : ""}${when}</span>
     <span class="ev-what"><strong>${title}</strong>${r.place ? html`<span>${r.place.href ? link(ctx, r.place.href, r.place.name) : r.place.name}${r.place.detail ? ` · ${r.place.detail}` : ""}</span>` : ""}</span>
     <span class="ev-sign">${signup(ctx, r, dropIn)}<span class="ended-tag">${ctx.t("schedule.ended")}</span></span>
@@ -40,6 +41,7 @@ export default {
   fields: { title: "text!", intro: "text", source: "source!", days: "number", later: "number", laterTitle: "text", home: "place", dropIn: "droplinks", connect: "link" },
   data: ["events"],
   client: "schedule.js",
+  refresh: true,
   analytics: "page",
   loading: "eager",
   render(b, ctx) {
@@ -58,10 +60,10 @@ export default {
     ${home ? html`<div class="place"><strong>${home.name}</strong><span>${home.detail}</span>${home.href ? go(ctx, home.href, ctx.t("schedule.placeLink"), "pin") : ""}</div>` : ""}
   </header>
   <div class="week-body">
-    <ol class="days">${week.map((d) => {
+    ${week.length ? html`<ol class="days">${week.map((d) => {
       const p = dateParts(d.date, ctx.t);
       return html`<li class="${d.date === today ? "day is-today" : "day"}" data-date="${d.date}">${dateBlock(ctx, d.date, today)}<div><h3 class="sr-only">${d.date === today ? `${ctx.t("schedule.todayPrefix")} ` : ""}${p.dowLong}, ${p.monLong} ${p.dom}</h3><ul class="events">${d.items.map((r) => eventRow(ctx, r, { dropIn }))}</ul></div></li>`;
-    })}</ol>
+    })}</ol>` : html`<div class="week-empty">${icon("calendar")}<p><strong>${ctx.t("schedule.none")}</strong><span>${ctx.t("schedule.noneMore")}</span></p></div>`}
     ${later.length ? html`<h3 class="later-title">${b.laterTitle || ctx.t("schedule.laterTitle")}</h3><ol class="days">${later.map((r) => html`<li class="day" data-date="${r.date}">${dateBlock(ctx, r.date, today)}<div><ul class="events">${eventRow(ctx, r, { withDate: true, dropIn })}</ul></div></li>`)}</ol>` : ""}
     ${b.connect ? html`<p class="week-foot">${go(ctx, b.connect.href, b.connect.label, "calendar")}</p>` : ""}
   </div>

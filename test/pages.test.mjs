@@ -2,7 +2,7 @@
    workshop previews, the Drop in links, the peer page's week and word cloud, the reel that loads
    nothing from Instagram until pressed,
    the Hub's old address, the calendar files, the one-red palette, the hero's Pause button and Badger
-   SPILL's logo. */
+   SPILL's logo, and the two applications' preview pages. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -183,20 +183,40 @@ test("a calendar file is CRLF, UTC, escaped and folded at 75 octets", () => {
   assert.match(ics, /\r\n a+\r\n/, "a long line continues on a line starting with a space");
 });
 
-test("the public site draws in brand red and neutrals only: no program hues in the tokens", () => {
+test("peer support wears green and craft nights purple; the header, footer and announcements stay brand red", () => {
   const tokens = fs.readFileSync(path.join(ROOT, "src/styles/tokens.css"), "utf8");
-  assert.doesNotMatch(tokens, /--(peer|workshops|craft|other)(-tint)?\s*:/);
-  const css = fs.readdirSync(path.join(ROOT, "src/styles")).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n");
-  assert.doesNotMatch(css, /var\(--(peer|workshops|craft|other)\b/);
+  for (const p of ["peer", "craft"]) for (const t of ["", "-deep", "-tint", "-wash"]) assert.match(tokens, new RegExp(`--${p}${t}\\s*:`), `--${p}${t}`);
+  assert.match(tokens, /\[data-program="peer"\]\s*\{[^}]*--accent:\s*var\(--peer\)/);
+  assert.match(tokens, /\[data-program="craft"\]\s*\{[^}]*--accent:\s*var\(--craft\)/);
+  const layout = fs.readFileSync(path.join(ROOT, "src/styles/layout.css"), "utf8");
+  assert.doesNotMatch(layout, /var\(--(accent|peer|craft)/, "the frame round every page is red");
+  assert.match(read("join/peer-support-groups/index.html"), /<main id="main" tabindex="-1" data-program="peer">/);
+  assert.match(read("join/craft-nights/index.html"), /<main id="main" tabindex="-1" data-program="craft">/);
+  assert.match(read("index.html"), /<main id="main" tabindex="-1">/, "the homepage is red; its sections take their own colours");
 });
 
-test("no coloured bar down the side of anything: edges are dotted, as on Connect", () => {
-  const css = fs.readdirSync(path.join(ROOT, "src/styles")).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n");
+// Every stylesheet, block ones (src/styles/blocks/) included.
+const allCss = () => fs.readdirSync(path.join(ROOT, "src/styles"), { recursive: true }).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "")).join("\n");
+
+test("no coloured bar down the side of anything: a side edge is the neutral rule, or a route's dotted line", () => {
+  const css = allCss();
   // A rotated rule draws a chevron from two of its borders; that is an arrow, not a bar.
   const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => !/rotate\(/.test(m[2]));
   const sides = rules.flatMap((m) => [...m[2].matchAll(/border-(?:left|right|inline-start|inline-end)\s*:\s*([^;}]+)/g)].map((d) => `${m[1].trim()}: ${d[1].trim()}`));
-  assert.deepEqual(sides.filter((v) => !/dotted|var\(--dot-line/.test(v.split(": ").pop())), [], "only dotted side edges");
+  assert.deepEqual(sides.filter((v) => !/^var\(--(hairline|rule-line|hairline-on-red)\)$|dotted var\(--rule-strong\)/.test(v.split(": ").pop())), [], "only neutral side edges");
   assert.doesNotMatch(css, /box-shadow:\s*inset\s+-?[1-9]/, "no inset shadow drawn as a side bar");
+});
+
+test("only what can be pressed stands on a ledge: cards and photos are flat (Badger SPILL's rule)", () => {
+  const rules = [...allCss().matchAll(/([^{}]+)\{([^{}]*)\}/g)];
+  const ledged = rules.filter((m) => /box-shadow:\s*(0 \d+px 0 |var\(--ledge\))/.test(m[2])).map((m) => m[1].trim().replace(/\s+/g, " "));
+  const pressable = /\.(btn|go|drop|door-link|door-go|hub-tag|hero-spill|footer-spill|mood-btn|say|flip|reel-play)\b|summary/;
+  assert.deepEqual(ledged.filter((sel) => !sel.split(",").every((one) => pressable.test(one))), [], "a ledge only under a button, a link or a control");
+  for (const flat of [".evcard", ".res-card", ".spill-card", ".staff-form", ".ws-panel", ".hubcard", ".dir-head", ".form-head"]) {
+    const own = rules.filter((m) => m[1].split(",").some((one) => one.trim() === flat));
+    assert.ok(own.length, `${flat} has a rule`);
+    for (const m of own) assert.doesNotMatch(m[2], /box-shadow/, `${flat} is flat`);
+  }
 });
 
 test("Get involved opens on people: up to three photos beside its heading", () => {
@@ -225,7 +245,7 @@ test("Get involved keeps what the live page said: the hiring steps as a list, wh
 
 test("an email address in a pill or a closed notice is kept whole, may break before its @, and is still escaped", () => {
   const page = read("join/get-involved/index.html");
-  assert.match(page, /<span class="go-label">Email us at <span class="addr">hello<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
+  assert.match(page, /<span class="go-label">Email Us at <span class="addr">hello<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
   assert.match(page, /<span class="door-text door-closed">[^<]*<span class="addr">hello<wbr>@badgersupports\.org<\/span>\.<\/span>/, "the closed staff door");
   assert.equal(String(html`${breakAtSign("a<b@c")}`), '<span class="addr">a&lt;b<wbr>@c</span>');
   assert.equal(breakAtSign("no address"), "no address");
@@ -253,4 +273,35 @@ test("Badger SPILL shows in the hero, in its own band and in every footer, as it
   // the cut along the milk is Badger SPILL's own, character for character
   const css = fs.readFileSync(path.join(ROOT, "src/styles/blocks.css"), "utf8");
   for (const sel of [".logo-bottle", ".logo-milk"]) assert.match(css, new RegExp(`^\\${sel} \\{ transform-origin: [0-9.]+% [0-9.]+%;\\n  clip-path: polygon\\(`, "m"), sel);
+});
+
+test("each application, the letter form and the four request forms has a preview page to review it by: every section, its new controls, and none of the notes kept for reviewers", () => {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const expect = {
+    "staff-application": { sections: 11, files: ["resume", "cover_letter"], rank: 4, phone: true },
+    "volunteer-application": { sections: 9, files: ["resume"], rank: 0, phone: true },
+    "recommendation-letter": { sections: 2, files: ["letter"], rank: 0, phone: true },
+    "resource-request": { sections: 2, files: [], rank: 0 },
+    "program-request": { sections: 2, files: [], rank: 0 },
+    "referral-card-survey": { sections: 1, files: [], rank: 0 },
+    "email-list": { sections: 2, files: [], rank: 0 },
+  };
+  for (const [key, want] of Object.entries(expect)) {
+    const def = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "forms", `${key}.json`), "utf8"));
+    const page = read(`forms/${key}/preview/index.html`);
+    assert.match(page, /<meta name="robots" content="noindex">/, key);
+    assert.match(page, new RegExp(`<form class="bss-form"[^>]* data-form="${key}"[^>]* data-preview=""`), key);
+    assert.equal([...page.matchAll(/data-section="/g)].length, want.sections, `${key}: sections`);
+    assert.deepEqual([...page.matchAll(/<input id="f-([a-z_]+)"[^>]* type="file" accept="application\/pdf"/g)].map((m) => m[1]), want.files, `${key}: files`);
+    assert.equal([...page.matchAll(/<select id="f-directorate_rank[^"]*" name="directorate_rank\.[a-z_]+"/g)].length, want.rank, `${key}: one place per directorate`);
+    if (want.phone) assert.match(page, /<input id="f-phone" name="phone"[^>]* type="tel"/, key);
+    const notes = [];
+    const walk = (v, kept) => {
+      if (typeof v === "string") { if (kept && v.length >= 12) notes.push(v.slice(0, 40)); return; }
+      if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) walk(x, kept || ["review", "proposed", "source", "workflow"].includes(k));
+    };
+    walk(def, false);
+    assert.ok(notes.length > 5, `${key} has notes to keep out`);
+    for (const n of notes) assert.ok(!page.includes(n) && !page.includes(esc(n)), `${key} shows a reviewer's note: ${n}`);
+  }
 });

@@ -3,15 +3,16 @@
  * The server decides everything a browser might have got wrong or stale: whether the form is
  * open, which version is current, which questions were visible, and whether each answer is
  * acceptable (the same rules the browser ran, from src/shared/forms.mjs). A submission and all
- * the work it causes — hand-off to Connect, the Sheets backup, a receipt — are written in one
- * transaction, so none of it can be half-done.
+ * the work it causes — hand-off to Connect, the Sheets backup, a receipt, claiming its uploaded
+ * files (files.mjs) — are written in one transaction, so none of it can be half-done.
  */
 
 import crypto from "node:crypto";
 import { one, tx } from "./db.mjs";
 import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
-import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, KEY_RE, OTHER } from "../../src/shared/forms.mjs";
+import { fileRecords, claimFiles } from "./files.mjs";
+import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER } from "../../src/shared/forms.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 
 const REF_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
@@ -45,14 +46,18 @@ function newRef(def) {
 
 const field = (input, k) => (typeof input?.get === "function" ? input.get(k) : input?.[k]);
 
-/* The person's answers as label/value rows, for a page that has to give them back. */
+/* The person's answers as label/value rows, for a page that has to give them back. A file is
+   left out: it is still on their own device, and its id would mean nothing to them. */
 export function answersForPerson(def, raw) {
   const rows = [];
   for (const { q } of allQuestions(def)) {
+    if (q.type === "file") continue;
     let v = raw[q.id];
+    if (q.type === "rank" || q.type === "links") v = v == null ? [] : answerWords(q, v).filter(Boolean);
     if (v == null || v === "" || (Array.isArray(v) && !v.length)) continue;
     const label = (id) => (id === OTHER ? raw[`${q.id}${OTHER}`] || "" : (q.options || []).find((o) => o.id === id)?.label || id);
-    v = Array.isArray(v) ? v.map(label).join(", ") : q.options ? label(v) : String(v);
+    if (q.type === "rank" || q.type === "links") v = v.join(", ");
+    else v = Array.isArray(v) ? v.map(label).join(", ") : q.options ? label(v) : String(v);
     rows.push({ label: q.label, value: v });
   }
   return rows;
@@ -86,15 +91,24 @@ export async function submit(key, input, { now = new Date() } = {}) {
   return tx(async (t) => {
     const existing = await t.one("SELECT ref FROM submissions WHERE form_key = $1 AND idem_key = $2", [def.key, idem]);
     if (existing) return { ok: true, ref: existing.ref, def, duplicate: true };
+    // Each file's id becomes its record, and an upload that is gone is said on its question. The
+    // id is cleared from what is given back, so the page asks for the file again.
+    const files = await fileRecords(t, def, check.answers);
+    if (files.errors) {
+      const back = { ...raw };
+      for (const id of Object.keys(files.errors)) back[id] = [];
+      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back };
+    }
     let row = null;
     for (let attempt = 0; !row && attempt < 5; attempt++) {
       row = await t.one(
         `INSERT INTO submissions (ref, form_key, form_version, version_seen, idem_key, answers, anonymous)
          VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7)
          ON CONFLICT (ref) DO NOTHING RETURNING id, ref`,
-        [newRef(def), def.key, def.version, versionSeen, idem, JSON.stringify(check.answers), !!def.anonymous]);
+        [newRef(def), def.key, def.version, versionSeen, idem, JSON.stringify(files.answers), !!def.anonymous]);
     }
     if (!row) throw new Error("could not mint a unique reference");
+    await claimFiles(t, row.id, files.ids);
     await t.query("INSERT INTO submission_events (submission_id, actor, kind, detail) VALUES ($1, 'public', 'received', $2::jsonb)",
       [row.id, JSON.stringify({ version: def.version, versionSeen })]);
     const outbox = (kind, state = "pending", hold = null) => t.query(

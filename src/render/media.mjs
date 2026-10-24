@@ -11,7 +11,7 @@
  * Every photo slot (a block's photo, photos or circle, a room or step photo, an event's photo)
  * takes one of three things, so any photo can be swapped by pasting a link:
  *   "m-craft-table"                                   a photo in the media library
- *   "https://…"                                       a link to a photo anywhere
+ *   "https://…"                                       a link to a photo (published: on PHOTO_HOSTS)
  *   { "link": "https://…", "alt": "…", "focal": [x, y] }   a link with its description and focal point
  * A linked photo is fetched once, at build time, by ops/media.mjs and served from this site like
  * any library photo: a visitor's browser never asks the other site for it.
@@ -51,7 +51,17 @@ export function photoRef(ref) {
   return null;
 }
 
-const privateHost = (h) => LOCAL_HOSTS.has(h) || /^(10|127)\./.test(h) || /^192\.168\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h) || /^169\.254\./.test(h) || h.endsWith(".local") || h.endsWith(".internal") || h.startsWith("[");
+export const privateHost = (h) => LOCAL_HOSTS.has(h) || /^(10|127)\./.test(h) || /^192\.168\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h) || /^169\.254\./.test(h) || h.endsWith(".local") || h.endsWith(".internal") || h.startsWith("[");
+
+/* The hosts a published build fetches a linked photo from, each with its subdomains: Google Drive
+   (a file link, and the googleusercontent.com address Drive and Google Sites serve the photo from)
+   and the organisation's own sites. A constant and not a setting, like Connect's IMG_HOSTS
+   (netlify/lib/store.mjs in the intranet repo): every fetch tells that server a build ran, and a
+   host nobody planned is a cost nobody planned (MASTER-PROMPT.md §11). A build on the laptop
+   without --production fetches from anywhere, so an editor can try a photo before asking for it
+   to be moved to Drive. */
+export const PHOTO_HOSTS = ["drive.google.com", "docs.google.com", "googleusercontent.com", "badgersupports.org", "supportbadgers.org", "badgerspill.org"];
+export const photoHostOk = (h) => PHOTO_HOSTS.some((a) => h === a || h.endsWith("." + a));
 
 /* Why a photo slot's value cannot be published, as a list of reasons (empty when it can).
    media: the set of library ids. production: refuse links a build machine should never fetch. */
@@ -70,6 +80,7 @@ export function photoProblems(ref, { media = null, production = false } = {}) {
     if (u.protocol !== "https:" && !(u.protocol === "http:" && local && !production)) out.push(`photo link "${r.link}" must start with https://`);
     if (u.username || u.password) out.push(`photo link "${r.link}" must not carry a user name or password`);
     if (production && privateHost(u.hostname)) out.push(`photo link "${r.link}" points at a private address`);
+    else if (production && !photoHostOk(u.hostname)) out.push(`photo link "${r.link}" is on ${u.hostname}, which a published build does not fetch from; put the photo in Google Drive, share it as "Anyone with the link" and paste its link`);
     if (/drive\.google\.com\/drive\/(u\/\d+\/)?folders\//.test(r.link)) out.push(`photo link "${r.link}" is a Drive folder; open the photo and copy its own link`);
   }
   if (r.link.length > 2000) out.push("a photo link is at most 2000 characters");

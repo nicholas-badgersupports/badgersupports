@@ -28,7 +28,8 @@ From `../../MASTER-PROMPT.md` §1. These came from Nicholas directly.
 > "I want get involved to be the big button, there is not a clear call to action in the design and alot of text.
 > There should be clear pages for getting directions … There should be an option to add roms and directions"
 
-- Get involved is the hero's one big button; "Drop in this week" is the quieter second link.
+- Get involved is the hero's one big button; "Drop in this week" was the quieter second link until the owner
+  removed it on 23 Oct 2026 (below, "23 Oct: the live site").
 - Rooms became records in `content/places/`, one file each. The build makes `/directions/` and
   `/directions/<id>/` from them. Adding a room means adding a record.
 - Text was cut and the photo frames were dropped, after the owner said they "give off AI-vibes". Photos now sit
@@ -191,15 +192,39 @@ and wrote the second. Little Hearts and Leadership were asked about once the res
 | Connect's 86 resource records, with directors@badgersupports.org as the list's "email us" | "Approve it" | recorded. The list stays marked a sample until a director approves the records in Connect; the five live entries Connect lacks still wait (`research/RESOURCES-VIEWER-2026-10-20.md`) |
 | Little Hearts and Leadership | "Redirect both" | a 301 each: Little Hearts to the Hub (`/directions/sac-mhh/`), where the hearts are picked up; Leadership, which said only that recruitment is paused, to Get involved. No live address is left without an answer (`research/ROUTES.md`) |
 
+### The live site, 23 Oct 2026 (Owner)
+
+> "I don't need it to be a protype for review, have it be the lvie site, I want it to be actually connected to
+> Connect. Also get rid of the Drop in this week button, as well as all events on badger supports connect."
+
+> "I also want the entire thign to be more cohesively designed … look at the lessons of Badger SPILL to see how
+> thign should go. I also want more color in palces, peer support gorups should be green, craft nights should be
+> purple."
+
+- **Connected to Connect.** The production build reads Connect's public events and approved resources when it
+  runs (`ops/connect-feed.mjs`, `content/connect-feed.json`, `test/connect-feed.test.mjs`). An event shows only
+  if a director ticked it in Connect, Admin › Resources › Public Website List. If Connect cannot be read, nothing
+  is built, so the deploy already online stays.
+- **The live build.** `netlify.toml`'s production context runs `--production`: no prototype notice, pages
+  indexable, a real `robots.txt` and sitemap, and the forms closed with a link to each Google Form, as the launch
+  ruling of 20 Oct says. The Wall of Support and the team have no Connect export yet, so the live build shows
+  neither the notes nor the fictional people.
+- **Removed:** the hero's "Drop in this week" link and the "All events on Badger Supports Connect" link under the
+  timetable. "All events on badger supports connect" was read as that link, not as an instruction to delete
+  events; nothing in Connect was touched. To put either back, restore its entry in `content/pages/home.json`.
+- **Colour** supersedes Rounds 5 and 7 for the two programs: peer support groups are green and craft nights
+  purple. Round 7's "no coloured bar down any side" still holds; the colour goes in fills and tints.
+- **Design**: SPILL's lessons (`DESIGN.md`, "Lessons from Badger SPILL") applied across the pages.
+
 ## 3. Rules carried over (Rule)
 
 | Rule | From | Here |
 |---|---|---|
-| Colour: a signed-out page uses brand red and the neutrals only, with no ownership hue | Connect design, sign-in round | no program hues in the tokens or styles, and no coloured side bar (`test/pages.test.mjs`) |
+| Colour: brand red and the neutrals, plus green for peer support groups and purple for craft nights (owner, 23 Oct 2026, superseding the sign-in round's "no ownership hue") | Connect design; the owner | the program hues are tokens; no coloured side bar (`test/pages.test.mjs`) |
 | No text below 14 px | Connect design, type floor | gate 3 of `npm run check` |
 | One main (filled) button per screen | SPILL row 132; Connect's card | `btn--big`, one per screen. Craft nights repeats its call at the close, a screen apart |
 | Every visible word is editable | SPILL, 17 Oct 2026; and the owner here, 19 Oct 2026 | gate 1 (`editable`) |
-| Dotted rules and paper grain, one surface treatment per element | Connect design, sign-in round | `--dot-line`, `--dot-line-strong`, the grain on `body` |
+| Solid rules and paper grain, one surface treatment per element; cards flat with a border, a ledge only on what can be pressed (23 Oct 2026, Badger SPILL's lesson; the rules were dotted until then) | Connect design, sign-in round; SPILL's `.card` | `--hairline`, `--rule-line`, the grain on `body`; `test/pages.test.mjs` |
 | Nothing loops on resting content | Connect design, Motion | **broken on purpose** by the owner's Round 4 request: the hero drift and float loop (`src/styles/blocks.css`), with the Pause button the owner chose on 20 Oct 2026 (WCAG 2.2.2) |
 | Real people never in the repository | SPILL, "Never"; this repository is public | fictional fixtures; the privacy gate |
 | Fail closed when configuration is missing | SPILL, "Never" | `netlify/lib/db.mjs` answers 503 `config.missing` |
@@ -213,6 +238,8 @@ and wrote the second. Little Hearts and Leadership were asked about once the res
 | Node 22 or later | the current LTS line; `netlify.toml` pins it | change `NODE_VERSION` |
 | One function at `/api/*`, with a tier on every route | same origin as the pages, so no CORS and room for a cookie session | `ARCHITECTURE.md` |
 | PGlite locally and Netlify Database when deployed, running the same migrations | a local run is evidence about production (`netlify-backend-local-first`) | `netlify/lib/db.mjs` |
+| A deploy that did not pack every migration stops before it publishes (Badger SPILL's guard) | the deployed API never migrates by itself; SPILL published code ahead of its database on 16 Oct 2026 | remove the `[[plugins]]` lines in `netlify.toml` |
+| A block reads only the data it declares, any block may carry `startsOn` / `endsOn`, and a block may name its own stylesheet; the build stops on each breach | §10's contract held by the build, not by a reader; dates act at the next build (`WORK.md` item 29); four blocks' styles moved, the rest when next worked on (`OVERNIGHT-RUN-2026-10-23.md` §5) | `renderBlock()` and `COMMON_FIELDS` in `src/render/registry.mjs`; `blockStyles()` in `ops/build.mjs` |
 | A strict CSP with no third-party script; the reel frame loads only on Play | the old site loaded Google's scripts on every page | `ops/build.mjs` `headersFile` |
 | No Google Analytics in the rebuild yet | §9 asks for the exclusions to be enforced before any tag loads; that plan needs approval | `ANALYTICS.md` |
 | Built pages end in `/`. An old address 301s only once its new page exists; until then links go to the live page | no dead links during a page-by-page migration | `ops/build.mjs` `redirectsFile` |
@@ -223,6 +250,11 @@ and wrote the second. Little Hearts and Leadership were asked about once the res
 | Photo originals stay in the gitignored `local/`, and the manifest holds metadata only. The Drive folder is named but never linked | the repository is public | `media/manifest.json` |
 | Receipts are queued as held (`sender-unverified`) until a sender is verified; `directors@badgersupports.org` is the proposed sender | §7: Nicholas's own account is never the fallback | `COMMUNICATIONS.md` |
 | The staff application ships closed, with its Fall 2026 message | an application must not open by accident | flip the switch in Connect once it exists |
+| The letter of referral / recommendation form (`recommend.badgersupports.org`) ships closed, with Google's words; its contact question splits into a required email and an optional phone, and the letter is one PDF of at most 3 MB, other formats by email to hiring@ (23 Oct, unattended: every choice in `OVERNIGHT-RUN-2026-10-23.md`) | an application's pieces must not open by accident; the workshop request split the same question; the site checks PDFs only | `content/forms/recommendation-letter.json` |
+| The resource request, the program request and the referral card survey (forms #1, #2, #4) ship closed, with Google's words and Google's required answers; owners Engagement, Programs and Programs; the pages keep linking the Google Forms until each opens (23 Oct, unattended: run log §3) | launch closed (owner, 20 Oct); Google's "COMM" and "PROG" titles and Connect's directorate pages name the owners | `content/forms/resource-request.json`, `program-request.json`, `referral-card-survey.json` |
+| The mailing list (form #5) ships closed with Google's question and steps; its thank-you page says the request is received and the person is not on the list yet, and it sends no receipt; owner Executive (23 Oct, unattended: run log §6) | only the Google Group knows who is subscribed (`COMMUNICATIONS.md`, "The mailing list"); Google's form name starts "EXEC" | `content/forms/email-list.json`; Exchange `PUBLIC-EMAIL-LIST-STATES-2026-10-23` |
+| One design, by Badger SPILL's lessons: heading bands with two waves, flat cards, solid rules, Title Case, styled empty states, motion under a second (23 Oct, unattended: decisions 2.17 to 2.25 in `OVERNIGHT-RUN-2026-10-23.md`) | the owner asked for the site to feel of a piece and to follow SPILL | each decision's own reversal in the run log |
+| Between publishes, a page built from Connect asks `/api/events/<page>` for its event blocks, rendered by the build's renderer from Connect's list now and held five minutes by the CDN; its calendar buttons open `/api/calendar/<event>.ics`; when Connect cannot be read the published list stays (23 Oct, unattended: decisions 7.1 to 7.9 in `OVERNIGHT-RUN-2026-10-23.md`) | an event ticked in Connect shows without a publish, and nothing is deployed without the owner, as a scheduled rebuild would | drop the two routes in `netlify/lib/router.mjs` and `refresh` from the blocks |
 | The four live resource pages become one `/resources/`, and each old address 301s to it with its topic | one list with search; the old addresses keep working | `content/routes.json`; `research/RESOURCES-VIEWER-2026-10-20.md` |
 | A resource card's button says View Details when its label would call, text or email; the number or address stays on the card | the button always opens the record's web page, so a label that promises a call would mislead | `src/render/blocks/resources.mjs` |
 | A number spelt in letters ("414-939-HOPE") dials each letter as its keypad digit | Connect's link keeps digits only and would dial six | `src/render/blocks/resources.mjs` |

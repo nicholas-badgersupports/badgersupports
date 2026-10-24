@@ -30,32 +30,28 @@
         "community"
       ],
       "primary": {
-        "label": "Get involved",
+        "label": "Get Involved",
         "href": "/join/get-involved/"
-      },
-      "secondary": {
-        "label": "Drop in this week",
-        "href": "#this-week"
       },
       "centre": "you",
       "circles": [
         {
           "media": "m-hub-sea",
-          "label": "peer support groups",
+          "label": "Peer Support Groups",
           "href": "#groups",
           "icon": "chat",
           "program": "peer"
         },
         {
           "media": "m-workshop-herald-team",
-          "label": "workshops",
+          "label": "Workshops",
           "href": "#workshops",
           "icon": "bulb",
           "program": "workshops"
         },
         {
           "media": "m-people-nostalgic",
-          "label": "craft nights",
+          "label": "Craft Nights",
           "href": "#craft",
           "icon": "scissors",
           "program": "craft"
@@ -64,7 +60,7 @@
       "spill": {
         "title": "Need to vent?",
         "text": "Spill it to a fellow Badger, in writing.",
-        "label": "Write your SPILL",
+        "label": "Write Your SPILL",
         "href": "https://badgerspill.org/#write"
       }
     },
@@ -72,29 +68,25 @@
       "id": "b-home-week",
       "type": "schedule",
       "anchor": "this-week",
-      "title": "drop in this week",
-      "source": "events-fixture",
+      "title": "Drop In This Week",
+      "source": "events",
       "days": 7,
       "later": 3,
-      "laterTitle": "coming up",
+      "laterTitle": "Coming Up",
       "home": "sac-mhh",
       "dropIn": [
         {
           "program": "peer",
           "href": "/join/peer-support-groups/"
         }
-      ],
-      "connect": {
-        "label": "All events on Badger Supports Connect",
-        "href": "https://home.badgersupports.org/"
-      }
+      ]
     },
     {
       "id": "b-home-groups",
       "type": "program",
       "variant": "feature",
       "program": "peer",
-      "title": "peer support groups",
+      "title": "Peer Support Groups",
       "lead": "Set aside an hour to reset.",
       "facts": [
         {
@@ -115,7 +107,7 @@
       ],
       "links": [
         {
-          "label": "Join us for a group",
+          "label": "Join Us for a Group",
           "href": "/join/peer-support-groups"
         }
       ],
@@ -130,12 +122,12 @@
         "Badger SPILL isn’t a crisis service. If you’re in danger, call 911, call or text 988, or call UHS 24/7 at 608-265-5600, option 9."
       ],
       "primary": {
-        "label": "Write your SPILL",
+        "label": "Write Your SPILL",
         "href": "https://badgerspill.org/#write"
       },
       "links": [
         {
-          "label": "How Badger SPILL works",
+          "label": "How Badger SPILL Works",
           "href": "https://badgerspill.org/how-it-works/"
         }
       ]
@@ -145,13 +137,13 @@
       "type": "program",
       "variant": "gallery",
       "program": "craft",
-      "title": "craft nights",
+      "title": "Craft Nights",
       "lead": "Need a break from classes?",
       "upcoming": {
-        "source": "events-fixture",
+        "source": "events",
         "program": "craft",
         "count": 2,
-        "label": "Next craft nights"
+        "label": "Next Craft Nights"
       },
       "photos": [
         "m-people-visionboards",
@@ -162,7 +154,7 @@
       ],
       "links": [
         {
-          "label": "Craft night schedule",
+          "label": "Craft Night Schedule",
           "href": "/join/craft-nights"
         }
       ],
@@ -172,23 +164,23 @@
       "id": "b-home-workshops",
       "type": "workshops",
       "anchor": "workshops",
-      "title": "wellness workshops",
+      "title": "Wellness Workshops",
       "lead": "Interactive sessions led by trained peer facilitators, tailored to your group’s needs.",
       "photos": [
         "m-workshop-housing-team",
         "m-workshop-herald-room"
       ],
       "primary": {
-        "label": "Request a workshop",
+        "label": "Request a Workshop",
         "href": "/forms/workshop-request/"
       },
       "items": [
         {
           "id": "w-networks",
           "tab": "Support networks",
-          "title": "Building support networks",
+          "title": "Building Support Networks",
           "link": {
-            "label": "About this workshop",
+            "label": "About This Workshop",
             "href": "/join/request-a-workshop/behind-the-workshop/support-networks"
           },
           "goals": [
@@ -231,9 +223,9 @@
         {
           "id": "w-selfcare",
           "tab": "Self-care",
-          "title": "Stress management and self-care",
+          "title": "Stress Management and Self-Care",
           "link": {
-            "label": "About this workshop",
+            "label": "About This Workshop",
             "href": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care"
           },
           "goals": [
@@ -296,9 +288,9 @@
         {
           "id": "w-housing",
           "tab": "Housing",
-          "title": "Navigating housing",
+          "title": "Navigating Housing",
           "link": {
-            "label": "About this workshop",
+            "label": "About This Workshop",
             "href": "/join/request-a-workshop/behind-the-workshop/navigating-housing"
           },
           "goals": [
@@ -339,7 +331,7 @@
     {
       "id": "b-home-wall",
       "type": "wall",
-      "title": "wall of support",
+      "title": "Wall of Support",
       "source": "wall-notes",
       "show": 8,
       "more": "Show other notes"
@@ -347,33 +339,33 @@
     {
       "id": "b-home-involved",
       "type": "involve",
-      "title": "get involved",
+      "title": "Get Involved",
       "items": [
         {
           "id": "inv-volunteer",
           "title": "Volunteer",
           "primary": true,
           "link": {
-            "label": "Express interest",
+            "label": "Express Interest",
             "href": "/join/get-involved/"
           },
           "icon": "hand"
         },
         {
           "id": "inv-staff",
-          "title": "Staff positions",
+          "title": "Staff Positions",
           "form": "staff-application",
           "link": {
-            "label": "About working here",
+            "label": "About Working Here",
             "href": "/join/get-involved/"
           },
           "icon": "badge"
         },
         {
           "id": "inv-list",
-          "title": "Email list",
+          "title": "Email List",
           "link": {
-            "label": "Join our email list",
+            "label": "Join Our Email List",
             "href": "/join/email-list"
           },
           "icon": "mail"
@@ -384,7 +376,7 @@
     {
       "id": "b-home-mood",
       "type": "mood",
-      "title": "how are you feeling today?"
+      "title": "How are you feeling today?"
     }
   ]
 }

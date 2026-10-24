@@ -1,0 +1,152 @@
+{
+  "schema": "bss.form/1",
+  "key": "resource-request",
+  "version": 1,
+  "title": "Badger Supports Resource Request Form",
+  "audience": "public",
+  "anonymous": false,
+  "state": "closed",
+  "closedMessage": "Resource requests are on Google Forms for now. Questions: hello@badgersupports.org.",
+  "intro": [
+    "Badger Supports is a General Student Services Fund (GSSF) organization, dual-registered with UHS Prevention.",
+    "As a peer-led mental health organization, we work to make wellness accessible, reduce stigma, and foster community across campus.",
+    "Our team of 20 to 35 trained student leaders partners with academic departments, advising offices, residence halls, and campus programs to connect students with resources, workshops, and peer-support opportunities. We welcome collaboration and are committed to making it easy for campus units to share Badger Supports materials, host workshops, or bring peer-support initiatives to their spaces.",
+    "We welcome your questions at hello@badgersupports.org."
+  ],
+  "review": "Built closed (decision 3.1), from Google's public view of 23 Oct 2026; the Colors of Support page still links the Google Form, and the rebuild's footer does not link it. Words are Google's. Google's form is one page: the section title 'About You' is ours, 'Options' is Google's own heading. Google shows four photos of the materials (the housing toolkit, the flyers, a card pack, the ribbon station); left out until they are in the photo library. Google's closing 'Thank you!' block sits above Submit: its timelines are now the help under 'I am requesting', where they are read before choosing, and its thanks are the confirmation. The timelines are Google's as read and are not confirmed (FORM-AUDIT.md). The closing message is ours.",
+  "sections": [
+    {
+      "id": "about_you",
+      "title": "About You",
+      "questions": [
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Your email (@wisc.edu)",
+          "required": true,
+          "autocomplete": "email",
+          "review": "Google's is a short-answer box that checks nothing; this one checks the address is an email address and, like Google's, does not refuse one outside wisc.edu."
+        },
+        {
+          "id": "affiliation",
+          "type": "long",
+          "label": "Affiliation / Logistics",
+          "required": false,
+          "maxLength": 2000,
+          "rows": 4,
+          "help": [
+            "Please provide your Department, Campus Unit, or Registered Student Organization (RSO) affiliated with UW–Madison.",
+            "Badger Supports will use this information to coordinate delivery of the materials you requested. Deliveries are typically made as no-contact drop-offs to a front desk, mailbox, or office door, unless another arrangement is requested here."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "options",
+      "title": "Options",
+      "intro": [
+        {
+          "heading": "Navigating Housing Toolkit"
+        },
+        "Our Navigating Housing toolkits include step-by-step guidance and resources for off-campus housing, leases, and tenant rights. Toolkits will be dropped off at your office or designated location for easy student pickup.",
+        {
+          "heading": "Program Referral Flyers"
+        },
+        "Our flyers are ideal for sharing with students during advising appointments, office hours, or meetings where students may benefit from peer-to-peer wellness and support programs.",
+        {
+          "heading": "Colors of Support: Ribbon Distribution"
+        },
+        "Host a Mini Solidarity Ribbon Station at your location. Badger Supports will supply materials, signage, and ribbons to ensure that students and staff can participate in our solidarity initiative. We will restock supplies as needed to keep the display active and inviting.",
+        {
+          "heading": "Workshop Requests"
+        },
+        "Explore our offerings at workshops.badgersupports.org and make a request. Badger Supports regularly facilitates sessions for First-Year Interest Groups, Greek organizations, academic departments, and other campus units. Workshops are tailored to your audience’s familiarity, goals, and group dynamics.",
+        {
+          "heading": "Resource Referral Cards Pack"
+        },
+        "Resource referral cards are quick reference tools designed to help students identify and access campus support. Each card highlights a specific area of need, provides brief guidance, and includes direct links or contact information for relevant resources. Cards are used by peer supporters during programs and outreach to support timely referrals and informed help seeking.",
+        {
+          "heading": "Information Meetings"
+        },
+        "Schedule an information meeting with a Badger Supports student leader, either in-person or virtually. These meetings introduce our programs, answer questions, and help your team learn effective ways to refer and support students seeking community and connection."
+      ],
+      "questions": [
+        {
+          "id": "requesting",
+          "type": "checkboxes",
+          "label": "I am requesting",
+          "required": true,
+          "options": [
+            {
+              "id": "housing_toolkits",
+              "label": "Navigating Housing Workshop Toolkits"
+            },
+            {
+              "id": "referral_flyers",
+              "label": "Program Referral Flyers"
+            },
+            {
+              "id": "ribbon_distribution",
+              "label": "Colors of Support: Ribbon Distribution"
+            },
+            {
+              "id": "workshop",
+              "label": "Workshop Request (Form at workshops.badgersupports.org or request a follow-up from our team)"
+            },
+            {
+              "id": "referral_cards",
+              "label": "Resource Referral Cards"
+            },
+            {
+              "id": "info_meeting",
+              "label": "Information Meeting"
+            }
+          ],
+          "help": [
+            "Current Timelines / Backlog:",
+            {
+              "list": [
+                "Navigating Housing Toolkits: 1 - 2 week(s).",
+                "Program Referral Flyers: 1 month.",
+                "Ribbon Distribution: 2 - 3 months.",
+                "Workshop Request: Pending Student Availability",
+                "Resource Referral Packs: 1 week.",
+                "Information Meeting: 1 week."
+              ],
+              "ordered": true
+            }
+          ],
+          "review": "The timelines are from Google's closing block and need confirming before the form opens."
+        },
+        {
+          "id": "comments",
+          "type": "long",
+          "label": "Comments",
+          "required": false,
+          "maxLength": 4000,
+          "rows": 4
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank you!",
+    "body": [
+      "Badger Supports receives many requests for materials, and we do our best to respond quickly once your form comes in. Our goal is to meet every request we receive and make sure you get what you need. If you have any questions or updates, feel free to reach out at hello@badgersupports.org."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "engagement.resource-requests",
+    "owner": "Engagement",
+    "receipt": "proposed",
+    "backup": "proposed"
+  },
+  "source": {
+    "system": "google-forms",
+    "publishedId": "1FAIpQLSenmQrIikZ5v2_tqdcGT1bTeKSNTPdaQAstCEkntuARHbrd8g",
+    "aliases": [
+      "https://forms.gle/GgfggAR7nRVSXrZPA"
+    ],
+    "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Google's title for the file begins 'LIVE COMM:'; Communications is a retired name, and its work sits with Engagement in Connect (docs/directorates/engagement.md)."
+  }
+}

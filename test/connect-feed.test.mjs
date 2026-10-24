@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { build, ROOT, loadContent } from "../ops/build.mjs";
 import { TEAM_PATH } from "../src/render/team.mjs";
-import { feedConfig, feedRuleProblems, mapEvents, mapResources, readConnectFeed, readFeedRules, roomFor } from "../ops/connect-feed.mjs";
+import { feedConfig, feedConfigGaps, feedRuleProblems, mapEvents, mapResources, readConnectFeed, readFeedRules, roomFor } from "../ops/connect-feed.mjs";
 import { BLOCKS } from "../src/render/registry.mjs";
 import { makeContext } from "../src/render/context.mjs";
 
@@ -137,6 +137,11 @@ test("reading Connect: signed, and a problem in words when it cannot", async () 
   assert.match((await readConnectFeed(fakeConnect({ fail: "refused" }).cfg, RULES)).problem, /connect\.refused/);
   assert.match((await readConnectFeed(fakeConnect({ events: { ok: true, schema: 2 } }).cfg, RULES)).problem, /schema 1/);
 
+  assert.match((await readConnectFeed(null, RULES, { CONNECT_URL: "https://connect.test", PUBLIC_SITE_SERVICE_KEY_ID: "k" })).problem, /\(PUBLIC_SITE_SERVICE_SECRET is missing/);
+  assert.deepEqual(feedConfigGaps({}), ["CONNECT_URL is missing", "PUBLIC_SITE_SERVICE_KEY_ID is missing", "PUBLIC_SITE_SERVICE_SECRET is missing (the publish file passes it from the keys file on the laptop)"]);
+  assert.deepEqual(feedConfigGaps({ CONNECT_URL: "https://connect.test/a", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "short" }), ["CONNECT_URL is not an address such as https://connect.example.org", "PUBLIC_SITE_SERVICE_SECRET is shorter than 32 characters"]);
+  assert.doesNotMatch(feedConfigGaps({ PUBLIC_SITE_SERVICE_SECRET: "short-secret-value" }).join(" "), /short-secret-value/);
+  assert.deepEqual(feedConfigGaps({ CONNECT_URL: "https://connect.test/", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "y".repeat(32) }), []);
   assert.equal(feedConfig({}), null);
   assert.equal(feedConfig({ CONNECT_URL: "https://connect.test", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "short" }), null);
   assert.equal(feedConfig({ CONNECT_URL: "https://connect.test/", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "y".repeat(32) }).url, "https://connect.test");

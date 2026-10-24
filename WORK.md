@@ -109,7 +109,7 @@ the Sheets backup; the §12 tests that need them (below, item 24).
 8. Reauthenticate the Analytics connector so the GA4 property can be checked, and answer Q1.
 9. **Publish**: open `../PUBLISH-WEBSITE-2026-10-23.command`, type `publish`. Who may see it is yours: team-only now.
    It builds the live site. First: in Connect, Admin › Resources › Public Website List, tick the event types and
-   weekly groups to show; in Netlify, give Connect's three variables **Builds** scope. Its log names events left out (run log 13.9).
+   weekly groups to show. The file gives the build Connect's key itself. Its log names events left out (run log 13.9).
 11. Leave `feedback.badgersupports.org` on its Google Form; point it at `/forms/programming-feedback/` (a DNS
     change) only once that form opens here.
 13. Signed in to Netlify, try the live site: a test form, staff sign-in, the answer in Connect, Edit text.

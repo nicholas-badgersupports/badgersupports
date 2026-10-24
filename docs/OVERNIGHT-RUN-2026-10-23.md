@@ -553,7 +553,9 @@ after 13.9, passed in the browser too (§13, "Checked").
 1. Read this log. Veto any decision you disagree with; its last column says how to undo it.
 2. Read the audit, `~/security-audit-skill/badger-supports-public-site/run-1/REPORT.md`. One choice in it is
    yours: 13.11, how many bytes of uploads to keep and what a student sees at the limit.
-3. Before the next publish: owner action 9 in `WORK.md` (Connect's Public Website List; **Builds** scope).
+3. Before the next publish: owner action 9 in `WORK.md` (Connect's Public Website List). Corrected after the run: this
+   line first also said to give Connect's variables **Builds** scope. That was wrong; Netlify gives no secret to a
+   build run on a laptop, so the 23:36 publish stopped, and the publish file now passes the key itself.
 4. When you are ready, publish with `PUBLISH-WEBSITE-2026-10-23.command`. It checks, commits, pushes and deploys,
    and it ships the 113 uncommitted paths. Then look in its log for `connect: left out event` (13.9).
 5. `WORK.md`, "Exchange", lists what is still open with Connect, including `PUBLIC-EVENT-IDS-AND-SIGN-IN` (13.13).

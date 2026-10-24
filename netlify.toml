@@ -6,8 +6,8 @@
 #
 # Two builds (owner, 23 Oct 2026: "have it be the live site, I want it to be actually connected to Connect"):
 #   production  `--production`: the live site. Events and resources are read from Connect when it builds
-#               (ops/connect-feed.mjs), with CONNECT_URL, PUBLIC_SITE_SERVICE_KEY_ID and
-#               PUBLIC_SITE_SERVICE_SECRET, which must be visible to builds as well as to functions. If Connect
+#               (ops/connect-feed.mjs): CONNECT_URL and PUBLIC_SITE_SERVICE_KEY_ID from the project, and
+#               PUBLIC_SITE_SERVICE_SECRET from the publish file (Netlify keeps secrets from laptop builds). If Connect
 #               cannot be read, nothing is built and the deploy already online stays. Forms are served closed,
 #               each linking its Google Form (owner, 20 Oct); pages are indexable.
 #   otherwise   the prototype build (hand-typed fixtures, noindex everywhere): what a deploy preview shows,

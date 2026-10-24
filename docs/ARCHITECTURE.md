@@ -23,9 +23,9 @@ configuration asks for, not something seen running.
 esbuild, includes `.build/server.json` and the migrations in the function, and keeps PGlite, Playwright, axe-core and
 sharp out of the bundle (`!node_modules/@electric-sql/**`). The owner's publish file runs it on the laptop through
 the Netlify CLI; the repository is never linked to Netlify. Since 23 Oct 2026 the production build reads Connect's
-public events and resources when it runs (`ops/connect-feed.mjs`). Netlify gives no secret to a build run on a
-laptop, so the publish file passes `PUBLIC_SITE_SERVICE_SECRET` from the owner's keys file; the address and key id
-come from the project. If Connect cannot be read, nothing is built and the deploy online stays.
+public events and resources when it runs (`ops/connect-feed.mjs`). Netlify gives a build run on a laptop only a short
+stand-in for a secret, so the publish file passes the key from the owner's keys file as `PUBLISH_SERVICE_SECRET`, a
+name Netlify does not hold; the address and key id come from the project. If Connect cannot be read, nothing is built and the deploy online stays.
 
 ## The build
 

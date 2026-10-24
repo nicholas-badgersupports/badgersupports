@@ -31,18 +31,24 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 // calendar route, /api/calendar/[A-Za-z0-9_-]{1,120}.ics, after the 8 characters of "connect-".
 const EVENT_ID = /^[A-Za-z0-9_-]{1,112}$/;
 
+/* A build run on the laptop never gets the key as Netlify holds it: Netlify hands it a short stand-in for every
+   secret, and that stand-in wins over a variable of the same name (measured 23 Oct 2026). So the owner's publish
+   file passes the key as PUBLISH_SERVICE_SECRET, a name Netlify does not hold, and it wins here. */
+const buildEnv = (env) => (env.PUBLISH_SERVICE_SECRET ? { ...env, PUBLIC_SITE_SERVICE_SECRET: env.PUBLISH_SERVICE_SECRET } : env);
+
 /* Connect's address and key from the environment, or null when any is missing. */
-export const feedConfig = (env = process.env) => serviceConfig(env);
+export const feedConfig = (env = process.env) => serviceConfig(buildEnv(env));
 
 /* Which of the three serviceConfig needs is missing or malformed, by name only: a value is never shown. */
-export function feedConfigGaps(env = process.env) {
+export function feedConfigGaps(given = process.env) {
+  const env = buildEnv(given);
   const out = [];
   const url = String(env.CONNECT_URL || "");
   if (!/^https?:\/\/[^\s/]+$/.test(url.replace(/\/+$/, ""))) out.push(url ? "CONNECT_URL is not an address such as https://connect.example.org" : "CONNECT_URL is missing");
   if (!env.PUBLIC_SITE_SERVICE_KEY_ID) out.push("PUBLIC_SITE_SERVICE_KEY_ID is missing");
   const secret = String(env.PUBLIC_SITE_SERVICE_SECRET || "");
-  // Netlify never gives a secret to a build run on a laptop; the owner's publish file passes this one itself.
-  if (secret.length < 32) out.push(secret ? "PUBLIC_SITE_SERVICE_SECRET is shorter than 32 characters" : "PUBLIC_SITE_SERVICE_SECRET is missing (the publish file passes it from the keys file on the laptop)");
+  const hint = given.PUBLISH_SERVICE_SECRET ? "" : " (on the laptop the publish file passes it as PUBLISH_SERVICE_SECRET)";
+  if (secret.length < 32) out.push(`PUBLIC_SITE_SERVICE_SECRET is ${secret ? "shorter than 32 characters" : "missing"}${hint}`);
   return out;
 }
 

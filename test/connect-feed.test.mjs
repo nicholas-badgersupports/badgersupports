@@ -138,11 +138,17 @@ test("reading Connect: signed, and a problem in words when it cannot", async () 
   assert.match((await readConnectFeed(fakeConnect({ events: { ok: true, schema: 2 } }).cfg, RULES)).problem, /schema 1/);
 
   assert.match((await readConnectFeed(null, RULES, { CONNECT_URL: "https://connect.test", PUBLIC_SITE_SERVICE_KEY_ID: "k" })).problem, /\(PUBLIC_SITE_SERVICE_SECRET is missing/);
-  assert.deepEqual(feedConfigGaps({}), ["CONNECT_URL is missing", "PUBLIC_SITE_SERVICE_KEY_ID is missing", "PUBLIC_SITE_SERVICE_SECRET is missing (the publish file passes it from the keys file on the laptop)"]);
-  assert.deepEqual(feedConfigGaps({ CONNECT_URL: "https://connect.test/a", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "short" }), ["CONNECT_URL is not an address such as https://connect.example.org", "PUBLIC_SITE_SERVICE_SECRET is shorter than 32 characters"]);
+  assert.deepEqual(feedConfigGaps({}), ["CONNECT_URL is missing", "PUBLIC_SITE_SERVICE_KEY_ID is missing", "PUBLIC_SITE_SERVICE_SECRET is missing (on the laptop the publish file passes it as PUBLISH_SERVICE_SECRET)"]);
+  assert.deepEqual(feedConfigGaps({ CONNECT_URL: "https://connect.test/a", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "short" }), ["CONNECT_URL is not an address such as https://connect.example.org", "PUBLIC_SITE_SERVICE_SECRET is shorter than 32 characters (on the laptop the publish file passes it as PUBLISH_SERVICE_SECRET)"]);
+  assert.deepEqual(feedConfigGaps({ PUBLIC_SITE_SERVICE_SECRET: "y".repeat(32), PUBLISH_SERVICE_SECRET: "short" }).slice(-1), ["PUBLIC_SITE_SERVICE_SECRET is shorter than 32 characters"]);
   assert.doesNotMatch(feedConfigGaps({ PUBLIC_SITE_SERVICE_SECRET: "short-secret-value" }).join(" "), /short-secret-value/);
   assert.deepEqual(feedConfigGaps({ CONNECT_URL: "https://connect.test/", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "y".repeat(32) }), []);
   assert.equal(feedConfig({}), null);
+  // Netlify's short stand-in for a secret loses to the key the publish file passes under its own name.
+  const laptop = { CONNECT_URL: "https://connect.test", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "stand-in" };
+  assert.equal(feedConfig(laptop), null);
+  assert.equal(feedConfig({ ...laptop, PUBLISH_SERVICE_SECRET: "p".repeat(64) }).secret, "p".repeat(64));
+  assert.deepEqual(feedConfigGaps({ ...laptop, PUBLISH_SERVICE_SECRET: "p".repeat(64) }), []);
   assert.equal(feedConfig({ CONNECT_URL: "https://connect.test", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "short" }), null);
   assert.equal(feedConfig({ CONNECT_URL: "https://connect.test/", PUBLIC_SITE_SERVICE_KEY_ID: "k", PUBLIC_SITE_SERVICE_SECRET: "y".repeat(32) }).url, "https://connect.test");
 });

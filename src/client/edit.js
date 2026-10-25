@@ -17,6 +17,9 @@
  * Finding a word on the page: the deepest element whose text is exactly that word, inside its own
  * block for a page's words, outside every block for the menus and footer. Words the page builds in
  * a way that does not match (a paragraph with a link inside it) are left to More words.
+ * A library photo is found by its picture in its own block, and is outlined and opened like words.
+ * A value is named by what it is and the section it sits in (nameOf), never by its key alone. The box
+ * for words inside a link offers the link's address, and lists the section's other values.
  */
 
 let table = {};
@@ -34,6 +37,27 @@ const norm = (s) => String(s).replace(/\s+/g, " ").trim();
 const short = (s) => (s.length > SHORT ? `${s.slice(0, SHORT - 1)}…` : s);
 const kindOf = (target) => target.split(":")[0];
 const blockOf = (target) => (kindOf(target) === "page" ? target.split(":")[2].split("/")[0] : null);
+const blockEl = (target) => (blockOf(target) ? document.querySelector(`[data-block="${blockOf(target)}"]`) : null);
+
+/* The section a target sits in, by the section's own heading as the page shows it now. */
+function sectionOf(target) {
+  if (kindOf(target) === "site") return t("edit.value.site");
+  const s = blockEl(target);
+  const by = s?.getAttribute("aria-labelledby");
+  const name = norm((by && document.getElementById(by)?.textContent) || s?.getAttribute("aria-label") || "");
+  return name ? `“${short(name)}”` : t("edit.value.page");
+}
+
+/* A value that is not words, named by its field (an entry of a list by the list's) and its section. */
+const FIELD = { media: "photo", photos: "photo" };
+function nameOf(entry) {
+  if (!entry.kind) return entry.where || "";
+  const path = entry.target.split("/");
+  const last = /^\d+$/.test(path.at(-1)) ? path.at(-2) : path.at(-1);
+  const field = FIELD[last] || last;
+  const what = table[`edit.field.${field}`] ? t(`edit.field.${field}`) : t("edit.field.other");
+  return t("edit.value.where", { what, section: sectionOf(entry.target) });
+}
 
 async function call(url, body) {
   const res = await fetch(url, {
@@ -92,6 +116,15 @@ function place() {
       if (take.length) marks.set(e.target, take);
     }
   }
+  // A library photo: its picture in its own block, one each, in order, for a photo shown twice.
+  for (const e of entries.values()) {
+    if (e.kind !== "media") continue;
+    const s = blockEl(e.target);
+    const img = s && [...s.querySelectorAll(`picture.media-${CSS.escape(e.current)} img`)].find((n) => !claimed.has(n));
+    if (!img) continue;
+    claimed.add(img);
+    marks.set(e.target, [img]);
+  }
 }
 
 function show(node, words) {
@@ -106,14 +139,18 @@ function show(node, words) {
 
 /* ---------- edit mode ---------- */
 
+/* Words name themselves; a photo is given its name while outlined, and its own back after. */
+const named = new Map();      // element -> the aria-label it had, or null
 function markAll(on) {
   for (const [target, nodes] of marks) for (const n of nodes) {
     if (on) {
       n.setAttribute("data-edit-target", target);
       if (n.tabIndex < 0 && !n.hasAttribute("tabindex")) { n.tabIndex = 0; added.add(n); }
+      if (entries.get(target)?.kind && !named.has(n)) { named.set(n, n.getAttribute("aria-label")); n.setAttribute("aria-label", nameOf(entries.get(target))); }
     } else {
       n.removeAttribute("data-edit-target");
       if (added.has(n)) { n.removeAttribute("tabindex"); added.delete(n); }
+      if (named.has(n)) { const was = named.get(n); if (was == null) n.removeAttribute("aria-label"); else n.setAttribute("aria-label", was); named.delete(n); }
     }
   }
 }
@@ -183,6 +220,27 @@ function control(entry) {
   return el("input", { id, type: "text", inputMode: k === "link" ? "url" : "text", maxLength: 500, spellcheck: false });
 }
 
+/* The address of the link the chosen words are, or sit in: a link value of the same block whose
+   address is the one the link has on the page. */
+function linkOf(entry, from) {
+  const a = !entry.kind && from?.closest?.("a[href]");
+  if (!a) return null;
+  return [...entries.values()].find((e) => e.kind === "link" && e.current === a.getAttribute("href") && kindOf(e.target) === kindOf(entry.target) && fits(e.target, a)) || null;
+}
+
+/* The values of the section an entry is in, other than the entry itself. */
+function sectionValues(entry) {
+  if (kindOf(entry.target) === "text") return [];
+  return [...entries.values()].filter((e) => e.kind && e.target !== entry.target && kindOf(e.target) === kindOf(entry.target) && blockOf(e.target) === blockOf(entry.target));
+}
+
+function pickButton(e, from) {
+  const where = e.kind ? nameOf(e) : e.where || "";
+  const b = el("button", { type: "button", className: "edit-pick" }, el("span", { textContent: short(e.current) }), where ? el("span", { className: "edit-pick-where", textContent: where }) : null);
+  b.addEventListener("click", () => open(e, from || b));
+  return b;
+}
+
 function open(entry, from) {
   if (!entry) return;
   opened = { entry, from };
@@ -190,8 +248,16 @@ function open(entry, from) {
   const fresh = control(entry);
   d.value.replaceWith(fresh);
   d.value = fresh;
-  d.where.textContent = entry.where || "";
-  d.where.hidden = !entry.where;
+  const where = nameOf(entry);
+  d.where.textContent = where;
+  d.where.hidden = !where;
+  d.linkTo = linkOf(entry, from);
+  d.link.hidden = !d.linkTo;
+  const others = sectionValues(entry);
+  d.section.hidden = !others.length;
+  d.section.open = false;
+  d.sectionTitle.textContent = t("edit.section.title", { n: others.length });
+  d.sectionList.replaceChildren(el("ul", {}, ...others.map((e) => el("li", {}, pickButton(e, from)))));
   d.key.replaceChildren(`${t("edit.key")} `, el("code", { textContent: entry.target }));
   d.value.value = entry.current;
   d.original.textContent = t("edit.original", { words: entry.original });
@@ -203,7 +269,7 @@ function open(entry, from) {
   historyAsked++;
   d.history.open = false;
   d.versions.replaceChildren();
-  d.box.showModal();
+  if (!d.box.open) d.box.showModal();
   d.value.focus();
 }
 
@@ -282,16 +348,10 @@ function moreList() {
   const here = [], everywhere = [];
   for (const e of entries.values()) {
     if (kindOf(e.target) !== "text" && marks.has(e.target)) continue;
-    if (filter && !`${e.current} ${e.where || ""} ${e.target}`.toLowerCase().includes(filter)) continue;
+    if (filter && !`${e.current} ${e.kind ? nameOf(e) : e.where || ""} ${e.target}`.toLowerCase().includes(filter)) continue;
     (kindOf(e.target) === "page" ? here : everywhere).push(e);
   }
-  const item = (e) => {
-    // a value that is not a word is named by its key, which says where it sits
-    const where = e.where || (e.kind ? e.target : "");
-    const b = el("button", { type: "button", className: "edit-pick" }, el("span", { textContent: short(e.current) }), where ? el("span", { className: "edit-pick-where", textContent: where }) : null);
-    b.addEventListener("click", () => open(e, b));
-    return el("li", {}, b);
-  };
+  const item = (e) => el("li", {}, pickButton(e));
   const group = (id, title, list) => (list.length ? [el("h3", { id, textContent: title }), el("ul", {}, ...list.map(item))] : []);
   ui.moreList.replaceChildren(
     ...group("edit-more-here", t("edit.more.here"), here),
@@ -360,10 +420,15 @@ function build() {
   const versionList = el("div", { className: "edit-versions-list" });
   const earlier = el("details", { className: "edit-history" }, el("summary", { textContent: t("edit.history.title") }), versionList);
   earlier.addEventListener("toggle", versions);
+  const link = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.link"), hidden: true });
+  link.addEventListener("click", () => open(ui.dialog.linkTo, opened.from));
+  const sectionTitle = el("summary");
+  const sectionList = el("div", { className: "edit-section-list" });
+  const section = el("details", { className: "edit-section", hidden: true }, sectionTitle, sectionList);
   const form = el("form", { className: "edit-form" },
     el("h2", { id: "edit-d-h", textContent: t("edit.dialog.title") }), where, key,
     el("label", { htmlFor: "edit-d-v", textContent: t("edit.dialog.label") }), value, original, by, status,
-    el("div", { className: "edit-actions" }, saveB, revert, cancel), earlier);
+    el("div", { className: "edit-actions" }, saveB, revert, cancel), link, section, earlier);
   form.addEventListener("submit", (e) => { e.preventDefault(); save(ui.dialog.value.value); });
   revert.addEventListener("click", () => save(opened.entry.original));
   cancel.addEventListener("click", () => box.close());
@@ -373,7 +438,7 @@ function build() {
   const root = el("div", { className: "edit-ui" }, more, bar, box);
   root.setAttribute("data-edit-ui", "");
   document.body.append(root);
-  ui = { toggle, more, moreButton, moreList: moreList_, find, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList } };
+  ui = { toggle, more, moreButton, moreList: moreList_, find, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList, link, linkTo: null, section, sectionTitle, sectionList } };
   drawBar();
 }
 

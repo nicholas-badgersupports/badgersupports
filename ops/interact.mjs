@@ -795,8 +795,8 @@ await part("edit button: a conflict answered after other words are opened", asyn
   await ctx.close();
 });
 
-/* A value that is not a word, by keyboard: found under More words by its key, opened with a list of its options,
-   saved, and checked again on the server. */
+/* A value that is not a word, by keyboard: found under More words by its key, named by what it is and its section,
+   opened with a list of its options, saved, and checked again on the server. */
 await part("edit button: a section switched off, by keyboard, under More words", async () => {
   await freshServer();
   const { ctx, page, errors } = await openStaff({ session: ["site.edit"], path: "/" });
@@ -807,13 +807,16 @@ await part("edit button: a section switched off, by keyboard, under More words",
   await page.getByRole("button", { name: words("edit.more") }).focus();
   await page.keyboard.press("Enter");
   await page.keyboard.type("b-home-announce/enabled");
-  const item = page.locator(".edit-more-list button", { hasText: target });
+  const item = page.locator(".edit-more-list .edit-pick");
   const found = await item.count();
+  const name = await item.first().locator(".edit-pick-where").textContent().catch(() => "");
   await item.first().focus();
   await page.keyboard.press("Enter");
-  const control = await page.evaluate(() => { const c = document.getElementById("edit-d-v"); return { tag: c?.tagName, options: [...(c?.options || [])].map((o) => o.textContent), value: c?.value, focused: document.activeElement === c }; });
-  check(!marked && found === 1 && control.tag === "SELECT" && control.options.join("|") === `${words("edit.on")}|${words("edit.off")}` && control.value === "true" && control.focused,
+  const control = await page.evaluate(() => { const c = document.getElementById("edit-d-v"); return { tag: c?.tagName, options: [...(c?.options || [])].map((o) => o.textContent), value: c?.value, focused: document.activeElement === c, key: document.querySelector(".edit-key code")?.textContent }; });
+  check(!marked && found === 1 && control.key === target && control.tag === "SELECT" && control.options.join("|") === `${words("edit.on")}|${words("edit.off")}` && control.value === "true" && control.focused,
     `typed value: not marked on the page, found under More words by its key, opened as a focused list of On and Off (${JSON.stringify({ marked, found, control })})`);
+  check(name.startsWith(`${words("edit.field.enabled")}, `) && !name.includes(target),
+    `typed value: More words names it by what it is and its section, not by its key ("${name}")`);
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Tab");
   const onSave = await page.evaluate(() => document.activeElement?.type === "submit");
@@ -823,6 +826,68 @@ await part("edit button: a section switched off, by keyboard, under More words",
   const row = await one("SELECT value FROM content_edits WHERE target = $1", [target]);
   check(row?.value === "false", `typed value: Off is saved by keyboard (${JSON.stringify(row)})`);
   check(!errors.length, `typed value: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+/* A photo and a link's address, from the page itself: the photo is outlined, reached by Tab, named by what it is and
+   its section, and opened by Enter; the box for a link's words opens the link's address, and lists the section's
+   other values by name. */
+await part("edit button: a photo and a link's address, from the page", async () => {
+  await freshServer();
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit"], path: "/" });
+  await page.getByRole("button", { name: words("edit.button") }).click({ timeout: 3000 });
+  await page.waitForFunction(() => document.documentElement.classList.contains("is-editing"), null, { timeout: 3000 });
+  const photo = await page.evaluate(() => {
+    const img = document.querySelector("main [data-block] picture img[data-edit-target]");
+    const others = [...document.querySelectorAll("main picture[class*='media-m-']")].map((p) => [...p.classList].find((c) => c.startsWith("media-m-")).slice(6));
+    return img && { target: img.getAttribute("data-edit-target"), label: img.getAttribute("aria-label"), tab: img.tabIndex, shown: [...img.closest("picture").classList].find((c) => c.startsWith("media-m-")).slice(6), others };
+  });
+  check(photo && photo.tab === 0 && photo.label?.startsWith(`${words("edit.field.photo")}, `) && !photo.label.includes(photo.target),
+    `photo: outlined on the page, in the Tab order, named by what it is and its section (${JSON.stringify(photo && { target: photo.target, label: photo.label, tab: photo.tab })})`);
+  if (photo) {
+    const img = page.locator(`img[data-edit-target="${photo.target}"]`);
+    await img.focus();
+    await page.keyboard.press("Enter");
+    const box = await page.evaluate(() => ({ open: document.querySelector(".edit-dialog").open, key: document.querySelector(".edit-key code")?.textContent, value: document.getElementById("edit-d-v")?.value, where: document.querySelector(".edit-where")?.textContent }));
+    check(box.open && box.key === photo.target && box.value === photo.shown && box.where === photo.label,
+      `photo: Enter opens it, with its library id and the same name (${JSON.stringify(box)})`);
+    const next = photo.others.find((id) => id !== photo.shown);
+    await page.fill("#edit-d-v", next);
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => !document.querySelector(".edit-dialog").open, null, { timeout: 3000 }).catch(() => {});
+    const row = await one("SELECT value FROM content_edits WHERE target = $1", [photo.target]);
+    const back = await page.evaluate(() => document.activeElement?.getAttribute("data-edit-target"));
+    check(row?.value === next && back === photo.target, `photo: another library photo is saved by keyboard, and focus comes back to the photo (${JSON.stringify({ row, back })})`);
+  }
+
+  const words_ = await page.evaluate(() => {
+    for (const n of document.querySelectorAll("main [data-block] a[href^='/'] [data-edit-target], main [data-block] a[href^='/'][data-edit-target]")) {
+      if (!n.closest("picture")) return { target: n.getAttribute("data-edit-target"), href: n.closest("a").getAttribute("href") };
+    }
+    return null;
+  });
+  await page.locator(`[data-edit-target="${words_?.target}"]`).first().click({ timeout: 3000 });
+  const linkButton = page.getByRole("button", { name: words("edit.link") });
+  const offered = await linkButton.isVisible();
+  const section = await page.evaluate(() => {
+    const d = document.querySelector(".edit-section");
+    return { hidden: d.hidden, title: d.querySelector("summary").textContent, names: [...d.querySelectorAll(".edit-pick-where")].map((n) => n.textContent) };
+  });
+  check(offered && !section.hidden && /\(\d+\)$/.test(section.title) && section.names.length && section.names.every((n) => n.includes(", ")),
+    `link: the box for a link's words offers its address, and lists the section's other values by name (${JSON.stringify({ words_, offered, title: section.title, first: section.names[0] })})`);
+  await linkButton.focus();
+  await page.keyboard.press("Enter");
+  const link = await page.evaluate(() => ({ key: document.querySelector(".edit-key code")?.textContent, value: document.getElementById("edit-d-v")?.value, focused: document.activeElement?.id === "edit-d-v", where: document.querySelector(".edit-where")?.textContent }));
+  check(link.key?.endsWith("/href") && link.value === words_?.href && link.focused && link.where.startsWith(`${words("edit.field.href")}, `),
+    `link: Change Where This Link Goes opens the address the link has on the page, focused, named (${JSON.stringify(link)})`);
+  await page.keyboard.press("Escape");
+  const back = await page.evaluate(() => document.activeElement?.getAttribute("data-edit-target"));
+  check(back === words_?.target, `link: closing the box gives focus back to the words it was opened from (${back})`);
+
+  await page.getByRole("button", { name: words("edit.done") }).click({ timeout: 3000 });
+  const after = await page.evaluate(() => ({ marked: document.querySelectorAll("[data-edit-target]").length, labelled: document.querySelectorAll("main picture img[aria-label]").length }));
+  check(after.marked === 0 && after.labelled === 0, `photo: Done Editing takes the outline, the Tab stop and the name away again (${JSON.stringify(after)})`);
+  check(!errors.length, `photo and link: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
   await ctx.close();
 });
 

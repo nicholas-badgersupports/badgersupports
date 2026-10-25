@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-348 keys. Keys are permanent. Required text cannot be published empty and must keep each
+378 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -696,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (136)
+### Staff page and edit button (166)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -827,6 +827,36 @@ the site adds the markup.
 | `edit.more.site` | On Every Page | More words list, menus, footer and shared lines. |  |
 | `edit.more.none` | Nothing matches. | More words list, when the search finds nothing. |  |
 | `edit.close` | Close | More words list, close button. |  |
+| `edit.value.where` | {{what}}, in {{section}} | Edit box and More words: names a value that is not words, such as a photo or a link, and the section it is in. | `{{what}}` `{{section}}` |
+| `edit.value.site` | the menus and footer | Edit box and More words: the section named for a value in the menus, header or footer. |  |
+| `edit.value.page` | this page | Edit box and More words: the section named for a value whose section has no heading. |  |
+| `edit.field.href` | Where the link goes | Name of a value: a link's address. |  |
+| `edit.field.icon` | Icon | Name of a value: an icon. |  |
+| `edit.field.photo` | Photo | Name of a value: a photo from the library. |  |
+| `edit.field.card` | What each card shows | Name of a value: the team cards' second line. |  |
+| `edit.field.flip` | Photos on the other side | Name of a value: on or off. |  |
+| `edit.field.variant` | Layout | Name of a value: a section's layout. |  |
+| `edit.field.program` | Colour | Name of a value: the program colour a row or section wears. |  |
+| `edit.field.whole` | Photo across the whole section | Name of a value: on or off. |  |
+| `edit.field.show` | What it shows | Name of a value: which events, or how many messages, a section shows. |  |
+| `edit.field.skip` | Events left out at the start | Name of a value: a number. |  |
+| `edit.field.count` | How many | Name of a value: a number. |  |
+| `edit.field.recent` | How many past events | Name of a value: a number. |  |
+| `edit.field.heading` | Heading level | Name of a value: h1 or h2. |  |
+| `edit.field.primary` | Main button | Name of a value: on or off. |  |
+| `edit.field.ordered` | Numbered list | Name of a value: on or off. |  |
+| `edit.field.enabled` | Section shown | Name of a value: on or off. |  |
+| `edit.field.startsOn` | First day shown | Name of a value: a date. |  |
+| `edit.field.endsOn` | Last day shown | Name of a value: a date. |  |
+| `edit.field.days` | Days shown | Name of a value: a number. |  |
+| `edit.field.later` | Later events shown | Name of a value: a number. |  |
+| `edit.field.tone` | Tone | Name of a value: a workshop answer's tone. |  |
+| `edit.field.compact` | Compact layout | Name of a value: on or off. |  |
+| `edit.field.size` | Word size | Name of a value: a word's size in the cloud. |  |
+| `edit.field.url` | Instagram video | Name of a value: an Instagram post or reel address. |  |
+| `edit.field.other` | Setting | Name of a value the site has no name for. |  |
+| `edit.link` | Change Where This Link Goes | Edit box, when the words chosen are a link: opens the link's address. |  |
+| `edit.section.title` | Settings in this section ({{n}}) | Edit box: a fold listing the photos, links and settings of the section the words are in. | `{{n}}` |
 | `auth.error.title` | Unable to sign in | Page shown when staff sign-in fails. |  |
 | `auth.error.unavailable` | Staff sign-in is not set up for this copy of the site yet. | Sign-in problem: Connect is not set up. |  |
 | `auth.error.state` | That sign-in link was already used or did not start here. Start again from the staff page. | Sign-in problem: the link came back wrong. |  |

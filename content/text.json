@@ -1583,6 +1583,56 @@
       "text": "Close",
       "where": "More words list, close button."
     },
+    "edit.value.where": {
+      "group": "staff",
+      "text": "{{what}}, in {{section}}",
+      "where": "Edit box and More words: names a value that is not words, such as a photo or a link, and the section it is in."
+    },
+    "edit.value.site": {
+      "group": "staff",
+      "text": "the menus and footer",
+      "where": "Edit box and More words: the section named for a value in the menus, header or footer."
+    },
+    "edit.value.page": {
+      "group": "staff",
+      "text": "this page",
+      "where": "Edit box and More words: the section named for a value whose section has no heading."
+    },
+    "edit.field.href": { "group": "staff", "text": "Where the link goes", "where": "Name of a value: a link's address." },
+    "edit.field.icon": { "group": "staff", "text": "Icon", "where": "Name of a value: an icon." },
+    "edit.field.photo": { "group": "staff", "text": "Photo", "where": "Name of a value: a photo from the library." },
+    "edit.field.card": { "group": "staff", "text": "What each card shows", "where": "Name of a value: the team cards' second line." },
+    "edit.field.flip": { "group": "staff", "text": "Photos on the other side", "where": "Name of a value: on or off." },
+    "edit.field.variant": { "group": "staff", "text": "Layout", "where": "Name of a value: a section's layout." },
+    "edit.field.program": { "group": "staff", "text": "Colour", "where": "Name of a value: the program colour a row or section wears." },
+    "edit.field.whole": { "group": "staff", "text": "Photo across the whole section", "where": "Name of a value: on or off." },
+    "edit.field.show": { "group": "staff", "text": "What it shows", "where": "Name of a value: which events, or how many messages, a section shows." },
+    "edit.field.skip": { "group": "staff", "text": "Events left out at the start", "where": "Name of a value: a number." },
+    "edit.field.count": { "group": "staff", "text": "How many", "where": "Name of a value: a number." },
+    "edit.field.recent": { "group": "staff", "text": "How many past events", "where": "Name of a value: a number." },
+    "edit.field.heading": { "group": "staff", "text": "Heading level", "where": "Name of a value: h1 or h2." },
+    "edit.field.primary": { "group": "staff", "text": "Main button", "where": "Name of a value: on or off." },
+    "edit.field.ordered": { "group": "staff", "text": "Numbered list", "where": "Name of a value: on or off." },
+    "edit.field.enabled": { "group": "staff", "text": "Section shown", "where": "Name of a value: on or off." },
+    "edit.field.startsOn": { "group": "staff", "text": "First day shown", "where": "Name of a value: a date." },
+    "edit.field.endsOn": { "group": "staff", "text": "Last day shown", "where": "Name of a value: a date." },
+    "edit.field.days": { "group": "staff", "text": "Days shown", "where": "Name of a value: a number." },
+    "edit.field.later": { "group": "staff", "text": "Later events shown", "where": "Name of a value: a number." },
+    "edit.field.tone": { "group": "staff", "text": "Tone", "where": "Name of a value: a workshop answer's tone." },
+    "edit.field.compact": { "group": "staff", "text": "Compact layout", "where": "Name of a value: on or off." },
+    "edit.field.size": { "group": "staff", "text": "Word size", "where": "Name of a value: a word's size in the cloud." },
+    "edit.field.url": { "group": "staff", "text": "Instagram video", "where": "Name of a value: an Instagram post or reel address." },
+    "edit.field.other": { "group": "staff", "text": "Setting", "where": "Name of a value the site has no name for." },
+    "edit.link": {
+      "group": "staff",
+      "text": "Change Where This Link Goes",
+      "where": "Edit box, when the words chosen are a link: opens the link's address."
+    },
+    "edit.section.title": {
+      "group": "staff",
+      "text": "Settings in this section ({{n}})",
+      "where": "Edit box: a fold listing the photos, links and settings of the section the words are in."
+    },
     "auth.error.title": {
       "group": "staff",
       "text": "Unable to sign in",

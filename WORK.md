@@ -13,8 +13,8 @@ Every person named in `content/` is fictional; real team members appear only thr
 |---|---|
 | Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text**. 24–25 Oct (run log §1–8): upload race and failure states, phone menu, a form changed while open, sign-in states and access freshness, width and helper text, stale replies and Back/Forward, the editor's keys, earlier versions and Restore, characters left |
 | Tested | `node ops/check.mjs --browser`: see "Evidence". Connect's feed against a fake Connect (`test/connect-feed.test.mjs`); the rest against a local rig with demo keys (setup file 5): not a live connection. A quick, source-only security audit, 23 Oct (run log §13; its report is kept outside the repository) |
-| Committed | `ae80634` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish of 25 Oct, holding the 24–25 Oct run. The cloud run of 25 Oct is a patch in the owner's private artifact, **not committed** (run log, "Cloud run") |
-| Deployed | Not reread since `ae80634` was published: the cloud run cannot read Netlify. Last read, 25 Oct: `aa5668c` (deploy `6adc3b39`, migrations 001–003); Connect's `7681b68` with migration 032 (20 Oct, not reread). The cloud run's patch is not deployed |
+| Committed | `9bf0ed5` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish of 25 Oct 11:36, holding the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006) |
+| Deployed | Not reread since `9bf0ed5` was published: a cloud session cannot read Netlify. Last read, 25 Oct: `aa5668c` (deploy `6adc3b39`, migrations 001–003); Connect's `7681b68` with migration 032 (20 Oct, not reread). Whether `9bf0ed5`'s deploy and migrations 004–006 applied is not read |
 | Verified live | Netlify's deploy records only (`ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
 
 ## Slice 1 against §12
@@ -151,7 +151,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All locally, each on a regression shown failing first.
 34. **Publishing and refresh** (P1) → slices 1–6 **built locally** 25 Oct (cloud run §3): a save is the published revision,
     drawn by a page function with every cache ≤30 min; the notice, last update, Refresh now; no query forces it. Live: two
-    packages, `netlify.toml`, a deploy (owner). Slice 7: links, photos, choices, on/off, numbers, dates editable too (inventory in `docs/research/`).
+    packages, `netlify.toml`, a deploy (owner). Slice 7 **built locally**: links, photos, choices, on/off, numbers, dates (inventory in `docs/research/`); photos and link addresses opened from the page, each value named (patch, 25 Oct).
 35. ~~No decorative coloured bars~~ **built locally** 25 Oct (cloud run §1): `.form-head`'s 8px accent top is gone; `test/pages.test.mjs`
     checks every edge, longhand, inset shadow, painted pseudo-element, gradient and SVG strip, and failed first on `.form-head`;
     focus, selected, status and charts keep colour (R.31). Screenshots before and after in the cloud artifact.
@@ -168,7 +168,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 
 `site/` is git, `main`, pushed to the public `nicholas-badgersupports/badgersupports`. Only the owner commits, pushes
 and publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`. A session reads git with `git --no-optional-locks` and
-never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish, a cloud session works from GitHub `main` and hands back patches, never commits (run log R.27). The 25 Oct cloud run's work is that patch, not committed. Never link it to Netlify: a Netlify build creates a database.
+never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish, a cloud session works from GitHub `main` and hands back patches, never commits (run log R.27). The 25 Oct cloud run's patch was published as `9bf0ed5`. Never link it to Netlify: a Netlify build creates a database.
 
 ## Exchange
 

@@ -1194,7 +1194,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .edit-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
 .edit-key { margin: 0; color: var(--muted); font-size: var(--fs-small); overflow-wrap: anywhere; }
 .edit-key code { font-size: var(--fs-small); overflow-wrap: anywhere; }
-.edit-history summary { padding: var(--s2) 0; font-weight: 600; cursor: pointer; }
+.edit-history summary, .edit-section summary { padding: var(--s2) 0; font-weight: 600; cursor: pointer; }
 .edit-history p { margin: 0; }
 .edit-versions { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: var(--s2); }
 .edit-versions li { display: grid; gap: var(--s1); justify-items: start; padding: var(--s2) var(--s3); border: 1px solid var(--line); border-radius: var(--r-input); background: var(--cream-soft); }
@@ -1202,6 +1202,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .is-editing [data-edit-target] { outline: 2px dashed var(--focus-ring); outline-offset: 3px; cursor: text; }
 .is-editing [data-edit-target]:hover { outline-style: solid; background: var(--cream-soft); }
 .is-editing [data-edit-target]:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.is-editing img[data-edit-target] { cursor: pointer; outline-offset: -3px; }
+.is-editing img[data-edit-target]:focus-visible { outline-offset: -4px; }
+.edit-section ul { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: var(--s1); }
 @media (max-width: 560px) {
   .edit-ui { right: var(--s2); bottom: var(--s2); left: var(--s2); max-width: none; }
   .edit-bar { justify-content: stretch; }

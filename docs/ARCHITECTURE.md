@@ -241,13 +241,17 @@ and a start not yet used, and the code is traded server to server for a note Con
 Connect's setting says not to share first names) and their scopes. A row in `staff_sessions`, keyed by a hash of the cookie, keeps it for **eight hours**. The cookies are
 HttpOnly, `SameSite=Lax`, and `__Host-` on https. A third cookie, `bss_staff_hint`, says only that someone signed
 in on this browser, so pages know to load the edit button; every staff call checks the real session. Signing out
-ends this site's session only; someone switched off in Connect keeps one already open here until it ends, and
-cannot start another.
+ends this site's session only. **Reading answers lasts an hour from signing in** (built 24 Oct 2026); after that
+the staff page asks for a fresh sign-in, while editing and publishing words last the eight hours. Someone switched
+off in Connect cannot sign in again, and so loses the answers within the hour. "Staying signed in", below, has the
+proposed change that would make a session follow Connect within minutes.
 
 **Handing a submission to Connect** (`deliver.mjs`). After a submission is saved and the reply sent, the function
 sends due `connect.ingest` rows to Connect's Website Forms queue, signed with `PUBLIC_SITE_SERVICE_SECRET`. Opening
-`/staff/` sends anything still waiting. A failure backs off and is retried; "Send waiting answers now" on the staff page
-forces it. An anonymous form carries only what it asked, flagged anonymous (`ingestPayload()`). A form with files
+`/staff/` only reads; it sends nothing (owner ruling, 24 Oct 2026). A failure backs off and is retried by the next
+submission. **Send waiting answers now** on the staff page sends at once, and only the forms that reader may read, checked on the
+server (`staffRetry()`, `router.mjs`): every form for `forms.read:*`, otherwise the forms named. Someone else's
+waiting answers stay where they are. An anonymous form carries only what it asked, flagged anonymous (`ingestPayload()`). A form with files
 adds a `files` list (question, id, name, size, SHA-256), and a column holding a confidential answer is marked
 `confidential`. Each answer is sent as words ("1. Programs"); one chosen from options also comes in `optionIds`,
 because labels can be edited. Connect's ingest drops all three extras today (Exchange `APPLICATION-FILES-HANDOVER`). The `sheets.backup` and
@@ -269,6 +273,37 @@ the site must be on 8899 or 8901, the two returns it accepts; and its seeded acc
 before it may sign in anywhere else. A script calling the rig's `/api` must send an `Origin` header, or it is
 refused. `../PUBLIC-SITE-SETUP-2026-10-20/` file 5 does all of this on a copy of Connect outside the synced
 folder. **This is a local rig with demo keys and in-memory databases, not a live connection.**
+
+### Staying signed in
+
+**Proposed change: Connect has no `publicSsoStatus` yet.** This site's half is built (24 Oct 2026) and stays off
+until `CONNECT_SESSION_STATUS=on`: `sessionFrom()` in `staff.mjs`, `sessionStatus()` in `connect.mjs`, tests in
+`test/staff.test.mjs`. Connect's half is not written; it waits on the intranet session and the owner (WORK.md, 20).
+
+**What this site sends.** Ten minutes after Connect last vouched for a session (`checked_at`), the next staff
+request makes one call, signed as every other: `{ action: "publicSsoStatus", client: "badgersupports-public", sub,
+nonce }`, where `sub` is Connect's id from the sign-in note and `nonce` is new for that call. It waits four seconds
+at most, because a staff request is waiting on it.
+
+**What Connect would answer.** `{ assertion, sig }`, as `publicSsoToken` does: a note signed with
+`PUBLIC_SSO_SECRET`, with `v: 1`, `aud: "badgersupports-public"`, the same `sub`, the same `nonce`, an `exp` still
+ahead, an `iat` no more than a minute ahead, a `name`, a `scopes` list and `active`. Unlike a sign-in note,
+`active: false` is a good answer: it means switched off.
+
+**What this site does with it.**
+- Active: the session keeps only what both notes allow. A check can take a scope away and never adds one; a new
+  scope needs a new sign-in. `scopes`, `name` and `checked_at` are written back.
+- Switched off, or nothing left: the session row is deleted and the request is answered as signed out.
+- No answer, or one that does not check out (signature, `sub`, nonce, audience, time): the session stays as it was
+  until 30 minutes after Connect's last good answer. After that every staff call is answered as signed out, until
+  Connect answers again. Nothing is let through on a guess.
+- Flag off (today): no call. `forms.read:` scopes lapse an hour after sign-in; the router answers `auth.again` and
+  the staff page offers a fresh sign-in. `site.edit` and `site.publish` last the eight hours.
+
+**What this does not solve.** Until Connect ships the action and the owner sets the flag, someone switched off in
+Connect keeps reading answers here for up to an hour, and editing and publishing words for up to eight. With the
+flag on and no action in Connect, every session stops working half an hour after sign-in, so the flag goes on only
+after Connect's half is published.
 
 ## The database
 
@@ -308,7 +343,7 @@ idempotent, and `bss_migrations` records which ran. `001_intake`:
 | Table | Holds |
 |---|---|
 | `auth_starts` | a sign-in gone to Connect and not yet back, keyed by a hash of its state; used once, ten minutes |
-| `staff_sessions` | a signed-in person, keyed by a hash of the cookie: Connect's id, first name, scopes, expiry |
+| `staff_sessions` | a signed-in person, keyed by a hash of the cookie: Connect's id, first name, scopes, expiry, and `checked_at` (from `004_session_check`) |
 | `content_edits` | a word changed with the edit button: place, words, the words replaced, who and when |
 
 `003_files`:
@@ -316,6 +351,12 @@ idempotent, and `bss_migrations` records which ran. `001_intake`:
 | Table | Holds |
 |---|---|
 | `uploads` | one PDF: its id, form, question, name, size (1 byte to 3 MB), SHA-256 and bytes; the submission that claimed it, when, and when Connect confirmed it |
+
+`004_session_check` (built 24 Oct 2026):
+
+| Table | Holds |
+|---|---|
+| `staff_sessions` | adds `checked_at`: when Connect last vouched for the session's scopes, at sign-in or at its latest status answer. A row from before has none and counts from `created_at` |
 
 **The migrations guard** (`netlify/plugins/migrations-guard`, Badger SPILL's, run from `netlify.toml`). Netlify
 applies only the migrations a deploy carries, and a deploy carries only what its "Netlify Database setup" step copied
@@ -325,7 +366,8 @@ ran on both publishes (the logs of 20 and 23 October, `~/Builds/badgersupports-l
 `002_staff`). The guard checks it every time: after the build, any migration not copied, or copied with different
 SQL, stops the deploy before it publishes, and the site online stays as it was. Measured 23 October against the
 23 October build folder: it passes, and with `003_files` added and not copied it stops naming it
-(`test/migrations-guard.test.mjs`). The next publish is the first to add a migration (`003_files`).
+(`test/migrations-guard.test.mjs`). Publishes from 23 October on carry `003_files`; the next carries
+`004_session_check` as well, and the guard checks both the same way.
 
 ## What is not built
 
@@ -365,6 +407,7 @@ Each photo is encoded at build time and served from this site (`DESIGN.md`, "Pho
 | `CONNECT_URL` | sign-in and delivery: Connect's origin | sign-in says "not set up"; submissions wait in the outbox |
 | `PUBLIC_SITE_SERVICE_KEY_ID`, `PUBLIC_SITE_SERVICE_SECRET` | signing calls to Connect; the pair Connect lists in its `PUBLIC_SITE_SERVICE_KEYS` | as above |
 | `PUBLIC_SSO_SECRET` | checking Connect's sign-in note; the same value Connect signs with | as above |
+| `CONNECT_SESSION_STATUS` | `on` once Connect answers `publicSsoStatus` ("Staying signed in", a proposed change) | reading answers lasts an hour from signing in |
 | `LOCAL_DB`, `LOCAL_DB_DIR` | the local rig and tests only | — |
 
 None has been set: the project was created empty on 20 Oct 2026. Set values never go in a file here.

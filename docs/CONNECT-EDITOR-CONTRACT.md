@@ -333,6 +333,8 @@ Reads: nothing but its own fields · analytics: `none` · photos load eager · b
 | `title` | one line of text | **required** |
 | `body` | one or more paragraphs | **required** |
 | `signIn` | one line of text | **required** |
+| `helpTitle` | one line of text |  |
+| `help` | one or more paragraphs |  |
 
 ### Resource list — `resources`
 
@@ -470,7 +472,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-289 keys. Keys are permanent. Required text cannot be published empty and must keep each
+303 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -599,7 +601,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (65)
+### Forms (67)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -622,6 +624,8 @@ the site adds the markup.
 | `form.closedNow.copy` | Your answers were not sent. Here is what you wrote, so you can keep a copy: | Under that heading, without JavaScript, above the person's own answers. |  |
 | `form.updated.title` | This form was updated while it was open | When the questions changed while someone had the form open. |  |
 | `form.updated.body` | Check the answers marked below. The rest of what you wrote is kept. | Under that heading. | optional |
+| `form.updated.ahead` | The questions on this form have changed since this page loaded. When you press Send, any new questions will appear here and the answers you have given will be kept. | Under that heading, with JavaScript, when someone comes back to a form whose questions have changed but has not pressed Send yet. |  |
+| `form.updated.gone` | These answers are to questions the form no longer asks, so they will not be sent. They are shown here so you can copy anything you need: | Under that heading, with JavaScript, above any answers to questions the updated form no longer asks. |  |
 | `form.sending` | Sending… | While a form is being sent. |  |
 | `form.status.network` | Unable to send — check your connection and press Send again. Your answers are kept, and sending again will not create a second request. | When the connection failed. |  |
 | `form.status.rateLimited` | Unable to send right now — too many requests from this connection. Wait a few minutes, then press Send again. Your answers are kept. | When one connection has sent too many. |  |
@@ -688,17 +692,25 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (82)
+### Staff page and edit button (94)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `staff.signedInAs` | Signed in as {{name}} | Staff page, top of the tools: who is signed in. | `{{name}}` |
 | `staff.signedIn` | Signed in | Staff page, top of the tools, when Connect is set not to share first names. |  |
 | `staff.signOut` | Sign Out | Staff page, button beside the name. |  |
+| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. |  |
+| `staff.ended` | Your sign-in has ended. Sign in again to carry on. | Staff page, above the Sign in button, when this browser was signed in before and is not now. |  |
+| `staff.returnTo` | Back to the Page You Were On | Staff page, for someone already signed in who was sent here from another page. |  |
 | `staff.notConfigured` | Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first. | Staff page, in place of the Sign in button when Connect is not set up. |  |
-| `staff.loadError` | Unable to load this right now. Reload the page to try again. | Staff page, when a list fails to load. |  |
+| `staff.loadError` | Unable to load this right now. Check your connection and try again. | Staff page, when a list fails to load. |  |
+| `staff.tryAgain` | Try Again | Staff page, the button beside a check or list that failed to load. |  |
+| `staff.forbidden` | Your Connect role does not include this form now. A super admin can change that in Connect, under Website Forms. | Staff page, in place of a form’s answers when the account may no longer read them. |  |
 | `staff.nothing` | Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms. | Staff page, for someone signed in whose role reaches neither forms nor words. |  |
+| `staff.readAgain` | For the privacy of the people who wrote in, answers can be read for an hour after signing in. Sign in again to keep reading. | Staff page, in place of the forms, or of one form's answers, once reading needs a fresh sign-in. |  |
+| `staff.signInAgain` | Sign In Again | Staff page, button under the note that reading answers needs a fresh sign-in. |  |
 | `staff.forms.title` | Website Forms | Staff page, heading above the list of forms. |  |
+| `staff.forms.how` | Working through answers — replying, assigning, closing — happens in Connect, under Website Forms. | Staff page, under Website Forms, for someone who may read answers. |  |
 | `staff.forms.empty` | No forms to show. | Staff page, when there are no forms your role can read. |  |
 | `staff.forms.none` | No answers yet. | Staff page, under a form nobody has filled in. |  |
 | `staff.forms.count.one` | {{n}} answer | Staff page, under a form with one answer. | `{{n}}` |
@@ -711,9 +723,11 @@ the site adds the markup.
 | `staff.delivery.failed` | {{n}} could not be sent | Staff page, how many answers failed to reach Connect. | `{{n}}` |
 | `staff.delivery.off` | Connect is not set up for this copy of the site, so answers are kept here and sent once it is. | Staff page, above the forms when Connect is not set up. |  |
 | `staff.retry` | Send Waiting Answers Now | Staff page, button under the forms when some have not reached Connect. |  |
+| `staff.retrying` | Sending… | Staff page, on the send button while waiting answers are sent. |  |
 | `staff.retried` | {{sent}} sent, {{failed}} still waiting. | Staff page, read aloud after pressing the send button. | `{{sent}}` `{{failed}}` |
 | `staff.answers.show` | Show Latest Answers | Staff page, button under a form. |  |
 | `staff.answers.hide` | Hide Answers | Staff page, the same button once the answers are showing. |  |
+| `staff.answers.loading` | Loading Answers… | Staff page, on the Show button while a form’s answers load. |  |
 | `staff.answers.caption` | {{title}}: newest {{shown}} of {{total}} | Staff page, above a table of answers. | `{{title}}` `{{shown}}` `{{total}}` |
 | `staff.answers.region` | Answers to {{title}} | Staff page, read aloud for the scrolling table of answers. | `{{title}}` |
 | `staff.answers.ref` | Reference | Staff page, first column of the answers table. |  |
@@ -757,7 +771,9 @@ the site adds the markup.
 | `edit.error.value` | These words cannot be saved as written. Links and web addresses are changed in Connect, not here. | Edit box, when the words are not allowed. |  |
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
 | `edit.error.failed` | Unable to save right now. Try again. | Edit box, when saving fails. |  |
-| `edit.error.signedOut` | You are signed out. Sign in again on the staff page, then come back. | Edit button, when the sign-in has ended. |  |
+| `edit.error.signedOut` | Your sign-in has ended. Your words are still in the box: sign in again in the new tab, then come back here and press Save. | Edit box, when Save finds the sign-in has ended; the words typed stay in the box. |  |
+| `edit.error.ended` | Your sign-in has ended. Sign in again to change words. | Edit button, when the sign-in has ended before Edit text was opened. |  |
+| `edit.signInAgain` | Sign In Again | Edit button, the link that opens the sign-in in a new tab once the sign-in has ended. |  |
 | `edit.more` | More Words | Button beside Edit text: words that are not on the screen right now. |  |
 | `edit.more.title` | More Words | Heading of the More words list. |  |
 | `edit.more.find` | Find Words | Label of the search box in the More words list. |  |

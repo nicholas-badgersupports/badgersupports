@@ -140,7 +140,8 @@ function section(def, s, values, errors, t, ctx) {
 }
 
 /* errors: { questionId: code }. notice: { title, text } shown above the form (stale tab, closed
-   while open, version changed). idemKey: carried through a no-JS correction so a resend is the
+   while open, version changed), with `kept` label/value rows under `keptText` when answers are
+   given back rather than sent. idemKey: carried through a no-JS correction so a resend is the
    same submission. ctx: the render context, for links inside the form's words. preview: the form
    shown for review while it is closed (prototype builds only); the browser sends nothing. */
 export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false }) {
@@ -156,7 +157,7 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
     <p>${ordered.length === 1 ? t("form.errors.one") : t("form.errors.many", { n: ordered.length })}</p>
     <ul data-error-list>${ordered.map(({ q }) => html`<li><a href="#${fid(q)}">${errorText(errors[q.id], q, t)}</a></li>`)}</ul>
   </div>
-  <div${attrs({ class: "form-notice", "data-form-notice": "", hidden: !shown })}>${shown ? html`<h2>${shown.title}</h2><p>${shown.text}</p>` : ""}</div>
+  <div${attrs({ class: "form-notice", "data-form-notice": "", hidden: !shown })}>${shown ? html`<h2>${shown.title}</h2><p>${shown.text}</p>${shown.kept?.length ? html`<p>${shown.keptText}</p><dl class="kept-answers">${shown.kept.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}` : ""}</div>
   ${anyRequired && t("form.rule") ? html`<p class="form-rule">${t("form.rule")}</p>` : ""}
   ${def.sections.map((s) => section(def, s, values, errors, t, ctx))}
   <div class="form-actions"><button type="submit" class="btn" data-submit>${def.submitLabel || t("form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>

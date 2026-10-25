@@ -126,7 +126,8 @@ async function enter() {
     ui.toggle.disabled = true;
     const got = await load();
     ui.toggle.disabled = false;
-    if (got !== 200) { say(got === 401 ? t("edit.error.signedOut") : t("edit.error.failed")); return; }
+    if (got === 401) { say(t("edit.error.ended"), " ", signInAgain(false)); return; }
+    if (got !== 200) { say(t("edit.error.failed")); return; }
   }
   editing = true;
   document.documentElement.classList.add("is-editing");
@@ -199,7 +200,7 @@ async function save(value) {
     d.status.textContent = t("edit.conflict");
     return;
   }
-  if (r.status === 401) { d.status.textContent = t("edit.error.signedOut"); return; }
+  if (r.status === 401) { d.status.replaceChildren(t("edit.error.signedOut"), " ", signInAgain(true)); return; }
   const why = String(r.body.error || "").split(".")[1] || "";
   d.status.textContent = (why && t(`edit.error.${why}`)) || t("edit.error.failed");
 }
@@ -229,9 +230,16 @@ function moreList() {
 /* ---------- the bar ---------- */
 
 let liveLine;
-function say(words) {
+function say(...words) {
   liveLine.textContent = "";
-  requestAnimationFrame(() => { liveLine.textContent = words; });
+  requestAnimationFrame(() => { liveLine.replaceChildren(...words); });
+}
+
+/* Sign in again, coming back to this page (held to netlify/lib/staff.mjs, returnPath). From the box
+   it opens a new tab, so the words typed there are still there to save. */
+function signInAgain(newTab) {
+  const path = /^\/(?!\/)[A-Za-z0-9\-._~/]*$/.test(location.pathname) && location.pathname.length <= 200 ? location.pathname : "/staff/";
+  return el("a", { href: `/api/auth/start?return=${encodeURIComponent(path)}`, textContent: t("edit.signInAgain"), ...(newTab ? { target: "_blank", rel: "noopener" } : {}) });
 }
 
 function drawBar() {

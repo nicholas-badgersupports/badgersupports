@@ -6,6 +6,8 @@
  *     failure, can never create a second submission;
  *   - a form closed while the tab was open says so before anyone types more, and again if they
  *     press Send — the server refuses either way;
+ *   - a form whose questions changed while the tab was open says so, and at Send the server's
+ *     reply, the form as it now stands with the answers that still fit, takes this one's place;
  *   - a file question sends its PDF on its own as soon as it is chosen, and the form sends only
  *     the id the server gave it (netlify/lib/files.mjs). Send waits for an upload in progress.
  * A preview (data-preview, prototype builds only) checks answers the same way and sends nothing.
@@ -122,18 +124,25 @@ function previewFileId() {
 const isPdf = (file) => file.type === "application/pdf" || (!file.type && /\.pdf$/i.test(file.name));
 
 /* One file question: the chosen PDF goes up at once, on its own, and its id goes into the hidden
-   input the form sends. Choosing again replaces it; a reply for an older choice is ignored. */
-function uploader(form, key, box, { preview, uploads, onClosed }) {
+   input the form sends. Choosing again replaces it at once: the older upload is stopped, its reply
+   is ignored, and Send stops waiting for it (ops/interact.mjs shows each case in a browser). */
+function uploader(form, key, box, { preview, uploads, onClosed, onSettled }) {
   const input = box.querySelector("[data-file]");
   const id = box.querySelector("[data-file-id]");
   const status = box.querySelector("[data-upload-status]");
   const q = box.dataset.upload;
   const maxMb = QUESTION_TYPES.file.maxBytes / (1024 * 1024);
   let turn = 0;
+  let going = null; // the upload in progress for this question, so a new choice can stop it
   const say = (text) => { status.textContent = text; };
   const fail = (text) => { id.value = ""; input.value = ""; say(text); };
   input.addEventListener("change", async () => {
     const mine = ++turn;
+    // A new choice ends the old one at once: whatever it was, nothing of it is going up any more.
+    if (going) going.abort();
+    going = null;
+    uploads.delete(q);
+    onSettled();
     const file = input.files && input.files[0];
     id.value = "";
     if (!file) { say(""); return; }
@@ -142,11 +151,13 @@ function uploader(form, key, box, { preview, uploads, onClosed }) {
     if (preview) { id.value = previewFileId(); say(t("form.preview.file", { name: file.name })); return; }
     say(t("form.upload.uploading", { name: file.name }));
     uploads.add(q);
+    const stop = going = new AbortController();
     try {
       const res = await fetch(`/api/forms/${key}/files?q=${encodeURIComponent(q)}`, {
         method: "POST",
         headers: { "content-type": "application/pdf", accept: "application/json", "x-file-name": encodeURIComponent(file.name) },
         body: file,
+        signal: stop.signal,
       });
       const body = await res.json().catch(() => ({}));
       if (mine !== turn) return;
@@ -159,12 +170,34 @@ function uploader(form, key, box, { preview, uploads, onClosed }) {
     } catch {
       if (mine === turn) fail(t("form.upload.failed"));
     } finally {
-      if (mine === turn) uploads.delete(q);
+      if (mine === turn) { going = null; uploads.delete(q); onSettled(); }
     }
   });
 }
 
-for (const form of document.querySelectorAll("form[data-form]")) {
+/* The questions changed while the tab was open, and Send's reply carries the form as it now stands
+   (netlify/lib/router.mjs formSubmit): the answers that still fit, any new questions, each problem
+   marked, and anything typed for a question that is gone listed under the notice, not sent. It
+   takes this form's place and is enhanced the same way, keeping this form's key, so the next Send
+   is still the same submission. An uploaded file that still has its question stays, and says so.
+   The markup is the server's render of the text table (src/render/form.mjs), so it adds no word. */
+function swapForm(form, markup) {
+  const doc = new DOMParser().parseFromString(markup, "text/html");
+  const next = doc.querySelector(`form[data-form="${form.dataset.form}"]`);
+  const island = next?.querySelector(`#form-def-${form.dataset.form}`);
+  if (!island) return false;
+  for (const box of next.querySelectorAll("[data-upload]")) {
+    const was = form.querySelector(`[data-upload="${box.dataset.upload}"]`);
+    const kept = box.querySelector("[data-file-id]").value;
+    if (was && kept && was.querySelector("[data-file-id]").value === kept) box.querySelector("[data-upload-status]").textContent = was.querySelector("[data-upload-status]").textContent;
+  }
+  form.replaceWith(next);
+  enhance(next, { started: true });
+  next.querySelector("[data-error-summary]:not([hidden])")?.focus();
+  return true;
+}
+
+function enhance(form, { started = false } = {}) {
   const key = form.dataset.form;
   const def = JSON.parse(document.getElementById(`form-def-${key}`).textContent);
   const submit = form.querySelector("[data-submit]");
@@ -173,7 +206,6 @@ for (const form of document.querySelectorAll("form[data-form]")) {
   const preview = "preview" in form.dataset;
   if (!idem.value) idem.value = newKey();
   form.noValidate = true;
-  let started = false;
   let checkedAt = 0;
   let closed = false;
   const uploads = new Set(); // file questions with an upload in progress
@@ -190,16 +222,20 @@ for (const form of document.querySelectorAll("form[data-form]")) {
       const res = await fetch(`/api/forms/${key}/state`, { headers: { accept: "application/json" }, cache: "no-store" });
       const s = await res.json();
       if (s.state === "closed") close(s.closedMessage || "");
+      // Newer questions than this page has: say so now, and Send brings them in with the answers kept.
+      else if (s.version && s.version !== def.version) notice(form, t("form.updated.title"), t("form.updated.ahead"));
     } catch { /* offline: the server still decides at Send */ }
   };
 
-  for (const box of form.querySelectorAll("[data-upload]")) uploader(form, key, box, { preview, uploads, onClosed: close });
+  // "Wait for your file" goes once nothing is going up, so it never outlasts the upload it meant.
+  const settled = () => { if (!uploads.size && status.textContent === t("form.upload.wait")) status.textContent = ""; };
+  for (const box of form.querySelectorAll("[data-upload]")) uploader(form, key, box, { preview, uploads, onClosed: close, onSettled: settled });
   applyVisibility(form, def);
   // A preview is of a closed form, so it neither asks whether the form is open nor counts a start.
   if (!preview) {
     checkState();
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && Date.now() - checkedAt > STALE_MS) checkState();
+      if (form.isConnected && document.visibilityState === "visible" && Date.now() - checkedAt > STALE_MS) checkState();
     });
   }
 
@@ -240,6 +276,7 @@ for (const form of document.querySelectorAll("form[data-form]")) {
     status.textContent = "";
     if (body.error === "form.closed") { close(body.closedMessage || ""); return; }
     if (body.error === "answers.invalid") {
+      if (body.form && swapForm(form, body.form)) return;
       if (body.version && body.version !== def.version) notice(form, t("form.updated.title"), t("form.updated.body"));
       // An upload the server no longer has is chosen again from scratch.
       for (const [id, code] of Object.entries(body.errors || {})) {
@@ -253,3 +290,5 @@ for (const form of document.querySelectorAll("form[data-form]")) {
     status.textContent = t("form.status.serverError");
   });
 }
+
+for (const form of document.querySelectorAll("form[data-form]")) enhance(form);

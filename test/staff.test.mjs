@@ -35,7 +35,7 @@ const hmac = (key, s) => b64u(crypto.createHmac("sha256", key).update(s).digest(
 /* Connect's canonical JSON for a flat note: keys sorted, nothing else to it. */
 const sortedJson = (o) => JSON.stringify(Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]])));
 
-function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], name = "Robin Example" } = {}) {
+function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], name = "Robin Example", statusCheck = false } = {}) {
   const keyId = "test-key-1";
   const secret = "test-service-secret-made-up-for-this-file-only";
   const ssoSecret = "test-sso-secret-made-up-for-this-file-only-too";
@@ -43,8 +43,12 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
   const seenNonces = new Set();
   const fake = {
     scopes, name,
+    active: true,     // switched off in Connect when false
     sso: "ok",        // ok | refuse | badsig | wrongnonce | down
     ingest: "ok",     // ok | refuse | down
+    status: "ok",     // ok | refuse | badsig | replay | down: publicSsoStatus, the proposed action
+    statusCalls: 0,
+    firstStatus: null,
     received: [],
     stored: new Map(),
     verifiers: [],
@@ -61,6 +65,7 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
   async function fetch(href, init) {
     if (fake.sso === "down" && JSON.parse(init.body).action === "publicSsoToken") throw new TypeError("fetch failed");
     if (fake.ingest === "down" && JSON.parse(init.body).action === "publicFormIngest") throw new TypeError("fetch failed");
+    if (fake.status === "down" && JSON.parse(init.body).action === "publicSsoStatus") throw new TypeError("fetch failed");
     const u = new URL(href);
     assert.equal(u.origin, CONNECT);
     assert.equal(u.pathname, "/api");
@@ -100,10 +105,28 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
       fake.stored.set(body.ref, body);
       return reply({ ok: true, ref: body.ref, stored });
     }
+
+    /* The proposed status action (docs/ARCHITECTURE.md, "Staying signed in"): a fresh note for one
+       person, signed like a sign-in note, with active false and no scopes once they are switched off. */
+    if (body.action === "publicSsoStatus") {
+      fake.statusCalls += 1;
+      if (fake.status === "refuse") return unknown();
+      if (fake.status === "replay" && fake.firstStatus) return reply(fake.firstStatus);
+      if (body.client !== "badgersupports-public" || typeof body.sub !== "string" || typeof body.nonce !== "string") return unknown();
+      const now = Math.floor(Date.now() / 1000);
+      const on = fake.active && body.sub === "u-test-0001";
+      const assertion = {
+        v: 1, iss: CONNECT, aud: "badgersupports-public", iat: now, exp: now + 120, nonce: body.nonce,
+        sub: body.sub, name: on ? fake.name : "", active: on, scopes: on ? fake.scopes : [],
+      };
+      const out = { ok: true, assertion, sig: hmac(fake.status === "badsig" ? "not-the-shared-secret" : ssoSecret, sortedJson(assertion)) };
+      fake.firstStatus ??= out;
+      return reply(out);
+    }
     return unknown();
   }
 
-  fake.cfg = { url: CONNECT, keyId, secret, ssoSecret, fetch };
+  fake.cfg = { url: CONNECT, keyId, secret, ssoSecret, fetch, statusCheck };
   return fake;
 }
 
@@ -268,7 +291,14 @@ test("with Connect not set up, signing in says so, and answers wait rather than 
     useConnect(null);
     const start = await handle(get("/api/auth/start", { json: false }), ip());
     assert.equal(start.status, 503);
-    assert.match(await start.text(), /not set up/);
+    const said = await start.text();
+    assert.match(said, /not set up/);
+    assert.match(said, /<a href="\/staff\/">/);
+    // Sent from another page: the way back still carries it, and an address off the site is dropped.
+    const from = await (await handle(get(`/api/auth/start?return=${encodeURIComponent("/forms/workshop-request/")}`, { json: false }), ip())).text();
+    assert.match(from, /<a href="\/staff\/\?return=%2Fforms%2Fworkshop-request%2F">/);
+    const away = await (await handle(get(`/api/auth/start?return=${encodeURIComponent("//elsewhere.test/")}`, { json: false }), ip())).text();
+    assert.match(away, /<a href="\/staff\/">/);
     const me = await handle(get("/api/staff/me"), ip());
     assert.equal(me.status, 401);
     assert.deepEqual(await me.json(), { ok: false, error: "auth.required", configured: false });
@@ -333,6 +363,132 @@ test("a director reads only the forms Connect lets them read, edits only with si
   const forged = await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" }, e.cookie, { origin: "http://elsewhere.test" }), ip());
   assert.equal(forged.status, 403);
   assert.equal((await forged.json()).error, "origin.refused");
+});
+
+/* ------------------------------------------------------------------ how long Connect's word lasts */
+
+/* Moves every session's sign-in, and its last word from Connect, this many minutes into the past. */
+const age = (minutes) => q(`UPDATE staff_sessions SET created_at = created_at - $1::int * interval '1 minute',
+                                   checked_at = coalesce(checked_at, created_at) - $1::int * interval '1 minute'`, [minutes]);
+const meFor = async (cookie) => {
+  const r = await handle(get("/api/staff/me", { cookie }), ip());
+  return r.status === 200 ? r.json() : r.status;
+};
+const answersFor = (cookie, key = "workshop-request") => handle(get(`/api/staff/forms/${key}/submissions`, { cookie }), ip());
+const refusal = async (res) => [res.status, (await res.json()).error];
+const SKIP = { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" };
+
+test("with no status check from Connect, reading answers needs a sign-in within the hour, and words last the working day", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  assert.equal((await answersFor(cookie)).status, 200);
+  await age(59);
+  assert.equal((await meFor(cookie)).canRead, true, "59 minutes after signing in, answers can still be read");
+
+  await age(2);
+  const later = await meFor(cookie);
+  assert.deepEqual([later.canRead, later.readAgain, later.canEdit, later.canPublish], [false, true, true, true], "an hour on, reading stops and the page says to sign in again");
+  assert.deepEqual(await refusal(await answersFor(cookie)), [403, "auth.again"], "a direct request for answers is refused");
+  assert.deepEqual(await refusal(await handle(staffPost("/api/staff/outbox/retry", {}, cookie), ip())), [403, "auth.again"]);
+  assert.deepEqual((await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms, [], "no form is listed");
+  assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 200, "changing words still works");
+  assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200, "and so does the publish file");
+  assert.equal(fake.statusCalls, 0, "nothing asked Connect");
+
+  const again = await signIn(fake);
+  assert.equal((await meFor(again.cookie)).canRead, true, "signing in again gives reading back");
+  assert.equal((await answersFor(again.cookie)).status, 200);
+
+  // A reader of one form is told to sign in again for that form, and never for another.
+  const reader = fakeConnect({ scopes: ["forms.read:workshop-request"] });
+  useConnect(reader.cfg);
+  const r = await signIn(reader);
+  await age(61);
+  const rm = await meFor(r.cookie);
+  assert.deepEqual([rm.canRead, rm.readAgain, rm.canEdit], [false, true, false]);
+  assert.deepEqual(await refusal(await answersFor(r.cookie)), [403, "auth.again"]);
+  assert.deepEqual(await refusal(await answersFor(r.cookie, "programming-feedback")), [403, "staff.forbidden"]);
+
+  // Someone who never read answers is not asked to sign in again to read them.
+  const editor = fakeConnect({ scopes: ["site.edit"] });
+  useConnect(editor.cfg);
+  const e = await signIn(editor);
+  await age(61);
+  const em = await meFor(e.cookie);
+  assert.deepEqual([em.canRead, em.readAgain, em.canEdit], [false, false, true]);
+  assert.deepEqual(await refusal(await answersFor(e.cookie)), [403, "staff.forbidden"]);
+});
+
+test("with Connect's status check on, a session is checked again after ten minutes: fewer scopes take effect, and switched off ends it", async () => {
+  await freshServer();
+  const fake = fakeConnect({ statusCheck: true });
+  useConnect(fake.cfg);
+  let { cookie } = await signIn(fake);
+  assert.equal((await meFor(cookie)).canRead, true);
+  assert.equal(fake.statusCalls, 0, "a new note is not checked again at once");
+
+  fake.scopes = ["site.edit"];
+  await age(9);
+  assert.equal((await meFor(cookie)).canPublish, true, "nine minutes on, the note still stands");
+  assert.equal(fake.statusCalls, 0);
+  await age(2);
+  const narrowed = await meFor(cookie);
+  assert.deepEqual([narrowed.canRead, narrowed.canEdit, narrowed.canPublish, narrowed.readAgain], [false, true, false, false], "Connect took reading and publishing away");
+  assert.equal(fake.statusCalls, 1);
+  assert.deepEqual(await refusal(await answersFor(cookie)), [403, "staff.forbidden"]);
+  assert.equal((await meFor(cookie)).canEdit, true);
+  assert.equal(fake.statusCalls, 1, "checked once, then trusted for ten minutes");
+
+  fake.scopes = ["forms.read:*", "site.edit", "site.publish"];
+  await age(11);
+  assert.deepEqual([(await meFor(cookie)).canRead, fake.statusCalls], [false, 2], "a check never adds access; signing in again does");
+
+  // Every form narrowed to one leaves that one.
+  ({ cookie } = await signIn(fake));
+  fake.scopes = ["forms.read:workshop-request", "site.edit", "site.publish"];
+  await age(11);
+  assert.deepEqual((await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms.map((f) => f.key), ["workshop-request"]);
+  assert.deepEqual(await refusal(await answersFor(cookie, "programming-feedback")), [403, "staff.forbidden"]);
+
+  // Switched off in Connect: the next check ends the session here.
+  fake.active = false;
+  await age(11);
+  assert.equal(await meFor(cookie), 401);
+  assert.equal((await answersFor(cookie)).status, 401, "a direct request for answers is refused");
+  assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 401);
+  assert.equal((await (await handle(get("/api/auth/status", { cookie }), ip())).json()).signedIn, false);
+  const id = cookie.match(/bss_staff=([^;]+)/)[1];
+  assert.equal((await one("SELECT count(*)::int AS n FROM staff_sessions WHERE id_hash = $1", [crypto.createHash("sha256").update(id).digest("hex")])).n, 0, "the session row is gone");
+});
+
+test("with the status check on, Connect not answering keeps a session as it was for half an hour, then nothing works until it answers", async () => {
+  for (const mode of ["down", "refuse", "badsig", "replay"]) {
+    await freshServer();
+    const fake = fakeConnect({ statusCheck: true });
+    useConnect(fake.cfg);
+    const { cookie } = await signIn(fake);
+    await age(11);
+    assert.equal((await meFor(cookie)).canRead, true, `${mode}: a first check, which a replay will resend`);
+
+    fake.status = mode;
+    fake.scopes = ["site.edit"];
+    await age(11);
+    const kept = await meFor(cookie);
+    assert.deepEqual([kept.canRead, kept.canPublish], [true, true], `${mode}: eleven minutes after Connect's last answer, kept as it was`);
+
+    await age(20);
+    assert.equal(await meFor(cookie), 401, `${mode}: half an hour on, refused`);
+    assert.equal((await answersFor(cookie)).status, 401, mode);
+    assert.equal((await handle(staffPost("/api/staff/outbox/retry", {}, cookie), ip())).status, 401, mode);
+    assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 401, mode);
+    assert.equal((await one("SELECT count(*)::int AS n FROM staff_sessions")).n, 1, `${mode}: an outage is not a sign-out`);
+
+    fake.status = "ok";
+    const back = await meFor(cookie);
+    assert.deepEqual([back.canRead, back.canEdit, back.canPublish], [false, true, false], `${mode}: Connect answering again brings the session back, as Connect now says`);
+  }
 });
 
 /* ------------------------------------------------------------------ forms into Connect */
@@ -427,6 +583,63 @@ test("a delivery that fails waits longer each time, shows as failing, and Try ag
   await deliveriesSettled();
   assert.deepEqual((await many("SELECT state FROM outbox WHERE kind = 'connect.ingest' ORDER BY id")).map((x) => x.state), ["sent", "failed"]);
   assert.equal((await one("SELECT last_error FROM outbox WHERE kind = 'connect.ingest' AND state = 'failed'")).last_error, "connect.unreachable");
+});
+
+test("opening the staff page sends nothing, and Try again sends only the forms the reader may read", async () => {
+  await freshServer();
+  const fake = fakeConnect({ scopes: ["forms.read:*"] });
+  fake.ingest = "refuse";
+  useConnect(fake.cfg);
+  const send = async (path, body) => (await (await handle(post(path, body), ip())).json()).ref;
+  const workshop = await send("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0401-aaaa" }));
+  const feedback = await send("/api/forms/programming-feedback/submit", {
+    _form: "programming-feedback", _version: "1", _key: "k-0402-bbbb", category: "craft", craft_activity: "bracelets_f26", craft_enjoyed: "Calm room.",
+  });
+  await deliveriesSettled();
+  // Both failed once and are due again; Connect now takes anything it is sent.
+  await q("UPDATE outbox SET next_at = now() WHERE kind = 'connect.ingest'");
+  fake.ingest = "ok";
+  const rows = async () => Object.fromEntries((await many(
+    `SELECT s.form_key, o.state FROM outbox o JOIN submissions s ON s.id = o.submission_id WHERE o.kind = 'connect.ingest'`)).map((r) => [r.form_key, r.state]));
+  const as = async (scopes) => { fake.scopes = scopes; return (await signIn(fake)).cookie; };
+  const retry = (cookie, opts) => handle(staffPost("/api/staff/outbox/retry", {}, cookie, opts), ip());
+  assert.deepEqual(await rows(), { "workshop-request": "failed", "programming-feedback": "failed" });
+
+  // Reading is reading, even for a reader of every form.
+  const all = await as(["forms.read:*"]);
+  assert.equal((await handle(get("/api/staff/forms", { cookie: all }), ip())).status, 200);
+  await deliveriesSettled();
+  assert.deepEqual(await rows(), { "workshop-request": "failed", "programming-feedback": "failed" }, "opening the staff page sent something");
+  assert.equal(fake.received.length, 0);
+
+  // A reader of a form with nothing waiting sends nothing.
+  const other = await retry(await as(["forms.read:email-list"]));
+  assert.equal(other.status, 200);
+  assert.deepEqual(((b) => [b.sent, b.failed, b.forms.map((f) => f.key)])(await other.json()), [0, 0, ["email-list"]]);
+  assert.deepEqual(await rows(), { "workshop-request": "failed", "programming-feedback": "failed" }, "an unrelated reader's Try again sent another form");
+
+  // Editing or publishing words is not reading answers.
+  const editor = await retry(await as(["site.edit", "site.publish"]));
+  assert.deepEqual([editor.status, (await editor.json()).error], [403, "staff.forbidden"]);
+
+  // Asked directly, without a session or from another site, the server says no and sends nothing.
+  const reader = await as(["forms.read:workshop-request"]);
+  assert.equal((await retry("")).status, 401);
+  assert.equal((await retry(reader, { origin: "https://elsewhere.example" })).status, 403);
+  assert.equal((await retry(reader, { headers: { cookie: reader, "sec-fetch-site": "cross-site" } })).status, 403);
+  assert.equal(fake.received.length, 0);
+
+  // A reader of one form sends that form's answers and leaves the other's alone.
+  const mine = await retry(reader);
+  const mb = await mine.json();
+  assert.deepEqual([mb.sent, mb.failed, mb.forms.map((f) => f.key)], [1, 0, ["workshop-request"]]);
+  assert.deepEqual(await rows(), { "workshop-request": "sent", "programming-feedback": "failed" });
+  assert.deepEqual(fake.received.map((b) => b.ref), [workshop]);
+
+  // forms.read:* covers every form, so its Try again sends the rest.
+  const rest = await (await retry(all)).json();
+  assert.deepEqual([rest.sent, rest.failed], [1, 0]);
+  assert.deepEqual(fake.received.map((b) => b.ref), [workshop, feedback]);
 });
 
 /* ------------------------------------------------------------------ the edit button */

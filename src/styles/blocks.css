@@ -1123,6 +1123,17 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff h1 { font-size: var(--fs-page); margin-bottom: var(--s4); }
 .staff .text-body { max-width: var(--measure); }
 .staff-signin { margin-top: var(--s5); }
+.staff-checking { margin-top: var(--s5); color: var(--muted); font-weight: 600; }
+/* A browser signed in before: the checking line stands where the button is until staff.js knows,
+   and the inline script's timer gives the button back if staff.js never runs (blocks/staff.mjs). */
+.js.staff-hint .staff-checking[hidden] { display: block !important; }
+.js.staff-hint .staff-signin { display: none; }
+.staff-state { margin-top: var(--s4); max-width: var(--measure); display: grid; gap: var(--s3); justify-items: start; }
+.staff-state .staff-note, .staff-answers .staff-note { margin: 0; }
+.staff-help { margin-top: var(--s4); max-width: var(--measure); }
+.staff-help > summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; cursor: pointer; }
+.staff-help > summary:hover { color: var(--accent-deep); text-decoration: underline; }
+.staff-help p { margin: var(--s2) 0 0; }
 .staff-app { margin-top: var(--s5); max-width: 60rem; }
 .staff-who { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); }
 .staff-who p { margin: 0; font-weight: 600; }
@@ -1130,6 +1141,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-part h2 { color: var(--accent); margin-bottom: var(--s4); }
 .staff-part > p + p { margin-top: var(--s2); }
 .staff-note { padding: var(--s3) var(--s4); border: var(--rule-line); border-radius: var(--r-card); background: var(--cream-soft); color: var(--ink); }
+.staff-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); }
 .staff-forms { list-style: none; margin: 0 0 var(--s4); padding: 0; display: grid; gap: var(--s3); }
 .staff-form { min-width: 0; padding: var(--s4); border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }
 .staff-form h3 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-bottom: var(--s2); }

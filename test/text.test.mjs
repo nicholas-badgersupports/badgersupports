@@ -32,6 +32,8 @@ test("the editable scan catches a planted word (calibration)", () => {
   assert.ok(sourceProblems("x.mjs", 'const a = html`<button aria-label="Close menu"></button>`;').length === 1);
   assert.ok(sourceProblems("x.mjs", 'link(ctx, "/a", "Read more")').length === 1);
   assert.ok(sourceProblems("x.js", 'el.textContent = "Loading";', { client: true }).length === 1);
+  assert.ok(sourceProblems("x.js", 'new DOMParser().parseFromString("<p>Hello there</p>", "text/html");', { client: true }).length === 1);
+  assert.equal(sourceProblems("x.js", 'new DOMParser().parseFromString(markup, "text/html");', { client: true }).length, 0);
   assert.equal(sourceProblems("x.mjs", 'const a = html`<p>${t("x.y")}</p>`;').length, 0);
 });
 

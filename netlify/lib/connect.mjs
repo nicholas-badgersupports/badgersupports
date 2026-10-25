@@ -1,8 +1,11 @@
 /* The only file that talks to Badger Supports Connect (home.badgersupports.org).
  *
- * Two kinds of call, both signed server to server and never made from a browser:
+ * Calls, all signed server to server and never made from a browser:
  *   publicSsoToken    trade the one-time code Connect's sign-in page sent back for a signed note
  *                     of who this is and what they may do here (staff.mjs).
+ *   publicSsoStatus   PROPOSED CHANGE, not in Connect yet: a fresh note for someone already signed
+ *                     in, so a session here follows Connect within minutes (staff.mjs). Made only
+ *                     with CONNECT_SESSION_STATUS=on; docs/ARCHITECTURE.md, "Staying signed in".
  *   publicFormIngest  hand one submission to Connect's Website Forms queue (deliver.mjs).
  *   publicEvents      the public event list, which the build reads (ops/connect-feed.mjs) and the
  *                     events refresh reads again between publishes (live-events.mjs).
@@ -19,12 +22,15 @@
  *   PUBLIC_SITE_SERVICE_SECRET   that key's secret (32 characters or more)
  *   PUBLIC_SSO_SECRET            the secret Connect signs sign-in notes with (32 or more)
  * With any of them missing, staff sign-in answers "not set up" and submissions wait in the outbox.
+ *   CONNECT_SESSION_STATUS       "on" once Connect answers publicSsoStatus. Anything else, and
+ *                                reading answers lasts an hour from signing in (staff.mjs).
  */
 
 import crypto from "node:crypto";
 
 export const CLIENT_ID = "badgersupports-public";
 const TIMEOUT_MS = 8000;
+const STATUS_TIMEOUT_MS = 4000;   // a status check holds up a staff request, so it waits less
 
 let override;
 
@@ -35,7 +41,7 @@ export function connectConfig() {
   if (override !== undefined && override !== null) return override;
   const cfg = serviceConfig();
   const ssoSecret = String(process.env.PUBLIC_SSO_SECRET || "");
-  return cfg && ssoSecret.length >= 32 ? { ...cfg, ssoSecret } : null;
+  return cfg && ssoSecret.length >= 32 ? { ...cfg, ssoSecret, statusCheck: process.env.CONNECT_SESSION_STATUS === "on" } : null;
 }
 
 /* Connect's address and the service key, without the sign-in secret: enough for the reads the build
@@ -79,7 +85,7 @@ function safeEqual(a, b) {
 
 /* One signed POST to Connect's /api. Returns Connect's JSON, or throws connect.unreachable /
    connect.refused / connect.bad-reply. */
-export async function call(cfg, body) {
+export async function call(cfg, body, { timeout = TIMEOUT_MS } = {}) {
   const raw = JSON.stringify(body);
   const ts = String(Math.floor(Date.now() / 1000));
   const nonce = randomB64u(18);
@@ -93,7 +99,7 @@ export async function call(cfg, body) {
   };
   let res;
   try {
-    res = await (cfg.fetch || globalThis.fetch)(target.href, { method: "POST", headers, body: raw, signal: AbortSignal.timeout(TIMEOUT_MS) });
+    res = await (cfg.fetch || globalThis.fetch)(target.href, { method: "POST", headers, body: raw, signal: AbortSignal.timeout(timeout) });
   } catch {
     throw Object.assign(new Error("Connect did not answer."), { code: "connect.unreachable" });
   }
@@ -111,17 +117,29 @@ export async function tradeCode(cfg, { code, verifier, redirect, nonce }) {
   return verifyAssertion(cfg, r.assertion, r.sig, { nonce });
 }
 
-export function verifyAssertion(cfg, assertion, sig, { nonce, now = Date.now() } = {}) {
+/* sub, when given, makes this a status note: it must be about that person, and active may be false.
+   A sign-in note must say active. */
+export function verifyAssertion(cfg, assertion, sig, { nonce, sub, now = Date.now() } = {}) {
   const bad = () => { throw Object.assign(new Error("Connect's sign-in note did not check out."), { code: "auth.invalid" }); };
   if (!assertion || typeof assertion !== "object" || typeof sig !== "string") bad();
   if (!safeEqual(hmacB64u(cfg.ssoSecret, canonicalJson(assertion)), sig)) bad();
   const s = now / 1000;
-  if (assertion.v !== 1 || assertion.aud !== CLIENT_ID || assertion.active !== true) bad();
+  if (assertion.v !== 1 || assertion.aud !== CLIENT_ID) bad();
+  if (sub === undefined ? assertion.active !== true : typeof assertion.active !== "boolean" || assertion.sub !== sub) bad();
   if (!Number.isFinite(assertion.exp) || assertion.exp <= s || !Number.isFinite(assertion.iat) || assertion.iat > s + 60) bad();
   if ((assertion.nonce || "") !== (nonce || "")) bad();
   if (typeof assertion.sub !== "string" || !assertion.sub || typeof assertion.name !== "string") bad();
   if (!Array.isArray(assertion.scopes) || !assertion.scopes.every((x) => typeof x === "string")) bad();
-  return { sub: assertion.sub.slice(0, 200), name: assertion.name.slice(0, 80), scopes: assertion.scopes.slice(0, 50) };
+  return { sub: assertion.sub.slice(0, 200), name: assertion.name.slice(0, 80), scopes: assertion.scopes.slice(0, 50), active: assertion.active };
+}
+
+/* PROPOSED CHANGE: Connect has no publicSsoStatus yet. Asks whether the person behind a session is
+   still active here, and with what; the note is bound to this call by its nonce, so an old answer
+   cannot be sent again. Returns { active, name, scopes }; throws as call() does, or auth.invalid. */
+export async function sessionStatus(cfg, sub) {
+  const nonce = randomB64u(16);
+  const r = await call(cfg, { action: "publicSsoStatus", client: CLIENT_ID, sub, nonce }, { timeout: STATUS_TIMEOUT_MS });
+  return verifyAssertion(cfg, r.assertion, r.sig, { nonce, sub });
 }
 
 /* ------------------------------------------------------------------ form delivery */

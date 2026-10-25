@@ -80,23 +80,26 @@ async function deliverOne(cfg, row) {
   }
 }
 
-/* Send whatever is due. force sends failed rows now, without waiting out their back-off. */
-async function run({ limit, force }) {
+/* Send whatever is due. force sends failed rows now, without waiting out their back-off. forms, when
+   given, is the list of form keys to send and nothing else; null means every form. */
+async function run({ limit, force, forms }) {
   const cfg = connectConfig();
   if (!cfg) return { sent: 0, failed: 0, configured: false };
+  if (forms && !forms.length) return { sent: 0, failed: 0, configured: true };
   const rows = await many(
     `SELECT o.id AS outbox_id, o.attempts, s.id, s.ref, s.form_key, s.form_version, s.answers, s.anonymous, s.received_at
        FROM outbox o JOIN submissions s ON s.id = o.submission_id
       WHERE o.kind = 'connect.ingest' AND o.state IN ('pending', 'failed') AND ($2::boolean OR o.next_at <= now())
-      ORDER BY o.next_at, o.id LIMIT $1`, [limit, !!force]);
+        AND ($3::jsonb IS NULL OR s.form_key IN (SELECT jsonb_array_elements_text($3::jsonb)))
+      ORDER BY o.next_at, o.id LIMIT $1`, [limit, !!force, forms ? JSON.stringify(forms) : null]);
   let sent = 0, failed = 0;
   for (const row of rows) (await deliverOne(cfg, row)) ? sent++ : failed++;
   return { sent, failed, configured: true };
 }
 
 /* One delivery run at a time in this process: a second caller waits for the first. */
-export function deliverDue({ limit = 5, force = false } = {}) {
-  const next = inflight.then(() => run({ limit, force }));
+export function deliverDue({ limit = 5, force = false, forms = null } = {}) {
+  const next = inflight.then(() => run({ limit, force, forms }));
   inflight = next.catch(() => {});
   return next;
 }

@@ -17,17 +17,28 @@
  * signed in on this browser" so the pages know to load the edit button; it carries nothing a
  * script could use, and every staff call checks the real session.
  *
- * Signing out here ends this site's session only. Someone switched off in Connect keeps a session
- * already open here until it ends (eight hours at most), and cannot start another.
+ * Signing out here ends this site's session only. How long Connect's note holds (sessionFrom):
+ *   - Until Connect answers publicSsoStatus (a proposed change, CONNECT_SESSION_STATUS=on), reading
+ *     answers lasts an hour from signing in; after that the page asks for a fresh sign-in, while
+ *     editing and publishing words last the working day. Someone switched off in Connect cannot sign
+ *     in again, and so loses the answers within the hour.
+ *   - With it on, a session is checked again ten minutes after Connect last vouched for it. Fewer
+ *     scopes take effect at once, more never do (sign in again for those), and switched off ends the
+ *     session. Connect not answering, or answering with anything that does not check out, keeps the
+ *     session as it was for half an hour from that last answer, then nothing works until it answers.
+ * docs/ARCHITECTURE.md, "Staying signed in", has the proposed Connect side.
  */
 
 import crypto from "node:crypto";
 import { q, one } from "./db.mjs";
 import { HttpError } from "./http.mjs";
-import { connectConfig, tradeCode, randomB64u, sha256Hex, sha256B64u, CLIENT_ID } from "./connect.mjs";
+import { connectConfig, tradeCode, sessionStatus, randomB64u, sha256Hex, sha256B64u, CLIENT_ID } from "./connect.mjs";
 
 const SESSION_HOURS = 8;
 const START_MINUTES = 10;
+const READ_MINUTES = 60;    // status check off: reading answers, from signing in
+const CHECK_MINUTES = 10;   // status check on: ask Connect again this long after its last answer
+const GRACE_MINUTES = 30;   // status check on: Connect silent this long after its last answer, and nothing works
 export const HINT = "bss_staff_hint";
 
 const secure = (req) => new URL(req.url).protocol === "https:";
@@ -57,7 +68,7 @@ function safeEqual(a, b) {
 }
 
 /* Where to land after signing in: a path on this site, nothing else. */
-function returnPath(v) {
+export function returnPath(v) {
   const s = String(v || "");
   return s.length <= 200 && /^\/(?!\/)[A-Za-z0-9\-._~/]*$/.test(s) ? s : "/staff/";
 }
@@ -115,13 +126,36 @@ export async function finishSignIn(req) {
   ]);
 }
 
-/* The signed-in person, or null. */
+/* The signed-in person, or null. With the status check off, an hour on, reading answers moves to
+   `lapsed`: the router answers auth.again for it, and the staff page offers a fresh sign-in. */
 export async function sessionFrom(req) {
   const id = readCookies(req)[names(req).session];
   if (!id || !/^[A-Za-z0-9_-]{43}$/.test(id)) return null;
-  const row = await one("SELECT sub, name, scopes FROM staff_sessions WHERE id_hash = $1 AND expires_at > now()", [sha256Hex(id)]);
-  return row ? { sub: row.sub, name: row.name, scopes: row.scopes } : null;
+  const hash = sha256Hex(id);
+  const row = await one(`SELECT sub, name, scopes, extract(epoch FROM now() - coalesce(checked_at, created_at))::float8 / 60 AS minutes
+                         FROM staff_sessions WHERE id_hash = $1 AND expires_at > now()`, [hash]);
+  if (!row) return null;
+  const who = { sub: row.sub, name: row.name, scopes: row.scopes };
+  const cfg = connectConfig();
+  if (!cfg?.statusCheck) {
+    if (row.minutes < READ_MINUTES) return who;
+    const reads = (s) => s.startsWith("forms.read:");
+    return { ...who, scopes: who.scopes.filter((s) => !reads(s)), lapsed: who.scopes.filter(reads) };
+  }
+  if (row.minutes < CHECK_MINUTES) return who;
+  let note;
+  try { note = await sessionStatus(cfg, row.sub); } catch { return row.minutes < GRACE_MINUTES ? who : null; }
+  const scopes = note.active ? narrower(who.scopes, note.scopes) : [];
+  if (!scopes.length) {
+    await q("DELETE FROM staff_sessions WHERE id_hash = $1", [hash]);
+    return null;
+  }
+  await q("UPDATE staff_sessions SET scopes = $2::jsonb, name = $3, checked_at = now() WHERE id_hash = $1", [hash, JSON.stringify(scopes), note.name]);
+  return { ...who, name: note.name, scopes };
 }
+
+/* What both notes allow, so a check can take scopes away but never add one. */
+const narrower = (was, now) => [...new Set([...now.filter((s) => can({ scopes: was }, s)), ...was.filter((s) => can({ scopes: now }, s))])];
 
 export async function signOut(req, { asJson = false } = {}) {
   const n = names(req);

@@ -19,7 +19,7 @@ import { recordMood, moodCounts } from "./mood.mjs";
 import { serverContent } from "./content.mjs";
 import { connectConfig } from "./connect.mjs";
 import { deliverDue } from "./deliver.mjs";
-import { startSignIn, finishSignIn, sessionFrom, signOut, can } from "./staff.mjs";
+import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { eventSections, calendarFile } from "./live-events.mjs";
@@ -33,14 +33,14 @@ import { clientTable } from "../../src/shared/text.mjs";
 
 export const TIERS = new Set(["public", "director"]);
 
-function context() {
+function renderContext() {
   const c = serverContent();
   return makeContext({ site: c.site, media: c.media, builtPaths: c.builtPaths, routes: c.routes, data: { forms: c.forms, mood: c.mood }, text: c.text, prototype: c.prototype, assets: c.assets });
 }
 
 /* pageInfo.titleKey names a text key for the <title> when the page has no content title. */
 function page(status, pageInfo, body, clients = []) {
-  const ctx = context();
+  const ctx = renderContext();
   const title = pageInfo.title || ctx.t(pageInfo.titleKey);
   return htmlResponse(status, String(renderPage(ctx, { analytics: "none", noindex: true, ...pageInfo, title }, { body: body(ctx), clients })));
 }
@@ -63,8 +63,10 @@ async function requireDirector(req) {
   return who;
 }
 
+/* auth.again: the session held this scope, and a fresh sign-in gives it back (staff.mjs). */
 function need(who, scope) {
-  if (!can(who, scope)) throw new HttpError(403, "staff.forbidden");
+  if (can(who, scope)) return;
+  throw new HttpError(403, who.lapsed && can({ scopes: who.lapsed }, scope) ? "auth.again" : "staff.forbidden");
 }
 
 const readsForms = (who) => who.scopes.some((s) => s.startsWith("forms.read:"));
@@ -96,19 +98,23 @@ async function formSubmit(req, [key], context) {
   }
   const r = await submit(key, body);
   if (r.ok && !r.duplicate && !r.trapped) afterReply(context, () => deliverDue({ limit: 5 }));
+  const changed = r.versionSeen && r.versionSeen !== r.version;
+  const corrected = (ctx) => renderForm(r.def, {
+    t: ctx.t, ctx, values: r.raw, errors: r.errors,
+    notice: changed ? { title: ctx.t("form.updated.title"), text: ctx.t("form.updated.body"), kept: r.gone, keptText: ctx.t("form.updated.gone") } : null,
+    idemKey: typeof body.get === "function" ? body.get("_key") || "" : body._key || "",
+  });
   if (asJson) {
     if (r.ok) return json(200, { ok: true, ref: r.ref });
     if (r.error === "form.closed") return json(409, { ok: false, error: r.error, closedMessage: r.closedMessage });
-    return json(422, { ok: false, error: r.error, errors: r.errors, version: r.version });
+    // The questions changed since the page was loaded: the reply carries the form as it now stands,
+    // with the answers that still fit and each problem marked, for the page to put in place of its
+    // own (src/client/form.js). The page's copy cannot mark a question it has never heard of.
+    return json(422, { ok: false, error: r.error, errors: r.errors, version: r.version, ...(changed ? { form: String(corrected(renderContext())) } : {}) });
   }
   if (r.ok) return formReply(200, r.def, (ctx) => renderDone(r.def, r.ref, ctx.t));
   if (r.error === "form.closed") return formReply(409, r.def, (ctx) => renderClosed(r.def, ctx.t, { title: ctx.t("form.closedNow.title"), answers: answersForPerson(r.def, r.raw) }));
-  const changed = r.versionSeen && r.versionSeen !== r.version;
-  return formReply(422, r.def, (ctx) => renderForm(r.def, {
-    t: ctx.t, ctx, values: r.raw, errors: r.errors,
-    notice: changed ? { title: ctx.t("form.updated.title"), text: ctx.t("form.updated.body") } : null,
-    idemKey: typeof body.get === "function" ? body.get("_key") || "" : body._key || "",
-  }));
+  return formReply(422, r.def, corrected);
 }
 
 /* One PDF for a file question, as soon as it is chosen (netlify/lib/files.mjs). Answered in JSON
@@ -170,18 +176,17 @@ async function staffMe(req, _m, _c, who) {
   const canEdit = can(who, "site.edit");
   const canPublish = can(who, "site.publish");
   return json(200, {
-    ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who),
+    ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who), readAgain: !!who.lapsed?.length,
     connectUrl: connectConfig()?.url || null,
     waiting: canEdit || canPublish ? await waitingCount() : 0,
     text: clientTable(serverContent().text, ["edit.js"]),
   });
 }
 
-/* Opening the staff page also sends anything still waiting to reach Connect. */
-async function staffForms(req, _m, context, who) {
-  const r = await formsFor(who);
-  afterReply(context, () => deliverDue({ limit: 5 }));
-  return json(200, { ok: true, ...r });
+/* Opening the staff page only reads. A new submission wakes delivery, and Try again sends the
+   reader's own forms (owner ruling, 24 Oct 2026). */
+async function staffForms(req, _m, _c, who) {
+  return json(200, { ok: true, ...(await formsFor(who)) });
 }
 
 async function staffSubmissions(req, [key], _c, who) {
@@ -191,9 +196,13 @@ async function staffSubmissions(req, [key], _c, who) {
   return json(200, { ok: true, ...r });
 }
 
+/* Try again sends only the forms this reader may read: every form for forms.read:*, otherwise the
+   ones named. Someone else's waiting answers stay where they are. */
 async function staffRetry(req, _m, _c, who) {
-  if (!readsForms(who)) throw new HttpError(403, "staff.forbidden");
-  const r = await deliverDue({ limit: 20, force: true });
+  if (!readsForms(who)) throw new HttpError(403, who.lapsed?.length ? "auth.again" : "staff.forbidden");
+  const forms = can(who, "forms.read:*") ? null
+    : who.scopes.filter((s) => s.startsWith("forms.read:")).map((s) => s.slice("forms.read:".length));
+  const r = await deliverDue({ limit: 20, force: true, forms });
   return json(200, { ok: true, ...r, ...(await formsFor(who)) });
 }
 
@@ -290,10 +299,13 @@ function errorReply(req, status, code, extra = {}) {
   }
   if (pathname.startsWith("/api/auth/")) {
     const why = AUTH_WHY[code] || "failed";
+    // Back to the staff page, still carrying the page Sign in was to come back to.
+    const onward = pathname === "/api/auth/start" ? returnPath(new URL(req.url).searchParams.get("return")) : "/staff/";
+    const back = onward === "/staff/" ? "/staff/" : `/staff/?return=${encodeURIComponent(onward)}`;
     return page(status, { id: "pg-auth", path: "/staff/", titleKey: "auth.error.title" }, (ctx) => html`<section class="band" aria-labelledby="auth-h"><div class="wrap">
   <h1 id="auth-h">${ctx.t("auth.error.title")}</h1>
   <p>${ctx.t(`auth.error.${why}`)}</p>
-  <p><a href="/staff/">${ctx.t("auth.error.back")}</a></p>
+  <p><a href="${back}">${ctx.t("auth.error.back")}</a></p>
 </div></section>`);
   }
   return page(status, { id: "pg-error", path: "/", titleKey: "errors.server.title" }, (ctx) => html`<section class="band" aria-labelledby="err-h"><div class="wrap">

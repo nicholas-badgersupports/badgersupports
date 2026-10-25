@@ -8,7 +8,8 @@
  * every renderer, browser script and server module and fails on:
  *   - words in the markup of an html`…` template, or in an aria-label, alt, title or placeholder;
  *   - a word passed straight to link(), or offered as a fallback with ||;
- *   - a word put on the page by a browser script (textContent, append, setAttribute, innerHTML);
+ *   - a word put on the page by a browser script (textContent, append, setAttribute, innerHTML,
+ *     markup parsed from a literal);
  *   - a t("key") that the registry lacks, or that a browser script uses without CLIENT_TEXT
  *     sending it to the page.
  * Keys nobody uses are listed as a warning, not a failure.
@@ -98,6 +99,7 @@ function literalProblems(file, src, { client }) {
       [new RegExp(String.raw`textContent\s*[:=]\s*` + lit, "g"), "textContent"],
       [new RegExp(String.raw`\.(?:append|prepend|after|before|replaceChildren)\(\s*` + lit, "g"), "inserted text"],
       [new RegExp(String.raw`setAttribute\(\s*["'](?:aria-label|title|alt|placeholder)["']\s*,\s*` + lit, "g"), "attribute"],
+      [new RegExp(String.raw`parseFromString\(\s*` + lit, "g"), "parsed markup"],
     );
     if (/\.innerHTML\s*=/.test(code)) out.push(`${file}: innerHTML (build elements and set textContent instead)`);
   }

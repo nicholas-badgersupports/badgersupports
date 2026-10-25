@@ -13,8 +13,11 @@ import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
 
-/* The one inline script. Its hash goes into the Content-Security-Policy (ops/build.mjs). */
-export const INLINE_JS = "document.documentElement.classList.add('js')";
+/* The one inline script. Its hash goes into the Content-Security-Policy (ops/build.mjs). A browser
+   that was signed in as staff also gets staff-hint, so the staff page shows "Checking your sign-in"
+   instead of a Sign in button that would vanish a moment later; staff.js takes it off, and the
+   timer does if staff.js never runs (src/render/blocks/staff.mjs). */
+export const INLINE_JS = "var d=document.documentElement;d.classList.add('js');if(/(?:^|; )bss_staff_hint=1(?:;|$)/.test(document.cookie)){d.classList.add('staff-hint');setTimeout(function(){d.classList.remove('staff-hint')},8000)}";
 
 function navItem(ctx, item, currentPath) {
   if (item.children) {

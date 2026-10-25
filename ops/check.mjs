@@ -1,7 +1,7 @@
 /* One command for "does this work": every gate and every suite, ending in a verdict line.
  *
  *   node ops/check.mjs              # source gates, build, tests (no network)
- *   node ops/check.mjs --browser    # …and screenshots, axe and the real forms in Chromium
+ *   node ops/check.mjs --browser    # …and screenshots, axe, the real forms, menus and uploads in Chromium
  *
  * Nothing here deploys, pushes or contacts anyone. The verdict says whether the work is ready to
  * show; publishing is the owner's decision (WORK.md, owner actions).
@@ -146,7 +146,7 @@ if (process.argv.includes("--browser")) {
   const { startServer } = await import("./dev-server.mjs");
   const server = await startServer({ port });
   const env = { ...process.env, BASE: `http://127.0.0.1:${port}` };
-  for (const [name, script] of [["screenshots and page weight", "ops/shots.mjs"], ["accessibility and the real forms", "ops/a11y.mjs"]]) {
+  for (const [name, script] of [["screenshots and page weight", "ops/shots.mjs"], ["accessibility and the real forms", "ops/a11y.mjs"], ["menus and uploads, pressed and timed", "ops/interact.mjs"]]) {
     /* Not spawnSync: the server runs in this process, and a blocked event loop never answers the browser. */
     const r = await new Promise((ok) => {
       const c = spawn(process.execPath, [script], { cwd: ROOT, env });

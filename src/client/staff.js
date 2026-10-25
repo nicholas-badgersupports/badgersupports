@@ -1,11 +1,23 @@
-/* The staff page's tools, drawn once someone is signed in (netlify/lib/staff.mjs). With nobody
- * signed in the page stays as the build drew it: the words and the Sign in button. With someone:
+/* The staff page's tools, drawn once someone is signed in (netlify/lib/staff.mjs). Before that, the
+ * page is in one of these states, each with one thing to do next:
+ *   - never signed in on this browser: the Sign in button at once; the page asks only whether
+ *     sign-in is switched on here (/api/auth/status);
+ *   - signed in before (the hint cookie): "Checking your sign-in" stands where the button is, from
+ *     the first frame (src/render/layout.mjs), until /api/staff/me answers;
+ *   - that sign-in has ended: says so above the button, and forgets the hint;
+ *   - sign-in is not switched on: says so, with no button;
+ *   - the check failed: says so, with Try again.
+ * Sent here with ?return=/some/page/, Sign in comes back to that page. With someone signed in:
  *   - who they are, and Sign out (a plain form, so it works however the page is);
  *   - the forms their Connect role lets them read, each with how many answers it holds and
  *     whether those reached Connect, a button to send any still waiting, and the latest answers
  *     to one form on request;
  *   - for anyone who may change words, how to, and how many changes wait to publish;
  *   - for anyone who may publish, the file a publish needs.
+ * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
+ * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
+ * A check that is run again wins over one still on its way, and leaving the page takes the tools
+ * off it, so a page a browser keeps for Back holds no answers; coming back to it checks again.
  * Nothing here is counted, and nothing is kept in the browser.
  */
 
@@ -13,7 +25,13 @@ import { t } from "./text.js";
 
 const app = document.querySelector("[data-staff-app]");
 const signIn = document.querySelector("[data-staff-signin]");
+const signInLink = signIn?.querySelector("a");
+const checking = document.querySelector("[data-staff-checking]");
+const intro = document.querySelector("[data-staff-intro]");
+const help = document.querySelector("[data-staff-help]");
+const heading = app?.closest(".staff")?.querySelector("h1");
 const WHEN = { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" };
+const HINT = /(?:^|;\s*)bss_staff_hint=1(?:;|$)/;
 
 const el = (tag, props = {}, ...kids) => {
   const n = Object.assign(document.createElement(tag), props);
@@ -21,6 +39,25 @@ const el = (tag, props = {}, ...kids) => {
   return n;
 };
 const when = (iso) => new Date(iso).toLocaleString("en-US", WHEN);
+const offline = () => ({ status: 0, body: {} });
+
+/* Where Sign in comes back to: ?return= when it names a page on this site, held to the server's
+   own rule (netlify/lib/staff.mjs, returnPath), else this page. */
+const back = (() => {
+  const v = new URLSearchParams(location.search).get("return") || "";
+  return v.length <= 200 && /^\/(?!\/)[A-Za-z0-9\-._~/]*$/.test(v) ? v : "/staff/";
+})();
+if (signInLink && back !== "/staff/") signInLink.href = `/api/auth/start?return=${encodeURIComponent(back)}`;
+
+/* A button at work: busy at once, so a second press does nothing, and its words change only once
+   the wait is long enough to notice, so a quick answer does not flicker. Returns the undo. */
+function busy(button, words) {
+  const label = button.textContent;
+  button.setAttribute("aria-busy", "true");
+  const timer = setTimeout(() => { button.textContent = words; }, 200);
+  return () => { clearTimeout(timer); button.removeAttribute("aria-busy"); button.textContent = label; };
+}
+const isBusy = (button) => button.getAttribute("aria-busy") === "true";
 
 async function call(url, { method = "GET", body } = {}) {
   const res = await fetch(url, {
@@ -31,7 +68,24 @@ async function call(url, { method = "GET", body } = {}) {
   return { status: res.status, body: await res.json().catch(() => ({})) };
 }
 
-let status;
+const noteBox = (words, ...more) => el("div", { className: "staff-note" }, el("p", { textContent: words }), ...more);
+const signInAgain = () => el("p", {}, el("a", { className: "btn", href: "/api/auth/start?return=/staff/", textContent: t("staff.signInAgain") }));
+/* In place of the forms, or of one form's answers, once reading needs a fresh sign-in. */
+const readAgain = () => noteBox(t("staff.readAgain"), signInAgain());
+const isAgain = (r) => r.status === 403 && r.body.error === "auth.again";
+
+/* What stands in place of something the server would not give, with its words for saying aloud:
+   a fresh sign-in, the reason, or that it failed. */
+function refused(r) {
+  if (isAgain(r)) return [readAgain(), t("staff.readAgain")];
+  if (r.status === 401) return [noteBox(t("staff.ended"), signInAgain()), t("staff.ended")];
+  if (r.status === 403) return [noteBox(t("staff.forbidden")), t("staff.forbidden")];
+  return [noteBox(t("staff.loadError")), t("staff.loadError")];
+}
+
+const status = el("p", { className: "sr-only" });
+status.setAttribute("role", "status");
+app?.after(status);
 function say(words) {
   status.textContent = "";
   // A fresh line each time, so a screen reader reads the same words twice in a row.
@@ -72,6 +126,7 @@ function formCard(f, connect) {
   toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-controls", panel.id);
   toggle.addEventListener("click", async () => {
+    if (isBusy(toggle)) return;
     const open = toggle.getAttribute("aria-expanded") === "true";
     if (open) {
       panel.hidden = true;
@@ -79,10 +134,18 @@ function formCard(f, connect) {
       toggle.textContent = t("staff.answers.show");
       return;
     }
-    toggle.disabled = true;
-    const r = await call(`/api/staff/forms/${encodeURIComponent(f.key)}/submissions`).catch(() => ({ status: 0, body: {} }));
-    toggle.disabled = false;
-    if (r.status !== 200) { say(t("staff.loadError")); return; }
+    const done = busy(toggle, t("staff.answers.loading"));
+    const r = await call(`/api/staff/forms/${encodeURIComponent(f.key)}/submissions`).catch(offline);
+    done();
+    if (!toggle.isConnected) return; // the page was left or drawn again meanwhile
+    if (r.status !== 200) {
+      // The reason shows where the answers would be; Show answers again tries again.
+      const [box, words] = refused(r);
+      panel.replaceChildren(box);
+      panel.hidden = false;
+      say(words);
+      return;
+    }
     panel.replaceChildren(r.body.items.length ? answersTable(r.body) : el("p", { textContent: t("staff.answers.none") }));
     panel.hidden = false;
     toggle.setAttribute("aria-expanded", "true");
@@ -101,7 +164,9 @@ function formsSection(me) {
   const list = el("ul", { className: "staff-forms" });
   const off = el("p", { className: "staff-note", textContent: t("staff.delivery.off"), hidden: true });
   const retry = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.retry"), hidden: true });
-  const work = me.connectUrl ? el("p", {}, el("a", { href: `${me.connectUrl}/`, textContent: t("staff.answers.openConnect") })) : null;
+  const retryProblem = el("div", { hidden: true });
+  const again = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.tryAgain") });
+  const work = me.connectUrl ? el("a", { href: `${me.connectUrl}/`, textContent: t("staff.answers.openConnect") }) : null;
 
   function draw(r) {
     list.replaceChildren(...r.forms.map((f) => formCard(f, r.connect)));
@@ -110,20 +175,51 @@ function formsSection(me) {
     retry.hidden = !r.connect || !r.forms.some((f) => f.delivery.pending || f.delivery.failed);
   }
   retry.addEventListener("click", async () => {
-    retry.disabled = true;
-    const r = await call("/api/staff/outbox/retry", { method: "POST", body: {} }).catch(() => ({ status: 0, body: {} }));
-    retry.disabled = false;
-    if (r.status !== 200) { say(t("staff.loadError")); return; }
+    if (isBusy(retry)) return;
+    const done = busy(retry, t("staff.retrying"));
+    const r = await call("/api/staff/outbox/retry", { method: "POST", body: {} }).catch(offline);
+    done();
+    if (!retry.isConnected) return;
+    if (r.status !== 200) {
+      const [box, words] = refused(r);
+      if (isAgain(r) || r.status === 401) retry.hidden = true;
+      retryProblem.replaceChildren(box);
+      retryProblem.hidden = false;
+      say(words);
+      return;
+    }
+    retryProblem.hidden = true;
     draw(r.body);
     say(t("staff.retried", { sent: r.body.sent, failed: r.body.failed }));
   });
 
-  const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }), off, list, retry, work);
+  /* The list, and Try again in its place when it fails to load. */
+  async function load() {
+    const had = document.activeElement === again;
+    const done = busy(again, t("staff.tryAgain"));
+    const r = await call("/api/staff/forms").catch(offline);
+    done();
+    if (!section.isConnected) return; // the page was left meanwhile
+    if (r.status === 200) { draw(r.body); return; }
+    const [box, words] = refused(r);
+    if (r.status !== 401 && r.status !== 403) box.append(el("p", {}, again));
+    list.replaceChildren(el("li", {}, box));
+    if (had) again.focus();
+    say(words);
+  }
+  again.addEventListener("click", () => { if (!isBusy(again)) load(); });
+
+  const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }),
+    el("p", { textContent: t("staff.forms.how") }), off, list, retryProblem,
+    el("div", { className: "staff-actions" }, retry, ...(work ? [work] : [])));
   section.setAttribute("aria-labelledby", "staff-forms-h");
-  call("/api/staff/forms").then((r) => {
-    if (r.status !== 200) throw new Error("forms");
-    draw(r.body);
-  }).catch(() => list.replaceChildren(el("li", { textContent: t("staff.loadError") })));
+  load();
+  return section;
+}
+
+function readAgainSection() {
+  const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }), readAgain());
+  section.setAttribute("aria-labelledby", "staff-forms-h");
   return section;
 }
 
@@ -155,30 +251,101 @@ function whoBar(me) {
    behind, and this page is where it is noticed. */
 const forgetHint = () => { document.cookie = `bss_staff_hint=; Path=/; Max-Age=0; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`; };
 
-async function start() {
-  if (!app) return;
-  const s = await call("/api/auth/status").catch(() => ({ status: 0, body: {} }));
-  if (s.status === 200 && !s.body.signedIn) {
-    forgetHint();
-    if (s.body.configured === false) {
-      signIn.hidden = true;
-      signIn.after(el("p", { className: "staff-note", textContent: t("staff.notConfigured") }));
-    }
-    return;
-  }
-  const r = s.status === 200 ? await call("/api/staff/me").catch(() => ({ status: 0, body: {} })) : s;
-  if (r.status === 401) return;
-  if (r.status !== 200) {
-    signIn.after(el("p", { className: "staff-note", textContent: t("staff.loadError") }));
-    return;
-  }
-  const me = r.body;
-  status = el("p", { className: "sr-only" });
-  status.setAttribute("role", "status");
-  signIn.hidden = true;
-  app.replaceChildren(...[whoBar(me), me.canRead && formsSection(me), (me.canEdit || me.canPublish) && editSection(me), status].filter(Boolean));
-  if (!me.canRead && !me.canEdit && !me.canPublish) app.prepend(el("p", { className: "staff-note", textContent: t("staff.nothing") }));
-  app.hidden = false;
+/* ---------- the states before the tools ---------- */
+
+/* Under the button: why there are no tools, and Try again when a check failed. Made once, so focus
+   stays on Try again while it checks again. */
+const state = el("div", { className: "staff-state", hidden: true });
+const stateNote = el("p", { className: "staff-note" });
+const tryAgain = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.tryAgain") });
+state.append(stateNote, tryAgain);
+signIn?.after(state);
+tryAgain.addEventListener("click", () => { if (!isBusy(tryAgain)) start(); });
+
+function note(words, retry = false) {
+  stateNote.textContent = words || "";
+  tryAgain.hidden = !retry;
+  state.hidden = !words;
 }
 
-start();
+/* "checking", "signIn" or "none": what stands where the button is. The words before it show again. */
+function before(mode) {
+  checking.hidden = mode !== "checking";
+  signIn.hidden = mode !== "signIn";
+  intro.hidden = false;
+  if (help) help.hidden = false;
+}
+
+function showTools(me) {
+  before("none");
+  note("");
+  intro.hidden = true;
+  if (help) help.hidden = true;
+  const forms = me.canRead ? formsSection(me) : me.readAgain && readAgainSection();
+  const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
+  app.replaceChildren(...[onward, whoBar(me), forms, (me.canEdit || me.canPublish) && editSection(me)].filter(Boolean));
+  if (!forms && !me.canEdit && !me.canPublish) app.prepend(el("p", { className: "staff-note", textContent: t("staff.nothing") }));
+  app.hidden = false;
+  say(me.name ? t("staff.signedInAs", { name: me.name }) : t("staff.signedIn"));
+}
+
+/* One check of who is here. `fresh()` turns false once a newer check has started, or the page was
+   left, and its answer is then dropped. */
+async function check(hinted, fresh) {
+  if (!hinted) {
+    const s = await call("/api/auth/status").catch(offline);
+    if (!fresh()) return;
+    if (s.status !== 200) { note(t("staff.loadError"), true); say(t("staff.loadError")); return; }
+    if (!s.body.signedIn) {
+      if (s.body.configured === false) { before("none"); note(t("staff.notConfigured")); }
+      else before("signIn");
+      return;
+    }
+    before("checking"); // signed in, though the hint has gone
+  }
+  const r = await call("/api/staff/me").catch(offline);
+  if (!fresh()) return;
+  if (r.status === 200) { showTools(r.body); return; }
+  if (r.status === 401) {
+    forgetHint();
+    if (r.body.configured === false) { before("none"); note(t("staff.notConfigured")); return; }
+    before("signIn");
+    note(t("staff.ended"));
+    say(t("staff.ended"));
+    return;
+  }
+  before(hinted ? "none" : "signIn");
+  note(t("staff.loadError"), true);
+  say(t("staff.loadError"));
+}
+
+let runs = 0;
+async function start() {
+  const run = ++runs;
+  const hinted = HINT.test(document.cookie);
+  const had = state.contains(document.activeElement);
+  document.documentElement.classList.remove("staff-hint");
+  // Pressed Try again: it stays where it is, busy, while the page checks again.
+  if (had) { stateNote.textContent = t("staff.checking"); tryAgain.setAttribute("aria-busy", "true"); }
+  else note("");
+  before(had ? "none" : hinted ? "checking" : "signIn");
+  await check(hinted, () => run === runs);
+  if (run !== runs) return;
+  tryAgain.removeAttribute("aria-busy");
+  // Try again has gone: focus goes to what replaced it, the button or the page's heading.
+  if (had && (state.hidden || tryAgain.hidden)) (signIn.hidden ? heading : signInLink)?.focus();
+}
+
+if (app) {
+  /* Leaving: the tools come off before a browser keeps the page for Back, so it holds no answers,
+     and any reply still on its way is dropped. Coming back to a kept page checks again. */
+  addEventListener("pagehide", () => {
+    runs++;
+    app.replaceChildren();
+    app.hidden = true;
+    note("");
+    before(HINT.test(document.cookie) ? "checking" : "signIn");
+  });
+  addEventListener("pageshow", (e) => { if (e.persisted) start(); });
+  start();
+}

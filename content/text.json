@@ -563,6 +563,16 @@
       "where": "Under that heading.",
       "optional": true
     },
+    "form.updated.ahead": {
+      "group": "forms",
+      "text": "The questions on this form have changed since this page loaded. When you press Send, any new questions will appear here and the answers you have given will be kept.",
+      "where": "Under that heading, with JavaScript, when someone comes back to a form whose questions have changed but has not pressed Send yet."
+    },
+    "form.updated.gone": {
+      "group": "forms",
+      "text": "These answers are to questions the form no longer asks, so they will not be sent. They are shown here so you can copy anything you need:",
+      "where": "Under that heading, with JavaScript, above any answers to questions the updated form no longer asks."
+    },
     "form.sending": {
       "group": "forms",
       "text": "Sending…",
@@ -938,6 +948,21 @@
       "text": "Sign Out",
       "where": "Staff page, button beside the name."
     },
+    "staff.checking": {
+      "group": "staff",
+      "text": "Checking your sign-in…",
+      "where": "Staff page, in place of the Sign in button while the page checks whether this browser is still signed in."
+    },
+    "staff.ended": {
+      "group": "staff",
+      "text": "Your sign-in has ended. Sign in again to carry on.",
+      "where": "Staff page, above the Sign in button, when this browser was signed in before and is not now."
+    },
+    "staff.returnTo": {
+      "group": "staff",
+      "text": "Back to the Page You Were On",
+      "where": "Staff page, for someone already signed in who was sent here from another page."
+    },
     "staff.notConfigured": {
       "group": "staff",
       "text": "Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first.",
@@ -945,18 +970,43 @@
     },
     "staff.loadError": {
       "group": "staff",
-      "text": "Unable to load this right now. Reload the page to try again.",
+      "text": "Unable to load this right now. Check your connection and try again.",
       "where": "Staff page, when a list fails to load."
+    },
+    "staff.tryAgain": {
+      "group": "staff",
+      "text": "Try Again",
+      "where": "Staff page, the button beside a check or list that failed to load."
+    },
+    "staff.forbidden": {
+      "group": "staff",
+      "text": "Your Connect role does not include this form now. A super admin can change that in Connect, under Website Forms.",
+      "where": "Staff page, in place of a form’s answers when the account may no longer read them."
     },
     "staff.nothing": {
       "group": "staff",
       "text": "Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms.",
       "where": "Staff page, for someone signed in whose role reaches neither forms nor words."
     },
+    "staff.readAgain": {
+      "group": "staff",
+      "text": "For the privacy of the people who wrote in, answers can be read for an hour after signing in. Sign in again to keep reading.",
+      "where": "Staff page, in place of the forms, or of one form's answers, once reading needs a fresh sign-in."
+    },
+    "staff.signInAgain": {
+      "group": "staff",
+      "text": "Sign In Again",
+      "where": "Staff page, button under the note that reading answers needs a fresh sign-in."
+    },
     "staff.forms.title": {
       "group": "staff",
       "text": "Website Forms",
       "where": "Staff page, heading above the list of forms."
+    },
+    "staff.forms.how": {
+      "group": "staff",
+      "text": "Working through answers — replying, assigning, closing — happens in Connect, under Website Forms.",
+      "where": "Staff page, under Website Forms, for someone who may read answers."
     },
     "staff.forms.empty": {
       "group": "staff",
@@ -1018,6 +1068,11 @@
       "text": "Send Waiting Answers Now",
       "where": "Staff page, button under the forms when some have not reached Connect."
     },
+    "staff.retrying": {
+      "group": "staff",
+      "text": "Sending…",
+      "where": "Staff page, on the send button while waiting answers are sent."
+    },
     "staff.retried": {
       "group": "staff",
       "text": "{{sent}} sent, {{failed}} still waiting.",
@@ -1032,6 +1087,11 @@
       "group": "staff",
       "text": "Hide Answers",
       "where": "Staff page, the same button once the answers are showing."
+    },
+    "staff.answers.loading": {
+      "group": "staff",
+      "text": "Loading Answers…",
+      "where": "Staff page, on the Show button while a form’s answers load."
     },
     "staff.answers.caption": {
       "group": "staff",
@@ -1250,8 +1310,18 @@
     },
     "edit.error.signedOut": {
       "group": "staff",
-      "text": "You are signed out. Sign in again on the staff page, then come back.",
-      "where": "Edit button, when the sign-in has ended."
+      "text": "Your sign-in has ended. Your words are still in the box: sign in again in the new tab, then come back here and press Save.",
+      "where": "Edit box, when Save finds the sign-in has ended; the words typed stay in the box."
+    },
+    "edit.error.ended": {
+      "group": "staff",
+      "text": "Your sign-in has ended. Sign in again to change words.",
+      "where": "Edit button, when the sign-in has ended before Edit text was opened."
+    },
+    "edit.signInAgain": {
+      "group": "staff",
+      "text": "Sign In Again",
+      "where": "Edit button, the link that opens the sign-in in a new tab once the sign-in has ended."
     },
     "edit.more": {
       "group": "staff",

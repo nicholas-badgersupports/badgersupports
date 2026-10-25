@@ -10,7 +10,7 @@ import { freshServer, post, ORIGIN } from "./helpers.mjs";
 import { handle } from "../netlify/lib/router.mjs";
 import { many, one, q } from "../netlify/lib/db.mjs";
 import { serverContent } from "../netlify/lib/content.mjs";
-import { ingestPayload } from "../netlify/lib/deliver.mjs";
+import { ingestPayload, definitionFor } from "../netlify/lib/deliver.mjs";
 import { latestAnswers } from "../netlify/lib/answers.mjs";
 import { publicDefinition } from "../src/render/form.mjs";
 import { definitionProblems, validateAnswers, readRaw, answerWords, errorText, allQuestions, questionById, QUESTION_TYPES } from "../src/shared/forms.mjs";
@@ -242,6 +242,67 @@ test("Send refuses a file it cannot match — unknown, already sent, or for anot
   const html = await (await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ resume: SOME_ID }), { json: false }), ip())).text();
   assert.match(html, /f-resume/, "without JavaScript the form comes back asking for the file again");
   assert.doesNotMatch(html, new RegExp(SOME_ID));
+});
+
+test("a resume chosen again: Send claims the replacement, and the first file goes nowhere", async () => {
+  // The browser stops the first upload when the second is chosen (ops/interact.mjs); if the
+  // first had already landed, it stays unclaimed and is cleared after a day (files.mjs).
+  await freshServer();
+  await openStaff();
+  const first = await fileIdFor("resume", "old.pdf");
+  const second = await fileIdFor("resume", "new.pdf");
+  const res = await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0151", resume: second })), ip());
+  const body = await res.json();
+  assert.equal(res.status, 200, JSON.stringify(body));
+  const sub = await one("SELECT * FROM submissions WHERE ref = $1", [body.ref]);
+  assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [first])).submission_id, null);
+  assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [second])).submission_id, sub.id);
+  const payload = ingestPayload(sub, serverContent().forms[STAFF]);
+  assert.deepEqual(payload.files.map((f) => [f.fileId, f.name]), [[second, "new.pdf"]]);
+  assert.doesNotMatch(JSON.stringify(payload), new RegExp(first));
+});
+
+/* WORK.md item 1b: the application changes while someone has it open, after their resume is up. */
+async function publishStaff(change) {
+  const v3 = structuredClone(serverContent().forms[STAFF]);
+  v3.version = 3;
+  change(v3);
+  await q("INSERT INTO form_versions (form_key, version, definition, published_by) VALUES ($1, 3, $2::jsonb, 'test')", [STAFF, JSON.stringify(v3)]);
+}
+const staffSection = (def, id) => def.sections.find((s) => s.id === id).questions;
+
+test("a resume uploaded before the form changed: the reply keeps it, the file is not asked for again, and the next Send claims it", async () => {
+  await freshServer();
+  await openStaff();
+  const fileId = await fileIdFor();
+  await publishStaff((d) => staffSection(d, "finished").push({ id: "start_term", type: "short", label: "Which term could you start?", required: true }));
+  const body = await (await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0161", resume: fileId })), ip(2))).json();
+  assert.deepEqual(Object.keys(body.errors), ["start_term"]);
+  assert.match(body.form, new RegExp(`name="resume" value="${fileId}" data-file-id`), "the uploaded file's id is carried");
+  const box = body.form.match(/<div class="upload" data-upload="resume">.*?<\/div>/s)?.[0] || "";
+  assert.doesNotMatch(box.match(/<input[^>]*type="file"[^>]*>/)?.[0] ?? "required", /\brequired\b/, "and the file is not asked for again");
+  assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [fileId])).submission_id, null, "nothing is claimed by a send that was refused");
+  const res = await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0161", _version: "3", resume: fileId, start_term: "Spring" })), ip(2));
+  assert.equal(res.status, 200);
+  const sub = await one("SELECT * FROM submissions");
+  assert.deepEqual([sub.form_version, sub.version_seen], [3, 3]);
+  assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [fileId])).submission_id, sub.id);
+});
+
+test("a file question retired after the upload: the send is accepted, that file is not claimed, and Connect is not told of it", async () => {
+  await freshServer();
+  await openStaff();
+  const resume = await fileIdFor();
+  const letter = await fileIdFor("cover_letter", "letter.pdf");
+  await publishStaff((d) => { const qs = staffSection(d, "supplemental"); qs.splice(qs.findIndex((x) => x.id === "cover_letter"), 1); });
+  const res = await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0162", resume, cover_letter: letter })), ip(3));
+  assert.equal(res.status, 200);
+  const sub = await one("SELECT * FROM submissions");
+  assert.equal("cover_letter" in sub.answers, false);
+  assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [letter])).submission_id, null, "cleared after a day, like any unclaimed upload");
+  const payload = ingestPayload(sub, await definitionFor(STAFF, sub.form_version));
+  assert.deepEqual(payload.files.map((f) => f.question), ["resume"]);
+  assert.doesNotMatch(JSON.stringify(payload), new RegExp(letter));
 });
 
 test("Connect is told which files to collect and which answers are confidential; the staff page shows neither confidential answer", async () => {

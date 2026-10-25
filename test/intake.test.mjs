@@ -91,6 +91,102 @@ test("a form updated while open: the send is checked against the new questions",
   assert.match(html, /value="Avery Example"/, "the answers already given are kept");
 });
 
+/* WORK.md item 1b. A version 2 of the workshop form, published while a version 1 page is open. */
+async function publishWorkshop(change) {
+  const { serverContent } = await import("../netlify/lib/content.mjs");
+  const v2 = structuredClone(serverContent().forms["workshop-request"]);
+  v2.version = 2;
+  change(v2);
+  await q("INSERT INTO form_versions (form_key, version, definition, published_by) VALUES ('workshop-request', 2, $1::jsonb, 'test')", [JSON.stringify(v2)]);
+  return v2;
+}
+const questionsOf = (def, sectionId) => def.sections.find((s) => s.id === sectionId).questions;
+
+test("a new required question: the reply carries the form as it stands, with the answers kept and the new question marked", async () => {
+  await freshServer();
+  await publishWorkshop((d) => questionsOf(d, "about_you").push({ id: "pronouns", type: "short", label: "Your pronouns", required: true }));
+  const body = await (await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0101-aaaa" })), ip(11))).json();
+  assert.equal(body.version, 2);
+  assert.equal(typeof body.form, "string", "the page cannot mark a question it has never heard of");
+  assert.match(body.form, /data-version="2"/);
+  assert.match(body.form, /name="_version" value="2"/);
+  assert.match(body.form, /name="_key" value="k-0101-aaaa"/, "the same submission when Send is pressed again");
+  assert.match(body.form, /This form was updated while it was open/);
+  assert.match(body.form, /<a href="#f-pronouns">/, "the summary links to the new question");
+  assert.match(body.form, /name="pronouns"[^>]*aria-invalid="true"/);
+  assert.match(body.form, /value="Avery Example"/);
+  assert.match(body.form, /Example Hall lounge/);
+  assert.doesNotMatch(body.form, /no longer asks/, "nothing was left behind");
+  const again = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0101-aaaa", _version: "2", pronouns: "they/them" })), ip(11));
+  assert.equal(again.status, 200);
+  const sub = await one("SELECT form_version, version_seen, answers FROM submissions");
+  assert.deepEqual([sub.form_version, sub.version_seen, sub.answers.pronouns], [2, 2, "they/them"]);
+});
+
+test("a mistake on an unchanged form: the reply is the errors alone, and the page marks them itself", async () => {
+  await freshServer();
+  const res = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ email: "nope" })), ip(12));
+  const body = await res.json();
+  assert.equal(res.status, 422);
+  assert.deepEqual(Object.keys(body.errors), ["email"]);
+  assert.equal("form" in body, false);
+});
+
+test("a renamed question: a new label keeps the answer; a new id asks again and gives back the old answer", async () => {
+  await freshServer();
+  await publishWorkshop((d) => { questionsOf(d, "about_you").find((x) => x.id === "affiliation").label = "Your group or organization"; });
+  const kept = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0102-aaaa" })), ip(13));
+  assert.equal(kept.status, 200, "the id is the question; its words can change");
+  assert.equal((await one("SELECT answers FROM submissions")).answers.affiliation, "Example Hall Council");
+
+  await freshServer();
+  await publishWorkshop((d) => { Object.assign(questionsOf(d, "about_you").find((x) => x.id === "affiliation"), { id: "organisation", label: "Your organisation" }); });
+  const body = await (await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0103-aaaa" })), ip(13))).json();
+  assert.deepEqual(Object.keys(body.errors), ["organisation"]);
+  assert.match(body.form, /name="organisation"[^>]*aria-invalid="true"/);
+  assert.match(body.form, /questions the form no longer asks/);
+  assert.match(body.form, /<dt>Organization or group affiliation<\/dt><dd>Example Hall Council<\/dd>/, "the old answer is shown to copy, not sent");
+  const html = await (await handle(post("/api/forms/workshop-request/submit", workshopAnswers(), { json: false }), ip(13))).text();
+  assert.match(html, /<dd>Example Hall Council<\/dd>/, "the same without JavaScript");
+});
+
+test("a retired question: the send is accepted under the new version, without that answer, and says what the page had", async () => {
+  await freshServer();
+  await publishWorkshop((d) => { const qs = questionsOf(d, "notes"); qs.splice(qs.findIndex((x) => x.id === "group_notes"), 1); });
+  const res = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0104-aaaa" })), ip(14));
+  assert.equal(res.status, 200);
+  const sub = await one("SELECT form_version, version_seen, answers FROM submissions");
+  assert.deepEqual([sub.form_version, sub.version_seen], [2, 1]);
+  assert.equal("group_notes" in sub.answers, false);
+  assert.equal(sub.answers.access_needs, "None known.");
+});
+
+test("a new question shown only for one answer: asked when that answer is given, not otherwise", async () => {
+  await freshServer();
+  await publishWorkshop((d) => questionsOf(d, "when_where").push({ id: "screen_size", type: "short", label: "How big is the screen?", required: true, showIf: { question: "projection", equals: "yes" } }));
+  const asked = await (await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0105-aaaa", projection: "yes" })), ip(15))).json();
+  assert.deepEqual(Object.keys(asked.errors), ["screen_size"]);
+  assert.match(asked.form, /name="screen_size"/);
+  const notAsked = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0106-aaaa", projection: "no" })), ip(15));
+  assert.equal(notAsked.status, 200);
+});
+
+test("answers sent under version 1 stay as they were sent once version 2 is published, and the staff page reads them with version 1", async () => {
+  await freshServer();
+  await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-0107-aaaa" })), ip(16));
+  const before = await one("SELECT form_version, answers FROM submissions");
+  await publishWorkshop((d) => {
+    const qs = questionsOf(d, "notes");
+    qs.splice(qs.findIndex((x) => x.id === "group_notes"), 1);
+    questionsOf(d, "about_you").find((x) => x.id === "affiliation").label = "Your group or organization";
+  });
+  const after = await one("SELECT form_version, answers FROM submissions");
+  assert.deepEqual(after, before);
+  const { latestAnswers } = await import("../netlify/lib/answers.mjs");
+  const latest = await latestAnswers("workshop-request");
+  assert.ok(JSON.stringify(latest).includes("First workshop for the group."), "the retired question's answer is still readable");
+});
+
 test("an anonymous form keeps no connection data, and answers from a hidden branch are dropped", async () => {
   await freshServer();
   const res = await handle(post("/api/forms/programming-feedback/submit", {

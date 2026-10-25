@@ -133,7 +133,37 @@ The rules this keeps:
 
 ## Proposal: the backup spreadsheet
 
-From Exchange request `PUBLIC-SITE-EMAIL-AND-BACKUP`. The owner names who owns the spreadsheet.
+From Exchange request `PUBLIC-SITE-EMAIL-AND-BACKUP`. **Owner, 24 Oct 2026:** "a backup styled spreadsheet in the
+directors account that has all of the forms answers, one tab for each form, as well as a dashboard and a landing
+page". Read as one Google Sheets workbook owned by `directors@badgersupports.org` (to confirm: `WORK.md` owner
+action 5), queued under `WORK.md` item 18. **Nothing of it is built.**
+
+**The pattern already exists in Connect**, and this follows it rather than inventing another: Connect's volunteer
+backup workbook (`BSS Intranet Transfer v23/tools/apps-script/volunteer-backup.gs`, read 24 Oct as reference only)
+is an Apps Script bound to a workbook in the directors' account, `@OnlyCurrentDoc`, which every 30 minutes asks the
+site for what changed behind one key (`VOL_BACKUP_KEY`), writes a Dashboard, an About tab and one tab per event,
+finds its own tabs by hidden developer metadata rather than by name, acknowledges what it wrote, and is one way only.
+The same here, proposed:
+
+- **Start Here** (the landing page): what the file is (a copy; Connect's Website Forms is where answers are worked
+  through), who may open it (directors by name, never "Anyone with the link"), that confidential answers are not in
+  it, when it was last confirmed and the last problem met, and a link to each form's tab and to Connect. Its words
+  are site text keys, so they are editable like every other word.
+- **Dashboard**: one line per form: open or closed, answers in all, in the last 7 and 30 days, the latest, and
+  how many wait or failed to reach Connect. Counts only, never answer text.
+- **One tab per form**, found by the form key in developer metadata so a renamed tab is still found: Reference,
+  Received, Version, then the columns below.
+- **Styled** from `src/styles/tokens.css`: a frozen header row in the site's cream with ink text, the title in the
+  accent red, banded rows, dates as dates, a filter on. No coloured edge bars (the 24 Oct ruling).
+- **The site's half** (a proposed change, not an endpoint that exists): one door behind its own key, answering as
+  if it did not exist until the key is set, `no-store`, rate limited, handing rows changed since a cursor and taking
+  an acknowledgement that turns the matching `sheets.backup` outbox rows `sent`. Pulling means the site holds no
+  Google credential and the workbook can open no other file. Setting the key and installing the script are the
+  owner's, as in Connect's `docs/VOLUNTEER-SIGNUPS.md` §3.
+- **Open:** whether the backup belongs in Connect instead, beside the volunteer one (Connect holds every answer the
+  site delivered; the site's own copy also holds those Connect never received).
+
+The rules the backup keeps either way:
 
 - **One spreadsheet, one tab per form.** Columns come from `answerColumns()` in `src/shared/forms.mjs`: one
   per question id, in order, across every published version, so a renamed or retired question keeps its column.

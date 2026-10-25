@@ -68,7 +68,7 @@ export const fill = (s, vars = {}) => String(s).replace(/\{\{(\w+)\}\}/g, (m, v)
    JSON island; ops/editable.mjs checks every t("…") in src/client/ is listed here. A key ending
    in ".*" takes every key under it. */
 export const CLIENT_TEXT = {
-  "form.js": ["form.errors.one", "form.errors.many", "form.closedNow.title", "form.closedNow.body", "form.updated.title", "form.updated.body", "form.sending", "form.status.*", "form.done.title", "form.done.ref", "form.error.*", "form.upload.*", "form.preview.sent", "form.preview.file"],
+  "form.js": ["form.errors.one", "form.errors.many", "form.closedNow.title", "form.closedNow.body", "form.updated.title", "form.updated.body", "form.updated.ahead", "form.sending", "form.status.*", "form.done.title", "form.done.ref", "form.error.*", "form.upload.*", "form.preview.sent", "form.preview.file"],
   "mood.js": ["mood.error", "mood.count.one", "mood.count.other"],
   "strip.js": ["strip.count"],
   "schedule.js": ["schedule.today"],

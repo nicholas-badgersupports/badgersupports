@@ -16,7 +16,7 @@ From `../../MASTER-PROMPT.md` §1. These came from Nicholas directly.
 |---|---|---|
 | Design | "Match the identity, improve layouts now." Keep the deep reds, with a family resemblance to Connect and SPILL. "Lots of trust will be lost if it looks like an AI slop site." | `DESIGN.md`; the tokens come from style.badgersupports.org and Connect |
 | Public login | Bare bones: directors and admins see submissions from the forms they are authorised for. Visitors go to Connect for events. No member portal | `/staff/` signs in through Connect and shows the latest answers to a director (`netlify/lib/staff.mjs`); live once Connect's half is pushed |
-| Editing | Through Connect. The public signed-in view is a reading surface with links to Manage in Connect | every block declares its fields (`CONNECT-EDITOR-CONTRACT.md`); the editor is Exchange request `PUBLIC-SITE-EDITOR` |
+| Editing | Through Connect. The public signed-in view is a reading surface with links to Manage in Connect. **Superseded for editing on 24 Oct 2026** (below, "Two answers, 24 Oct"): the editor stays on this site | every block declares its fields (`CONNECT-EDITOR-CONTRACT.md`); the editor is Exchange request `PUBLIC-SITE-EDITOR` |
 | Form scope | Public forms are rebuilt here; internal workflows stay in Connect; SPILL's forms stay with SPILL | `COMMUNICATIONS.md` |
 | Form controls | Closed forms are built too. Every form has an on/off switch and editable questions; an application must not open by accident | each form ships with a `state`; the database switch (`form_state`) wins; the staff application ships `closed` |
 | Engagement | Research, recommend, and show a homepage prototype first | the homepage, then the pages below as the owner reviewed it |
@@ -215,6 +215,50 @@ and wrote the second. Little Hearts and Leadership were asked about once the res
 - **Colour** supersedes Rounds 5 and 7 for the two programs: peer support groups are green and craft nights
   purple. Round 7's "no coloured bar down any side" still holds; the colour goes in fills and tints.
 - **Design**: SPILL's lessons (`DESIGN.md`, "Lessons from Badger SPILL") applied across the pages.
+
+### Two answers, 24 Oct 2026 (Owner)
+
+Asked at the start of the run in `OVERNIGHT-RUN-2026-10-24.md`, as tappable questions.
+
+> Edit text: "It's approved here, I also want it to be expanded, the current edit features seem super limited,
+> and I don't think it actually publishes? Try to have it be more similar to the SPILL editing, with the ID
+> system. It seems really limited and beginner like comapred to the other editing systems."
+
+> Retries: "Limit to own forms (Recommended)".
+
+- **The editor stays on the public site** and grows toward Badger SPILL's: each word shown with its permanent
+  key, every word on the page listed, drafts, publish as a numbered version, history and restore. This supersedes
+  §1's "Editing: through Connect" for editing; Connect still holds who may edit and who may publish (`site.edit`,
+  `site.publish`, set by a super admin, 20 Oct). Nicholas was right that saved words did not reach the live site:
+  the publish file never read them (`OVERNIGHT-RUN-2026-10-24.md`, "The editor").
+- **Retries are limited to the reader's own forms.** Opening the staff page sends nothing. Try again resends only
+  the forms that person may read, checked on the server. A new submission still wakes delivery. No Connect change.
+
+### The platform, 24 Oct 2026 (Owner)
+
+From §2, "Decisions from Nicholas", of the prompt *"Public Website — Editable Publishing, Reliable Workflows, and Lean
+Platform Growth"* (`PUBLIC-PLATFORM-PROMPT-2026-10-24.md`, in Nicholas's Codex outputs, kept unchanged). Nicholas asked
+for it to be merged into the queue. It is queued, not built: `WORK.md` items 15, 16, 18, 20, 22, 23 and 33–39.
+
+- **A permitted, valid save publishes**, with no second Publish step. Permissions, version history, conflict checks,
+  restore and audit stay. Nobody gains `site.publish` this way, and a save approves no decision or bulk message.
+  This replaces the separate publish step for permitted content, in "Two answers" above ("drafts, publish as a
+  numbered version") and in §1.
+- **Everything is editable**, both from Connect and from the live-site editor: words, links, media, forms,
+  navigation, sections and layouts, and feature settings. A field left out is a listed gap, not fixed content.
+- **Public events, resources and content may take up to 30 minutes to appear.** The page says so, and shows the last
+  successful update. Authorised editors and directors get **Refresh now**. Visitors get the published copy.
+- **A failed routine delivery is retried within 30 minutes**, without waiting for a visitor. Routine receipts and
+  alerts may send by themselves. Decisions and bulk mail need a director's preview and explicit approval.
+- **No new subscriptions**: no trials, upgrades, plan changes, auto-recharge changes or new vendor accounts.
+- **Netlify Web Analytics** is reported as on. It is to be verified per project and in billing. It does not approve
+  GA4 or any other collector.
+- **No decorative coloured bars**: "the rounded red strip across the top of a white card". None in any colour, on
+  any edge, on any page now or later.
+  - This widens Round 7's "no coloured bar down any side" to every edge.
+  - The first is `.form-head`'s `border-top: 8px solid var(--accent)` (`src/styles/forms.css:12`).
+  - Colour that means something stays: focus, selected, status and charts.
+  - It applies to this site only; the sibling projects are not restyled.
 
 ## 3. Rules carried over (Rule)
 

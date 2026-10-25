@@ -12,6 +12,7 @@ import { one, tx } from "./db.mjs";
 import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { fileRecords, claimFiles } from "./files.mjs";
+import { definitionFor } from "./deliver.mjs";
 import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER } from "../../src/shared/forms.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 
@@ -63,10 +64,23 @@ export function answersForPerson(def, raw) {
   return rows;
 }
 
+/* What someone typed for questions the form no longer asks, read with the version their page had,
+   so a reply that puts the new form in front of them can show it instead of losing it. Nothing
+   here is stored or sent; a question renamed by its id counts as gone, which is why ids stay. */
+async function leftBehind(def, versionSeen, input) {
+  if (!versionSeen || versionSeen === def.version) return [];
+  const seen = await definitionFor(def.key, versionSeen).catch(() => null);
+  if (!seen || seen.version !== versionSeen) return [];
+  const still = new Set(allQuestions(def).map(({ q }) => q.id));
+  const gone = { ...seen, sections: seen.sections.map((s) => ({ ...s, questions: s.questions.filter((q) => !still.has(q.id)) })) };
+  return answersForPerson(gone, readRaw(gone, input));
+}
+
 /* One submission. Returns one of
      { ok: true, ref, def, duplicate }               accepted (or the same one again)
      { ok: false, error: "form.closed", ... }        switched off, or closed while the tab was open
-     { ok: false, error: "answers.invalid", ... }    with errors by question id
+     { ok: false, error: "answers.invalid", ... }    with errors by question id, and `gone`: answers
+                                                     to questions dropped since the page loaded
    Throws HttpError for an unknown form. */
 export async function submit(key, input, { now = new Date() } = {}) {
   const form = await currentForm(key);
@@ -80,7 +94,7 @@ export async function submit(key, input, { now = new Date() } = {}) {
 
   const versionSeen = Number(field(input, "_version")) || null;
   const check = validateAnswers(def, raw);
-  if (!check.ok) return { ok: false, error: "answers.invalid", errors: check.errors, version: def.version, versionSeen, def, raw };
+  if (!check.ok) return { ok: false, error: "answers.invalid", errors: check.errors, version: def.version, versionSeen, def, raw, gone: await leftBehind(def, versionSeen, input) };
 
   // The browser sends one key per filled-in form. Without JavaScript there is none, so the key
   // is the answers themselves for the day: pressing Send twice, or reloading the reply, is one
@@ -97,7 +111,7 @@ export async function submit(key, input, { now = new Date() } = {}) {
     if (files.errors) {
       const back = { ...raw };
       for (const id of Object.keys(files.errors)) back[id] = [];
-      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back };
+      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back, gone: await leftBehind(def, versionSeen, input) };
     }
     let row = null;
     for (let attempt = 0; !row && attempt < 5; attempt++) {

@@ -9,7 +9,11 @@
    only the ones that changed, so its photos stay; any other block's section is replaced when its
    answer differs from the page; an empty answer hides it. A block the page was published without
    cannot be added, which is why a list that found nothing still publishes an empty hidden section.
-   If the asking fails in any way, the page stays as it was published. */
+   If the asking fails in any way, the page stays as it was published.
+
+   Back or Forward to a page the browser kept, or a tab come back to after a while, marks again and
+   asks again; only the newest answer is used, and a section the person is in (focus inside it)
+   waits for them to leave it. */
 
 import { t } from "./text.js";
 
@@ -29,7 +33,8 @@ function mark() {
   }
 }
 
-/* The page's event sections as published, read before mark() changes their classes. */
+/* The page's event sections as published, read before mark() changes their classes. A swap writes
+   down what it put in, so the next answer is compared with what the page shows. */
 const sections = new Map();
 for (const s of document.querySelectorAll("main [data-block]")) {
   sections.set(s.dataset.block, { el: s, html: s.outerHTML, live: [...s.querySelectorAll("[data-live]")].map((p) => p.outerHTML) });
@@ -46,28 +51,75 @@ const keys = (parts) => parts.map((p) => p.dataset.live).join(" ");
    change. A section with live parts only ever has those parts swapped: what is around them is the
    block's own words and photos, which change only with a publish, and other scripts (strip.js) may
    have touched it. */
-function swap(id, markup) {
+function put(id, markup) {
   const was = sections.get(id);
   if (!was || !was.el.isConnected) return;
-  if (!markup) { was.el.hidden = true; return; }
+  if (!markup) { was.el.hidden = true; was.html = ""; was.live = []; return; }
   const fresh = parse(markup);
   if (!fresh || fresh.dataset.block !== id) return;
   const parts = [...was.el.querySelectorAll("[data-live]")];
   const freshParts = [...fresh.querySelectorAll("[data-live]")];
   if (parts.length && parts.length === was.live.length && keys(parts) === keys(freshParts)) {
-    parts.forEach((p, i) => { if (was.live[i] !== freshParts[i].outerHTML) p.replaceWith(freshParts[i]); });
+    parts.forEach((p, i) => {
+      const html = freshParts[i].outerHTML;
+      if (was.live[i] !== html) { p.replaceWith(freshParts[i]); was.live[i] = html; }
+    });
     return;
   }
-  if (fresh.outerHTML !== was.html) was.el.replaceWith(fresh);
+  const html = fresh.outerHTML;
+  if (html !== was.html) {
+    was.el.replaceWith(fresh);
+    sections.set(id, { el: fresh, html, live: freshParts.map((p) => p.outerHTML) });
+  }
 }
 
-if (document.body.dataset.refresh === "events" && sections.size) {
+/* A section with focus inside it (a keyboard user on its link) is not taken from under them: its
+   newest answer waits, and goes in once focus has left the section. */
+const held = new Map(); // block id -> the newest answer not yet put in
+function swap(id, markup) {
+  const el = sections.get(id)?.el;
+  if (!el || !el.contains(document.activeElement)) { put(id, markup); return; }
+  const waiting = held.has(id);
+  held.set(id, markup);
+  if (waiting) return;
+  const left = () => setTimeout(() => {
+    if (!held.has(id) || el.contains(document.activeElement)) return;
+    el.removeEventListener("focusout", left);
+    const next = held.get(id);
+    held.delete(id);
+    put(id, next);
+    mark();
+  });
+  el.addEventListener("focusout", left);
+}
+
+const refreshing = document.body.dataset.refresh === "events" && sections.size > 0;
+const AGAIN_MS = 5 * 60 * 1000; // the CDN holds an answer five minutes (netlify/lib/router.mjs)
+let asked = 0;   // the newest ask; an answer to an older one is dropped
+let askedAt = 0;
+
+function ask() {
+  const mine = ++asked;
+  askedAt = Date.now();
   fetch(`/api/events/${encodeURIComponent(document.body.dataset.page)}`, { headers: { accept: "application/json" }, credentials: "omit" })
     .then((r) => (r.ok ? r.json() : null))
     .then((reply) => {
-      if (!reply?.ok || !reply.blocks || typeof reply.blocks !== "object") return;
+      if (mine !== asked || !reply?.ok || !reply.blocks || typeof reply.blocks !== "object") return;
       for (const [id, markup] of Object.entries(reply.blocks)) if (typeof markup === "string") swap(id, markup);
       mark();
     })
     .catch(() => {});
 }
+
+if (refreshing) ask();
+
+window.addEventListener("pageshow", (e) => {
+  if (!e.persisted) return;
+  mark();
+  if (refreshing) ask();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  mark();
+  if (refreshing && Date.now() - askedAt > AGAIN_MS) ask();
+});

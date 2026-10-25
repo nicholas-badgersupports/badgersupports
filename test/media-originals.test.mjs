@@ -53,6 +53,6 @@ test("the build stops before encoding, with the whole list in one message", asyn
   assert.ok(!fs.existsSync(OUT), "nothing was written");
 });
 
-test("on the laptop, where local/ holds the originals, none is missing", () => {
+test("on the laptop, where local/ holds the originals, none is missing", { skip: process.env.NO_MEDIA === "1" && "away from the laptop (check --no-media)" }, () => {
   assert.deepEqual(missingOriginals(items), []);
 });

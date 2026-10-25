@@ -467,12 +467,13 @@ arrives as `"name (size)"` with a `files` list naming each file's `fileId`, `byt
 collected separately and never sent in an answer. A file question is refused on an anonymous form.
 
 **Prose** (a form's or section's `intro`, a question's `help`) is a string, or a list of parts: a paragraph, `{ heading }`,
-`{ list, ordered }` or `{ links: [{ href, label }] }`. Links start `https://`, `mailto:`, `/` or `#`. Plain words only:
+`{ list, ordered }`, `{ links: [{ href, label }] }` or `{ more, body }`: secondary help shown closed under its label `more`,
+its `body` a list of the other parts, never empty. Links start `https://`, `mailto:`, `/` or `#`. Plain words only:
 the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-303 keys. Keys are permanent. Required text cannot be published empty and must keep each
+311 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -601,7 +602,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (67)
+### Forms (68)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -668,6 +669,7 @@ the site adds the markup.
 | `form.upload.needsScript` | Uploading a file needs JavaScript. Turn it on in your browser, then reload this page. | Under a file question when the browser runs no JavaScript. |  |
 | `form.preview.title` | Preview Only | Heading of the note above a closed form shown for review, on the preview pages of the prototype site. |  |
 | `form.preview.body` | This form is closed. This page shows it as it will look when it opens, so it can be checked. Nothing typed here is sent. | The note above a closed form shown for review, on the preview pages of the prototype site. |  |
+| `form.left` | Characters left: {{n}} | Under a long answer box, once a tenth of its room is left. | `{{n}}` |
 | `form.preview.sent` | Preview only: these answers pass every check. Nothing was sent. | Under the Send button of a form preview once the answers would have been accepted. |  |
 | `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
 | `form.preview.pageTitle` | Preview: {{form}} — Badger Supports | The browser-tab title of a closed form's preview page on the prototype site. | `{{form}}` |
@@ -692,7 +694,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (94)
+### Staff page and edit button (101)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -743,10 +745,10 @@ the site adds the markup.
 | `staff.edit.title` | Words on the Site | Staff page, heading above the edit tools. |  |
 | `staff.edit.how` | Open any page of this site and press Edit text in the bottom corner. Every word you can change gets a dotted outline; choose one, change it and save. | Staff page, how to use the edit button. |  |
 | `staff.edit.none` | Every saved change is already on the site. | Staff page, when nothing waits to publish. |  |
-| `staff.edit.waiting.one` | {{n}} saved change waits for the next publish. | Staff page, when one change waits. | `{{n}}` |
-| `staff.edit.waiting.other` | {{n}} saved changes wait for the next publish. | Staff page, when several changes wait. | `{{n}}` |
+| `staff.edit.waiting.one` | {{n}} saved change is not on the site yet. | Staff page, when one change waits. | `{{n}}` |
+| `staff.edit.waiting.other` | {{n}} saved changes are not on the site yet. | Staff page, when several changes wait. | `{{n}}` |
 | `staff.edit.download` | Download the Edits File | Staff page, button that saves every change as one file. |  |
-| `staff.edit.publish` | Changes are kept as soon as you save them. Visitors see them after the next publish, which uses this file. | Staff page, under the download button. |  |
+| `staff.edit.publish` | Save this file in the site as content/edits.json before you publish, or saved changes are left out. | Staff page, under the download button. |  |
 | `edit.button` | Edit Text | The edit button, bottom corner of every page, for staff who may change words. |  |
 | `edit.buttonWaiting` | Edit Text ({{n}} waiting) | The edit button, when saved changes wait for a publish. | `{{n}}` |
 | `edit.done` | Done Editing | The edit button while words are outlined. |  |
@@ -759,10 +761,17 @@ the site adds the markup.
 | `edit.revert` | Put Back the Original | Edit box, button that restores the words the site shipped with. |  |
 | `edit.original` | Original: {{words}} | Edit box, the words the site shipped with. | `{{words}}` |
 | `edit.lastBy` | Last changed by {{name}}, {{when}} | Edit box, who saved these words last. | `{{name}}` `{{when}}` |
+| `edit.key` | Key: | Edit box, before the permanent key of these words: the name the edits file and Connect use for them. |  |
+| `edit.history.title` | Earlier Versions | Edit box, the list that opens to show other words saved here before. |  |
+| `edit.history.loading` | Loading… | Edit box, Earlier versions, while the list loads. |  |
+| `edit.history.none` | No earlier versions. | Edit box, Earlier versions, when no other words have been saved here. |  |
+| `edit.history.failed` | Unable to load. Close and reopen to try again. | Edit box, Earlier versions, when the list cannot be loaded. |  |
+| `edit.history.by` | {{name}}, {{when}} | Edit box, Earlier versions, under each version: who saved it, and when. | `{{name}}` `{{when}}` |
+| `edit.restore` | Restore | Edit box, Earlier versions: saves this version again as the newest. |  |
 | `edit.saving` | Saving… | Edit box, while a change is being saved. |  |
 | `edit.saved` | Saved. Visitors see it now. | After saving, when the page already shows the change. |  |
-| `edit.savedWaiting` | Saved. Visitors see it after the next publish. | After saving, when the change waits for a publish. |  |
-| `edit.waitingNote` | A change to these words is saved and waits for the next publish. | Edit box, when the words have a change waiting. |  |
+| `edit.savedWaiting` | Saved, but not on the site yet. | After saving, when the change waits for a publish. |  |
+| `edit.waitingNote` | Saved, but not on the site yet. | Edit box, when the words have a change waiting. |  |
 | `edit.conflict` | Someone else changed these words while you were editing. Their words are in the box now; change them again if you need to. | Edit box, when two people edit the same words. |  |
 | `edit.error.empty` | These words cannot be empty. | Edit box, when the box is empty. |  |
 | `edit.error.long` | That is too long. Keep it under 2,000 characters. | Edit box, when the words are too long. |  |

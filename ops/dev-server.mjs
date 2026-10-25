@@ -3,6 +3,7 @@
  *
  *   node ops/dev-server.mjs                 # build, then serve on PORT (default 8899)
  *   node ops/dev-server.mjs --no-build      # serve the last build
+ *   node ops/dev-server.mjs --no-media      # away from the laptop: placeholders for the photos
  *   node ops/dev-server.mjs --today=2026-10-20
  *   PORT=8901 node ops/dev-server.mjs --connect=http://127.0.0.1:8903
  *                                          # sign in and send forms through a local Connect rig
@@ -66,18 +67,26 @@ function parseRedirects() {
 
 const matches = (pattern, p) => (pattern.endsWith("*") ? p.startsWith(pattern.slice(0, -1)) : p === pattern);
 
-export async function startServer({ port = Number(process.env.PORT) || 8899, today = null } = {}) {
+async function standIns() {
+  const { default: sharp } = await import("sharp");
+  const flat = () => sharp({ create: { width: 16, height: 12, channels: 3, background: { r: 200, g: 200, b: 200 } } });
+  return { ".avif": await flat().avif().toBuffer(), ".webp": await flat().webp().toBuffer(), ".jpg": await flat().jpeg().toBuffer() };
+}
+
+export async function startServer({ port = Number(process.env.PORT) || 8899, today = null, media = true } = {}) {
   const { handle } = await import("../netlify/lib/router.mjs");
   const { useContent } = await import("../netlify/lib/content.mjs");
   const { editsFile } = await import("../netlify/lib/edits.mjs");
   const { build } = await import("./build.mjs");
   // The pages as staff left them: every saved edit laid over the files, as a publish would.
   const afterEdit = async () => {
-    await build({ today, edits: (await editsFile()).edits });
+    await build({ today, edits: (await editsFile()).edits, media });
     useContent(null);
   };
   const headerRules = parseHeaders();
   const redirects = parseRedirects();
+  // Without the photos (--no-media) no variant is written: each is answered with a flat one of its format.
+  const stand = media ? null : await standIns();
 
   const server = http.createServer(async (req, res) => {
     const u = new URL(req.url, `http://${req.headers.host}`);
@@ -104,6 +113,7 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
       if (!fs.existsSync(file)) {
         const asDir = path.join(DIST, pathname, "index.html");
         if (fs.existsSync(asDir)) file = asDir;
+        else if (stand?.[path.extname(pathname)] && pathname.startsWith("/media/")) { res.writeHead(200, { "content-type": TYPES[path.extname(pathname)] }); res.end(stand[path.extname(pathname)]); return; }
         else { file = path.join(DIST, "404.html"); status = 404; }
       }
       const headers = { "content-type": TYPES[path.extname(file)] || "application/octet-stream" };
@@ -121,14 +131,15 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
 
 if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
   const today = arg("today") || null;
+  const media = !process.argv.includes("--no-media");
   if (arg("connect")) useLocalConnect(arg("connect"));
   if (!process.argv.includes("--no-build")) {
     const { build } = await import("./build.mjs");
-    const r = await build({ today });
+    const r = await build({ today, media });
     console.log(`built ${r.pages.length} pages for ${r.today}`);
   }
   const port = Number(process.env.PORT) || 8899;
-  await startServer({ port, today });
+  await startServer({ port, today, media });
   const connect = process.env.CONNECT_URL ? `Connect: ${process.env.CONNECT_URL}` : "no Connect";
   console.log(`http://localhost:${port}/  (database: PGlite in memory; ${connect}; nothing else leaves this machine)`);
 }

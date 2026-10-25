@@ -31,6 +31,13 @@
   .form-page .wrap > .form-head + * { margin-top: var(--s5); }
   .form-head { position: static; grid-row: auto; }
 }
+/* On a phone the card gives its width to the words and the page gives less to the space above it,
+   so the first question comes up the screen; the 28px line rhythm is kept. */
+@media (max-width: 480px) {
+  .form-page { padding-top: var(--s4); }
+  .form-page .wrap > .form-head + * { margin-top: var(--s4); }
+  .form-head { padding-inline: var(--s3); }
+}
 .bss-form { margin-top: 0; }
 .bss-form > .form-rule:first-child { margin-top: 0; }
 .bss-form fieldset.section { border: 0; margin: 0; padding: var(--s5) 0 var(--s3); border-top: var(--rule-line); min-width: 0; }
@@ -38,7 +45,7 @@
 .bss-form legend { padding: 0; margin-bottom: var(--s2); }
 /* A section's title is its heading (h2 inside the legend); a section of words only is not a fieldset. */
 .bss-form .section h2 { font: 700 var(--fs-h3)/1.25 var(--font-body); letter-spacing: 0; color: var(--ink); }
-.bss-form .section.is-words { padding: var(--s5) 0 var(--s3); border-top: var(--rule-line); max-width: 40rem; }
+.bss-form .section.is-words { padding: var(--s5) 0 var(--s3); border-top: var(--rule-line); }
 .bss-form .section.is-words > h2 { margin-bottom: var(--s2); }
 .bss-form .section.is-words[hidden] { display: none; }
 .section-intro { color: var(--muted); margin-bottom: var(--s3); }
@@ -48,8 +55,23 @@
 .section-intro ul, .section-intro ol, .field-help ul, .field-help ol { padding-left: 1.4rem; margin: 0 0 var(--s3); display: grid; gap: var(--s0); }
 .section-intro ul:last-child, .section-intro ol:last-child, .field-help ul:last-child, .field-help ol:last-child { margin-bottom: 0; }
 .section-intro .more-links, .field-help .more-links { padding-left: 0; margin-top: 0; display: flex; }
+/* Secondary help folded under its label (prose { more, body }), closed until asked for. */
+.prose-more { margin: 0 0 var(--s2); }
+.prose-more > summary { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; color: var(--accent); font-weight: 700; cursor: pointer; list-style: none; }
+.prose-more > summary::-webkit-details-marker { display: none; }
+.prose-more > summary::after {
+  content: ""; width: .45rem; height: .45rem; margin-top: -.2rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg);
+  transition: transform var(--t) var(--ease-out);
+}
+.prose-more[open] > summary::after { transform: rotate(225deg); margin-top: .25rem; }
+.prose-more > summary:hover { color: var(--accent-deep); text-decoration: underline; }
+.prose-more-body { padding-top: var(--s1); }
 
-.field { display: grid; gap: .4rem; margin-bottom: var(--s4); max-width: 40rem; }
+/* A question takes the whole of the form's column, as Connect's fields take theirs (its
+   --maxw-field: 100%): no cap of its own, so a long answer has room. A control for a short value
+   (a number, a phone number, a date, an Other) keeps its compact width; paragraphs keep the measure. */
+.field { display: grid; gap: .4rem; margin-bottom: var(--s4); min-width: 0; }
 .field[hidden] { display: none; }
 .field > label, .field > .q-label, .field legend.q-label { font-weight: 700; font-size: 1.0625rem; line-height: 1.4; }
 .optional { font-weight: 400; color: var(--muted); }
@@ -67,8 +89,9 @@
 .field input[type="tel"] { max-width: 20rem; }
 .field input[type="datetime-local"], .field input[type="date"] { max-width: 20rem; }
 .field textarea { resize: vertical; }
+.field-left { color: var(--muted); font-size: var(--fs-small); margin: 0; }
 .field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
-fieldset.field { border: 0; padding: 0; min-width: 0; }
+fieldset.field { border: 0; padding: 0; margin-inline: 0; min-width: 0; }
 .choices { display: grid; gap: .25rem; }
 .choice { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: .6rem; align-items: start; min-height: 44px; padding: .55rem .25rem; border-radius: var(--r-input); cursor: pointer; }
 .choice:hover { background: var(--cream); }

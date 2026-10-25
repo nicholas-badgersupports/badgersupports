@@ -21,7 +21,7 @@ import { connectConfig } from "./connect.mjs";
 import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
-import { editSource, editEntry, saveEdit, editsFile, waitingCount } from "./edits.mjs";
+import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { eventSections, calendarFile } from "./live-events.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
@@ -211,8 +211,16 @@ async function editSourceRoute(req, _m, _c, who) {
   return json(200, { ok: true, entries: await editSource(new URL(req.url).searchParams.get("page")) });
 }
 
+/* Every version saved for one place, newest first; Restore in the edit box saves one of them again
+   through editSave, so it passes the same checks and becomes the newest. */
+async function editHistoryRoute(req, _m, _c, who) {
+  need(who, "site.edit");
+  return json(200, { ok: true, ...(await editHistory(new URL(req.url).searchParams.get("target"))) });
+}
+
 /* A local copy rebuilds the pages after a save (context.afterEdit, ops/dev-server.mjs), so the
-   change shows at once there; on Netlify it waits for the next publish. */
+   change shows at once there. On Netlify the save is kept here, and visitors see it once someone
+   with site.publish downloads the edits file, saves it as content/edits.json and publishes. */
 async function editSave(req, _m, context, who) {
   need(who, "site.edit");
   const body = await readBody(req);
@@ -277,6 +285,7 @@ export const ROUTES = [
   { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },
   { name: "staffRetry", method: "POST", pattern: /^\/api\/staff\/outbox\/retry$/, tier: "director", run: staffRetry },
   { name: "editSource", method: "GET", pattern: /^\/api\/staff\/edit\/source$/, tier: "director", run: editSourceRoute },
+  { name: "editHistory", method: "GET", pattern: /^\/api\/staff\/edit\/history$/, tier: "director", run: editHistoryRoute },
   { name: "editSave", method: "POST", pattern: /^\/api\/staff\/edit\/save$/, tier: "director", run: editSave },
   { name: "editsFile", method: "GET", pattern: /^\/api\/staff\/edits$/, tier: "director", run: editsFileRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },

@@ -4,10 +4,12 @@
  * carries none of them.
  *
  * Edit text marks every word on the page that can be changed. Choosing one opens a box with the
- * words, what the site shipped with, and who changed them last. Saving keeps the change at once
- * (netlify/lib/edits.mjs); visitors see it after the next publish, or at once on a local copy.
+ * words, their permanent key, what the site shipped with, who changed them last, and under Earlier
+ * versions every version saved, each of which Restore saves again as the newest. Saving keeps the
+ * change at once (netlify/lib/edits.mjs). Visitors see it once someone who may publish downloads
+ * the edits file from the staff page and publishes it; on a local copy, at once.
  * Words not on the screen right now — a line shown only when something goes wrong, a label read
- * aloud — are under More words, as are the lines every page shares.
+ * aloud — are under More words, as are the lines every page shares; its search finds keys too.
  *
  * Finding a word on the page: the deepest element whose text is exactly that word, inside its own
  * block for a page's words, outside every block for the menus and footer. Words the page builds in
@@ -46,6 +48,7 @@ const added = new Set();      // elements given a tabindex here, to take it away
 let editing = false;
 let ui = null;
 let opened = null;            // the entry the box is showing
+let historyAsked = 0;         // the newest ask for Earlier versions; an older answer is dropped
 
 /* ---------- finding words on the page ---------- */
 
@@ -160,44 +163,90 @@ function pick(e) {
 
 /* ---------- the box ---------- */
 
+const when = (at) => new Date(at).toLocaleString("en-US", { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" });
+
 function open(entry, from) {
   if (!entry) return;
   opened = { entry, from };
   const d = ui.dialog;
   d.where.textContent = entry.where || "";
   d.where.hidden = !entry.where;
+  d.key.replaceChildren(`${t("edit.key")} `, el("code", { textContent: entry.target }));
   d.value.value = entry.current;
   d.original.textContent = t("edit.original", { words: entry.original });
-  d.by.textContent = entry.by ? t("edit.lastBy", { name: entry.by, when: new Date(entry.at).toLocaleString("en-US", { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" }) }) : "";
+  d.by.textContent = entry.by ? t("edit.lastBy", { name: entry.by, when: when(entry.at) }) : "";
   d.by.hidden = !entry.by;
   d.revert.hidden = entry.current === entry.original;
   d.status.textContent = entry.waiting ? t("edit.waitingNote") : "";
+  d.save.disabled = d.revert.disabled = false;
+  historyAsked++;
+  d.history.open = false;
+  d.versions.replaceChildren();
   d.box.showModal();
   d.value.focus();
 }
 
+/* Other words saved here before, newest first (netlify/lib/edits.mjs, editHistory), asked for when
+   Earlier versions is opened. The words in the box are not listed again, and words saved more than
+   once are listed once, at their newest. Restore saves one again through save(), so it passes the
+   same checks as typing it and becomes the newest. An answer for words the box has moved on from,
+   or to an ask that a newer one replaced, is dropped. */
+async function versions() {
+  const d = ui.dialog;
+  if (!opened || !d.history.open) return;
+  const mine = opened;
+  const ask = ++historyAsked;
+  d.versions.replaceChildren(el("p", { className: "edit-by", textContent: t("edit.history.loading") }));
+  const r = await call(`/api/staff/edit/history?target=${encodeURIComponent(mine.entry.target)}`).catch(() => ({ status: 0, body: {} }));
+  if (ask !== historyAsked || opened !== mine || !d.box.open) return;
+  if (r.status === 401) { d.versions.replaceChildren(el("p", {}, t("edit.error.ended"), " ", signInAgain(true))); return; }
+  if (r.status !== 200 || !Array.isArray(r.body.versions)) { d.versions.replaceChildren(el("p", { textContent: t("edit.history.failed") })); return; }
+  const seen = new Set([mine.entry.current]);
+  const list = r.body.versions.filter((v) => !seen.has(v.value) && seen.add(v.value));
+  if (!list.length) { d.versions.replaceChildren(el("p", { className: "edit-by", textContent: t("edit.history.none") })); return; }
+  d.versions.replaceChildren(el("ol", { className: "edit-versions" }, ...list.map((v, i) => {
+    const words = el("p", { id: `edit-v-${i}`, className: "edit-version-words", textContent: v.value });
+    const by = el("p", { className: "edit-by", textContent: t("edit.history.by", { name: v.by, when: when(v.at) }) });
+    const restore = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.restore") });
+    restore.setAttribute("aria-describedby", words.id);
+    restore.addEventListener("click", () => save(v.value));
+    return el("li", {}, words, by, restore);
+  })));
+}
+
+/* The box can be closed, and other words opened in it, while a save is still going. Its answer then
+   changes the words on the page and says how it went on the bar, but leaves the box to the words
+   now in it: it neither closes it nor writes into it. */
 async function save(value) {
-  const { entry } = opened;
+  const mine = opened;
+  const { entry } = mine;
   const d = ui.dialog;
   d.save.disabled = d.revert.disabled = true;
   d.status.textContent = t("edit.saving");
   const r = await call("/api/staff/edit/save", { target: entry.target, expected: entry.current, value }).catch(() => ({ status: 0, body: {} }));
-  d.save.disabled = d.revert.disabled = false;
+  const here = opened === mine && d.box.open;
+  if (here) d.save.disabled = d.revert.disabled = false;
   if (r.status === 200 && r.body.ok) {
     const next = r.body.entry || { ...entry, current: value.trim() };
     entries.set(entry.target, next);
     for (const n of marks.get(entry.target) || []) show(n, next.current);
     me.waiting = r.body.waiting;
-    d.box.close();
+    if (here) d.box.close();
     drawBar();
     say(next.waiting ? t("edit.savedWaiting") : t("edit.saved"));
     return;
   }
+  if (r.status === 409 && typeof r.body.current === "string") entries.set(entry.target, { ...entry, current: r.body.current });
+  if (!here) {
+    if (r.status === 401) say(t("edit.error.ended"), " ", signInAgain(false));
+    else say(t("edit.error.failed"));
+    return;
+  }
   if (r.status === 409 && typeof r.body.current === "string") {
-    entries.set(entry.target, { ...entry, current: r.body.current });
     opened.entry = entries.get(entry.target);
     d.value.value = r.body.current;
     d.status.textContent = t("edit.conflict");
+    versions();
     return;
   }
   if (r.status === 401) { d.status.replaceChildren(t("edit.error.signedOut"), " ", signInAgain(true)); return; }
@@ -212,7 +261,7 @@ function moreList() {
   const here = [], everywhere = [];
   for (const e of entries.values()) {
     if (kindOf(e.target) !== "text" && marks.has(e.target)) continue;
-    if (filter && !`${e.current} ${e.where || ""}`.toLowerCase().includes(filter)) continue;
+    if (filter && !`${e.current} ${e.where || ""} ${e.target}`.toLowerCase().includes(filter)) continue;
     (kindOf(e.target) === "page" ? here : everywhere).push(e);
   }
   const item = (e) => {
@@ -276,6 +325,7 @@ function build() {
   const box = el("dialog", { className: "edit-dialog" });
   box.setAttribute("aria-labelledby", "edit-d-h");
   const where = el("p", { className: "edit-where" });
+  const key = el("p", { className: "edit-key" });
   const value = el("textarea", { id: "edit-d-v", rows: 4, maxLength: 2000 });
   const original = el("p", { className: "edit-original" });
   const by = el("p", { className: "edit-by" });
@@ -284,10 +334,13 @@ function build() {
   const saveB = el("button", { type: "submit", className: "btn", textContent: t("edit.save") });
   const revert = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.revert") });
   const cancel = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.cancel") });
+  const versionList = el("div", { className: "edit-versions-list" });
+  const earlier = el("details", { className: "edit-history" }, el("summary", { textContent: t("edit.history.title") }), versionList);
+  earlier.addEventListener("toggle", versions);
   const form = el("form", { className: "edit-form" },
-    el("h2", { id: "edit-d-h", textContent: t("edit.dialog.title") }), where,
+    el("h2", { id: "edit-d-h", textContent: t("edit.dialog.title") }), where, key,
     el("label", { htmlFor: "edit-d-v", textContent: t("edit.dialog.label") }), value, original, by, status,
-    el("div", { className: "edit-actions" }, saveB, revert, cancel));
+    el("div", { className: "edit-actions" }, saveB, revert, cancel), earlier);
   form.addEventListener("submit", (e) => { e.preventDefault(); save(value.value); });
   revert.addEventListener("click", () => save(opened.entry.original));
   cancel.addEventListener("click", () => box.close());
@@ -297,7 +350,7 @@ function build() {
   const root = el("div", { className: "edit-ui" }, more, bar, box);
   root.setAttribute("data-edit-ui", "");
   document.body.append(root);
-  ui = { toggle, more, moreButton, moreList: moreList_, find, dialog: { box, where, value, original, by, status, save: saveB, revert } };
+  ui = { toggle, more, moreButton, moreList: moreList_, find, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList } };
   drawBar();
 }
 

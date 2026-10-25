@@ -205,7 +205,8 @@ export function contract() {
   w("collected separately and never sent in an answer. A file question is refused on an anonymous form.");
   w();
   w("**Prose** (a form's or section's `intro`, a question's `help`) is a string, or a list of parts: a paragraph, `{ heading }`,");
-  w("`{ list, ordered }` or `{ links: [{ href, label }] }`. Links start `https://`, `mailto:`, `/` or `#`. Plain words only:");
+  w("`{ list, ordered }`, `{ links: [{ href, label }] }` or `{ more, body }`: secondary help shown closed under its label `more`,");
+  w("its `body` a list of the other parts, never empty. Links start `https://`, `mailto:`, `/` or `#`. Plain words only:");
   w("the site adds the markup.");
   w();
   w("## Every other word (`content/text.json`)");

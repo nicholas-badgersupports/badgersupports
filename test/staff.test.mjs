@@ -17,7 +17,7 @@ import { handle } from "../netlify/lib/router.mjs";
 import { useConnect } from "../netlify/lib/connect.mjs";
 import { deliverDue, deliveriesSettled } from "../netlify/lib/deliver.mjs";
 import { serverContent, useContent } from "../netlify/lib/content.mjs";
-import { many, one, q } from "../netlify/lib/db.mjs";
+import { many, one, q, migrate } from "../netlify/lib/db.mjs";
 import { readEditsFile } from "../src/shared/edits.mjs";
 import { build, loadContent } from "../ops/build.mjs";
 
@@ -326,6 +326,7 @@ test("a director reads only the forms Connect lets them read, edits only with si
   for (const [req, label] of [
     [get("/api/staff/forms/programming-feedback/submissions", { cookie }), "another form's answers"],
     [get("/api/staff/edit/source?page=pg-home", { cookie }), "the edit button's words"],
+    [get("/api/staff/edit/history?target=text:page.skip", { cookie }), "the versions of some words"],
     [get("/api/staff/edits", { cookie }), "the edits file"],
     [staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" }, cookie), "saving an edit"],
   ]) {
@@ -356,6 +357,7 @@ test("a director reads only the forms Connect lets them read, edits only with si
   assert.deepEqual([pm.name, pm.canEdit, pm.canPublish, pm.canRead], ["", false, true, false]);
   assert.equal((await handle(get("/api/staff/edits?download=1", { cookie: pb.cookie }), ip())).status, 200);
   assert.equal((await handle(get("/api/staff/edit/source?page=pg-home", { cookie: pb.cookie }), ip())).status, 403);
+  assert.equal((await handle(get("/api/staff/edit/history?target=text:page.skip", { cookie: pb.cookie }), ip())).status, 403);
   assert.equal((await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" }, pb.cookie), ip())).status, 403);
 
   // A made-up session is nobody, and a post from another site is refused before anything else.
@@ -703,6 +705,58 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip to the page" }, cookie), ctx);
   await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to the page" }, cookie), ctx);
   assert.equal(rebuilt, 1);
+});
+
+test("every saved version is kept, newest first, and Restore saves an earlier one again as the newest", async () => {
+  const db = await freshServer();
+  const fake = fakeConnect({ scopes: ["site.edit"] });
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  const history = (target) => handle(get(`/api/staff/edit/history?target=${encodeURIComponent(target)}`, { cookie }), ip());
+  const save = async (expected, value) => (await handle(staffPost("/api/staff/edit/save", { target: HERO, expected, value }, cookie), ip())).json();
+  const shipped = serverContent().editable[HERO].shown;
+
+  const none = await history(HERO);
+  assert.equal(none.status, 200);
+  assert.equal(none.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await none.json(), { ok: true, target: HERO, original: shipped, versions: [] });
+
+  await save(shipped, "first words");
+  await save("first words", "second words");
+  await save("second words", "second words"); // nothing changed, so no new version
+  const two = await (await history(HERO)).json();
+  assert.deepEqual(two.versions.map((v) => v.value), ["second words", "first words"]);
+  assert.ok(two.versions.every((v) => v.by === "Robin Example" && !Number.isNaN(Date.parse(v.at))));
+  assert.ok(!JSON.stringify(two).includes("u-test-0001"), "Connect's id for the person stays on the server");
+
+  // Restore is a save of an earlier version's words: the same checks, and it becomes the newest.
+  const restored = await save("second words", two.versions[1].value);
+  assert.deepEqual([restored.changed, restored.entry.current], [true, "first words"]);
+  const stale = await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: "second words", value: "second words" }, cookie), ip());
+  assert.equal(stale.status, 409, "a Restore from a box opened before that is refused like any stale save");
+  const three = await (await history(HERO)).json();
+  assert.deepEqual(three.versions.map((v) => v.value), ["first words", "second words", "first words"]);
+  assert.deepEqual(three.versions.slice(1).map((v) => v.id), two.versions.map((v) => v.id), "earlier versions keep their place");
+
+  // The history only grows: every row is exactly as it was written.
+  const rows = await many("SELECT value, previous, edited_by FROM content_edit_history WHERE target = $1 ORDER BY id", [HERO]);
+  assert.deepEqual(rows.map((r) => [r.value, r.previous, r.edited_by]), [
+    ["first words", shipped, "u-test-0001"], ["second words", "first words", "u-test-0001"], ["first words", "second words", "u-test-0001"]]);
+
+  for (const target of ["text:no.such.key", "page:pg-home:b-home-hero/id", "nonsense", ""]) {
+    const bad = await history(target);
+    assert.equal(bad.status, 400, target);
+    assert.equal((await bad.json()).error, "edit.target", target);
+  }
+
+  // Words saved before the history existed start it with their latest version, once.
+  await q("INSERT INTO content_edits (target, value, previous, edited_by, edited_name) VALUES ($1, $2, $3, $4, $5)",
+    ["text:page.skip", "Skip ahead", "Skip to Content", "u-test-0002", "Sam Example"]);
+  await migrate(db);
+  await migrate(db);
+  const kept = await (await history("text:page.skip")).json();
+  assert.deepEqual(kept.versions.map((v) => [v.value, v.by]), [["Skip ahead", "Sam Example"]]);
+  assert.equal((await many("SELECT 1 FROM content_edit_history WHERE target = $1", [HERO])).length, 3, "and nothing else is copied");
 });
 
 test("the download is the file a publish lays over the site, and the built pages show the new words", async () => {

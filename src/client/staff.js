@@ -12,8 +12,9 @@
  *   - the forms their Connect role lets them read, each with how many answers it holds and
  *     whether those reached Connect, a button to send any still waiting, and the latest answers
  *     to one form on request;
- *   - for anyone who may change words, how to, and how many changes wait to publish;
- *   - for anyone who may publish, the file a publish needs.
+ *   - for anyone who may change words, how to, and how many saved changes are not on the site yet;
+ *   - for anyone who may publish, the edits file: saved changes reach visitors only when it is
+ *     downloaded, saved as content/edits.json and published (netlify/lib/edits.mjs).
  * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
  * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools

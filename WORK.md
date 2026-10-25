@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 24 Oct 2026. `node ops/check.mjs` keeps this file under 180 lines.
+brief is `../MASTER-PROMPT.md`. Updated 25 Oct 2026. `node ops/check.mjs` keeps this file under 180 lines.
 
 ## Where it stands
 
@@ -9,13 +9,13 @@ brief is `../MASTER-PROMPT.md`. Updated 24 Oct 2026. `node ops/check.mjs` keeps 
 Connect**, more colour, a cohesive design and **no departure from the brand** (Decisions). Silence is not approval.
 Every person named in `content/` is fictional; real team members appear only through their own Connect profile.
 
-| | State on 23 Oct 2026 |
+| | State on 25 Oct 2026 |
 |---|---|
-| Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text** |
+| Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text**. 24–25 Oct (run log §1–8): upload race and failure states, phone menu, a form changed while open, sign-in states and access freshness, width and helper text, stale replies and Back/Forward, the editor's keys, earlier versions and Restore, characters left |
 | Tested | `node ops/check.mjs --browser`: see "Evidence". Connect's feed against a fake Connect (`test/connect-feed.test.mjs`); the rest against a local rig with demo keys (setup file 5): not a live connection. A quick, source-only security audit, 23 Oct (run log §13; its report is kept outside the repository) |
-| Committed | `aa5668c` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish, 23 Oct 23:59. 24 Oct: the run's work is one local commit on top, not pushed (run log R.4) |
-| Deployed | **production**: `d12f205` on 20 Oct at `badgersupports-public.netlify.app`, with migrations 001–002; Connect's `7681b68` with migration 032. The publish of 23 Oct deploys `f6cd97f` the same way; this session has not read that deploy |
-| Verified live | Netlify's deploy records only (both `ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
+| Committed | `aa5668c` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish, 23 Oct 23:59. 24–25 Oct: the run's work is local commit `0b50df0` plus uncommitted changes, none pushed (run log R.4); a publish commits and pushes both |
+| Deployed | **production**: `aa5668c` at `badgersupports-public.netlify.app` (deploy `6adc3b39`, 24 Oct 05:00 UTC, migrations 001–003), read from Netlify 25 Oct; Connect's `7681b68` with migration 032 (20 Oct, not reread). The run's work, with migrations 004–005, is not deployed |
+| Verified live | Netlify's deploy records only (`ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
 
 ## Slice 1 against §12
 
@@ -63,11 +63,11 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-`node ops/check.mjs --browser`, 23 Oct 2026 at 22:38, after the audit's fix (exit 0): every word editable (289 text keys,
-69 source files); the editor contract current; colours from `tokens.css`, no text under 14px; nothing private (194 files
-read); the build, 58 pages, 894 image variants, 0 links to the live site, 0 redirects waiting; tests 151 passed, 0 failed;
-174 captures, no console errors or sideways scroll; 181 a11y and form checks passed (`local/shots/`). Every live address
-is answered; `--production` builds against a fake Connect (37 pages). 24 Oct: `docs/OVERNIGHT-RUN-2026-10-24.md`.
+`node ops/check.mjs --browser`, 25 Oct 2026 at 03:14, with the photos (exit 0): every word editable (311 text keys, 69
+source files); the editor contract current; colours from `tokens.css`, no text under 14px; nothing private (198 files
+read); the build, 58 pages, 894 image variants, 0 links to the live site, 0 redirects waiting; tests 167 passed, 0 failed,
+among them every live address answered and a `--production` build against a fake Connect; 174 captures, no console errors
+or sideways scroll; 181 a11y and form checks; 105 pressed and timed. A clean clone without the photos (`--browser --no-media`, exit 0): the same, with 0 image variants and tests 166 passed, 1 skipped. What each proves: `docs/OVERNIGHT-RUN-2026-10-24.md`.
 **Not run:** anything against a deployed site or the live Connect (only a local rig with demo keys, file 5); email;
 the Sheets backup; the §12 tests that need them (below, item 24).
 
@@ -117,8 +117,8 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
-15. **Editor and publishing** → **words done** 20 Oct (Edit text, `test/staff.test.mjs`); grants set by a super admin. 24 Oct:
-    grows toward SPILL's (keys shown, every word listed, history, restore); **a permitted save publishes**. P2 → every field
+15. **Editor and publishing** → **words done** 20 Oct (Edit text, `test/staff.test.mjs`); grants set by a super admin. 25 Oct:
+    keys shown, every word listed, earlier versions, Restore **built locally** (run log §7); a save publishing waits on 34. P2 → every field
     (links, media, forms, navigation, sections, layouts, settings) saved live with grants, conflicts, immutable history,
     restore, sanitising, keyboard use; a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16.
 16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2).
@@ -144,12 +144,12 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 25. **Before the switch**: shortlinks, the six subdomains, the ribbons path, the privacy policy, mobile performance,
     redirects, SEO and accessibility checked on a preview; a handoff and a reversible switch plan.
 26. **The one-week promise** on the workshop confirmation → confirmed by Programs, or removed.
-30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, not pushed); the site already reads
-    it (`ops/connect-feed.mjs`) and shows the list once Connect is published.
+30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, not on GitHub 25 Oct); the site reads it
+    (`ops/connect-feed.mjs`). Still → the site ignores `endDate`: a multi-day event shows on its first day only (run log §6).
 31. **Open the workshop and feedback forms** on the live site once Programs sees answers in Connect (owner's call).
 33. **Functionality and UI pass** (24 Oct brief; `docs/OVERNIGHT-RUN-2026-10-24.md`) → (a) form failures **built**; (b) the
-    sign-in states and a shorter staff page **built**; (c) access freshness **built**; (d) width and helper text, per component;
-    (e) stale replies, Back/Forward, no refresh under typing. Each closes on a run-log regression shown failing first.
+    sign-in states and a shorter staff page **built**; (c) access freshness **built**; (d) width and helper text **built** (§5, §8);
+    (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All locally, each on a regression shown failing first.
 34. **Publishing and refresh** (P1) → a permitted save is the published revision, seen within 30 minutes in HTML and feeds;
     a notice, the last good update, Refresh now (editors only, checked, bounded); no query string forces a refresh;
     failures shown; SEO and no-JS checked. Needs 15, 16, 29; no deploy loop.
@@ -169,7 +169,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 
 `site/` is git, `main`, pushed to the public `nicholas-badgersupports/badgersupports`. Only the owner commits, pushes
 and publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`. A session reads git with `git --no-optional-locks` and
-never pushes (24 Oct: one local commit for a cloud session, run log R.4). Never link it to Netlify: a Netlify build creates a database.
+never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish, a cloud session works from GitHub `main` and hands back patches, never commits (run log R.27). Never link it to Netlify: a Netlify build creates a database.
 
 ## Exchange
 

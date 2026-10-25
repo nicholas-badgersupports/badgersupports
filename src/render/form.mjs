@@ -21,7 +21,8 @@ const eid = (q) => `e-${q.id}`;
 const hid = (q) => `h-${q.id}`;
 
 /* Prose (src/shared/forms.mjs proseProblem): a string is one paragraph; a list holds paragraphs,
-   { heading }, { list, ordered } and { links }. `level` is the heading level its headings take.
+   { heading }, { list, ordered }, { links } and { more, body }, which is a closed <details> under
+   its label. `level` is the heading level its headings take.
    With ctx, links resolve the site's way and show as its pills; without, they are plain links. */
 export function prose(v, { level = 3, ctx = null } = {}) {
   if (v == null || v === "") return "";
@@ -33,6 +34,7 @@ export function prose(v, { level = 3, ctx = null } = {}) {
       return p.ordered ? html`<ol>${items}</ol>` : html`<ul>${items}</ul>`;
     }
     if (p.links) return html`<ul class="more-links">${p.links.map((l) => html`<li>${ctx ? go(ctx, l.href, l.label) : html`<a href="${l.href}">${l.label}</a>`}</li>`)}</ul>`;
+    if (p.more) return html`<details class="prose-more"><summary>${p.more}</summary><div class="prose-more-body">${prose(p.body, { level, ctx })}</div></details>`;
     return "";
   });
 }

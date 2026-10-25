@@ -144,18 +144,20 @@ export function definitionProblems(def) {
 
 /* Words longer than a line (a form's intro, a section's intro, a question's help) are prose: one
    paragraph as a string, or a list of parts. A part is a paragraph (a string), { heading },
-   { list, ordered } or { links: [{ href, label }] }. Plain words only: the renderer adds the
-   markup, so nothing an editor types becomes HTML. True when the shape is wrong. */
+   { list, ordered }, { links: [{ href, label }] } or { more, body }: secondary help folded under
+   its label, body being parts of the other kinds and never empty. Plain words only: the renderer
+   adds the markup, so nothing an editor types becomes HTML. True when the shape is wrong. */
 export function proseProblem(v) {
   if (v == null || typeof v === "string") return false;
-  return !Array.isArray(v) || !v.every(prosePartOk);
+  return !Array.isArray(v) || !v.every((p) => prosePartOk(p));
 }
 
 const words = (x) => typeof x === "string" && x.trim() !== "";
-function prosePartOk(p) {
+function prosePartOk(p, folded = false) {
   if (typeof p === "string") return true;
   if (!p || typeof p !== "object" || Array.isArray(p)) return false;
   const keys = Object.keys(p);
+  if ("more" in p) return !folded && keys.length === 2 && words(p.more) && Array.isArray(p.body) && p.body.length > 0 && p.body.every((b) => prosePartOk(b, true));
   if ("heading" in p) return keys.length === 1 && words(p.heading);
   if ("list" in p) return keys.every((k) => k === "list" || k === "ordered") && Array.isArray(p.list) && p.list.length > 0 && p.list.every(words) && (p.ordered == null || typeof p.ordered === "boolean");
   if ("links" in p) return keys.length === 1 && Array.isArray(p.links) && p.links.length > 0 && p.links.every((l) => l && typeof l === "object" && /^(\/|#|https:\/\/|mailto:)/.test(String(l.href || "")) && words(l.label));
@@ -163,11 +165,12 @@ function prosePartOk(p) {
 }
 
 /* The paragraphs of a piece of prose as plain text, for a place with no room for markup (the
-   closed page's kept answers, a receipt). Headings and list items become their own lines. */
+   closed page's kept answers, a receipt). Headings, list items and a fold's label become their own
+   lines; a fold's body follows its label. */
 export function proseText(v) {
   if (v == null) return [];
   if (typeof v === "string") return [v];
-  return v.flatMap((p) => (typeof p === "string" ? [p] : p.heading ? [p.heading] : p.list ? p.list : p.links ? p.links.map((l) => l.label) : []));
+  return v.flatMap((p) => (typeof p === "string" ? [p] : p.heading ? [p.heading] : p.list ? p.list : p.links ? p.links.map((l) => l.label) : p.more ? [p.more, ...proseText(p.body)] : []));
 }
 
 function conditionProblems(cond, seen, at, add) {

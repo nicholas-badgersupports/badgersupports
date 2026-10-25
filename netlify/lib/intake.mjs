@@ -102,7 +102,7 @@ export async function submit(key, input, { now = new Date() } = {}) {
   let idem = String(field(input, "_key") || "").trim();
   if (!IDEM_RE.test(idem)) idem = `d-${sha256(`${def.key}|${def.version}|${canonicalJSON(check.answers)}|${chicagoDate(now)}`).slice(0, 40)}`;
 
-  return tx(async (t) => {
+  const out = await tx(async (t) => {
     const existing = await t.one("SELECT ref FROM submissions WHERE form_key = $1 AND idem_key = $2", [def.key, idem]);
     if (existing) return { ok: true, ref: existing.ref, def, duplicate: true };
     // Each file's id becomes its record, and an upload that is gone is said on its question. The
@@ -111,7 +111,7 @@ export async function submit(key, input, { now = new Date() } = {}) {
     if (files.errors) {
       const back = { ...raw };
       for (const id of Object.keys(files.errors)) back[id] = [];
-      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back, gone: await leftBehind(def, versionSeen, input) };
+      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back };
     }
     let row = null;
     for (let attempt = 0; !row && attempt < 5; attempt++) {
@@ -135,4 +135,7 @@ export async function submit(key, input, { now = new Date() } = {}) {
     if (!def.anonymous && def.workflow?.receipt === "on" && check.answers.email) await outbox("mail.receipt", "held", "sender-unverified");
     return { ok: true, ref: row.ref, def, duplicate: false };
   });
+  // Read after the transaction ends: on one connection (PGlite) a read beside it waits for it.
+  if (out.error === "answers.invalid") out.gone = await leftBehind(def, versionSeen, input);
+  return out;
 }

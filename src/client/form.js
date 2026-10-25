@@ -61,6 +61,32 @@ function describe(control, errorId) {
   else control.removeAttribute("aria-describedby");
 }
 
+/* A long answer shows the room left once a tenth of it remains, so words the box cuts off at its
+   limit (a long paste, say) are not lost unseen. A screen reader hears it when it first shows and
+   again at none left, not at every key, as in SPILL's home.js. Without this file the box still
+   stops at its limit and the server refuses anything longer. */
+function counters(form) {
+  for (const box of form.querySelectorAll("textarea[maxlength]:not([inputmode])")) {
+    const left = Object.assign(document.createElement("p"), { className: "field-left", hidden: true });
+    const say = Object.assign(document.createElement("p"), { className: "sr-only" });
+    say.setAttribute("role", "status");
+    box.after(left, say);
+    let was = "room";
+    const update = () => {
+      const n = Math.max(0, box.maxLength - box.value.length);
+      const now = n === 0 ? "none" : n <= box.maxLength / 10 ? "near" : "room";
+      left.hidden = now === "room";
+      left.textContent = t("form.left", { n: n.toLocaleString() });
+      if (now !== was && now !== "room") say.textContent = left.textContent;
+      was = now;
+    };
+    box.addEventListener("input", update);
+    box.addEventListener("blur", () => { say.textContent = ""; });
+    update();
+    say.textContent = "";
+  }
+}
+
 function clearErrors(form) {
   for (const f of form.querySelectorAll(".field.has-error")) f.classList.remove("has-error");
   for (const p of form.querySelectorAll(".field-error")) p.remove();
@@ -230,6 +256,7 @@ function enhance(form, { started = false } = {}) {
   // "Wait for your file" goes once nothing is going up, so it never outlasts the upload it meant.
   const settled = () => { if (!uploads.size && status.textContent === t("form.upload.wait")) status.textContent = ""; };
   for (const box of form.querySelectorAll("[data-upload]")) uploader(form, key, box, { preview, uploads, onClosed: close, onSettled: settled });
+  counters(form);
   applyVisibility(form, def);
   // A preview is of a closed form, so it neither asks whether the form is open nor counts a start.
   if (!preview) {

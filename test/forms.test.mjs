@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { definitionProblems, visibility, validateAnswers, readRaw, cellText, errorText, OTHER } from "../src/shared/forms.mjs";
+import { definitionProblems, visibility, validateAnswers, readRaw, cellText, errorText, OTHER, proseProblem, proseText } from "../src/shared/forms.mjs";
+import { prose } from "../src/render/form.mjs";
+import { html } from "../src/render/html.mjs";
 import { makeT, resolveText } from "../src/shared/text.mjs";
 
 const load = (k) => JSON.parse(fs.readFileSync(new URL(`../content/forms/${k}.json`, import.meta.url)));
@@ -58,4 +60,17 @@ test("a spreadsheet cell can never start a formula", () => {
   assert.equal(cellText(def, "group_notes", "=HYPERLINK(\"http://x\")"), "'=HYPERLINK(\"http://x\")");
   assert.equal(cellText(def, "group_notes", "+1"), "'+1");
   assert.equal(cellText(def, "topics", ["housing"]), "Navigating housing");
+});
+
+test("secondary help folds under its label: closed, never empty, never nested, still in the plain text", () => {
+  const fold = { more: "Our programs", body: [{ heading: "Programs" }, { list: ["Peer support"], ordered: true }] };
+  assert.equal(proseProblem(["First.", fold, "Last."]), false);
+  for (const bad of [{ more: "x", body: [] }, { more: " ", body: ["a"] }, { more: "x", body: "a" }, { more: "x", body: ["a"], open: true }, { more: "x", body: [{ more: "y", body: ["a"] }] }]) {
+    assert.equal(proseProblem(["First.", bad]), true, JSON.stringify(bad));
+  }
+  assert.deepEqual(proseText(["First.", fold]), ["First.", "Our programs", "Programs", "Peer support"]);
+  const out = String(html`${prose(["First.", fold])}`);
+  assert.match(out, /<details class="prose-more"><summary>Our programs<\/summary><div class="prose-more-body"><h3>Programs<\/h3><ol><li>Peer support<\/li><\/ol><\/div><\/details>/);
+  assert.doesNotMatch(out, /<details[^>]* open/);
+  assert.doesNotMatch(String(html`${prose(["First."])}`), /details/);
 });

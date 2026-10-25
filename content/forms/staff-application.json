@@ -1,7 +1,7 @@
 {
   "schema": "bss.form/1",
   "key": "staff-application",
-  "version": 2,
+  "version": 3,
   "title": "Badger Supports Staff Application",
   "audience": "public",
   "anonymous": false,
@@ -20,32 +20,37 @@
       "intro": [
         "Badger Supports is a student-led community built around peer connection. Badgers come together to talk about mental health, share experiences, and support one another in everyday moments. Our peer support groups, workshops, and craft nights offer space to be heard, understood, and connected.",
         {
-          "heading": "Our Core Programs"
-        },
-        {
-          "ordered": true,
-          "list": [
-            "Weekly Peer Support Groups",
-            "Conversation-Focused Craft Nights",
-            "Requestable Educational Workshops",
-            "Navigating Housing Workshop & Toolkit",
-            "Badger Break Day / Stress Awareness",
-            "Peer Support Training (for staff & volunteers)",
-            "Resource Referral Cards"
-          ]
-        },
-        {
-          "heading": "Our Key Teams / Directorates"
-        },
-        {
-          "ordered": true,
-          "list": [
-            "Engagement - Outreach, Marketing, Apparel, Video",
-            "Programs - Workshops, Events, Craft Nights, Collaborations, Initiatives",
-            "Wellness & Support - Training, Professional Development, Peer Support Groups",
-            "Business Development - Compliance, Grants, Payroll, Fundraising, Logistics, Office Management, Technical, Data",
-            "Badger SPILL",
-            "Executive - Campus Relations & Advocacy"
+          "more": "Our programs and teams",
+          "body": [
+            {
+              "heading": "Our Core Programs"
+            },
+            {
+              "ordered": true,
+              "list": [
+                "Weekly Peer Support Groups",
+                "Conversation-Focused Craft Nights",
+                "Requestable Educational Workshops",
+                "Navigating Housing Workshop & Toolkit",
+                "Badger Break Day / Stress Awareness",
+                "Peer Support Training (for staff & volunteers)",
+                "Resource Referral Cards"
+              ]
+            },
+            {
+              "heading": "Our Key Teams / Directorates"
+            },
+            {
+              "ordered": true,
+              "list": [
+                "Engagement - Outreach, Marketing, Apparel, Video",
+                "Programs - Workshops, Events, Craft Nights, Collaborations, Initiatives",
+                "Wellness & Support - Training, Professional Development, Peer Support Groups",
+                "Business Development - Compliance, Grants, Payroll, Fundraising, Logistics, Office Management, Technical, Data",
+                "Badger SPILL",
+                "Executive - Campus Relations & Advocacy"
+              ]
+            }
           ]
         }
       ],
@@ -109,21 +114,25 @@
             }
           ]
         },
-        "Applicants who apply for staff positions are automatically considered for volunteer opportunities as part of the same review process.",
         {
           "heading": "Letter of Recommendation / Referral"
         },
-        "A letter of recommendation should be submitted by someone who can speak to your readiness for peer-centered leadership and collaborative student support. Appropriate recommenders include the following:",
         {
-          "ordered": true,
-          "list": [
-            "A peer who has worked with you in a leadership, facilitation, or organizing role",
-            "A mentor or supervisor from a student-facing program who has observed your peer-to-peer engagement",
-            "A faculty or instructional staff member familiar with your experience in group facilitation, mentoring, or community building",
-            "A coordinator, advisor, or professional staff member who can speak to your leadership development and service orientation"
+          "more": "Who can write your letter",
+          "body": [
+            "A letter of recommendation should be submitted by someone who can speak to your readiness for peer-centered leadership and collaborative student support. Appropriate recommenders include the following:",
+            {
+              "ordered": true,
+              "list": [
+                "A peer who has worked with you in a leadership, facilitation, or organizing role",
+                "A mentor or supervisor from a student-facing program who has observed your peer-to-peer engagement",
+                "A faculty or instructional staff member familiar with your experience in group facilitation, mentoring, or community building",
+                "A coordinator, advisor, or professional staff member who can speak to your leadership development and service orientation"
+              ]
+            },
+            "Your recommender should be able to address your relational skills, responsibility, and alignment with a peer-to-peer support model."
           ]
         },
-        "Your recommender should be able to address your relational skills, responsibility, and alignment with a peer-to-peer support model.",
         "Your letter of recommendation is required before April 26th for your application to be considered complete. You may therefore submit this application before your letter of recommendation is submitted.",
         "You may submit any number of letters of recommendation; only one is required. Please have your recommender submit at:",
         {
@@ -136,14 +145,16 @@
         },
         "Referrers / Recommenders may also email letters to hiring@badgersupports.org.",
         {
-          "heading": "Supplemental Materials"
-        },
-        "Badger Supports values strong creative writers, artists, and storytellers. A written application offers limited space to demonstrate these skills. Later in this application, you will be encouraged to submit materials that support our holistic understanding of your qualifications.",
-        {
-          "list": [
-            "Resume - Required for all applicants",
-            "Cover Letter - Encouraged for all applicants",
-            "Personal Portfolio - Encouraged for applicants interested in an Engagement role"
+          "more": "Supplemental Materials",
+          "body": [
+            "Badger Supports values strong creative writers, artists, and storytellers. A written application offers limited space to demonstrate these skills. Later in this application, you will be encouraged to submit materials that support our holistic understanding of your qualifications.",
+            {
+              "list": [
+                "Resume - Required for all applicants",
+                "Cover Letter - Encouraged for all applicants",
+                "Personal Portfolio - Encouraged for applicants interested in an Engagement role"
+              ]
+            }
           ]
         }
       ],
@@ -401,7 +412,12 @@
           "label": "Wellness & Support",
           "required": false,
           "help": [
-            "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -429,7 +445,12 @@
           "label": "Programs",
           "required": false,
           "help": [
-            "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -482,7 +503,12 @@
           "label": "Engagement - Outreach",
           "required": false,
           "help": [
-            "The Directorate of Engagement advances the organization's mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Directorate of Engagement advances the organization's mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -543,7 +569,12 @@
           "label": "Business Development",
           "required": false,
           "help": [
-            "The Directorate of Business Development advances Badger Supports' long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Directorate of Business Development advances Badger Supports' long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -716,7 +747,12 @@
           "label": "How many Peer Support Groups per week would you feel comfortable actively facilitating?",
           "required": false,
           "help": [
-            "Peer Support Groups are weekly, one-hour, student led spaces where participants gather for shared conversation, active listening, and mutual support. Groups focus on connection rather than advice or solutions, with facilitators helping guide discussion and maintain a supportive environment alongside trained Badger Supports volunteers.",
+            {
+              "more": "What a Peer Support Group is",
+              "body": [
+                "Peer Support Groups are weekly, one-hour, student led spaces where participants gather for shared conversation, active listening, and mutual support. Groups focus on connection rather than advice or solutions, with facilitators helping guide discussion and maintain a supportive environment alongside trained Badger Supports volunteers."
+              ]
+            },
             "Please answer honestly based on time availability and comfort level. If \"No\" or \"Unsure\" was selected for facilitating groups in the previous section, selecting \"zero\" is appropriate. Comfort with group facilitation does not affect an application, as Badger Supports values many forms of involvement and commitment."
           ],
           "options": [
@@ -854,17 +890,22 @@
           "help": [
             "A personal portfolio is encouraged for applicants seeking consideration for the Directorate of Engagement. The portfolio should clearly demonstrate experience in communications work, particularly content designed for students in a peer to peer setting. Portfolios should include at least two to five samples, including (but not limited to):",
             {
-              "ordered": true,
-              "list": [
-                "Video content that was filmed, produced, or edited",
-                "Digital media work such as graphics, social media posts, or web content*",
-                "Press releases or public facing announcements",
-                "Marketing or outreach campaigns for student organizations",
-                "Written communications such as newsletters, email campaigns, or blog posts",
-                "Branding or visual identity work, including style guides or asset systems"
+              "more": "Kinds of samples",
+              "body": [
+                {
+                  "ordered": true,
+                  "list": [
+                    "Video content that was filmed, produced, or edited",
+                    "Digital media work such as graphics, social media posts, or web content*",
+                    "Press releases or public facing announcements",
+                    "Marketing or outreach campaigns for student organizations",
+                    "Written communications such as newsletters, email campaigns, or blog posts",
+                    "Branding or visual identity work, including style guides or asset systems"
+                  ]
+                },
+                "*A public, well developed personal/business LinkedIn and Instagram are acceptable forms of submission. One link with multiple elements is preferred."
               ]
             },
-            "*A public, well developed personal/business LinkedIn and Instagram are acceptable forms of submission. One link with multiple elements is preferred.",
             "Applicants interested in other Directorates may still choose to share a personal portfolio if they wish.",
             "Up to five links, one per line, each starting with https://. Set each to \"Anyone with the link can view\", or share it with hiring@badgersupports.org. Please label your files as FIRSTLAST_Portfolio"
           ],

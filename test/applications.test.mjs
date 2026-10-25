@@ -20,12 +20,13 @@ const load = (k) => JSON.parse(fs.readFileSync(new URL(`../content/forms/${k}.js
 const t = makeT(resolveText(JSON.parse(fs.readFileSync(new URL("../content/text.json", import.meta.url)))));
 const ip = (n = 1) => ({ ip: `192.0.2.${n}` });
 const STAFF = "staff-application";
+const SHIPPED = load(STAFF).version; // a content change raises it, so the tests read it rather than name it
 const PDF = Buffer.from("%PDF-1.4\n% a made-up file for the tests\n%%EOF\n");
 const SOME_ID = "A".repeat(32);
 
 function staffAnswers(over = {}) {
   return {
-    _form: STAFF, _version: "2",
+    _form: STAFF, _version: String(SHIPPED),
     eligibility: "yes", ai_use: "yes",
     email: "river@example.org", name: "River Example", semesters: "s3", phone: "555-0199",
     about: "A made-up applicant.", campus_resource: "A made-up answer.",
@@ -263,11 +264,12 @@ test("a resume chosen again: Send claims the replacement, and the first file goe
 });
 
 /* WORK.md item 1b: the application changes while someone has it open, after their resume is up. */
+const NEXT = SHIPPED + 1;
 async function publishStaff(change) {
-  const v3 = structuredClone(serverContent().forms[STAFF]);
-  v3.version = 3;
-  change(v3);
-  await q("INSERT INTO form_versions (form_key, version, definition, published_by) VALUES ($1, 3, $2::jsonb, 'test')", [STAFF, JSON.stringify(v3)]);
+  const next = structuredClone(serverContent().forms[STAFF]);
+  next.version = NEXT;
+  change(next);
+  await q("INSERT INTO form_versions (form_key, version, definition, published_by) VALUES ($1, $2, $3::jsonb, 'test')", [STAFF, NEXT, JSON.stringify(next)]);
 }
 const staffSection = (def, id) => def.sections.find((s) => s.id === id).questions;
 
@@ -282,10 +284,10 @@ test("a resume uploaded before the form changed: the reply keeps it, the file is
   const box = body.form.match(/<div class="upload" data-upload="resume">.*?<\/div>/s)?.[0] || "";
   assert.doesNotMatch(box.match(/<input[^>]*type="file"[^>]*>/)?.[0] ?? "required", /\brequired\b/, "and the file is not asked for again");
   assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [fileId])).submission_id, null, "nothing is claimed by a send that was refused");
-  const res = await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0161", _version: "3", resume: fileId, start_term: "Spring" })), ip(2));
+  const res = await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0161", _version: String(NEXT), resume: fileId, start_term: "Spring" })), ip(2));
   assert.equal(res.status, 200);
   const sub = await one("SELECT * FROM submissions");
-  assert.deepEqual([sub.form_version, sub.version_seen], [3, 3]);
+  assert.deepEqual([sub.form_version, sub.version_seen], [NEXT, NEXT]);
   assert.equal((await one("SELECT submission_id FROM uploads WHERE file_id = $1", [fileId])).submission_id, sub.id);
 });
 
@@ -303,6 +305,20 @@ test("a file question retired after the upload: the send is accepted, that file 
   const payload = ingestPayload(sub, await definitionFor(STAFF, sub.form_version));
   assert.deepEqual(payload.files.map((f) => f.question), ["resume"]);
   assert.doesNotMatch(JSON.stringify(payload), new RegExp(letter));
+});
+
+test("a file Send cannot match, from a page older than the form: the reply comes, keeps the answer to the dropped question, and asks for the file again", { timeout: 15000 }, async () => {
+  // The dropped answers were read beside the open transaction. On one connection (PGlite: the
+  // dev server and these tests) that read waited for the transaction, and no reply came.
+  await freshServer();
+  await openStaff();
+  await publishStaff((d) => { const qs = staffSection(d, "availability"); qs.splice(qs.findIndex((x) => x.id === "commitments"), 1); });
+  const res = await handle(post(`/api/forms/${STAFF}/submit`, staffAnswers({ _key: "k-app-0163", resume: SOME_ID, commitments: "Made-up evening rehearsals." })), ip(4));
+  const body = await res.json();
+  assert.equal(res.status, 422);
+  assert.deepEqual(body.errors, { resume: "file-missing" });
+  assert.match(body.form, /<dl class="kept-answers">.*Made-up evening rehearsals\./s, "what they typed for the dropped question is shown, not lost");
+  assert.equal((await one("SELECT count(*)::int AS n FROM submissions")).n, 0);
 });
 
 test("Connect is told which files to collect and which answers are confidential; the staff page shows neither confidential answer", async () => {

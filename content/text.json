@@ -783,6 +783,11 @@
       "text": "This form is closed. This page shows it as it will look when it opens, so it can be checked. Nothing typed here is sent.",
       "where": "The note above a closed form shown for review, on the preview pages of the prototype site."
     },
+    "form.left": {
+      "group": "forms",
+      "text": "Characters left: {{n}}",
+      "where": "Under a long answer box, once a tenth of its room is left."
+    },
     "form.preview.sent": {
       "group": "forms",
       "text": "Preview only: these answers pass every check. Nothing was sent.",
@@ -1170,12 +1175,12 @@
     },
     "staff.edit.waiting.one": {
       "group": "staff",
-      "text": "{{n}} saved change waits for the next publish.",
+      "text": "{{n}} saved change is not on the site yet.",
       "where": "Staff page, when one change waits."
     },
     "staff.edit.waiting.other": {
       "group": "staff",
-      "text": "{{n}} saved changes wait for the next publish.",
+      "text": "{{n}} saved changes are not on the site yet.",
       "where": "Staff page, when several changes wait."
     },
     "staff.edit.download": {
@@ -1185,7 +1190,7 @@
     },
     "staff.edit.publish": {
       "group": "staff",
-      "text": "Changes are kept as soon as you save them. Visitors see them after the next publish, which uses this file.",
+      "text": "Save this file in the site as content/edits.json before you publish, or saved changes are left out.",
       "where": "Staff page, under the download button."
     },
     "edit.button": {
@@ -1248,6 +1253,41 @@
       "text": "Last changed by {{name}}, {{when}}",
       "where": "Edit box, who saved these words last."
     },
+    "edit.key": {
+      "group": "staff",
+      "text": "Key:",
+      "where": "Edit box, before the permanent key of these words: the name the edits file and Connect use for them."
+    },
+    "edit.history.title": {
+      "group": "staff",
+      "text": "Earlier Versions",
+      "where": "Edit box, the list that opens to show other words saved here before."
+    },
+    "edit.history.loading": {
+      "group": "staff",
+      "text": "Loading…",
+      "where": "Edit box, Earlier versions, while the list loads."
+    },
+    "edit.history.none": {
+      "group": "staff",
+      "text": "No earlier versions.",
+      "where": "Edit box, Earlier versions, when no other words have been saved here."
+    },
+    "edit.history.failed": {
+      "group": "staff",
+      "text": "Unable to load. Close and reopen to try again.",
+      "where": "Edit box, Earlier versions, when the list cannot be loaded."
+    },
+    "edit.history.by": {
+      "group": "staff",
+      "text": "{{name}}, {{when}}",
+      "where": "Edit box, Earlier versions, under each version: who saved it, and when."
+    },
+    "edit.restore": {
+      "group": "staff",
+      "text": "Restore",
+      "where": "Edit box, Earlier versions: saves this version again as the newest."
+    },
     "edit.saving": {
       "group": "staff",
       "text": "Saving…",
@@ -1260,12 +1300,12 @@
     },
     "edit.savedWaiting": {
       "group": "staff",
-      "text": "Saved. Visitors see it after the next publish.",
+      "text": "Saved, but not on the site yet.",
       "where": "After saving, when the change waits for a publish."
     },
     "edit.waitingNote": {
       "group": "staff",
-      "text": "A change to these words is saved and waits for the next publish.",
+      "text": "Saved, but not on the site yet.",
       "where": "Edit box, when the words have a change waiting."
     },
     "edit.conflict": {

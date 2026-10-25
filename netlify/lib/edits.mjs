@@ -1,14 +1,17 @@
-/* The edit button's store: words staff changed on the site, kept in content_edits (migration 002)
- * until a publish carries them into content/edits.json (src/shared/edits.mjs says how the build
- * lays that file over the shipped content).
+/* The edit button's store: words staff changed on the site, kept in content_edits (migration 002).
+ * Visitors see them once someone who may publish downloads the edits file (editsFile, below),
+ * saves it as content/edits.json and publishes; nothing carries them there on its own.
+ * src/shared/edits.mjs says how the build lays that file over the shipped content.
  *
  * The build's editable map (server.json) says, for every word the button can reach, what the
  * pages show now (shown) and what the shipped files say where an edit moved it (floor). A row here
  * is the newest words for one place, and it is "waiting to publish" while the pages still show
  * something else. On a local copy the rig rebuilds after each save, so nothing waits there.
  *
- * Rows are never deleted. Putting the original back saves the shipped words like any other edit,
- * so the next download carries the undo as well.
+ * Every save also adds a row to content_edit_history (migration 005), in the same transaction.
+ * Rows in either table are never deleted, and history rows are never changed. Putting the original
+ * back, or restoring an earlier version, saves those words like any other edit, so it becomes the
+ * newest version and the next download carries it as well.
  */
 
 import { many, tx } from "./db.mjs";
@@ -82,8 +85,28 @@ export async function saveEdit(who, { target, expected, value } = {}) {
        ON CONFLICT (target) DO UPDATE SET value = EXCLUDED.value, previous = content_edits.value,
          edited_by = EXCLUDED.edited_by, edited_name = EXCLUDED.edited_name, edited_at = now()`,
       [target, words, current, who.sub, who.name]);
+    await t.query(
+      "INSERT INTO content_edit_history (target, value, previous, edited_by, edited_name) VALUES ($1, $2, $3, $4, $5)",
+      [target, words, current, who.sub, who.name]);
     return { changed: true };
   });
+}
+
+export const HISTORY_LIMIT = 50;
+
+/* Every version saved for one place, newest first, with who saved it. The newest is what the
+   place holds now. Older than the newest HISTORY_LIMIT are kept but not listed. */
+export async function editHistory(target) {
+  const e = editable()[String(target || "")];
+  if (!e) throw new HttpError(400, "edit.target");
+  const rows = await many(
+    "SELECT id, value, edited_name, edited_at FROM content_edit_history WHERE target = $1 ORDER BY id DESC LIMIT $2",
+    [target, HISTORY_LIMIT]);
+  return {
+    target,
+    original: original(e),
+    versions: rows.map((r) => ({ id: String(r.id), value: r.value, by: r.edited_name, at: new Date(r.edited_at).toISOString() })),
+  };
 }
 
 /* The file a publish needs, as the build reads it: the edits the pages already show, every saved

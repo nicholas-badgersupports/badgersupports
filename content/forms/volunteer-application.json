@@ -1,7 +1,7 @@
 {
   "schema": "bss.form/1",
   "key": "volunteer-application",
-  "version": 1,
+  "version": 2,
   "title": "Badger Supports Volunteer Application",
   "audience": "public",
   "anonymous": false,
@@ -20,32 +20,37 @@
       "intro": [
         "Badger Supports is a student-led community built around peer connection. Badgers come together to talk about mental health, share experiences, and support one another in everyday moments. Our peer support groups, workshops, and craft nights offer space to be heard, understood, and connected.",
         {
-          "heading": "Our Core Programs"
-        },
-        {
-          "ordered": true,
-          "list": [
-            "Weekly Peer Support Groups",
-            "Conversation-Focused Craft Nights",
-            "Requestable Educational Workshops",
-            "Navigating Housing Workshop & Toolkit",
-            "Badger Break Day / Stress Awareness",
-            "Peer Support Training (for staff & volunteers)",
-            "Resource Referral Cards"
-          ]
-        },
-        {
-          "heading": "Our Key Teams / Directorates"
-        },
-        {
-          "ordered": true,
-          "list": [
-            "Engagement - Outreach, Marketing, Apparel, Video",
-            "Programs - Workshops, Events, Craft Nights, Collaborations, Initiatives",
-            "Wellness & Support - Training, Professional Development, Peer Support Groups",
-            "Business Development - Compliance, Grants, Payroll, Fundraising, Logistics, Office Management, Technical, Data",
-            "Badger SPILL",
-            "Executive - Campus Relations & Advocacy"
+          "more": "Our programs and teams",
+          "body": [
+            {
+              "heading": "Our Core Programs"
+            },
+            {
+              "ordered": true,
+              "list": [
+                "Weekly Peer Support Groups",
+                "Conversation-Focused Craft Nights",
+                "Requestable Educational Workshops",
+                "Navigating Housing Workshop & Toolkit",
+                "Badger Break Day / Stress Awareness",
+                "Peer Support Training (for staff & volunteers)",
+                "Resource Referral Cards"
+              ]
+            },
+            {
+              "heading": "Our Key Teams / Directorates"
+            },
+            {
+              "ordered": true,
+              "list": [
+                "Engagement - Outreach, Marketing, Apparel, Video",
+                "Programs - Workshops, Events, Craft Nights, Collaborations, Initiatives",
+                "Wellness & Support - Training, Professional Development, Peer Support Groups",
+                "Business Development - Compliance, Grants, Payroll, Fundraising, Logistics, Office Management, Technical, Data",
+                "Badger SPILL",
+                "Executive - Campus Relations & Advocacy"
+              ]
+            }
           ]
         }
       ],
@@ -339,7 +344,12 @@
           "label": "Wellness & Support",
           "required": false,
           "help": [
-            "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -367,7 +377,12 @@
           "label": "Programs",
           "required": false,
           "help": [
-            "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -420,7 +435,12 @@
           "label": "Engagement - Outreach",
           "required": false,
           "help": [
-            "The Directorate of Engagement advances the organization's mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Directorate of Engagement advances the organization's mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [
@@ -481,7 +501,12 @@
           "label": "Business Development",
           "required": false,
           "help": [
-            "The Directorate of Business Development advances Badger Supports' long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources.",
+            {
+              "more": "What this directorate does",
+              "body": [
+                "The Directorate of Business Development advances Badger Supports' long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources."
+              ]
+            },
             "Check all that apply."
           ],
           "options": [

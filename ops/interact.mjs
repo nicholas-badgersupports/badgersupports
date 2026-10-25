@@ -9,15 +9,24 @@
  *    or a second PDF, never leaves Send stuck on "wait for your file", and an older reply never
  *    puts back a file that was replaced. The applications are closed as shipped, so the page is a
  *    preview; the harness serves it as an open form and answers its uploads itself, slowly, with
- *    made-up ids. The real upload route is tested in test/applications.test.mjs.
+ *    made-up ids. The real upload route is tested in test/applications.test.mjs. On the same
+ *    page: every question takes the form's column at 1280, 390 and 320 while a short value's
+ *    control stays compact, and folded help opens from its label by keyboard and without JavaScript.
  * 3. The workshop form, with its API answered by the real router against a fresh database in this
  *    process: a version published while the page is open (a question added, or renamed, with and
- *    without JavaScript), Send pressed twice, a lost reply, no connection, and the form closed
- *    under the page.
+ *    without JavaScript), Send pressed twice, a lost reply, no connection, the form closed under
+ *    the page, and a long answer pasted past its limit.
  * 4. The staff page in each state: signed in (no Sign In flash), signed out, a sign-in that has
  *    ended, coming back to the page that sent you, an editor who reads nothing, answers refused,
  *    Back after signing out, a dropped connection, a phone, and no JavaScript; and the edit
- *    button when the sign-in ends with words in its box.
+ *    button when the sign-in ends with words in its box, or when other words are opened in the box
+ *    while a save is still going; its key, earlier versions and Restore.
+ * 5. The events between publishes (src/client/schedule.js), on the home page served as a page built
+ *    from Connect's events, with the answers made up here from its own markup: a section with focus
+ *    in it is not replaced until focus leaves; Back or Forward to a kept page moves "Today" and asks
+ *    again; and of two answers, the newer ask's wins even when the older one arrives last.
+ * 6. The resources page: a card's details open and close by keyboard and leave the page as it was,
+ *    and Back keeps the topic and search.
  * Fictional files and people only: a few bytes that start as a PDF does, Avery Example and Robin Example.
  */
 
@@ -248,6 +257,58 @@ await part("upload still going", async () => {
   await ctx.close();
 });
 
+/* A question takes the form's whole column (a 40rem cap left 640px fields in a 715px column at
+   1280), a control for a short value keeps its compact width, and secondary help stays folded
+   until asked for, by keyboard as by pointer, with or without JavaScript. */
+const COMPACT = 'input[type="number"], input[type="tel"], input[type="date"], input[type="datetime-local"], .other-text, .rank select';
+const widths = (page) => page.evaluate((compact) => {
+  const shown = (el) => el.getClientRects().length > 0;
+  const form = document.querySelector("form[data-form]").getBoundingClientRect().width;
+  const fields = [...document.querySelectorAll(".bss-form .field")].filter(shown);
+  const short = fields.filter((f) => Math.abs(f.getBoundingClientRect().width - form) > 1).map((f) => f.id || f.querySelector("[id]")?.id);
+  const controls = [...document.querySelectorAll(".bss-form .field input:not([type=checkbox]):not([type=radio]):not([type=file]), .bss-form .field textarea, .bss-form .field select")].filter(shown);
+  const narrow = controls.filter((c) => !c.matches(compact) && Math.abs(c.getBoundingClientRect().width - c.closest(".field").getBoundingClientRect().width) > 1).map((c) => c.id);
+  const compacts = controls.filter((c) => c.matches(compact)).map((c) => c.getBoundingClientRect().width < c.closest(".field").getBoundingClientRect().width - 1);
+  return { form: Math.round(form), fields: fields.length, short, narrow, compacts, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+}, COMPACT);
+
+await part("a form's width", async () => {
+  for (const width of [1280, 390, 320]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    const page = await ctx.newPage();
+    await page.goto(BASE + PAGE, { waitUntil: "networkidle" });
+    const r = await widths(page);
+    check(r.fields > 10 && !r.short.length, `@${width}: every question takes the ${r.form}px column (${r.fields} questions${r.short.length ? `; narrower: ${r.short.slice(0, 4).join(", ")}` : ""})`);
+    check(!r.narrow.length, `@${width}: every text box and list fills its question${r.narrow.length ? ` (not: ${r.narrow.slice(0, 4).join(", ")})` : ""}`);
+    if (width === 1280) check(r.compacts.length && r.compacts.every(Boolean), `@1280: a short value's control stays compact (${r.compacts.length} of them)`);
+    check(r.sideways <= 0, `@${width}: nothing scrolls sideways`);
+    await ctx.close();
+  }
+});
+
+await part("folded help", async () => {
+  for (const js of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: js });
+    const page = await ctx.newPage();
+    await page.goto(BASE + PAGE, { waitUntil: "networkidle" });
+    const folds = await page.evaluate(() => [...document.querySelectorAll("details.prose-more")].map((d) => d.open));
+    check(folds.length > 0 && folds.every((o) => !o), `${js ? "" : "no JavaScript: "}${folds.length} folds, all closed until asked for`);
+    const first = page.locator("details.prose-more > summary").first();
+    if (js) {
+      await first.focus();
+      await page.keyboard.press("Enter");
+      const opened = await page.evaluate(() => { const d = document.querySelector("details.prose-more"); return d.open && d.querySelector(".prose-more-body").getBoundingClientRect().height > 0; });
+      await page.keyboard.press("Space");
+      const shut = await page.evaluate(() => !document.querySelector("details.prose-more").open);
+      check(opened && shut, `a fold opens with Enter and closes with Space from its label (${opened}, ${shut})`);
+    } else {
+      await first.click();
+      check(await page.evaluate(() => document.querySelector("details.prose-more").open), "no JavaScript: a fold still opens when its label is pressed");
+    }
+    await ctx.close();
+  }
+});
+
 /* ------------------------------------------------------------------ 3. the form changes, or the reply is lost */
 
 /* The workshop page as built, with its API answered by the real router against a fresh PGlite
@@ -418,6 +479,32 @@ await part("closed while the page is open", async () => {
   await ctx.close();
 });
 
+await part("a long answer near its limit", async () => {
+  await freshServer();
+  const { ctx, page, errors } = await openWorkshop();
+  const box = page.locator("#f-contact_other");
+  const max = Number(await box.getAttribute("maxlength"));
+  const room = () => page.evaluate(() => {
+    const b = document.querySelector("#f-contact_other"), left = b.parentElement.querySelector(".field-left");
+    return { length: b.value.length, shown: left && !left.hidden ? left.textContent : "", said: b.parentElement.querySelector(".sr-only[role=status]")?.textContent ?? null };
+  });
+  await box.focus();
+  await page.keyboard.insertText("Made-up words.");
+  const early = await room();
+  await box.fill("");
+  await page.keyboard.insertText("x".repeat(max - 40));
+  const near = await room();
+  await page.keyboard.insertText("x".repeat(100));
+  const cut = await room();
+  const left = (n) => words("form.left").replace("{{n}}", n);
+  check(early.shown === "" && near.shown === left(40) && near.said === left(40),
+    `long answer: nothing shows while there is room; near the limit the room left shows and is said once (${JSON.stringify({ early, near })})`);
+  check(cut.length === max && cut.shown === left(0) && cut.said === left(0),
+    `long answer: a paste past the limit is cut by the box, and the page shows and says that none is left (${JSON.stringify(cut)})`);
+  check(!errors.length, `long answer: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
 /* ------------------------------------------------------------------ 4. the staff page, in each state */
 
 /* The staff page as built, its API answered by the real router. A signed-in director is a session
@@ -439,7 +526,8 @@ async function staffSession(scopes) {
 }
 
 /* `session`: scopes for a signed-in director, or null. `hint`: the cookie a past sign-in leaves.
-   `slow`: ms each answer waits. `fail(path, n)`: true to drop that request, as a lost connection. */
+   `slow`: ms each answer waits, or `(path) => ms`. `fail(path, n)`: true to drop that request, as a
+   lost connection. */
 async function openStaff({ session = null, hint = !!session, slow = 0, fail, path = STAFF, js = true, viewport = { width: 1280, height: 900 } } = {}) {
   const ctx = await browser.newContext({ viewport, javaScriptEnabled: js });
   const cookies = [];
@@ -462,7 +550,8 @@ async function openStaff({ session = null, hint = !!session, slow = 0, fail, pat
     const u = new URL(r.url());
     calls[u.pathname] = (calls[u.pathname] || 0) + 1;
     if (fail?.(u.pathname, calls[u.pathname])) return route.abort("internetdisconnected");
-    if (slow) await sleep(slow);
+    const wait = typeof slow === "function" ? slow(u.pathname) : slow;
+    if (wait) await sleep(wait);
     const all = await r.allHeaders();
     const headers = { origin: ORIGIN, "sec-fetch-site": "same-origin" };
     for (const h of ["content-type", "accept", "cookie"]) if (all[h]) headers[h] = all[h];
@@ -637,6 +726,221 @@ await part("edit button: the sign-in ends while words are in the box", async () 
   check(box.href === "/api/auth/start?return=%2F" && box.target === "_blank" && /noopener/.test(box.rel),
     `edit button, sign-in ended: Sign in again opens in a new tab and comes back to this page (${box.href}, ${box.target})`);
   check(!errors.length, `edit button, sign-in ended: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+/* The box closed (Escape) and other words opened in it while the first save is still going. The
+   first answer used to close the box on the second words, or, when it was a conflict, write the
+   first place's words into it and point Save at the first place. */
+async function editTwoPlaces({ conflict }) {
+  await freshServer();
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit"], path: "/", slow: (p) => (p === "/api/staff/edit/save" ? 1200 : 0) });
+  await page.getByRole("button", { name: words("edit.button") }).click({ timeout: 3000 });
+  await page.waitForFunction(() => document.documentElement.classList.contains("is-editing"), null, { timeout: 3000 });
+  const [first, second] = await page.evaluate(() => [...new Set([...document.querySelectorAll("main [data-block] [data-edit-target]")].map((n) => n.getAttribute("data-edit-target")))].slice(0, 2));
+  if (conflict) await q("INSERT INTO content_edits (target, value, previous, edited_by, edited_name) VALUES ($1, 'Made-up words someone else saved', '', 'u-harness-2', 'Avery Example')", [first]);
+  const mark = (target) => page.locator(`[data-edit-target="${target}"]`).first();
+  await mark(first).click({ timeout: 3000 });
+  await page.fill(".edit-dialog textarea", "Made-up words for the first place");
+  await page.getByRole("button", { name: words("edit.save") }).click({ timeout: 3000 });
+  await page.keyboard.press("Escape");
+  await mark(second).click({ timeout: 3000 });
+  await page.fill(".edit-dialog textarea", "Words still being typed for the second place");
+  await sleep(1700);
+  const box = await page.evaluate(() => ({ open: document.querySelector(".edit-dialog").open, value: document.querySelector(".edit-dialog textarea").value, save: document.querySelector(".edit-dialog [type=submit]").disabled }));
+  return { ctx, page, errors, first, second, box, mark };
+}
+
+await part("edit button: other words opened while a save is still going", async () => {
+  const { ctx, page, errors, first, box, mark } = await editTwoPlaces({ conflict: false });
+  check(box.open && box.value === "Words still being typed for the second place" && !box.save,
+    `edit button, two places: the first save's answer leaves the box open on the second words, Save usable (${JSON.stringify(box)})`);
+  check((await mark(first).textContent()).trim() === "Made-up words for the first place", "edit button, two places: the first place shows its saved words");
+  check(!errors.length, `edit button, two places: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+await part("edit button: a conflict answered after other words are opened", async () => {
+  const { ctx, page, first, second, box } = await editTwoPlaces({ conflict: true });
+  check(box.open && box.value === "Words still being typed for the second place",
+    `edit button, conflict for the first place: the second words stay in the box (${JSON.stringify(box.value)})`);
+  await page.getByRole("button", { name: words("edit.save") }).click({ timeout: 3000 });
+  await sleep(1600);
+  const rows = Object.fromEntries((await many("SELECT target, value FROM content_edits")).map((r) => [r.target, r.value]));
+  check(rows[second] === "Words still being typed for the second place" && rows[first] === "Made-up words someone else saved",
+    `edit button, conflict for the first place: Save keeps the second words in the second place and leaves the first alone (${JSON.stringify(rows)})`);
+  await ctx.close();
+});
+
+/* Earlier versions, by keyboard. The first ask for them is answered after the box has moved on to
+   other words, before the ask for those: it must not fill the box with the first place's versions. */
+await part("edit button: the key, earlier versions and Restore", async () => {
+  await freshServer();
+  let asks = 0;
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit"], path: "/", slow: (p) => (p === "/api/staff/edit/history" ? [0, 1000, 2500][asks++] ?? 0 : 0) });
+  await page.getByRole("button", { name: words("edit.button") }).click({ timeout: 3000 });
+  await page.waitForFunction(() => document.documentElement.classList.contains("is-editing"), null, { timeout: 3000 });
+  const [first, second] = await page.evaluate(() => [...new Set([...document.querySelectorAll("main [data-block] [data-edit-target]")].map((n) => n.getAttribute("data-edit-target")))].slice(0, 2));
+  const mark = (target) => page.locator(`[data-edit-target="${target}"]`).first();
+  const closed = () => page.waitForFunction(() => !document.querySelector(".edit-dialog").open, null, { timeout: 3000 });
+  for (const v of ["Made-up first version", "Made-up second version"]) {
+    await mark(first).click({ timeout: 3000 });
+    await page.fill(".edit-dialog textarea", v);
+    await page.getByRole("button", { name: words("edit.save") }).click({ timeout: 3000 });
+    await closed();
+  }
+  await mark(first).click({ timeout: 3000 });
+  const key = await page.evaluate(() => document.querySelector(".edit-key code")?.textContent);
+  check(key === first, `edit box: shows the words' permanent key (${key})`);
+  await page.locator(".edit-history summary").focus();
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => document.querySelector(".edit-versions li"), null, { timeout: 3000 }).catch(() => {});
+  const list = await page.evaluate(() => [...document.querySelectorAll(".edit-versions li")].map((li) => {
+    const b = li.querySelector("button");
+    return { words: li.querySelector(".edit-version-words").textContent, notes: [...li.querySelectorAll(".edit-by")].map((p) => p.textContent), restore: b ? document.getElementById(b.getAttribute("aria-describedby"))?.textContent : null };
+  }));
+  check(list.length === 1 && list[0].words === "Made-up first version" && list[0].restore === "Made-up first version" && list[0].notes.join().startsWith("Robin Example, "),
+    `edit box: Earlier versions lists the words saved before, not the words already in the box, with who and when, and Restore named by its words (${JSON.stringify(list)})`);
+  await page.getByRole("button", { name: words("edit.restore") }).focus();
+  await page.keyboard.press("Enter");
+  await closed().catch(() => {});
+  const rows = (await many("SELECT value FROM content_edit_history WHERE target = $1 ORDER BY id", [first])).map((r) => r.value);
+  const back = await page.evaluate(() => document.activeElement?.getAttribute("data-edit-target"));
+  check((await mark(first).textContent()).trim() === "Made-up first version" && rows.join("|") === "Made-up first version|Made-up second version|Made-up first version" && back === first,
+    `edit box: Restore saves the earlier words as the newest version, shows them, and gives focus back to them (${JSON.stringify({ rows, back })})`);
+
+  await mark(first).click({ timeout: 3000 });
+  await page.locator(".edit-history summary").click({ timeout: 3000 });
+  await page.keyboard.press("Escape");
+  await mark(second).click({ timeout: 3000 });
+  await page.locator(".edit-history summary").click({ timeout: 3000 });
+  await sleep(1600);
+  const between = await page.evaluate(() => ({ key: document.querySelector(".edit-key code")?.textContent, items: document.querySelectorAll(".edit-versions li").length, line: document.querySelector(".edit-versions-list")?.textContent }));
+  check(between.key === second && between.items === 0 && between.line === words("edit.history.loading"),
+    `edit box: an answer about the first words, come after the box moved on, is not shown for the second (${JSON.stringify(between)})`);
+  await sleep(2400);
+  const after = await page.evaluate(() => document.querySelector(".edit-versions-list")?.textContent);
+  check(after === words("edit.history.none"), `edit box: the second words' own answer is shown ("${after}")`);
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("button", { name: words("edit.more") }).click({ timeout: 3000 });
+  await page.fill("#edit-find", "text:page.skip");
+  const found = await page.locator(".edit-more-list .edit-pick").count();
+  await page.locator(".edit-more-list .edit-pick").first().click({ timeout: 3000 });
+  const picked = await page.evaluate(() => document.querySelector(".edit-key code")?.textContent);
+  check(found === 1 && picked === "text:page.skip", `More words: searching a key finds those words, and the box shows the key (${JSON.stringify({ found, picked })})`);
+  await page.keyboard.press("Escape");
+  check(!errors.length, `edit box, versions: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+/* ------------------------------------------------------------------ 5. the events between publishes */
+
+/* The home page as built, served as a page built from Connect's events, so schedule.js asks
+   /api/events/pg-home; each answer is the week section as built, with `data-harness` saying which
+   answer it is, sent after `delays[n]` ms. The clock is held at a made-up Monday morning. */
+async function openEvents(delays) {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.clock.setFixedTime(new Date("2026-10-26T15:00:00Z"));
+  await page.route((u) => u.pathname === "/", async (route) => {
+    const res = await route.fetch();
+    route.fulfill({ response: res, body: (await res.text()).replace('<body data-page="pg-home"', '<body data-refresh="events" data-page="pg-home"') });
+  });
+  const built = await (await fetch(BASE + "/")).text();
+  let n = 0;
+  await page.route("**/api/events/pg-home", async (route) => {
+    const mine = ++n;
+    await sleep(delays[mine - 1] ?? 0);
+    const week = await page.evaluate(([html, v]) => new DOMParser().parseFromString(html, "text/html").querySelector('[data-block="b-home-week"]').outerHTML.replace('data-block="b-home-week"', `data-block="b-home-week" data-harness="${v}"`), [built, `v${mine}`]).catch(() => "");
+    await route.fulfill({ json: { ok: true, today: "2026-10-26", blocks: { "b-home-week": week } }, headers: { "cache-control": "no-store" } }).catch(() => {});
+  });
+  await page.goto(BASE + "/", { waitUntil: "load" });
+  return { ctx, page, errors, asked: () => n };
+}
+
+const weekState = (page) => page.evaluate(() => {
+  const week = document.querySelector('[data-block="b-home-week"]');
+  const a = document.activeElement;
+  return { answer: week?.dataset.harness || "published", today: [...document.querySelectorAll(".day.is-today")].map((d) => d.dataset.date),
+    focus: a === document.body ? "body" : a?.textContent.trim().slice(0, 40), inWeek: !!week?.contains(a) };
+});
+
+await part("events: a section with focus in it waits for focus to leave", async () => {
+  const { ctx, page, errors } = await openEvents([1200]);
+  await page.focus('[data-block="b-home-week"] .place a');
+  const link = await page.evaluate(() => document.activeElement.textContent.trim());
+  await sleep(1500);
+  let s = await weekState(page);
+  check(s.answer === "published" && s.inWeek && s.focus === link,
+    `events, focus inside: the answer does not replace the section the person is on, and focus stays put (${JSON.stringify(s)})`);
+  await page.keyboard.press("Shift+Tab");
+  await sleep(150);
+  s = await weekState(page);
+  check(s.answer === "v1" && s.focus !== "body" && !s.inWeek, `events, focus inside: once focus leaves, the answer goes in and focus is where the person moved it (${JSON.stringify(s)})`);
+  check(!errors.length, `events: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+await part("events: Back or Forward to a kept page", async () => {
+  // Asks: the page's own, then two restores; the first restore's answer comes last.
+  const { ctx, page, asked } = await openEvents([0, 1200, 100]);
+  await sleep(300);
+  let s = await weekState(page);
+  check(s.answer === "v1" && s.today.join() === "2026-10-26", `events: the page's own ask is put in, and Monday is Today (${JSON.stringify(s)})`);
+  /* Headless Chromium keeps no page in the back-forward cache (measured), so the restore is fired
+     by hand, a day later. */
+  await page.clock.setFixedTime(new Date("2026-10-27T15:00:00Z"));
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+  await sleep(50);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+  await sleep(1600);
+  s = await weekState(page);
+  check(s.today.join() === "2026-10-27", `events, restored a day later: Today moves to the real today (${JSON.stringify(s.today)})`);
+  check(asked() === 3 && s.answer === "v3", `events, restored twice: both ask again, and the newer ask's answer stays though the older one arrives last (asked ${asked()}, showing ${s.answer})`);
+  await ctx.close();
+});
+
+/* ------------------------------------------------------------------ 6. the resources page */
+
+const resState = (page) => page.evaluate(() => ({
+  topic: document.querySelector("[data-topic][aria-pressed='true']")?.dataset.topic ?? null,
+  q: document.getElementById("b-res-list-q")?.value,
+  count: document.querySelector("[data-res-count]")?.textContent.trim(),
+  open: !!document.querySelector("[data-res-dialog]")?.open,
+  locked: getComputedStyle(document.documentElement).overflowY === "hidden",
+  y: Math.round(scrollY),
+}));
+
+await part("resources: a card's details and the filter", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(BASE + "/resources/", { waitUntil: "networkidle" });
+  const summary = page.locator(".res-more > summary").nth(4);
+  await summary.scrollIntoViewIfNeeded();
+  await summary.focus();
+  const before = await resState(page);
+  await page.keyboard.press("Enter");
+  const opened = await resState(page);
+  await page.keyboard.press("Escape");
+  const shut = await resState(page);
+  const back = await summary.evaluate((s) => s === document.activeElement);
+  check(opened.open && !shut.open && back && shut.y === before.y && !shut.locked,
+    `resources: a card's details open by keyboard, Escape closes them, focus and scroll come back to the card, and the page scrolls again (${JSON.stringify({ opened: opened.open, shut: shut.open, focusBack: back, y: [before.y, shut.y], locked: shut.locked })})`);
+  await page.click('[data-topic="housing"]');
+  const word = (await page.locator(".res-card:not([hidden]) h3").first().textContent()).match(/[A-Za-z]{4,}/)[0].toLowerCase();
+  await page.fill("#b-res-list-q", word);
+  const set = await resState(page);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goBack({ waitUntil: "networkidle" });
+  const kept = await resState(page);
+  check(set.topic === "housing" && kept.topic === "housing" && kept.q === word && kept.count === set.count,
+    `resources: Back keeps the topic and the search (${JSON.stringify({ set: [set.topic, set.q, set.count], back: [kept.topic, kept.q, kept.count] })})`);
+  check(!errors.length, `resources: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
   await ctx.close();
 });
 

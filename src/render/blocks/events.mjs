@@ -21,17 +21,18 @@ import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref } from "../ics.mjs";
-import { nextDated, lastDated, dateParts, timeRange } from "../events.mjs";
+import { nextDated, lastDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
 
 /* A night that has happened, as its photo: the date and name under it. One without a photo keeps
    the card. */
 function shot(ctx, r) {
   if (!r.media) return card(ctx, r, { past: true });
   const p = dateParts(r.date, ctx.t);
+  const days = dayRange(r, ctx.t);
   const hid = `ev-${r.event}`;
   return html`<li class="evshot" aria-labelledby="${hid}">
     <div class="photo">${picture(ctx, r.media, { sizes: "(max-width: 760px) calc(50vw - 1.5rem), 17rem" })}</div>
-    <h3 id="${hid}"><span class="evshot-date" aria-hidden="true">${p.dow} ${p.mon} ${p.dom}</span>${r.short}<span class="sr-only">, ${p.dowLong}, ${p.monLong} ${p.dom}</span></h3>
+    <h3 id="${hid}"><span class="evshot-date" aria-hidden="true">${days ? days.short : `${p.dow} ${p.mon} ${p.dom}`}</span>${r.short}<span class="sr-only">, ${days ? days.long : `${p.dowLong}, ${p.monLong} ${p.dom}`}</span></h3>
   </li>`;
 }
 
@@ -43,14 +44,16 @@ function mosaic(ctx, photos) {
 function card(ctx, r, { past = false } = {}) {
   const p = dateParts(r.date, ctx.t);
   const when = timeRange(r.start, r.end, ctx.t);
-  const today = r.date === ctx.today;
+  const today = runsOn(r, ctx.today);
+  const days = dayRange(r, ctx.t);
   const cls = ["evcard", r.media ? "has-photo" : null, past ? "is-recent" : null].filter(Boolean).join(" ");
   const hid = `ev-${r.event}`;
-  return html`<li${attrs({ class: cls, "data-starts": past ? null : r.startsAt, "data-ends": past ? null : r.endsAt, "data-date": past ? null : r.date })} aria-labelledby="${hid}">
+  return html`<li${attrs({ class: cls, "data-starts": past ? null : r.startsAt, "data-ends": past ? null : r.endsAt, "data-date": past ? null : r.date, "data-until": past || !days ? null : r.until })} aria-labelledby="${hid}">
     <div class="evcard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span>${past ? "" : html`<span class="evcard-time">${when}</span>`}${today && !past ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
     ${r.media ? html`<div class="evcard-photo">${picture(ctx, r.media, { sizes: "(max-width: 760px) calc(100vw - 2rem), 13rem" })}</div>` : ""}
     <div class="evcard-body">
-      <h3 id="${hid}">${r.short}<span class="sr-only">, ${p.dowLong}, ${p.monLong} ${p.dom}${past ? "" : `, ${when}`}</span></h3>
+      <h3 id="${hid}">${r.short}<span class="sr-only">, ${days ? days.long : `${p.dowLong}, ${p.monLong} ${p.dom}`}${past ? "" : `, ${when}`}</span></h3>
+      ${days ? html`<p class="evcard-days" aria-hidden="true">${days.short}</p>` : ""}
       ${r.tagline ? html`<p class="evcard-tag">${r.tagline}</p>` : ""}
       ${r.place && !past ? html`<p class="evcard-where">${icon("pin")}<span><strong>${r.place.name}</strong>${r.place.detail ? ` · ${r.place.detail}` : ""}</span></p>` : ""}
       ${r.note && !past ? html`<p class="evcard-note">${r.note}</p>` : ""}

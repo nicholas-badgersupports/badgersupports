@@ -16,17 +16,19 @@ import { link } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref } from "../ics.mjs";
-import { nextDated, dateParts, timeRange } from "../events.mjs";
+import { nextDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
 
 function feature(ctx, b, r) {
   const p = dateParts(r.date, ctx.t);
   const when = timeRange(r.start, r.end, ctx.t);
+  const days = dayRange(r, ctx.t);
   const hid = `${b.id}-next`;
-  return html`<article${attrs({ class: "evcard is-feature", "data-live": "next", "data-starts": r.startsAt, "data-ends": r.endsAt, "data-date": r.date, "aria-labelledby": hid })}>
-    <div class="evcard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span><span class="evcard-time">${when}</span>${r.date === ctx.today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
+  return html`<article${attrs({ class: "evcard is-feature", "data-live": "next", "data-starts": r.startsAt, "data-ends": r.endsAt, "data-date": r.date, "data-until": days ? r.until : null, "aria-labelledby": hid })}>
+    <div class="evcard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span><span class="evcard-time">${when}</span>${runsOn(r, ctx.today) ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
     <div class="evcard-body">
       <p class="feature-label">${b.nextLabel || ctx.t("events.next")}</p>
-      <h2 id="${hid}">${r.short}<span class="sr-only">, ${p.dowLong}, ${p.monLong} ${p.dom}, ${when}</span></h2>
+      <h2 id="${hid}">${r.short}<span class="sr-only">, ${days ? days.long : `${p.dowLong}, ${p.monLong} ${p.dom}`}, ${when}</span></h2>
+      ${days ? html`<p class="evcard-days" aria-hidden="true">${days.short}</p>` : ""}
       ${r.tagline ? html`<p class="evcard-tag">${r.tagline}</p>` : ""}
       ${r.place ? html`<p class="evcard-where">${icon("pin")}<span><strong>${r.place.name}</strong>${r.place.detail ? html`<span class="where-detail"><span class="sr-only">, </span>${r.place.detail}</span>` : ""}</span></p>` : ""}
       ${r.note ? html`<p class="evcard-note">${r.note}</p>` : ""}

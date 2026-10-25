@@ -14,8 +14,9 @@
  *                                          # 8899 or 8901, the two returns that rig accepts.
  *
  * Nothing here talks to the network: no Netlify, no email, and Connect only when --connect names
- * a local rig. A word saved with the edit button rebuilds the pages at once, so the change shows
- * on the next load; on Netlify it waits for a publish.
+ * a local rig. Every page address is answered by the page function (netlify/lib/pages.mjs), as on
+ * Netlify, so a word saved with the edit button is published to the rig's in-memory revision and shows
+ * on the next load.
  */
 
 import http from "node:http";
@@ -76,13 +77,9 @@ async function standIns() {
 export async function startServer({ port = Number(process.env.PORT) || 8899, today = null, media = true } = {}) {
   const { handle } = await import("../netlify/lib/router.mjs");
   const { useContent } = await import("../netlify/lib/content.mjs");
-  const { editsFile } = await import("../netlify/lib/edits.mjs");
-  const { build } = await import("./build.mjs");
-  // The pages as staff left them: every saved edit laid over the files, as a publish would.
-  const afterEdit = async () => {
-    await build({ today, edits: (await editsFile()).edits, media });
-    useContent(null);
-  };
+  const { handlePage } = await import("../netlify/lib/pages.mjs");
+  const { chicagoDate } = await import("../src/render/context.mjs");
+  useContent(null);
   const headerRules = parseHeaders();
   const redirects = parseRedirects();
   // Without the photos (--no-media) no variant is written: each is answered with a flat one of its format.
@@ -95,7 +92,7 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
         const chunks = [];
         for await (const c of req) chunks.push(c);
         const request = new Request(u, { method: req.method, headers: req.headers, body: ["GET", "HEAD"].includes(req.method) ? undefined : Buffer.concat(chunks) });
-        const response = await handle(request, { ip: req.socket.remoteAddress, afterEdit });
+        const response = await handle(request, { ip: req.socket.remoteAddress });
         const headers = Object.fromEntries(response.headers);
         const cookies = response.headers.getSetCookie();
         if (cookies.length) headers["set-cookie"] = cookies;
@@ -104,6 +101,13 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
         return;
       }
       const pathname = decodeURIComponent(u.pathname);
+      // A page address: the page function, as Netlify sends it (netlify/functions/pages.mjs).
+      if (["GET", "HEAD"].includes(req.method) && !/^\/(assets|media|calendar)\//.test(pathname) && (!path.extname(pathname) || pathname.endsWith(".html"))) {
+        const response = await handlePage(new Request(u, { method: req.method, headers: req.headers }), { today: today || chicagoDate() });
+        res.writeHead(response.status, Object.fromEntries(response.headers));
+        res.end(Buffer.from(await response.arrayBuffer()));
+        return;
+      }
       const r = redirects.get(pathname) || redirects.get(pathname.replace(/\/$/, ""));
       if (r) { res.writeHead(r.status, { location: r.to }); res.end(); return; }
       let file = path.join(DIST, pathname);

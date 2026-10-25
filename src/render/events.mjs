@@ -36,6 +36,20 @@ export function chicagoOffset(date) {
   return off === "" ? "+00:00" : off;
 }
 
+/* The days an event over several days runs, short ("Fri Oct 23 – Sun Oct 25") and in full for a screen reader,
+   or null for one day. Words from the text registry (events.days, events.daysLong). */
+export function dayRange(r, t) {
+  if (!r.until || !r.from || r.until === r.from) return null;
+  const a = dateParts(r.from, t), b = dateParts(r.until, t);
+  return {
+    short: t("events.days", { from: `${a.dow} ${a.mon} ${a.dom}`, to: `${b.dow} ${b.mon} ${b.dom}` }),
+    long: t("events.daysLong", { from: `${a.dowLong}, ${a.monLong} ${a.dom}`, to: `${b.dowLong}, ${b.monLong} ${b.dom}` }),
+  };
+}
+
+/* Whether a row's event runs on `day`: its one day, or any day from its first to its last. */
+export const runsOn = (r, day) => (r.from || r.date) <= day && day <= (r.until || r.date);
+
 /* 5–6 PM · 5:30–7:30 PM · 11:30 AM–1 PM */
 export function timeRange(start, end, t) {
   const fmt = (hm) => {
@@ -50,9 +64,15 @@ export function timeRange(start, end, t) {
   return a.ap === b.ap ? `${a.text}–${b.text}\u00a0${b.ap}` : `${a.text}\u00a0${a.ap}–${b.text}\u00a0${b.ap}`;
 }
 
+/* The last day a dated event runs: its endDate when it runs over several days, otherwise its own day. */
+export const lastDay = (e) => (e.endDate && e.endDate > e.date ? e.endDate : e.date);
+
 function row(src, e, date) {
   const place = src.places?.[e.place] || null;
   const off = chicagoOffset(date);
+  // a dated event's first and last day; a weekly one's row is its one day
+  const dated = e.weekday === undefined;
+  const last = dated ? lastDay(e) : date;
   return {
     id: `${e.id}@${date}`,
     program: e.program || "other",
@@ -61,10 +81,12 @@ function row(src, e, date) {
     short: e.short || e.title,
     note: e.note || null,
     date,
+    from: dated ? e.date : date,
+    until: last,
     start: e.start,
     end: e.end || null,
     startsAt: `${date}T${e.start}:00${off}`,
-    endsAt: `${date}T${e.end || e.start}:00${off}`,
+    endsAt: `${last}T${e.end || e.start}:00${chicagoOffset(last)}`,
     place,
     placeId: e.place || null,
     signup: e.signup || "none",
@@ -89,7 +111,7 @@ export function rowsBetween(src, from, days) {
       if ((e.skip || []).includes(date)) continue;
       out.push(row(src, e, date));
     }
-    for (const e of src.dated || []) if (e.date === date) out.push(row(src, e, date));
+    for (const e of src.dated || []) if (e.date <= date && date <= lastDay(e)) out.push(row(src, e, date));
   }
   return out.sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
 }
@@ -101,21 +123,22 @@ function wanted(which) {
   return (e) => (w.series ? e.series === w.series : !w.program || e.program === w.program);
 }
 
-/* The next `count` dated (one-off) events on or after `from`, optionally for one program or series. */
+/* The next `count` dated (one-off) events still running on or after `from`, optionally for one program or series.
+   One that began before `from` and has not ended comes first. */
 export function nextDated(src, from, count, which = null) {
   const keep = wanted(which);
   return (src.dated || [])
-    .filter((e) => e.date >= from && keep(e))
+    .filter((e) => lastDay(e) >= from && keep(e))
     .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))
     .slice(0, count)
     .map((e) => row(src, e, e.date));
 }
 
-/* The `count` most recent dated events before `before`, newest first, optionally for one program or series. */
+/* The `count` most recent dated events over before `before`, newest first, optionally for one program or series. */
 export function lastDated(src, before, count, which = null) {
   const keep = wanted(which);
   return (src.dated || [])
-    .filter((e) => e.date < before && keep(e))
+    .filter((e) => lastDay(e) < before && keep(e))
     .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start))
     .slice(0, count)
     .map((e) => row(src, e, e.date));

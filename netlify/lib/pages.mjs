@@ -1,0 +1,96 @@
+/* Every page, drawn when it is asked for: the build's renderer, the build's snapshot (.build/server.json,
+ * `render`) and the published revision of saved words (published.mjs) laid over it. This is how a save
+ * reaches visitors with no deploy (owner, 24 Oct 2026; docs/ARCHITECTURE.md, "Publishing a save").
+ *
+ * Bounded: Netlify's CDN holds a page at most 30 minutes (25, then 5 while it draws it again), the browser
+ * not at all, and the revision is held a minute (published.mjs). The cache key ignores every query string but
+ * the two the pages read, and no cookie or header, so nobody can ask past it. Nothing here reads the database.
+ *
+ * If the revision cannot be read or the page cannot be drawn, the answer is the build's own file, held a
+ * minute, so a fault is never kept for long. A path the build does not have answers the site's 404 page.
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import url from "node:url";
+import { serverContent } from "./content.mjs";
+import { currentRevision } from "./published.mjs";
+import { composeSite, renderSitePage } from "../../src/render/site.mjs";
+import { chicagoDate } from "../../src/render/context.mjs";
+
+const HERE = path.dirname(url.fileURLToPath(import.meta.url));
+let dist = path.resolve(HERE, "..", "..", "dist");
+/* Tests point it at their own build. */
+export function useDist(dir) { dist = dir; composed = null; }
+
+export const PAGE_CACHE = {
+  "cache-control": "public, max-age=0, must-revalidate",
+  "netlify-cdn-cache-control": "public, durable, s-maxage=1500, stale-while-revalidate=300",
+  "netlify-vary": "query=topic|return",
+};
+const FALLBACK_CACHE = { "cache-control": "public, max-age=0, must-revalidate", "netlify-cdn-cache-control": "public, s-maxage=60", "netlify-vary": "query=topic|return" };
+
+let composed = null; // { key, site }
+
+function siteFor(snap, revision) {
+  const key = revision ? `${revision.n}:${revision.stamp}` : "none";
+  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits || {}) };
+  return composed.site;
+}
+
+/* The site as published now: the snapshot with the current revision laid over it, or null when this build
+   carries no snapshot (an older server.json, or a test's own content). */
+export async function siteNow() {
+  const c = serverContent();
+  if (!c.render) return null;
+  return siteFor(c.render, await currentRevision());
+}
+
+const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l.indexOf(":"); return [l.slice(0, i).toLowerCase(), l.slice(i + 1).trim()]; }));
+
+function redirectFor(c, pathname) {
+  for (const line of String(c.redirects || "").split("\n")) {
+    const [from, to, status] = line.trim().split(/\s+/);
+    if (from && decodeURI(from) === pathname) return { to, status: Number(status) || 301 };
+  }
+  return null;
+}
+
+function staticFile(pathname) {
+  const rel = pathname === "/404.html" ? "404.html" : path.join(pathname, "index.html");
+  const file = path.join(dist, rel);
+  if (!file.startsWith(dist + path.sep) || !fs.existsSync(file)) return null;
+  return fs.readFileSync(file, "utf8");
+}
+
+/* A page's answer, or null for a path this function does not draw (an asset, the API). */
+export async function handlePage(req, { today = chicagoDate() } = {}) {
+  const u = new URL(req.url);
+  let pathname;
+  try { pathname = decodeURI(u.pathname); } catch { pathname = "/"; }
+  if (req.method !== "GET" && req.method !== "HEAD") return new Response("", { status: 405, headers: { allow: "GET, HEAD" } });
+  const c = serverContent();
+  const base = headerPairs(c.headers || []);
+  const html = (status, body, extra) => new Response(req.method === "HEAD" ? null : body, { status, headers: { "content-type": "text/html; charset=utf-8", ...base, ...extra } });
+
+  const moved = redirectFor(c, pathname);
+  if (moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
+  // A page's address ends in "/", as the static site's do.
+  if (!pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
+
+  const snap = c.render;
+  try {
+    const revision = await currentRevision();
+    const site = siteFor(snap, revision);
+    const page = site.pages.find((p) => (p.file ? `/${p.file}` : p.path) === pathname);
+    const notFound = !page;
+    const shown = page || site.pages.find((p) => p.id === "pg-not-found");
+    const tags = `page,page:${shown.id}`;
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today), { ...PAGE_CACHE, "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+  } catch (e) {
+    console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
+    const file = staticFile(pathname);
+    if (file) return html(200, file, { ...FALLBACK_CACHE, "x-bss-revision": "build" });
+    return html(404, staticFile("/404.html") || "", { ...FALLBACK_CACHE, "x-bss-revision": "build" });
+  }
+}

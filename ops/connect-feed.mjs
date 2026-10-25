@@ -23,6 +23,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { call, serviceConfig } from "../netlify/lib/connect.mjs";
+import { addDays } from "../src/render/events.mjs";
 
 export const FEED_SCHEMA = "bss.connect-feed/1";
 const HM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -30,6 +31,8 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 // An event id becomes a file name (`calendar/connect-<id>.ics`) and a calendar UID, so it must fit the live
 // calendar route, /api/calendar/[A-Za-z0-9_-]{1,120}.ics, after the 8 characters of "connect-".
 const EVENT_ID = /^[A-Za-z0-9_-]{1,112}$/;
+// The longest run an event's endDate is believed for; past it the event shows on its first day only.
+export const LONGEST_DAYS = 14;
 
 /* A build run on the laptop never gets the key as Netlify holds it: Netlify hands it a short stand-in for every
    secret, and that stand-in wins over a variable of the same name (measured 23 Oct 2026). So the owner's publish
@@ -130,6 +133,14 @@ export function mapEvents(reply, rules) {
     if (!EVENT_ID.test(String(e.id))) { dropped.push(`event ${JSON.stringify(String(e.id).slice(0, 40))} (${e.date}): id is not letters, digits, - or _`); continue; }
     if (seen.has(e.id)) { dropped.push(`event ${e.id} (${e.date}): listed twice`); continue; }
     if (past && DAY.test(reply.today || "") && e.date >= reply.today) { dropped.push(`event ${e.id} (${e.date}): listed as recent but not before today`); continue; }
+    // The last day of an event that runs over several days. An end before the start, or more than LONGEST_DAYS
+    // on, is not believed: the event shows on its first day and the build names it.
+    let endDate = null;
+    if (DAY.test(e.endDate || "") && e.endDate > e.date) {
+      if (e.endDate <= addDays(e.date, LONGEST_DAYS)) endDate = e.endDate;
+      else dropped.push(`event ${e.id} (${e.date}): end date ${e.endDate} is more than ${LONGEST_DAYS} days on, so it shows on its first day only`);
+    } else if (DAY.test(e.endDate || "") && e.endDate < e.date) dropped.push(`event ${e.id} (${e.date}): end date ${e.endDate} is before it starts, so it shows on its first day only`);
+    if (past && DAY.test(reply.today || "") && (endDate || e.date) >= reply.today) { dropped.push(`event ${e.id} (${e.date}): listed as recent but not over before today`); continue; }
     seen.add(e.id);
     // A row needs a start time to sit in the timetable; an event saved without one is left out.
     if (!HM.test(e.start || "")) { dropped.push(`event ${e.id} (${e.date}): no start time`); continue; }
@@ -139,7 +150,7 @@ export function mapEvents(reply, rules) {
     dated.push({
       id: `connect-${e.id}`, program: s?.program || t.program, ...(s ? { series: s.id } : {}),
       title: String(e.title).slice(0, 160), short: String(e.short || e.title).slice(0, 160),
-      date: e.date, start: e.start, ...(HM.test(e.end || "") ? { end: e.end } : {}),
+      date: e.date, ...(endDate ? { endDate } : {}), start: e.start, ...(HM.test(e.end || "") ? { end: e.end } : {}),
       place: placeFor(e.room, null), signup: "none", ...(href ? { href } : {}),
     });
   }

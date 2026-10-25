@@ -315,7 +315,7 @@ await part("folded help", async () => {
    database in this process, so a test can publish a new version or close the form under it. */
 const { freshServer, ORIGIN } = await import("../test/helpers.mjs");
 const { handle } = await import("../netlify/lib/router.mjs");
-const { many, q } = await import("../netlify/lib/db.mjs");
+const { many, one, q } = await import("../netlify/lib/db.mjs");
 const { serverContent } = await import("../netlify/lib/content.mjs");
 const WORKSHOP = "/forms/workshop-request/";
 let ipN = 10;
@@ -620,6 +620,8 @@ await part("staff page: signed out", async () => {
 
 await part("staff page: a past sign-in that has ended", async () => {
   const { ctx, page } = await openStaff({ hint: true });
+  // the edit button may forget the hint before the staff page has said anything: wait for the page's own answer
+  await page.waitForFunction((w) => [...document.querySelectorAll(".staff-note")].some((n) => n.textContent === w), words("staff.ended"), { timeout: 3000 }).catch(() => {});
   const s = await staffState(page);
   check(s.signIn && s.notes.includes(words("staff.ended")) && !s.hint && !s.who,
     `staff ended: says the sign-in has ended, offers Sign in, and forgets the hint (notes ${JSON.stringify(s.notes)}, hint ${s.hint})`);
@@ -643,6 +645,27 @@ await part("staff page: editor only", async () => {
   const s = await staffState(page);
   check(s.who && !s.headings.includes(words("staff.forms.title")) && s.headings.includes(words("staff.edit.title")) && !/answers/i.test(s.text) && !s.buttons.includes(words("staff.edit.download")),
     `staff editor only: words tools only, nothing about reading answers or publishing (headings ${JSON.stringify(s.headings)})`);
+  await ctx.close();
+});
+
+await part("staff page: when the words last reached the site, and Refresh Now", async () => {
+  await freshServer();
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit"] });
+  const before = words("staff.edit.timing").split("{{when}}")[0];
+  let s = await staffState(page);
+  check(s.text.includes(before + words("staff.edit.neverUpdated")), `refresh: the page says changes take up to 30 minutes, and that nothing has been published yet ("${s.text.split("\n").find((l) => l.startsWith(before)) || ""}")`);
+  const button = page.getByRole("button", { name: words("staff.edit.refresh") });
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words("staff.edit.refreshed"), { timeout: 5000 }).catch(() => {});
+  s = await staffState(page);
+  const line = s.text.split("\n").find((l) => l.startsWith(before)) || "";
+  check(/\d{4}/.test(line) && !line.includes(words("staff.edit.neverUpdated")), `refresh: pressed by keyboard, the line names when the site last updated ("${line}")`);
+  await button.click();
+  await page.waitForTimeout(300);
+  s = await staffState(page);
+  check(s.text.includes(words("staff.edit.refreshSoon")), "refresh: pressed again within the minute, it says to wait, and nothing else happens");
+  check(!errors.length, `refresh: no script errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
   await ctx.close();
 });
 
@@ -772,7 +795,38 @@ await part("edit button: a conflict answered after other words are opened", asyn
   await ctx.close();
 });
 
-/* Earlier versions, by keyboard. The first ask for them is answered after the box has moved on to
+/* A value that is not a word, by keyboard: found under More words by its key, opened with a list of its options,
+   saved, and checked again on the server. */
+await part("edit button: a section switched off, by keyboard, under More words", async () => {
+  await freshServer();
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit"], path: "/" });
+  const target = "page:pg-home:b-home-announce/enabled";
+  await page.getByRole("button", { name: words("edit.button") }).click({ timeout: 3000 });
+  await page.waitForFunction(() => document.documentElement.classList.contains("is-editing"), null, { timeout: 3000 });
+  const marked = await page.evaluate((t) => !!document.querySelector(`[data-edit-target="${t}"]`), target);
+  await page.getByRole("button", { name: words("edit.more") }).focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("b-home-announce/enabled");
+  const item = page.locator(".edit-more-list button", { hasText: target });
+  const found = await item.count();
+  await item.first().focus();
+  await page.keyboard.press("Enter");
+  const control = await page.evaluate(() => { const c = document.getElementById("edit-d-v"); return { tag: c?.tagName, options: [...(c?.options || [])].map((o) => o.textContent), value: c?.value, focused: document.activeElement === c }; });
+  check(!marked && found === 1 && control.tag === "SELECT" && control.options.join("|") === `${words("edit.on")}|${words("edit.off")}` && control.value === "true" && control.focused,
+    `typed value: not marked on the page, found under More words by its key, opened as a focused list of On and Off (${JSON.stringify({ marked, found, control })})`);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Tab");
+  const onSave = await page.evaluate(() => document.activeElement?.type === "submit");
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => !document.querySelector(".edit-dialog").open, null, { timeout: 3000 }).catch(() => {});
+  check(onSave, "typed value: Tab from the list reaches Save");
+  const row = await one("SELECT value FROM content_edits WHERE target = $1", [target]);
+  check(row?.value === "false", `typed value: Off is saved by keyboard (${JSON.stringify(row)})`);
+  check(!errors.length, `typed value: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+/* Earlier versions, by keyboard. The first ask for them is answered after the box has moved on to/* Earlier versions, by keyboard. The first ask for them is answered after the box has moved on to
    other words, before the ask for those: it must not fill the box with the first place's versions. */
 await part("edit button: the key, earlier versions and Restore", async () => {
   await freshServer();

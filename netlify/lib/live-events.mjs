@@ -23,6 +23,7 @@ import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { liveBlocks, renderBlock } from "../../src/render/registry.mjs";
 import { nextDated } from "../../src/render/events.mjs";
 import { eventIcs } from "../../src/render/ics.mjs";
+import { siteNow } from "./pages.mjs";
 
 const FRESH_MS = 60_000;
 const FAILED_MS = 30_000;
@@ -58,11 +59,17 @@ export async function eventsNow(ev, now = Date.now()) {
   return held.promise;
 }
 
-function context(c, page, events, today) {
+/* The words as published now (pages.mjs): a saved word reaches the event blocks as it reaches the page. If the
+   revision cannot be read, the build's words. */
+async function published(c) {
+  try { return await siteNow(); } catch { return null; }
+}
+
+function context(c, page, events, today, now) {
   const ev = c.events;
   return makeContext({
-    site: c.site, media: c.media, builtPaths: c.builtPaths, programs: new Map([...ev.programs, ...page.sections]),
-    routes: c.routes, data: { events, places: ev.places }, text: c.text, today, prototype: c.prototype, assets: c.assets,
+    site: now?.site || c.site, media: c.media, builtPaths: c.builtPaths, programs: new Map([...ev.programs, ...page.sections]),
+    routes: c.routes, data: { events, places: ev.places }, text: now?.text || c.text, today, prototype: c.prototype, assets: c.assets,
     liveEvents: ev.source === "connect", path: page.path || null,
   });
 }
@@ -73,10 +80,14 @@ export async function eventSections(pageId, { today = chicagoDate(), now = Date.
   const page = Object.hasOwn(c.events?.pages || {}, pageId) ? c.events.pages[pageId] : null;
   if (!page) return null;
   const { events, stale } = await eventsNow(c.events, now);
-  const ctx = context(c, page, events, today);
-  const showing = new Set(liveBlocks({ blocks: page.blocks }, today).map((b) => b.id));
+  const site = await published(c);
+  // the blocks with their saved words, so a refreshed block never puts the build's words back
+  const edited = site?.pages.find((p) => p.id === pageId)?.blocks;
+  const own = page.blocks.map((b) => edited?.find((x) => x.id === b.id) || b);
+  const ctx = context(c, page, events, today, site);
+  const showing = new Set(liveBlocks({ blocks: own }, today).map((b) => b.id));
   const blocks = {};
-  for (const b of page.blocks) blocks[b.id] = showing.has(b.id) ? String(renderBlock(b, ctx)) : "";
+  for (const b of own) blocks[b.id] = showing.has(b.id) ? String(renderBlock(b, ctx)) : "";
   return { today, stale, blocks };
 }
 

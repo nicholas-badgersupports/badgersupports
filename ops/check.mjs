@@ -13,7 +13,7 @@ import path from "node:path";
 import url from "node:url";
 import net from "node:net";
 import { spawn, spawnSync } from "node:child_process";
-import { build } from "./build.mjs";
+import { deliveredProblems, build } from "./build.mjs";
 import { editableReport } from "./editable.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
@@ -132,12 +132,22 @@ let report = null;
   gate("the build", problems, report ? `${report.pages.length} pages for ${report.today}, ${report.media.variants} image variants, ${report.pendingLinks.length} links still to the live site, ${report.redirectsWaiting.length} redirects waiting` : "");
 }
 
+/* 6b. What browsers are sent: only the files on the list, no notes, no maps (X2). The build refuses these too;
+   this reads the output again and says how much it read. */
+if (report) {
+  const dist = path.join(ROOT, "dist");
+  const problems = await deliveredProblems(dist);
+  const n = fs.readdirSync(dist, { recursive: true, withFileTypes: true }).filter((e) => e.isFile()).length;
+  gate("delivered files are clean", problems, `${n} files, each on the list, no comment, map or source note`);
+}
+
 /* 7. Every suite, each on its own fresh database. */
 {
   const r = spawnSync(process.execPath, ["--test", "--test-concurrency=1", "test/*.test.mjs"], { cwd: ROOT, encoding: "utf8", env: { ...process.env, LOCAL_DB: "pglite", ...(media ? {} : { NO_MEDIA: "1" }) } });
   const out = r.stdout + r.stderr;
-  const num = (k) => Number((out.match(new RegExp(`ℹ ${k} (\\d+)`)) || [])[1] || 0);
-  const failed = [...out.matchAll(/^✖ (.+?) \(\d/gm)].map((m) => m[1]).filter((v, i, a) => a.indexOf(v) === i && v !== "failing tests:");
+  /* The spec reporter prints "ℹ pass 1"; TAP, the default off a terminal, prints "# pass 1". */
+  const num = (k) => Number((out.match(new RegExp(`^(?:ℹ|#) ${k} (\\d+)`, "m")) || [])[1] || 0);
+  const failed = [...out.matchAll(/^(?:✖ (.+?) \(\d|\s*not ok \d+ - (.+)$)/gm)].map((m) => m[1] || m[2]).filter((v, i, a) => a.indexOf(v) === i && v !== "failing tests:");
   gate("tests", r.status === 0 ? [] : failed.length ? failed : [out.slice(-2000)], `${num("pass")} passed, ${num("fail")} failed${num("skipped") ? `, ${num("skipped")} skipped` : ""}`);
 }
 

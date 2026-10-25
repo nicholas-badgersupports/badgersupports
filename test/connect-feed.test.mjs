@@ -227,4 +227,53 @@ test("the published site shows Connect's events, each page its own, and no sampl
   // The live site, not a prototype: no notice saying so, and open to search engines.
   assert.doesNotMatch(read("index.html"), /class="proto"|noindex/);
   assert.doesNotMatch(read("robots.txt"), /Disallow: \/\s*$/m);
+  // Crawler policy (X3): robots.txt asks for a From address and points at the page that says so; it names no
+  // private address beyond the two whole areas, and the sitemap lists the policy page.
+  const robots = read("robots.txt");
+  assert.match(robots, /^# Crawlers: please send a working email address in the HTTP From header \(https:\/\/[^)]+\/crawlers\/\)\.$/m);
+  assert.deepEqual(robots.match(/^Disallow: .*$/gm), ["Disallow: /staff/", "Disallow: /api/"]);
+  assert.match(read("sitemap.xml"), /<loc>[^<]+\/crawlers\/<\/loc>/);
+  assert.match(read("crawlers/index.html"), /HTTP From header/);
+});
+
+/* Connect sends each event's endDate (Exchange PUBLIC-EVENTS-RECENT-2026-10-23; run log §6). An event that runs over
+   several days shows on each of them, names its dates, and leaves once its last day is over. */
+test("an event over several days shows on each day it runs, names its dates, and leaves once it has ended", async () => {
+  const weekend = { id: "e5", type: "craft", title: "Craft night: an example weekend", short: "An example weekend", date: "2026-10-23", endDate: "2026-10-25", start: "10:00", end: "16:00", room: "SAC Caucus Room", full: false };
+  const { events, dropped } = mapEvents({ ...EVENTS, events: [weekend] }, RULES);
+  assert.deepEqual(dropped, []);
+  assert.equal(events.dated[0].endDate, "2026-10-25");
+
+  const ctx = (today) => makeContext({ site: {}, media: { items: [] }, data: { events: { ...events, places: {} } }, text: TEXT, today });
+  const week = String(BLOCKS.schedule.render({ id: "b-w", type: "schedule", title: "This week", source: "events" }, ctx("2026-10-24")));
+  const days = [...week.matchAll(/<li class="day[^"]*" data-date="([\d-]+)">[\s\S]*?<\/ul><\/div><\/li>/g)].filter((m) => /An example weekend|an example weekend/i.test(m[0])).map((m) => m[1]);
+  assert.deepEqual(days, ["2026-10-24", "2026-10-25"], "on each day it still runs, from today");
+  assert.match(week, /data-ends="2026-10-25T16:00:00-05:00"/, "it ends on its last day");
+  const across = String(BLOCKS.schedule.render({ id: "b-w", type: "schedule", title: "This week", source: "events" }, ctx("2026-10-17")));
+  assert.equal(across.match(/An example weekend/gi)?.length, 1, "one that starts in the week and ends after it is in the week, not again under Coming Up");
+
+  const cards = (today) => String(BLOCKS.events.render({ id: "b-c", type: "events", title: "Craft", source: "events", program: "craft" }, ctx(today)));
+  const during = cards("2026-10-24");
+  assert.match(during, /class="evcard"[^>]*data-ends="2026-10-25T16:00:00-05:00"/, "still to come on its second day");
+  assert.ok(during.includes(`${TEXT["date.dow.5"]} ${TEXT["date.mon.9"]} 23`) && during.includes(`${TEXT["date.dow.0"]} ${TEXT["date.mon.9"]} 25`), "the card names its first and last day");
+  assert.match(during, /today-tag/, "its second day is today");
+  assert.doesNotMatch(cards("2026-10-26"), /class="evcard"[^>]*data-ends/, "gone from what is to come the day after it ends");
+  assert.match(cards("2026-10-26"), /An example weekend/, "and listed with what has happened");
+  assert.doesNotMatch(String(BLOCKS.events.render({ id: "b-c", type: "events", title: "Craft", source: "events", program: "craft", show: "recent" }, ctx("2026-10-25"))), /An example weekend/, "not recent while it still runs");
+
+  // Connect's `recent` list: an event still running is not recent yet.
+  const notOver = mapEvents({ ...EVENTS, today: "2026-10-24", events: [], recent: [weekend] }, RULES);
+  assert.deepEqual(notOver.dropped, ["event e5 (2026-10-23): listed as recent but not over before today"]);
+  // An end before the start, or a month away, is not believed: the event shows on its first day, and the build says so.
+  const odd = mapEvents({ ...EVENTS, events: [{ ...weekend, endDate: "2026-10-20" }, { ...weekend, id: "e6", endDate: "2027-01-10" }] }, RULES);
+  assert.deepEqual(odd.events.dated.map((e) => e.endDate), [undefined, undefined]);
+  assert.equal(odd.dropped.length, 2);
+  assert.match(odd.dropped.join(" "), /e5 .*end date 2026-10-20 .*first day only/);
+
+  // The published files: a calendar file that ends on the last day, written while the event still runs.
+  const out = path.join(ROOT, "local", "test-build-connect-days");
+  await build({ production: true, connectConfig: fakeConnect({ events: { ...EVENTS, today: "2026-10-24", events: [weekend] } }).cfg, out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-24", log: () => {} });
+  const ics = fs.readFileSync(path.join(out, "calendar", "connect-e5.ics"), "utf8");
+  assert.match(ics, /DTSTART:20261023T150000Z/);
+  assert.match(ics, /DTEND:20261025T210000Z/);
 });

@@ -9,7 +9,7 @@
 .form-page .wrap > :not(.form-head) + :not(.form-head) { margin-top: var(--s4); }
 .form-head {
   grid-row: 1 / span 20; position: sticky; top: calc(var(--header-h) + var(--s4));
-  padding: 28px var(--s4) 28px; border-radius: var(--r-panel); border: 2px solid var(--line); border-top: 8px solid var(--accent);
+  padding: 28px var(--s4) 28px; border-radius: var(--r-panel); border: 2px solid var(--line);
   background: var(--paper);
 }
 /* the longest word of a form's name, RECOMMENDATION, is 10.4em wide in capitals, so the name is sized

@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-311 keys. Keys are permanent. Required text cannot be published empty and must keep each
+348 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -531,7 +531,7 @@ the site adds the markup.
 | `mood.pageTitle` | Thanks for Checking In | Heading of the page shown after a mood tap without JavaScript. |  |
 | `mood.back` | Back to the Homepage | Link on that page. |  |
 
-### Event cards (7)
+### Event cards (9)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -539,6 +539,8 @@ the site adds the markup.
 | `events.next` | Next Up | Small label over the next event's name at the top of a program's page, when the block gives none. |  |
 | `events.recentTitle` | Recent Events | Heading over events that have happened, when the event-card block gives none. |  |
 | `events.none` | Nothing is scheduled yet. | Shown in place of event cards when none are coming up. |  |
+| `events.days` | {{from}} – {{to}} | The first and last day of an event that runs over several days, on its card and in the timetable. {{from}} and {{to}} are each a short day, month and date. | `{{from}}` `{{to}}` |
+| `events.daysLong` | {{from}} to {{to}} | The same days in full, read by screen readers. {{from}} and {{to}} are each a weekday, month and date. | `{{from}}` `{{to}}` |
 | `calendar.gone.title` | That event is not coming up any more | Heading on the page an Add to Calendar button opens when the event has happened, moved or been taken off since the page was loaded. |  |
 | `calendar.gone.body` | It may have happened already, or moved to another day. The timetable has what is coming up. | Under that heading. |  |
 | `calendar.gone.back` | See What’s Coming Up | Link under it, to the home page and its timetable. |  |
@@ -694,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (101)
+### Staff page and edit button (136)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -747,6 +749,33 @@ the site adds the markup.
 | `staff.edit.none` | Every saved change is already on the site. | Staff page, when nothing waits to publish. |  |
 | `staff.edit.waiting.one` | {{n}} saved change is not on the site yet. | Staff page, when one change waits. | `{{n}}` |
 | `staff.edit.waiting.other` | {{n}} saved changes are not on the site yet. | Staff page, when several changes wait. | `{{n}}` |
+| `staff.edit.timing` | Changes can take up to 30 minutes to show. Last update: {{when}}. | Staff page, words on the site, for anyone who may change or publish words. {{when}} is the date and time the pages last took new words. | `{{when}}` |
+| `staff.edit.neverUpdated` | none yet | Staff page: stands for {{when}} in the line above before any change has been published. |  |
+| `staff.edit.updateFailed` | The last update did not reach the site. Saved words are kept; Refresh Now tries again. | Staff page, in place of the line above when the newest words could not be published; also said by screen readers after Refresh Now. |  |
+| `staff.edit.refresh` | Refresh Now | Staff page button: shows the newest words and events on every page at once, instead of within 30 minutes. |  |
+| `staff.edit.refreshing` | Refreshing… | The Refresh Now button while it works. |  |
+| `staff.edit.refreshed` | Refreshed. Every page shows the newest words and events. | Read by screen readers after Refresh Now worked. |  |
+| `staff.edit.refreshSoon` | The site was refreshed a moment ago. Try again in a minute. | Staff page, under Refresh Now, when it was pressed too often. |  |
+| `backup.start.title` | Start Here | Backup workbook: the first tab's name and its title. |  |
+| `backup.start.what` | A copy of every answer sent through the website's forms. Answers are worked through in Connect, not here. | Backup workbook, Start Here: what the file is. |  |
+| `backup.start.who` | Share this file with directors by name, never with anyone who has the link. | Backup workbook, Start Here: who may open it. |  |
+| `backup.start.confidential` | Answers marked confidential are not in this file. | Backup workbook, Start Here, while confidential answers are left out. |  |
+| `backup.start.updated` | Last written: {{when}} | Backup workbook, Start Here. {{when}} is the date and time, in UTC. | `{{when}}` |
+| `backup.start.forms` | One tab for each form: | Backup workbook, Start Here: over the list of forms. |  |
+| `backup.dashboard.title` | Dashboard | Backup workbook: the second tab's name. |  |
+| `backup.col.form` | Form | Backup workbook, Dashboard column. |  |
+| `backup.col.state` | Open or Closed | Backup workbook, Dashboard column. |  |
+| `backup.col.total` | Answers | Backup workbook, Dashboard column: answers in all. |  |
+| `backup.col.week` | Last 7 Days | Backup workbook, Dashboard column. |  |
+| `backup.col.month` | Last 30 Days | Backup workbook, Dashboard column. |  |
+| `backup.col.latest` | Latest | Backup workbook, Dashboard column: when the newest answer came. |  |
+| `backup.col.waiting` | Waiting for Connect | Backup workbook, Dashboard column. |  |
+| `backup.col.failed` | Not Reaching Connect | Backup workbook, Dashboard column. |  |
+| `backup.col.ref` | Reference | Backup workbook, each form's tab: the first column. |  |
+| `backup.col.received` | Received | Backup workbook, each form's tab: the second column, in UTC. |  |
+| `backup.col.version` | Version | Backup workbook, each form's tab: the form's version the answer was sent under. |  |
+| `backup.open` | Open | Backup workbook, Dashboard: a form taking answers. |  |
+| `backup.closed` | Closed | Backup workbook, Dashboard: a form not taking answers. |  |
 | `staff.edit.download` | Download the Edits File | Staff page, button that saves every change as one file. |  |
 | `staff.edit.publish` | Save this file in the site as content/edits.json before you publish, or saved changes are left out. | Staff page, under the download button. |  |
 | `edit.button` | Edit Text | The edit button, bottom corner of every page, for staff who may change words. |  |
@@ -778,6 +807,14 @@ the site adds the markup.
 | `edit.error.markup` | Leave out the angle brackets < and >. | Edit box, when the words contain angle brackets. |  |
 | `edit.error.placeholder` | Keep every part in double curly brackets exactly as it was; the site fills those in. | Edit box, when a fill-in part was removed. |  |
 | `edit.error.value` | These words cannot be saved as written. Links and web addresses are changed in Connect, not here. | Edit box, when the words are not allowed. |  |
+| `edit.error.link` | A link is a page of this site (it starts with /), or a web address that starts with https://. | Edit box, when a link cannot be saved as written. |  |
+| `edit.error.media` | Give the id of a photo in the library, such as m-hub-sea. | Edit box, when a photo cannot be saved as written. |  |
+| `edit.error.choice` | Choose one of the options in the list. | Edit box, when a choice is not one of its options. |  |
+| `edit.error.number` | Give a whole number from 0 to 99. | Edit box, when a number cannot be saved as written. |  |
+| `edit.error.date` | Give a date such as 2026-11-01. | Edit box, when a date cannot be saved as written. |  |
+| `edit.error.video` | A video is the address of an Instagram post or reel. | Edit box, when a video address cannot be saved as written. |  |
+| `edit.on` | On | Edit box option for a section switched on. |  |
+| `edit.off` | Off | Edit box option for a section switched off. |  |
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
 | `edit.error.failed` | Unable to save right now. Try again. | Edit box, when saving fails. |  |
 | `edit.error.signedOut` | Your sign-in has ended. Your words are still in the box: sign in again in the new tab, then come back here and press Save. | Edit box, when Save finds the sign-in has ended; the words typed stay in the box. |  |

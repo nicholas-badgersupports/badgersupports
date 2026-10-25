@@ -198,13 +198,66 @@ test("peer support wears green and craft nights purple; the header, footer and a
 // Every stylesheet, block ones (src/styles/blocks/) included.
 const allCss = () => fs.readdirSync(path.join(ROOT, "src/styles"), { recursive: true }).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "")).join("\n");
 
-test("no coloured bar down the side of anything: a side edge is the neutral rule, or a route's dotted line", () => {
+/* No decorative coloured bar on any edge (owner, 24 Oct 2026, widening Round 7): "the rounded red strip across
+   the top of a white card", in any colour, on any edge. An edge is the neutral rule, a route's dotted line, or
+   nothing. Colour that means something stays: the page you are on, a selected tab, focus, a checked box. */
+const NEUTRAL_EDGE = /^(0|none|var\(--(hairline|rule-line|hairline-on-red)\)|\d+px dotted var\(--rule-strong\))$/;
+const MEANING = /aria-current|aria-selected|:focus|:checked|aria-invalid/;
+/* Each edge here was read and judged not a bar; the reason is the comment beside it. */
+const NOT_A_BAR = new Map([
+  // a phone tab closes its own outline in its own fill colour, so the edge cannot be seen apart from the tab
+  [".ws-tab: border-bottom: 3px solid var(--ws-tint)", "closes the tab's own same-colour outline"],
+]);
+
+test("no coloured bar on any edge of anything: an edge is the neutral rule, a route's dotted line, or none", () => {
   const css = allCss();
   // A rotated rule draws a chevron from two of its borders; that is an arrow, not a bar.
-  const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => !/rotate\(/.test(m[2]));
-  const sides = rules.flatMap((m) => [...m[2].matchAll(/border-(?:left|right|inline-start|inline-end)\s*:\s*([^;}]+)/g)].map((d) => `${m[1].trim()}: ${d[1].trim()}`));
-  assert.deepEqual(sides.filter((v) => !/^var\(--(hairline|rule-line|hairline-on-red)\)$|dotted var\(--rule-strong\)/.test(v.split(": ").pop())), [], "only neutral side edges");
-  assert.doesNotMatch(css, /box-shadow:\s*inset\s+-?[1-9]/, "no inset shadow drawn as a side bar");
+  const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => !/rotate\(/.test(m[2])).map((m) => ({ sel: m[1].trim().replace(/\s+/g, " "), body: m[2] }));
+  const bars = [];
+  for (const { sel, body } of rules) {
+    if (MEANING.test(sel)) continue;
+    // one edge, physical or logical, by its shorthand or by its own width or colour
+    for (const d of body.matchAll(/(?:^|[;\s])border-((?:top|bottom|left|right|block|inline)(?:-start|-end)?)(-width|-color|-style)?\s*:\s*([^;}]+)/g)) {
+      const v = `${sel}: border-${d[1]}${d[2] || ""}: ${d[3].trim()}`;
+      if (d[2] === "-style") continue;
+      if (d[1] === "block" || d[1] === "inline") { if (!d[2] && NEUTRAL_EDGE.test(d[3].trim())) continue; }
+      if (!d[2] && NEUTRAL_EDGE.test(d[3].trim())) continue;
+      if (NOT_A_BAR.has(v)) continue;
+      bars.push(v);
+    }
+    // one edge made thicker or another colour through the four-value forms
+    for (const d of body.matchAll(/(?:^|[;\s])border-(width|color)\s*:\s*([^;}]+)/g)) {
+      const parts = d[2].trim().split(/\s+(?![^(]*\))/);
+      if (new Set(parts).size > 1) bars.push(`${sel}: border-${d[1]}: ${d[2].trim()}`);
+    }
+    // a shadow drawn inside an edge
+    for (const d of body.matchAll(/box-shadow\s*:\s*([^;}]+)/g)) if (/\binset\b[^,]*?\s-?(?:[1-9]|0?\.\d)/.test(d[1]) || /\binset\s+-?[1-9]/.test(d[1])) bars.push(`${sel}: box-shadow: ${d[1].trim()}`);
+    // a strip: a pseudo-element painted in a colour, thinner than a dot is wide
+    if (/::?(before|after)/.test(sel) && /background(-color)?\s*:\s*var\(--(accent|red|peer|craft|ws|ink|cream)[^)]*\)/.test(body) && !/border-radius\s*:\s*50%/.test(body)
+      && /(?:^|[;\s])(height|width|block-size|inline-size)\s*:\s*(?:[0-9]px|1[0-2]px|0?\.\d+rem)/.test(body)) bars.push(`${sel}: a thin painted pseudo-element`);
+    // a strip: a gradient with a hard stop, or one that changes colour, painted on an element
+    for (const d of body.matchAll(/linear-gradient\(((?:[^()]|\([^()]*\))*)\)/g)) {
+      const stops = d[1].split(/,(?![^(]*\))/).map((s) => s.trim());
+      const colours = new Set(stops.filter((s) => !/^(to |\d+deg)/.test(s)).map((s) => s.replace(/\s+[\d.]+(%|px|rem)$/, "")));
+      if (colours.size > 1 && !(sel === ".person-title > span")) bars.push(`${sel}: linear-gradient(${d[1]})`);
+    }
+  }
+  assert.deepEqual(bars, [], "no decorative bar: each of these is one");
+});
+
+test("no coloured bar in the pages themselves: no inline border or shadow, no thin painted SVG strip", () => {
+  const pages = fs.readdirSync(OUT, { recursive: true }).filter((f) => f.endsWith(".html"));
+  assert.ok(pages.length > 40, "the built pages are read");
+  const found = [];
+  for (const p of pages) {
+    const page = read(p);
+    for (const m of page.matchAll(/\sstyle="([^"]*)"/g)) if (/border|box-shadow|linear-gradient/.test(m[1])) found.push(`${p}: style="${m[1]}"`);
+    for (const m of page.matchAll(/<rect\b[^>]*>/g)) {
+      const h = Number((m[0].match(/\sheight="([\d.]+)"/) || [])[1]), w = Number((m[0].match(/\swidth="([\d.]+)"/) || [])[1]);
+      if (Math.min(h, w) <= 4 && Math.max(h, w) >= 4 * Math.min(h, w)) found.push(`${p}: ${m[0]}`);
+    }
+  }
+  assert.deepEqual(found, []);
 });
 
 test("only what can be pressed stands on a ledge: cards and photos are flat (Badger SPILL's rule)", () => {

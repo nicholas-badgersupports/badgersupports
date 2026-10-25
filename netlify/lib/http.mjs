@@ -17,7 +17,7 @@ export const htmlResponse = (status, text, headers = {}) =>
 export const wantsJson = (req) => (req.headers.get("content-type") || "").startsWith("application/json") || (req.headers.get("accept") || "").startsWith("application/json");
 
 export class HttpError extends Error {
-  constructor(status, code, extra = {}) { super(code); this.status = status; this.code = code; this.extra = extra; }
+  constructor(status, code, extra = {}, headers = {}) { super(code); this.status = status; this.code = code; this.extra = extra; this.headers = headers; }
 }
 
 /* JSON for the enhanced forms, URL-encoded for the no-JavaScript ones. Anything else, or more
@@ -73,11 +73,13 @@ export function sameOrigin(req) {
 }
 
 /* A keyed hash of the connection, so a counter can be kept without keeping an address. The key
-   is RATE_SALT; production refuses to run without one. */
+   is RATE_SALT; production refuses to run without one. The address is the platform's own (Netlify
+   gives it to the function as context.ip), never a header a request brings: a forwarding header,
+   a user agent or an email address buys nothing. With no address, every request counts as one. */
 export function connectionHash(req, context) {
   const salt = process.env.RATE_SALT || (process.env.LOCAL_DB === "pglite" ? "local-only" : null);
   if (!salt) throw new HttpError(503, "config.missing");
-  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "unknown";
+  const ip = context?.ip || "unknown";
   return crypto.createHmac("sha256", salt).update(ip).digest("hex").slice(0, 32);
 }
 
@@ -93,5 +95,6 @@ export async function rateLimit(bucket, limit, windowSeconds) {
       [bucket, start]);
     return r.n;
   });
-  if (n > limit) throw new HttpError(429, "rate.limited");
+  // says when the window ends, and nothing else
+  if (n > limit) throw new HttpError(429, "rate.limited", {}, { "retry-after": String(Math.max(1, Math.ceil((Date.parse(start) + windowSeconds * 1000 - now) / 1000))) });
 }

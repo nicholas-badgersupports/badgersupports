@@ -1,12 +1,12 @@
 /* The edit button's store: words staff changed on the site, kept in content_edits (migration 002).
- * Visitors see them once someone who may publish downloads the edits file (editsFile, below),
- * saves it as content/edits.json and publishes; nothing carries them there on its own.
- * src/shared/edits.mjs says how the build lays that file over the shipped content.
+ * A save publishes them: the router writes every saved word as the next published revision
+ * (published.mjs), and the pages are drawn with it (pages.mjs). The edits file (editsFile, below)
+ * is the same words, for a build. src/shared/edits.mjs says how either is laid over the content.
  *
  * The build's editable map (server.json) says, for every word the button can reach, what the
- * pages show now (shown) and what the shipped files say where an edit moved it (floor). A row here
- * is the newest words for one place, and it is "waiting to publish" while the pages still show
- * something else. On a local copy the rig rebuilds after each save, so nothing waits there.
+ * build's pages show (shown) and what the shipped files say where an edit moved it (floor). A row here
+ * is the newest words for one place, and it is "waiting" while the published revision (or, before
+ * any revision, the build) still shows something else.
  *
  * Every save also adds a row to content_edit_history (migration 005), in the same transaction.
  * Rows in either table are never deleted, and history rows are never changed. Putting the original
@@ -17,7 +17,9 @@
 import { many, tx } from "./db.mjs";
 import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
-import { EDITS_SCHEMA, editProblem } from "../../src/shared/edits.mjs";
+import { EDITS_SCHEMA, editProblem, valueProblem } from "../../src/shared/edits.mjs";
+import { ICONS } from "../../src/render/icons.mjs";
+import { currentRevision } from "./published.mjs";
 
 const PAGE_RE = /^pg-[a-z0-9-]{1,60}$/;
 
@@ -28,14 +30,23 @@ async function saved() {
   return new Map((await many("SELECT target, value, edited_name, edited_at FROM content_edits")).map((r) => [r.target, r]));
 }
 
-function entry(target, e, row) {
+/* What visitors are shown for a place: the published revision's words, or the build's before any revision.
+   A revision that cannot be read counts as none, so a fault says "waiting" rather than "on the site". */
+async function liveWords() {
+  let r = null;
+  try { r = await currentRevision(); } catch { r = null; }
+  return (target, e) => (r ? (r.edits[target] ?? original(e)) : e.shown);
+}
+
+function entry(target, e, row, live) {
   return {
     target,
     shown: e.shown,
     original: original(e),
     current: row ? row.value : e.shown,
-    waiting: !!row && row.value !== e.shown,
+    waiting: !!row && row.value !== live(target, e),
     ...(e.where ? { where: e.where } : {}),
+    ...(e.kind ? { kind: e.kind, ...(e.options ? { options: e.options } : {}) } : {}),
     ...(row ? { by: row.edited_name, at: new Date(row.edited_at).toISOString() } : {}),
   };
 }
@@ -45,24 +56,26 @@ function entry(target, e, row) {
 export async function editSource(pageId) {
   if (!PAGE_RE.test(String(pageId || ""))) throw new HttpError(400, "edit.page");
   const rows = await saved();
+  const live = await liveWords();
   const own = `page:${pageId}:`;
   const out = [];
   for (const [target, e] of Object.entries(editable())) {
-    if (target.startsWith(own) || target.startsWith("site:") || target.startsWith("text:")) out.push(entry(target, e, rows.get(target)));
+    if (target.startsWith(own) || target.startsWith("site:") || target.startsWith("text:")) out.push(entry(target, e, rows.get(target), live));
   }
   return out;
 }
 
 export async function editEntry(target) {
   const e = editable()[target];
-  return e ? entry(target, e, (await saved()).get(target)) : null;
+  return e ? entry(target, e, (await saved()).get(target), await liveWords()) : null;
 }
 
-/* How many saved edits the live pages do not show yet. */
+/* How many saved edits the pages do not show yet. */
 export async function waitingCount() {
   const map = editable();
+  const live = await liveWords();
   let n = 0;
-  for (const [target, r] of await saved()) if (map[target] && map[target].shown !== r.value) n++;
+  for (const [target, r] of await saved()) if (map[target] && live(target, map[target]) !== r.value) n++;
   return n;
 }
 
@@ -72,7 +85,11 @@ export async function saveEdit(who, { target, expected, value } = {}) {
   const e = editable()[String(target || "")];
   if (!e) throw new HttpError(400, "edit.target");
   if (typeof expected !== "string") throw new HttpError(400, "edit.value");
-  const problem = editProblem(target, value, original(e));
+  // a value that is not a word is checked by its kind: a link https or on this site, a photo from the library,
+  // a choice from its list (src/shared/edits.mjs, valueProblem)
+  const problem = e.kind
+    ? valueProblem(e.kind, value, { options: e.options || (e.kind === "icon" ? ICONS : []), media: new Set((serverContent().media?.items || []).map((m) => m.id)) })
+    : editProblem(target, value, original(e));
   if (problem) throw new HttpError(422, problem);
   const words = value.trim();
   return tx(async (t) => {

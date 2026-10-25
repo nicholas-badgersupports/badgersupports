@@ -13,8 +13,9 @@
  *     whether those reached Connect, a button to send any still waiting, and the latest answers
  *     to one form on request;
  *   - for anyone who may change words, how to, and how many saved changes are not on the site yet;
- *   - for anyone who may publish, the edits file: saved changes reach visitors only when it is
- *     downloaded, saved as content/edits.json and published (netlify/lib/edits.mjs).
+ *   - for anyone who may change or publish words: that changes take up to 30 minutes to show, when
+ *     the site last updated (or that the last update failed), and Refresh now (router.mjs, refresh);
+ *   - for anyone who may publish, the edits file, for a build (netlify/lib/edits.mjs).
  * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
  * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools
@@ -226,13 +227,40 @@ function readAgainSection() {
 
 /* ---------- words ---------- */
 
+/* When the pages were last drawn with new words, or why the last update did not reach them. */
+const updateLine = (me) => (me.publishError ? t("staff.edit.updateFailed")
+  : t("staff.edit.timing", { when: me.published ? when(me.published.at) : t("staff.edit.neverUpdated") }));
+
 function editSection(me) {
   const line = el("p", { textContent: me.waiting ? t(me.waiting === 1 ? "staff.edit.waiting.one" : "staff.edit.waiting.other", { n: me.waiting }) : t("staff.edit.none") });
+  const update = el("p", { textContent: updateLine(me) });
+  const refresh = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.edit.refresh") });
+  const problem = el("div", { hidden: true });
   const download = me.canPublish && el("a", { className: "btn", href: "/api/staff/edits?download=1", download: "edits.json", textContent: t("staff.edit.download") });
+  refresh.addEventListener("click", async () => {
+    if (isBusy(refresh)) return;
+    const done = busy(refresh, t("staff.edit.refreshing"));
+    const r = await call("/api/staff/refresh", { method: "POST", body: {} }).catch(offline);
+    done();
+    if (!refresh.isConnected) return;
+    if (r.status !== 200) {
+      const [box, words] = r.status === 429 ? [noteBox(t("staff.edit.refreshSoon")), t("staff.edit.refreshSoon")] : refused(r);
+      problem.replaceChildren(box);
+      problem.hidden = false;
+      say(words);
+      return;
+    }
+    problem.hidden = true;
+    update.textContent = updateLine(r.body);
+    say(r.body.publishError || r.body.purgeError ? t("staff.edit.updateFailed") : t("staff.edit.refreshed"));
+  });
   const section = el("section", { className: "staff-part" },
     el("h2", { id: "staff-edit-h", textContent: t("staff.edit.title") }),
     me.canEdit && el("p", { textContent: t("staff.edit.how") }),
     line,
+    update,
+    el("div", { className: "staff-actions" }, refresh),
+    problem,
     download && el("p", {}, download),
     download && el("p", { className: "staff-note", textContent: t("staff.edit.publish") }));
   section.setAttribute("aria-labelledby", "staff-edit-h");

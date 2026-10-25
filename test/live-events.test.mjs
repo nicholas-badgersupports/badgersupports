@@ -198,3 +198,14 @@ test("the routes refuse a query string, a page with no events and anything but G
   const unknown = await get("/api/events/pg-nowhere", {});
   assert.match(unknown.headers.get("content-type"), /^application\/json/, "the events route answers a script, so its errors are JSON");
 });
+
+test("an event that began yesterday and ends tomorrow is still coming up, between publishes and in its calendar file", async () => {
+  const days = { id: "e4", type: "craft", title: "Example weekend", short: "", date: day(-1), endDate: day(1), start: "10:00", end: "16:00", room: "SAC Caucus Room", full: false };
+  given(fakeConnect(reply([days])));
+  const all = Object.values((await eventSections("pg-craft-nights", { today: TODAY })).blocks).join("");
+  assert.match(all, /Example weekend/);
+  assert.match(all, new RegExp(`data-until="${day(1)}"`));
+  const res = await get("/api/calendar/connect-e4.ics", {});
+  assert.equal(res.status, 200);
+  assert.match(await res.text(), new RegExp(`DTEND:${day(1).replace(/-/g, "")}T`));
+});

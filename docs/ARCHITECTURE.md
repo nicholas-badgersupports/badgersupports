@@ -133,6 +133,7 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | editSource | GET | `/api/staff/edit/source` | director |
 | editSave | POST | `/api/staff/edit/save` | director |
 | editsFile | GET | `/api/staff/edits` | director |
+| refresh | POST | `/api/staff/refresh` | director |
 | staffAny | any | `/api/staff/…` | director |
 
 - **public**: anyone. A POST must come from this site, and is rate-limited. Sign-in is public because it is how a
@@ -247,7 +248,11 @@ off in Connect cannot sign in again, and so loses the answers within the hour. "
 proposed change that would make a session follow Connect within minutes.
 
 **Handing a submission to Connect** (`deliver.mjs`). After a submission is saved and the reply sent, the function
-sends due `connect.ingest` rows to Connect's Website Forms queue, signed with `PUBLIC_SITE_SERVICE_SECRET`. Opening
+sends due `connect.ingest` rows to Connect's Website Forms queue, signed with `PUBLIC_SITE_SERVICE_SECRET`. Since 25
+Oct 2026 (built locally): a worker claims its rows in one statement (`006_outbox_claims`), so two instances never
+send one row; a failed row waits 2, 4, 8, then 15 minutes at most; `runOutbox()` is what a scheduled function would
+call every 15 minutes, so a due retry happens within 30, and it reads when work is next due from a note outside the
+database, so an idle run never wakes it. The schedule is not registered (owner action, `COMMUNICATIONS.md`). Opening
 `/staff/` only reads; it sends nothing (owner ruling, 24 Oct 2026). A failure backs off and is retried by the next
 submission. **Send waiting answers now** on the staff page sends at once, and only the forms that reader may read, checked on the
 server (`staffRetry()`, `router.mjs`): every form for `forms.read:*`, otherwise the forms named. Someone else's
@@ -262,9 +267,9 @@ form rules send those to Connect only, where who may read them is set.
 
 **The edit button** (`edits.mjs`, `src/client/edit.js`). A signed-in person with `site.edit` sees **Edit text** at
 the bottom right of any page. A change is a row in `content_edits`, the latest per place, with the words it
-replaced. The shipped files stay the floor. On the local rig a save rebuilds the pages at once; deployed, a change
-waits for the next build, which lays `/api/staff/edits?download=1` (saved as `content/edits.json`) over the files.
-That download needs `site.publish`.
+replaced. The shipped files stay the floor. Since 25 Oct 2026 (built locally, not deployed) a save publishes:
+"Publishing a save", above. `/api/staff/edits?download=1` is the same words as a file a build can lay over the
+files (`content/edits.json`); it needs `site.publish`.
 
 **Trying it on a laptop.** `PORT=8901 node ops/dev-server.mjs --connect=http://127.0.0.1:8903` signs in and
 delivers through a local Connect rig (`PORT=8903 node ops/dev.mjs --seed` in the intranet folder), with that rig's
@@ -304,6 +309,147 @@ ahead, an `iat` no more than a minute ahead, a `name`, a `scopes` list and `acti
 Connect keeps reading answers here for up to an hour, and editing and publishing words for up to eight. With the
 flag on and no action in Connect, every session stops working half an hour after sign-in, so the flag goes on only
 after Connect's half is published.
+
+## Publishing a save (proposed, 25 Oct 2026; built locally in slices)
+
+The owner's ruling of 24 Oct ("The platform", `DECISIONS.md`): a permitted save publishes; visitors see it within 30
+minutes, in the HTML and in the feeds; editors get Refresh now; no deploy loop. The run of 24 Oct costed three ways
+(`OVERNIGHT-RUN-2026-10-24.md`, "The editor") and proposed the second. This is that way, built on what is here.
+
+**The published revision.** A save that passes its checks writes the word to `content_edits` and its history, as now,
+in one transaction. Then the full set of saved words becomes the next **published revision**: one numbered JSON
+document `{ n, at, edits }` in a small store outside the database (`netlify/lib/published.mjs`). Deployed, the store
+is Netlify Blobs; locally and in the tests it is memory. A save never grants `site.publish` and approves no form
+decision or bulk message. If the store cannot be written, the save is kept, the editor is told it is not on the site
+yet, and Refresh now tries again.
+
+**Pages.** A page function (`netlify/functions/pages.mjs`) answers every page address. It renders the page with the
+build's own renderer from what the build wrote (`.build/server.json`, now carrying every page's blocks and data) with
+the current revision laid over it, exactly as a build lays `content/edits.json`. With no saved words it gives the
+build's page byte for byte. It never reads the database. If the revision or the render fails, it answers the
+build's own file, held one minute, so a fault is never cached for long.
+
+**Every cache, at most 30 minutes.**
+
+| Layer | Holds | Bound |
+|---|---|---|
+| The page function's copy of the revision | one JSON document | 60 s |
+| Netlify's CDN, page HTML | `Netlify-CDN-Cache-Control: public, durable, s-maxage=1500, stale-while-revalidate=300` | 30 min |
+| The browser, page HTML | `Cache-Control: public, max-age=0, must-revalidate` | 0 |
+| `/api/events/<page>` | five minutes, ten more while it refetches; the browser one | 16 min |
+| `/api/calendar/<event>.ics` | the same | 16 min |
+| Private and sign-in answers (`/api/staff/*`, `/api/auth/*`, forms) | `no-store` | never cached |
+
+The cache key ignores every query string but `topic` and `return` (`Netlify-Vary: query=topic|return`) and no
+cookie or header, so a visitor cannot ask past the cache. Each page is tagged `page` and `page:<id>`.
+
+**Refresh now** (`POST /api/staff/refresh`): for a signed-in person holding `site.edit` or `site.publish`, checked on
+the server; JSON only and same-origin, so a page elsewhere cannot send it; at most six an hour per person and one a
+minute for the site. It publishes the revision again if the last write failed, drops the held Connect list, and
+purges the tags `page` and `events`. Deployed, the purge is Netlify's (`purgeCache` in `@netlify/functions`); locally
+it is recorded, nothing more.
+
+**What the editor sees.** The staff page says changes may take up to 30 minutes, and when the site last updated
+(the revision's time), or that the last update failed and why. New text keys; the wording is a proposal.
+
+**The feeds.** `/api/events` and `/api/calendar` render with the same revision's words.
+
+**Every field.** A saved value need not be a word: links, library photos, icons, layout choices, on/off, numbers,
+dates and the video are targets too, each checked by its kind (`src/shared/edits.mjs`, `valueProblem`) on save and
+again when laid over a page. What stays out, and why: `research/EDITABLE-INVENTORY-2026-10-25.md`.
+
+**Cost, modelled.** No database read on a page view. A page renders on a CDN miss: at most one per page per 25
+minutes from the durable cache, about 58 × 58 = 3,400 a day, under 5 credits a month at 50 ms and 1 GB. Blobs is
+listed in every plan; whether its reads draw credits is **not verified** (Netlify's docs could not be read from the
+cloud session). After a deploy, tagged pages may stay up to 30 minutes old, which is inside the bound.
+
+**What it needs from the owner.** Two packages, exact-pinned (`@netlify/blobs`, `@netlify/functions`), the page
+function's lines in `netlify.toml`, and one deploy. Until then a deployed save behaves as today: kept, not
+published, and said so.
+
+## Crawlers and abuse (25 Oct 2026, cloud run §6)
+
+**What limits each public route** (`netlify/lib/http.mjs`, `router.mjs`):
+
+| Route | Before any database work | Budget |
+|---|---|---|
+| any | a path and method that match a route, else 404/405; a POST from another site refused | — |
+| form send | body ≤ 64 KiB, JSON or URL-encoded | 40 an hour per form per address (was 10: a class behind one campus address was refused from the 11th) |
+| file upload | type and declared length checked first; reading stops at 3 MB | 20 an hour per form per address |
+| form state | no query string | none; the CDN holds it a minute, so a burst does not wake the database |
+| events, calendar | no query string; never the database | CDN five minutes |
+| mood | body checked | 30 an hour per address |
+| sign-in start and return | — | 30 an hour per address, its own budget |
+| pages | the page function never reads the database; one cache key per page | CDN 30 minutes |
+
+**Whose address.** Only the platform's: Netlify gives the function `context.ip`. A forwarding header, a user agent,
+a `From` address or an email in a form buys nothing; with no address, all requests count as one. Counters keep a
+keyed hash of the address, never the address. A refusal is 429 with `Retry-After` and `{"ok":false,"error":"rate.limited"}`.
+
+**Crawlers.** `robots.txt` asks for a working email in the HTTP `From` header and points at `/crawlers/`, which says
+the same and that the address is taken as given, never as proof. It disallows only `/staff/` and `/api/`, and
+names no other private address; the sitemap lists every indexable page. robots.txt is a request, not access
+control (RFC 9309 §3): every private answer is refused on the server.
+
+**Not collected: the `From` contact.** Recording it would mean writing something for page requests, which today
+write nothing and wake no database, or reading Netlify's request logs, whose export is not available to this
+project as far as could be read (unverified: it needs the Netlify UI). So the policy asks, and nothing records.
+
+**Netlify's own rate limiting, proposed, not enabled.** Netlify offers code-based rate limits on functions (plan
+limits apply; unverified for this team). The smallest useful rule, for the owner to add to `netlify/functions/api.mjs`'s
+`config` after reading the plan's entitlement (the property names are as remembered from Netlify's docs, which
+could not be read from the cloud session: check them first):
+
+```js
+rateLimit: { windowLimit: 120, windowSize: 60, aggregateBy: ["ip", "domain"] },
+```
+
+Checklist: read the plan's rate-limit entitlement in the Netlify UI; add the line; deploy; read the deploy's rule
+validation; send a short burst from one address and see 429; watch a week of logs for real visitors refused.
+Rollback: remove the line and deploy. The site's own limits above stay either way.
+
+## What Netlify already includes (25 Oct 2026, cloud run §8; a map, nothing switched on)
+
+Read from this repository and from the prices already recorded under "Cost" (`How credits work`). Netlify's
+documentation and the project's UI could not be read from the cloud session, so anything that needs them says so.
+**Used** = in this repository's configuration or code; **built locally** = code here, not deployed; **available** =
+the platform offers it and nothing here uses it; **unknown** = needs the Netlify UI.
+
+| Capability | State | Evidence | Cost, as recorded |
+|---|---|---|---|
+| Search and filtering | used: the resources page filters in the browser; no site-wide search | `src/client/resources.js` | none |
+| Static search over the pages | available, not built: an index written at build time | — | none beyond bandwidth |
+| Events and calendar files | used: from Connect at build, refreshed between publishes | `ops/connect-feed.mjs`, `netlify/lib/live-events.mjs` | functions, CDN-held |
+| Waitlists, sign-ups | Connect's, not this site's | `DECISIONS.md`, one owner per fact | — |
+| Staff self-service | used: sign-in through Connect, the staff page, the editor | `netlify/lib/staff.mjs`, `edits.mjs` | database while staff use it |
+| Forms | used: the custom intake, authoritative | `netlify/lib/intake.mjs` | database wake per form page and send |
+| Netlify Forms | available, not used; a pilot is proposed below | — | form submissions 0 credits; the posting function's time |
+| Publishing | built locally: a save is the published revision | "Publishing a save" | Blobs (unknown), function on a CDN miss |
+| Approvals | Connect's (decisions, bulk mail) | `COMMUNICATIONS.md` | — |
+| Web Analytics | reported on by the owner (24 Oct); scope and billing **unknown**, needs the UI | `WORK.md` item 22 | unknown |
+| Rate limits, firewall | available, not enabled; proposed rule and checklist under "Crawlers and abuse"; plan entitlement **unknown** | — | unknown |
+| Deploy previews | available; not used by the laptop publish | `netlify.toml` | 0 credits |
+| Rollback | available in the UI | — | 0 credits |
+| Headers and cache rules | used: `_headers`, `_redirects`, `Netlify-CDN-Cache-Control`, cache tags | `ops/build.mjs`, `netlify/lib/pages.mjs` | none |
+| Secret scanning | Netlify's runs in Netlify builds; this site builds on the laptop through the CLI, so whether it runs is **unknown**; this run searched the tree and history by hand (run log §7) | — | none |
+| Edge Functions | available, not used: no request needs filtering before the CDN | — | metered |
+| Identity | not used; staff identity is Connect's (owner). Whether Netlify Identity is still offered is **unknown** here | `DECISIONS.md` §1 | — |
+| Blobs | built locally as the revision store and the outbox's note | `netlify/lib/published.mjs` | **unknown** whether reads draw credits |
+| Scheduled functions | built locally, not registered: the outbox runner | `netlify/lib/deliver.mjs`, `COMMUNICATIONS.md` | function time; database only when work is due |
+| Observability | used read-only by an earlier run (requests, function runs) | `ARCHITECTURE.md`, "Cost" | none |
+| Extensions | none installed; one local build plugin, the migrations guard | `netlify.toml` | — |
+
+**Netlify Forms: a proposal at most.** The custom intake stays the one record. If the owner wants a second, lower
+risk trail, the smallest pilot is a metadata-only envelope for the anonymous programming feedback: the outbox
+(not the browser) posts `{ ref, form, receivedAt }` to a fixed Netlify form, with no answers, and Netlify's own
+notifications off. It records that a submission arrived, not what it said, so it cannot restore an answer; and it
+shares Netlify's failures. Recommended: not now.
+
+**Lighthouse, local only** (mobile, the local rig, photos as grey stand-ins, no compression, so speed figures are
+indicative): accessibility 99–100, best practices 100, SEO 69 on every page only because the prototype is `noindex`
+on purpose; performance 72 (home), 85 (resources), 92 (craft nights), 94 (workshop request). The audits name one
+shared stylesheet blocking first paint (73–88 KB unused on a page) and, on the home page, 670 ms of blocking script.
+Findings for the owner's design review, not changed here.
 
 ## The database
 
@@ -352,6 +498,12 @@ idempotent, and `bss_migrations` records which ran. `001_intake`:
 |---|---|
 | `uploads` | one PDF: its id, form, question, name, size (1 byte to 3 MB), SHA-256 and bytes; the submission that claimed it, when, and when Connect confirmed it |
 
+`006_outbox_claims` (built 25 Oct 2026, cloud run; applied by the next deploy):
+
+| Table | Holds |
+|---|---|
+| `outbox` | adds `claim_until` and `claim_token`: the worker sending a row, and until when; another worker skips it (`netlify/lib/deliver.mjs`, `claim()`) |
+
 `004_session_check` (built 24 Oct 2026):
 
 | Table | Holds |
@@ -374,9 +526,9 @@ SQL, stops the deploy before it publishes, and the site online stays as it was. 
 | Piece | State | Waits on |
 |---|---|---|
 | Connect's half | built in the intranet working tree, uncommitted: `publicsite.mjs`, migration `032_public_site`, `public-sso.html` | the owner running Connect's `_xfer/Public website setup` files: 1 saves the 17 files, 2 sets the keys and the one allowed return (`badgersupports-public.netlify.app`) in both projects, 3 publishes |
-| Receipts and the Sheets backup | `mail.receipt` and `sheets.backup` rows are written; nothing sends them. The backup must skip `confidential` columns | a verified sender, the Sheets backup design (`COMMUNICATIONS.md`) |
+| Receipts and the Sheets backup | built locally 25 Oct 2026 (`deliver.mjs`, `backup.mjs`), tested against a fake Connect and a fake Sheets API; off until set up | Connect's `publicReceipt` (proposed), `RECEIPT_SENDER`, the workbook and its service account, the scheduled function (owner actions) |
 | Application files reaching Connect | stored and claimed here; `delivered_at` is never set | Connect fetching them by id (Exchange `APPLICATION-FILES-HANDOVER`) |
-| Publishing edits | saved edits wait in the database; a build lays them over the files | a deployed site with a database (file 6); who may publish is `site.publish`, set by a super admin |
+| Publishing edits | built locally 25 Oct 2026: a save is the published revision, drawn by the page function ("Publishing a save") | the two packages, the function's lines in `netlify.toml` and a deploy (owner actions) |
 | Opening and closing forms from Connect | the switch row works; nothing in Connect writes it | `PUBLIC-SITE-FORMS` |
 | Wall, team | samples in the prototype; a production build shows neither | `PUBLIC-RESOURCES-AND-WALL`, `PUBLIC-TEAM-PROFILES-2026-10-20` |
 | Recent events | a production build lists none: Connect's public export holds upcoming events only. The site reads a `recent` list when Connect sends one (`ops/connect-feed.mjs`) | Exchange `PUBLIC-EVENTS-RECENT-2026-10-23`; `../WORK.md` item 30 |
@@ -408,6 +560,9 @@ Each photo is encoded at build time and served from this site (`DESIGN.md`, "Pho
 | `PUBLIC_SITE_SERVICE_KEY_ID`, `PUBLIC_SITE_SERVICE_SECRET` | signing calls to Connect; the pair Connect lists in its `PUBLIC_SITE_SERVICE_KEYS` | as above |
 | `PUBLIC_SSO_SECRET` | checking Connect's sign-in note; the same value Connect signs with | as above |
 | `CONNECT_SESSION_STATUS` | `on` once Connect answers `publicSsoStatus` ("Staying signed in", a proposed change) | reading answers lasts an hour from signing in |
+| `RECEIPT_SENDER` | the verified sender of receipts, an `@badgersupports.org` address; set by the owner once Connect's mail path accepts it (`publicReceipt`, proposed) | receipts stay held as `sender-unverified` |
+| `BACKUP_SPREADSHEET_ID`, `GOOGLE_SERVICE_ACCOUNT` | the directors' backup workbook and the service account it is shared with (`netlify/lib/backup.mjs`) | backup rows wait |
+| `BACKUP_CONFIDENTIAL` | `include` puts confidential answers in the workbook | they are left out (the default, a question for the owner) |
 | `LOCAL_DB`, `LOCAL_DB_DIR` | the local rig and tests only | — |
 
 None has been set: the project was created empty on 20 Oct 2026. Set values never go in a file here.

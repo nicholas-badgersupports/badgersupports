@@ -847,7 +847,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .evcard-date .dow { font-size: .875rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .evcard-date .dom { font: 800 2.15rem/1 var(--font-display); padding-top: .3rem; color: var(--accent); }
 .evcard-date .mon { font-size: .875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-.evcard-time { margin-top: .55rem; padding-top: .55rem; border-top: 2px solid var(--rule-strong); font-size: .875rem; font-weight: 700; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.evcard-time { margin-top: .55rem; padding-top: .55rem; border-top: var(--rule-line); font-size: .875rem; font-weight: 700; line-height: 1.3; font-variant-numeric: tabular-nums; }
 .evcard .today-tag { margin-top: .5rem; }
 .evcard-photo { background: var(--paper-deep); }
 .evcard-photo picture { height: 100%; }
@@ -856,6 +856,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .evcard-body p { margin: 0; }
 .evcard-body h3 { font: 700 1.1875rem/1.3 var(--font-body); }
 .evcard-tag { color: var(--muted); }
+/* an event over several days: its first and last day under its name */
+.evcard-days { font-size: var(--fs-small); font-weight: 700; }
 .evcard-where { display: flex; gap: .45rem; align-items: baseline; font-size: var(--fs-small); }
 .evcard-where .ic { width: 1rem; height: 1rem; flex: none; translate: 0 .15rem; color: var(--accent); }
 .evcard-note { font-size: var(--fs-small); color: var(--muted); }
@@ -1159,7 +1161,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-table:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 .staff-table table { border-collapse: collapse; min-width: 100%; font-size: var(--fs-small); }
 .staff-table caption { text-align: left; padding: var(--s2) var(--s3); color: var(--muted); }
-.staff-table th, .staff-table td { padding: var(--s2) var(--s3); border-top: 1px solid var(--line); text-align: left; vertical-align: top; max-width: 28rem; }
+.staff-table th, .staff-table td { padding: var(--s2) var(--s3); border-top: var(--hairline); text-align: left; vertical-align: top; max-width: 28rem; }
 .staff-table thead th { background: var(--cream-soft); white-space: nowrap; }
 
 /* the edit button (edit.js): a bar in the corner, and the words under it outlined while it is on */

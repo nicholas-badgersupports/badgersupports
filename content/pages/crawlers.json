@@ -1,0 +1,19 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-crawlers",
+  "path": "/crawlers/",
+  "title": "Crawlers — Badger Supports",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-crawlers",
+      "type": "text",
+      "heading": "h1",
+      "title": "Crawlers and Automated Tools",
+      "body": [
+        "Crawlers may read the public pages. Please follow robots.txt, keep to a few requests a minute, and send a working email address in the HTTP From header of each request, so we can reach you if something goes wrong.",
+        "We read that address as given. It is never taken as proof of who is asking, and it changes no limit."
+      ]
+    }
+  ]
+}

@@ -918,6 +918,16 @@
       "text": "Nothing is scheduled yet.",
       "where": "Shown in place of event cards when none are coming up."
     },
+    "events.days": {
+      "group": "events",
+      "text": "{{from}} – {{to}}",
+      "where": "The first and last day of an event that runs over several days, on its card and in the timetable. {{from}} and {{to}} are each a short day, month and date."
+    },
+    "events.daysLong": {
+      "group": "events",
+      "text": "{{from}} to {{to}}",
+      "where": "The same days in full, read by screen readers. {{from}} and {{to}} are each a weekday, month and date."
+    },
     "calendar.gone.title": {
       "group": "events",
       "text": "That event is not coming up any more",
@@ -1183,6 +1193,141 @@
       "text": "{{n}} saved changes are not on the site yet.",
       "where": "Staff page, when several changes wait."
     },
+    "staff.edit.timing": {
+      "group": "staff",
+      "text": "Changes can take up to 30 minutes to show. Last update: {{when}}.",
+      "where": "Staff page, words on the site, for anyone who may change or publish words. {{when}} is the date and time the pages last took new words."
+    },
+    "staff.edit.neverUpdated": {
+      "group": "staff",
+      "text": "none yet",
+      "where": "Staff page: stands for {{when}} in the line above before any change has been published."
+    },
+    "staff.edit.updateFailed": {
+      "group": "staff",
+      "text": "The last update did not reach the site. Saved words are kept; Refresh Now tries again.",
+      "where": "Staff page, in place of the line above when the newest words could not be published; also said by screen readers after Refresh Now."
+    },
+    "staff.edit.refresh": {
+      "group": "staff",
+      "text": "Refresh Now",
+      "where": "Staff page button: shows the newest words and events on every page at once, instead of within 30 minutes."
+    },
+    "staff.edit.refreshing": {
+      "group": "staff",
+      "text": "Refreshing…",
+      "where": "The Refresh Now button while it works."
+    },
+    "staff.edit.refreshed": {
+      "group": "staff",
+      "text": "Refreshed. Every page shows the newest words and events.",
+      "where": "Read by screen readers after Refresh Now worked."
+    },
+    "staff.edit.refreshSoon": {
+      "group": "staff",
+      "text": "The site was refreshed a moment ago. Try again in a minute.",
+      "where": "Staff page, under Refresh Now, when it was pressed too often."
+    },
+    "backup.start.title": {
+      "group": "staff",
+      "text": "Start Here",
+      "where": "Backup workbook: the first tab's name and its title."
+    },
+    "backup.start.what": {
+      "group": "staff",
+      "text": "A copy of every answer sent through the website's forms. Answers are worked through in Connect, not here.",
+      "where": "Backup workbook, Start Here: what the file is."
+    },
+    "backup.start.who": {
+      "group": "staff",
+      "text": "Share this file with directors by name, never with anyone who has the link.",
+      "where": "Backup workbook, Start Here: who may open it."
+    },
+    "backup.start.confidential": {
+      "group": "staff",
+      "text": "Answers marked confidential are not in this file.",
+      "where": "Backup workbook, Start Here, while confidential answers are left out."
+    },
+    "backup.start.updated": {
+      "group": "staff",
+      "text": "Last written: {{when}}",
+      "where": "Backup workbook, Start Here. {{when}} is the date and time, in UTC."
+    },
+    "backup.start.forms": {
+      "group": "staff",
+      "text": "One tab for each form:",
+      "where": "Backup workbook, Start Here: over the list of forms."
+    },
+    "backup.dashboard.title": {
+      "group": "staff",
+      "text": "Dashboard",
+      "where": "Backup workbook: the second tab's name."
+    },
+    "backup.col.form": {
+      "group": "staff",
+      "text": "Form",
+      "where": "Backup workbook, Dashboard column."
+    },
+    "backup.col.state": {
+      "group": "staff",
+      "text": "Open or Closed",
+      "where": "Backup workbook, Dashboard column."
+    },
+    "backup.col.total": {
+      "group": "staff",
+      "text": "Answers",
+      "where": "Backup workbook, Dashboard column: answers in all."
+    },
+    "backup.col.week": {
+      "group": "staff",
+      "text": "Last 7 Days",
+      "where": "Backup workbook, Dashboard column."
+    },
+    "backup.col.month": {
+      "group": "staff",
+      "text": "Last 30 Days",
+      "where": "Backup workbook, Dashboard column."
+    },
+    "backup.col.latest": {
+      "group": "staff",
+      "text": "Latest",
+      "where": "Backup workbook, Dashboard column: when the newest answer came."
+    },
+    "backup.col.waiting": {
+      "group": "staff",
+      "text": "Waiting for Connect",
+      "where": "Backup workbook, Dashboard column."
+    },
+    "backup.col.failed": {
+      "group": "staff",
+      "text": "Not Reaching Connect",
+      "where": "Backup workbook, Dashboard column."
+    },
+    "backup.col.ref": {
+      "group": "staff",
+      "text": "Reference",
+      "where": "Backup workbook, each form's tab: the first column."
+    },
+    "backup.col.received": {
+      "group": "staff",
+      "text": "Received",
+      "where": "Backup workbook, each form's tab: the second column, in UTC."
+    },
+    "backup.col.version": {
+      "group": "staff",
+      "text": "Version",
+      "where": "Backup workbook, each form's tab: the form's version the answer was sent under."
+    },
+    "backup.open": {
+      "group": "staff",
+      "text": "Open",
+      "where": "Backup workbook, Dashboard: a form taking answers."
+    },
+    "backup.closed": {
+      "group": "staff",
+      "text": "Closed",
+      "where": "Backup workbook, Dashboard: a form not taking answers."
+    },
     "staff.edit.download": {
       "group": "staff",
       "text": "Download the Edits File",
@@ -1337,6 +1482,46 @@
       "group": "staff",
       "text": "These words cannot be saved as written. Links and web addresses are changed in Connect, not here.",
       "where": "Edit box, when the words are not allowed."
+    },
+    "edit.error.link": {
+      "group": "staff",
+      "text": "A link is a page of this site (it starts with /), or a web address that starts with https://.",
+      "where": "Edit box, when a link cannot be saved as written."
+    },
+    "edit.error.media": {
+      "group": "staff",
+      "text": "Give the id of a photo in the library, such as m-hub-sea.",
+      "where": "Edit box, when a photo cannot be saved as written."
+    },
+    "edit.error.choice": {
+      "group": "staff",
+      "text": "Choose one of the options in the list.",
+      "where": "Edit box, when a choice is not one of its options."
+    },
+    "edit.error.number": {
+      "group": "staff",
+      "text": "Give a whole number from 0 to 99.",
+      "where": "Edit box, when a number cannot be saved as written."
+    },
+    "edit.error.date": {
+      "group": "staff",
+      "text": "Give a date such as 2026-11-01.",
+      "where": "Edit box, when a date cannot be saved as written."
+    },
+    "edit.error.video": {
+      "group": "staff",
+      "text": "A video is the address of an Instagram post or reel.",
+      "where": "Edit box, when a video address cannot be saved as written."
+    },
+    "edit.on": {
+      "group": "staff",
+      "text": "On",
+      "where": "Edit box option for a section switched on."
+    },
+    "edit.off": {
+      "group": "staff",
+      "text": "Off",
+      "where": "Edit box option for a section switched off."
     },
     "edit.error.target": {
       "group": "staff",

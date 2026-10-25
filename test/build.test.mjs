@@ -112,3 +112,34 @@ test("a production build refuses anything still left on the live site", () => {
   const moved = [{ live: "/b", path: "/c/", disposition: "replace" }];
   assert.match(cutoverProblems({ routes: moved, pages: [], builtPaths: [], pendingLinks: [] })[0], / \/b \(replace\) has no page/, "a redirect still waiting for its page");
 });
+
+/* What browsers are sent (X2): parsed clean, on the list, and every leak kind caught when planted. */
+test("delivered files: no notes and no maps, only what is on the list; a planted note, map or stray file is caught", async () => {
+  const { deliveredProblems } = await import("../ops/build.mjs");
+  assert.deepEqual(await deliveredProblems(OUT, { serverDir: path.join(OUT, "_server") }), [], "the build as written is clean");
+  const js = fs.readdirSync(path.join(OUT, "assets/js"))[0];
+  const forms = fs.readFileSync(path.join(OUT, "assets/js", js, "forms.mjs"), "utf8");
+  assert.match(forms, /export /, "a module keeps its exports");
+  assert.match(fs.readFileSync(path.join(OUT, "assets/js", js, "staff.js"), "utf8"), /from"\.\/text\.js"|from "\.\/text\.js"/, "and its relative imports");
+  assert.ok(!fs.readFileSync(path.join(ROOT, "src/shared/forms.mjs"), "utf8").startsWith(forms.slice(0, 40)), "(the source still has its notes)");
+
+  const seed = async (name, plant) => {
+    const dir = path.join(ROOT, "local", `test-leak-${name}`);
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.cpSync(OUT, dir, { recursive: true, filter: (src) => !src.includes(`${path.sep}_server`) });
+    plant(dir);
+    return deliveredProblems(dir);
+  };
+  const css = fs.readdirSync(path.join(OUT, "assets/css"))[0];
+  const planted = {
+    "css comment": await seed("css", (d) => fs.appendFileSync(path.join(d, "assets/css", css), "/* internal: remove before launch */")),
+    "note in a module": await seed("mjs", (d) => fs.appendFileSync(path.join(d, "assets/js", js, "forms.mjs"), "\n// TODO ask Nicholas about this\n")),
+    "source map": await seed("map", (d) => { fs.writeFileSync(path.join(d, "assets/js", js, "site.js.map"), "{}"); fs.appendFileSync(path.join(d, "assets/js", js, "site.js"), "\n//# sourceMappingURL=site.js.map\n"); }),
+    "stray file": await seed("stray", (d) => fs.writeFileSync(path.join(d, "NOTES.md"), "internal")),
+    "html comment": await seed("html", (d) => fs.appendFileSync(path.join(d, "index.html"), "<!-- built by hand -->")),
+  };
+  for (const [kind, problems] of Object.entries(planted)) assert.ok(problems.length > 0, `${kind} is caught`);
+  assert.ok(planted["source map"].some((p) => /site\.js\.map: not on the list/.test(p)) && planted["source map"].some((p) => /names a source map/.test(p)));
+  // a string that only looks like a comment is not one
+  assert.deepEqual(await seed("string", (d) => fs.appendFileSync(path.join(d, "assets/js", js, "text.js"), '\nexport const a = "/* not a comment */ // nor this";\n')), []);
+});

@@ -224,10 +224,67 @@ test("posts from another site are refused; one connection is rate-limited", asyn
   const cross = await handle(post("/api/forms/workshop-request/submit", workshopAnswers(), { origin: "https://elsewhere.example" }), ip());
   assert.equal(cross.status, 403);
   let last;
-  for (let i = 0; i < 11; i++) last = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: `k-rate-${String(i).padStart(4, "0")}` })), ip(9));
+  for (let i = 0; i < 41; i++) last = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: `k-rate-${String(i).padStart(4, "0")}`, group_notes: `Made-up ${i}.` })), ip(9));
   assert.equal(last.status, 429);
   const other = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-rate-other" })), ip(10));
   assert.equal(other.status, 200, "another connection is unaffected");
+});
+
+/* ------------------------------------------------------------------ crawlers and abuse (X3), fixture */
+
+const send = (n, { ctx = ip(9), headers = {} } = {}) => handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: `k-x3-${String(n).padStart(4, "0")}`, group_notes: `Made-up request ${n}.` }), { headers }), ctx);
+
+test("abuse: a forged forwarding header buys no fresh limit; only the platform's own address counts", async () => {
+  await freshServer();
+  let last;
+  // no address from the platform: every request counts as one, whatever it claims to be
+  for (let i = 0; i < 41; i++) last = await send(i, { ctx: {}, headers: { "x-nf-client-connection-ip": `203.0.113.${i}`, "x-forwarded-for": `198.51.100.${i}`, "user-agent": `Made-up crawler ${i}`, from: `bot${i}@example.org` } });
+  assert.equal(last.status, 429, "41 sends with 41 made-up addresses are one connection's 41");
+});
+
+test("abuse: a class behind one campus address can all send the form in an hour; a burst past that is refused", async () => {
+  await freshServer();
+  for (let i = 0; i < 30; i++) assert.equal((await send(i)).status, 200, `classmate ${i + 1}`);
+  for (let i = 30; i < 40; i++) await send(i);
+  const refused = await send(40);
+  assert.equal(refused.status, 429);
+  assert.equal((await send(41, { ctx: ip(10) })).status, 200, "another address is unaffected");
+});
+
+test("abuse: a refusal says when to try again and nothing more, with or without JavaScript", async () => {
+  await freshServer();
+  for (let i = 0; i < 40; i++) await send(i);
+  const res = await send(40);
+  assert.equal(res.status, 429);
+  const wait = Number(res.headers.get("retry-after"));
+  assert.ok(Number.isInteger(wait) && wait >= 1 && wait <= 3600, `retry-after ${res.headers.get("retry-after")}`);
+  assert.deepEqual(await res.json(), { ok: false, error: "rate.limited" });
+  const page = await handle(post("/api/forms/workshop-request/submit", workshopAnswers({ _key: "k-x3-page" }), { json: false }), ip(9));
+  assert.equal(page.status, 429);
+  assert.ok(Number(page.headers.get("retry-after")) >= 1);
+});
+
+test("abuse: a form's open-or-closed state is held by the CDN for a minute, and no query string asks past it", async () => {
+  await freshServer();
+  const res = await handle(new Request(`${ORIGIN}/api/forms/workshop-request/state`, { headers: { accept: "application/json" } }), ip());
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("netlify-cdn-cache-control"), "public, s-maxage=60");
+  assert.equal(res.headers.get("cache-control"), "no-store", "the browser asks each time; the CDN answers");
+  const busted = await handle(new Request(`${ORIGIN}/api/forms/workshop-request/state?t=123`, { headers: { accept: "application/json" } }), ip());
+  assert.deepEqual([busted.status, (await busted.json()).error], [400, "query.refused"]);
+});
+
+test("abuse: what must keep working does — a script with no Origin, the sign-in return, other forms", async () => {
+  await freshServer();
+  for (let i = 0; i < 41; i++) await send(i);
+  // a signed service call has no browser Origin; it meets the limits and the checks like anyone, and is not refused for it
+  const noOrigin = await handle(new Request(`${ORIGIN}/api/mood`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify({ mood: "finding_calm" }) }), ip(9));
+  assert.equal(noOrigin.status, 200);
+  // the sign-in return has its own budget, untouched by the form's
+  const back = await handle(new Request(`${ORIGIN}/api/auth/callback?state=x&code=y`, { headers: { accept: "text/html" } }), ip(9));
+  assert.notEqual(back.status, 429);
+  const feedback = await handle(post("/api/forms/programming-feedback/submit", { _form: "programming-feedback", _version: "1" }), ip(9));
+  assert.notEqual(feedback.status, 429, "another form's budget is its own");
 });
 
 test("every route declares a tier, and every staff route refuses while sign-in does not exist", async () => {

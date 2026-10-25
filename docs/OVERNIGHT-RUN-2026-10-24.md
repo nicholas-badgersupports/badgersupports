@@ -744,3 +744,379 @@ publishes. Queue order: 35, 30, 34 + 15, 24, 18, 38, 37, 39.
 | R.26 | `--no-media` for `ops/check.mjs` and `ops/dev-server.mjs`: no image variants, grey stand-ins, the originals test skipped | the photos are only on the laptop, and a cloud session must still run every gate | remove the flag from both files and the skip in `test/media-originals.test.mjs` |
 | R.27 | The rest of the Queue goes to a cloud session that hands back patches, in the order above. Owner items and Connect's are skipped | the owner, 25 Oct; SPILL's route; brief: "No … commit" | ignore the artifact and carry on here |
 | R.28 | The 19 Oct launch files are archived and `README.md` is rewritten | folder rule: "Archive, never delete" | the 25 Oct row in `Admin/_archive/INDEX.md` |
+
+## Cloud run, 25 Oct 2026
+
+A cloud session, started from a clean clone of GitHub `main` after the owner published (`ae80634`, "Public website:
+publish", tree `73e6d75`, as the laptop expected). It works the Queue in the order R.27 set: 35, 30, 34 + 15, 24, 18,
+38, 37, 39. It commits, pushes and deploys nothing: each step is a patch in the owner's private artifact, which the
+laptop applies and checks again with the photos. Every result below is **local** or **fixture**; none is deployed or
+live.
+
+**Setup.** Node 22.22.0, npm 10.9.4. `npm ci` refused the lock file ("Missing: @electric-sql/pglite@0.2.17 from lock
+file"), so the packages came from `npm install --no-save --no-package-lock`; neither package file changed. Chromium:
+Playwright 1.62.1 wants browser build 1234, and its download was refused here, so the browser gates ran on the build
+already in the container (1243, Chromium 153), through a folder of links outside the repository. Those runs are
+evidence from a near build, not the pinned one; the laptop runs the pinned one.
+
+**One baseline fault, in this repository's code.** The tests gate printed "0 passed, 0 failed" while 166 passed. Off a
+terminal, `node --test` writes TAP (`# pass 166`), and `ops/check.mjs` read only the spec reporter's `ℹ pass 166`.
+The verdict was never wrong (it reads the exit code), only the count. The gate now reads both forms, and names a
+failing test from either.
+
+### 1. No decorative coloured bar on any edge (queue 35)
+
+**What was wrong.** `.form-head` drew an 8 px accent strip across the top of the white form card
+(`src/styles/forms.css:12`), the bar the owner ruled out on 24 Oct. The old check in `test/pages.test.mjs` looked at
+left and right edges only, and at inset shadows starting with a non-zero number, so it could not see a top bar, a
+bar drawn by `border-width`, a coloured `border-*-color`, a painted pseudo-element, a hard-stop gradient or an SVG
+strip.
+
+**The search.** Every stylesheet (`src/styles/`, block sheets included) for each edge, physical and logical, each
+longhand, inset shadows, pseudo-elements, gradients; every renderer and SVG for inline styles and `<rect>` strips.
+One decorative bar: `.form-head`. Two neutral rules were written as literals rather than tokens (`.evcard-time`, the
+staff table's cells); they are the same colour and width as `--rule-line` and `--hairline` and now use them, so
+nothing changes on screen.
+
+**The test, before the fix** (`node --test --test-name-pattern="coloured bar" test/pages.test.mjs`, fixture build):
+
+```
+not ok 1 - no coloured bar on any edge of anything: an edge is the neutral rule, a route's dotted line, or none
+    0: '.evcard-time: border-top: 2px solid var(--rule-strong)'
+    1: '.staff-table th, .staff-table td: border-top: 1px solid var(--line)'
+    2: '.form-head: border-top: 8px solid var(--accent)'
+# pass 1
+# fail 1
+```
+
+Seeded, one of each kind, then removed: a 6 px `border-inline-start`, `border-width: 8px 2px 2px`, `box-shadow: inset 0
+6px 0`, a 6 px painted `::before`, a hard-stop `linear-gradient`, `border-block-start-color`, and a 24×2 `<rect>` in an
+icon. The check named all seven.
+
+**What changed.** `.form-head` keeps its 2 px `--line` on every edge, nothing added. `DESIGN.md` says the rule for
+every edge. **After:** `test/pages.test.mjs` 19 of 19.
+
+**Screenshots** (local, `--no-media` grey stand-ins, fictional content): the workshop request, programming feedback
+and staff application preview, at 1280, 390 and 320 px, before and after (`cloud/shots/01-*` in the artifact). No
+console errors, nothing scrolls sideways.
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.29 | `ops/check.mjs` counts tests from TAP as well as the spec reporter | the gate printed 0 of 166; the brief asks for the actual summary lines | restore the `ℹ`-only pattern |
+| R.30 | The browser gates ran on the container's Chromium 153 (build 1243) for Playwright 1.62.1, which pins 151 (build 1234); its download was refused | the brief: a gate that cannot run is named, never passed; a near build is evidence, labelled as such | the laptop's `node ops/check.mjs --browser` is the gate |
+| R.31 | Kept, not a bar: the page you are on (`.nav a[aria-current]`, an inset 3 px red line); the selected workshop tab (a full fill); the phone tab's bottom edge (its own outline in its own fill colour); the stub of a room ticket (a filled block holding an icon and words); the Get involved heading band (a full-width section); the highlighter behind a person's title (behind words, on no edge); the mood chart's bars (a chart); the paper textures (flat veils) | owner, 24 Oct: "Colour that means something stays: focus, selected, status and charts"; the brief: "a full-width heading band is a section, not a bar" | add the selector to the check and make it neutral |
+| R.32 | The two literal neutral rules use the tokens they equal | the check accepts tokens, so a literal of the same value would need its own exception | — |
+
+### 2. An event over several days (queue 30)
+
+**What was wrong.** Connect sends each event's `endDate` (run log §6). `mapEvents()` dropped it, and the event model
+knew one day per dated event, so a weekend event showed on its first day only, its card and calendar file ended on
+that day, and from its second day it sat under "Recent" while still running. Reproduced with a fixture in the fake
+Connect, not live: no real multi-day event was read.
+
+**The tests, before the fix** (the new tests run on the item-1 tree, fixture):
+
+```
+not ok 12 - an event over several days shows on each day it runs, names its dates, and leaves once it has ended
+    + undefined
+    - '2026-10-25'
+not ok 21 - an event that began yesterday and ends tomorrow is still coming up, between publishes and in its calendar file
+    The input did not match the regular expression /data-until="…"/  (the craft page's hero said "Nothing is scheduled yet.")
+# pass 19
+# fail 2
+```
+
+**What changed.**
+- `ops/connect-feed.mjs`: an `endDate` after the event's day, and at most 14 days on (`LONGEST_DAYS`), is kept. An end
+  before the start or further away is not believed: the event shows on its first day and the build names it. An
+  event Connect lists as recent is refused while it still runs.
+- `src/render/events.mjs`: a dated event's row carries its first and last day. It is a row on every day it runs, it is
+  "to come" until its last day is over, and it ends (`data-ends`, the calendar file's `DTEND`) at its end time on its
+  last day.
+- Cards, the event hero and the timetable name the days under the event's name, "Fri Oct 23 – Sun Oct 25", and in
+  full to a screen reader. Two new text keys, `events.days` and `events.daysLong`. Today is marked on any day it runs,
+  in the build and in the browser (`schedule.js`, `data-until`).
+- The timetable's "Coming Up" lists only events that start after the week: one that starts in the week and runs past
+  it was listed twice. A test caught it before the fix (`… not again under Coming Up`).
+- The calendar files, the `/api/events/<page>` answers and `/api/calendar/<event>.ics` all read the same model, so
+  each follows.
+
+**After:** `test/connect-feed.test.mjs`, `test/live-events.test.mjs`, `test/events.test.mjs`: 29 of 29.
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.33 | An `endDate` more than 14 days after the start is not believed, and the event shows on its first day, named in the build's log | a wrong date in Connect would otherwise fill every day of the timetable for months; the brief: missing or odd data fails closed | change `LONGEST_DAYS` in `ops/connect-feed.mjs` |
+| R.34 | Each day's row shows the event's own times, as Connect gives them, with its first and last day under its name | Connect sends one start and one end; the brief's default asks for each day it runs and its date range, no more | — |
+| R.35 | Proposed copy, not changed: none. The two new keys are new text, editable like every other (`ops/editable.mjs`) | owner, 25 Oct: no new helper text; the range is a fact, shown once on the card | delete the two keys and the `days` lines in the three blocks |
+
+### 3. A save publishes, every cache bounded, Refresh now (queues 34 and 15, slices 1–6)
+
+**Designed first** (`ARCHITECTURE.md`, "Publishing a save"; three proposal rows in `DECISIONS.md` §4), on the way the
+24 Oct run costed and proposed ("The editor", above). What was wrong: a save was kept in `content_edits` and reached
+visitors only through a downloaded file and a publish, so the owner's "a permitted save publishes" was not true.
+
+**Before** (the new tests on checkpoint 2's tree, with only the store module added so they could load; fixture):
+
+```
+not ok 13 - the edit button saves words, …: the save is the published revision — undefined !== 1
+not ok 15 - a save whose revision cannot be written is kept and says so, and Refresh now publishes it
+not ok 16 - Refresh now: … — reading answers is not editing; no title grants it — 404 !== 403
+not ok 17 - the download is the file …: the save published the undo — 1 !== 0
+# pass 13
+# fail 4
+```
+
+**What changed** (built locally, tested with fixtures; nothing deployed):
+- **Slice 1, a save is the published revision.** After the save's transaction, every saved word becomes the next
+  numbered revision in a store outside the database (`netlify/lib/published.mjs`: memory on the rig and in tests,
+  Netlify Blobs deployed). A later save never loses to a slower earlier one (`stamp`, the newest history row). The
+  save grants no scope. If the store cannot be written the words are kept, the reply says `publish.unavailable`, and
+  the staff page says the last update did not reach the site.
+- **Pages.** A page function (`netlify/functions/pages.mjs` → `netlify/lib/pages.mjs`) draws every page with the
+  build's renderer from a snapshot the build now writes into `server.json` (`render`; `src/render/site.mjs`), with
+  the revision laid over it. With nothing published, all 58 pages are the build's files byte for byte. It never reads
+  the database. On a fault it answers the build's own file, held a minute. It carries the `_headers` security headers
+  itself, keeps the build's redirects, adds the slash, and answers the 404 page.
+- **Slice 3, Refresh now** (`POST /api/staff/refresh`): `site.edit` or `site.publish`, checked on the server; JSON
+  and same-origin only; six an hour per person, one a minute for the site; writes the revision again if it failed,
+  forgets the held Connect list, purges the tags `page` and `events`. Deployed purging is Netlify's `purgeCache`;
+  here it is recorded only.
+- **Slices 2 and 5, what the editor reads.** The staff page: "Changes can take up to 30 minutes to show. Last update:
+  {{when}}." or, after a failure, "The last update did not reach the site. Saved words are kept; Refresh Now tries
+  again."; a Refresh Now button; "try again in a minute" when pressed too often. Seven new keys, `staff.edit.*`.
+- **Slice 4.** No query string, header or cookie changes a page's answer: the cache key keeps only `topic` and
+  `return` (`Netlify-Vary`), and nothing on a public address refreshes anything.
+- **Slice 6.** With the words changed, the canonical, robots and `h1` tags are the build's; the page is whole HTML.
+- **The feeds.** `/api/events` draws its blocks with the same revision, so a refresh never puts the build's words
+  back on a page that has newer ones (a test caught the gap while building).
+- **The local rig** answers pages through the same page function, so the browser gates now exercise it.
+
+**After:** `test/staff.test.mjs` 17 of 17, `test/published.test.mjs` 7 of 7, `test/live-events.test.mjs` 9 of 9;
+`ops/interact.mjs` 109 of 109 through the page function, with four new checks for the update line and Refresh Now
+(keyboard, a second press inside the minute).
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.36 | Two test expectations changed with the ruling: a save no longer "waits", and an undo after a publish is published at once | owner, 24 Oct: "a permitted save publishes"; the old lines asserted the superseded rule | restore `waiting: true` / `1` in `test/staff.test.mjs` with the old router |
+| R.37 | Refresh Now is for `site.edit` or `site.publish`; reading answers alone does not give it | the owner's "editors and directors"; never inferred from a title | change `refreshRoute` in `router.mjs` |
+| R.38 | The local rig no longer rebuilds after a save; it answers pages through the page function | one path for the rig and Netlify; a save shows on the next load either way | restore `afterEdit` in `ops/dev-server.mjs` and `router.mjs` |
+| R.39 | `/404.html` asked for by name answers 200, as Netlify serves a file; an unknown path answers 404 with that page | Netlify's own behaviour for a file that exists | — |
+| R.40 | The page function's bundle carries `dist/**/*.html` for its fallback | a fault answers the build's page rather than an error | drop the line from `netlify.toml`; a fault then answers the 404 page |
+
+**Slice 7 (P2, every field)** (built locally, tested with fixtures). The inventory is
+`docs/research/EDITABLE-INVENTORY-2026-10-25.md`. Instead of one mechanism per field, one: a value that is not a
+word is a target too, by its kind (`kindAt`, `pageValues`, `siteValues`, `valueProblem` in `src/shared/edits.mjs`):
+link, library photo, icon, layout choice, on/off, number, date, video. It is saved, conflict-checked, kept in the
+history, restored and published exactly as words are, and checked again on the server and again when it is laid
+over a page. The edit box lists these under More words by their key and opens each with a control of its kind (a
+list for choices and on/off, a date or number field, a text field for links and photos). The 57 text lines with
+`{{placeholders}}` are listed there too, and a save must keep each placeholder.
+- Links are a page of this site, `#anchor`, `mailto:`, `tel:` or `https://` without a name or password; `http:`,
+  `javascript:` and anything with spaces or quotes is refused.
+- Photos: a library id only. A photo by a new link still needs the laptop's build (it is fetched and encoded there,
+  and the security policy serves photos from this site only); that is a listed gap, not a silent one.
+- Left as permanent keys: ids, references, the kind of a workshop activity. Left to Connect: adding, reordering and
+  retiring sections and pages (item 16), forms (item 17), events and resources.
+- **Evidence:** "values that are not words: each kind is checked on the server …" (`test/staff.test.mjs`): seven
+  kinds, sixteen refused values, each saved and published, history kept, a placeholder line refused without its
+  placeholder; "a published value that is not a word …" (`test/published.test.mjs`): a section switched off is gone
+  from the page, a link changes, a layout choice changes the page, and a refused value in the store is not laid
+  over the page. `ops/interact.mjs`: a section switched off by keyboard from More words (four checks).
+  Before this slice these targets were refused as `edit.target` (`floorValue` returned nothing for structure).
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.41 | One typed-value mechanism for links, photos, icons, choices, on/off, numbers, dates and the video, not one per slice | the brief's every-field slices share grants, conflicts, history, restore and sanitising; one path keeps them the same | drop `pageValues`/`siteValues` from the editable map in `ops/build.mjs` |
+| R.42 | `mailto:` and `tel:` stay allowed in links; every web address must be `https://` | the content already uses both; the brief's "https links only" is read as web links | add them to the refused list in `valueProblem` |
+| R.43 | A photo can be changed to a library photo at once; a photo by a new link waits for the laptop's build | the build fetches and encodes linked photos; the CSP serves images from this site only | — |
+| R.44 | Text lines with placeholders are editable from More words | the save check already keeps placeholders; leaving them out was only because they cannot be found on screen | restore the `!v.includes("{{")` filter in `textStrings` |
+
+### 4. The §12 tests that need a server or Connect (queue 24)
+
+Every one runs against the local rig: the real router, PGlite, and a fake Connect where Connect is needed. All are
+**fixture**; none is deployed or live. Most were built by earlier runs; this run added the three marked new, and
+mapped each scenario to its test.
+
+| §12 scenario | Test (file: name) | Kind |
+|---|---|---|
+| A closed form and a stale tab | intake: "a form closed while a tab is open refuses the send and gives the answers back"; applications: "a closed form takes no file…"; launch: "the server holds the same forms closed…"; interact: "closed while the page is open" | fixture |
+| Duplicate submits | intake: "pressing Send twice, or again after a lost reply, is one submission"; interact: "Send pressed twice", "a lost reply" | fixture |
+| Version changes | intake: added, renamed, retired, conditional questions, history kept; applications: a resume across a version change | fixture |
+| Denied access | staff: "a director reads only the forms Connect lets them read…", "every route declares a tier…", "Refresh now: editors and publishers only…" | fixture |
+| Retries and outages | staff: "a delivery that fails waits longer each time…", "Connect saying no, … or Connect not answering, signs nobody in", "with Connect not set up…"; intake: "with no database configured the API fails closed"; published: "when the revision cannot be read, the build's file answers"; staff: "a save whose revision cannot be written is kept and says so" | fixture |
+| Revocation | staff: "…reading answers needs a sign-in within the hour…" (built: an hour of reading after sign-in); "with Connect's status check on…" and "…Connect not answering…" (the **proposed** `publicSsoStatus`, built here behind `CONNECT_SESSION_STATUS`, off). Revocation is **not** solved until Connect ships that action and the owner turns the flag on | fixture; Connect's half proposed, not built |
+| Staff-only caching | **new** staff: "§12 staff-only caching: every private, sign-in and form answer is no-store and carries nothing for the CDN" (18 answers, with and without a session); published: "every cache is bounded…" (a staff cookie changes nothing on a page) | fixture, a guard: it passes on the old code too |
+| Analytics leakage | **new** staff: "§12 analytics leakage: a page the API draws is not counted and not for search engines"; build: "the mood check-in is excluded from analytics…"; forms: "what the browser is given leaves out every review note…" | fixture, a guard |
+| Editor to public page | **new** staff: "§12 editor to public page: a save is on the page the next visitor gets, and Restore puts it back" (sign in, save, the page function's answer has the words; put back, the build's page byte for byte) | fixture; fails on checkpoint 2 (no page function) |
+
+**After:** `test/staff.test.mjs` 21 of 21.
+
+### 5. The outbox, receipts and the directors' backup workbook (queue 18, P3)
+
+**What was wrong.** `deliver.mjs` serialised sending in one process only, so two function instances could send one
+row twice; a failed row could wait six hours; nothing ever sent `mail.receipt` or `sheets.backup` rows; `cellText()`
+was never called; and a retry waited for a visitor.
+
+**Before.** On the item-4 tree `test/outbox.test.mjs` cannot load (no `runOutbox`, `deliverOnce`, `backup.mjs`). Run
+against two mutations of the new code: with the old six-hour cap, `waits [2, 4, 8, 16, 32, 64]` against `[2, 4, 8,
+15, 15, 15]`; with claims that ignore another worker's hold, two workers sent four rows **8** times (`8 !== 4`).
+
+**What changed** (built locally, tested with fixtures; nothing switched on):
+- **Claims** (`006_outbox_claims`, a new migration, applied by the next deploy): one statement takes a worker's rows,
+  skipping rows another holds; a stopped worker's claim runs out after two minutes and the row is due again.
+- **Waits** of 2, 4, 8, then 15 minutes at most: with a run every 15 minutes a due retry happens within 30.
+- **Unknown outcomes**: an answer lost on the way back is sent again with the same reference or dedupe key, and
+  Connect keeps one (its Website Forms already does; its mail path is asked to, in the Exchange draft).
+- **`runOutbox()`**, what a scheduled function calls, reads when work is next due from a note outside the database
+  (the revision store), and returns at once when nothing is due or nothing can be sent; a test counts zero queries.
+  A note it cannot read counts as work due. The schedule is **not registered** (owner action).
+- **Receipts** send themselves once `RECEIPT_SENDER` names a verified `@badgersupports.org` sender, through Connect's
+  proposed `publicReceipt`; never for an anonymous form, even if a row says otherwise. Decisions and bulk mail stay
+  off here: they are Connect's, behind a director's preview and approval (Exchange draft).
+- **The workbook** (`netlify/lib/backup.mjs`): Start Here, Dashboard (counts only), one tab per form; found by
+  developer metadata, so a renamed tab is still found; columns keep their place; every cell through `cellText()`;
+  each answer once; the brand's cream and ink, a frozen header, banded rows, no borders. 20 new text keys.
+
+**After:** `test/outbox.test.mjs` 8 of 8, among them "one submission, everything set up: one Connect record, one
+receipt, one sheet row; a retry makes no second".
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.45 | The workbook is pushed through the Sheets API with a service account, not pulled by an Apps Script | the brief: "against a fake Sheets API"; a push opens no new door into the site. COMMUNICATIONS.md's pull design stays as the alternative | write the pull door and script instead; `backup.mjs`'s plan serves either |
+| R.46 | Confidential answers are left out of the workbook unless `BACKUP_CONFIDENTIAL=include` | `COMMUNICATIONS.md` says the backup skips them; the owner's "all of the forms answers" may mean otherwise: a question for the owner, this the default | set `BACKUP_CONFIDENTIAL=include` |
+| R.47 | Waits cap at 15 minutes; the schedule proposed is every 15 | the owner's "a failed delivery is retried within 30 minutes"; 15 + 15 = 30 | change `MAX_WAIT_MINUTES` and the schedule together |
+| R.48 | A scheduled run reads a note outside the database first | an idle run every 15 minutes would keep the database awake (`ARCHITECTURE.md`, "Cost") | delete the note check in `runOutbox` |
+| R.49 | A receipt sender must be an `@badgersupports.org` address | owner, §7: the founder's own account is never the fallback | widen `receiptSender()` |
+| R.50 | Migration `006_outbox_claims` adds two columns to `outbox` | claims across instances need a place to live; changing an old migration is not allowed | a later migration drops them |
+
+### 6. Crawlers and abuse (queue 38, X3)
+
+**The audit** is the table in `ARCHITECTURE.md`, "Crawlers and abuse". Four gaps could be shown, each with a test
+that failed first (fixture; `test/intake.test.mjs`, "abuse: …"):
+
+```
+not ok 2 - abuse: a forged forwarding header buys no fresh limit; only the platform's own address counts
+not ok 3 - abuse: a class behind one campus address can all send the form in an hour; a burst past that is refused
+not ok 4 - abuse: a refusal says when to try again and nothing more, with or without JavaScript
+not ok 5 - abuse: a form's open-or-closed state is held by the CDN for a minute, and no query string asks past it
+ok 6 - abuse: what must keep working does — a script with no Origin, the sign-in return, other forms
+# pass 2
+# fail 4
+```
+
+**What changed.**
+- `connectionHash()` uses the platform's address only (`context.ip`); `x-nf-client-connection-ip` from the request
+  was trusted when the platform gave none.
+- Form sends: 40 an hour per form per address, so a class behind one campus address can send; 41 is refused.
+- A 429 carries `Retry-After` (seconds to the end of the window), with and without JavaScript, and says nothing else.
+- The form state is held by the CDN a minute and refuses a query string.
+- `robots.txt` asks for a `From` address and points at a new page, `/crawlers/` (two sentences, editable words); it
+  still disallows only `/staff/` and `/api/`. The sitemap lists the page.
+- Not built, and why: collecting the declared `From` contact (`ARCHITECTURE.md`); enabling Netlify's rate limiting
+  (a proposal and a checklist only).
+
+**After:** `test/intake.test.mjs` 24 of 24 with the five new tests; the production build's robots and sitemap
+checked in `test/connect-feed.test.mjs`.
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.51 | The form limit is 40 an hour per form per address | X3: "many people behind one campus IP"; the honeypot, the idempotency key and validation still stand | change `FORM_PER_HOUR` in `router.mjs` |
+| R.52 | With no platform address, every request shares one counter | no trust from forwarding headers; fail closed rather than let a header pick its own bucket | — |
+| R.53 | The form state is cached by the CDN for 60 seconds | it is public and the same for everyone; the server still decides at Send | drop `STATE_CACHE` |
+| R.54 | A crawler policy page at `/crawlers/`, linked from robots.txt only | X3: "a crawler policy page asks for the HTTP From header and treats it as unverified"; no menu link, to add no words where visitors read | delete `content/pages/crawlers.json` and the robots line |
+| R.55 | The `From` contact is not collected | X3: "do not route every static visit through a database merely to gather contact"; Netlify's log export not verified | — |
+
+### 7. Clean delivered files (queue 37, X2)
+
+**What was wrong.** `ops/build.mjs` joined the stylesheets and copied every browser script and `forms.mjs` as written,
+so about 200 comment blocks in the stylesheet and every source note in the scripts went to every visitor. Nothing
+checked what `dist/` held. The HTML carries no comments, the one inline script is already minified, and the one SVG
+file has none; no source map is written today.
+
+**Before** (the new scan, `deliveredProblems()`, over the item-6 tree's build, local): 328 problems in 16 files —
+198 comments in the stylesheet, and comments in all 15 scripts (32 in `forms.mjs`, 23 in `staff.js`, 19 in
+`edit.js`, …). After: none, and the planted leaks below are each caught.
+
+**What changed.**
+- The stylesheet goes through clean-css (level 1: whitespace and comments only, nothing reordered) and each script
+  through terser as a module (compress and mangle off: comments and spacing only; every name, export and relative
+  import kept), **before** the file names are taken from the bytes. A licence comment (`/*!`, `@license`) is kept.
+- `SHIPS`, an explicit list of what may be in `dist/`. `deliveredProblems()` reads the output after the build:
+  a file not on the list, a source map or `sourceMappingURL`, a comment in a script (found by parsing with acorn),
+  in the stylesheet (a tokenizer that knows strings), or in HTML or SVG, and editors' SVG metadata. The build stops
+  on any, and `ops/check.mjs` has a gate, "delivered files are clean".
+- Planted in a copy of a clean build, each is caught: a stylesheet comment, a `// TODO` in `forms.mjs`, a map and
+  its `sourceMappingURL`, a stray `NOTES.md`, an HTML comment. A string that only looks like a comment is not.
+- The page function renders HTML with no comments, and the inline script and its CSP hash are untouched (the
+  existing test "the one inline script is the one the policy allows" passes on the minified build).
+- Without the packages the build stops: "needs terser@5.51.2, clean-css@5.3.3, acorn@8.19.0. Install them: npm
+  install --save-dev --save-exact …".
+
+**Payload per page** (local prototype build without photos; the page's HTML plus the stylesheet and every script it
+loads, counted each time):
+
+| Page | Before, raw / gzip | After, raw / gzip |
+|---|---|---|
+| `/` | 230 / 55.6 KB | 179 / 39.1 KB |
+| `/about/faq/` | 175 / 42.3 KB | 131 / 28.2 KB |
+| `/forms/staff-application/preview/` | 267 / 68.1 KB | 208 / 49.2 KB |
+| `/forms/workshop-request/` | 217 / 56.5 KB | 158 / 37.6 KB |
+| `/join/craft-nights/` | 188 / 46.1 KB | 141 / 30.7 KB |
+| `/resources/` | 300 / 57.0 KB | 254 / 42.1 KB |
+| `/staff/` | 187 / 47.2 KB | 137 / 31.1 KB |
+| All 59 pages, summed | 10.60 / 2.58 MB | 7.91 / 1.72 MB |
+
+**Packages** (installed here with `npm install --no-save --no-package-lock`; the laptop runs the saving command):
+terser 5.51.2 (BSD-2-Clause), clean-css 5.3.3 (MIT), acorn 8.19.0 (MIT), each the newest release at least two
+weeks old. `npm install --save-dev --save-exact terser@5.51.2 clean-css@5.3.3 acorn@8.19.0`.
+
+**Not changed, owner's checklist** (X2: "review … without changing them"):
+1. The repository is public: everything in its history, comments included, stays readable there. Minifying the
+   delivered files does not change that.
+2. Earlier deploys keep their own files at their permalinks, with the comments they had; deleting them is Netlify's
+   UI, and the owner's call.
+3. No secret was found: the tracked files, the working tree and `git log -p --all` (the whole history, 8 commits, not
+   shallow) were searched on 25 Oct for private-key blocks, AWS, GitHub, Slack, Google API, Netlify and `sk-` style
+   keys, and quoted values assigned to names ending SECRET, TOKEN, PASSWORD or API_KEY: no match in any.
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.56 | Minify with compress and mangle off | X2 wants notes out, not a rewrite; names and imports stay readable to the tests and the CSP | turn them on in `minifiers()` |
+| R.57 | HTML is not minified | it has no comments; minifying it at request time would put a minifier in the page function | — |
+| R.58 | `dist/` ships only `SHIPS`; anything else stops the build | X2: "an explicit allowlist of what ships" | add a pattern to `SHIPS` |
+
+### 8. What Netlify already includes (queue 39, P5 and X4)
+
+A map and a proposal, as the brief asks: no scope is approved, so no capability was built under this item.
+`ARCHITECTURE.md`, "What Netlify already includes", lists each capability as used, built locally, available or
+unknown, with its evidence and the cost already recorded. Netlify's documentation and the project's UI could not
+be read from the cloud session (the documentation host did not resolve), so Web Analytics, rate-limit entitlement,
+secret scanning on a CLI build, Identity and Blobs billing stay **unknown**. Netlify Forms: a metadata-only pilot is
+described and not recommended now. Lighthouse 13.5.0 ran in its own folder outside the repository (installed
+there, nothing saved) against the local rig: the figures are in the same section.
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.59 | No capability built under item 39 | the brief: "No scope is approved yet: deliver the map and a proposal" | — |
+| R.60 | Lighthouse's performance findings (one render-blocking stylesheet; blocking script on the home page) are left for the owner's design review | a design change is the owner's; this is a functionality pass | split the stylesheet per page, as blocks already allow (`blockStyles`) |
+
+### 9. One browser check made to wait for its answer
+
+Checkpoint 7's first full check failed one of 113 browser checks: "staff ended: says the sign-in has ended, offers
+Sign in, and forgets the hint (notes [], hint false)". The 24 Oct run saw the same check fail once and called it a
+timing flake. The cause: on a page with the staff hint, two scripts ask `/api/staff/me` and both forget the hint on
+a 401, the staff page and the edit button. The check read the page once, at network idle, and could land after the
+edit button's answer and before the staff page's. It now waits up to three seconds for the staff page's own note
+(`ops/interact.mjs`), so it still fails if the note never comes. The site's code is unchanged.
+
+| # | Decision | Basis | To reverse |
+|---|---|---|---|
+| R.61 | The check waits for the note rather than reading at network idle | two scripts answer on their own schedules; the check is about what the page says, not when | restore the single read |
+
+### Where the cloud run ends, 25 Oct 2026
+
+Every item of the brief's Queue is done as far as a cloud session can take it: 35, 30, 34 with 15, 24, 18, 38, 37
+and 39, in nine checkpoints. Each checkpoint's checks ran on an exact copy of its tree; the last full check is in
+the cloud log and the report. Nothing is committed, pushed or deployed; the laptop applies the cumulative patch,
+re-runs every check with the photos, and the owner publishes. Owner actions, in order, Exchange drafts, copy
+proposals and the questions taken by default are in the cloud artifact's log and report.

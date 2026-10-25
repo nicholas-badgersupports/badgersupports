@@ -40,5 +40,7 @@
   # PGlite is the local rig's database (LOCAL_DB=pglite) and must never ship. The packer traces its
   # import anyway, so the "!" line is what keeps it out: measured 20 October 2026, the bundle drops
   # from 20 MB to 2 MB and the API still answers. The other three are build and test tools.
-  included_files = [".build/server.json", "netlify/database/migrations/**", "!node_modules/@electric-sql/**"]
+  # The page function (functions/pages.mjs) answers with the build's own page when the published revision
+  # cannot be read, so it carries the built pages too (docs/ARCHITECTURE.md, "Publishing a save").
+  included_files = [".build/server.json", "netlify/database/migrations/**", "dist/**/*.html", "!node_modules/@electric-sql/**"]
   ignored_node_modules = ["@electric-sql/pglite", "playwright", "axe-core", "sharp"]

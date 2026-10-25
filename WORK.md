@@ -13,8 +13,8 @@ Every person named in `content/` is fictional; real team members appear only thr
 |---|---|
 | Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text**. 24–25 Oct (run log §1–8): upload race and failure states, phone menu, a form changed while open, sign-in states and access freshness, width and helper text, stale replies and Back/Forward, the editor's keys, earlier versions and Restore, characters left |
 | Tested | `node ops/check.mjs --browser`: see "Evidence". Connect's feed against a fake Connect (`test/connect-feed.test.mjs`); the rest against a local rig with demo keys (setup file 5): not a live connection. A quick, source-only security audit, 23 Oct (run log §13; its report is kept outside the repository) |
-| Committed | `aa5668c` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish, 23 Oct 23:59. 24–25 Oct: the run's work is local commit `0b50df0` plus uncommitted changes, none pushed (run log R.4); a publish commits and pushes both |
-| Deployed | **production**: `aa5668c` at `badgersupports-public.netlify.app` (deploy `6adc3b39`, 24 Oct 05:00 UTC, migrations 001–003), read from Netlify 25 Oct; Connect's `7681b68` with migration 032 (20 Oct, not reread). The run's work, with migrations 004–005, is not deployed |
+| Committed | `ae80634` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish of 25 Oct, holding the 24–25 Oct run. The cloud run of 25 Oct is a patch in the owner's private artifact, **not committed** (run log, "Cloud run") |
+| Deployed | Not reread since `ae80634` was published: the cloud run cannot read Netlify. Last read, 25 Oct: `aa5668c` (deploy `6adc3b39`, migrations 001–003); Connect's `7681b68` with migration 032 (20 Oct, not reread). The cloud run's patch is not deployed |
 | Verified live | Netlify's deploy records only (`ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
 
 ## Slice 1 against §12
@@ -63,13 +63,12 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-`node ops/check.mjs --browser`, 25 Oct 2026 at 03:14, with the photos (exit 0): every word editable (311 text keys, 69
-source files); the editor contract current; colours from `tokens.css`, no text under 14px; nothing private (198 files
-read); the build, 58 pages, 894 image variants, 0 links to the live site, 0 redirects waiting; tests 167 passed, 0 failed,
-among them every live address answered and a `--production` build against a fake Connect; 174 captures, no console errors
-or sideways scroll; 181 a11y and form checks; 105 pressed and timed. A clean clone without the photos (`--browser --no-media`, exit 0): the same, with 0 image variants and tests 166 passed, 1 skipped. What each proves: `docs/OVERNIGHT-RUN-2026-10-24.md`.
-**Not run:** anything against a deployed site or the live Connect (only a local rig with demo keys, file 5); email;
-the Sheets backup; the §12 tests that need them (below, item 24).
+Cloud run, 25 Oct 2026, without the photos (`node ops/check.mjs --browser --no-media` on each checkpoint's exact tree,
+Chromium 153 for the pinned 151; exit 0): 348 text keys over 74 files; the editor contract current; colours from tokens, no
+text under 14px; nothing private (208 files read); 59 pages; delivered files clean (98 files); tests 197 passed, 0 failed,
+1 skipped; 177 captures, no console errors or sideways scroll; 184 a11y and form checks; 113 pressed and timed. Every result
+is local or fixture. The laptop's last run with the photos (25 Oct 03:14) predates the cloud run. What each proves: the run log.
+**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers
 
@@ -118,18 +117,18 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
 15. **Editor and publishing** → **words done** 20 Oct (Edit text, `test/staff.test.mjs`); grants set by a super admin. 25 Oct:
-    keys shown, every word listed, earlier versions, Restore **built locally** (run log §7); a save publishing waits on 34. P2 → every field
+    keys shown, every word listed, earlier versions, Restore **built locally** (run log §7); a save publishes, built locally (cloud run §3). P2 → every field
     (links, media, forms, navigation, sections, layouts, settings) saved live with grants, conflicts, immutable history,
     restore, sanitising, keyboard use; a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16.
 16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2).
 17. **Connect: forms** (`PUBLIC-SITE-FORMS`; answers reach Website Forms, **done** 20 Oct). Still → the switch opens and closes
     a form with no deploy; the server refuses a stale tab. Recount its "34 passing tests" first (`docs/COMMUNICATIONS.md`).
-18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → one submission, one Connect record, one test receipt, one sheet
-    row; a retry makes no second. `cellText()` is not yet called; the backup skips columns marked `confidential`. P3 →
-    claims, leases and idempotency across instances; a due retry within 30 minutes (now up to six hours, `deliver.mjs`);
-    unknown outcomes reconciled, never sent twice; receipts send themselves; decisions and bulk mail wait for a
-    director's approval of that version; nothing automatic from an anonymous form. Needs Connect's sender contract.
-    **Owner, 24 Oct:** a styled directors' workbook: Start Here, Dashboard, a tab per form (`docs/COMMUNICATIONS.md`).
+18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **built locally** 25 Oct (cloud run §5): claims across instances
+    (migration 006), waits ≤15 min, unknown outcomes resent under one key, an idle run never wakes the database; receipts
+    once a sender is verified; the workbook (Start Here, Dashboard, a tab per form, `cellText()`), fake Sheets only. One
+    submission → one record, receipt, row. Off until: Connect's `publicReceipt`, the sender, the workbook and its account,
+    the schedule (owner, `docs/COMMUNICATIONS.md`). Confidential answers left out unless the owner says (R.46).
+    Decisions and bulk mail stay Connect's, behind a director's approval.
 19. **Connect: exports**: events and resources **done** 23 Oct (`test/connect-feed.test.mjs`). Still → the team
     (`PUBLIC-TEAM-PROFILES`) and the wall (`PUBLIC-RESOURCES-AND-WALL`); a person appears only from their own profile.
 20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Since 24 Oct answers can be read for an hour after
@@ -139,37 +138,37 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     Netlify Web Analytics, reported on 24 Oct → verified per project and in billing; no other collector.
 23. ~~Netlify~~ keys and database 20 Oct; **cost plan** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Waits for a yes
     → check form state at first keystroke. No new subscriptions (24 Oct): every change is costed against the allowance.
-24. **The §12 tests that need a server or Connect**: closed-form stale tabs, duplicate submits, version changes,
-    denied access, retries and outages, revocation, staff-only caching, analytics leakage, editor to public page.
+24. ~~The §12 server tests~~ **mapped and built locally** 25 Oct (cloud run §4): each scenario has a fixture test; three new
+    (staff-only caching, analytics leakage, editor to public page). Revocation stays Connect's (`publicSsoStatus`, item 20).
 25. **Before the switch**: shortlinks, the six subdomains, the ribbons path, the privacy policy, mobile performance,
     redirects, SEO and accessibility checked on a preview; a handoff and a reversible switch plan.
 26. **The one-week promise** on the workshop confirmation → confirmed by Programs, or removed.
 30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, not on GitHub 25 Oct); the site reads it
-    (`ops/connect-feed.mjs`). Still → the site ignores `endDate`: a multi-day event shows on its first day only (run log §6).
+    (`ops/connect-feed.mjs`). `endDate` **built locally** 25 Oct (cloud run §2): an event over several days shows on each day, names its dates, leaves after its last.
 31. **Open the workshop and feedback forms** on the live site once Programs sees answers in Connect (owner's call).
 33. **Functionality and UI pass** (24 Oct brief; `docs/OVERNIGHT-RUN-2026-10-24.md`) → (a) form failures **built**; (b) the
     sign-in states and a shorter staff page **built**; (c) access freshness **built**; (d) width and helper text **built** (§5, §8);
     (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All locally, each on a regression shown failing first.
-34. **Publishing and refresh** (P1) → a permitted save is the published revision, seen within 30 minutes in HTML and feeds;
-    a notice, the last good update, Refresh now (editors only, checked, bounded); no query string forces a refresh;
-    failures shown; SEO and no-JS checked. Needs 15, 16, 29; no deploy loop.
-35. **No decorative coloured bars** (P4) → `.form-head`'s 8px accent top (`src/styles/forms.css:12`) and kin on any edge,
-    pseudo-element, strip or SVG go neutral; `test/pages.test.mjs`'s side-bar check covers every edge; focus, selected,
-    status and charts keep colour; screenshots before and after.
+34. **Publishing and refresh** (P1) → slices 1–6 **built locally** 25 Oct (cloud run §3): a save is the published revision,
+    drawn by a page function with every cache ≤30 min; the notice, last update, Refresh now; no query forces it. Live: two
+    packages, `netlify.toml`, a deploy (owner). Slice 7: links, photos, choices, on/off, numbers, dates editable too (inventory in `docs/research/`).
+35. ~~No decorative coloured bars~~ **built locally** 25 Oct (cloud run §1): `.form-head`'s 8px accent top is gone; `test/pages.test.mjs`
+    checks every edge, longhand, inset shadow, painted pseudo-element, gradient and SVG strip, and failed first on `.form-head`;
+    focus, selected, status and charts keep colour (R.31). Screenshots before and after in the cloud artifact.
 36. **A `to-public/` inbox** (X1) → the Exchange README and `../../CLAUDE.md` name three sessions; sibling handoffs; "Commit;
     don't push" corrected; a fictional item found in all three. Outside `site/`, so it waits for the owner's go-ahead.
-37. **Clean delivered files** (X2; P4) → HTML, CSS, JS, MJS, SVG minified by a parser before hashing (raw copies today,
-    `ops/build.mjs`); CSP hashes, imports, edit keys, licences kept; a list of what ships; no maps; payload measured.
-38. **Crawlers and abuse** (X3) → `netlify/lib/http.mjs` limits audited; layered controls; robots and sitemap; a crawler's
-    `From` contact is unverified; no invented collector.
-39. **Netlify features already included** (P5; X4) → a capability map, its first approved slice end to end; static search if
-    needed; Lighthouse; extensions listed; Netlify Forms a costed supplement; no paid middleware; Edge, Identity evaluated.
+37. ~~Clean delivered files~~ **built locally** 25 Oct (cloud run §7): CSS and scripts minified by parsers before hashing; `dist/`
+    ships only its list; a gate catches planted notes, maps and stray files; payload −33% gzip. Packages: owner installs.
+38. ~~Crawlers and abuse~~ **built locally** 25 Oct (cloud run §6): limits audited; only the platform's address counts; 40 sends
+    an hour per form per address; 429 with Retry-After; form state cached a minute; `/crawlers/` and robots ask for `From`, not collected.
+39. **Netlify features already included** (P5; X4) → map **done** 25 Oct (cloud run §8; `docs/ARCHITECTURE.md`): used, available,
+    unknown; Lighthouse run locally; Netlify Forms pilot not recommended. Waits for the owner to approve a first slice.
 
 ## Git and publishing
 
 `site/` is git, `main`, pushed to the public `nicholas-badgersupports/badgersupports`. Only the owner commits, pushes
 and publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`. A session reads git with `git --no-optional-locks` and
-never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish, a cloud session works from GitHub `main` and hands back patches, never commits (run log R.27). Never link it to Netlify: a Netlify build creates a database.
+never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish, a cloud session works from GitHub `main` and hands back patches, never commits (run log R.27). The 25 Oct cloud run's work is that patch, not committed. Never link it to Netlify: a Netlify build creates a database.
 
 ## Exchange
 

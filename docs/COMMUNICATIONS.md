@@ -131,6 +131,31 @@ The rules this keeps:
   connection in its own table, kept apart from submissions; rows over a day old are deleted at the next count
   (`netlify/lib/http.mjs:67`).
 
+## Built locally, 25 Oct 2026: delivery, receipts and the backup workbook
+
+Built in the cloud run (`docs/OVERNIGHT-RUN-2026-10-24.md`, "Cloud run" §5), tested against a fake Connect and a
+fake Sheets API only. **Nothing is switched on**: no schedule is registered, no sender is set, no workbook exists.
+
+- **Delivery** (`netlify/lib/deliver.mjs`): claims, so two instances never send one row; waits of 2, 4, 8, then 15
+  minutes; an answer lost on the way back is sent again with the same reference, and Connect keeps one.
+- **Receipts**: a `mail.receipt` row stays `held` until the owner sets `RECEIPT_SENDER` to a verified
+  `@badgersupports.org` sender; then it goes to Connect's mail path with its dedupe key (Connect's `publicReceipt`
+  is **proposed**, an Exchange request). Never for an anonymous form.
+- **The workbook** (`netlify/lib/backup.mjs`): Start Here, Dashboard (counts only) and one tab per form, found by
+  developer metadata, in the brand's cream and ink with a frozen header, every cell through `cellText()`, each
+  answer written once by its reference. Confidential answers are left out unless `BACKUP_CONFIDENTIAL=include`.
+  It **pushes** through the Sheets API with a service account, not the pull script proposed below: the brief asked
+  for it against a fake Sheets API, and a push needs no new door into the site. Which one ships is the owner's call.
+- **To switch on**, in order: deploy (applies `006_outbox_claims`); Connect ships `publicReceipt`; set
+  `RECEIPT_SENDER`; create the workbook in the directors' account, share it with a service account, set
+  `BACKUP_SPREADSHEET_ID` and `GOOGLE_SERVICE_ACCOUNT`; add `netlify/functions/outbox.mjs`:
+
+  ```js
+  import { runOutbox } from "../lib/deliver.mjs";
+  export default async () => { await runOutbox(); return new Response(null, { status: 204 }); };
+  export const config = { schedule: "*/15 * * * *" };
+  ```
+
 ## Proposal: the backup spreadsheet
 
 From Exchange request `PUBLIC-SITE-EMAIL-AND-BACKUP`. **Owner, 24 Oct 2026:** "a backup styled spreadsheet in the
@@ -169,7 +194,7 @@ The rules the backup keeps either way:
   per question id, in order, across every published version, so a renamed or retired question keeps its column.
 - **Formula guard.** `cellText()` in the same file puts an apostrophe in front of any answer that starts with
   `=`, `+`, `-`, `@`, a tab or a carriage return, because answers are untrusted. Tested in
-  `test/forms.test.mjs:58`. Neither function is called by running code yet.
+  `test/forms.test.mjs:58`. Both are called by the workbook writer (`netlify/lib/backup.mjs`, 25 Oct 2026).
 - **Out of the request path.** The worker writes rows later, never while the visitor waits.
 - **Idempotent.** A row is keyed by its reference; the worker writes it only if that reference is not in the
   tab already.

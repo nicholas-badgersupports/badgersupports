@@ -52,7 +52,7 @@ import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
 import { definitionProblems, launchForms } from "../src/shared/forms.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
-import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings } from "../src/shared/edits.mjs";
+import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings, pageValues, siteValues } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
 import { formPreviewPages } from "../src/render/blocks/form.mjs";
 import { teamProblems, personPages, publicPeople, teamRedirects, GROUPS, TEAM_PATH } from "../src/render/team.mjs";
@@ -60,6 +60,7 @@ import { buildMedia, buildLinks, linkPlaceholders, loadManifest } from "./media.
 import { nextDated } from "../src/render/events.mjs";
 import { eventIcs, icsPath } from "../src/render/ics.mjs";
 import { feedConfig, feedRuleProblems, readConnectFeed, seriesIds } from "./connect-feed.mjs";
+import { pagePrograms, sectionPrograms, siteSnapshot } from "../src/render/site.mjs";
 
 export const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const CSS_ORDER = ["tokens.css", "base.css", "layout.css", "blocks.css", "forms.css", "motion.css"];
@@ -80,6 +81,75 @@ export function blockStyles(dir = path.join(ROOT, "src/styles/blocks"), blocks =
 const readJson = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 const readDir = (p) => fs.readdirSync(path.join(ROOT, p)).filter((f) => f.endsWith(".json")).sort();
 const hash = (s, n = 10) => crypto.createHash("sha256").update(s).digest("hex").slice(0, n);
+
+/* The parsers that take the notes out of what browsers are sent (X2): clean-css for the stylesheet, terser for
+   the scripts. Exact-pinned dev dependencies; a build without them stops and says how to install them. */
+export const MINIFIERS = { terser: "5.51.2", "clean-css": "5.3.3", acorn: "8.19.0" };
+async function minifiers() {
+  const missing = [];
+  const load = async (name) => { try { return await import(name); } catch { missing.push(`${name}@${MINIFIERS[name]}`); return null; } };
+  const [terser, CleanCSS] = [await load("terser"), await load("clean-css")];
+  await load("acorn");
+  if (missing.length) throw new Error(`The build takes the notes out of what browsers are sent, and needs ${missing.join(", ")}. Install them: npm install --save-dev --save-exact ${Object.entries(MINIFIERS).map(([n, v]) => `${n}@${v}`).join(" ")}`);
+  return {
+    // level 1 only: whitespace and comments out, nothing reordered or merged
+    css(text) {
+      const out = new (CleanCSS.default || CleanCSS)({ level: 1, inline: false, rebase: false }).minify(text);
+      if (out.errors.length) throw new Error(`the stylesheet could not be read: ${out.errors.join("; ")}`);
+      return out.styles;
+    },
+    // parsed as a module: comments and spacing out, every name and import kept, nothing rewritten
+    async js(text, name) {
+      const out = await terser.minify(text, { module: true, compress: false, mangle: false, format: { comments: /^!|@license/ } });
+      if (out.code === undefined) throw new Error(`${name} could not be read`);
+      return out.code;
+    },
+  };
+}
+
+/* What may ship in dist/, and nothing else (X2). A file outside this list stops the build. */
+export const SHIPS = [
+  /^(?:[a-z0-9-]+\/)*index\.html$/, /^404\.html$/, /^_headers$/, /^_redirects$/, /^robots\.txt$/, /^sitemap\.xml$/,
+  /^assets\/css\/site\.[0-9a-f]{10}\.css$/, /^assets\/js\/[0-9a-f]{10}\/[a-z0-9-]+\.(?:js|mjs)$/,
+  /^assets\/fonts\/[A-Za-z0-9-]+\.woff2$/, /^assets\/fonts\/[A-Za-z0-9-]+\.txt$/,
+  /^assets\/brand\/[a-z0-9-]+\.(?:png|jpg|webp|svg)$/, /^assets\/brand\/[A-Z-]+\.txt$/, /^assets\/icons\/[a-z0-9-]+\.svg$/,
+  /^media\/[A-Za-z0-9._-]+\.(?:avif|webp|jpg|png)$/, /^calendar\/[A-Za-z0-9_-]+\.ics$/,
+];
+
+/* Every note, map or file a browser should not be sent, as sentences. Comments are found by parsing (acorn for
+   scripts, a tokenizer that knows strings for the stylesheet), never by deleting text. A licence comment
+   (/*! … or @license) is allowed. */
+export async function deliveredProblems(out, { serverDir = null } = {}) {
+  const { Parser } = await import("acorn");
+  const problems = [];
+  // a test may write the server's file inside its output; a real build writes it to .build/, outside dist/
+  const own = serverDir && serverDir.startsWith(out + path.sep) ? path.relative(out, serverDir).split(path.sep).join("/") + "/" : null;
+  const files = fs.readdirSync(out, { recursive: true, withFileTypes: true }).filter((e) => e.isFile()).map((e) => path.relative(out, path.join(e.parentPath ?? e.path, e.name)).split(path.sep).join("/")).filter((f) => !own || !f.startsWith(own));
+  for (const f of files) {
+    if (!SHIPS.some((re) => re.test(f))) { problems.push(`${f}: not on the list of what ships`); continue; }
+    if (!/\.(?:html|css|js|mjs|svg|txt|xml|ics)$|^_headers$|^_redirects$/.test(f)) continue;
+    const text = fs.readFileSync(path.join(out, f), "utf8");
+    if (/[#@]\s*source(?:Mapping)?URL=/.test(text) || /^SourceMap:/im.test(text)) problems.push(`${f}: names a source map`);
+    if (/\.(?:js|mjs)$/.test(f)) {
+      try {
+        Parser.parse(text, { ecmaVersion: "latest", sourceType: "module", onComment: (block, body) => { if (!/^!|@license/.test(body)) problems.push(`${f}: a comment: ${body.trim().slice(0, 40)}`); } });
+      } catch (e) { problems.push(`${f}: cannot be read as a module (${e.message})`); }
+    }
+    if (f.endsWith(".css")) for (const c of cssComments(text)) if (!c.startsWith("!")) problems.push(`${f}: a comment: ${c.trim().slice(0, 40)}`);
+    if (/\.(?:html|svg)$/.test(f) && /<!--|<metadata\b|\b(?:inkscape|sodipodi):/.test(text)) problems.push(`${f}: an HTML or SVG comment or editor's metadata`);
+  }
+  return problems;
+}
+
+function cssComments(text) {
+  const out = [];
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"' || c === "'") { for (i++; i < text.length && text[i] !== c; i++) if (text[i] === "\\") i++; continue; }
+    if (c === "/" && text[i + 1] === "*") { const end = text.indexOf("*/", i + 2); out.push(text.slice(i + 2, end < 0 ? undefined : end)); i = end < 0 ? text.length : end + 1; }
+  }
+  return out;
+}
 
 /* The edits file a build lays over the content when it is given none: content/edits.json, if any. */
 export function shippedEdits() {
@@ -123,7 +193,8 @@ export function loadContent({ production = false, launch = production, textEdits
   const files = readDir("content/pages").map((f) => ({ f, page: readJson(`content/pages/${f}`) }));
   const floorText = Object.fromEntries(Object.entries(textRegistry.text).map(([k, v]) => [k, v.text]));
   const floor = { site: structuredClone(site), pages: files.map((x) => structuredClone(x.page)) };
-  const overlay = applyEdits(edits, { site, pages: files.map((x) => x.page), text: floorText });
+  const overlay = applyEdits(edits, { site, pages: files.map((x) => x.page), text: floorText }, { media: mediaIds });
+  const givenTextEdits = textEdits;
   textEdits = { ...textEdits, ...overlay.textEdits };
 
   const ids = new Set();
@@ -228,6 +299,8 @@ export function loadContent({ production = false, launch = production, textEdits
     site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, resources, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
+    // the files before any saved word, for the page function to lay a published revision over (src/render/site.mjs)
+    floor: { ...floor, text: floorText }, givenTextEdits,
   };
 }
 
@@ -247,6 +320,13 @@ function editableWords(built, floor, registry) {
     if (f === undefined) continue;
     out[s.target] = f === s.value ? { shown: s.value } : { shown: s.value, floor: f };
     if (s.target.startsWith("text:")) out[s.target].where = registry.text[s.target.slice(5)].where;
+  }
+  // values that are not words, each with its kind (src/shared/edits.mjs, kindAt)
+  const floorValues = new Map([...floor.pages.flatMap(pageValues), ...siteValues(floor.site)].map((v) => [v.target, v.value]));
+  for (const v of [...built.pages.flatMap(pageValues), ...siteValues(built.site)]) {
+    const f = floorValues.get(v.target);
+    if (f === undefined) continue;
+    out[v.target] = { shown: v.value, ...(f === v.value ? {} : { floor: f }), kind: v.kind, ...(v.options && v.kind !== "icon" ? { options: v.options } : {}) };
   }
   return out;
 }
@@ -283,8 +363,10 @@ export function cspHeader() {
   ].join("; ");
 }
 
-function headersFile({ prototype }) {
-  const all = [
+/* The headers every path gets. _headers carries them for the static files; the page function sets the same on
+   the pages it draws, because Netlify does not lay _headers over a function's answer. */
+export function siteHeaders({ prototype }) {
+  return [
     `Content-Security-Policy: ${cspHeader()}`,
     "X-Content-Type-Options: nosniff",
     "Referrer-Policy: strict-origin-when-cross-origin",
@@ -292,6 +374,10 @@ function headersFile({ prototype }) {
     "Cross-Origin-Opener-Policy: same-origin",
     ...(prototype ? ["X-Robots-Tag: noindex"] : []),
   ];
+}
+
+function headersFile({ prototype }) {
+  const all = siteHeaders({ prototype });
   return [
     "/*", ...all.map((h) => `  ${h}`), "",
     // File names carry a content hash: a change is a new URL, so the old one may be cached forever.
@@ -340,10 +426,6 @@ export function cutoverProblems({ routes, pages, builtPaths, pendingLinks }) {
   ];
 }
 
-/* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
-const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
-/* ... and the sections of one page, so a circle to "#craft" wears the craft section's colour. */
-const sectionPrograms = (page) => (page.blocks || []).filter((b) => PROGRAMS.includes(b.program)).map((b) => [`#${b.anchor || b.id}`, b.program]);
 
 /* What the events refresh (netlify/lib/live-events.mjs) needs to render a page's event blocks again
    from Connect's current list: those blocks as the build had them, the rules that map Connect's list,
@@ -391,11 +473,13 @@ export async function build({ production = false, launch = production, today = n
   const linkResult = media ? await buildLinks(content.links, path.join(out, "media"), { fetchMissing: fetchMedia, production, log }) : { items: linkPlaceholders(content.links), files: [], encoded: 0, fetched: 0 };
   const allMedia = { ...content.media, items: [...content.media.items, ...linkResult.items] };
 
+  const min = await minifiers();
   // Styles: one file, named by its content. A block's own rules (its `styles`, in src/styles/blocks/) follow the
-  // shared blocks.css, in the library's order.
-  const css = CSS_ORDER.flatMap((f) => (f === "blocks.css" ? [f, ...blockStyles()] : [f])).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n")
+  // shared blocks.css, in the library's order. The notes come out before the name is taken from the bytes.
+  const source = CSS_ORDER.flatMap((f) => (f === "blocks.css" ? [f, ...blockStyles()] : [f])).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n")
     + "\n/* generated: photo focal points */\n" + mediaCss(allMedia.items)
     + "/* generated: mood colours (content/widgets/mood.json) */\n" + moodCss(content.mood);
+  const css = min.css(source);
   const cssName = `site.${hash(css)}.css`;
   fs.mkdirSync(path.join(out, "assets/css"), { recursive: true });
   fs.writeFileSync(path.join(out, "assets/css", cssName), css);
@@ -405,6 +489,7 @@ export async function build({ production = false, launch = production, today = n
   const jsFiles = fs.readdirSync(path.join(ROOT, "src/client")).filter((f) => f.endsWith(".js")).sort()
     .map((f) => ({ name: f, text: fs.readFileSync(path.join(ROOT, "src/client", f), "utf8") }));
   jsFiles.push({ name: "forms.mjs", text: fs.readFileSync(path.join(ROOT, "src/shared/forms.mjs"), "utf8") });
+  for (const f of jsFiles) f.text = await min.js(f.text, f.name);
   const jsDir = hash(jsFiles.map((f) => f.name + "\0" + f.text).join("\0"));
   fs.mkdirSync(path.join(out, "assets/js", jsDir), { recursive: true });
   const js = {};
@@ -462,7 +547,7 @@ export async function build({ production = false, launch = production, today = n
   fs.writeFileSync(path.join(out, "_redirects"), redirects.text);
   fs.writeFileSync(path.join(out, "robots.txt"), prototype
     ? "# Prototype: not for search engines.\nUser-agent: *\nDisallow: /\n"
-    : `User-agent: *\nDisallow: /staff/\nDisallow: /api/\nSitemap: ${content.site.origin}/sitemap.xml\n`);
+    : `# Crawlers: please send a working email address in the HTTP From header (${content.site.origin}/crawlers/).\nUser-agent: *\nDisallow: /staff/\nDisallow: /api/\nSitemap: ${content.site.origin}/sitemap.xml\n`);
   if (!prototype) {
     const urls = content.pages.filter((p) => !p.noindex && !p.file).map((p) => `  <url><loc>${content.site.origin}${p.path}</loc></url>`);
     fs.writeFileSync(path.join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`);
@@ -473,6 +558,12 @@ export async function build({ production = false, launch = production, today = n
     schema: "bss.server/1", prototype, assets, site: content.site, routes: content.routes, builtPaths,
     forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
     events: eventsForServer(content, { connect: !!feed }),
+    headers: siteHeaders({ prototype }), redirects: redirects.text,
+    // every page as the build rendered it, before the saved words: the page function draws pages from this
+    render: siteSnapshot({
+      floor: content.floor, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team,
+      forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths,
+    }),
     formPages: Object.fromEntries(content.pages.flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null }]))),
   };
   fs.mkdirSync(serverDir, { recursive: true });
@@ -496,6 +587,9 @@ export async function build({ production = false, launch = production, today = n
     pendingLinks: [...pending.entries()].sort().map(([p, from]) => ({ path: p, from: [...new Set(from)] })),
     redirectsWaiting: redirects.waiting,
   };
+  // nothing ships that is not on the list, and nothing carries a note or a map (X2)
+  const leaks = await deliveredProblems(out, { serverDir });
+  if (leaks.length) throw Object.assign(new Error(`What browsers would be sent is not clean:\n  ${leaks.join("\n  ")}`), { problems: leaks });
   fs.writeFileSync(path.join(serverDir, "report.json"), JSON.stringify(report, null, 2) + "\n");
   return report;
 }

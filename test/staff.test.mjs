@@ -20,6 +20,8 @@ import { serverContent, useContent } from "../netlify/lib/content.mjs";
 import { many, one, q, migrate } from "../netlify/lib/db.mjs";
 import { readEditsFile } from "../src/shared/edits.mjs";
 import { build, loadContent } from "../ops/build.mjs";
+import { currentRevision, useStore, memoryStore, usePurger } from "../netlify/lib/published.mjs";
+import { handlePage, useDist } from "../netlify/lib/pages.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECT = "http://connect.test";
@@ -668,10 +670,16 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   const s = await saved.json();
   assert.equal(s.changed, true);
   assert.equal(s.entry.current, "badger supports, together", "trimmed");
-  assert.equal(s.entry.waiting, true);
   assert.equal(s.entry.by, "Robin Example");
-  assert.equal(s.waiting, 1);
-  assert.equal((await (await handle(get("/api/staff/me", { cookie }), ip())).json()).waiting, 1);
+  // A permitted save publishes (owner, 24 Oct 2026): it is revision 1, and nothing waits.
+  assert.equal(s.published?.n, 1, "the save is the published revision");
+  assert.equal(s.publishError, null);
+  assert.equal(s.entry.waiting, false);
+  assert.equal(s.waiting, 0);
+  const me = await (await handle(get("/api/staff/me", { cookie }), ip())).json();
+  assert.equal(me.waiting, 0);
+  assert.equal(me.published.n, 1);
+  assert.deepEqual((await currentRevision({ fresh: true })).edits, { [HERO]: "badger supports, together" });
 
   // Someone who opened the box before that save cannot overwrite it without seeing it.
   const stale = await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: hero.current, value: "badger supports!" }, cookie), ip());
@@ -694,17 +702,20 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   assert.equal(back.changed, true);
   assert.equal(back.entry.waiting, false);
   assert.equal(back.waiting, 0);
+  assert.equal(back.published.n, 2, "putting it back publishes too");
+  assert.deepEqual((await currentRevision({ fresh: true })).edits, {});
   const rows = await many("SELECT target, value, previous, edited_by FROM content_edits");
   assert.deepEqual(rows.map((r) => ({ ...r })), [{ target: HERO, value: hero.original, previous: "badger supports, together", edited_by: "u-test-0001" }]);
   const file = await (await handle(get("/api/staff/edits", { cookie }), ip())).json();
   assert.deepEqual(file.edits, {}, "an edit equal to the shipped words is not in the file");
 
-  // A local copy rebuilds after each save; a save that changes nothing does not.
-  let rebuilt = 0;
-  const ctx = { ...ip(), afterEdit: async () => { rebuilt++; } };
-  await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip to the page" }, cookie), ctx);
-  await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to the page" }, cookie), ctx);
-  assert.equal(rebuilt, 1);
+  // Each save that changes words publishes the next revision; a save that changes nothing publishes nothing.
+  const changed = await (await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip to the page" }, cookie), ip())).json();
+  assert.equal(changed.published.n, 3);
+  const same = await (await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to the page" }, cookie), ip())).json();
+  assert.equal(same.changed, false);
+  assert.equal(same.published, null);
+  assert.equal((await currentRevision({ fresh: true })).n, 3);
 });
 
 test("every saved version is kept, newest first, and Restore saves an earlier one again as the newest", async () => {
@@ -759,6 +770,116 @@ test("every saved version is kept, newest first, and Restore saves an earlier on
   assert.equal((await many("SELECT 1 FROM content_edit_history WHERE target = $1", [HERO])).length, 3, "and nothing else is copied");
 });
 
+test("values that are not words: each kind is checked on the server, saved with history, and published like words", async () => {
+  await freshServer();
+  const fake = fakeConnect({ scopes: ["site.edit"] });
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  const shipped = serverContent().editable;
+  const save = async (target, value) => {
+    const res = await handle(staffPost("/api/staff/edit/save", { target, expected: shipped[target].shown, value }, cookie), ip());
+    return [res.status, await res.json()];
+  };
+  const cases = [
+    ["page:pg-home:b-home-hero/primary/href", "link", "/about/what-we-do/", [["http://elsewhere.example/", "edit.link"], ["javascript:alert(1)", "edit.link"], ["https://user:pw@example.org/", "edit.link"], ["/a page/", "edit.markup"]]],
+    ["page:pg-home:b-home-hero/circles/0/media", "media", "m-peer-couch", [["https://elsewhere.example/x.jpg", "edit.media"], ["m-no-such-photo", "edit.media"]]],
+    ["page:pg-home:b-home-announce/enabled", "boolean", "false", [["maybe", "edit.choice"]]],
+    ["page:pg-home:b-home-announce/endsOn", "date", "2026-12-01", [["2026-02-30", "edit.date"], ["soon", "edit.date"]]],
+    ["page:pg-craft-nights:b-cn-next/show", "choice", "all", [["everything", "edit.choice"]]],
+    ["page:pg-craft-nights:b-cn-next/count", "number", "4", [["-1", "edit.number"], ["4.5", "edit.number"], ["1000", "edit.number"]]],
+    ["site:nav/0/children/0/href", "link", "https://example.org/about", [["ftp://example.org/", "edit.link"]]],
+  ];
+  for (const [target, kind, good, bad] of cases) {
+    assert.equal(shipped[target]?.kind, kind, `${target} is a ${kind}`);
+    const source = await (await handle(get(`/api/staff/edit/source?page=${target.split(":")[1].startsWith("pg-") ? target.split(":")[1] : "pg-home"}`, { cookie }), ip())).json();
+    assert.equal(source.entries.find((e) => e.target === target)?.kind, kind, `the edit box is told ${target} is a ${kind}`);
+    for (const [value, code] of bad) {
+      const [status, body] = await save(target, value);
+      assert.deepEqual([status, body.error], [422, code], `${target} refuses ${value}`);
+    }
+    const [status, body] = await save(target, good);
+    assert.equal(status, 200, target);
+    assert.equal(body.entry.current, good);
+    assert.ok(body.published?.n >= 1, `${target} is published`);
+  }
+  const revision = await currentRevision({ fresh: true });
+  assert.deepEqual(Object.keys(revision.edits).sort(), cases.map((c) => c[0]).sort());
+  // A line filled in where it shows can be changed too, keeping each placeholder.
+  assert.equal(shipped["text:strip.count"]?.shown, "{{n}} of {{total}}");
+  const [dropped, why] = await save("text:strip.count", "{{n}} photos");
+  assert.deepEqual([dropped, why.error], [422, "edit.placeholder"]);
+  assert.equal((await save("text:strip.count", "Photo {{n}} of {{total}}"))[0], 200);
+  // History and Restore are the same as for words.
+  const hist = await (await handle(get(`/api/staff/edit/history?target=${encodeURIComponent(cases[0][0])}`, { cookie }), ip())).json();
+  assert.deepEqual(hist.versions.map((v) => v.value), ["/about/what-we-do/"]);
+});
+
+test("a save whose revision cannot be written is kept and says so, and Refresh now publishes it", async () => {
+  await freshServer();
+  const fake = fakeConnect({ scopes: ["site.edit"] });
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  const hero = serverContent().editable[HERO];
+  let down = true;
+  const store = memoryStore();
+  useStore({ kind: "flaky", get: (k) => (down ? Promise.reject(new Error("store down")) : store.get(k)), set: (k, v) => (down ? Promise.reject(new Error("store down")) : store.set(k, v)) });
+  const was = console.error;
+  console.error = () => {};
+  try {
+    const s = await (await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: hero.shown, value: "badger supports, kept" }, cookie), ip())).json();
+    assert.equal(s.changed, true);
+    assert.equal(s.published, null);
+    assert.equal(s.publishError, "publish.unavailable");
+    assert.equal(s.entry.current, "badger supports, kept", "the words are kept");
+    assert.equal(s.entry.waiting, true, "and are not on the site yet");
+    const me = await (await handle(get("/api/staff/me", { cookie }), ip())).json();
+    assert.equal(me.publishError, "publish.unavailable", "the staff page is told why");
+    down = false;
+    const r = await handle(staffPost("/api/staff/refresh", {}, cookie), ip());
+    assert.equal(r.status, 200);
+    const body = await r.json();
+    assert.equal(body.published.n, 1);
+    assert.equal(body.publishError, undefined);
+    assert.deepEqual((await store.get("current")).edits, { [HERO]: "badger supports, kept" });
+  } finally { console.error = was; }
+});
+
+test("Refresh now: editors and publishers only, from this site, JSON, bounded, and it clears only the pages and the feeds", async () => {
+  await freshServer();
+  const cleared = [];
+  usePurger(async (tags) => { cleared.push(...tags); });
+  try {
+    const as = async (opts) => { const f = fakeConnect(opts); useConnect(f.cfg); return signIn(f); };
+    const reader = await as({ scopes: ["forms.read:*"] });
+    const editor = await as({ scopes: ["site.edit"] });
+    const publisher = await as({ scopes: ["site.publish"], name: "Avery Example" });
+    const refresh = (cookie, opts) => handle(staffPost("/api/staff/refresh", {}, cookie, opts), ip());
+
+    assert.equal((await handle(post("/api/staff/refresh", {}), ip())).status, 401, "signed out");
+    const denied = await refresh(reader.cookie);
+    assert.equal(denied.status, 403, "reading answers is not editing; no title grants it");
+    assert.equal((await denied.json()).error, "staff.forbidden");
+    assert.equal((await refresh(editor.cookie, { origin: "https://elsewhere.example" })).status, 403, "a page elsewhere cannot send it");
+    assert.equal((await refresh(editor.cookie, { json: false })).status, 415, "a plain form post cannot either");
+    assert.deepEqual(cleared, [], "nothing was cleared by a refused ask");
+
+    const ok = await refresh(editor.cookie);
+    assert.equal(ok.status, 200);
+    assert.equal(ok.headers.get("cache-control"), "no-store");
+    assert.deepEqual(cleared, ["page", "events"]);
+    assert.equal((await refresh(publisher.cookie)).status, 429, "one a minute for the whole site");
+    await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'");
+    assert.equal((await refresh(publisher.cookie)).status, 200, "site.publish may refresh too");
+    // The fake Connect gives each account the same Connect id (u-test-0001), so these count as one person's:
+    // three so far, the refused one included.
+    for (let i = 0; i < 2; i++) { await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'"); assert.equal((await refresh(editor.cookie)).status, 200); }
+    await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'");
+    assert.equal((await refresh(editor.cookie)).status, 200, "the sixth in the hour");
+    await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'");
+    assert.equal((await refresh(editor.cookie)).status, 429, "and no seventh");
+  } finally { usePurger(null); }
+});
+
 test("the download is the file a publish lays over the site, and the built pages show the new words", async () => {
   await freshServer();
   const fake = fakeConnect({ scopes: ["site.edit", "site.publish"] });
@@ -805,5 +926,71 @@ test("the download is the file a publish lays over the site, and the built pages
   await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to Content" }, cookie), ip());
   const undo = await (await handle(get("/api/staff/edits", { cookie }), ip())).json();
   assert.equal(undo.edits["text:page.skip"], undefined);
-  assert.equal(undo.waiting, 1);
+  assert.equal(undo.waiting, 0, "the save published the undo (owner, 24 Oct 2026: a permitted save publishes)");
+});
+
+/* ------------------------------------------------------------------ §12, against the local rig (fixture) */
+
+test("§12 staff-only caching: every private, sign-in and form answer is no-store and carries nothing for the CDN", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  await handle(post("/api/forms/workshop-request/submit", workshopAnswers()), ip(7));
+  const shipped = serverContent().editable;
+  const asked = [
+    get("/api/staff/me", { cookie }), get("/api/staff/forms", { cookie }), get("/api/staff/forms/workshop-request/submissions", { cookie }),
+    get("/api/staff/edit/source?page=pg-home", { cookie }), get(`/api/staff/edit/history?target=${encodeURIComponent(HERO)}`, { cookie }),
+    get("/api/staff/edits", { cookie }), get("/api/staff/edits?download=1", { cookie }), get("/api/staff/nowhere", { cookie }),
+    get("/api/staff/me"), get("/api/auth/status", { cookie }), get("/api/auth/start", { json: false }), get("/api/auth/callback?state=x&code=y", { json: false }),
+    staffPost("/api/staff/edit/save", { target: HERO, expected: shipped[HERO].shown, value: "badger supports, cached nowhere" }, cookie),
+    staffPost("/api/staff/outbox/retry", {}, cookie), staffPost("/api/staff/refresh", {}, cookie),
+    post("/api/forms/workshop-request/submit", workshopAnswers({ group_notes: "A second request." })), post("/api/auth/signout", {}, { headers: { cookie } }),
+  ];
+  for (const req of asked) {
+    const res = await handle(req, ip(8));
+    const where = `${req.method} ${new URL(req.url).pathname}${new URL(req.url).search} (${res.status})`;
+    assert.equal(res.headers.get("cache-control"), "no-store", where);
+    for (const h of ["netlify-cdn-cache-control", "cdn-cache-control", "netlify-cache-tag", "netlify-vary"]) assert.equal(res.headers.get(h), null, `${where}: ${h}`);
+  }
+});
+
+test("§12 analytics leakage: a page the API draws is not counted and not for search engines", async () => {
+  await freshServer();
+  const pages = [
+    await handle(post("/api/forms/workshop-request/submit", { ...workshopAnswers(), email: "not an email" }, { json: false }), ip(9)),
+    await handle(get("/api/auth/callback?state=x&code=y", { json: false }), ip(9)),
+    await handle(get("/api/calendar/connect-nothing.ics", { json: false }), ip(9)),
+    await handle(post("/api/mood", { mood: "great" }, { json: false }), ip(9)),
+  ];
+  for (const res of pages) {
+    const body = await res.text();
+    assert.match(res.headers.get("content-type"), /^text\/html/);
+    assert.match(body, /data-analytics="none"/, `${res.status}: not counted`);
+    assert.match(body, /<meta name="robots" content="noindex">/, `${res.status}: not for search engines`);
+  }
+});
+
+test("§12 editor to public page: a save is on the page the next visitor gets, and Restore puts it back", async () => {
+  await freshServer();
+  const out = path.join(ROOT, "local/test-build-editor-to-page");
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+  const content = JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8"));
+  useContent(content);
+  useDist(out);
+  const fake = fakeConnect({ scopes: ["site.edit"] });
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  const visitor = async () => (await handlePage(new Request(`${ORIGIN}/`), { today: "2026-10-20" })).text();
+  const before = await visitor();
+  assert.equal(before, fs.readFileSync(path.join(out, "index.html"), "utf8"));
+  const shown = content.editable[HERO].shown;
+  const s = await (await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: shown, value: "Made-up words for the visitor" }, cookie), ip())).json();
+  assert.equal(s.published.n, 1);
+  const after = await visitor();
+  assert.match(after, /Made-up words for the visitor/);
+  assert.doesNotMatch(after, /Robin Example|u-test-0001/, "nothing about the editor reaches the page");
+  const back = await (await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: "Made-up words for the visitor", value: shown }, cookie), ip())).json();
+  assert.equal(back.published.n, 2);
+  assert.equal(await visitor(), before, "putting the words back gives the build's page byte for byte");
 });

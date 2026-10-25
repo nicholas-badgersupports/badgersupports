@@ -5,7 +5,7 @@
 import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
-import { rowsBetween, nextDated, groupByDate, dateParts, timeRange, addDays } from "../events.mjs";
+import { rowsBetween, nextDated, groupByDate, dateParts, timeRange, addDays, dayRange } from "../events.mjs";
 
 function dateBlock(ctx, date, today) {
   const p = dateParts(date, ctx.t);
@@ -27,10 +27,11 @@ function signup(ctx, r, dropIn) {
 function eventRow(ctx, r, { withDate = false, dropIn = null } = {}) {
   const p = dateParts(r.date, ctx.t);
   const when = timeRange(r.start, r.end, ctx.t);
+  const days = dayRange(r, ctx.t);
   const title = r.href && !ctx.here(r.href) ? link(ctx, r.href, r.title) : r.title;
   return html`<li${attrs({ class: "ev", "data-program": r.program, "data-starts": r.startsAt, "data-ends": r.endsAt })}>
     <span class="ev-time">${withDate ? html`<span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>` : ""}${when}</span>
-    <span class="ev-what"><strong>${title}</strong>${r.place ? html`<span>${r.place.href ? link(ctx, r.place.href, r.place.name) : r.place.name}${r.place.detail ? ` · ${r.place.detail}` : ""}</span>` : ""}</span>
+    <span class="ev-what"><strong>${title}</strong>${days ? html`<span class="ev-days"><span aria-hidden="true">${days.short}</span><span class="sr-only">${days.long}</span></span>` : ""}${r.place ? html`<span>${r.place.href ? link(ctx, r.place.href, r.place.name) : r.place.name}${r.place.detail ? ` · ${r.place.detail}` : ""}</span>` : ""}</span>
     <span class="ev-sign">${signup(ctx, r, dropIn)}<span class="ended-tag">${ctx.t("schedule.ended")}</span></span>
   </li>`;
 }
@@ -50,7 +51,9 @@ export default {
     const days = b.days || 7;
     const today = ctx.today;
     const week = groupByDate(rowsBetween(src, today, days));
-    const later = nextDated(src, addDays(today, days), b.later ?? 3);
+    // after the week: events that start after it (one that starts in the week is already in it, whatever its last day)
+    const after = addDays(today, days);
+    const later = nextDated(src, after, Infinity).filter((r) => r.date >= after).slice(0, b.later ?? 3);
     const home = b.home ? src.places?.[b.home] : null;
     const dropIn = Object.fromEntries((b.dropIn || []).map((d) => [d.program, d.href]));
     return html`<section class="week band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">

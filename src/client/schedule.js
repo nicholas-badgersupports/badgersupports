@@ -24,7 +24,8 @@ function mark() {
   }
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
   for (const day of document.querySelectorAll(".day[data-date], .evcard[data-date]")) {
-    const isToday = day.dataset.date === today;
+    // an event over several days is today on any day from its first to its last (data-until)
+    const isToday = day.dataset.until ? day.dataset.date <= today && today <= day.dataset.until : day.dataset.date === today;
     day.classList.toggle("is-today", isToday);
     const block = day.querySelector(".dateblock, .evcard-date");
     const tag = day.querySelector(".today-tag");

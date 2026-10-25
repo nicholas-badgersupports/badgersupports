@@ -6,10 +6,13 @@
  * Edit text marks every word on the page that can be changed. Choosing one opens a box with the
  * words, their permanent key, what the site shipped with, who changed them last, and under Earlier
  * versions every version saved, each of which Restore saves again as the newest. Saving keeps the
- * change at once (netlify/lib/edits.mjs). Visitors see it once someone who may publish downloads
- * the edits file from the staff page and publishes it; on a local copy, at once.
+ * change and publishes it (netlify/lib/edits.mjs, published.mjs): the pages are drawn with it, every
+ * cache in under 30 minutes, the page it is on at once.
  * Words not on the screen right now — a line shown only when something goes wrong, a label read
  * aloud — are under More words, as are the lines every page shares; its search finds keys too.
+ * So are the values that are not words (a link, a photo from the library, a layout choice, a number,
+ * a section switched on or off, its dates), each opened with a control of its kind; the server checks
+ * each again (src/shared/edits.mjs, valueProblem).
  *
  * Finding a word on the page: the deepest element whose text is exactly that word, inside its own
  * block for a page's words, outside every block for the menus and footer. Words the page builds in
@@ -81,7 +84,7 @@ function place() {
   marks.clear();
   for (const kind of ["page", "site", "text"]) {
     for (const e of entries.values()) {
-      if (kindOf(e.target) !== kind) continue;
+      if (kindOf(e.target) !== kind || e.kind) continue;
       const found = (index.get(norm(e.shown)) || []).filter((n) => !claimed.has(n) && fits(e.target, n));
       // Two places in one block with the same words: one element each, in order.
       const take = twins.get(scope(e)) > 1 ? found.slice(0, 1) : found;
@@ -165,10 +168,28 @@ function pick(e) {
 
 const when = (at) => new Date(at).toLocaleString("en-US", { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" });
 
+/* The control for an entry: the words' box, or one that fits a value of its kind. Same id, so the label
+   and the form read it the same way. */
+function control(entry) {
+  const id = "edit-d-v";
+  const k = entry.kind;
+  if (!k) return el("textarea", { id, rows: 4, maxLength: 2000 });
+  if (k === "choice" || k === "icon" || k === "boolean") {
+    const options = k === "boolean" ? [["true", t("edit.on")], ["false", t("edit.off")]] : (entry.options || [entry.current]).map((o) => [o, o]);
+    return el("select", { id }, ...options.map(([v, label]) => el("option", { value: v, textContent: label })));
+  }
+  if (k === "date") return el("input", { id, type: "date" });
+  if (k === "number") return el("input", { id, type: "number", min: 0, max: 99, step: 1 });
+  return el("input", { id, type: "text", inputMode: k === "link" ? "url" : "text", maxLength: 500, spellcheck: false });
+}
+
 function open(entry, from) {
   if (!entry) return;
   opened = { entry, from };
   const d = ui.dialog;
+  const fresh = control(entry);
+  d.value.replaceWith(fresh);
+  d.value = fresh;
   d.where.textContent = entry.where || "";
   d.where.hidden = !entry.where;
   d.key.replaceChildren(`${t("edit.key")} `, el("code", { textContent: entry.target }));
@@ -265,7 +286,9 @@ function moreList() {
     (kindOf(e.target) === "page" ? here : everywhere).push(e);
   }
   const item = (e) => {
-    const b = el("button", { type: "button", className: "edit-pick" }, el("span", { textContent: short(e.current) }), e.where ? el("span", { className: "edit-pick-where", textContent: e.where }) : null);
+    // a value that is not a word is named by its key, which says where it sits
+    const where = e.where || (e.kind ? e.target : "");
+    const b = el("button", { type: "button", className: "edit-pick" }, el("span", { textContent: short(e.current) }), where ? el("span", { className: "edit-pick-where", textContent: where }) : null);
     b.addEventListener("click", () => open(e, b));
     return el("li", {}, b);
   };
@@ -326,7 +349,7 @@ function build() {
   box.setAttribute("aria-labelledby", "edit-d-h");
   const where = el("p", { className: "edit-where" });
   const key = el("p", { className: "edit-key" });
-  const value = el("textarea", { id: "edit-d-v", rows: 4, maxLength: 2000 });
+  const value = control({});
   const original = el("p", { className: "edit-original" });
   const by = el("p", { className: "edit-by" });
   const status = el("p", { className: "edit-status" });
@@ -341,7 +364,7 @@ function build() {
     el("h2", { id: "edit-d-h", textContent: t("edit.dialog.title") }), where, key,
     el("label", { htmlFor: "edit-d-v", textContent: t("edit.dialog.label") }), value, original, by, status,
     el("div", { className: "edit-actions" }, saveB, revert, cancel), earlier);
-  form.addEventListener("submit", (e) => { e.preventDefault(); save(value.value); });
+  form.addEventListener("submit", (e) => { e.preventDefault(); save(ui.dialog.value.value); });
   revert.addEventListener("click", () => save(opened.entry.original));
   cancel.addEventListener("click", () => box.close());
   box.addEventListener("close", () => { if (opened?.from?.isConnected) opened.from.focus(); });

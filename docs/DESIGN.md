@@ -82,7 +82,9 @@ Four small families sit outside that and each has one job:
 - **Focus**, `--focus-ring` (`#304674`) on light grounds and `--focus-on-red` (cream) on a coloured ground.
 
 Program hues were removed on 20 Oct 2026 and brought back on 23 Oct 2026 at the owner's word, as fills and tints
-rather than the old accent bar (the side-bar test still holds), and moved onto the brand's rainbow the same day.
+rather than the old accent bar, and moved onto the brand's rainbow the same day. No decorative bar on any edge, in any
+colour (owner, 24 Oct 2026): an edge is `--hairline`, `--rule-line`, a route's dotted line, or nothing. Colour on an
+edge means something: the page you are on, a selected tab, focus. `test/pages.test.mjs` fails on any other.
 The gate "colours come from tokens.css" in `npm run check` fails on any colour literal outside `tokens.css`, so a new colour starts as a token.
 
 ### Paper
@@ -192,8 +194,9 @@ Each element gets one of these, never two:
 - **A rule**: `--hairline` (1 px, `--line`) parts the items of one list; `--rule-line` (2 px, `--rule-strong`) parts
   two halves of one thing.
 
-The form head is a white card with an 8 px top in the section's colour, flat: Connect's ruled paper under it went with
-the brand change of 23 Oct 2026.
+The form head is a white card, flat, with the same 2 px `--line` on every edge. Its 8 px top in the section's colour
+went on 25 Oct 2026, under the owner's no-bar ruling of 24 Oct; Connect's ruled paper under it went with the brand
+change of 23 Oct 2026.
 
 ## Buttons and links
 

@@ -4,8 +4,8 @@
  *   public    anyone; posts must come from this site's own pages and are rate-limited
  *   director  someone signed in through Connect (staff.mjs). The tier only proves a session; each
  *             route then checks the scope it needs: forms.read:<key> to read a form's answers,
- *             site.edit to change words with the edit button, site.publish to see the changes
- *             waiting and download the file a publish needs. Which roles hold which is a super
+ *             site.edit to change words with the edit button (a save publishes them), site.edit or
+ *             site.publish for Refresh now, site.publish to download the edits file. Which roles hold which is a super
  *             admin's setting in Connect (Website Forms), not this site's.
  *
  * Sign-in itself (/api/auth/*) is public: it is how a session starts. Its failures are pages,
@@ -22,7 +22,8 @@ import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
-import { eventSections, calendarFile } from "./live-events.mjs";
+import { eventSections, calendarFile, forgetEvents } from "./live-events.mjs";
+import { publishRevision, currentRevision, purgeTags } from "./published.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
@@ -32,6 +33,7 @@ import { readRaw, QUESTION_TYPES } from "../../src/shared/forms.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
 
 export const TIERS = new Set(["public", "director"]);
+export const FORM_PER_HOUR = 40;
 
 function renderContext() {
   const c = serverContent();
@@ -79,22 +81,29 @@ function afterReply(context, work) {
   return done;
 }
 
+/* Public, and the same for everyone, so the CDN holds it a minute: a burst of asks does not wake the
+   database. The browser asks each time; the server still decides at Send. */
+const STATE_CACHE = { "netlify-cdn-cache-control": "public, s-maxage=60" };
 async function formState(req, [key]) {
+  noQuery(req);
   const f = await currentForm(key);
   if (!f) throw new HttpError(404, "form.unknown");
-  return json(200, { ok: true, key, state: f.state, version: f.def.version, closedMessage: f.state === "closed" ? f.closedMessage : null });
+  return json(200, { ok: true, key, state: f.state, version: f.def.version, closedMessage: f.state === "closed" ? f.closedMessage : null }, STATE_CACHE);
 }
 
 async function formSubmit(req, [key], context) {
   const asJson = wantsJson(req);
   const body = await readBody(req);
   try {
-    await rateLimit(`form:${key}:${connectionHash(req, context)}`, 10, 3600);
+    // 40 an hour per form per address: a class behind one campus address can all send it (cloud run §6)
+    await rateLimit(`form:${key}:${connectionHash(req, context)}`, FORM_PER_HOUR, 3600);
   } catch (e) {
     if (e.code !== "rate.limited" || asJson) throw e;
     const f = await currentForm(key);
     if (!f) throw new HttpError(404, "form.unknown");
-    return formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
+    const reply = formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
+    for (const [k, v] of Object.entries(e.headers || {})) reply.headers.set(k, v);
+    return reply;
   }
   const r = await submit(key, body);
   if (r.ok && !r.duplicate && !r.trapped) afterReply(context, () => deliverDue({ limit: 5 }));
@@ -172,6 +181,16 @@ const authSignOut = (req) => signOut(req, { asJson: wantsJson(req) });
    logging a refusal for every visitor who is not staff. */
 const authStatus = async (req) => json(200, { ok: true, signedIn: !!(await sessionFrom(req)), configured: !!connectConfig() });
 
+/* The revision the pages are drawn with now, for the editor: its number and time, or why it cannot be read. */
+async function publishedNow() {
+  try {
+    const r = await currentRevision({ fresh: true });
+    return { published: r ? { n: r.n, at: r.at } : null };
+  } catch (e) {
+    return { published: null, publishError: e.code || "publish.unavailable" };
+  }
+}
+
 async function staffMe(req, _m, _c, who) {
   const canEdit = can(who, "site.edit");
   const canPublish = can(who, "site.publish");
@@ -179,6 +198,7 @@ async function staffMe(req, _m, _c, who) {
     ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who), readAgain: !!who.lapsed?.length,
     connectUrl: connectConfig()?.url || null,
     waiting: canEdit || canPublish ? await waitingCount() : 0,
+    ...(canEdit || canPublish ? await publishedNow() : {}),
     text: clientTable(serverContent().text, ["edit.js"]),
   });
 }
@@ -218,16 +238,53 @@ async function editHistoryRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await editHistory(new URL(req.url).searchParams.get("target"))) });
 }
 
-/* A local copy rebuilds the pages after a save (context.afterEdit, ops/dev-server.mjs), so the
-   change shows at once there. On Netlify the save is kept here, and visitors see it once someone
-   with site.publish downloads the edits file, saves it as content/edits.json and publishes. */
-async function editSave(req, _m, context, who) {
+/* The cache tags a saved word touches: its own page, or every page for the menus, footer and shared lines,
+   which the event feeds also print. */
+const tagsFor = (target) => {
+  const m = String(target).match(/^page:(pg-[a-z0-9-]+):/);
+  return m ? [`page:${m[1]}`] : ["page", "events"];
+};
+
+/* A permitted save publishes (owner, 24 Oct 2026): the saved words become the next revision the pages are
+   drawn with (published.mjs, pages.mjs), and the pages they touch are cleared from the CDN. It grants no
+   scope and approves nothing else. If the revision cannot be written the save is still kept, and the reply
+   says so; Refresh now tries again. */
+async function editSave(req, _m, _c, who) {
   need(who, "site.edit");
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   const r = await saveEdit(who, body);
-  if (r.changed) await context?.afterEdit?.();
-  return json(200, { ok: true, changed: r.changed, entry: await editEntry(body.target), waiting: await waitingCount() });
+  let published = null, publishError = null;
+  if (r.changed) {
+    try {
+      published = await publishRevision(who);
+      await purgeTags(tagsFor(body.target)).catch((e) => console.error("purge:", e.code || e.message));
+    } catch (e) {
+      publishError = e.code || "publish.unavailable";
+      console.error("publish:", e.message);
+    }
+  }
+  return json(200, { ok: true, changed: r.changed, entry: await editEntry(body.target), waiting: await waitingCount(), published, publishError });
+}
+
+/* Refresh now: the pages and the event feeds drawn again from now, for someone who may edit or publish
+   words, checked here. JSON from this site only (a form elsewhere cannot send JSON without asking first),
+   six an hour per person and one a minute for the whole site. It writes the revision again if the last
+   write failed, forgets the held Connect list and clears the `page` and `events` tags. A visitor has no way
+   to ask for this: no query string, header or cookie on a public address does it. */
+export const REFRESH_PER_PERSON = 6;
+export const REFRESH_SITE_SECONDS = 60;
+async function refreshRoute(req, _m, _c, who) {
+  if (!can(who, "site.edit") && !can(who, "site.publish")) throw new HttpError(403, "staff.forbidden");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  await rateLimit(`refresh:${who.sub}`, REFRESH_PER_PERSON, 3600);
+  await rateLimit("refresh:site", 1, REFRESH_SITE_SECONDS);
+  let publishError = null, purgeError = null;
+  try { await publishRevision(who); } catch (e) { publishError = e.code || "publish.unavailable"; }
+  forgetEvents();
+  try { await purgeTags(["page", "events"]); } catch (e) { purgeError = e.code || "purge.unavailable"; }
+  return json(200, { ok: true, ...(await publishedNow()), ...(publishError ? { publishError } : {}), ...(purgeError ? { purgeError } : {}) });
 }
 
 /* ?download=1 is the file a publish lays over the site: saved as content/edits.json. Changing words
@@ -246,8 +303,8 @@ async function editsFileRoute(req, _m, _c, who) {
    it: five minutes when it came from Connect, half a minute when Connect could not be read and it is
    the publish's list. A query string is refused rather than ignored, so nobody can ask past the
    cache to Connect. */
-const LIVE_CACHE = { "cache-control": "public, max-age=60", "netlify-cdn-cache-control": "public, durable, s-maxage=300, stale-while-revalidate=600" };
-const STALE_CACHE = { "cache-control": "public, max-age=30", "netlify-cdn-cache-control": "public, s-maxage=30" };
+const LIVE_CACHE = { "cache-control": "public, max-age=60", "netlify-cdn-cache-control": "public, durable, s-maxage=300, stale-while-revalidate=600", "netlify-cache-tag": "events" };
+const STALE_CACHE = { "cache-control": "public, max-age=30", "netlify-cdn-cache-control": "public, s-maxage=30", "netlify-cache-tag": "events" };
 
 function noQuery(req) {
   if (new URL(req.url).search) throw new HttpError(400, "query.refused");
@@ -288,6 +345,7 @@ export const ROUTES = [
   { name: "editHistory", method: "GET", pattern: /^\/api\/staff\/edit\/history$/, tier: "director", run: editHistoryRoute },
   { name: "editSave", method: "POST", pattern: /^\/api\/staff\/edit\/save$/, tier: "director", run: editSave },
   { name: "editsFile", method: "GET", pattern: /^\/api\/staff\/edits$/, tier: "director", run: editsFileRoute },
+  { name: "refresh", method: "POST", pattern: /^\/api\/staff\/refresh$/, tier: "director", run: refreshRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },
 ];
 
@@ -296,9 +354,9 @@ for (const r of ROUTES) if (!TIERS.has(r.tier)) throw new Error(`route ${r.name}
 /* What a person reads when signing in goes wrong, by error code. */
 const AUTH_WHY = { "auth.unavailable": "unavailable", "auth.state": "state", "auth.expired": "expired", "auth.unreachable": "unreachable", "auth.refused": "refused", "rate.limited": "rateLimited" };
 
-function errorReply(req, status, code, extra = {}) {
+function errorReply(req, status, code, extra = {}, headers = {}) {
   const { pathname } = new URL(req.url);
-  if (wantsJson(req) || pathname.startsWith("/api/staff") || pathname.startsWith("/api/events/") || /^\/api\/forms\/[^/]+\/files$/.test(pathname)) return json(status, { ok: false, error: code, ...extra });
+  if (wantsJson(req) || pathname.startsWith("/api/staff") || pathname.startsWith("/api/events/") || /^\/api\/forms\/[^/]+\/files$/.test(pathname)) return json(status, { ok: false, error: code, ...extra }, headers);
   if (pathname.startsWith("/api/calendar/") && status === 404) {
     return page(status, { id: "pg-calendar-gone", path: "/", titleKey: "calendar.gone.title" }, (ctx) => html`<section class="band" aria-labelledby="cal-h"><div class="wrap">
   <h1 id="cal-h">${ctx.t("calendar.gone.title")}</h1>
@@ -333,7 +391,11 @@ export async function handle(req, context) {
     const who = route.tier === "director" ? await requireDirector(req) : null;
     return await route.run(req, pathname.match(route.pattern).slice(1), context, who);
   } catch (e) {
-    if (e instanceof HttpError) return errorReply(req, e.status, e.code, e.extra);
+    if (e instanceof HttpError) {
+      const reply = errorReply(req, e.status, e.code, e.extra, e.headers);
+      for (const [k, v] of Object.entries(e.headers || {})) reply.headers.set(k, v);
+      return reply;
+    }
     if (e?.code === "config.missing") return errorReply(req, 503, "config.missing");
     console.error(`api ${route.name}:`, e);
     return errorReply(req, 500, "server.error");

@@ -4,11 +4,14 @@
 import { freshPglite, useAdapter } from "../netlify/lib/db.mjs";
 import { useContent } from "../netlify/lib/content.mjs";
 import { loadContent } from "../ops/build.mjs";
+import { useStore, memoryStore } from "../netlify/lib/published.mjs";
 
 export async function freshServer({ textEdits = {} } = {}) {
   process.env.LOCAL_DB = "pglite";
   const db = await freshPglite();
   useAdapter(db);
+  // a published revision is kept outside the database, so each case starts with none
+  useStore(memoryStore());
   const c = loadContent({ textEdits });
   useContent({
     schema: "bss.server/1", prototype: true, site: c.site, routes: c.routes, builtPaths: c.pages.map((p) => p.path),

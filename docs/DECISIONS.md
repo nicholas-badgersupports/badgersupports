@@ -278,6 +278,9 @@ for it to be merged into the queue. It is queued, not built: `WORK.md` items 15,
 
 | Decision | Why | To overturn |
 |---|---|---|
+| **Proposed 25 Oct 2026 (queue 34)**: a permitted save becomes the next numbered published revision, kept outside the database (Netlify Blobs deployed, memory locally) | the owner's "a save publishes" with no deploy loop and no database wake on a page view (`ARCHITECTURE.md`, "Publishing a save") | keep saves waiting for the edits file; delete `netlify/lib/published.mjs` |
+| **Proposed 25 Oct 2026**: one page function renders every page from the build's renderer and the revision, cached by the CDN for at most 30 minutes, falling back to the build's file | the owner's 30-minute bound; P §4's "extend the existing full-HTML rendering"; no JavaScript needed to see a change | remove the function's lines from `netlify.toml`; the static pages answer again |
+| **Proposed 25 Oct 2026**: Refresh now needs `site.edit` or `site.publish`, is JSON and same-origin only, six an hour per person and one a minute for the site, and purges only the `page` and `events` tags | the owner's "editors and directors"; never inferred from a title; bounded and targeted | change `REFRESH_*` in `router.mjs` |
 | A static build in plain Node: no framework and no client bundle | the pages are content; less to maintain and audit; each page loads only the scripts its blocks declare | a rewrite of `src/render/`; the content files keep their shape |
 | Node 22 or later | the current LTS line; `netlify.toml` pins it | change `NODE_VERSION` |
 | One function at `/api/*`, with a tier on every route | same origin as the pages, so no CORS and room for a cookie session | `ARCHITECTURE.md` |

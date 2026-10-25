@@ -4,12 +4,19 @@
  *   text:<key>                       a line in content/text.json
  *   site:<path>                      a word in content/site.json, e.g. site:footer/address
  *   page:<pageId>:<blockId>/<path>   a word in a block of a page, e.g. page:pg-home:b-home-hero/title
- * Paths are keys and list positions joined by "/". Only words a visitor reads can be targets: ids,
- * links, photos, icons, dates and choices are structure, and stay with the files.
+ * Paths are keys and list positions joined by "/". Words a visitor reads are targets, and so are the
+ * values that shape a page but are not words (owner, 24 Oct 2026: "everything should be editable"), each
+ * by its kind (KINDS, below): a link, a photo from the library, an icon, a layout choice, a number, a
+ * section switched on or off, the dates a section shows. Ids and references (a form, a room, a person, a
+ * series, a source) are permanent keys and stay with the files.
  *
  * The shipped files stay the floor. An edits file ({ schema: "bss.edits/1", edits: { target:
  * words } }) is laid over them at build time, and an edit equal to the floor is simply dropped.
  */
+
+import { BLOCKS } from "../render/registry.mjs";
+import { ICONS } from "../render/icons.mjs";
+import { embedProblems } from "../render/blocks/embed.mjs";
 
 export const EDITS_SCHEMA = "bss.edits/1";
 
@@ -54,9 +61,10 @@ export function siteStrings(site) {
   return out;
 }
 
-/* Lines of text.json that read the same everywhere (no {{placeholders}}). */
+/* Every line of text.json. A line with {{placeholders}} is filled in where it shows, so it cannot be found on the
+   page; the edit box lists it under More words, and a save must keep each placeholder (editProblem). */
 export function textStrings(table) {
-  return Object.entries(table).filter(([, v]) => typeof v === "string" && v.trim() && !v.includes("{{")).map(([k, v]) => ({ target: `text:${k}`, value: v }));
+  return Object.entries(table).filter(([, v]) => typeof v === "string" && v.trim()).map(([k, v]) => ({ target: `text:${k}`, value: v }));
 }
 
 /* Split a target into its parts, or null when it is not one. */
@@ -117,11 +125,128 @@ export function editProblem(target, value, floor) {
   return null;
 }
 
+/* ---------- values that are not words ---------- */
+
+/* What a value is, from where it sits: { kind, options? } or null for structure. A block's own fields take
+   the kind they are declared with (src/render/registry.mjs); anywhere deeper, a link is an `href`, a
+   photo a `media`, `photo` or an entry of `photos`, an icon an `icon`. */
+export function kindAt(blockType, path, value) {
+  const last = String(path.at(-1));
+  if (last === "href") return { kind: "link" };
+  if (typeof value === "boolean") return { kind: "boolean" };
+  // inside a list: the colour a link or a row wears, a word's size in the cloud, a workshop answer's tone
+  if (last === "program") return { kind: "choice", options: ["peer", "craft", "workshops", "other"] };
+  if (blockType === "words" && last === "size") return { kind: "choice", options: ["1", "2", "3"] };
+  if (blockType === "workshops" && last === "tone") return { kind: "choice", options: ["soft", "clear", "harsh"] };
+  if (last === "count" && typeof value === "number") return { kind: "number" };
+  // a video: an Instagram post or reel, the one frame the page's security policy lets in
+  if (last === "url" && (blockType === "embed" || String(path[0]) === "embed")) return { kind: "video" };
+  if (last === "media" || last === "photo" || (path.length >= 2 && String(path.at(-2)) === "photos" && /^\d+$/.test(last))) return { kind: "media" };
+  if (last === "icon") return { kind: "icon", options: ICONS };
+  if (path.length !== 1) return null;
+  if (last === "enabled") return { kind: "boolean" };
+  if (last === "startsOn" || last === "endsOn") return { kind: "date" };
+  const spec = String(BLOCKS[blockType]?.fields?.[last] || "").replace(/!$/, "");
+  if (spec.startsWith("choice:")) return { kind: "choice", options: spec.slice(7).split("|") };
+  if (spec === "number") return { kind: "number" };
+  if (spec === "boolean") return { kind: "boolean" };
+  return null;
+}
+const siteKindAt = (path) => (String(path.at(-1)) === "href" ? { kind: "link" } : String(path.at(-1)) === "enabled" ? { kind: "boolean" } : null);
+
+/* Every value of a page that is not a word but may be changed, as text, with its kind. */
+export function pageValues(page) {
+  const out = [];
+  const walkAll = (node, at, block) => {
+    if (node !== null && typeof node === "object") {
+      for (const [k, v] of Array.isArray(node) ? node.entries() : Object.entries(node)) walkAll(v, [...at, k], block);
+      return;
+    }
+    if (!["string", "number", "boolean"].includes(typeof node) || !at.length) return;
+    const k = kindAt(block.type, at, node);
+    if (k) out.push({ target: `page:${page.id}:${join([block.id, ...at])}`, value: String(node), ...k });
+  };
+  for (const b of page.blocks || []) if (b?.id) for (const [key, v] of Object.entries(b)) if (key !== "id" && key !== "type") walkAll(v, [key], b);
+  return out;
+}
+
+export function siteValues(site) {
+  const out = [];
+  const walkAll = (node, at) => {
+    if (node !== null && typeof node === "object") { for (const [k, v] of Array.isArray(node) ? node.entries() : Object.entries(node)) walkAll(v, [...at, k]); return; }
+    const k = ["string", "boolean"].includes(typeof node) ? siteKindAt(at) : null;
+    if (k) out.push({ target: `site:${join(at)}`, value: String(node), ...k });
+  };
+  for (const part of SITE_PARTS) walkAll(site[part], [part]);
+  return out;
+}
+
+const ANCHOR = /^#[a-z0-9-]{1,80}$/;
+const PATH = /^\/[a-z0-9\-/]*(\?[a-z]+=[a-z0-9-]+)?(#[a-z0-9-]{1,80})?$/;
+
+/* What is wrong with a new value of a given kind, as a code, or null. media: the library's ids. */
+export function valueProblem(kind, value, { options = [], media = null } = {}) {
+  if (typeof value !== "string") return "edit.value";
+  const v = value.trim();
+  if (!v) return "edit.empty";
+  if (/[\s<>"'`\\]/.test(v) && kind !== "choice") return "edit.markup";
+  if (kind === "link") {
+    if (v.length > 500) return "edit.long";
+    if (PATH.test(v) || ANCHOR.test(v)) return null;
+    if (/^mailto:[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v)) return null;
+    if (/^tel:\+?[0-9-]{3,20}$/.test(v)) return null;
+    let u;
+    try { u = new URL(v); } catch { return "edit.link"; }
+    // web addresses are https only, with no name or password in them
+    return u.protocol === "https:" && !u.username && !u.password && u.hostname.includes(".") ? null : "edit.link";
+  }
+  if (kind === "video") return embedProblems({ url: v, title: "-" }).length ? "edit.video" : null;
+  if (kind === "media") return /^m-[a-z0-9-]{2,80}$/.test(v) && (!media || media.has(v)) ? null : "edit.media";
+  if (kind === "icon" || kind === "choice") return options.includes(v) ? null : "edit.choice";
+  if (kind === "number") return /^\d{1,2}$/.test(v) ? null : "edit.number";
+  if (kind === "boolean") return v === "true" || v === "false" ? null : "edit.choice";
+  if (kind === "date") {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "edit.date";
+    const d = new Date(`${v}T00:00:00Z`);
+    return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v ? null : "edit.date";
+  }
+  return "edit.target";
+}
+
+/* The value a typed target names in the shipped content, with its kind, or null. */
+export function floorTyped(target, { site, pages }) {
+  const t = parseTarget(target);
+  if (!t || t.kind === "text") return null;
+  if (t.kind === "site") return siteValues(site).find((x) => x.target === target) || null;
+  const page = pages.find((p) => p.id === t.page);
+  return page ? pageValues(page).find((x) => x.target === target) || null : null;
+}
+
+function setTyped(target, { site, pages }, kind, value) {
+  const t = parseTarget(target);
+  const root = t.kind === "site" ? site : pages.find((p) => p.id === t.page).blocks.find((x) => x.id === t.block);
+  let node = root;
+  for (const k of t.path.slice(0, -1)) node = node[Array.isArray(node) ? Number(k) : k];
+  const last = Array.isArray(node) ? Number(t.path.at(-1)) : t.path.at(-1);
+  // a value keeps the type it had in the file: a size written 2 stays a number
+  const was = node[last];
+  node[last] = typeof was === "number" ? Number(value) : typeof was === "boolean" ? value === "true" : value;
+}
+
 /* Lay edits over raw content in place. Returns { textEdits, applied, problems }: text edits go to
    resolveText (text.mjs) like any other; the rest are written into site and the pages. */
-export function applyEdits(edits, { site, pages, text }) {
+export function applyEdits(edits, { site, pages, text }, { media = null } = {}) {
   const textEdits = {}, problems = [], applied = [];
   for (const [target, raw] of Object.entries(edits || {})) {
+    const typed = floorTyped(target, { site, pages });
+    if (typed) {
+      const problem = valueProblem(typed.kind, raw, { options: typed.options, media });
+      if (problem) { problems.push(`${target}: ${problem}`); continue; }
+      if (raw.trim() === typed.value) continue;
+      setTyped(target, { site, pages }, typed.kind, raw.trim());
+      applied.push(target);
+      continue;
+    }
     const floor = floorValue(target, { site, pages, text });
     const problem = editProblem(target, raw, floor);
     if (problem) { problems.push(`${target}: ${problem}`); continue; }

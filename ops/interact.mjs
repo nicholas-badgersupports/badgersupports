@@ -817,7 +817,10 @@ await part("edit button: a section switched off, by keyboard, under More words",
     `typed value: not marked on the page, found under More words by its key, opened as a focused list of On and Off (${JSON.stringify({ marked, found, control })})`);
   check(name.startsWith(`${words("edit.field.enabled")}, `) && !name.includes(target),
     `typed value: More words names it by what it is and its section, not by its key ("${name}")`);
-  await page.keyboard.press("ArrowDown");
+  // Native selects handle arrow keys differently across platforms; type the option's label.
+  await page.keyboard.type(words("edit.off"));
+  const selected = await page.locator("#edit-d-v").inputValue();
+  check(selected === "false", `typed value: keyboard selects Off (${selected})`);
   await page.keyboard.press("Tab");
   const onSave = await page.evaluate(() => document.activeElement?.type === "submit");
   await page.keyboard.press("Enter");

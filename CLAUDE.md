@@ -12,3 +12,10 @@ Plan: Repository Clarity Review, https://claude.ai/artifact/HsS2C3et5GR4wSDqkCyY
 - **Rule 4.** A code comment states a rule, an invariant, a side effect, failure behaviour or a compatibility constraint. Dates, rulings, quotations, run IDs, line numbers in other files and counts go in the commit or the decision record. A TODO names the queue item that tracks it, as in `TODO(AUDIT-14): what remains`.
 - **Rule 6.** Open no pull request on bss-intranet, badger-spill or badgersupports until Nicholas confirms that Netlify Deploy Previews are switched off. According to Netlify's agent guidance, which has not been checked on a live page, a preview gets a copy of the production database.
 - **Rule 7.** On badger-spill and badgersupports, a commit that changes only documentation carries `[skip netlify]` in its message. This holds until each repository has a `[build] ignore` rule. Until then, every push to `main` starts a production build, which costs 15 credits.
+
+## Exchange inbox
+
+On Nicholas's laptop this session's inbox is `../../Admin/Handoffs/Exchange/to-public/`. List it at the start and again before
+finishing, handle each `open` item as `../../Admin/Handoffs/Exchange/README.md` says, and send requests for Connect to
+`to-intranet/` and for Badger SPILL to `to-spill/`. A session that cloned this repository cannot reach that folder: it says so
+and leaves the inbox to the next laptop session.

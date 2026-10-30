@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 25 Oct 2026. `node ops/check.mjs` keeps this file under 180 lines.
+brief is `../MASTER-PROMPT.md`. Updated 30 Oct 2026. `node ops/check.mjs` keeps this file under 180 lines.
 
 ## Where it stands
 
@@ -13,8 +13,8 @@ Every person named in `content/` is fictional; real team members appear only thr
 |---|---|
 | Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text**. 24–25 Oct (run log §1–8): upload race and failure states, phone menu, a form changed while open, sign-in states and access freshness, width and helper text, stale replies and Back/Forward, the editor's keys, earlier versions and Restore, characters left |
 | Tested | `node ops/check.mjs --browser`: see "Evidence". Connect's feed against a fake Connect (`test/connect-feed.test.mjs`); the rest against a local rig with demo keys (setup file 5): not a live connection. A quick, source-only security audit, 23 Oct (run log §13; its report is kept outside the repository) |
-| Committed | `9bf0ed5` on GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository): the owner's publish of 25 Oct 11:36, holding the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006) |
-| Deployed | Read from Netlify 25 Oct (read-only): `9bf0ed5`, the cloud run with its packages (deploy `6ade3037`, `ready`, published 16:37 UTC), migrations 001–006 (`006_outbox_claims` applied by this deploy), two functions, `api` and `pages` (every page address); 38 pages changed. Connect's `7681b68` with migration 032 (20 Oct, not reread) |
+| Committed | GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository), is `a78d13e` (`git ls-remote`, 30 Oct). `9bf0ed5`, the owner's publish of 25 Oct 11:36, holds the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006); the editor patch `3106704` followed it |
+| Deployed | Read from Netlify 30 Oct (read-only): production is `a78d13e` (deploy `6ae4da91`, `ready`, published 17:58 UTC; `007_staff_method` applied by it; functions `api` and `pages`). `9bf0ed5` was deploy `6ade3037` (25 Oct, with its packages; migrations 001–006). Connect's production is `202b88f` (30 Oct 17:51 UTC; `036_google_signin` applied by it) |
 | Verified live | Netlify's deploy records only (`ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
 
 ## Slice 1 against §12
@@ -63,11 +63,11 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-Cloud run, 25 Oct 2026, without the photos (`node ops/check.mjs --browser --no-media` on each checkpoint's exact tree,
-Chromium 153 for the pinned 151; exit 0): 348 text keys over 74 files; the editor contract current; colours from tokens, no
-text under 14px; nothing private (208 files read); 59 pages; delivered files clean (98 files); tests 197 passed, 0 failed,
-1 skipped; 177 captures, no console errors or sideways scroll; 184 a11y and form checks; 113 pressed and timed. Every result
-is local or fixture. The laptop's last run with the photos (25 Oct 03:14) predates the cloud run. What each proves: the run log.
+Cloud run, 30 Oct 2026, without the photos (`node ops/check.mjs --browser --no-media` on this tree, Chromium 153 for the pinned 151;
+exit 0): 378 text keys over 74 files; the editor contract current; colours from tokens, no text under 14px; nothing private (211 files
+read); 59 pages; delivered files clean (98 files); tests 201 passed, 0 failed, 1 skipped; 177 captures, no console errors or sideways
+scroll; 184 a11y and form checks; 124 pressed and timed. Before the events checks read an injected day, the same run failed 2 of 123, as the laptop's run with the photos did that day (reported, GOOGLE-SIGNIN);
+they then passed with the server's day at 26 and 31 Oct, 1 and 5 Nov and 31 Dec. Every result is local or fixture. What each proves: the run log.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers
@@ -106,24 +106,24 @@ is local or fixture. The laptop's last run with the photos (25 Oct 03:14) predat
 
 ## Queue, in order
 
-Each item names its acceptance test; numbers stay, because other files cite them. **Done** 20 Oct: 2 (Our Team), 3 (photo
+Each item names its acceptance test; numbers stay, because other files cite them. **Shipped**: in a commit the owner published whose Netlify deploy reads `ready` (Deployed, above); not tried live (Blocker 1). **Done** 20 Oct: 2 (Our Team), 3 (photo
 source), 5 (entrance photos), 8 (rooms), 11 (live pages; two 301s). **Done** 23 Oct (run log): 4 (photo hosts, §11), 6
 (engagement; recommendations 1–3 are the owner's words), 9 (blocks, §5), 10 (migrations, §4), 12 (mailing list, closed,
 §6), 13 (forms #1, #2, #4, closed, §3; #8 waits for a PDF, Google answers 401), 14 (applications, letter, closed, previews
 at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `open`), 27, 28, 32 (colour; SPILL's lessons,
-§10), 29 (events between publishes, §7). **Added 24 Oct, queued only:** 33–39, from the brief, `PUBLIC-PLATFORM-PROMPT-2026-10-24.md`
-(P1–P5) and `PUBLIC-EXCHANGE-AND-SECURITY-PROMPT-2026-10-24.md` (X1–X4). P2 extends 15 and 16; P3, 18; P5, 22 and 23.
+§10), 29 (events between publishes, §7). **Added 24 Oct, queued only:** 33–39, from the brief, `../PUBLIC-PLATFORM-PROMPT-2026-10-24.md`
+(P1–P5) and `../PUBLIC-EXCHANGE-AND-SECURITY-PROMPT-2026-10-24.md` (X1–X4). P2 extends 15 and 16; P3, 18; P5, 22 and 23.
 
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
 15. **Editor and publishing** → **words done** 20 Oct (Edit text, `test/staff.test.mjs`); grants set by a super admin. 25 Oct:
-    keys shown, every word listed, earlier versions, Restore **built locally** (run log §7); a save publishes, built locally (cloud run §3). P2 → every field
+    keys shown, every word listed, earlier versions, Restore (run log §7) and a save that publishes (cloud run §3) **shipped** in `9bf0ed5`. P2 → every field
     (links, media, forms, navigation, sections, layouts, settings) saved live with grants, conflicts, immutable history,
     restore, sanitising, keyboard use; a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16.
 16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2).
 17. **Connect: forms** (`PUBLIC-SITE-FORMS`; answers reach Website Forms, **done** 20 Oct). Still → the switch opens and closes
     a form with no deploy; the server refuses a stale tab. Recount its "34 passing tests" first (`docs/COMMUNICATIONS.md`).
-18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **built locally** 25 Oct (cloud run §5): claims across instances
+18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **shipped, switched off**, in `9bf0ed5` (cloud run §5): claims across instances
     (migration 006), waits ≤15 min, unknown outcomes resent under one key, an idle run never wakes the database; receipts
     once a sender is verified; the workbook (Start Here, Dashboard, a tab per form, `cellText()`), fake Sheets only. One
     submission → one record, receipt, row. Off until: Connect's `publicReceipt`, the sender, the workbook and its account,
@@ -131,36 +131,36 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     Decisions and bulk mail stay Connect's, behind a director's approval.
 19. **Connect: exports**: events and resources **done** 23 Oct (`test/connect-feed.test.mjs`). Still → the team
     (`PUBLIC-TEAM-PROFILES`) and the wall (`PUBLIC-RESOURCES-AND-WALL`); a person appears only from their own profile.
-20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is built locally (25 Oct),
-    production unverified. **Google sign-in consumer live 30 Oct, a78d13e** (Connect GOOGLE-SIGNIN): no `/staff/`
+20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is on Connect's GitHub `main`
+    and in its production `202b88f` (read 30 Oct); not tried live. **Google sign-in consumer live 30 Oct, a78d13e** (Connect GOOGLE-SIGNIN): no `/staff/`
     help; Connect's shared quote (`/api/signin-quotes`); sessions keep `method` (migration 007) for the status check. No Google code here.
 21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated.
 22. **Analytics** (Q1; §9) → an event dictionary; exclusions before any tag loads; no Connect identity; network read.
     Netlify Web Analytics, reported on 24 Oct → verified per project and in billing; no other collector.
 23. ~~Netlify~~ keys and database 20 Oct; **cost plan** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Waits for a yes
     → check form state at first keystroke. No new subscriptions (24 Oct): every change is costed against the allowance.
-24. ~~The §12 server tests~~ **mapped and built locally** 25 Oct (cloud run §4): each scenario has a fixture test; three new
+24. ~~The §12 server tests~~ **mapped, shipped** in `9bf0ed5` (cloud run §4): each scenario has a fixture test; three new
     (staff-only caching, analytics leakage, editor to public page). Revocation stays Connect's (`publicSsoStatus`, item 20).
 25. **Before the switch**: shortlinks, the six subdomains, the ribbons path, the privacy policy, mobile performance,
     redirects, SEO and accessibility checked on a preview; a handoff and a reversible switch plan.
 26. **The one-week promise** on the workshop confirmation → confirmed by Programs, or removed.
-30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, not on GitHub 25 Oct); the site reads it
-    (`ops/connect-feed.mjs`). `endDate` **built locally** 25 Oct (cloud run §2): an event over several days shows on each day, names its dates, leaves after its last.
+30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, now in its production `202b88f`); the site reads it
+    (`ops/connect-feed.mjs`). `endDate` **shipped** in `9bf0ed5` (cloud run §2): an event over several days shows on each day, names its dates, leaves after its last.
 31. **Open the workshop and feedback forms** on the live site once Programs sees answers in Connect (owner's call).
 33. **Functionality and UI pass** (24 Oct brief; `docs/OVERNIGHT-RUN-2026-10-24.md`) → (a) form failures **built**; (b) the
     sign-in states and a shorter staff page **built**; (c) access freshness **built**; (d) width and helper text **built** (§5, §8);
-    (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All locally, each on a regression shown failing first.
-34. **Publishing and refresh** (P1) → slices 1–6 **built locally** 25 Oct (cloud run §3): a save is the published revision,
-    drawn by a page function with every cache ≤30 min; the notice, last update, Refresh now; no query forces it. Live: two
-    packages, `netlify.toml`, a deploy (owner). Slice 7 **built locally**: links, photos, choices, on/off, numbers, dates (inventory in `docs/research/`); photos and link addresses opened from the page, each value named (patch, 25 Oct).
-35. ~~No decorative coloured bars~~ **built locally** 25 Oct (cloud run §1): `.form-head`'s 8px accent top is gone; `test/pages.test.mjs`
+    (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All **shipped** in `9bf0ed5`, each on a regression shown failing first.
+34. **Publishing and refresh** (P1) → slices 1–6 **shipped** in `9bf0ed5` (cloud run §3): a save is the published revision,
+    drawn by a page function with every cache ≤30 min; the notice, last update, Refresh now; no query forces it. Its two
+    packages and `netlify.toml` went live with it. Slice 7 **shipped** in `9bf0ed5`: links, photos, choices, on/off, numbers, dates (inventory in `docs/research/`); photos and link addresses opened from the page, each value named, **shipped** in `3106704`.
+35. ~~No decorative coloured bars~~ **shipped** in `9bf0ed5` (cloud run §1): `.form-head`'s 8px accent top is gone; `test/pages.test.mjs`
     checks every edge, longhand, inset shadow, painted pseudo-element, gradient and SVG strip, and failed first on `.form-head`;
     focus, selected, status and charts keep colour (R.31). Screenshots before and after in the cloud artifact.
 36. **A `to-public/` inbox** (X1) → the Exchange README and `../../CLAUDE.md` name three sessions; sibling handoffs; "Commit;
-    don't push" corrected; a fictional item found in all three. Outside `site/`, so it waits for the owner's go-ahead.
-37. ~~Clean delivered files~~ **built locally** 25 Oct (cloud run §7): CSS and scripts minified by parsers before hashing; `dist/`
-    ships only its list; a gate catches planted notes, maps and stray files; payload −33% gzip. Packages: owner installs.
-38. ~~Crawlers and abuse~~ **built locally** 25 Oct (cloud run §6): limits audited; only the platform's address counts; 40 sends
+    don't push" corrected; a fictional item found in all three. **Registered** 30 Oct (owner's go-ahead that day): the inbox, a pointer in `CLAUDE.md` and `AGENTS.md`, a registration item in each sibling's inbox; still → Connect's and SPILL's own pointers, theirs to make.
+37. ~~Clean delivered files~~ **shipped** in `9bf0ed5` (cloud run §7): CSS and scripts minified by parsers before hashing; `dist/`
+    ships only its list; a gate catches planted notes, maps and stray files; payload −33% gzip; its packages went live with it.
+38. ~~Crawlers and abuse~~ **shipped** in `9bf0ed5` (cloud run §6): limits audited; only the platform's address counts; 40 sends
     an hour per form per address; 429 with Retry-After; form state cached a minute; `/crawlers/` and robots ask for `From`, not collected.
 39. **Netlify features already included** (P5; X4) → map **done** 25 Oct (cloud run §8; `docs/ARCHITECTURE.md`): used, available,
     unknown; Lighthouse run locally; Netlify Forms pilot not recommended. Waits for the owner to approve a first slice.
@@ -173,6 +173,6 @@ never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish
 
 ## Exchange
 
-`../../Admin/Handoffs/Exchange/`. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
-`PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`. Open in `to-intranet/`: `APPLICATION-FORMS-*` (in progress),
-`APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`. No `to-public/` yet (36).
+`../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
+`PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`.
+Their replies say migration 035 "applies on publish": `73cf3cf` is in Connect's production `202b88f`, whose deploy applied only 036, so 035 ran before it (inferred from the deploy record, not read). Open from this session: none. Owed by Connect: its XSEC-1 handoffs.

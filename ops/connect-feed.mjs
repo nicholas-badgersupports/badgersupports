@@ -24,6 +24,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { call, serviceConfig } from "../netlify/lib/connect.mjs";
 import { addDays } from "../src/render/events.mjs";
+import { chicagoDate } from "../src/render/context.mjs";
 
 export const FEED_SCHEMA = "bss.connect-feed/1";
 const HM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -157,10 +158,24 @@ export function mapEvents(reply, rules) {
   return { events: { schema: "bss.events-fixture/1", fixture: false, source: "connect", timezone: reply.tz || "America/Chicago", recurring, dated, rooms }, dropped };
 }
 
+/* The resource footer needs a calendar day. Connect sends a timestamp; keep date-only values as
+   written, and put instants on their Chicago day. Unknown optional metadata leaves the date off. */
+function resourceDay(value) {
+  if (typeof value !== "string") return null;
+  const day = value.slice(0, 10);
+  const midnight = new Date(`${day}T00:00:00Z`);
+  if (!DAY.test(day) || !Number.isFinite(midnight.getTime()) || midnight.toISOString().slice(0, 10) !== day) return null;
+  if (value === day) return day;
+  // An instant needs its own offset; never interpret it in the build machine's timezone.
+  if (!/^T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value.slice(10))) return null;
+  const instant = new Date(value);
+  return Number.isFinite(instant.getTime()) ? chicagoDate(instant) : null;
+}
+
 /* Connect's approved resources, in the fixture's shape (Connect projects them as the fixture does). */
 export function mapResources(reply) {
   const resources = Array.isArray(reply.resources) ? reply.resources.filter((r) => r && r.id && r.name) : [];
-  return { schema: "bss.resources-fixture/1", fixture: false, source: "connect", sourceUpdatedAt: reply.sourceUpdatedAt || null, resources };
+  return { schema: "bss.resources-fixture/1", fixture: false, source: "connect", sourceUpdatedAt: resourceDay(reply.sourceUpdatedAt), resources };
 }
 
 /* Both lists, or a problem saying why not. Never throws. */

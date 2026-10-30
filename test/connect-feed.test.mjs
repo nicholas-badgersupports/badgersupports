@@ -29,7 +29,7 @@ const EVENTS = {
     { id: "e4", type: "workshop", title: "Example workshop with no time yet", short: "", date: "2026-10-24", endDate: "2026-10-24", start: "", end: "", room: "", full: false },
   ],
 };
-const RESOURCE_REPLY = { ok: true, schema: 1, catalogVersion: "cat-1", sourceUpdatedAt: RESOURCES.sourceUpdatedAt, publication: { updatedBy: WHO }, unchanged: false, resources: RESOURCES.resources };
+const RESOURCE_REPLY = { ok: true, schema: 1, catalogVersion: "cat-1", sourceUpdatedAt: "2026-08-02T04:30:00.000Z", publication: { updatedBy: WHO }, unchanged: false, resources: RESOURCES.resources };
 
 /* A fake Connect: answers the two public actions and records what it was sent. */
 function fakeConnect({ events = EVENTS, resources = RESOURCE_REPLY, fail = null } = {}) {
@@ -120,6 +120,29 @@ test("resources keep Connect's list and never who approved it", () => {
   assert.doesNotMatch(JSON.stringify(out), new RegExp(WHO));
 });
 
+test("resource update dates preserve calendar dates and convert timestamp instants to Chicago days", () => {
+  for (const [sourceUpdatedAt, day] of [
+    ["2026-08-01", "2026-08-01"],
+    ["2024-02-29", "2024-02-29"],
+    ["2026-10-25T05:14:10.380Z", "2026-10-25"],
+    ["2026-08-02T04:30:00.000Z", "2026-08-01"],
+    ["2026-01-15T05:59:00Z", "2026-01-14"],
+    ["2026-10-25T00:30:00+02:00", "2026-10-24"],
+  ]) {
+    const out = mapResources({ ...RESOURCE_REPLY, sourceUpdatedAt });
+    assert.equal(out.sourceUpdatedAt, day, sourceUpdatedAt);
+    assert.deepEqual(out.resources, RESOURCE_REPLY.resources, "the public resource records stay intact");
+  }
+});
+
+test("invalid or missing optional resource update dates are omitted without losing resources", () => {
+  for (const sourceUpdatedAt of [undefined, null, "", "not a date", "2026-02-30", "2026-13-01", "2026-02-30T12:00:00Z", "2026-10-25T12:00:00", 123, {}]) {
+    const out = mapResources({ ...RESOURCE_REPLY, sourceUpdatedAt });
+    assert.equal(out.sourceUpdatedAt, null, JSON.stringify(sourceUpdatedAt));
+    assert.deepEqual(out.resources, RESOURCE_REPLY.resources);
+  }
+});
+
 test("reading Connect: signed, and a problem in words when it cannot", async () => {
   const ok = fakeConnect();
   const feed = await readConnectFeed(ok.cfg, RULES);
@@ -192,6 +215,8 @@ test("the published site shows Connect's events, each page its own, and no sampl
   const said = [];
   const report = await build({ production: true, connectConfig: fakeConnect().cfg, out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", log: (s) => said.push(s) });
   const read = (p) => fs.readFileSync(path.join(out, p), "utf8");
+  assert.match(read("resources/index.html"), /<span class="res-updated">Last Updated August 1, 2026<\/span>/,
+    "Connect's timestamp renders as its Chicago calendar day in the production resource list");
   assert.deepEqual({ ...report.connect, dropped: report.connect.dropped.length }, { events: 3, weekly: 2, resources: RESOURCES.resources.length, dropped: 1, version: { events: "ev-1", resources: "cat-1" } });
   assert.ok(said.some((s) => s.includes("left out event e4")), "the build says what it left out");
 

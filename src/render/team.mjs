@@ -17,9 +17,9 @@ import { photoProblems } from "./media.mjs";
 export const TEAM_SCHEMA = "bss.team-fixture/1";
 export const GROUPS = ["directors", "associate-directors", "staff", "volunteers", "advisors"];
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-/* A public contact is an organisation address, never a personal one, unless Connect says the
-   member chose to publish their own. The fixture uses example.org. */
-const CONTACT_RE = /@(badgersupports\.org|example\.org|example\.com)$/;
+/* A public contact is at badgersupports.org or wisc.edu, never a personal address. example.org and
+   example.com are for fixtures and tests. */
+const CONTACT_RE = /@(badgersupports\.org|wisc\.edu|example\.org|example\.com)$/;
 
 export const TEAM_PATH = "/about/our-team/";
 export const personPath = (slug) => `${TEAM_PATH}${slug}/`;
@@ -40,7 +40,7 @@ export function teamProblems(team, { media = null, production = false } = {}) {
     for (const k of ["name", "title", "role"]) if (!p[k]) out.push(`${at}: needs a ${k}`);
     if (!GROUPS.includes(p.group)) out.push(`${at}: group must be one of ${GROUPS.join(", ")}`);
     if (!Array.isArray(p.bio) || p.bio.some((x) => typeof x !== "string")) out.push(`${at}: bio is a list of paragraphs`);
-    if (p.contact && !CONTACT_RE.test(String(p.contact).replace(/^mailto:/, ""))) out.push(`${at}: a public contact is an organisation address`);
+    if (p.contact && !CONTACT_RE.test(String(p.contact).replace(/^mailto:/, ""))) out.push(`${at}: a public contact is a badgersupports.org or wisc.edu address`);
     if (p.photo) for (const x of photoProblems(p.photo, { media, production })) out.push(`${at}: ${x}`);
     for (const a of p.aliases || []) if (!/^\/[^\s]*[^/]$/.test(a)) out.push(`${at}: alias ${a}: an old address starts with "/" and has no trailing slash`);
   }

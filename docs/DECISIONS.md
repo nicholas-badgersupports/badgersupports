@@ -339,3 +339,15 @@ site's side as `docs/ARCHITECTURE.md` "This site's half" records: help removed, 
 **Live, 30 Oct 2026.** Published as `a78d13e`, with migration 007 and `CONNECT_SESSION_STATUS=on`, so switching Google
 off in Connect now reaches staff sessions here at their next ten-minute check. It carried another session's tested fix
 for Connect's resource timestamp, which the production build needed.
+
+## 30 October 2026 · the team and the Wall (Owner)
+
+His answers to the three questions at the end of the item 19 report, quoted. They settle the decisions Connect's
+20 Oct replies to `PUBLIC-TEAM-PROFILES` and `PUBLIC-RESOURCES-AND-WALL` were waiting for.
+
+| Question | Answer | Effect |
+|---|---|---|
+| May a public profile show a personal email, or only an @badgersupports.org one? | "@badgersupports.org or @wisc.edu" | `src/render/team.mjs` accepts both; any other address stops the publish |
+| Who reviews public profiles, Wall of Support notes and public resource suggestions before anything goes public or changes? | "Resource-editing directors" | Connect's to build, for profiles and Wall notes (Exchange `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`) and for item 21's suggestions |
+| Consent words on the public-profile switch, and a release sentence on the photo upload? | "No words, stop having so much helper text" | neither carries consent or release text |
+

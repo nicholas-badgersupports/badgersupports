@@ -65,7 +65,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 Cloud run, 30 Oct 2026, without the photos (`node ops/check.mjs --browser --no-media` on this tree, Chromium 153 for the pinned 151;
 exit 0): 378 text keys over 74 files; the editor contract current; colours from tokens, no text under 14px; nothing private (211 files
-read); 59 pages; delivered files clean (98 files); tests 201 passed, 0 failed, 1 skipped; 177 captures, no console errors or sideways
+read); 59 pages; delivered files clean (98 files); tests 205 passed, 0 failed, 1 skipped (item 19's run); 177 captures, no console errors or sideways
 scroll; 184 a11y and form checks; 124 pressed and timed. Before the events checks read an injected day, the same run failed 2 of 123, as the laptop's run with the photos did that day (reported, GOOGLE-SIGNIN);
 they then passed with the server's day at 26 and 31 Oct, 1 and 5 Nov and 31 Dec. Every result is local or fixture. What each proves: the run log.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
@@ -78,7 +78,7 @@ they then passed with the server's day at 26 and 31 Oct, 1 and 5 Nov and 31 Dec.
    only the functions; without them a publish stops with "Nothing was built" and the last deploy stays.
 3. **Releases come from the laptop**, in a new folder outside the synced one: only it has the 23 Drive originals,
    and the synced `dist/` holds conflict copies that cannot be deleted here (`docs/DESIGN.md`).
-5. **Connect exports** for the Wall of Support and the team do not exist, so the live build shows neither (item 19).
+5. **Connect exports** for the Wall of Support and the team do not exist; the site's reader waits, off (item 19).
 6. **Cost**: prices read 23 Oct (`docs/ARCHITECTURE.md`, "Cost"); what each database used is in Billing → Usage only.
 7. **The privacy policy** still names Google Sites, Analytics and Forms: the owner's and a legal review before launch.
 8. **Analytics is off.** The GA4 property is unverified; the connector asked to reauthenticate.
@@ -129,8 +129,8 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     submission → one record, receipt, row. Off until: Connect's `publicReceipt`, the sender, the workbook and its account,
     the schedule (owner, `docs/COMMUNICATIONS.md`). Confidential answers left out unless the owner says (R.46).
     Decisions and bulk mail stay Connect's, behind a director's approval.
-19. **Connect: exports**: events and resources **done** 23 Oct (`test/connect-feed.test.mjs`). Still → the team
-    (`PUBLIC-TEAM-PROFILES`) and the wall (`PUBLIC-RESOURCES-AND-WALL`); a person appears only from their own profile.
+19. **Connect: exports**: events and resources **done** 23 Oct; team and wall read against a fake Connect, off (`exports`), 30 Oct
+    (`test/connect-feed.test.mjs`). Still → Connect's `publicTeam`, `publicWallNotes` (Exchange, 30 Oct); a person appears only from their own profile.
 20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is on Connect's GitHub `main`
     and in its production `202b88f` (read 30 Oct); not tried live. **Google sign-in consumer live 30 Oct, a78d13e** (Connect GOOGLE-SIGNIN): no `/staff/`
     help; Connect's shared quote (`/api/signin-quotes`); sessions keep `method` (migration 007) for the status check. No Google code here.
@@ -174,5 +174,5 @@ never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish
 ## Exchange
 
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
-`PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`.
-Their replies say migration 035 "applies on publish": `73cf3cf` is in Connect's production `202b88f`, whose deploy applied only 036, so 035 ran before it (inferred from the deploy record, not read). Open from this session: none. Owed by Connect: its XSEC-1 handoffs.
+`PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`; 30 Oct, from SPILL: `SPILL-CRAWLER-CONTACT` (`/crawlers/` now speaks for this site only).
+Their replies say migration 035 "applies on publish": `73cf3cf` is in Connect's production `202b88f`, whose deploy applied only 036, so 035 ran before it (inferred from the deploy record, not read). Open from this session: the two inbox registrations; item 19's `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30` (30 Oct). Owed by Connect: its XSEC-1 handoffs.

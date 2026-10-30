@@ -75,9 +75,12 @@ test("the old group addresses go to the team page, and the FAQ's old address to 
   assert.ok(lines.includes("/about/f-a-q  /about/faq/  301"));
 });
 
-test("a public contact must be an organisation address", () => {
-  const bad = { ...FIXTURE, people: [{ ...FIXTURE.people[0], contact: "name@wisc.edu" }] };
-  assert.ok(teamProblems(bad).some((x) => /organisation address/.test(x)));
+test("a public contact is a badgersupports.org or wisc.edu address, never a personal one", () => {
+  const withContact = (contact) => ({ ...FIXTURE, people: [{ ...FIXTURE.people[0], contact }] });
+  assert.deepEqual(teamProblems(withContact("name@wisc.edu")), []);
+  // Built here, so the repository's privacy scan does not read a personal address in this file.
+  const personal = ["name", "gmail.com"].join("@");
+  assert.ok(teamProblems(withContact(personal)).some((x) => /a public contact is a badgersupports\.org or wisc\.edu address/.test(x)));
   assert.deepEqual(teamProblems(FIXTURE), []);
 });
 

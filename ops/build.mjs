@@ -261,13 +261,14 @@ export function loadContent({ production = false, launch = production, textEdits
   for (const page of pages) for (const b of page.blocks || []) if (b.series && !series.includes(b.series)) problems.push(`content/pages: ${page.id}.${b.id} names series "${b.series}"; the series are ${series.join(", ")} (content/connect-feed.json)`);
   photos(events, eventsAt);
   events.places = { ...eventPlaces(places), ...rooms };
-  // The wall's moderated source and Connect's profile export do not exist yet. A published site shows
-  // neither sample: the wall renders nothing and the team page its words without people.
-  const wall = production ? { schema: "bss.wall-fixture/1", fixture: false, notes: [] } : readJson("content/fixtures/wall-notes.json");
+  // The wall and the team: Connect's exports when the build read them (ops/connect-feed.mjs). Without them a
+  // published site shows neither sample: the wall renders nothing and the team page its words without people.
+  const wall = feed?.wall ? structuredClone(feed.wall) : production ? { schema: "bss.wall-fixture/1", fixture: false, notes: [] } : readJson("content/fixtures/wall-notes.json");
   // The team: Connect's opt-in public profiles (src/render/team.mjs). Each published one gets a page.
-  const team = production ? { schema: "bss.team-fixture/1", fixture: false, people: [] } : readJson("content/fixtures/team.json");
-  for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`content/fixtures/team.json: ${p}`);
-  photos({ people: publicPeople(team) }, "content/fixtures/team.json");
+  const teamAt = feed?.team ? "Connect's public team export" : "content/fixtures/team.json";
+  const team = feed?.team ? structuredClone(feed.team) : production ? { schema: "bss.team-fixture/1", fixture: false, people: [] } : readJson("content/fixtures/team.json");
+  for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`${teamAt}: ${p}`);
+  photos({ people: publicPeople(team) }, teamAt);
   const slugs = new Set(publicPeople(team).map((p) => p.slug));
   // Resources: Connect's resource records, projected as its projectResource() does.
   const resourcesAt = feed?.resources ? "Connect's public resource list" : "content/fixtures/resources.json";
@@ -291,7 +292,7 @@ export function loadContent({ production = false, launch = production, textEdits
   const roomPages = placePages(places, makeT(text));
   for (const p of roomPages) if (paths.has(p.path)) throw new Error(`content/places: ${p.path} is also a page in content/pages`);
   const peoplePages = personPages(team, makeT(text));
-  for (const p of peoplePages) if (paths.has(p.path)) throw new Error(`content/fixtures/team.json: ${p.path} is also a page in content/pages`);
+  for (const p of peoplePages) if (paths.has(p.path)) throw new Error(`${teamAt}: ${p.path} is also a page in content/pages`);
   // A closed form's review page, on the prototype only (src/render/blocks/form.mjs).
   const previewPages = production ? [] : formPreviewPages(forms, makeT(text));
   for (const p of previewPages) if (paths.has(p.path)) throw new Error(`content/forms: ${p.path} is also a page in content/pages`);
@@ -450,12 +451,13 @@ export function eventsForServer(content, { connect }) {
 
 /* `connect` reads Connect's public events and resources (ops/connect-feed.mjs) in place of the
    fixtures; production always does, and refuses to build when Connect cannot be read, so the site
-   already published stays up. `connectConfig` is for tests: Connect's address, key and a fetch. */
-export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, edits = undefined, connect = production, connectConfig = undefined, log = () => {} } = {}) {
+   already published stays up. `connectConfig` is for tests: Connect's address, key and a fetch.
+   `feedRules` is for tests too: content/connect-feed.json with its `exports` turned on or off. */
+export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, edits = undefined, connect = production, connectConfig = undefined, feedRules = null, log = () => {} } = {}) {
   const prototype = !production;
   let feed = null;
   if (connect) {
-    feed = await readConnectFeed(connectConfig === undefined ? feedConfig() : connectConfig, JSON.parse(fs.readFileSync(path.join(ROOT, "content/connect-feed.json"), "utf8")));
+    feed = await readConnectFeed(connectConfig === undefined ? feedConfig() : connectConfig, feedRules || JSON.parse(fs.readFileSync(path.join(ROOT, "content/connect-feed.json"), "utf8")));
     if (feed.problem) throw Object.assign(new Error(`Connect: ${feed.problem}. Nothing was built.`), { problems: [feed.problem] });
     for (const d of feed.dropped) log(`connect: left out ${d}`);
   }
@@ -571,7 +573,7 @@ export async function build({ production = false, launch = production, today = n
 
   const report = {
     today: day, prototype, launch,
-    connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, dropped: feed.dropped, version: feed.version } : null,
+    connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, ...(feed.team ? { team: publicPeople(feed.team).length } : {}), ...(feed.wall ? { wall: feed.wall.notes.length } : {}), dropped: feed.dropped, version: feed.version } : null,
     edits: content.edits,
     pages: pageReport,
     calendar: calendar.map((r) => icsPath(r.event)),
@@ -609,7 +611,7 @@ if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
       log: process.argv.includes("--verbose") ? console.log : () => {},
     });
     console.log(`built ${r.pages.length} pages for ${r.today}${r.prototype ? " (prototype)" : ""}${r.launch ? ", forms as at launch" : ""}`);
-    console.log(r.connect ? `  from Connect: ${r.connect.events} events, ${r.connect.weekly} weekly groups, ${r.connect.resources} resources${r.connect.dropped.length ? `; left out ${r.connect.dropped.length} (--verbose names them)` : ""}` : "  events and resources from the hand-typed fixtures");
+    console.log(r.connect ? `  from Connect: ${r.connect.events} events, ${r.connect.weekly} weekly groups, ${r.connect.resources} resources${r.connect.team != null ? `, ${r.connect.team} team profiles` : ""}${r.connect.wall != null ? `, ${r.connect.wall} Wall notes` : ""}${r.connect.dropped.length ? `; left out ${r.connect.dropped.length} (--verbose names them)` : ""}` : "  events and resources from the hand-typed fixtures");
     console.log(`  css ${r.css.bytes} B · js ${Object.values(r.js).reduce((a, b) => a + b, 0)} B · ${r.media.variants} image variants (${r.media.encoded} newly encoded)`);
     console.log(`  ${r.pendingLinks.length} internal links still point at the live site · ${r.redirectsWaiting.length} redirects wait for their page`);
     if (r.edits.applied.length || r.edits.skipped.length) console.log(`  ${r.edits.applied.length} edited words laid over the files${r.edits.skipped.length ? `; skipped ${r.edits.skipped.length}: ${r.edits.skipped.join(", ")}` : ""}`);

@@ -44,11 +44,17 @@ problems. It checks:
 
 `--production` reads Connect's public event and resource lists as it builds (`ops/connect-feed.mjs`) and
 refuses a hand-typed fixture for either; if Connect cannot be read, nothing is built. Two sources have no
-export yet, so a production build shows neither sample:
+export in Connect yet, so a production build shows neither sample:
 
-- the Wall of Support renders nothing until the moderated source exists (`PUBLIC-RESOURCES-AND-WALL`);
-- the team page shows its words without people until Connect's public profile export exists
-  (`PUBLIC-TEAM-PROFILES-2026-10-20`).
+- the Wall of Support renders nothing until Connect sends approved notes (`publicWallNotes`, Exchange
+  `PUBLIC-WALL-OF-SUPPORT-2026-10-30`);
+- the team page shows its words without people until Connect's public profile export exists (`publicTeam`,
+  Exchange `PUBLIC-TEAM-PROFILES-2026-10-30`).
+
+The site's reader for both is built and tested against a fake Connect (`mapTeam` and `mapWall` in
+`ops/connect-feed.mjs`): a person appears only from a profile Connect marks published, carrying its public
+fields and nothing else, and a note carries its words only. Each is read only once `exports` in
+`content/connect-feed.json` turns it on, which waits until Connect answers that action live.
 
 It then refuses, after rendering, anything that still leans on the live site (`cutoverProblems()`): a live
 address in `content/routes.json` with no page here and no alias to one, and a link to a page this site does not
@@ -572,7 +578,7 @@ SQL, stops the deploy before it publishes, and the site online stays as it was. 
 | Application files reaching Connect | stored and claimed here; `delivered_at` is never set | Connect fetching them by id (Exchange `APPLICATION-FILES-HANDOVER`) |
 | Publishing edits | built locally 25 Oct 2026: a save is the published revision, drawn by the page function ("Publishing a save") | the two packages, the function's lines in `netlify.toml` and a deploy (owner actions) |
 | Opening and closing forms from Connect | the switch row works; nothing in Connect writes it | `PUBLIC-SITE-FORMS` |
-| Wall, team | samples in the prototype; a production build shows neither | `PUBLIC-RESOURCES-AND-WALL`, `PUBLIC-TEAM-PROFILES-2026-10-20` |
+| Wall, team | samples in the prototype; the reader is built against a fake Connect and off (`exports`), so a production build shows neither | Connect's `publicTeam` and `publicWallNotes` and the owner's decisions they name (Exchange `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`) |
 | Recent events | a production build lists none: Connect's public export holds upcoming events only. The site reads a `recent` list when Connect sends one (`ops/connect-feed.mjs`) | Exchange `PUBLIC-EVENTS-RECENT-2026-10-23`; `../WORK.md` item 30 |
 | The resource viewer | not started | `PUBLIC-RESOURCES-AND-WALL`; `../../MASTER-PROMPT.md` §8 |
 

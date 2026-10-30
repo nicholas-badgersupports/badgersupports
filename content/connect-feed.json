@@ -27,5 +27,10 @@
     { "place": "memorial-union-tripp", "words": ["tripp commons"] },
     { "place": "lcm", "words": ["lcm student center", "lcm"] }
   ],
-  "review": "Proposed 23 Oct 2026 (overnight run, decision 2.4). Words are matched whole, case and punctuation ignored, longest first; a room that matches nothing is shown in Connect's words with no link. The room names are Connect's own (its saved rooms include 'SAC Caucus Room' and 'Student Mental Health Hub, Student Activity Center 3203'). 'Hearing room' and 'multipurpose room' match only with the building named, since other buildings have rooms by those names."
+  "review": "Proposed 23 Oct 2026 (overnight run, decision 2.4). Words are matched whole, case and punctuation ignored, longest first; a room that matches nothing is shown in Connect's words with no link. The room names are Connect's own (its saved rooms include 'SAC Caucus Room' and 'Student Mental Health Hub, Student Activity Center 3203'). 'Hearing room' and 'multipurpose room' match only with the building named, since other buildings have rooms by those names.",
+  "exports": {
+    "team": false,
+    "wall": false,
+    "review": "Connect has not built publicTeam or publicWallNotes yet (Exchange to-intranet/PUBLIC-TEAM-PROFILES-2026-10-30.md and PUBLIC-WALL-OF-SUPPORT-2026-10-30.md). Turn one to true only after Connect answers it on the live site: Connect answers an action it does not have as it answers a refused one, so with one on and Connect without it, a publish builds nothing. While both are false, the published site shows no team members and no Wall of Support."
+  }
 }

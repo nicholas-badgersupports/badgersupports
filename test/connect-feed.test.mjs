@@ -6,8 +6,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { build, ROOT, loadContent } from "../ops/build.mjs";
-import { TEAM_PATH } from "../src/render/team.mjs";
-import { feedConfig, feedConfigGaps, feedRuleProblems, mapEvents, mapResources, readConnectFeed, readFeedRules, roomFor } from "../ops/connect-feed.mjs";
+import { TEAM_PATH, teamProblems } from "../src/render/team.mjs";
+import { feedConfig, feedConfigGaps, feedRuleProblems, mapEvents, mapResources, mapTeam, mapWall, readConnectFeed, readFeedRules, roomFor } from "../ops/connect-feed.mjs";
 import { BLOCKS } from "../src/render/registry.mjs";
 import { makeContext } from "../src/render/context.mjs";
 
@@ -31,8 +31,36 @@ const EVENTS = {
 };
 const RESOURCE_REPLY = { ok: true, schema: 1, catalogVersion: "cat-1", sourceUpdatedAt: "2026-08-02T04:30:00.000Z", publication: { updatedBy: WHO }, unchanged: false, resources: RESOURCES.resources };
 
-/* A fake Connect: answers the two public actions and records what it was sent. */
-function fakeConnect({ events = EVENTS, resources = RESOURCE_REPLY, fail = null } = {}) {
+/* Connect's team and Wall exports in the shapes the Exchange items ask for (bss.team/1, bss.wall/1). Every person
+   and note is fictional. PRIVATE holds values a member's account has and their public profile must never carry;
+   they are planted on a published profile so the build can be shown to drop them. */
+const PRIVATE = { phone: "phone-priv-xq7", ssid: "ssid-priv-xq7", email: "private.xq7@example.com", tier: "tier-priv-xq7", roster: "roster-row-xq7", permissions: ["perm-priv-xq7"] };
+const TEAM_REPLY = {
+  ok: true, schema: "bss.team/1", generatedAt: "2026-10-30T15:00:00Z",
+  people: [
+    { id: "cp-1", slug: "riley-example", published: true, name: "Riley Example", pronouns: "they/them", classYear: 2027, title: "Director of Outreach", role: "Outreach", group: "directors", order: 1,
+      bio: ["Riley wrote this paragraph about themself."], photo: { url: "https://home.badgersupports.org/o/photo/cp-1.webp", alt: "Riley Example smiling", width: 600, height: 600 },
+      contact: "riley.example@example.org", aliases: ["/about/our-team/sample-group/riley-e"], ...PRIVATE },
+    { id: "cp-2", slug: "jordan-sample", published: false, name: "Jordan Sample", title: "Volunteer", role: "Volunteer", group: "volunteers", bio: ["Jordan has not made this public."] },
+    { id: "cp-3", slug: "casey-test", published: true, name: "Casey Test", credentials: "PhD", title: "Faculty Advisor", role: "Advisor", group: "advisors", bio: ["Casey wrote this one."] },
+  ],
+};
+const WALL_REPLY = {
+  ok: true, schema: "bss.wall/1",
+  notes: [
+    { id: "n1", text: "  A fictional   approved note.  ", approvedAt: "2026-10-29T12:00:00Z", approvedBy: WHO },
+    { id: "n2", text: "Another fictional approved note.", approvedAt: "2026-10-29T12:05:00Z" },
+    { id: "n3", text: "   ", approvedAt: "2026-10-29T12:06:00Z" },
+    { id: "n4", text: "x".repeat(281), approvedAt: "2026-10-29T12:07:00Z" },
+    { id: "n2", text: "The same id again.", approvedAt: "2026-10-29T12:08:00Z" },
+    { id: "n5", text: "Another fictional approved note.", approvedAt: "2026-10-29T12:09:00Z" },
+  ],
+};
+const EXPORTS_ON = { ...RULES, exports: { team: true, wall: true } };
+
+/* A fake Connect: answers the public actions and records what it was sent. `refuse` names one action it answers
+   as Connect answers an action it does not have; so does any action it has no reply for. */
+function fakeConnect({ events = EVENTS, resources = RESOURCE_REPLY, team = TEAM_REPLY, wall = WALL_REPLY, fail = null, refuse = null } = {}) {
   const calls = [];
   return {
     calls,
@@ -42,7 +70,8 @@ function fakeConnect({ events = EVENTS, resources = RESOURCE_REPLY, fail = null 
         calls.push({ url, headers: init.headers, body: JSON.parse(init.body) });
         if (fail === "unreachable") throw new Error("offline");
         const action = JSON.parse(init.body).action;
-        return { json: async () => (fail === "refused" ? { ok: false } : action === "publicEvents" ? events : resources) };
+        const replies = { publicEvents: events, publicResourceExport: resources, publicTeam: team, publicWallNotes: wall };
+        return { json: async () => (fail === "refused" || action === refuse || !replies[action] ? { ok: false, error: "Unknown action." } : replies[action]) };
       },
     },
   };
@@ -259,6 +288,8 @@ test("the published site shows Connect's events, each page its own, and no sampl
   assert.deepEqual(robots.match(/^Disallow: .*$/gm), ["Disallow: /staff/", "Disallow: /api/"]);
   assert.match(read("sitemap.xml"), /<loc>[^<]+\/crawlers\/<\/loc>/);
   assert.match(read("crawlers/index.html"), /HTTP From header/);
+  // The page speaks for this site only: badgerspill.org asks every crawler to stay off (Exchange SPILL-CRAWLER-CONTACT).
+  assert.match(read("crawlers/index.html"), /Crawlers may read this site(?:'|&#39;|&#x27;|&apos;)s public pages\./);
 });
 
 /* Connect sends each event's endDate (Exchange PUBLIC-EVENTS-RECENT-2026-10-23; run log §6). An event that runs over
@@ -301,4 +332,98 @@ test("an event over several days shows on each day it runs, names its dates, and
   const ics = fs.readFileSync(path.join(out, "calendar", "connect-e5.ics"), "utf8");
   assert.match(ics, /DTSTART:20261023T150000Z/);
   assert.match(ics, /DTEND:20261025T210000Z/);
+});
+
+/* Item 19: the team and the Wall from Connect (Exchange PUBLIC-TEAM-PROFILES-2026-10-30,
+   PUBLIC-WALL-OF-SUPPORT-2026-10-30). Connect has built neither; these run against the fake above. */
+
+test("a person appears only from their own profile: one marked published, with its public fields only", () => {
+  const { team, dropped } = mapTeam(TEAM_REPLY);
+  assert.equal(team.fixture, false);
+  assert.deepEqual(team.people.map((p) => p.id), ["cp-1", "cp-3"], "the unpublished profile is not there at all");
+  const riley = team.people[0];
+  assert.deepEqual(Object.keys(riley).sort(), ["aliases", "bio", "classYear", "contact", "group", "id", "name", "order", "photo", "pronouns", "published", "role", "slug", "title"]);
+  assert.deepEqual(riley.photo, { link: "https://home.badgersupports.org/o/photo/cp-1.webp", alt: "Riley Example smiling" });
+  assert.deepEqual(dropped, ["profile cp-1: ignored email, permissions, phone, roster, ssid, tier", "profile cp-2: not marked published"]);
+  assert.doesNotMatch(dropped.join(" "), /xq7/, "a dropped field is named by its key, never its value");
+  assert.deepEqual(teamProblems(team, { production: true }), [], "what Connect sends passes the site's own checks");
+
+  // Anything short of published: true is not published.
+  for (const published of [false, "true", 1, undefined]) assert.equal(mapTeam({ people: [{ ...TEAM_REPLY.people[2], published }] }).team.people.length, 0);
+  assert.deepEqual(mapTeam({ people: [{ ...TEAM_REPLY.people[2], photo: { alt: "no address" } }] }).dropped, ["profile cp-3: photo has no url, so none is shown"]);
+  // A slug the site cannot use stops the build rather than publishing a broken page.
+  assert.match(teamProblems(mapTeam({ people: [{ ...TEAM_REPLY.people[2], slug: "Casey Test" }] }).team).join(), /slug must use/);
+});
+
+test("the Wall carries the words of approved notes and nothing else", () => {
+  const { wall, dropped } = mapWall(WALL_REPLY);
+  assert.equal(wall.fixture, false);
+  assert.deepEqual(wall.notes, ["A fictional approved note.", "Another fictional approved note."]);
+  assert.deepEqual(dropped, ["note n3: no text", "note n4: longer than 280 characters", "note n2: listed twice", "note n5: listed twice"]);
+  assert.deepEqual(mapWall({ notes: [{ id: "n9", text: "y".repeat(280) }] }).wall.notes.length, 1, "280 characters is allowed");
+});
+
+test("the team and the Wall are read only when turned on, and a refusal says which and what to do", async () => {
+  assert.deepEqual({ team: RULES.exports.team, wall: RULES.exports.wall }, { team: false, wall: false }, "both stay off until Connect answers them live");
+  const off = await readConnectFeed(fakeConnect().cfg, RULES);
+  assert.equal(off.team, null);
+  assert.equal(off.wall, null);
+
+  const on = fakeConnect();
+  const feed = await readConnectFeed(on.cfg, EXPORTS_ON);
+  assert.equal(feed.problem, undefined);
+  assert.deepEqual(on.calls.map((c) => c.body.action), ["publicEvents", "publicResourceExport", "publicTeam", "publicWallNotes"]);
+  for (const c of on.calls) assert.match(c.headers["x-public-signature"], /^[A-Za-z0-9_-]{43}$/);
+  assert.equal(feed.team.people.length, 2);
+  assert.equal(feed.wall.notes.length, 2);
+  assert.ok(feed.dropped.includes("profile cp-2: not marked published"));
+
+  const lacks = (await readConnectFeed(fakeConnect({ refuse: "publicTeam" }).cfg, EXPORTS_ON)).problem;
+  assert.match(lacks, /\(connect\.refused, publicTeam\)/);
+  assert.match(lacks, /set exports\.team to false in content\/connect-feed\.json/);
+  assert.match((await readConnectFeed(fakeConnect({ refuse: "publicWallNotes" }).cfg, EXPORTS_ON)).problem, /exports\.wall to false/);
+  assert.match((await readConnectFeed(fakeConnect({ team: { ok: true, schema: 1, people: [] } }).cfg, EXPORTS_ON)).problem, /team export .*bss\.team\/1/);
+  assert.match((await readConnectFeed(fakeConnect({ wall: { ok: true, schema: "bss.wall/1" } }).cfg, EXPORTS_ON)).problem, /Wall of Support .*bss\.wall\/1/);
+  assert.doesNotMatch((await readConnectFeed(fakeConnect({ fail: "refused" }).cfg, EXPORTS_ON)).problem, /exports\./, "a refusal of the events is not blamed on the exports");
+
+  const places = loadContent().places;
+  assert.deepEqual(feedRuleProblems({ ...RULES, exports: { team: "yes", wall: true } }, places), ["exports.team: only team and wall, each true or false"]);
+  assert.deepEqual(feedRuleProblems({ ...RULES, exports: { staff: true } }, places), ["exports.staff: only team and wall, each true or false"]);
+  assert.deepEqual(feedRuleProblems({ ...RULES, exports: [] }, places), ["exports: team and wall, each true or false"]);
+});
+
+test("with the exports on, the published site shows each person from their own profile and only approved notes", async () => {
+  const out = path.join(ROOT, "local", "test-build-connect-team");
+  const said = [];
+  const report = await build({ production: true, connectConfig: fakeConnect().cfg, feedRules: EXPORTS_ON, out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", log: (s) => said.push(s) });
+  const read = (p) => fs.readFileSync(path.join(out, p), "utf8");
+  assert.equal(report.connect.team, 2);
+  assert.equal(report.connect.wall, 2);
+  assert.ok(said.includes("connect: left out profile cp-2: not marked published"), "the build says who it left out, by id");
+
+  const people = report.pages.map((p) => p.path).filter((p) => p.startsWith(TEAM_PATH) && p !== TEAM_PATH).sort();
+  assert.deepEqual(people, ["/about/our-team/casey-test/", "/about/our-team/riley-example/"]);
+  const team = read("about/our-team/index.html");
+  assert.match(team, /Riley Example/);
+  assert.match(team, /Casey Test/);
+  assert.doesNotMatch(team, /class="team-none"/);
+  assert.match(read("about/our-team/riley-example/index.html"), /Riley wrote this paragraph about themself\./);
+  assert.doesNotMatch(read("about/our-team/casey-test/index.html"), /Riley/, "a page carries its own person only");
+  assert.match(read("_redirects"), /^\/about\/our-team\/sample-group\/riley-e\s+\/about\/our-team\/riley-example\/\s+301$/m, "a member's old address reaches their new page");
+
+  const wall = section(read("index.html"), "b-home-wall");
+  assert.match(wall, /A fictional approved note\./);
+  assert.doesNotMatch(wall, /You are allowed to take up space/, "no sample note");
+
+  // Nothing private, nothing about the unpublished member, and nothing saying who approved a note reaches any
+  // file the build wrote, the server's data included. The build's own report, which is never deployed, names a
+  // profile it left out by its id; no other file does.
+  const files = fs.readdirSync(out, { recursive: true, withFileTypes: true }).filter((d) => d.isFile()).map((d) => path.join(d.parentPath ?? d.path, d.name));
+  assert.ok(files.length > 50);
+  const never = new RegExp([...Object.values(PRIVATE).flat(), WHO, "Jordan Sample", "jordan-sample", "approvedAt"].map((v) => v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"));
+  for (const f of files) {
+    const body = fs.readFileSync(f, "utf8");
+    assert.doesNotMatch(body, never, path.relative(out, f));
+    if (path.basename(f) !== "report.json") assert.doesNotMatch(body, /\bcp-2\b/, path.relative(out, f));
+  }
 });

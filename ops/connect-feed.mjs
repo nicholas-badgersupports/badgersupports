@@ -2,12 +2,20 @@
  * director approved. The production build reads these in place of the hand-typed fixtures, so the
  * published site shows what Connect holds on the day it was built.
  *
- * Two signed calls (netlify/lib/connect.mjs, the same signature the forms use):
+ * Signed calls (netlify/lib/connect.mjs, the same signature the forms use):
  *   publicEvents          { events, weekly } from today to 56 days ahead, and `recent`, the last few that
  *                         have ended, once Connect sends it (Exchange PUBLIC-EVENTS-RECENT-2026-10-23)
  *   publicResourceExport  { resources, sourceUpdatedAt }
- * Connect sends only what a director ticked in Admin › Resources › Public Website List, and never a
+ *   publicTeam            { people }: the profiles members made public themselves (bss.team/1;
+ *                         Exchange PUBLIC-TEAM-PROFILES-2026-10-30)
+ *   publicWallNotes       { notes }: Wall of Support notes a moderator approved (bss.wall/1;
+ *                         Exchange PUBLIC-WALL-OF-SUPPORT-2026-10-30)
+ * The first two carry only what a director ticked in Admin › Resources › Public Website List, and never a
  * description, a contact, who an event is for, volunteers or sign-ups.
+ *
+ * The last two are read only when `exports` in content/connect-feed.json turns them on. Connect answers an
+ * action it does not have exactly as it answers a refused one ("Unknown action."), so the build cannot tell
+ * "not built yet" from "refused"; with one turned on, a refusal builds nothing, as it does for events.
  *
  * Configuration is environment only, as for the forms:
  *   CONNECT_URL, PUBLIC_SITE_SERVICE_KEY_ID, PUBLIC_SITE_SERVICE_SECRET (32 characters or more)
@@ -25,6 +33,7 @@ import path from "node:path";
 import { call, serviceConfig } from "../netlify/lib/connect.mjs";
 import { addDays } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
+import { TEAM_SCHEMA } from "../src/render/team.mjs";
 
 export const FEED_SCHEMA = "bss.connect-feed/1";
 const HM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -34,6 +43,13 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const EVENT_ID = /^[A-Za-z0-9_-]{1,112}$/;
 // The longest run an event's endDate is believed for; past it the event shows on its first day only.
 export const LONGEST_DAYS = 14;
+export const TEAM_EXPORT = "bss.team/1";
+export const WALL_EXPORT = "bss.wall/1";
+// A Wall note longer than this is left out whole, never cut.
+export const WALL_NOTE_MAX = 280;
+// The only fields of a public profile that reach this site. Anything else Connect sends is dropped unread,
+// so a field Connect adds later reaches no page until it is named here.
+const PROFILE_FIELDS = ["id", "slug", "name", "pronouns", "classYear", "credentials", "title", "role", "group", "order", "bio", "contact", "aliases"];
 
 /* A build run on the laptop never gets the key as Netlify holds it: Netlify hands it a short stand-in for every
    secret, and that stand-in wins over a variable of the same name (measured 23 Oct 2026). So the owner's publish
@@ -73,6 +89,9 @@ export function feedRuleProblems(rules, places) {
   }
   if (rules.weekly?.place && !places[rules.weekly.place]) out.push(`weekly.place "${rules.weekly.place}" is not a room in content/places/`);
   for (const r of rules.rooms || []) if (!places[r?.place]) out.push(`rooms: "${r?.place}" is not a room in content/places/`);
+  const ex = rules.exports;
+  if (ex !== undefined && (!ex || typeof ex !== "object" || Array.isArray(ex))) out.push("exports: team and wall, each true or false");
+  else for (const [k, v] of Object.entries(ex || {})) if (k !== "review" && (!["team", "wall"].includes(k) || typeof v !== "boolean")) out.push(`exports.${k}: only team and wall, each true or false`);
   return out;
 }
 
@@ -178,17 +197,86 @@ export function mapResources(reply) {
   return { schema: "bss.resources-fixture/1", fixture: false, source: "connect", sourceUpdatedAt: resourceDay(reply.sourceUpdatedAt), resources };
 }
 
-/* Both lists, or a problem saying why not. Never throws. */
+/* Connect's public team export in the site's team shape (src/render/team.mjs). A person comes only from
+   their own profile: one Connect marks published, carrying PROFILE_FIELDS and a photo Connect serves,
+   nothing else. A profile not marked published is left out and named; any other field is dropped and named
+   by its key, never its value. */
+export function mapTeam(reply) {
+  const people = [];
+  const dropped = [];
+  for (const p of Array.isArray(reply?.people) ? reply.people : []) {
+    const at = typeof p?.id === "string" && p.id ? p.id : "?";
+    if (!p || typeof p !== "object" || p.published !== true) { dropped.push(`profile ${at}: not marked published`); continue; }
+    const person = { published: true };
+    for (const k of PROFILE_FIELDS) if (p[k] !== undefined && p[k] !== null && p[k] !== "") person[k] = p[k];
+    if (p.photo != null) {
+      if (typeof p.photo?.url === "string" && p.photo.url) person.photo = { link: p.photo.url, ...(typeof p.photo.alt === "string" && p.photo.alt.trim() ? { alt: p.photo.alt.trim() } : {}) };
+      else dropped.push(`profile ${at}: photo has no url, so none is shown`);
+    }
+    const extra = Object.keys(p).filter((k) => k !== "published" && k !== "photo" && !PROFILE_FIELDS.includes(k)).sort();
+    if (extra.length) dropped.push(`profile ${at}: ignored ${extra.join(", ")}`);
+    people.push(person);
+  }
+  return { team: { schema: TEAM_SCHEMA, fixture: false, source: "connect", people }, dropped };
+}
+
+/* Connect's approved Wall of Support notes as the wall block's list of words. Only the words cross: a note's
+   id, approval time or anything else never reaches a page. A note with no words, longer than WALL_NOTE_MAX,
+   or repeating an id or the words of one already taken is left out and named by its id. */
+export function mapWall(reply) {
+  const notes = [];
+  const dropped = [];
+  const ids = new Set();
+  const texts = new Set();
+  for (const n of Array.isArray(reply?.notes) ? reply.notes : []) {
+    const at = typeof n?.id === "string" && n.id ? n.id : "?";
+    const text = typeof n?.text === "string" ? n.text.replace(/\s+/g, " ").trim() : "";
+    if (!text) { dropped.push(`note ${at}: no text`); continue; }
+    if (text.length > WALL_NOTE_MAX) { dropped.push(`note ${at}: longer than ${WALL_NOTE_MAX} characters`); continue; }
+    if ((at !== "?" && ids.has(at)) || texts.has(text)) { dropped.push(`note ${at}: listed twice`); continue; }
+    ids.add(at);
+    texts.add(text);
+    notes.push(text);
+  }
+  return { wall: { schema: "bss.wall-fixture/1", fixture: false, source: "connect", notes }, dropped };
+}
+
+/* Connect's lists, or a problem saying why not. The team and the wall are read only when `exports` in the
+   rules turns them on; otherwise they are null and the build shows neither. Never throws. */
 export async function readConnectFeed(cfg, rules, env = process.env) {
   if (!cfg) return { problem: `Connect is not set up for this build (${feedConfigGaps(env).join("; ") || "no Connect address and key were given"}): CONNECT_URL, PUBLIC_SITE_SERVICE_KEY_ID and PUBLIC_SITE_SERVICE_SECRET are needed in the build's environment` };
+  let step = "publicEvents";
   try {
-    const ev = await call(cfg, { action: "publicEvents" });
-    const res = await call(cfg, { action: "publicResourceExport" });
+    const ev = await call(cfg, { action: step });
+    step = "publicResourceExport";
+    const res = await call(cfg, { action: step });
     if (ev.schema !== 1 || !Array.isArray(ev.events) || !Array.isArray(ev.weekly)) return { problem: "Connect's event list was not in the shape this site reads (schema 1)" };
     if (res.schema !== 1 || !Array.isArray(res.resources)) return { problem: "Connect's resource list was not in the shape this site reads (schema 1)" };
+    const want = rules?.exports || {};
+    const more = [];
+    let team = null;
+    let wall = null;
+    if (want.team === true) {
+      step = "publicTeam";
+      const t = await call(cfg, { action: step });
+      if (t.schema !== TEAM_EXPORT || !Array.isArray(t.people)) return { problem: `Connect's team export was not in the shape this site reads (${TEAM_EXPORT})` };
+      const m = mapTeam(t);
+      team = m.team;
+      more.push(...m.dropped);
+    }
+    if (want.wall === true) {
+      step = "publicWallNotes";
+      const w = await call(cfg, { action: step });
+      if (w.schema !== WALL_EXPORT || !Array.isArray(w.notes)) return { problem: `Connect's Wall of Support notes were not in the shape this site reads (${WALL_EXPORT})` };
+      const m = mapWall(w);
+      wall = m.wall;
+      more.push(...m.dropped);
+    }
     const { events, dropped } = mapEvents(ev, rules);
-    return { events, resources: mapResources(res), dropped, version: { events: ev.version || null, resources: res.catalogVersion || null }, today: ev.today || null };
+    return { events, resources: mapResources(res), team, wall, dropped: [...dropped, ...more], version: { events: ev.version || null, resources: res.catalogVersion || null }, today: ev.today || null };
   } catch (e) {
-    return { problem: `Connect could not be read (${e.code || "error"}): ${e.message}` };
+    const which = { publicTeam: "team", publicWallNotes: "wall" }[step];
+    const hint = which && e.code === "connect.refused" ? `. Connect answers this way when it does not have ${step} yet; until it does, set exports.${which} to false in content/connect-feed.json` : "";
+    return { problem: `Connect could not be read (${e.code || "error"}, ${step}): ${e.message}${hint}` };
   }
 }

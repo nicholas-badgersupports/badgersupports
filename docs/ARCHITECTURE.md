@@ -126,6 +126,7 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | authCallback | GET | `/api/auth/callback` | public |
 | authSignOut | POST | `/api/auth/signout` | public |
 | authStatus | GET | `/api/auth/status` | public |
+| signinQuotes | GET | `/api/signin-quotes` | public |
 | staffMe | GET | `/api/staff/me` | director |
 | staffForms | GET | `/api/staff/forms` | director |
 | staffSubmissions | GET | `/api/staff/forms/<key>/submissions` | director |
@@ -233,6 +234,40 @@ nothing is sent to analytics.
 
 ## Staff sign-in and Connect
 
+**Owner revision · 30 October 2026 — built locally the same day, not published (WORK item 20).** What
+this site does is in "This site's half" at the end of this section; the rules it follows are these. Connect GOOGLE-SIGNIN and `docs/signin-rebuild/SPEC.md`/`DECISIONS.md` queue common behavior for its
+ordinary sign-in and credential-entry `public-sso.html`/`spill-sso.html` doors, sharing `sso-door.js`: one email field
+plus Sign In launches Google when enabled, with hints for exact `wisc.edu`/`badgersupports.org`. An accessible logo
+control reveals the ordinary password route for this visit; refresh/new visit resets it. Google off/missing
+configuration restores passwords. This applies to sign-in logos, not this website's header or invitation/setup pages.
+
+Connect verifies the signed identity, permitted hd/domain, email, audience, expiry and nonce; the entered and returned
+addresses may differ only as approved addresses already attached to the same active existing person. Multiple
+verified Google subjects may bind to that person, never another person. No new account, role or automatic alias.
+Google-derived sessions skip password-only setup/change gates, including Connect public authorize/token/status
+checks, while terms, current status and grants remain. Public still verifies state, nonce, signature, audience,
+expiry, PKCE, allowed return and scopes on the server; authenticated provider/availability metadata prevents a
+disabled Google route from being reused. Preserve existing freshness, scope narrowing and revocation boundaries.
+
+Google authentication belongs on Connect: add no Google SDK/client or account/password store to this public site,
+and keep its restrictive CSP. Queue removal of ordinary `/staff/` About Signing In help and the matching Connect
+warning/help; consume the same optional quote list/switch owned in Connect Settings, never a local writable copy.
+Bulk plain-text entries, safe rendering, one selection per page load stable while typing; off/empty/unavailable means
+no quote/help and never blocks sign-in. No approved starter quotes. Future consumer anchors: `content/pages/staff.json`,
+`src/render/blocks/staff.mjs`, `netlify/lib/staff.mjs`, `netlify/lib/connect.mjs` and `test/staff.test.mjs`.
+The password-seeded rig below is password-flow evidence, not a Google test. The tests are stand-ins for Connect; a
+real Google round trip through `public-sso.html` is still owed before Connect's Google switch goes on.
+
+**This site's half (built 30 Oct 2026, local).** The help under the button is gone from `content/pages/staff.json` and
+`blocks/staff.mjs` (its two fields with it). `GET /api/signin-quotes` (router, public, `no-store`) returns Connect's
+`publicSigninQuotes` list, read by `signinQuotes()` in `connect.mjs` at most every five minutes and `[]` on any
+failure; `staff.js` picks one per page load into `[data-staff-quote]` and shows it only beside the Sign in button.
+`verifyAssertion()` returns the signed note's `method` (`password` when absent); `finishSignIn()` keeps it in
+`staff_sessions.method` (migration 007); `sessionFrom()` sends it with each status check, so a Google-opened session
+ends here once Connect's Google route is off. With `CONNECT_SESSION_STATUS` off nothing asks, and a Google-opened
+session lasts its normal life: switching Google off in Connect does not reach this site until the flag is on.
+Tests: `test/staff.test.mjs`, two tests named for Google and quotes.
+
 **Signing in** (`netlify/lib/staff.mjs`). This site keeps no accounts, passwords or roster. `/api/auth/start` sets a
 random state in a ten-minute cookie, keeps a PKCE verifier and nonce in `auth_starts`, and sends the browser to
 Connect's `public-sso.html` with the state and the verifier's hash in the fragment. The director signs in there as
@@ -281,13 +316,20 @@ folder. **This is a local rig with demo keys and in-memory databases, not a live
 
 ### Staying signed in
 
-**Proposed change: Connect has no `publicSsoStatus` yet.** This site's half is built (24 Oct 2026) and stays off
-until `CONNECT_SESSION_STATUS=on`: `sessionFrom()` in `staff.mjs`, `sessionStatus()` in `connect.mjs`, tests in
-`test/staff.test.mjs`. Connect's half is not written; it waits on the intranet session and the owner (WORK.md, 20).
+**Source check, 30 Oct 2026: Connect's `publicSsoStatus` is built locally, not verified live.** Its action is in
+Connect's `netlify/actions/publicsite.mjs`; SIGNIN-PARITY progress records the 25 Oct implementation and fixture
+checks. This site's half was built 24 Oct and stays off until `CONNECT_SESSION_STATUS=on`: `sessionFrom()` in
+`staff.mjs`, `sessionStatus()` in `connect.mjs`, tests in `test/staff.test.mjs`. Published availability was not checked
+here; the owner must verify Connect's live action before switching on this existing freshness feature (WORK item 20).
+
+*History, 24 Oct:* this paragraph formerly said Connect had no action yet and its half was not written. That was
+the then-current dependency, not a present claim. The protocol and flag-off behavior below remain; queued Google
+provider changes are not implemented and do not prove production freshness.
 
 **What this site sends.** Ten minutes after Connect last vouched for a session (`checked_at`), the next staff
 request makes one call, signed as every other: `{ action: "publicSsoStatus", client: "badgersupports-public", sub,
-nonce }`, where `sub` is Connect's id from the sign-in note and `nonce` is new for that call. It waits four seconds
+nonce, method }`, where `sub` is Connect's id from the sign-in note, `method` is how that note's Connect session was
+opened (30 Oct) and `nonce` is new for that call. It waits four seconds
 at most, because a staff request is waiting on it.
 
 **What Connect would answer.** `{ assertion, sig }`, as `publicSsoToken` does: a note signed with

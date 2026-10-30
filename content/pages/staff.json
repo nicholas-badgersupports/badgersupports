@@ -13,12 +13,7 @@
       "body": [
         "For Badger Supports directors and admins, with your Badger Supports Connect account."
       ],
-      "signIn": "Sign in with Connect",
-      "helpTitle": "About Signing In",
-      "help": [
-        "Signing in happens on Connect, so this site never sees your Connect password.",
-        "Once you are signed in, this page shows only the tools your Connect role includes: reading the answers to the forms your role covers, checking that each one reached Connect, and changing the words on this site with the Edit text button. A super admin can change your role in Connect, under Website Forms."
-      ]
+      "signIn": "Sign in with Connect"
     }
   ]
 }

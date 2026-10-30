@@ -1132,10 +1132,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .js.staff-hint .staff-signin { display: none; }
 .staff-state { margin-top: var(--s4); max-width: var(--measure); display: grid; gap: var(--s3); justify-items: start; }
 .staff-state .staff-note, .staff-answers .staff-note { margin: 0; }
-.staff-help { margin-top: var(--s4); max-width: var(--measure); }
-.staff-help > summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; cursor: pointer; }
-.staff-help > summary:hover { color: var(--accent-deep); text-decoration: underline; }
-.staff-help p { margin: var(--s2) 0 0; }
+/* One quote from Connect's shared list, under the button (Connect GOOGLE-SIGNIN; staff.js fills it). */
+.staff-quote { margin-top: var(--s4); max-width: var(--measure); color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
 /* The signed-in part is a work area: its answer tables take the page's width, as Connect's work
    areas do; its sentences keep the reading measure. */
 .staff-app { margin-top: var(--s5); }

@@ -14,7 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { freshServer, workshopAnswers, post, ORIGIN } from "./helpers.mjs";
 import { handle } from "../netlify/lib/router.mjs";
-import { useConnect } from "../netlify/lib/connect.mjs";
+import { useConnect, resetQuoteCache } from "../netlify/lib/connect.mjs";
 import { deliverDue, deliveriesSettled } from "../netlify/lib/deliver.mjs";
 import { serverContent, useContent } from "../netlify/lib/content.mjs";
 import { many, one, q, migrate } from "../netlify/lib/db.mjs";
@@ -54,6 +54,11 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
     received: [],
     stored: new Map(),
     verifiers: [],
+    method: null,     // "google" or "password" on the sign-in note; null sends none, as Connect did before GOOGLE-SIGNIN
+    googleOn: true,   // Connect's Google route: switched off, a status check about a Google-opened session says inactive
+    statusMethods: [],
+    quotes: [],       // publicSigninQuotes: Connect's one shared list, [] when its Show switch is off
+    quoteCalls: 0,
     /* Connect's sign-in page: the director signs in, and Connect hands back a one-time code. */
     approve(location) {
       assert.ok(location.startsWith(`${CONNECT}/public-sso.html#`), `sign-in goes to Connect's page, not ${location}`);
@@ -95,6 +100,7 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
         v: 1, iss: CONNECT, aud: "badgersupports-public", iat: now, exp: now + 120,
         nonce: fake.sso === "wrongnonce" ? "someone-elses-nonce" : c.nonce,
         sub: "u-test-0001", name: fake.name, active: true, scopes: fake.scopes,
+        ...(fake.method ? { method: fake.method } : {}),
       };
       const sig = fake.sso === "badsig" ? hmac("not-the-shared-secret", sortedJson(assertion)) : hmac(ssoSecret, sortedJson(assertion));
       return reply({ ok: true, assertion, sig });
@@ -116,14 +122,22 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
       if (fake.status === "replay" && fake.firstStatus) return reply(fake.firstStatus);
       if (body.client !== "badgersupports-public" || typeof body.sub !== "string" || typeof body.nonce !== "string") return unknown();
       const now = Math.floor(Date.now() / 1000);
-      const on = fake.active && body.sub === "u-test-0001";
+      fake.statusMethods.push(body.method);
+      const on = fake.active && body.sub === "u-test-0001" && (body.method !== "google" || fake.googleOn);
       const assertion = {
         v: 1, iss: CONNECT, aud: "badgersupports-public", iat: now, exp: now + 120, nonce: body.nonce,
         sub: body.sub, name: on ? fake.name : "", active: on, scopes: on ? fake.scopes : [],
+        ...(body.method === "google" ? { method: "google" } : {}),
       };
       const out = { ok: true, assertion, sig: hmac(fake.status === "badsig" ? "not-the-shared-secret" : ssoSecret, sortedJson(assertion)) };
       fake.firstStatus ??= out;
       return reply(out);
+    }
+    /* Connect GOOGLE-SIGNIN: the one shared list of sign-in quotes, for this client's own key only. */
+    if (body.action === "publicSigninQuotes") {
+      fake.quoteCalls += 1;
+      if (fake.quotes === "down") throw new TypeError("fetch failed");
+      return reply({ ok: true, quotes: fake.quotes });
     }
     return unknown();
   }
@@ -465,6 +479,85 @@ test("with Connect's status check on, a session is checked again after ten minut
   assert.equal((await (await handle(get("/api/auth/status", { cookie }), ip())).json()).signedIn, false);
   const id = cookie.match(/bss_staff=([^;]+)/)[1];
   assert.equal((await one("SELECT count(*)::int AS n FROM staff_sessions WHERE id_hash = $1", [crypto.createHash("sha256").update(id).digest("hex")])).n, 0, "the session row is gone");
+});
+
+test("a Google-opened Connect session is kept as one, the status check says so, and Connect switching Google off ends it here", async () => {
+  await freshServer();
+  const fake = fakeConnect({ statusCheck: true });
+  fake.method = "google";
+  useConnect(fake.cfg);
+  const g = await signIn(fake);
+  assert.equal((await meFor(g.cookie)).canRead, true);
+  assert.deepEqual((await many("SELECT method FROM staff_sessions")).map((x) => x.method), ["google"]);
+
+  // A password sign-in beside it, and a note from a Connect that sends no method, are password ones.
+  fake.method = null;
+  const p = await signIn(fake);
+  assert.deepEqual((await many("SELECT method FROM staff_sessions ORDER BY method")).map((x) => x.method), ["google", "password"]);
+
+  await age(11);
+  assert.equal((await meFor(g.cookie)).canRead, true);
+  assert.equal((await meFor(p.cookie)).canRead, true);
+  assert.deepEqual([...fake.statusMethods].sort(), ["google", "password"], "each check asks about the route its own session came by");
+
+  // Connect's Google route switched off: the Google-opened session ends at its next check, the password one does not.
+  fake.googleOn = false;
+  await age(11);
+  assert.equal(await meFor(g.cookie), 401, "the Google-opened session ends");
+  assert.equal((await answersFor(g.cookie)).status, 401);
+  assert.equal((await meFor(p.cookie)).canRead, true, "the password one carries on");
+  assert.deepEqual((await many("SELECT method FROM staff_sessions")).map((x) => x.method), ["password"], "only the Google row is gone");
+
+  // Without the status check, a method alone changes nothing about how long a session lasts.
+  await freshServer();
+  const quiet = fakeConnect();
+  quiet.method = "google";
+  useConnect(quiet.cfg);
+  const q1 = await signIn(quiet);
+  quiet.googleOn = false;
+  await age(30);
+  assert.equal((await meFor(q1.cookie)).canEdit, true, "with CONNECT_SESSION_STATUS off, Connect is not asked");
+  assert.equal(quiet.statusCalls, 0);
+});
+
+test("the staff page's quote comes from Connect's one list, read at most every five minutes, and is none when there is nothing to show", async () => {
+  await freshServer();
+  resetQuoteCache();
+  const quotesNow = async () => {
+    const r = await handle(get("/api/signin-quotes"), ip());
+    assert.equal(r.status, 200);
+    assert.equal(r.headers.get("cache-control"), "no-store");
+    return (await r.json()).quotes;
+  };
+  assert.deepEqual(await quotesNow(), [], "Connect not set up: no quote");
+
+  const fake = fakeConnect();
+  fake.quotes = ["Be kind; everyone you meet is fighting a hard battle.", "x".repeat(301), 7];
+  useConnect(fake.cfg);
+  resetQuoteCache();
+  assert.deepEqual(await quotesNow(), ["Be kind; everyone you meet is fighting a hard battle."], "only plain lines within the limit");
+  fake.quotes = [];
+  assert.deepEqual(await quotesNow(), ["Be kind; everyone you meet is fighting a hard battle."], "kept for five minutes");
+  assert.equal(fake.quoteCalls, 1);
+  resetQuoteCache();
+  assert.deepEqual(await quotesNow(), [], "Show switched off in Connect: no quote");
+  fake.quotes = "down";
+  resetQuoteCache();
+  assert.deepEqual(await quotesNow(), [], "Connect not answering: no quote, and nothing is refused");
+  const asked = fake.quoteCalls;
+  fake.quotes = ["Back again."];
+  assert.deepEqual(await quotesNow(), [], "a failure is kept for a minute, so Connect is not asked on every page");
+  assert.equal(fake.quoteCalls, asked);
+
+  // The page itself: no help folded under the button, and a quote line the browser fills, empty until it does.
+  const page = await handle(new Request(ORIGIN + "/staff/", { headers: { accept: "text/html" } }), ip());
+  if (page.status === 200) {
+    const body = await page.text();
+    assert.doesNotMatch(body, /About Signing In|data-staff-help/);
+  }
+  const built = fs.readFileSync(path.join(ROOT, "src/render/blocks/staff.mjs"), "utf8");
+  assert.match(built, /data-staff-quote hidden/);
+  assert.doesNotMatch(built, /staff-help|helpTitle/);
 });
 
 test("with the status check on, Connect not answering keeps a session as it was for half an hour, then nothing works until it answers", async () => {

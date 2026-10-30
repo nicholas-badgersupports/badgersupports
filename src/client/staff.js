@@ -30,7 +30,7 @@ const signIn = document.querySelector("[data-staff-signin]");
 const signInLink = signIn?.querySelector("a");
 const checking = document.querySelector("[data-staff-checking]");
 const intro = document.querySelector("[data-staff-intro]");
-const help = document.querySelector("[data-staff-help]");
+const quote = document.querySelector("[data-staff-quote]");
 const heading = app?.closest(".staff")?.querySelector("h1");
 const WHEN = { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" };
 const HINT = /(?:^|;\s*)bss_staff_hint=1(?:;|$)/;
@@ -302,14 +302,14 @@ function before(mode) {
   checking.hidden = mode !== "checking";
   signIn.hidden = mode !== "signIn";
   intro.hidden = false;
-  if (help) help.hidden = false;
+  if (quote) quote.hidden = !quote.textContent || mode !== "signIn";
 }
 
 function showTools(me) {
   before("none");
   note("");
   intro.hidden = true;
-  if (help) help.hidden = true;
+  if (quote) quote.hidden = true;
   const forms = me.canRead ? formsSection(me) : me.readAgain && readAgainSection();
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
   app.replaceChildren(...[onward, whoBar(me), forms, (me.canEdit || me.canPublish) && editSection(me)].filter(Boolean));
@@ -348,6 +348,18 @@ async function check(hinted, fresh) {
   say(t("staff.loadError"));
 }
 
+/* Connect GOOGLE-SIGNIN: one quote from Connect's one shared list, picked once per page load and kept while the page
+   stands. None when the list is empty, switched off in Connect, or does not load; it never holds up signing in. It
+   stands only beside the Sign in button. */
+async function loadQuote() {
+  if (!quote) return;
+  const r = await call("/api/signin-quotes").catch(offline);
+  const list = Array.isArray(r.body.quotes) ? r.body.quotes.filter((x) => typeof x === "string" && x) : [];
+  if (!list.length) return;
+  quote.textContent = list[Math.floor(Math.random() * list.length)];
+  quote.hidden = signIn.hidden;
+}
+
 let runs = 0;
 async function start() {
   const run = ++runs;
@@ -377,4 +389,5 @@ if (app) {
   });
   addEventListener("pageshow", (e) => { if (e.persisted) start(); });
   start();
+  loadQuote();
 }

@@ -131,8 +131,9 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     Decisions and bulk mail stay Connect's, behind a director's approval.
 19. **Connect: exports**: events and resources **done** 23 Oct (`test/connect-feed.test.mjs`). Still → the team
     (`PUBLIC-TEAM-PROFILES`) and the wall (`PUBLIC-RESOURCES-AND-WALL`); a person appears only from their own profile.
-20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Since 24 Oct answers can be read for an hour after
-    sign-in; Connect's `publicSsoStatus` is proposed, not built, so revocation is not solved (`docs/ARCHITECTURE.md`).
+20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is built locally (25 Oct),
+    production unverified. **Google sign-in consumer built locally 30 Oct, not published** (Connect GOOGLE-SIGNIN): no `/staff/`
+    help; Connect's shared quote (`/api/signin-quotes`); sessions keep `method` (migration 007) for the status check. No Google code here.
 21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated.
 22. **Analytics** (Q1; §9) → an event dictionary; exclusions before any tag loads; no Connect identity; network read.
     Netlify Web Analytics, reported on 24 Oct → verified per project and in billing; no other collector.

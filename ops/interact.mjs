@@ -514,9 +514,15 @@ const crypto = await import("node:crypto");
 const { post, workshopAnswers } = await import("../test/helpers.mjs");
 const { useConnect } = await import("../netlify/lib/connect.mjs");
 const STAFF = "/staff/";
-/* Sign-in switched on, with no Connect behind it: nothing here signs in through Connect or delivers. */
+/* Sign-in switched on, with no Connect behind it: nothing here signs in through Connect or delivers. The one call it
+   answers is Connect's shared sign-in quotes (Connect GOOGLE-SIGNIN), one made-up line, so the quote under the button
+   is pressed and timed like the rest. */
+const HARNESS_QUOTE = "A made-up line for the harness.";
 useConnect({ url: "https://connect.example.test", keyId: "harness-key", secret: "h".repeat(40), ssoSecret: "s".repeat(40), statusCheck: false,
-  fetch: async () => { throw new TypeError("no Connect in this harness"); } });
+  fetch: async (href, init) => {
+    if (JSON.parse(init.body).action === "publicSigninQuotes") return new Response(JSON.stringify({ ok: true, quotes: [HARNESS_QUOTE] }), { headers: { "content-type": "application/json" } });
+    throw new TypeError("no Connect in this harness");
+  } });
 
 async function staffSession(scopes) {
   const id = crypto.randomBytes(32).toString("base64url");
@@ -569,13 +575,13 @@ const staffState = (page) => page.evaluate(() => {
   const seen = (n) => !!n && !n.closest("[hidden]") && !!n.getClientRects().length;
   const signIn = document.querySelector("[data-staff-signin] a");
   const intro = document.querySelector("[data-staff-intro]");
-  const help = document.querySelector("[data-staff-help]");
+  const quote = document.querySelector("[data-staff-quote]");
   const app = document.querySelector("[data-staff-app]");
   return {
     signIn: seen(signIn), href: signIn?.getAttribute("href") || "",
     checking: seen(document.querySelector("[data-staff-checking]")),
     intro: seen(intro) ? intro.textContent.trim() : "", introParas: intro ? intro.querySelectorAll("p").length : 0,
-    help: help ? { shown: seen(help), open: help.open, summary: help.querySelector("summary")?.textContent.trim() || "" } : null,
+    quote: seen(quote) ? quote.textContent.trim() : "", help: !!document.querySelector("[data-staff-help], .staff details"),
     who: seen(document.querySelector(".staff-who")) ? document.querySelector(".staff-who p").textContent : "",
     notes: [...new Set(document.querySelectorAll(".staff-note, .staff-answers p"))].filter(seen).map((n) => n.textContent),
     headings: [...app.querySelectorAll("h2")].filter(seen).map((h) => h.textContent),
@@ -593,7 +599,7 @@ await part("staff page: signed in, no Sign In flash", async () => {
   const seen = await page.evaluate(() => window.__seen);
   check(!seen.signIn && seen.checking && s.who === "Signed in as Robin Example" && !s.signIn,
     `staff signed in: the Sign In button never shows while the session is checked, a checking line does, then who is signed in (sign-in seen ${seen.signIn}, checking seen ${seen.checking}, "${s.who}")`);
-  check(!s.intro && !(s.help?.shown), `staff signed in: the before-sign-in words and help give way to the tools (intro "${s.intro.slice(0, 40)}", help ${s.help?.shown})`);
+  check(!s.intro && !s.quote, `staff signed in: the before-sign-in words and the quote give way to the tools (intro "${s.intro.slice(0, 40)}", quote "${s.quote}")`);
   check(s.text.includes(words("staff.forms.how")), "staff signed in, a reader: the forms part says answers are worked through in Connect");
   check(!errors.length, `staff signed in: no script errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
   await ctx.close();
@@ -603,18 +609,18 @@ await part("staff page: signed out", async () => {
   const { ctx, page } = await openStaff({ slow: 400 });
   const s = await staffState(page);
   const seen = await page.evaluate(() => window.__seen);
-  check(s.signIn && !seen.checking && s.introParas === 1 && s.help && !s.help.open && s.help.summary,
-    `staff signed out: the button shows at once, no checking line, one short line before it, help folded (checking seen ${seen.checking}, paragraphs ${s.introParas}, help ${JSON.stringify(s.help)})`);
+  check(s.signIn && !seen.checking && s.introParas === 1 && !s.help,
+    `staff signed out: the button shows at once, no checking line, one short line before it, no help under it (checking seen ${seen.checking}, paragraphs ${s.introParas}, help ${s.help})`);
   const order = await page.evaluate(() => {
-    const a = document.querySelector("[data-staff-signin] a"), h = document.querySelector("[data-staff-help]");
-    return !!h && !!(a.compareDocumentPosition(h) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const a = document.querySelector("[data-staff-signin] a"), q = document.querySelector("[data-staff-quote]");
+    return !!q && !!(a.compareDocumentPosition(q) & Node.DOCUMENT_POSITION_FOLLOWING);
   });
-  check(order, "staff signed out: the sign-in button comes before the folded help");
+  check(order && s.quote === HARNESS_QUOTE, `staff signed out: Connect's quote shows under the sign-in button ("${s.quote}")`);
   await page.keyboard.press("Tab");
   let tabs = 0;
   while (tabs++ < 30 && !(await page.evaluate(() => !!document.activeElement?.closest("[data-staff-signin]")))) await page.keyboard.press("Tab");
   const next = await (async () => { await page.keyboard.press("Tab"); return page.evaluate(() => document.activeElement?.tagName); })();
-  check(tabs < 30 && next === "SUMMARY", `staff signed out, keyboard: Tab reaches Sign in, and the help next (after sign-in, ${next})`);
+  check(tabs < 30 && next !== "SUMMARY", `staff signed out, keyboard: Tab reaches Sign in, and no folded help comes next (after sign-in, ${next})`);
   await ctx.close();
 });
 

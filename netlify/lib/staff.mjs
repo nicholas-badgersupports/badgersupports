@@ -115,9 +115,10 @@ export async function finishSignIn(req) {
   if (!who.scopes.length) throw new HttpError(403, "auth.refused");
   if (jar[n.session]) await q("DELETE FROM staff_sessions WHERE id_hash = $1", [sha256Hex(jar[n.session])]);
   const id = randomB64u(32);
-  await q(`INSERT INTO staff_sessions (id_hash, sub, name, scopes, expires_at)
-           VALUES ($1, $2, $3, $4::jsonb, now() + ($5::int * interval '1 hour'))`,
-    [sha256Hex(id), who.sub, who.name, JSON.stringify(who.scopes), SESSION_HOURS]);
+  /* `method` (Connect GOOGLE-SIGNIN): kept so the status check can ask about the route this session came by. */
+  await q(`INSERT INTO staff_sessions (id_hash, sub, name, scopes, expires_at, method)
+           VALUES ($1, $2, $3, $4::jsonb, now() + ($5::int * interval '1 hour'), $6)`,
+    [sha256Hex(id), who.sub, who.name, JSON.stringify(who.scopes), SESSION_HOURS, who.method === "google" ? "google" : "password"]);
   const age = SESSION_HOURS * 3600;
   return redirect(start.return_to, [
     cookie(req, n.session, id, { maxAge: age }),
@@ -132,7 +133,7 @@ export async function sessionFrom(req) {
   const id = readCookies(req)[names(req).session];
   if (!id || !/^[A-Za-z0-9_-]{43}$/.test(id)) return null;
   const hash = sha256Hex(id);
-  const row = await one(`SELECT sub, name, scopes, extract(epoch FROM now() - coalesce(checked_at, created_at))::float8 / 60 AS minutes
+  const row = await one(`SELECT sub, name, scopes, method, extract(epoch FROM now() - coalesce(checked_at, created_at))::float8 / 60 AS minutes
                          FROM staff_sessions WHERE id_hash = $1 AND expires_at > now()`, [hash]);
   if (!row) return null;
   const who = { sub: row.sub, name: row.name, scopes: row.scopes };
@@ -144,7 +145,7 @@ export async function sessionFrom(req) {
   }
   if (row.minutes < CHECK_MINUTES) return who;
   let note;
-  try { note = await sessionStatus(cfg, row.sub); } catch { return row.minutes < GRACE_MINUTES ? who : null; }
+  try { note = await sessionStatus(cfg, row.sub, row.method); } catch { return row.minutes < GRACE_MINUTES ? who : null; }
   const scopes = note.active ? narrower(who.scopes, note.scopes) : [];
   if (!scopes.length) {
     await q("DELETE FROM staff_sessions WHERE id_hash = $1", [hash]);

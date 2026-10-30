@@ -333,8 +333,6 @@ Reads: nothing but its own fields · analytics: `none` · photos load eager · b
 | `title` | one line of text | **required** |
 | `body` | one or more paragraphs | **required** |
 | `signIn` | one line of text | **required** |
-| `helpTitle` | one line of text |  |
-| `help` | one or more paragraphs |  |
 
 ### Resource list — `resources`
 

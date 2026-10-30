@@ -316,3 +316,22 @@ for it to be merged into the queue. It is queued, not built: `WORK.md` items 15,
 | A building's or a block's directory is its own block, `directory`: groups in order, each place with its own name, address and link | a card has one link, and a floor of the Student Activity Center has up to four offices with their own | `src/render/blocks/directory.mjs` |
 | Student Activity Center and University Square correct two live spellings: "Financial" (live: "Finanical") and "Milio's Sandwiches" (live: "Milo"), after the shop's own link and photo | they are typos | `content/pages/student-activity-center.json`, `university-square.json` |
 | A page whose live form is a Google Form keeps linking it until its native form exists (alumni, email list, referral cards, ribbons, request a program, and request a workshop's volunteer training) | the native forms launch closed (Launch, 20 Oct 2026); a native form for each is queue items 12–14 | each page's `content/pages/*.json` |
+
+## 30 October 2026 · shared sign-in rules (Owner; queued, not implemented)
+
+The owner asked that the shared SSO-page rules and Public Website folder reflect the revised Google sign-in queue.
+This supersedes password-first/help/password-setup requirements only for the future Google route; existing built
+sign-in, authorization and password fallback remain until implemented. WORK item 20 is the queue, not a new tracker.
+
+| Decision | Queued behavior and boundary | Source |
+|---|---|---|
+| Email-first Google; logo password override | Connect owns Google authentication and `public-sso.html`/shared `sso-door.js`. Exact wisc.edu/badgersupports.org emails hint account selection; Google may still prompt. Clicking the sign-in logo reveals the password route for this visit; Google off/missing configuration restores passwords. No public header-logo behavior, Google SDK/client or second account/password store is added here. Entered/verified returned addresses must already belong to the same active approved person; multiple verified Google subjects for that person are permitted. No new account, alias, merge, role or access. Signed audience/scopes/state/nonce/PKCE/return validation, grants and server checks remain; Google skips password-only setup/change gates in Connect's authorize/token/status paths. | Nicholas, 30 Oct 2026: passwordless default and clarified same-person matching; corrected the fallback to "just be able to click the logo"; requested updating shared SSO rules and this Public Website folder. Queue/rule changes only. |
+| Shared optional sign-in quotes | Remove matching ordinary `/staff/` About Signing In help and Connect's warning/help. Connect Settings owns one quote list/visibility switch, bulk plain-text lines, safe rendering and once-per-load selection stable while typing; Public consumes the shared delivery and has no writable duplicate. Off/empty/unavailable shows no quote/help and never blocks sign-in. No approved starter library. | Nicholas, 30 Oct 2026: optional quotes, bulk entry and one shared list/switch; carried to the Public sign-in consumer under the shared-page ruling. |
+
+Source correction recorded separately from the queued feature: on 30 Oct, Connect's local action and SIGNIN-PARITY
+25 Oct record establish that `publicSsoStatus` is built locally. Production availability and a real Google SSO
+round trip remain unverified; the existing flag stays the owner's. No application code, live setting or deploy changed.
+
+**Built locally, 30 Oct 2026 (same day; not published).** The two queued rows above are built on this
+site's side as `docs/ARCHITECTURE.md` "This site's half" records: help removed, Connect's quote shown, the session's
+`method` kept and sent with the status check. Evidence is stand-in tests only (`test/staff.test.mjs`); no real Google.

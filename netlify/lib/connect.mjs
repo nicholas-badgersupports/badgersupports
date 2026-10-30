@@ -130,16 +130,41 @@ export function verifyAssertion(cfg, assertion, sig, { nonce, sub, now = Date.no
   if ((assertion.nonce || "") !== (nonce || "")) bad();
   if (typeof assertion.sub !== "string" || !assertion.sub || typeof assertion.name !== "string") bad();
   if (!Array.isArray(assertion.scopes) || !assertion.scopes.every((x) => typeof x === "string")) bad();
-  return { sub: assertion.sub.slice(0, 200), name: assertion.name.slice(0, 80), scopes: assertion.scopes.slice(0, 50), active: assertion.active };
+  /* `method` (Connect GOOGLE-SIGNIN, 30 October 2026): how the Connect session behind the note was opened. Signed with
+     the rest; a note from a Connect that does not send it is a password one. */
+  return { sub: assertion.sub.slice(0, 200), name: assertion.name.slice(0, 80), scopes: assertion.scopes.slice(0, 50), active: assertion.active,
+           method: assertion.method === "google" ? "google" : "password" };
 }
 
 /* PROPOSED CHANGE: Connect has no publicSsoStatus yet. Asks whether the person behind a session is
    still active here, and with what; the note is bound to this call by its nonce, so an old answer
    cannot be sent again. Returns { active, name, scopes }; throws as call() does, or auth.invalid. */
-export async function sessionStatus(cfg, sub) {
+/* `method` (Connect GOOGLE-SIGNIN): the session's own, from its sign-in note. Connect holds a Google-opened session to
+   its Google route — switched off there, the answer is `active: false` — and a password one to the password gates. */
+export async function sessionStatus(cfg, sub, method = "password") {
   const nonce = randomB64u(16);
-  const r = await call(cfg, { action: "publicSsoStatus", client: CLIENT_ID, sub, nonce }, { timeout: STATUS_TIMEOUT_MS });
+  const r = await call(cfg, { action: "publicSsoStatus", client: CLIENT_ID, sub, nonce, method: method === "google" ? "google" : "password" }, { timeout: STATUS_TIMEOUT_MS });
   return verifyAssertion(cfg, r.assertion, r.sig, { nonce, sub });
+}
+
+/* Connect's one shared list of sign-in quotes (Connect GOOGLE-SIGNIN, publicSigninQuotes): the list when its Show switch
+   is on, [] otherwise. Read for the staff page, five minutes per instance; any failure is no quote and never blocks
+   signing in. Nothing about anyone is sent or received, and this site keeps no copy anyone can edit. */
+/* A failed read is kept for a minute too, so a page opened again and again while Connect is down does not ask it each time. */
+let quoteCache = { until: 0, quotes: null };
+export function resetQuoteCache() { quoteCache = { until: 0, quotes: null }; }
+export async function signinQuotes(cfg, now = Date.now()) {
+  if (!cfg) return [];
+  if (quoteCache.quotes && now < quoteCache.until) return quoteCache.quotes;
+  try {
+    const r = await call(cfg, { action: "publicSigninQuotes" }, { timeout: STATUS_TIMEOUT_MS });
+    const quotes = (Array.isArray(r.quotes) ? r.quotes : []).filter((x) => typeof x === "string" && x && x.length <= 300).slice(0, 500);
+    quoteCache = { until: now + 5 * 60 * 1000, quotes };
+    return quotes;
+  } catch {
+    quoteCache = { until: now + 60 * 1000, quotes: [] };
+    return [];
+  }
 }
 
 /* ------------------------------------------------------------------ form delivery */

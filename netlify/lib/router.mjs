@@ -17,7 +17,7 @@ import { currentForm, submit, answersForPerson } from "./intake.mjs";
 import { fileQuestion, fileName, isPdfType, storeFile } from "./files.mjs";
 import { recordMood, moodCounts } from "./mood.mjs";
 import { serverContent } from "./content.mjs";
-import { connectConfig } from "./connect.mjs";
+import { connectConfig, signinQuotes } from "./connect.mjs";
 import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
@@ -138,6 +138,13 @@ async function formFile(req, [key], context) {
   const bytes = await readBytes(req, QUESTION_TYPES.file.maxBytes);
   const fileId = await storeFile(form, qn, { name: fileName(req.headers.get("x-file-name")), bytes });
   return json(200, { ok: true, fileId });
+}
+
+/* Connect GOOGLE-SIGNIN, WORK item 20 — the staff page's optional quote, from Connect's one shared list (connect.mjs,
+   signinQuotes). Public, read-only, names nobody; [] when Connect is not set up, the list is switched off or empty, or
+   Connect does not answer. Never cached at the edge: a switch in Connect reaches the page within five minutes. */
+async function signinQuotesRoute() {
+  return json(200, { ok: true, quotes: await signinQuotes(connectConfig()) }, { "cache-control": "no-store" });
 }
 
 async function moodRead() {
@@ -337,6 +344,7 @@ export const ROUTES = [
   { name: "authCallback", method: "GET", pattern: /^\/api\/auth\/callback$/, tier: "public", run: authCallback },
   { name: "authSignOut", method: "POST", pattern: /^\/api\/auth\/signout$/, tier: "public", run: authSignOut },
   { name: "authStatus", method: "GET", pattern: /^\/api\/auth\/status$/, tier: "public", run: authStatus },
+  { name: "signinQuotes", method: "GET", pattern: /^\/api\/signin-quotes$/, tier: "public", run: signinQuotesRoute },
   { name: "staffMe", method: "GET", pattern: /^\/api\/staff\/me$/, tier: "director", run: staffMe },
   { name: "staffForms", method: "GET", pattern: /^\/api\/staff\/forms$/, tier: "director", run: staffForms },
   { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },

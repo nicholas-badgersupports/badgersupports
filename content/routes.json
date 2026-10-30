@@ -44,6 +44,9 @@
     {"live": "/resources/identity-based", "path": "/resources/", "disposition": "replace", "note": "301 to /resources/?topic=identity-based."},
     {"live": null, "path": "/forms/workshop-request/", "disposition": "new", "note": "Native form. Built in slice 1."},
     {"live": null, "path": "/forms/programming-feedback/", "disposition": "new", "note": "Native form, anonymous. Built in slice 1."},
+    {"live": null, "path": "/forms/resource-problem/", "disposition": "new", "note": "Native form, anonymous, closed until Connect files it (WORK.md item 21). Opened from a resource's Additional Details."},
+    {"live": null, "path": "/forms/resource-update/", "disposition": "new", "note": "Native form, anonymous, closed until Connect files it (WORK.md item 21). Opened from a resource's Additional Details."},
+    {"live": null, "path": "/forms/resource-suggestion/", "disposition": "new", "note": "Native form, anonymous, closed until Connect files it (WORK.md item 21). Linked under the resource list."},
     {"live": null, "path": "/staff/", "disposition": "new", "note": "Director sign-in through Connect. Signs in through Connect and shows directors the latest answers; live once Connect's half is pushed."},
     {"live": null, "path": "/directions/", "disposition": "new", "note": "Every published room, generated from content/places/. Each room also gets /directions/<id>/."}
   ]

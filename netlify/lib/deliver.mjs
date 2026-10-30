@@ -57,6 +57,7 @@ export function ingestPayload(sub, def) {
     const q = id.endsWith(OTHER) ? null : questionById(def, id);
     answers[id] = answerWords(q, v);
     if (q && QUESTION_TYPES[q.type]?.options && v != null) optionIds[id] = q.type === "rank" ? rankOrder(q, v) : v;
+    if (q?.type === "resource" && v) optionIds[id] = v;
     if (q?.type !== "file") continue;
     for (const f of Array.isArray(v) ? v : []) {
       if (f && typeof f === "object") files.push({ question: id, fileId: f.fileId, name: f.name, type: f.type, bytes: f.bytes, sha256: f.sha256 });

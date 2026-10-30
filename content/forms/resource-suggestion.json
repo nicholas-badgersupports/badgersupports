@@ -1,0 +1,54 @@
+{
+  "schema": "bss.form/1",
+  "key": "resource-suggestion",
+  "version": 1,
+  "title": "Suggest a Resource",
+  "audience": "public",
+  "anonymous": true,
+  "state": "closed",
+  "closedMessage": "Email resource suggestions to directors@badgersupports.org.",
+  "review": "Built closed (WORK.md item 21). Connect is asked to file this form's answers in Admin › Resource Suggestions, where resource-editing directors review them (Exchange PUBLIC-RESOURCE-SUGGESTIONS-2026-10-30). Open it only after Connect replies that its live site does; until then an answer would land in Website Forms. Words are ours.",
+  "sections": [
+    {
+      "id": "resource",
+      "title": "Resource",
+      "questions": [
+        {
+          "id": "name",
+          "type": "short",
+          "label": "Name",
+          "required": true,
+          "maxLength": 200
+        },
+        {
+          "id": "link",
+          "type": "links",
+          "label": "Website",
+          "required": false,
+          "maxLinks": 1,
+          "rows": 1
+        },
+        {
+          "id": "about",
+          "type": "long",
+          "label": "What does it offer?",
+          "required": false,
+          "maxLength": 2000,
+          "rows": 5
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank You",
+    "body": [
+      "A Badger Supports director will review it."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "resources.suggestions",
+    "owner": "Resource-editing directors",
+    "receipt": "none",
+    "backup": "proposed"
+  }
+}

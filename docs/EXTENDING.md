@@ -195,7 +195,9 @@ message, and a `workflow` that says where its answers go. `definitionProblems()`
 rule book; the build and the server both refuse a definition that breaks it. The question types and their limits
 are `QUESTION_TYPES` in that file, and the editor contract lists them in plain words. Since 23 Oct there are four
 more: `tel` (a phone number, no format forced), `links` (up to five https links, one per line), `rank` (each
-option given a different place) and `file` (one PDF of at most 3 MB, never on an anonymous form).
+option given a different place) and `file` (one PDF of at most 3 MB, never on an anonymous form). Since 30 Oct,
+`resource`: one resource from the list the resource viewer shows, written into the definition by the build
+(`withResources()`), so a file never holds the list.
 
 **A new form** ships `closed`. A prototype build gives a closed form with questions a preview page at
 `/forms/<key>/preview/`, which checks answers in the browser and sends nothing. To open one: a page in

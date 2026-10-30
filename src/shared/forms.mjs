@@ -34,12 +34,20 @@ export const QUESTION_TYPES = {
   links:      { input: "textarea",       maxItems: 5 },
   rank:       { input: "select",         options: true },
   file:       { input: "file",           maxBytes: 3 * 1024 * 1024, accept: "application/pdf" },
+  /* One resource from the site's resource list. Its `resources` ([{ id, name }]) are filled in by
+     the build from the list the resource viewer shows (withResources), never typed into the file,
+     so the form and the viewer always offer the same resources. The answer is the resource's id. */
+  resource:   { input: "select",         list: true },
 };
+
+/* What Connect keeps as a suggestion's resource id (its suggestionFields()), so no id Connect
+   exports is refused here and none it would cut short is sent. */
+export const RESOURCE_ID_RE = /^[A-Za-z0-9_-]{1,120}$/;
 
 export const LINK_MAX = 2000;
 export const FILE_ID_RE = /^[A-Za-z0-9_-]{32}$/;
 /* Types whose answer is not one value a condition could test. */
-const UNCONDITIONAL = new Set(["links", "rank", "file"]);
+const UNCONDITIONAL = new Set(["links", "rank", "file", "resource"]);
 
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]{1,64}@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -59,6 +67,16 @@ export function googleFormUrl(def) {
    still wins over this (netlify/lib/intake.mjs), but the page stays as built until a rebuild. */
 export function launchForms(forms) {
   return Object.fromEntries(Object.entries(forms).map(([key, def]) => [key, def.state === "open" ? { ...def, state: "closed", elsewhere: googleFormUrl(def) } : def]));
+}
+
+/* The definition with every `resource` question given the site's resource list, by name. The
+   list is the build's: the resource viewer's own records. A definition with no such question comes
+   back unchanged. */
+export function withResources(def, resources) {
+  if (!def || !Array.isArray(def.sections) || !def.sections.some((s) => (s.questions || []).some((q) => q.type === "resource"))) return def;
+  const list = (resources || []).filter((r) => r && r.id && r.name).map((r) => ({ id: String(r.id), name: String(r.name) }))
+    .sort((a, z) => a.name.localeCompare(z.name, "en") || a.id.localeCompare(z.id));
+  return { ...def, sections: def.sections.map((s) => ({ ...s, questions: (s.questions || []).map((q) => (q.type === "resource" ? { ...q, resources: list } : q)) })) };
 }
 
 /* ------------------------------------------------------------------ walking a definition */
@@ -118,6 +136,16 @@ export function definitionProblems(def) {
           if (ids.has(o.id)) add("option-id-duplicate", `${qat}.${o.id}`);
           if (!String(o.label || "").trim()) add("option-label-missing", `${qat}.${o.id}`);
           ids.add(o.id);
+        }
+      }
+      if (type.list) {
+        if (!Array.isArray(q.resources) || q.resources.length === 0) add("resources-missing", qat);
+        const ids = new Set();
+        for (const r of q.resources || []) {
+          if (!RESOURCE_ID_RE.test(String(r?.id || ""))) add("resource-id-shape", `${qat}.${r?.id}`);
+          else if (ids.has(r.id)) add("resource-id-duplicate", `${qat}.${r.id}`);
+          if (!String(r?.name || "").trim()) add("resource-name-missing", `${qat}.${r?.id}`);
+          ids.add(r?.id);
         }
       }
       if (q.allowOther && !["choice", "checkboxes"].includes(q.type)) add("other-not-allowed", qat);
@@ -349,6 +377,8 @@ function typeProblem(q, v) {
     }
     case "choice": case "select":
       return ids.has(v) ? null : "option-unknown";
+    case "resource":
+      return (q.resources || []).some((r) => r.id === v) ? null : "option-unknown";
     case "checkboxes":
       if (v.some((x) => !ids.has(x))) return "option-unknown";
       if (q.maxSelected && v.length > q.maxSelected) return "too-many";
@@ -392,7 +422,7 @@ export function errorText(code, q, t) {
     case "required":
       if (q?.type === "file") return t("form.error.requiredFile", { label });
       if (q?.type === "rank") return t("form.error.requiredRank", { label });
-      return q && QUESTION_TYPES[q.type]?.options ? t("form.error.requiredChoice", { label }) : t("form.error.required", { label });
+      return q && (QUESTION_TYPES[q.type]?.options || QUESTION_TYPES[q.type]?.list) ? t("form.error.requiredChoice", { label }) : t("form.error.required", { label });
     case "links-too-many": return t("form.error.linksTooMany", { max: q.maxLinks || QUESTION_TYPES.links.maxItems });
     case "link-too-long": return t("form.error.linkTooLong", { max: LINK_MAX.toLocaleString("en-US") });
     case "link-shape": return t("form.error.linkShape");
@@ -445,6 +475,7 @@ export function answerWords(q, v) {
     case "rank": return rankOrder(q, v).map((id, i) => `${i + 1}. ${optionLabel(q, id)}`);
     case "file": return (Array.isArray(v) ? v : [v]).map((f) => (isFileRecord(f) ? `${f.name} (${sizeWords(f.bytes)})` : String(f)));
     case "links": return Array.isArray(v) ? v.map(String) : String(v).split("\n");
+    case "resource": return resourceName(q, v);
     default:
       if (Array.isArray(v)) return v.map((x) => optionLabel(q, x));
       return q && QUESTION_TYPES[q.type]?.options ? optionLabel(q, v) : String(v);
@@ -467,6 +498,12 @@ export function cellText(def, id, value) {
   const w = value == null ? "" : answerWords(q, value);
   const s = Array.isArray(w) ? w.join(q?.type === "links" ? "\n" : "; ") : w;
   return /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
+}
+
+/* A resource's name, or its id when the list no longer holds it. */
+export function resourceName(q, v) {
+  const r = q && (q.resources || []).find((x) => x.id === v);
+  return r ? r.name : String(v);
 }
 
 export function optionLabel(q, v) {

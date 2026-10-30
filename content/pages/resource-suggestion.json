@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-resource-suggestion",
+  "path": "/forms/resource-suggestion/",
+  "title": "Suggest a Resource — Badger Supports",
+  "description": "Suggest a resource for the Badger Supports resource list.",
+  "analytics": "none",
+  "noindex": true,
+  "blocks": [
+    {
+      "id": "b-form-resource-suggestion",
+      "type": "form",
+      "form": "resource-suggestion",
+      "title": "Suggest a Resource"
+    }
+  ]
+}

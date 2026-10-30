@@ -9,11 +9,11 @@ import { t } from "./text.js";
 
 const words = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 /* A card's own words: its name, what it is, who it suits, its chips and its details, without the
-   labels every card shares ("Recommended For", "Phone:"). */
+   labels and links every card shares ("Recommended For", "Phone:", Report a Problem). */
 const own = (el) => {
   if (!el) return "";
   const c = el.cloneNode(true);
-  for (const x of c.querySelectorAll("b, .res-lead")) x.remove();
+  for (const x of c.querySelectorAll("b, .res-lead, .res-report")) x.remove();
   return c.textContent;
 };
 /* "psychologist" -> "psycholog": the start a word must share with a card's word on the second try. */

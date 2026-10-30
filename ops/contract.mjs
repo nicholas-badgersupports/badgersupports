@@ -182,7 +182,7 @@ export function contract() {
   w("| Type | Shows as | Has options | Limit |");
   w("|---|---|---|---|");
   const limit = (v) => (v.max ? `${v.max} characters` : v.maxItems ? `${v.maxItems} links, https only, one per line` : v.maxBytes ? `one PDF, ${v.maxBytes / (1024 * 1024)} MB` : "");
-  for (const [k, v] of Object.entries(QUESTION_TYPES)) w(`| \`${k}\` | ${v.input} | ${v.options ? "yes" : ""} | ${limit(v)} |`);
+  for (const [k, v] of Object.entries(QUESTION_TYPES)) w(`| \`${k}\` | ${v.input} | ${v.options ? "yes" : v.list ? "the site's resource list" : ""} | ${limit(v)} |`);
   w();
   w("A question has an `id`, a `type`, a `label` and may have:");
   w();
@@ -192,8 +192,9 @@ export function contract() {
     ["required", "true: the form will not send without an answer"],
     ["help", "prose under the label (see below)"],
     ["options", "`[{ id, label }]` for a type with options; ids are permanent"],
+    ["resources", "`resource` only: `[{ id, name }]`, written by the build from the list the resource viewer shows; an editor never types or keeps it"],
     ["allowOther", "`choice` and `checkboxes` only: adds an Other with its own words"],
-    ["showIf", "`{ question, equals | in | includes }` on an earlier question; not on `links`, `rank` or `file`"],
+    ["showIf", "`{ question, equals | in | includes }` on an earlier question; not on `links`, `rank`, `file` or `resource`"],
     ["maxLength, min, max, maxSelected", "tighter limits than the type's own"],
     ["maxLinks", "`links` only: 1 to 10"],
     ["confirmText", "`confirm` only: the checkbox's words, when the label is a heading above them"],

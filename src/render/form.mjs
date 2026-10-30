@@ -65,6 +65,10 @@ function control(q, value, otherValue, aria, t) {
     }
     case "select":
       return html`<select${attrs(common)}><option value="">${t("form.choose")}</option>${q.options.map((o) => html`<option${attrs({ value: o.id, selected: value === o.id })}>${o.label}</option>`)}</select>`;
+    /* The address can choose the resource (?<question id>=<resource id>, src/client/form.js), so a
+       resource's own Report a Problem opens with it chosen. */
+    case "resource":
+      return html`<select${attrs({ ...common, "data-from-address": "" })}><option value="">${t("form.choose")}</option>${(q.resources || []).map((r) => html`<option${attrs({ value: r.id, selected: value === r.id })}>${r.name}</option>`)}</select>`;
     case "rank": {
       const places = q.options.map((_, i) => String(i + 1));
       return html`<div class="rank">${q.options.map((o, i) => {

@@ -1096,6 +1096,33 @@ await part("resources: a card's details and the filter", async () => {
   await ctx.close();
 });
 
+/* A card's Suggest an Update names its resource in the address; the form's own page is closed until Connect files these,
+   so the check reads the same address on the form's review page. */
+await part("resources: Suggest an Update opens with its resource chosen", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(BASE + "/resources/", { waitUntil: "networkidle" });
+  const all = await page.locator(".res-card").count();
+  await page.fill("#b-res-list-q", "report problem suggest update");
+  const matched = await page.locator(".res-card:not([hidden])").count();
+  check(all > 0 && matched === 0, `resources: the search does not read the links every card shares (${matched} of ${all} cards match their words)`);
+  const href = await page.locator('.res-card .res-report a[href^="/forms/resource-update/?resource="]').nth(4).getAttribute("href");
+  const id = decodeURIComponent(href.split("?resource=")[1]);
+  const chosen = async (query) => {
+    await page.goto(`${BASE}/forms/resource-update/preview/${query}`, { waitUntil: "networkidle" });
+    return page.evaluate(() => { const s = document.querySelector('select[name="resource"]'); return s ? s.value : null; });
+  };
+  const got = await chosen(`?resource=${encodeURIComponent(id)}`);
+  const unknown = await chosen("?resource=no-such-resource");
+  const none = await chosen("");
+  check(got === id && unknown === "" && none === "",
+    `resources: Suggest an Update opens with its resource chosen, and an address naming no resource chooses nothing (${JSON.stringify({ id, got, unknown, none })})`);
+  check(!errors.length, `resources: the update form has no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

@@ -1248,10 +1248,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-more > summary:hover { color: var(--accent-deep); text-decoration: underline; }
 .res-more-body { display: grid; gap: var(--s1); padding-top: var(--s2); font-size: var(--fs-small); }
 .res-more-body p, .res-dialog-body p { margin: 0; overflow-wrap: anywhere; }
+.res-report { display: flex; flex-wrap: wrap; gap: 0 var(--s4); }
+.res-report a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; }
+.res-report a:hover { color: var(--accent-deep); }
 .res-none { padding: var(--s4); background: var(--accent-tint); border-radius: var(--r-card); max-width: var(--measure); }
 .res-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
 .res-none p { margin: 0 0 var(--s2); }
 .res-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
+.res-suggest { margin: var(--s3) 0 0; }
 .res-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); max-height: min(40rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
 .res-dialog::backdrop { background: var(--scrim); }
 .res-dialog-head { position: sticky; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); padding: var(--s4) var(--s4) var(--s2) var(--s5); background: var(--paper); }

@@ -60,9 +60,28 @@ test("no button calls, texts or emails: those say View Details, and the number s
   assert.equal(button("slow-food-uw"), "View Details", "Email Slow Food UW opens a web page");
   assert.equal(button("988-suicide-crisis-lifeline"), "View Details", "Text 988 opens a web page");
   assert.match(card("slow-food-uw"), /View Details<span class="sr-only">: Slow Food UW<\/span><\/span>/, "a reader hears whose details");
-  assert.doesNotMatch(card("foodshare"), /<a [^>]*class="btn res-go"[^>]*>[\s\S]*?sr-only[\s\S]*?<\/a>/, "a label of the record's own needs nothing added");
+  assert.doesNotMatch(card("foodshare"), /<a [^>]*class="btn res-go"[^>]*>(?:(?!<\/a>)[\s\S])*sr-only/, "a label of the record's own needs nothing added");
   assert.match(card("988-suicide-crisis-lifeline"), /Text 988 for support\./, "the text instruction stays");
   assert.match(card("space-to-heal"), /<p class="res-tel"><a href="tel:4149394673">414-939-HOPE<\/a><\/p>/, "letters dial as their keys");
+});
+
+test("each resource's Additional Details reports a problem with it or suggests an update, and the list asks for new resources", () => {
+  for (const r of fixture.resources) {
+    const more = card(r.id).match(/<div class="res-more-body">([\s\S]*)<\/div><\/details>/)?.[1] || "";
+    const links = [...more.matchAll(/<p class="res-report">([\s\S]*?)<\/p>/g)];
+    assert.equal(links.length, 1, `${r.id}: one row of reports`);
+    const q = encodeURIComponent(r.id).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const name = r.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    assert.match(links[0][1], new RegExp(`^<a href="/forms/resource-problem/\\?resource=${q}">Report a Problem<span class="sr-only">: ${name}</span></a><a href="/forms/resource-update/\\?resource=${q}">Suggest an Update<span class="sr-only">: ${name}</span></a>$`), r.id);
+  }
+  assert.equal([...page.matchAll(/href="\/forms\/resource-suggestion\/"/g)].length, 1, "one Suggest a Resource, under the list");
+  assert.match(page, /<p class="res-suggest"><a href="\/forms\/resource-suggestion\/" class="go"><span class="go-label">Suggest a Resource<\/span>/);
+  for (const key of ["resource-problem", "resource-update", "resource-suggestion"]) {
+    const form = read(`forms/${key}/index.html`);
+    assert.match(form, /<meta name="robots" content="noindex">/, key);
+    assert.match(form, /directors<wbr>@badgersupports\.org|directors@badgersupports\.org/, `${key}: closed, it gives the address the list gives`);
+    assert.doesNotMatch(form, /<form[\s>]/, `${key}: closed, no inputs`);
+  }
 });
 
 test("Additional Details never repeats what the card already says", () => {

@@ -30,7 +30,7 @@ and SPILL's forms stay with SPILL.
 The audit's whole-directory check also found internal, personnel and SPILL forms whose questions load publicly.
 That they load is not a reason to publish them here.
 
-## The nine forms built
+## The forms built
 
 From `content/forms/*.json`. A form's `workflow` block names where its submissions go; none of it is wired to
 anything outside this site yet.
@@ -46,6 +46,9 @@ anything outside this site yet.
 | `program-request` | **closed** | no | `programs.program-requests` (proposed) | Programs | proposed | proposed |
 | `referral-card-survey` | **closed** | no | `programs.referral-card-ideas` (proposed) | Programs | none | proposed |
 | `email-list` | **closed** | no | `executive.email-list` (proposed) | Executive | none | proposed |
+| `resource-problem` | **closed** until Connect files it | yes | `resources.suggestions` (asked of Connect) | Resource-editing directors | none | proposed |
+| `resource-update` | **closed** until Connect files it | yes | `resources.suggestions` (asked of Connect) | Resource-editing directors | none | proposed |
+| `resource-suggestion` | **closed** until Connect files it | yes | `resources.suggestions` (asked of Connect) | Resource-editing directors | none | proposed |
 
 The two applications ask for a resume (and the staff one a cover letter) as one PDF of at most 3 MB, kept on
 this site until Connect takes it (`docs/ARCHITECTURE.md`, "Files"). Answers about work study and commitments are

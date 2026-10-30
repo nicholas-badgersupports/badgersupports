@@ -3,8 +3,8 @@
 The live site has four resource pages: General, Basic Needs, Health and Identity Based. This site has
 one, `/resources/`, built from Connect's own resource records and drawn as Connect's Find a Resource
 card. The four old addresses send a visitor to the same list with a topic chosen (`_redirects`, 301).
-The moderated viewer, with Report a Problem, Suggest a Resource and Suggest an Update, is queue item 21
-and is not built.
+Report a Problem, Suggest a Resource and Suggest an Update are queue item 21: built closed on 30 Oct
+(`docs/DECISIONS.md`, "the resource reports").
 
 Sources: the live pages, crawled 19 Oct 2026; Connect's shipped catalog,
 `../BSS Intranet Transfer v23/repo/netlify/lib/builtin-resources.mjs` (source date 1 Aug 2026), read
@@ -86,6 +86,6 @@ word shows everything, which is why `general` needs no alias.
 - **The privacy check** does not look for addresses or phone numbers in `content/fixtures/resources.json`,
   because every one there is a public service's own line; it still looks for credentials. It also allows
   the email list's subscribe address, which the organisation prints on its own form (`ops/check.mjs`).
-- **Suggest a Resource** already exists as a Google Form, the Badger Supports Resource Request Form (its
-  question text is in the corpus). Item 21 decides whether it moves into Connect with the other two
-  reports.
+- **Suggest a Resource** had no form before item 21. The Badger Supports Resource Request Form
+  (`content/forms/resource-request.json`) orders the organisation's own materials (toolkits, flyers, a
+  ribbon station), not a resource for this list.

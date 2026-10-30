@@ -50,7 +50,7 @@ import { ICONS } from "../src/render/icons.mjs";
 import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
-import { definitionProblems, launchForms } from "../src/shared/forms.mjs";
+import { definitionProblems, launchForms, withResources } from "../src/shared/forms.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
 import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings, pageValues, siteValues } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
@@ -181,8 +181,14 @@ export function loadContent({ production = false, launch = production, textEdits
   const pages = [];
   const problems = [];
 
+  // Resources: Connect's resource records, projected as its projectResource() does.
+  const resourcesAt = feed?.resources ? "Connect's public resource list" : "content/fixtures/resources.json";
+  const resources = feed?.resources ? structuredClone(feed.resources) : readJson("content/fixtures/resources.json");
+  if (!Array.isArray(resources.resources)) problems.push(`${resourcesAt}: resources is a list`);
+  else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`${resourcesAt}: resources[${i}] needs an id and a name`);
+  // A form's resource question offers the same resources the resource list shows (withResources).
   for (const f of readDir("content/forms")) {
-    const def = readJson(`content/forms/${f}`);
+    const def = withResources(readJson(`content/forms/${f}`), Array.isArray(resources.resources) ? resources.resources : []);
     if (`${def.key}.json` !== f) problems.push(`content/forms/${f}: key "${def.key}" does not match the file name`);
     for (const p of definitionProblems(def)) problems.push(`content/forms/${f}: ${p.code} at ${p.at || "(form)"}`);
     forms[def.key] = def;
@@ -270,11 +276,6 @@ export function loadContent({ production = false, launch = production, textEdits
   for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`${teamAt}: ${p}`);
   photos({ people: publicPeople(team) }, teamAt);
   const slugs = new Set(publicPeople(team).map((p) => p.slug));
-  // Resources: Connect's resource records, projected as its projectResource() does.
-  const resourcesAt = feed?.resources ? "Connect's public resource list" : "content/fixtures/resources.json";
-  const resources = feed?.resources ? structuredClone(feed.resources) : readJson("content/fixtures/resources.json");
-  if (!Array.isArray(resources.resources)) problems.push(`${resourcesAt}: resources is a list`);
-  else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`${resourcesAt}: resources[${i}] needs an id and a name`);
   for (const page of pages) for (const b of page.blocks || []) {
     if (b.type === "team") for (const g of b.groups || []) if (!GROUPS.includes(g.group)) problems.push(`content/pages: ${page.id}.${b.id}: each group is one of ${GROUPS.join(", ")}`);
     if (b.type === "person" && !slugs.has(b.person)) problems.push(`content/pages: ${page.id}.${b.id} names "${b.person}", who has no public profile`);

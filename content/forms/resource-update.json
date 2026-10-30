@@ -1,0 +1,109 @@
+{
+  "schema": "bss.form/1",
+  "key": "resource-update",
+  "version": 1,
+  "title": "Suggest an Update",
+  "audience": "public",
+  "anonymous": true,
+  "state": "closed",
+  "closedMessage": "Email updates to a resource to directors@badgersupports.org.",
+  "review": "Built closed (WORK.md item 21). Connect is asked to file this form's answers in Admin › Resource Suggestions, where resource-editing directors review them (Exchange PUBLIC-RESOURCE-SUGGESTIONS-2026-10-30). Open it only after Connect replies that its live site does; until then an answer would land in Website Forms. Words are ours.",
+  "sections": [
+    {
+      "id": "update",
+      "title": "Update",
+      "questions": [
+        {
+          "id": "resource",
+          "type": "resource",
+          "label": "Resource",
+          "required": true
+        },
+        {
+          "id": "field",
+          "type": "select",
+          "label": "What needs updating?",
+          "required": true,
+          "options": [
+            {
+              "id": "name",
+              "label": "Name"
+            },
+            {
+              "id": "what",
+              "label": "Description"
+            },
+            {
+              "id": "best",
+              "label": "Recommended For"
+            },
+            {
+              "id": "cat",
+              "label": "Topic"
+            },
+            {
+              "id": "cost",
+              "label": "Cost"
+            },
+            {
+              "id": "where",
+              "label": "Location"
+            },
+            {
+              "id": "step",
+              "label": "Next Step"
+            },
+            {
+              "id": "phone",
+              "label": "Phone"
+            },
+            {
+              "id": "limits",
+              "label": "Limits"
+            },
+            {
+              "id": "eligibility",
+              "label": "Eligibility"
+            },
+            {
+              "id": "hours",
+              "label": "Hours"
+            },
+            {
+              "id": "email",
+              "label": "Email"
+            },
+            {
+              "id": "act_url",
+              "label": "Link"
+            },
+            {
+              "id": "other",
+              "label": "Something Else"
+            }
+          ]
+        },
+        {
+          "id": "words",
+          "type": "long",
+          "label": "What should it say?",
+          "required": true,
+          "maxLength": 2000,
+          "rows": 5
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank You",
+    "body": [
+      "A Badger Supports director will review it."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "resources.suggestions",
+    "owner": "Resource-editing directors",
+    "receipt": "none",
+    "backup": "proposed"
+  }
+}

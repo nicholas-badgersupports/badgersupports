@@ -351,3 +351,20 @@ His answers to the three questions at the end of the item 19 report, quoted. The
 | Who reviews public profiles, Wall of Support notes and public resource suggestions before anything goes public or changes? | "Resource-editing directors" | Connect's to build, for profiles and Wall notes (Exchange `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`) and for item 21's suggestions |
 | Consent words on the public-profile switch, and a release sentence on the photo upload? | "No words, stop having so much helper text" | neither carries consent or release text |
 
+
+## 30 October 2026 · the resource reports (item 21; proposals, made in the session)
+
+Report a Problem, Suggest an Update and Suggest a Resource are three anonymous native forms, built **closed**. Nicholas's
+queue asked for Connect's Suggest an Update store rather than a second one, and his answer above names its reviewers.
+
+| Call | Why | To reverse |
+|---|---|---|
+| The three are forms in the one intake (`content/forms/resource-*.json`), not a new endpoint | the intake already has the switch, the per-connection limit, the trap field, one row per press and the outbox to Connect | a dedicated route and outbox kind |
+| Connect is asked to file them in `resource_suggestions` by form key, through `publicFormIngest` | one store and one screen for resource-editing directors; no new signing (Exchange `PUBLIC-RESOURCE-SUGGESTIONS-2026-10-30`) | Connect names another action; one call changes |
+| They stay closed until Connect replies that its live site files them | Connect's `publicFormIngest` takes any form key, so an open form would land in Website Forms | open each with its switch, after the reply |
+| A `resource` question type: one resource from the list the viewer shows, written in by the build (`withResources()`) | the form and the viewer offer the same resources; Connect receives the id and the name. Resource ids do not fit option ids | a short answer with the resource's name |
+| The resource is chosen from the address (`?resource=`) by the page's script | a card's link opens its form with the resource chosen; without a script the person chooses it | drop `data-from-address` |
+| Report a Problem and Suggest an Update sit in each card's Additional Details; Suggest a Resource is one link under the list | 172 more links on the cards would crowd them; every card has Additional Details | move the row into `.res-foot` |
+| No contact question on any of the three | anonymous; "none of the three stores who sent it unless they chose to say" (20 Oct item); a director cannot reply | add an optional email question |
+| Suggest an Update offers Connect's fields except Full Description, which the public card does not show; `act_url` stands for `actUrl` | option ids are lower case | add `long` |
+| The three pages are not indexed and load no analytics | they carry anonymous reports | `noindex: false`, `analytics: "public"` |

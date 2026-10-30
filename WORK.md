@@ -64,9 +64,9 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 ## Evidence
 
 Cloud run, 30 Oct 2026, without the photos (`node ops/check.mjs --browser --no-media` on this tree, Chromium 153 for the pinned 151;
-exit 0): 378 text keys over 74 files; the editor contract current; colours from tokens, no text under 14px; nothing private (211 files
-read); 59 pages; delivered files clean (98 files); tests 205 passed, 0 failed, 1 skipped (item 19's run); 177 captures, no console errors or sideways
-scroll; 184 a11y and form checks; 124 pressed and timed. Before the events checks read an injected day, the same run failed 2 of 123, as the laptop's run with the photos did that day (reported, GOOGLE-SIGNIN);
+exit 0): 381 text keys over 74 files; the editor contract current; colours from tokens, no text under 14px; nothing private (217 files
+read); 65 pages; delivered files clean (104 files); tests 208 passed, 0 failed, 1 skipped (item 21's run); 195 captures, no console errors or sideways
+scroll; 202 a11y and form checks; 127 pressed and timed (Escape closing a card's details fails about 1 run in 7, on the unedited tip too). Before the events checks read an injected day, the same run failed 2 of 123, as the laptop's run with the photos did that day (reported, GOOGLE-SIGNIN);
 they then passed with the server's day at 26 and 31 Oct, 1 and 5 Nov and 31 Dec. Every result is local or fixture. What each proves: the run log.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
@@ -78,7 +78,7 @@ they then passed with the server's day at 26 and 31 Oct, 1 and 5 Nov and 31 Dec.
    only the functions; without them a publish stops with "Nothing was built" and the last deploy stays.
 3. **Releases come from the laptop**, in a new folder outside the synced one: only it has the 23 Drive originals,
    and the synced `dist/` holds conflict copies that cannot be deleted here (`docs/DESIGN.md`).
-5. **Connect exports** for the Wall of Support and the team do not exist; the site's reader waits, off (item 19).
+5. **Connect** has no Wall or team export (item 19) and does not file the three resource forms (item 21): off, and closed.
 6. **Cost**: prices read 23 Oct (`docs/ARCHITECTURE.md`, "Cost"); what each database used is in Billing → Usage only.
 7. **The privacy policy** still names Google Sites, Analytics and Forms: the owner's and a legal review before launch.
 8. **Analytics is off.** The GA4 property is unverified; the connector asked to reauthenticate.
@@ -134,7 +134,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is on Connect's GitHub `main`
     and in its production `202b88f` (read 30 Oct); not tried live. **Google sign-in consumer live 30 Oct, a78d13e** (Connect GOOGLE-SIGNIN): no `/staff/`
     help; Connect's shared quote (`/api/signin-quotes`); sessions keep `method` (migration 007) for the status check. No Google code here.
-21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated.
+21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated. **Built closed** 30 Oct (`docs/DECISIONS.md`); waits for Connect.
 22. **Analytics** (Q1; §9) → an event dictionary; exclusions before any tag loads; no Connect identity; network read.
     Netlify Web Analytics, reported on 24 Oct → verified per project and in billing; no other collector.
 23. ~~Netlify~~ keys and database 20 Oct; **cost plan** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Waits for a yes
@@ -175,4 +175,4 @@ never pushes (24 Oct: one local commit, `0b50df0`, run log R.4). After a publish
 
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
 `PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`; 30 Oct, from SPILL: `SPILL-CRAWLER-CONTACT` (`/crawlers/` now speaks for this site only).
-Their replies say migration 035 "applies on publish": `73cf3cf` is in Connect's production `202b88f`, whose deploy applied only 036, so 035 ran before it (inferred from the deploy record, not read). Open from this session: the two inbox registrations; item 19's `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30` (30 Oct). Owed by Connect: its XSEC-1 handoffs.
+Their replies say migration 035 "applies on publish": `73cf3cf` is in Connect's production `202b88f`, whose deploy applied only 036, so 035 ran before it (inferred from the deploy record, not read). SPILL answered its inbox registration. Open from this session: Connect's inbox registration; item 19's `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`; item 21's `PUBLIC-RESOURCE-SUGGESTIONS-2026-10-30` (30 Oct). Owed by Connect: its XSEC-1 handoffs.

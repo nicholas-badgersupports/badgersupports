@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-resource-update",
+  "path": "/forms/resource-update/",
+  "title": "Suggest an Update — Badger Supports",
+  "description": "Suggest an update to a resource on the Badger Supports resource list.",
+  "analytics": "none",
+  "noindex": true,
+  "blocks": [
+    {
+      "id": "b-form-resource-update",
+      "type": "form",
+      "form": "resource-update",
+      "title": "Suggest an Update"
+    }
+  ]
+}

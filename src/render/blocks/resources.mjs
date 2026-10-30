@@ -18,7 +18,7 @@
    public site. */
 
 import { html, attrs } from "../html.mjs";
-import { link } from "../context.mjs";
+import { link, go } from "../context.mjs";
 import { dateParts } from "../events.mjs";
 
 /* Connect's sixteen resource categories (netlify/lib/builtin-resources.mjs). A topic names one. */
@@ -78,12 +78,20 @@ function button(r, ctx) {
   return label === ctx.t("resources.view") ? html`${label}<span class="sr-only">: ${r.name}</span>` : label;
 }
 
+/* A report about one resource opens its form's page with the resource chosen by the address
+   (?resource=, src/client/form.js). A screen reader hears which resource, as with View Details. */
+function reportLink(ctx, form, r, label) {
+  const to = ctx.link(`/forms/${form}/`);
+  const href = to.pending ? to.href : `${to.href}?resource=${encodeURIComponent(r.id)}`;
+  return html`<a${attrs({ href, "data-pending": to.pending ? "" : null })}>${label}<span class="sr-only">: ${r.name}</span></a>`;
+}
+
 function card(r, ctx, topicOf) {
   const href = r.action?.url || r.url;
   const phone = r.contact?.phone;
   const topic = topicOf.get(r.primaryCategory);
   const where = WHERE[r.location?.campus];
-  const more = details(r, ctx);
+  const more = [...details(r, ctx), html`<p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"))}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"))}</p>`];
   return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null })}>
     <h3>${r.name}</h3>
     ${r.summary ? html`<p class="res-what">${r.summary}</p>` : ""}
@@ -137,6 +145,7 @@ export default {
     <button type="button" class="btn btn--quiet" data-res-reset>${ctx.t("resources.none.reset")}</button>
   </div>
   <p class="res-scope">${ctx.t("resources.scope")}${updated ? html` <span class="res-updated">${ctx.t("resources.updated", dateParts(updated, ctx.t))}</span>` : ""}</p>
+  <p class="res-suggest">${go(ctx, "/forms/resource-suggestion/", ctx.t("resources.report.suggest"))}</p>
   <dialog class="res-dialog" aria-labelledby="${b.id}-dh" data-res-dialog>
     <div class="res-dialog-head"><h2 id="${b.id}-dh" data-res-dtitle></h2><button type="button" class="btn btn--quiet res-close" data-res-close>${ctx.t("resources.close")}</button></div>
     <div class="res-dialog-body" data-res-dbody></div>

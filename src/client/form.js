@@ -232,6 +232,15 @@ function enhance(form, { started = false } = {}) {
   const preview = "preview" in form.dataset;
   if (!idem.value) idem.value = newKey();
   form.noValidate = true;
+  /* A resource named by the address (?resource=<id>) is chosen on the page as it first loads, when
+     the list holds it and nothing is chosen yet. A page redrawn after Send keeps what was sent. */
+  if (!started) {
+    const params = new URLSearchParams(location.search);
+    for (const sel of form.querySelectorAll("select[data-from-address]")) {
+      const want = params.get(sel.name);
+      if (want && !sel.value && [...sel.options].some((o) => o.value === want)) sel.value = want;
+    }
+  }
   let checkedAt = 0;
   let closed = false;
   const uploads = new Set(); // file questions with an upload in progress

@@ -1837,6 +1837,21 @@
       "group": "resources",
       "text": "Last Updated {{monLong}} {{dom}}, {{year}}",
       "where": "On the resource list: the date the list was last checked, after the note under the list."
+    },
+    "resources.report.problem": {
+      "group": "resources",
+      "text": "Report a Problem",
+      "where": "On the resource list: in each resource's Additional Details, the link to report a problem with it."
+    },
+    "resources.report.update": {
+      "group": "resources",
+      "text": "Suggest an Update",
+      "where": "On the resource list: in each resource's Additional Details, the link to suggest a change to it."
+    },
+    "resources.report.suggest": {
+      "group": "resources",
+      "text": "Suggest a Resource",
+      "where": "On the resource list: the link under the list to suggest a resource it does not have."
     }
   }
 }

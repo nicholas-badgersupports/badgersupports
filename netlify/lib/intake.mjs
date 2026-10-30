@@ -58,6 +58,7 @@ export function answersForPerson(def, raw) {
     if (v == null || v === "" || (Array.isArray(v) && !v.length)) continue;
     const label = (id) => (id === OTHER ? raw[`${q.id}${OTHER}`] || "" : (q.options || []).find((o) => o.id === id)?.label || id);
     if (q.type === "rank" || q.type === "links") v = v.join(", ");
+    else if (q.type === "resource") v = answerWords(q, v);
     else v = Array.isArray(v) ? v.map(label).join(", ") : q.options ? label(v) : String(v);
     rows.push({ label: q.label, value: v });
   }

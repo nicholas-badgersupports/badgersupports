@@ -445,6 +445,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `links` | textarea |  | 5 links, https only, one per line |
 | `rank` | select | yes |  |
 | `file` | file |  | one PDF, 3 MB |
+| `resource` | select | the site's resource list |  |
 
 A question has an `id`, a `type`, a `label` and may have:
 
@@ -453,8 +454,9 @@ A question has an `id`, a `type`, a `label` and may have:
 | `required` | true: the form will not send without an answer |
 | `help` | prose under the label (see below) |
 | `options` | `[{ id, label }]` for a type with options; ids are permanent |
+| `resources` | `resource` only: `[{ id, name }]`, written by the build from the list the resource viewer shows; an editor never types or keeps it |
 | `allowOther` | `choice` and `checkboxes` only: adds an Other with its own words |
-| `showIf` | `{ question, equals | in | includes }` on an earlier question; not on `links`, `rank` or `file` |
+| `showIf` | `{ question, equals | in | includes }` on an earlier question; not on `links`, `rank`, `file` or `resource` |
 | `maxLength, min, max, maxSelected` | tighter limits than the type's own |
 | `maxLinks` | `links` only: 1 to 10 |
 | `confirmText` | `confirm` only: the checkbox's words, when the label is a heading above them |
@@ -471,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-378 keys. Keys are permanent. Required text cannot be published empty and must keep each
+381 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -865,7 +867,7 @@ the site adds the markup.
 | `auth.error.failed` | Something went wrong signing in. Start again from the staff page. | Sign-in problem: anything else. |  |
 | `auth.error.back` | Back to the Staff Page | Link at the bottom of the sign-in problem page. |  |
 
-### Resource list (32)
+### Resource list (35)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -901,6 +903,9 @@ the site adds the markup.
 | `resources.detail.cost` | Cost: | On the resource list: a line in Additional Details. |  |
 | `resources.scope` | Details change. Check the official page before relying on hours, availability or eligibility. | On the resource list: the note under the list. |  |
 | `resources.updated` | Last Updated {{monLong}} {{dom}}, {{year}} | On the resource list: the date the list was last checked, after the note under the list. | `{{monLong}}` `{{dom}}` `{{year}}` |
+| `resources.report.problem` | Report a Problem | On the resource list: in each resource's Additional Details, the link to report a problem with it. |  |
+| `resources.report.update` | Suggest an Update | On the resource list: in each resource's Additional Details, the link to suggest a change to it. |  |
+| `resources.report.suggest` | Suggest a Resource | On the resource list: the link under the list to suggest a resource it does not have. |  |
 
 ## Also edited in Connect
 

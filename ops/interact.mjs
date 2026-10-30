@@ -1,6 +1,9 @@
 /* Behaviour in a real browser, against the running local site: the things a screenshot cannot show.
  *
- *   BASE=http://127.0.0.1:8911 node ops/interact.mjs
+ *   BASE=http://127.0.0.1:8911 TODAY=2026-10-20 node ops/interact.mjs
+ *
+ * TODAY is the day the local site draws its pages for (check.mjs passes the build's day; the
+ * server's own default when it is not given).
  *
  * 1. The phone menu: Escape closes the innermost open layer (a sub-menu, then the menu) and puts
  *    focus back on what opened it; a click or tap outside closes it; widening the window past the
@@ -34,6 +37,8 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import { chromium } from "playwright";
+import { chicagoDate } from "../src/render/context.mjs";
+import { addDays } from "../src/render/events.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const BASE = process.env.BASE || "http://127.0.0.1:8899";
@@ -964,15 +969,34 @@ await part("edit button: the key, earlier versions and Restore", async () => {
 
 /* ------------------------------------------------------------------ 5. the events between publishes */
 
+/* The week section lists only days that have an event. The clock is held, mid-morning in Madison, on
+   the first day of the week drawn for TODAY whose next day is listed too, so "Today" can be seen to
+   move a day later whatever day the checks run on. */
+const TODAY = process.env.TODAY || chicagoDate();
+const weekDays = await (async () => {
+  const p = await browser.newPage();
+  const home = await (await fetch(BASE + "/")).text();
+  const days = await p.evaluate((h) => [...new DOMParser().parseFromString(h, "text/html")
+    .querySelectorAll('[data-block="b-home-week"] .week-body > ol.days:first-child > li.day')].map((li) => li.dataset.date), home);
+  await p.close();
+  return days;
+})();
+const DAY = weekDays.find((d, i) => weekDays[i + 1] === addDays(d, 1)) || null;
+const NEXT = DAY && addDays(DAY, 1);
+const at = (day) => new Date(`${day}T15:00:00Z`);
+check(DAY && weekDays[0] >= TODAY && weekDays.at(-1) < addDays(TODAY, 7),
+  `events: the home page's week is drawn for TODAY (${TODAY}) and has two days in a row to hold the clock on (${JSON.stringify(weekDays)})`);
+
 /* The home page as built, served as a page built from Connect's events, so schedule.js asks
    /api/events/pg-home; each answer is the week section as built, with `data-harness` saying which
-   answer it is, sent after `delays[n]` ms. The clock is held at a made-up Monday morning. */
+   answer it is, sent after `delays[n]` ms. */
 async function openEvents(delays) {
+  if (!DAY) throw new Error("no two days in a row in the week drawn for TODAY");
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.clock.setFixedTime(new Date("2026-10-26T15:00:00Z"));
+  await page.clock.setFixedTime(at(DAY));
   await page.route((u) => u.pathname === "/", async (route) => {
     const res = await route.fetch();
     route.fulfill({ response: res, body: (await res.text()).replace('<body data-page="pg-home"', '<body data-refresh="events" data-page="pg-home"') });
@@ -983,7 +1007,7 @@ async function openEvents(delays) {
     const mine = ++n;
     await sleep(delays[mine - 1] ?? 0);
     const week = await page.evaluate(([html, v]) => new DOMParser().parseFromString(html, "text/html").querySelector('[data-block="b-home-week"]').outerHTML.replace('data-block="b-home-week"', `data-block="b-home-week" data-harness="${v}"`), [built, `v${mine}`]).catch(() => "");
-    await route.fulfill({ json: { ok: true, today: "2026-10-26", blocks: { "b-home-week": week } }, headers: { "cache-control": "no-store" } }).catch(() => {});
+    await route.fulfill({ json: { ok: true, today: DAY, blocks: { "b-home-week": week } }, headers: { "cache-control": "no-store" } }).catch(() => {});
   });
   await page.goto(BASE + "/", { waitUntil: "load" });
   return { ctx, page, errors, asked: () => n };
@@ -1017,16 +1041,16 @@ await part("events: Back or Forward to a kept page", async () => {
   const { ctx, page, asked } = await openEvents([0, 1200, 100]);
   await sleep(300);
   let s = await weekState(page);
-  check(s.answer === "v1" && s.today.join() === "2026-10-26", `events: the page's own ask is put in, and Monday is Today (${JSON.stringify(s)})`);
+  check(s.answer === "v1" && s.today.join() === DAY, `events: the page's own ask is put in, and ${DAY} is Today (${JSON.stringify(s)})`);
   /* Headless Chromium keeps no page in the back-forward cache (measured), so the restore is fired
      by hand, a day later. */
-  await page.clock.setFixedTime(new Date("2026-10-27T15:00:00Z"));
+  await page.clock.setFixedTime(at(NEXT));
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
   await sleep(50);
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
   await sleep(1600);
   s = await weekState(page);
-  check(s.today.join() === "2026-10-27", `events, restored a day later: Today moves to the real today (${JSON.stringify(s.today)})`);
+  check(s.today.join() === NEXT, `events, restored a day later: Today moves to the real today, ${NEXT} (${JSON.stringify(s.today)})`);
   check(asked() === 3 && s.answer === "v3", `events, restored twice: both ask again, and the newer ask's answer stays though the older one arrives last (asked ${asked()}, showing ${s.answer})`);
   await ctx.close();
 });

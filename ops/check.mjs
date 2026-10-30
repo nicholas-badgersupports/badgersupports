@@ -156,8 +156,9 @@ if (process.argv.includes("--browser")) {
   const port = await new Promise((ok) => { const s = net.createServer(); s.listen(0, "127.0.0.1", () => { const p = s.address().port; s.close(() => ok(p)); }); });
   process.env.LOCAL_DB = "pglite";
   const { startServer } = await import("./dev-server.mjs");
-  const server = await startServer({ port, media });
-  const env = { ...process.env, BASE: `http://127.0.0.1:${port}` };
+  /* One day for the whole run: the server draws its pages for the build's day, and the suites are told it as TODAY. */
+  const server = await startServer({ port, media, today: report?.today || null });
+  const env = { ...process.env, BASE: `http://127.0.0.1:${port}`, ...(report ? { TODAY: report.today } : {}) };
   for (const [name, script] of [["screenshots and page weight", "ops/shots.mjs"], ["accessibility and the real forms", "ops/a11y.mjs"], ["menus and uploads, pressed and timed", "ops/interact.mjs"]]) {
     /* Not spawnSync: the server runs in this process, and a blocked event loop never answers the browser. */
     const r = await new Promise((ok) => {

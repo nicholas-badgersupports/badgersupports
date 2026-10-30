@@ -234,7 +234,7 @@ nothing is sent to analytics.
 
 ## Staff sign-in and Connect
 
-**Owner revision · 30 October 2026 — built locally the same day, not published (WORK item 20).** What
+**Owner revision · 30 October 2026 — built and published the same day (`a78d13e`, WORK item 20).** What
 this site does is in "This site's half" at the end of this section; the rules it follows are these. Connect GOOGLE-SIGNIN and `docs/signin-rebuild/SPEC.md`/`DECISIONS.md` queue common behavior for its
 ordinary sign-in and credential-entry `public-sso.html`/`spill-sso.html` doors, sharing `sso-door.js`: one email field
 plus Sign In launches Google when enabled, with hints for exact `wisc.edu`/`badgersupports.org`. An accessible logo
@@ -255,8 +255,8 @@ warning/help; consume the same optional quote list/switch owned in Connect Setti
 Bulk plain-text entries, safe rendering, one selection per page load stable while typing; off/empty/unavailable means
 no quote/help and never blocks sign-in. No approved starter quotes. Future consumer anchors: `content/pages/staff.json`,
 `src/render/blocks/staff.mjs`, `netlify/lib/staff.mjs`, `netlify/lib/connect.mjs` and `test/staff.test.mjs`.
-The password-seeded rig below is password-flow evidence, not a Google test. The tests are stand-ins for Connect; a
-real Google round trip through `public-sso.html` is still owed before Connect's Google switch goes on.
+The password-seeded rig below is password-flow evidence, not a Google test. The tests are stand-ins for Connect; Nicholas
+reported a real Google round trip before Connect's Google switch went on (30 Oct 2026).
 
 **This site's half (built 30 Oct 2026, local).** The help under the button is gone from `content/pages/staff.json` and
 `blocks/staff.mjs` (its two fields with it). `GET /api/signin-quotes` (router, public, `no-store`) returns Connect's

@@ -335,3 +335,7 @@ round trip remain unverified; the existing flag stays the owner's. No applicatio
 **Built locally, 30 Oct 2026 (same day; not published).** The two queued rows above are built on this
 site's side as `docs/ARCHITECTURE.md` "This site's half" records: help removed, Connect's quote shown, the session's
 `method` kept and sent with the status check. Evidence is stand-in tests only (`test/staff.test.mjs`); no real Google.
+
+**Live, 30 Oct 2026.** Published as `a78d13e`, with migration 007 and `CONNECT_SESSION_STATUS=on`, so switching Google
+off in Connect now reaches staff sessions here at their next ten-minute check. It carried another session's tested fix
+for Connect's resource timestamp, which the production build needed.

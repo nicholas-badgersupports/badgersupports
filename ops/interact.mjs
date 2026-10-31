@@ -696,6 +696,38 @@ await part("staff page: answers the account may no longer read", async () => {
   await ctx.close();
 });
 
+await part("staff page: Open and Close a form", async () => {
+  await freshServer();
+  const { ctx, page, errors } = await openStaff({ session: ["forms.switch:resource-problem"] });
+  const rows = async () => (await q("SELECT state FROM form_state WHERE form_key = 'resource-problem'")).rows.map((r) => r.state);
+  const card = () => page.evaluate(() => {
+    const li = document.querySelector(".staff-form");
+    return { chip: li?.querySelector(".staff-chip")?.textContent, buttons: [...(li?.querySelectorAll("button") || [])].map((b) => b.textContent),
+      text: li?.textContent || "", focus: document.activeElement?.textContent || "", forms: document.querySelectorAll(".staff-form").length };
+  });
+  const first = await card();
+  check(first.forms === 1 && first.chip === words("staff.forms.state.closed") && first.buttons.join("|") === words("staff.switch.open") && !first.text.includes(words("staff.forms.none")),
+    `staff switch: someone who may only switch a form sees it closed, with Open and no answers (${JSON.stringify(first)})`);
+  await page.getByRole("button", { name: words("staff.switch.open") }).click();
+  const asked = await card();
+  check(asked.buttons.join("|") === `${words("staff.switch.yes")}|${words("staff.switch.cancel")}` && asked.focus === words("staff.switch.yes") && !(await rows()).length,
+    `staff switch: Open asks again first, with the yes focused, and sends nothing (${JSON.stringify(asked)})`);
+  await page.getByRole("button", { name: words("staff.switch.cancel") }).click();
+  const kept = await card();
+  check(kept.buttons.join("|") === words("staff.switch.open") && kept.focus === words("staff.switch.open") && !(await rows()).length, `staff switch: Keep It Closed puts Open back, focused (${JSON.stringify(kept)})`);
+  await page.getByRole("button", { name: words("staff.switch.open") }).click();
+  await page.getByRole("button", { name: words("staff.switch.yes") }).click();
+  await page.waitForFunction((w) => document.querySelector(".staff-form .staff-chip")?.textContent === w, words("staff.forms.state.open"));
+  const open = await card();
+  check(open.buttons.join("|") === words("staff.switch.close") && open.focus === words("staff.switch.close") && /is open\./.test(open.text) && (await rows()).join() === "open",
+    `staff switch: the yes opens it; the chip, the button and the line follow the server (${JSON.stringify(open)})`);
+  await page.getByRole("button", { name: words("staff.switch.close") }).click();
+  await page.waitForFunction((w) => document.querySelector(".staff-form .staff-chip")?.textContent === w, words("staff.forms.state.closed"));
+  check((await rows()).join() === "closed" && (await card()).buttons.join("|") === words("staff.switch.open"), "staff switch: Close goes at once, with no second question");
+  check(!errors.length, `staff switch: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+});
+
 await part("staff page: Back after signing out", async () => {
   await freshServer();
   await handle(post("/api/forms/workshop-request/submit", workshopAnswers(), { json: false }), { ip: "198.51.100.202" });

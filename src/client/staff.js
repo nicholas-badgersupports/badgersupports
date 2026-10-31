@@ -11,7 +11,8 @@
  *   - who they are, and Sign out (a plain form, so it works however the page is);
  *   - the forms their Connect role lets them read, each with how many answers it holds and
  *     whether those reached Connect, a button to send any still waiting, and the latest answers
- *     to one form on request;
+ *     to one form on request; and the forms it lets them open and close, with Open (asked twice)
+ *     or Close;
  *   - for anyone who may change words, how to, and how many saved changes are not on the site yet;
  *   - for anyone who may change or publish words: that changes take up to 30 minutes to show, when
  *     the site last updated (or that the last update failed), and Refresh now (router.mjs, refresh);
@@ -122,6 +123,51 @@ function answersTable(r) {
   return box;
 }
 
+/* Open or Close for one form (router.mjs, formSwitch). Open asks again, naming the form, before anything is
+   sent; Close goes at once. The chip and the button follow the server's answer, never the click. */
+function switchControl(f, chip) {
+  const box = el("div", { className: "staff-switch" });
+  const shown = () => box.querySelector("button");
+  function draw() {
+    chip.className = `staff-chip is-${f.state}`;
+    chip.textContent = t(`staff.forms.state.${f.state}`);
+    const button = el("button", { type: "button", className: "btn btn--quiet", textContent: t(f.state === "open" ? "staff.switch.close" : "staff.switch.open") });
+    button.addEventListener("click", () => (f.state === "open" ? send(button, "closed") : ask()));
+    box.replaceChildren(el("div", { className: "staff-actions" }, button));
+  }
+  function ask() {
+    const yes = el("button", { type: "button", className: "btn", textContent: t("staff.switch.yes") });
+    const no = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.switch.cancel") });
+    yes.addEventListener("click", () => send(yes, "open"));
+    no.addEventListener("click", () => { draw(); shown().focus(); });
+    box.replaceChildren(noteBox(t("staff.switch.confirm", { title: f.title }), el("div", { className: "staff-actions" }, yes, no)));
+    yes.focus();
+  }
+  async function send(button, state) {
+    if (isBusy(button)) return;
+    const done = busy(button, t(state === "open" ? "staff.switch.opening" : "staff.switch.closing"));
+    const r = await call(`/api/staff/forms/${encodeURIComponent(f.key)}/switch`, { method: "POST", body: state === "open" ? { state, confirm: f.key } : { state } }).catch(offline);
+    done();
+    if (!box.isConnected) return;
+    if (r.status !== 200) {
+      const [why, words] = r.body.error === "switch.empty" ? [noteBox(t("staff.switch.empty")), t("staff.switch.empty")] : refused(r);
+      draw();
+      box.append(why);
+      shown().focus();
+      say(words);
+      return;
+    }
+    f.state = r.body.state;
+    draw();
+    const words = [t(f.state === "open" ? "staff.switch.opened" : "staff.switch.closed", { title: f.title }), r.body.purgeError ? t("staff.switch.slow") : ""].filter(Boolean).join(" ");
+    box.append(el("p", { textContent: words }));
+    shown().focus();
+    say(words);
+  }
+  draw();
+  return box;
+}
+
 function formCard(f, connect) {
   const panel = el("div", { className: "staff-answers", id: `answers-${f.key}`, hidden: true });
   const toggle = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.answers.show") });
@@ -154,12 +200,15 @@ function formCard(f, connect) {
     toggle.textContent = t("staff.answers.hide");
   });
   const state = el("span", { className: `staff-chip is-${f.state}`, textContent: t(`staff.forms.state.${f.state}`) });
+  // A form someone may switch but not read shows its title and switch only: no counts, no answers.
+  const read = f.canRead !== false;
   return el("li", { className: "staff-form" },
     el("h3", {}, el("span", { textContent: f.title }), " ", state),
-    el("p", { textContent: f.total ? `${t(f.total === 1 ? "staff.forms.count.one" : "staff.forms.count.other", { n: f.total })} · ${t("staff.forms.latest", { when: when(f.latest) })}` : t("staff.forms.none") }),
-    deliveryLine(f, connect),
-    f.total ? toggle : null,
-    panel);
+    read ? el("p", { textContent: f.total ? `${t(f.total === 1 ? "staff.forms.count.one" : "staff.forms.count.other", { n: f.total })} · ${t("staff.forms.latest", { when: when(f.latest) })}` : t("staff.forms.none") }) : null,
+    read ? deliveryLine(f, connect) : null,
+    read && f.total ? toggle : null,
+    read ? panel : null,
+    f.canSwitch ? switchControl(f, state) : null);
 }
 
 function formsSection(me) {
@@ -212,7 +261,7 @@ function formsSection(me) {
   again.addEventListener("click", () => { if (!isBusy(again)) load(); });
 
   const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }),
-    el("p", { textContent: t("staff.forms.how") }), off, list, retryProblem,
+    el("p", { textContent: t("staff.forms.how") }), me.readAgain ? readAgain() : null, off, list, retryProblem,
     el("div", { className: "staff-actions" }, retry, ...(work ? [work] : [])));
   section.setAttribute("aria-labelledby", "staff-forms-h");
   load();
@@ -310,7 +359,7 @@ function showTools(me) {
   note("");
   intro.hidden = true;
   if (quote) quote.hidden = true;
-  const forms = me.canRead ? formsSection(me) : me.readAgain && readAgainSection();
+  const forms = me.canRead || me.canSwitch ? formsSection(me) : me.readAgain && readAgainSection();
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
   app.replaceChildren(...[onward, whoBar(me), forms, (me.canEdit || me.canPublish) && editSection(me)].filter(Boolean));
   if (!forms && !me.canEdit && !me.canPublish) app.prepend(el("p", { className: "staff-note", textContent: t("staff.nothing") }));

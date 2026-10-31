@@ -22,6 +22,8 @@ import { readEditsFile } from "../src/shared/edits.mjs";
 import { build, loadContent } from "../ops/build.mjs";
 import { currentRevision, useStore, memoryStore, usePurger } from "../netlify/lib/published.mjs";
 import { handlePage, useDist } from "../netlify/lib/pages.mjs";
+import { currentForm, setSwitch } from "../netlify/lib/intake.mjs";
+import { launchForms } from "../src/shared/forms.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECT = "http://connect.test";
@@ -1086,4 +1088,106 @@ test("§12 editor to public page: a save is on the page the next visitor gets, a
   const back = await (await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: "Made-up words for the visitor", value: shown }, cookie), ip())).json();
   assert.equal(back.published.n, 2);
   assert.equal(await visitor(), before, "putting the words back gives the build's page byte for byte");
+});
+
+/* ------------------------------------------------------------------ the form switch (item 17) */
+
+test("item 17: the switch opens and closes a form with no deploy, Open needs a second yes, and only forms.switch may use it", async () => {
+  await freshServer();
+  const out = path.join(ROOT, "local/test-build-form-switch");
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+  useContent(JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8")));
+  useDist(out);
+  const cleared = [];
+  usePurger(async (tags) => { cleared.push(...tags); });
+  try {
+    const as = async (opts) => { const f = fakeConnect(opts); useConnect(f.cfg); return signIn(f); };
+    const reader = await as({ scopes: ["forms.read:*"] });
+    const other = await as({ scopes: ["forms.switch:workshop-request"] });
+    const switcher = await as({ scopes: ["forms.switch:*"], name: "Avery Example" });
+    const flip = (cookie, key, body, opts) => handle(staffPost(`/api/staff/forms/${key}/switch`, body, cookie, opts), ip());
+    const visitor = async (p) => (await handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20" })).text();
+    const FORM = "resource-problem", PAGE = "/forms/resource-problem/";
+    const before = await visitor(PAGE);
+    assert.equal(before, fs.readFileSync(path.join(out, "forms/resource-problem/index.html"), "utf8"), "no switch row: the build's page byte for byte");
+    assert.match(before, /data-form-closed="resource-problem"/);
+
+    assert.equal((await handle(post(`/api/staff/forms/${FORM}/switch`, { state: "open", confirm: FORM }), ip())).status, 401, "signed out");
+    assert.deepEqual(await refusal(await flip(reader.cookie, FORM, { state: "open", confirm: FORM })), [403, "staff.forbidden"], "reading answers is not switching");
+    assert.deepEqual(await refusal(await flip(other.cookie, FORM, { state: "open", confirm: FORM })), [403, "staff.forbidden"], "another form's switch");
+    assert.equal((await flip(switcher.cookie, FORM, { state: "open", confirm: FORM }, { origin: "https://elsewhere.example" })).status, 403, "a page elsewhere");
+    assert.equal((await flip(switcher.cookie, FORM, { state: "open", confirm: FORM }, { json: false })).status, 415, "a plain form post");
+    assert.deepEqual(await refusal(await flip(switcher.cookie, FORM, { state: "open" })), [409, "switch.confirm"], "Open with no second yes");
+    assert.deepEqual(await refusal(await flip(switcher.cookie, FORM, { state: "open", confirm: "workshop-request" })), [409, "switch.confirm"], "a yes for another form");
+    assert.deepEqual(await refusal(await flip(switcher.cookie, FORM, { state: "on" })), [400, "switch.state"]);
+    assert.deepEqual(await refusal(await flip(switcher.cookie, "no-such-form", { state: "closed" })), [404, "form.unknown"]);
+    assert.equal((await many("SELECT * FROM form_state")).length, 0, "nothing refused was written");
+    assert.deepEqual(cleared, [], "and nothing was cleared");
+
+    const opened = await flip(switcher.cookie, FORM, { state: "open", confirm: FORM });
+    assert.equal(opened.status, 200);
+    assert.equal(opened.headers.get("cache-control"), "no-store");
+    assert.deepEqual(await opened.json(), { ok: true, key: FORM, state: "open" });
+    assert.deepEqual({ ...(await one("SELECT state, changed_by FROM form_state WHERE form_key = $1", [FORM])) }, { state: "open", changed_by: "u-test-0001" });
+    assert.deepEqual(cleared.sort(), [`form:${FORM}`, "page:pg-form-resource-problem"], "its page and its state answer, nothing else");
+    const open = await visitor(PAGE);
+    assert.doesNotMatch(open, /data-form-closed/);
+    assert.match(open, /<button type="submit" class="btn" data-submit>/, "the next visitor gets the form");
+    assert.doesNotMatch(open, /Avery Example|u-test-0001/, "nothing about the director reaches the page");
+    const state = await handle(new Request(`${ORIGIN}/api/forms/${FORM}/state`), ip());
+    assert.equal((await state.json()).state, "open");
+    assert.equal(state.headers.get("netlify-cache-tag"), `form:${FORM}`, "the state answer can be cleared by its own tag");
+
+    const list = await (await handle(get("/api/staff/forms", { cookie: switcher.cookie }), ip())).json();
+    const card = list.forms.find((f) => f.key === FORM);
+    assert.deepEqual([card.state, card.canSwitch, card.canRead, card.total], ["open", true, false, 0], "a switcher sees the switch, not the answers");
+    const me = await (await handle(get("/api/staff/me", { cookie: switcher.cookie }), ip())).json();
+    assert.deepEqual([me.canSwitch, me.canRead], [true, false]);
+    const rlist = await (await handle(get("/api/staff/forms", { cookie: reader.cookie }), ip())).json();
+    assert.equal(rlist.forms.find((f) => f.key === FORM).canSwitch, false);
+
+    cleared.length = 0;
+    const closed = await flip(switcher.cookie, FORM, { state: "closed" });
+    assert.deepEqual(await closed.json(), { ok: true, key: FORM, state: "closed" }, "Close needs no second yes");
+    assert.deepEqual(cleared.sort(), [`form:${FORM}`, "page:pg-form-resource-problem"]);
+    assert.match(await visitor(PAGE), /data-form-closed="resource-problem"/);
+
+    // A door to a form shows its state on the pages that carry the door: the home page and Get Involved.
+    cleared.length = 0;
+    const doors = async () => [await visitor("/"), await visitor("/join/get-involved/")].map((h) => (h.match(/chip--closed/g) || []).length);
+    const shut = await doors();
+    assert.ok(shut.every((n) => n > 0), "the staff application's door says Applications Closed");
+    assert.equal((await flip(switcher.cookie, "staff-application", { state: "open", confirm: "staff-application" })).status, 200);
+    assert.deepEqual(cleared.sort(), ["form:staff-application", "page:pg-get-involved", "page:pg-home"]);
+    assert.deepEqual(await doors(), shut.map((n) => n - 1), "open: the doors drop the tag");
+    await flip(switcher.cookie, "staff-application", { state: "closed" });
+    assert.deepEqual(await doors(), shut);
+  } finally { usePurger(null); }
+});
+
+test("item 17: a switch the CDN could not clear still holds, and the reply says the pages may lag", async () => {
+  await freshServer();
+  usePurger(async () => { throw Object.assign(new Error("down"), { code: "purge.unavailable" }); });
+  try {
+    const f = fakeConnect({ scopes: ["forms.switch:workshop-request"] });
+    useConnect(f.cfg);
+    const { cookie } = await signIn(f);
+    const r = await handle(staffPost("/api/staff/forms/workshop-request/switch", { state: "closed" }, cookie), ip());
+    assert.deepEqual(await r.json(), { ok: true, key: "workshop-request", state: "closed", purgeError: "purge.unavailable" });
+    assert.equal((await currentForm("workshop-request")).state, "closed", "the server refuses a send at once");
+  } finally { usePurger(null); }
+});
+
+test("item 17: at launch a form points to its Google Form until the switch decides; then the switch alone says open or closed", async () => {
+  await freshServer();
+  useContent({ ...serverContent(), forms: launchForms(serverContent().forms) });
+  const at = await currentForm("workshop-request");
+  assert.equal(at.state, "closed");
+  assert.match(at.def.elsewhere, /^https:\/\/docs\.google\.com\/forms\//, "no switch row: the launch build's link stands");
+  await setSwitch("workshop-request", "open", "test");
+  const open = await currentForm("workshop-request");
+  assert.deepEqual([open.state, open.def.elsewhere], ["open", undefined]);
+  await setSwitch("workshop-request", "closed", "test");
+  const shut = await currentForm("workshop-request");
+  assert.deepEqual([shut.state, shut.def.elsewhere], ["closed", undefined], "closed by a director: its own message, not the Google Form");
 });

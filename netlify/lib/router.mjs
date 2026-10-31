@@ -4,7 +4,8 @@
  *   public    anyone; posts must come from this site's own pages and are rate-limited
  *   director  someone signed in through Connect (staff.mjs). The tier only proves a session; each
  *             route then checks the scope it needs: forms.read:<key> to read a form's answers,
- *             site.edit to change words with the edit button (a save publishes them), site.edit or
+ *             forms.switch:<key> to open and close a form, site.edit to change words with the edit
+ *             button (a save publishes them), site.edit or
  *             site.publish for Refresh now, site.publish to download the edits file. Which roles hold which is a super
  *             admin's setting in Connect (Website Forms), not this site's.
  *
@@ -13,7 +14,7 @@
  */
 
 import { json, htmlResponse, wantsJson, readBody, readBytes, sameOrigin, connectionHash, rateLimit, HttpError } from "./http.mjs";
-import { currentForm, submit, answersForPerson } from "./intake.mjs";
+import { currentForm, submit, answersForPerson, setSwitch } from "./intake.mjs";
 import { fileQuestion, fileName, isPdfType, storeFile } from "./files.mjs";
 import { recordMood, moodCounts } from "./mood.mjs";
 import { serverContent } from "./content.mjs";
@@ -24,12 +25,13 @@ import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { eventSections, calendarFile, forgetEvents } from "./live-events.mjs";
 import { publishRevision, currentRevision, purgeTags } from "./published.mjs";
+import { formTags } from "./pages.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
 import { formSection } from "../../src/render/blocks/form.mjs";
 import { html } from "../../src/render/html.mjs";
-import { readRaw, QUESTION_TYPES } from "../../src/shared/forms.mjs";
+import { readRaw, allQuestions, QUESTION_TYPES } from "../../src/shared/forms.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
 
 export const TIERS = new Set(["public", "director"]);
@@ -72,6 +74,7 @@ function need(who, scope) {
 }
 
 const readsForms = (who) => who.scopes.some((s) => s.startsWith("forms.read:"));
+const switchesForms = (who) => who.scopes.some((s) => s.startsWith("forms.switch:"));
 
 /* Work that should not hold up the reply. Netlify keeps the function alive for it (waitUntil); a
    local server simply carries on. A failure is logged, never shown to the person waiting. */
@@ -82,13 +85,14 @@ function afterReply(context, work) {
 }
 
 /* Public, and the same for everyone, so the CDN holds it a minute: a burst of asks does not wake the
-   database. The browser asks each time; the server still decides at Send. */
-const STATE_CACHE = { "netlify-cdn-cache-control": "public, s-maxage=60" };
+   database. The browser asks each time; the server still decides at Send. A switch clears it by its tag
+   (formSwitch): held, a "closed" answer would close a form the page had just drawn open. */
+const stateCache = (key) => ({ "netlify-cdn-cache-control": "public, s-maxage=60", "netlify-cache-tag": `form:${key}` });
 async function formState(req, [key]) {
   noQuery(req);
   const f = await currentForm(key);
   if (!f) throw new HttpError(404, "form.unknown");
-  return json(200, { ok: true, key, state: f.state, version: f.def.version, closedMessage: f.state === "closed" ? f.closedMessage : null }, STATE_CACHE);
+  return json(200, { ok: true, key, state: f.state, version: f.def.version, closedMessage: f.state === "closed" ? f.closedMessage : null }, stateCache(key));
 }
 
 async function formSubmit(req, [key], context) {
@@ -202,7 +206,7 @@ async function staffMe(req, _m, _c, who) {
   const canEdit = can(who, "site.edit");
   const canPublish = can(who, "site.publish");
   return json(200, {
-    ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who), readAgain: !!who.lapsed?.length,
+    ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who), canSwitch: switchesForms(who), readAgain: !!who.lapsed?.length,
     connectUrl: connectConfig()?.url || null,
     waiting: canEdit || canPublish ? await waitingCount() : 0,
     ...(canEdit || canPublish ? await publishedNow() : {}),
@@ -231,6 +235,27 @@ async function staffRetry(req, _m, _c, who) {
     : who.scopes.filter((s) => s.startsWith("forms.read:")).map((s) => s.slice("forms.read:".length));
   const r = await deliverDue({ limit: 20, force: true, forms });
   return json(200, { ok: true, ...r, ...(await formsFor(who)) });
+}
+
+/* Open or Close on the staff page: the switch row intake.mjs reads at every send, so a form opens or closes with
+   no deploy. JSON from this site only, with forms.switch:<key>. Open needs the form's key sent back as `confirm`,
+   the staff page's second yes, so a stray call cannot open an application; a form with no questions never opens.
+   The form's state answer and the pages that show it are then cleared from the CDN. If that fails the switch
+   still holds, the server goes by it at once, and the reply says the pages may lag (up to 30 minutes). */
+async function formSwitch(req, [key], _c, who) {
+  need(who, `forms.switch:${key}`);
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  const state = body.state;
+  if (state !== "open" && state !== "closed") throw new HttpError(400, "switch.state");
+  const f = await currentForm(key);
+  if (!f) throw new HttpError(404, "form.unknown");
+  if (state === "open" && body.confirm !== key) throw new HttpError(409, "switch.confirm");
+  if (state === "open" && !allQuestions(f.def).length) throw new HttpError(409, "switch.empty");
+  await setSwitch(key, state, who.sub);
+  let purgeError = null;
+  try { await purgeTags(await formTags(key)); } catch (e) { purgeError = e.code || "purge.unavailable"; console.error("purge:", e.code || e.message); }
+  return json(200, { ok: true, key, state, ...(purgeError ? { purgeError } : {}) });
 }
 
 async function editSourceRoute(req, _m, _c, who) {
@@ -348,6 +373,7 @@ export const ROUTES = [
   { name: "staffMe", method: "GET", pattern: /^\/api\/staff\/me$/, tier: "director", run: staffMe },
   { name: "staffForms", method: "GET", pattern: /^\/api\/staff\/forms$/, tier: "director", run: staffForms },
   { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },
+  { name: "formSwitch", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/switch$/, tier: "director", run: formSwitch },
   { name: "staffRetry", method: "POST", pattern: /^\/api\/staff\/outbox\/retry$/, tier: "director", run: staffRetry },
   { name: "editSource", method: "GET", pattern: /^\/api\/staff\/edit\/source$/, tier: "director", run: editSourceRoute },
   { name: "editHistory", method: "GET", pattern: /^\/api\/staff\/edit\/history$/, tier: "director", run: editHistoryRoute },

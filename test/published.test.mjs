@@ -12,6 +12,7 @@ import { useContent } from "../netlify/lib/content.mjs";
 import { handlePage, useDist, PAGE_CACHE } from "../netlify/lib/pages.mjs";
 import { useStore, memoryStore, forgetRevision } from "../netlify/lib/published.mjs";
 import { eventSections, forgetEvents } from "../netlify/lib/live-events.mjs";
+import { freshPglite, useAdapter } from "../netlify/lib/db.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build-published");
 const TODAY = "2026-10-20";
@@ -22,6 +23,7 @@ const HERO = "page:pg-home:b-home-hero/title";
 
 /* Each case: the build's content, its files, and a store holding `revision` (or nothing). */
 async function given(revision = null) {
+  useAdapter(await freshPglite()); // the pages that show a form read its switch
   useContent(SERVER);
   useDist(OUT);
   const store = memoryStore();
@@ -216,4 +218,18 @@ test("a published value that is not a word: a section switched off, a link, a ph
   // A value that fails its check is not laid over the page, whatever the store holds.
   await given({ n: 5, edits: { "page:pg-home:b-home-hero/primary/href": "javascript:alert(1)" } });
   assert.equal(await (await get("/")).text(), built);
+});
+
+test("a form's switch that cannot be read: the page keeps its published words, draws the form as built, and is held a minute", async () => {
+  await given({ n: 4, edits: { [HERO]: "badger supports, still here" } });
+  useAdapter({ query: async () => { throw Object.assign(new Error("down"), { code: "db.down" }); } });
+  const res = await get("/");
+  assert.equal(res.status, 200);
+  const home = await res.text();
+  assert.match(home, /badger supports, still here/, "the published words stay");
+  assert.match(home, /chip--closed/, "the staff application's door as built");
+  assert.equal(res.headers.get("netlify-cdn-cache-control"), "public, s-maxage=60");
+  assert.equal(res.headers.get("x-bss-revision"), "4");
+  const faq = await get("/about/faq/");
+  assert.equal(faq.headers.get("netlify-cdn-cache-control"), PAGE_CACHE["netlify-cdn-cache-control"], "a page with no form never asks");
 });

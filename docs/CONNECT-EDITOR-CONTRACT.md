@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-381 keys. Keys are permanent. Required text cannot be published empty and must keep each
+392 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -696,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (166)
+### Staff page and edit button (177)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -722,6 +722,17 @@ the site adds the markup.
 | `staff.forms.latest` | latest {{when}} | Staff page, after the count: when the newest answer came in. | `{{when}}` |
 | `staff.forms.state.open` | Open | Staff page, label beside a form that takes answers. |  |
 | `staff.forms.state.closed` | Closed | Staff page, label beside a form that is closed. |  |
+| `staff.switch.open` | Open This Form | Staff page, button under a closed form, for someone Connect lets open and close it. |  |
+| `staff.switch.close` | Close This Form | Staff page, button under an open form, for someone Connect lets open and close it. |  |
+| `staff.switch.confirm` | Open {{title}}? Anyone can send it once it opens, and its page shows it within a minute. | Staff page, the second question before a form opens. | `{{title}}` |
+| `staff.switch.yes` | Yes, Open It | Staff page, button that opens the form, under that question. |  |
+| `staff.switch.cancel` | Keep It Closed | Staff page, button beside it that leaves the form closed. |  |
+| `staff.switch.opening` | Opening… | Staff page, on the button while a form is opening. |  |
+| `staff.switch.closing` | Closing… | Staff page, on the button while a form is closing. |  |
+| `staff.switch.opened` | {{title}} is open. | Staff page, under a form once it has opened. | `{{title}}` |
+| `staff.switch.closed` | {{title}} is closed. Anyone who sends it from a page opened earlier gets their answers back. | Staff page, under a form once it has closed. | `{{title}}` |
+| `staff.switch.slow` | Its page may take up to 30 minutes to show it. | Staff page, after either line above, when the site could not clear the old page. |  |
+| `staff.switch.empty` | This form has no questions yet, so it cannot open. | Staff page, when Open is refused for a form with no questions. |  |
 | `staff.delivery.sent` | {{n}} in Connect | Staff page, how many answers reached Connect. | `{{n}}` |
 | `staff.delivery.waiting` | {{n}} waiting to send | Staff page, how many answers have not gone to Connect yet. | `{{n}}` |
 | `staff.delivery.failed` | {{n}} could not be sent | Staff page, how many answers failed to reach Connect. | `{{n}}` |

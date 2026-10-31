@@ -11,7 +11,8 @@
  *                               (connect.mjs); a session row and an HttpOnly cookie follow.
  *
  * Scopes come from the note: forms.read:<key> (or forms.read:*) to read a form's answers here,
- * site.edit to change words on the site, site.publish to download them for a publish. A super admin
+ * forms.switch:<key> (or forms.switch:*) to open and close a form, site.edit to change words on the
+ * site, site.publish to download them for a publish. A super admin
  * sets which roles hold which in Connect; the note also leaves the name empty when Connect is set
  * not to share first names. A second cookie, bss_staff_hint, says only "someone
  * signed in on this browser" so the pages know to load the edit button; it carries nothing a
@@ -169,7 +170,7 @@ export async function signOut(req, { asJson = false } = {}) {
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
 }
 
-/* forms.read:* covers every form; any other scope must be named exactly. */
+/* forms.read:* and forms.switch:* cover every form; any other scope must be named exactly. */
 export function can(who, scope) {
   if (!who) return false;
   const kind = scope.split(":")[0];

@@ -36,11 +36,20 @@ export function composeSite(snap, edits = {}) {
   return { site, pages, text, applied: overlay.applied, skipped: overlay.problems, programs: pagePrograms(pages) };
 }
 
-/* One page as HTML. */
-export function renderSitePage(snap, composed, page, today) {
+/* The forms a page shows the state of: its form blocks and the doors that name a form. A review page's
+   preview shows the questions whatever the switch says, so it is not one of them. */
+export const formsOn = (page) => [...new Set((page.blocks || []).flatMap((b) => [
+  b.type === "form" && !b.preview ? b.form : null,
+  ...(b.type === "involve" ? (b.items || []).map((it) => it.form) : []),
+]).filter(Boolean))];
+
+/* One page as HTML. `forms`, when given, replaces those forms' definitions in the snapshot: the forms as
+   they stand now, switch included (netlify/lib/pages.mjs). */
+export function renderSitePage(snap, composed, page, today, forms = null) {
+  const data = forms ? { ...snap.data, forms: { ...snap.data.forms, ...forms } } : snap.data;
   const ctx = makeContext({
     site: composed.site, media: snap.media, builtPaths: snap.builtPaths, programs: new Map([...composed.programs, ...sectionPrograms(page)]),
-    routes: snap.routes, data: snap.data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null,
+    routes: snap.routes, data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null,
   });
   return String(renderPage(ctx, page));
 }

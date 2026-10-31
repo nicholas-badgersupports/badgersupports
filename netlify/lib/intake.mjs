@@ -8,7 +8,7 @@
  */
 
 import crypto from "node:crypto";
-import { one, tx } from "./db.mjs";
+import { q, one, tx } from "./db.mjs";
 import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { fileRecords, claimFiles } from "./files.mjs";
@@ -23,7 +23,9 @@ const sha256 = (s) => crypto.createHash("sha256").update(s).digest("hex");
 
 /* The form as it stands: the newest definition (published from Connect, or the shipped file if
    that is newer), then its switch. A form switched open that has no questions stays closed —
-   an application cannot open by accident before it has been written. */
+   an application cannot open by accident before it has been written. Once a switch row exists the
+   launch build's link to the Google Form (`elsewhere`) is dropped: a form a director closed is
+   closed, with its own message. The pages draw forms from this too (pages.mjs). */
 export async function currentForm(key) {
   if (!KEY_RE.test(String(key))) return null;
   const shipped = serverContent().forms[key] || null;
@@ -33,9 +35,17 @@ export async function currentForm(key) {
   if (!def) return null;
   if (definitionProblems({ ...def, state: "closed" }).length) throw new HttpError(503, "form.broken");
   const sw = await one("SELECT state, closed_message FROM form_state WHERE form_key = $1", [key]);
+  if (sw && def.elsewhere) { const { elsewhere, ...own } = def; def = own; }
   let state = sw ? sw.state : def.state;
   if (state === "open" && allQuestions(def).length === 0) state = "closed";
   return { def, state, closedMessage: (sw && sw.closed_message) || def.closedMessage };
+}
+
+/* A form's switch, set from the staff page (router.mjs, formSwitch). `by` is the Connect id of whoever
+   set it. The row's closed message, if any, is kept. */
+export async function setSwitch(key, state, by) {
+  await q(`INSERT INTO form_state (form_key, state, changed_by) VALUES ($1, $2, $3)
+           ON CONFLICT (form_key) DO UPDATE SET state = EXCLUDED.state, changed_by = EXCLUDED.changed_by, changed_at = now()`, [key, state, by]);
 }
 
 function newRef(def) {

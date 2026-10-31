@@ -63,8 +63,8 @@ export function googleFormUrl(def) {
 
 /* The forms as a launch build serves them (owner, 20 Oct 2026): every open form closed, its page
    linking the Google Form it replaces (`elsewhere`), until Connect shows submissions to the team
-   that answers them. A form already closed keeps its own message. On the server a switch row
-   still wins over this (netlify/lib/intake.mjs), but the page stays as built until a rebuild. */
+   that answers them. A form already closed keeps its own message. A switch row wins over this,
+   at Send (netlify/lib/intake.mjs) and on the pages that show the form (netlify/lib/pages.mjs). */
 export function launchForms(forms) {
   return Object.fromEntries(Object.entries(forms).map(([key, def]) => [key, def.state === "open" ? { ...def, state: "closed", elsewhere: googleFormUrl(def) } : def]));
 }

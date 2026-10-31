@@ -1058,6 +1058,61 @@
       "text": "Closed",
       "where": "Staff page, label beside a form that is closed."
     },
+    "staff.switch.open": {
+      "group": "staff",
+      "text": "Open This Form",
+      "where": "Staff page, button under a closed form, for someone Connect lets open and close it."
+    },
+    "staff.switch.close": {
+      "group": "staff",
+      "text": "Close This Form",
+      "where": "Staff page, button under an open form, for someone Connect lets open and close it."
+    },
+    "staff.switch.confirm": {
+      "group": "staff",
+      "text": "Open {{title}}? Anyone can send it once it opens, and its page shows it within a minute.",
+      "where": "Staff page, the second question before a form opens."
+    },
+    "staff.switch.yes": {
+      "group": "staff",
+      "text": "Yes, Open It",
+      "where": "Staff page, button that opens the form, under that question."
+    },
+    "staff.switch.cancel": {
+      "group": "staff",
+      "text": "Keep It Closed",
+      "where": "Staff page, button beside it that leaves the form closed."
+    },
+    "staff.switch.opening": {
+      "group": "staff",
+      "text": "Opening…",
+      "where": "Staff page, on the button while a form is opening."
+    },
+    "staff.switch.closing": {
+      "group": "staff",
+      "text": "Closing…",
+      "where": "Staff page, on the button while a form is closing."
+    },
+    "staff.switch.opened": {
+      "group": "staff",
+      "text": "{{title}} is open.",
+      "where": "Staff page, under a form once it has opened."
+    },
+    "staff.switch.closed": {
+      "group": "staff",
+      "text": "{{title}} is closed. Anyone who sends it from a page opened earlier gets their answers back.",
+      "where": "Staff page, under a form once it has closed."
+    },
+    "staff.switch.slow": {
+      "group": "staff",
+      "text": "Its page may take up to 30 minutes to show it.",
+      "where": "Staff page, after either line above, when the site could not clear the old page."
+    },
+    "staff.switch.empty": {
+      "group": "staff",
+      "text": "This form has no questions yet, so it cannot open.",
+      "where": "Staff page, when Open is refused for a form with no questions."
+    },
     "staff.delivery.sent": {
       "group": "staff",
       "text": "{{n}} in Connect",

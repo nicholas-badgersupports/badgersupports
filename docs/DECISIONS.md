@@ -424,3 +424,19 @@ team and the Wall" above; Wall of Support notes and resource suggestions keep th
 | `team.none` reads "Profiles of our directors, staff and volunteers will appear here." | the old sentence said each person chooses to share theirs, and profiles are now shared unless turned off | restore the old text in `content/text.json`, run `node ops/contract.mjs`, drop the test's choice assertion |
 | The website does not check Student Supporter status itself | `bss.team/1` has no field for that choice; the amendment asks Connect to name one | add the check to `mapTeam` once Connect names the field |
 | "opt-in" is taken out of the docs, notes and comments that describe the team now; the 20 Oct record in § 2 is left as written | a dated record says what was decided then | put the word back |
+
+## 30 October 2026 · the form switch (queue item 5, WORK item 17; Owner, then routine calls made in the session)
+
+His answer, given with a button on 30 Oct: the open/close switch lives on the website's staff page (`/staff/`), and
+Connect's "Who May Do What on the Website" grants who may use it. Sent to Connect as Exchange
+`to-intranet/PUBLIC-FORM-SWITCH-GRANT-2026-10-30.md`. The "34 passing tests" in item 17 is Connect's count from
+`PUBLIC-SITE-FORMS` (20 Oct), not this suite's.
+
+| Call | Why | To reverse |
+|---|---|---|
+| The scope is `forms.switch:<key>`, with `forms.switch:*` for every form | matches `forms.read:<key>`, and `can()` already reads `kind:*` | rename it in `router.mjs`, `answers.mjs` and the Exchange item |
+| Every Open asks a second time, not only an application's; the server refuses Open without the form's key as `confirm` | the 20 Oct design asks it of applications, and one rule cannot miss a new application; Close stays one press | ask only for forms in Connect's hiring queues |
+| A switch row drops the launch build's Google Form link | a form a director closed is not taking answers; pointing people at a Google Form nobody may be watching loses them silently | keep `elsewhere` in `currentForm()` when the row says closed |
+| The page function reads the database for pages that show a form's state (5 form pages, Home and Get Involved), fresh each draw | a value held in one instance could be drawn into a page the CDN then keeps for 25 minutes | hold it, and accept the lag |
+| Someone who may switch a form but not read it sees its title and switch, no counts | counts are about answers, which their role does not read | show counts to switchers |
+| The row records the Connect id, not the name | an id does not change; Connect maps it to a person | store `who.name` beside it |

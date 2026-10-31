@@ -1,5 +1,6 @@
-/* What a signed-in director reads on the staff page: the forms their Connect role lets them see,
- * how many answers each holds and whether those reached Connect, and the latest answers.
+/* What a signed-in director reads on the staff page: the forms their Connect role lets them read or
+ * switch, how many answers each holds and whether those reached Connect (for a reader only), and the
+ * latest answers.
  *
  * Connect's Website Forms queue is where answers are worked on. This is the copy the site kept, so
  * a director can check that nothing is stuck on the way. Nothing records who looked.
@@ -28,13 +29,14 @@ export async function formsFor(who) {
   const delivery = await deliveryCounts();
   const forms = [];
   for (const key of [...keys].sort()) {
-    if (!can(who, `forms.read:${key}`)) continue;
+    const canRead = can(who, `forms.read:${key}`), canSwitch = can(who, `forms.switch:${key}`);
+    if (!canRead && !canSwitch) continue;
     const f = await formOrNull(key);
-    const c = counts.get(key);
+    const c = canRead ? counts.get(key) : null;
     forms.push({
-      key, title: f?.def.title || key, state: f?.state || "closed",
+      key, title: f?.def.title || key, state: f?.state || "closed", canRead, canSwitch,
       total: c?.n || 0, latest: c ? new Date(c.latest).toISOString() : null,
-      delivery: delivery[key] || NONE,
+      delivery: (canRead && delivery[key]) || NONE,
     });
   }
   return { connect: !!connectConfig(), forms };

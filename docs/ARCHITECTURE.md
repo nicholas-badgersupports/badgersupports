@@ -139,6 +139,7 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | staffMe | GET | `/api/staff/me` | director |
 | staffForms | GET | `/api/staff/forms` | director |
 | staffSubmissions | GET | `/api/staff/forms/<key>/submissions` | director |
+| formSwitch | POST | `/api/staff/forms/<key>/switch` | director |
 | staffRetry | POST | `/api/staff/outbox/retry` | director |
 | editSource | GET | `/api/staff/edit/source` | director |
 | editSave | POST | `/api/staff/edit/save` | director |
@@ -150,8 +151,9 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
   session starts; its routes share a limit of 30 an hour per connection. `/api/auth/status` always answers 200, so
   the staff page can ask whether anyone is signed in without the browser logging a refusal for every visitor.
 - **director**: someone signed in through Connect ("Staff sign-in", below). The tier proves a session; each route
-  then checks its scope: `forms.read:<key>` (or `forms.read:*`) to read a form's answers, `site.edit` to change
-  words, `site.publish` to download saved changes for a publish. A super admin sets which tiers carry which scope in
+  then checks its scope: `forms.read:<key>` (or `forms.read:*`) to read a form's answers, `forms.switch:<key>` (or
+  `forms.switch:*`) to open and close a form, `site.edit` to change words, `site.publish` to download saved changes
+  for a publish. A super admin sets which tiers carry which scope in
   Connect (Admin > Website Forms, `adminSetPublicSitePermissions`); a super admin always has all of them. Without a session, `requireDirector()` answers 401 with `configured`, which tells `/staff/` whether
   signing in can work on this copy at all.
 
@@ -205,7 +207,16 @@ published page cannot appear before the next publish.
 `form_versions`. A definition that fails `definitionProblems()` answers 503 `form.broken` rather than guess.
 
 **Open or closed.** The switch row in `form_state` wins over the definition's own `state`. A form with no questions
-is closed. The closed message comes from the switch row, else from the definition. Both applications ship
+is closed. The closed message comes from the switch row, else from the definition. Once a row exists, the launch
+build's link to the Google Form (`elsewhere`, `launchForms()`) is dropped: a form a director closed says it is closed.
+
+**The switch.** Open and Close on `/staff/`, for `forms.switch:<key>` (`formSwitch`, `POST /api/staff/forms/<key>/switch`,
+JSON from this site only). Open must carry the form's key again as `confirm`, which the page sends only after its
+second question; a form with no questions is refused (`switch.empty`). The row records the Connect id of whoever set
+it. The page function draws every form a page shows (a `form` block, an `involve` door) from `currentForm()`, so the
+switch is on the page with no deploy once the switch clears the CDN tags `page:<id>` of those pages and `form:<key>` of
+`/api/forms/<key>/state`. If clearing fails, the server still goes by the switch at once and the reply says the pages
+may lag up to 30 minutes. A review page's preview is drawn as built. Both applications ship
 closed (`DECISIONS.md` §4); a prototype build gives each a preview page at `/forms/<key>/preview/` that checks
 answers and sends nothing.
 
@@ -582,7 +593,7 @@ SQL, stops the deploy before it publishes, and the site online stays as it was. 
 | Receipts and the Sheets backup | built locally 25 Oct 2026 (`deliver.mjs`, `backup.mjs`), tested against a fake Connect and a fake Sheets API; off until set up | Connect's `publicReceipt` (proposed), `RECEIPT_SENDER`, the workbook and its service account, the scheduled function (owner actions) |
 | Application files reaching Connect | stored and claimed here; `delivered_at` is never set | Connect fetching them by id (Exchange `APPLICATION-FILES-HANDOVER`) |
 | Publishing edits | built locally 25 Oct 2026: a save is the published revision, drawn by the page function ("Publishing a save") | the two packages, the function's lines in `netlify.toml` and a deploy (owner actions) |
-| Opening and closing forms from Connect | the switch row works; nothing in Connect writes it | `PUBLIC-SITE-FORMS` |
+| Opening and closing forms | built: Open and Close on `/staff/` ("The switch"); nobody holds `forms.switch` until Connect's "Who May Do What on the Website" offers it | Exchange `PUBLIC-FORM-SWITCH-GRANT-2026-10-30` |
 | Wall, team | samples in the prototype; the reader is built against a fake Connect and off (`exports`), so a production build shows neither | Connect's `publicTeam` and `publicWallNotes` and the owner's decisions they name (Exchange `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`) |
 | Recent events | a production build lists none: Connect's public export holds upcoming events only. The site reads a `recent` list when Connect sends one (`ops/connect-feed.mjs`) | Exchange `PUBLIC-EVENTS-RECENT-2026-10-23`; `../WORK.md` item 30 |
 | The resource viewer | not started | `PUBLIC-RESOURCES-AND-WALL`; `../../MASTER-PROMPT.md` §8 |

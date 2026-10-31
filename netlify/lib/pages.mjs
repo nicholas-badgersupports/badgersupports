@@ -4,7 +4,10 @@
  *
  * Bounded: Netlify's CDN holds a page at most 30 minutes (25, then 5 while it draws it again), the browser
  * not at all, and the revision is held a minute (published.mjs). The cache key ignores every query string but
- * the two the pages read, and no cookie or header, so nobody can ask past it. Nothing here reads the database.
+ * the two the pages read, and no cookie or header, so nobody can ask past it. Only a page that shows a form's
+ * state reads the database: each such form as it stands (intake.mjs currentForm), so a switch set on the staff
+ * page is on the page once the switch clears its tags (formTags). Nothing is held between draws. If those forms
+ * cannot be read, the page draws them as built and is held a minute, keeping its published words.
  *
  * If the revision cannot be read or the page cannot be drawn, the answer is the build's own file, held a
  * minute, so a fault is never kept for long. A path the build does not have answers the site's 404 page.
@@ -15,7 +18,8 @@ import path from "node:path";
 import url from "node:url";
 import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
-import { composeSite, renderSitePage } from "../../src/render/site.mjs";
+import { currentForm } from "./intake.mjs";
+import { composeSite, renderSitePage, formsOn } from "../../src/render/site.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 
 const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -44,6 +48,35 @@ export async function siteNow() {
   const c = serverContent();
   if (!c.render) return null;
   return siteFor(c.render, await currentRevision());
+}
+
+/* The forms this page shows, as they stand now: { forms } (null when it shows none), or { failed: true } when
+   they cannot be read, and the page draws them as built. */
+async function formsNow(page) {
+  const keys = formsOn(page);
+  if (!keys.length) return { forms: null };
+  const forms = {};
+  try {
+    for (const key of keys) {
+      const f = await currentForm(key);
+      if (f) forms[key] = { ...f.def, state: f.state, closedMessage: f.closedMessage };
+    }
+  } catch (e) {
+    console.error(`pages: forms drawn as built (${e.code || e.message})`);
+    return { forms: null, failed: true };
+  }
+  return { forms };
+}
+
+/* The cache tags a form's switch touches: its state answer (router.mjs) and every page that shows it. When the
+   pages cannot be listed, every page. */
+export async function formTags(key) {
+  try {
+    const site = await siteNow();
+    return [`form:${key}`, ...(site ? site.pages.filter((p) => formsOn(p).includes(key)).map((p) => `page:${p.id}`) : [])];
+  } catch {
+    return [`form:${key}`, "page"];
+  }
 }
 
 const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l.indexOf(":"); return [l.slice(0, i).toLowerCase(), l.slice(i + 1).trim()]; }));
@@ -99,7 +132,8 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
     const notFound = !page;
     const shown = page || site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
-    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today), { ...PAGE_CACHE, "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+    const { forms, failed } = await formsNow(shown);
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms), { ...(failed ? FALLBACK_CACHE : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
     const file = staticFile(pathname);

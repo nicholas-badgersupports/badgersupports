@@ -13,7 +13,8 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { editableFor, revisionEdits, original, problemFor } from "./edits.mjs";
 import { redirectFor } from "./pages.mjs";
-import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
+import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
+import { variantName, variantWidths } from "../../src/render/media.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 
 const parse = (d) => (typeof d === "string" ? JSON.parse(d) : d);
@@ -41,6 +42,27 @@ function settingsAt(doc) {
   const c = serverContent();
   const s = laySettings(structuredClone(c.render?.floor?.site || c.site), doc.settings);
   return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null };
+}
+
+/* The photo library's ids, the set a step's photo is checked against. */
+const libraryIds = (c = serverContent()) => new Set((c.media?.items || []).map((m) => m.id));
+
+/* The room records as drawn at structure `doc`: the build's, with that version's saved words and photos laid over. */
+function roomsAt(doc) {
+  const c = serverContent();
+  return layRooms(c.render?.places || {}, doc.rooms, { media: libraryIds(c) });
+}
+
+/* The rooms part of the staff page: every room's words and its steps' words and photos as drawn now, the version they
+   belong to, the library photos a step may show (each with a small picture to know it by), and each word's limit. */
+export async function roomsList() {
+  const { version, doc } = await structureNow();
+  const c = serverContent();
+  if (!c.render) throw new HttpError(503, "pages.unavailable");
+  const rooms = Object.values(roomsAt(doc)).map(roomFields).sort((a, b) => a.name.localeCompare(b.name));
+  const photos = (c.media?.items || []).filter((m) => /^m-/.test(m.id) && m.sha256 && m.width)
+    .map((m) => ({ id: m.id, alt: m.alt || "", src: `/media/${variantName(m, variantWidths(m)[0], "jpg")}` }));
+  return { version, rooms, photos, limits: { ...ROOM_LIMITS, text: STEP_TEXT_MAX } };
 }
 
 /* A page's title as the staff page lists it: without the site's name, the build's or the current one. */
@@ -78,7 +100,8 @@ export async function sectionsList(pageId) {
 /* The scope a change needs, from the state of the page it names: words and drafts are an editor's (site.edit); what
    visitors can reach, the menu, a live page's address and bringing back a version are a publisher's (site.publish).
    A page's sections are words too, but taking one off a live page is a publisher's, as retiring the page is. The site's
-   settings are a publisher's, draft or not: every page's title and footer change with them. */
+   settings are a publisher's, draft or not: every page's title and footer change with them; so are a room's words
+   and photos, which show on its page, the list of rooms and every event held there. */
 export function scopeFor(change, doc) {
   const draft = change.page && doc.pages[change.page]?.state === "draft";
   switch (change.action) {
@@ -88,17 +111,20 @@ export function scopeFor(change, doc) {
     case "details": return change.path !== undefined && !draft ? "site.publish" : "site.edit";
     case "retire": return draft ? "site.edit" : "site.publish";
     case "settings": return "site.publish";
+    case "room": return "site.publish";
     default: return "site.publish";
   }
 }
 
 /* Apply one change for `who`, after `allow(scope)` has said they may. Returns { version, page?, section? }. A stale
    change is refused 409 with the version now; a stale settings change also carries the settings as saved at that
-   version, so the staff page can show them before a second save replaces them knowingly. */
+   version, and a stale room change that room as saved at it, so the staff page can show them before a second save
+   replaces them knowingly. */
 export async function changeStructure(who, change, allow) {
   const before = await structureNow();
   allow(scopeFor(change, before.doc));
-  const stale = (now) => new HttpError(409, "pages.conflict", { current: now.version, ...(change.action === "settings" ? { site: settingsAt(now.doc) } : {}) });
+  const roomNow = (doc) => { const p = change.action === "room" && typeof change.room === "string" ? roomsAt(doc)[change.room] : null; return p ? { room: roomFields(p) } : {}; };
+  const stale = (now) => new HttpError(409, "pages.conflict", { current: now.version, ...(change.action === "settings" ? { site: settingsAt(now.doc) } : {}), ...roomNow(now.doc) });
   if (String(change.expected) !== before.version) throw stale(before);
   const c = serverContent();
   const site = await siteAsSaved(before.doc);
@@ -107,7 +133,7 @@ export async function changeStructure(who, change, allow) {
     out = applyChange(before.doc, change, {
       pages: site.all, authored: site.authored, menu: menuOutline(site.site.nav), offMenu: site.offMenu,
       site: { name: site.site.name, description: site.site.description, built: site.site.built?.name }, redirected: (p) => !!redirectFor(c, p),
-      links: siteLinks(site.site, site.pages.concat(site.drafts)),
+      links: siteLinks(site.site, site.pages.concat(site.drafts)), places: c.render?.places || {}, media: libraryIds(c),
     });
   } catch (e) {
     if (isProblem(e)) throw new HttpError(e.status, e.code);

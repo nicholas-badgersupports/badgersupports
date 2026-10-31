@@ -129,6 +129,9 @@ export function contract() {
   w();
   w("Adding a room is adding a record. A published room gets its own page at `/directions/<id>/`, appears on");
   w("`/directions/`, and every event held there links to it. A draft (`published: false`) gets no page and no link.");
+  w("A room's words (`name`, `short`, `building`, `where`, `address`, `note`) and each step's text and photo are also changed");
+  w("live on this site's staff page, by someone with `site.publish`; what is saved there is drawn over the record. The rest");
+  w("of a room stays a change in its record.");
   w();
   w("| Field | What it holds |");
   w("|---|---|");

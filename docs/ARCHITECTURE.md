@@ -570,6 +570,47 @@ description when they next crawl the home page. The edits file a build downloads
 in the published revision, as made pages do), so when the revision cannot be read a page is the build's own file, with
 the file's name, description and address.
 
+### Rooms (item 15, fourth slice, 31 Oct 2026)
+
+A publisher (`site.publish`) changes each room's **words and photos** on the staff page, under Rooms: its name, short
+name, building, where in the building, address and note, and each step's words and photo. Adding or taking down a
+room, its id, aliases, published flag, links, kind, its own photo and arrival photo, and the number and order of its
+steps stay a change in `content/places/`. The routine calls and how to reverse each: `DECISIONS.md`, 31 Oct, "rooms'
+words and photos".
+
+**Stored and published like a page change.** The structure document holds `rooms: { "<room id>": { name?, short?,
+building?, where?, address?, note?, steps?: { "<step id>": { text?, photo? } } } }`, only what was saved. A change is the
+action `room` through `POST /api/staff/pages`, carrying the room, the fields that differ from the room as last known
+saved, and the version its tab started from: refused 409 when stale, with the room as saved at the version now
+(`room`), shown on the staff page under each field that differs from what the form opened with ("Saved since you opened
+this page: …"), as Site Settings does; otherwise a new row of `site_structure`, the next revision published, and `page`
+and `events` cleared, since a room's words show on its page, on the list of rooms and on every event held there.
+Restoring a published revision brings back its rooms' words. `GET /api/staff/rooms` lists every room as drawn now, the
+version, the library photos a step may show (each with a small picture) and each word's limit.
+
+**Checks** (`src/shared/structure.mjs`): each word as a saved page word is (not empty, no markup, not a link), the name
+and the building at most 80 characters, the short name 60, where in the building 120, the address 200, the note and a
+step's words 600; a step's photo a library photo (the edit button's photo check) or none. A room the files do not hold
+(`room.unknown`), a step it does not have (`room.step`) and any other field, a step order among them (`room.field`), are
+refused 422. A saved value is checked again when it is laid; one that fails keeps the file's.
+
+**Who reads a room, and how each gets the saved words.** `layRooms()` lays them over the room records before anything
+draws a room. The page function (`composeSite`) lays them for the room pages' titles and descriptions
+(`placePages`), the blocks that draw a room (`data.places`: a room's page, the list of rooms, the Hub's directions on
+the peer support groups page) and the room names event lists carry (`data.events.places`, with
+`withRoomPlaces()`: event cards and the week's drop-in room); the staff page's preview draws through it too. The event
+answer (`/api/events/<page>`) and the calendar file (`/api/calendar/<event>.ics`) lay them from the published site
+(`siteNow`). The build reads `content/places/` itself and never lays a revision, so with nothing saved every page is
+the build's (`rooms-build-identity`). Connect's event feed matches rooms by its own words in `content/connect-feed.json`
+and their ids, never their names, so a renamed room keeps its events.
+
+**Limits.** Found in the code, not seen live. The calendar files a fixture build writes (`/calendar/<event>.ics`, the
+prototype only) keep the files' words; a site built from Connect links `/api/calendar`, which follows a saved room. When
+the revision cannot be read, a page is the build's own file with the files' words. A room's note can be added or
+changed, not emptied (an empty word is refused); a step's photo can be taken off. The step photo's shape is the
+photo's own (`.dir-steps .photo img`), so a map is never cropped. A room's words in the CDN can be up to 30 minutes old,
+and a room change shares item 8's one-minute window, as a page change does.
+
 ## Crawlers and abuse (25 Oct 2026, cloud run §6)
 
 **What limits each public route** (`netlify/lib/http.mjs`, `router.mjs`):

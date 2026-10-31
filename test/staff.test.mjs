@@ -1896,3 +1896,155 @@ test("item 15, settings (i): a stale tab's refusal carries the settings saved si
   assert.equal(again.status, 200, JSON.stringify(again.body));
   assert.equal(await homeTitle(), `${SITE_NAME} — peer support at UW–Madison`, "pressed again with that version, mine replace theirs");
 });
+
+/* ------------------------------------------------------------------ rooms' words and photos (item 15, fourth slice) */
+
+/* Values no room file, fallback or build holds. */
+const ROOM = "sac-caucus";
+const ROOM_WORDS = { name: "Sifting Room Test", short: "Sifting Room Short Test", building: "Made-Up Test Hall", where: "Floor 9, past the test fountain" };
+const ROOM_ADDRESS = "1 Made-Up Way, Testville, WI 00000";
+const ROOM_NOTE = "A made-up note for this test alone.";
+const ROOM_STEP = "Walk past the made-up test fountain to the lifts.";
+const ROOM_PHOTO = "m-hub-sea";
+const roomsNow = async (cookie) => { const r = await handle(get("/api/staff/rooms", { cookie }), ip()); return { status: r.status, body: await r.json() }; };
+const saveRoom = (cookie, room, fields, expected) => change(cookie, { action: "room", room, fields, expected });
+const stepOf = (html, n) => [...html.matchAll(/<ol class="dir-steps">([\s\S]*?)<\/ol>/g)][0]?.[1].split("<li>").slice(1)[n] || "";
+const unescape = (s) => s.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+
+test("item 15, rooms (a): a publisher's new room words show on the list of rooms, the room's page, the events held there, their feed and calendar file", async (t) => {
+  const { as } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const list = await roomsNow(publisher);
+  assert.equal(list.status, 200, JSON.stringify(list.body));
+  assert.deepEqual(list.body.rooms.map((r) => r.id).sort(), ["lcm", "memorial-union-tripp", "sac-caucus", "sac-hearing", "sac-mhh", "sac-multipurpose", "union-south-marquee"]);
+  assert.ok(list.body.photos.some((p) => p.id === ROOM_PHOTO), "the library's photos are offered");
+  const saved = await saveRoom(publisher, ROOM, ROOM_WORDS, list.body.version);
+  assert.equal(saved.status, 200, `the room save: ${JSON.stringify(saved.body)}`);
+  assert.ok(saved.body.published?.n >= 1, "the change is published");
+  const rooms = unescape(await (await visit("/directions/")).text());
+  assert.match(rooms, new RegExp(`<strong class="ticket-name">${ROOM_WORDS.name}</strong>`), "the list of rooms");
+  assert.match(rooms, new RegExp(`<span class="ticket-where">${ROOM_WORDS.building} · ${ROOM_WORDS.where}</span>`));
+  const page = unescape(await (await visit(`/directions/${ROOM}/`)).text());
+  assert.deepEqual(titlesOf(page), [`Directions to ${ROOM_WORDS.name} — Badger Supports`, `Directions to ${ROOM_WORDS.name} — Badger Supports`], "the room's own title");
+  assert.match(page, new RegExp(`<h1 id="[^"]+">${ROOM_WORDS.name}</h1>`), "the room's own heading");
+  const craft = unescape(await (await visit("/join/craft-nights/")).text());
+  assert.match(craft, new RegExp(`<strong>${ROOM_WORDS.short}</strong><span class="where-detail"><span class="sr-only">, </span>${ROOM_WORDS.building}, ${ROOM_WORDS.where}`), "an event held there");
+  assert.doesNotMatch(craft, /SAC Caucus Room/, "the file's short name is gone from the page");
+  const { eventSections, calendarFile, forgetEvents } = await import("../netlify/lib/live-events.mjs");
+  forgetEvents();
+  const feed = await eventSections("pg-craft-nights", { today: "2026-10-20" });
+  assert.ok(Object.values(feed.blocks).some((h) => unescape(h).includes(`<strong>${ROOM_WORDS.short}</strong>`)), "the page's event feed (/api/events)");
+  const roomFeed = await eventSections(`pg-place-${ROOM}`, { today: "2026-10-20" });
+  assert.ok(Object.values(roomFeed.blocks).some((h) => new RegExp(`<h1 id="[^"]+">${ROOM_WORDS.name}</h1>`).test(unescape(h))), "the room page's own feed (/api/events), which draws the room");
+  const ics = (await calendarFile("craft-2026-10-20", { today: "2026-10-20" })).text.replace(/\r\n /g, "");
+  assert.match(ics, new RegExp(`LOCATION:${ROOM_WORDS.name}\\\\, ${ROOM_WORDS.building}\\\\, `), "the calendar file (/api/calendar)");
+});
+
+test("item 15, rooms (b, c): a step's words and photo, the note and the address change on the room's page", async (t) => {
+  const { as } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const list = await roomsNow(publisher);
+  const fields = { address: ROOM_ADDRESS, note: ROOM_NOTE, steps: { "s-room": { text: ROOM_STEP, photo: ROOM_PHOTO }, "s-floor": { photo: null } } };
+  const saved = await saveRoom(publisher, ROOM, fields, list.body.version);
+  assert.equal(saved.status, 200, `the room save: ${JSON.stringify(saved.body)}`);
+  const page = unescape(await (await visit(`/directions/${ROOM}/`)).text());
+  assert.match(stepOf(page, 2), new RegExp(`<p>${ROOM_STEP}</p>`), "the third step's words");
+  assert.match(stepOf(page, 2), new RegExp(`media-${ROOM_PHOTO}`), "the third step's photo");
+  assert.doesNotMatch(stepOf(page, 1), /<picture/, "the second step's photo taken off");
+  assert.match(stepOf(page, 0), /media-m-room-sac-entrance/, "a step not named keeps its own");
+  assert.match(page, new RegExp(`<p class="dir-note">${ROOM_NOTE}</p>`), "the note");
+  assert.match(page, new RegExp(`<address>${ROOM_ADDRESS}</address>`), "the address");
+  assert.match(page, new RegExp(encodeURIComponent(ROOM_ADDRESS).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), "the map button looks up the new address");
+  assert.match(unescape(await (await visit("/directions/")).text()), new RegExp(`<span class="ticket-addr">${ROOM_ADDRESS}</span>`), "the list of rooms");
+  const again = await roomsNow(publisher);
+  const r = again.body.rooms.find((x) => x.id === ROOM);
+  assert.deepEqual([r.address, r.note, r.steps[2].text, r.steps[2].photo, r.steps[1].photo], [ROOM_ADDRESS, ROOM_NOTE, ROOM_STEP, ROOM_PHOTO, null]);
+});
+
+test("item 15, rooms (d): someone with site.edit alone is refused, and nothing moves", async (t) => {
+  const { as, cleared } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  assert.equal((await roomsNow(editor)).status, 403, "the rooms list is a publisher's");
+  const v = await pagesNow(editor);
+  const no = await saveRoom(editor, ROOM, { name: ROOM_WORDS.name }, v.version);
+  assert.deepEqual([no.status, no.body.error], [403, "staff.forbidden"]);
+  assert.equal((await pagesNow(editor)).version, v.version, "the structure version did not move");
+  assert.deepEqual(cleared, []);
+  assert.doesNotMatch(await (await visit(`/directions/${ROOM}/`)).text(), new RegExp(ROOM_WORDS.name));
+});
+
+test("item 15, rooms (e): a stale tab is refused 409 with the room as saved since and the version it belongs to", async (t) => {
+  const { as } = await pagesSite(t);
+  const mine = await as(["site.edit", "site.publish"]);
+  const theirs = await as(["site.edit", "site.publish"], "Avery Example");
+  const v = (await roomsNow(mine)).body.version;
+  const other = await saveRoom(theirs, ROOM, { name: "Their Room Test Name", steps: { "s-room": { text: "Their made-up step words." } } }, v);
+  assert.equal(other.status, 200, JSON.stringify(other.body));
+  const stale = await saveRoom(mine, ROOM, { name: ROOM_WORDS.name }, v);
+  assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", other.body.version]);
+  assert.equal(stale.body.room?.id, ROOM, "the refusal carries the room");
+  assert.equal(stale.body.room.name, "Their Room Test Name");
+  assert.equal(stale.body.room.steps.find((s) => s.id === "s-room").text, "Their made-up step words.");
+  assert.equal(stale.body.room.address, "333 E Campus Mall, Madison, WI 53715");
+  const again = await saveRoom(mine, ROOM, { name: ROOM_WORDS.name }, stale.body.current);
+  assert.equal(again.status, 200, "pressed again with that version, mine replace theirs");
+  assert.match(await (await visit(`/directions/${ROOM}/`)).text(), new RegExp(`<h1 id="[^"]+">${ROOM_WORDS.name}</h1>`));
+});
+
+test("item 15, rooms (f): markup, a link, an unknown photo, room or step, and any field outside the list are refused 422", async (t) => {
+  const { as } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = (await roomsNow(publisher)).body.version;
+  const refused = [
+    [ROOM, { name: "<b>Bold Room</b>" }, "room.name"],
+    [ROOM, { name: "" }, "room.name"],
+    [ROOM, { name: "x".repeat(81) }, "room.name"],
+    [ROOM, { short: "https://elsewhere.example" }, "room.short"],
+    [ROOM, { where: "x".repeat(121) }, "room.where"],
+    [ROOM, { address: "x".repeat(201) }, "room.address"],
+    [ROOM, { note: "See <a href=x>here</a>" }, "room.note"],
+    [ROOM, { steps: { "s-room": { text: "https://elsewhere.example/way-in" } } }, "room.text"],
+    [ROOM, { steps: { "s-room": { photo: "m-no-such-photo" } } }, "room.photo"],
+    [ROOM, { steps: { "s-room": { photo: "https://elsewhere.example/a.jpg" } } }, "room.photo"],
+    ["no-such-room", { name: "Fine Name" }, "room.unknown"],
+    [ROOM, { steps: { "s-nope": { text: "Fine words." } } }, "room.step"],
+    [ROOM, { published: false }, "room.field"],
+    [ROOM, { id: "another-room" }, "room.field"],
+    [ROOM, { aliases: ["/old-room"] }, "room.field"],
+    [ROOM, { links: [] }, "room.field"],
+    [ROOM, { photo: ROOM_PHOTO }, "room.field"],
+    [ROOM, { steps: ["s-room", "s-floor", "s-entrance"] }, "room.field"],
+    [ROOM, { order: ["s-room", "s-floor", "s-entrance"] }, "room.field"],
+    [ROOM, { steps: { "s-room": { id: "s-other" } } }, "room.field"],
+    [ROOM, {}, "room.field"],
+  ];
+  for (const [room, fields, code] of refused) {
+    const no = await saveRoom(publisher, room, fields, v);
+    assert.deepEqual([no.status, no.body.error], [422, code], `${room} ${JSON.stringify(fields)}`);
+  }
+  assert.equal((await roomsNow(publisher)).body.version, v, "no refusal moved the structure");
+});
+
+test("item 15, rooms (g, h): a room save clears every page and feed, and Restore brings the old words back", async (t) => {
+  const { as, cleared } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = (await roomsNow(publisher)).body.version;
+  const one = await saveRoom(publisher, ROOM, { name: ROOM_WORDS.name }, v);
+  assert.equal(one.status, 200, `the room save: ${JSON.stringify(one.body)}`);
+  assert.ok(cleared.includes("page"), `the purge list ${JSON.stringify(cleared)} clears every page`);
+  assert.ok(cleared.includes("events"), `the purge list ${JSON.stringify(cleared)} clears every feed`);
+  const two = await saveRoom(publisher, ROOM, { name: "Second Room Test Name" }, one.body.version);
+  assert.equal(two.status, 200, JSON.stringify(two.body));
+  const h1 = async () => (await (await visit(`/directions/${ROOM}/`)).text()).match(/<h1 id="[^"]+">([^<]*)<\/h1>/)[1];
+  assert.equal(await h1(), "Second Room Test Name");
+  const restore = async (n) => {
+    const list = await (await handle(get("/api/staff/versions", { cookie: publisher }), ip())).json();
+    const r = await handle(staffPost(`/api/staff/versions/${n}/restore`, { expected: list.expected }, publisher), ip());
+    return { status: r.status, body: await r.json() };
+  };
+  assert.equal((await restore(one.body.published.n)).status, 200);
+  assert.equal(await h1(), ROOM_WORDS.name, "the earlier version's name");
+  const word = await saveWord(publisher, "text:page.skip", "Skip to Content", "Skip ahead");
+  assert.ok(word.published?.n);
+  assert.equal(await h1(), ROOM_WORDS.name, "a saved word keeps the room's words");
+});

@@ -383,6 +383,9 @@ A link anywhere else, or one that redirects anywhere else, stops the build. An e
 
 Adding a room is adding a record. A published room gets its own page at `/directions/<id>/`, appears on
 `/directions/`, and every event held there links to it. A draft (`published: false`) gets no page and no link.
+A room's words (`name`, `short`, `building`, `where`, `address`, `note`) and each step's text and photo are also changed
+live on this site's staff page, by someone with `site.publish`; what is saved there is drawn over the record. The rest
+of a room stays a change in its record.
 
 | Field | What it holds |
 |---|---|
@@ -473,7 +476,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-536 keys. Keys are permanent. Required text cannot be published empty and must keep each
+559 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -696,7 +699,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (321)
+### Staff page and edit button (344)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -866,6 +869,29 @@ the site adds the markup.
 | `staff.settings.conflict` | Someone saved settings since you opened this page. Their values are under each field. Save Settings again to replace them with yours. | Under Site Settings, when someone else saved settings after this page was opened; the fields keep what was typed. |  |
 | `staff.settings.since` | Saved since you opened this page: {{value}} | Under a Site Settings field whose saved value changed after this page was opened, with that value. | `{{value}}` |
 | `staff.settings.none` | (none) | Shown as the value saved since when that value is empty (a search description left blank). |  |
+| `staff.rooms.title` | Rooms | Heading of the Rooms part of the staff page, for someone who may publish: each room's words and its steps' words and photos. |  |
+| `staff.rooms.how` | A saved room shows on its own page, the list of rooms and every event held there. | Under the Rooms heading on the staff page: where a room's saved words show. |  |
+| `staff.rooms.open` | Change Room | Button on each room under Rooms: opens its words and photos. |  |
+| `staff.rooms.openName` | Change Room: {{name}} | The Change Room button's name for screen readers, naming the room. | `{{name}}` |
+| `staff.rooms.field.name` | Room Name | Label of a room's name under Rooms. |  |
+| `staff.rooms.help.name` | On the room's page and the list of rooms. | Under the Room Name label: where the name shows. |  |
+| `staff.rooms.field.short` | Short Name | Label of a room's short name under Rooms. |  |
+| `staff.rooms.help.short` | On the events held here. | Under the Short Name label: where the short name shows. |  |
+| `staff.rooms.field.building` | Building | Label of a room's building under Rooms. |  |
+| `staff.rooms.field.where` | Where in the Building | Label of where the room is in its building, under Rooms. |  |
+| `staff.rooms.field.address` | Address | Label of a room's street address under Rooms. |  |
+| `staff.rooms.help.address` | The map button looks up this address. | Under the Address label: what else the address changes. |  |
+| `staff.rooms.step` | Step {{n}} | Heading of one step of a room's directions under Rooms, and the name of its words. | `{{n}}` |
+| `staff.rooms.field.photo` | Photo | Label of a step's photo under Rooms: a choice of library photos. |  |
+| `staff.rooms.photo.none` | No Photo | The choice for a step with no photo under Rooms. |  |
+| `staff.rooms.field.note` | Note | Label of a room's note under Rooms, shown under its steps. |  |
+| `staff.rooms.field.steps` | Each step | Names the steps in the message when a step's words are refused under Rooms. |  |
+| `staff.rooms.save` | Save Room | Button under an open room: saves its changed words and photos as one change, which publishes. |  |
+| `staff.rooms.done` | Room saved. | Read out once a room is saved and published. |  |
+| `staff.rooms.unchanged` | Nothing has changed since you opened this room. | Under an open room when Save Room is pressed with nothing changed. |  |
+| `staff.rooms.conflict` | Someone saved this room since you opened it. Their words and photos are under each field. Save Room again to replace them with yours. | Under an open room, when someone else saved it after this page was opened; the fields keep what was typed. |  |
+| `staff.rooms.error.words` | {{field}} takes up to {{max}} characters, with no markup or web address, and cannot be left empty. | Under an open room when a word is refused, naming the field and its limit. | `{{field}}` `{{max}}` |
+| `staff.rooms.error.photo` | Choose a photo from the library, or No Photo. | Under an open room when a step's photo is refused. |  |
 | `staff.sections.open` | Sections | Staff page, button that opens a page's sections. |  |
 | `staff.sections.title` | Sections of {{title}} | Staff page, heading of one page's sections. | `{{title}}` |
 | `staff.sections.up` | Move {{name}} up | Staff page, button name for screen readers. | `{{name}}` |

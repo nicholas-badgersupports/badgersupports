@@ -1778,6 +1778,121 @@
       "text": "(none)",
       "where": "Shown as the value saved since when that value is empty (a search description left blank)."
     },
+    "staff.rooms.title": {
+      "group": "staff",
+      "text": "Rooms",
+      "where": "Heading of the Rooms part of the staff page, for someone who may publish: each room's words and its steps' words and photos."
+    },
+    "staff.rooms.how": {
+      "group": "staff",
+      "text": "A saved room shows on its own page, the list of rooms and every event held there.",
+      "where": "Under the Rooms heading on the staff page: where a room's saved words show."
+    },
+    "staff.rooms.open": {
+      "group": "staff",
+      "text": "Change Room",
+      "where": "Button on each room under Rooms: opens its words and photos."
+    },
+    "staff.rooms.openName": {
+      "group": "staff",
+      "text": "Change Room: {{name}}",
+      "where": "The Change Room button's name for screen readers, naming the room."
+    },
+    "staff.rooms.field.name": {
+      "group": "staff",
+      "text": "Room Name",
+      "where": "Label of a room's name under Rooms."
+    },
+    "staff.rooms.help.name": {
+      "group": "staff",
+      "text": "On the room's page and the list of rooms.",
+      "where": "Under the Room Name label: where the name shows."
+    },
+    "staff.rooms.field.short": {
+      "group": "staff",
+      "text": "Short Name",
+      "where": "Label of a room's short name under Rooms."
+    },
+    "staff.rooms.help.short": {
+      "group": "staff",
+      "text": "On the events held here.",
+      "where": "Under the Short Name label: where the short name shows."
+    },
+    "staff.rooms.field.building": {
+      "group": "staff",
+      "text": "Building",
+      "where": "Label of a room's building under Rooms."
+    },
+    "staff.rooms.field.where": {
+      "group": "staff",
+      "text": "Where in the Building",
+      "where": "Label of where the room is in its building, under Rooms."
+    },
+    "staff.rooms.field.address": {
+      "group": "staff",
+      "text": "Address",
+      "where": "Label of a room's street address under Rooms."
+    },
+    "staff.rooms.help.address": {
+      "group": "staff",
+      "text": "The map button looks up this address.",
+      "where": "Under the Address label: what else the address changes."
+    },
+    "staff.rooms.step": {
+      "group": "staff",
+      "text": "Step {{n}}",
+      "where": "Heading of one step of a room's directions under Rooms, and the name of its words."
+    },
+    "staff.rooms.field.photo": {
+      "group": "staff",
+      "text": "Photo",
+      "where": "Label of a step's photo under Rooms: a choice of library photos."
+    },
+    "staff.rooms.photo.none": {
+      "group": "staff",
+      "text": "No Photo",
+      "where": "The choice for a step with no photo under Rooms."
+    },
+    "staff.rooms.field.note": {
+      "group": "staff",
+      "text": "Note",
+      "where": "Label of a room's note under Rooms, shown under its steps."
+    },
+    "staff.rooms.field.steps": {
+      "group": "staff",
+      "text": "Each step",
+      "where": "Names the steps in the message when a step's words are refused under Rooms."
+    },
+    "staff.rooms.save": {
+      "group": "staff",
+      "text": "Save Room",
+      "where": "Button under an open room: saves its changed words and photos as one change, which publishes."
+    },
+    "staff.rooms.done": {
+      "group": "staff",
+      "text": "Room saved.",
+      "where": "Read out once a room is saved and published."
+    },
+    "staff.rooms.unchanged": {
+      "group": "staff",
+      "text": "Nothing has changed since you opened this room.",
+      "where": "Under an open room when Save Room is pressed with nothing changed."
+    },
+    "staff.rooms.conflict": {
+      "group": "staff",
+      "text": "Someone saved this room since you opened it. Their words and photos are under each field. Save Room again to replace them with yours.",
+      "where": "Under an open room, when someone else saved it after this page was opened; the fields keep what was typed."
+    },
+    "staff.rooms.error.words": {
+      "group": "staff",
+      "text": "{{field}} takes up to {{max}} characters, with no markup or web address, and cannot be left empty.",
+      "where": "Under an open room when a word is refused, naming the field and its limit."
+    },
+    "staff.rooms.error.photo": {
+      "group": "staff",
+      "text": "Choose a photo from the library, or No Photo.",
+      "where": "Under an open room when a step's photo is refused."
+    },
     "staff.sections.open": { "group": "staff", "text": "Sections", "where": "Staff page, button that opens a page's sections." },
     "staff.sections.title": { "group": "staff", "text": "Sections of {{title}}", "where": "Staff page, heading of one page's sections." },
     "staff.sections.up": { "group": "staff", "text": "Move {{name}} up", "where": "Staff page, button name for screen readers." },

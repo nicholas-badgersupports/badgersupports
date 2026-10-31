@@ -60,6 +60,14 @@ export function placePages(places, t) {
   }));
 }
 
+/* An event list with the rooms in `ids` (changed on the staff page) named from `places`, the room records with the
+   saved words laid over them. A list naming none of them is returned as it is. */
+export function withRoomPlaces(events, places, ids) {
+  const hit = (ids || []).filter((id) => events?.places?.[id] && places?.[id]);
+  if (!hit.length) return events;
+  return { ...events, places: { ...events.places, ...eventPlaces(Object.fromEntries(hit.map((id) => [id, places[id]]))) } };
+}
+
 /* What an event list shows for a place: its short name, the line under it, and its page if it
    has one. */
 export function eventPlaces(places) {

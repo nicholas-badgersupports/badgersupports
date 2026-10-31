@@ -23,8 +23,9 @@
  *    ended, coming back to the page that sent you, an editor who reads nothing, answers refused,
  *    Back after signing out, a dropped connection, a phone, and no JavaScript; and the edit
  *    button when the sign-in ends with words in its box, or when other words are opened in the box
- *    while a save is still going; its key, earlier versions and Restore; and the pages, sections, menu and Site
- *    Settings parts (a refused or stale Site Settings save keeps what was typed and shows what was saved since).
+ *    while a save is still going; its key, earlier versions and Restore; and the pages, sections, menu, Site
+ *    Settings and Rooms parts (a refused or stale save of settings or a room keeps what was typed and shows what was
+ *    saved since).
  * 5. The events between publishes (src/client/schedule.js), on the home page served as a page built
  *    from Connect's events, with the answers made up here from its own markup: a section with focus
  *    in it is not replaced until focus leaves; Back or Forward to a kept page moves "Today" and asks
@@ -1364,6 +1365,76 @@ await part("staff page: Site Settings", async () => {
   const shown = await page.locator("form.staff-settings").count();
   const headings = await page.evaluate(() => [...document.querySelectorAll("h3")].map((h) => h.textContent));
   check(shown === 0 && !headings.includes(words("staff.settings.title")), `settings: someone with site.edit only does not see Site Settings (forms ${shown})`);
+  await ctx.close();
+});
+
+/* Rooms (item 15): a publisher's part. With a room open, Tab goes through its words, each step's words and photo, the
+   note and Save Room; a refused save keeps what was typed and says why; a stale tab keeps it too and shows, under each
+   changed field, what someone else saved since; Save Room again replaces theirs; site.edit alone does not see the part. */
+await part("staff page: Rooms", async () => {
+  await freshServer();
+  const { useContent, serverContent } = await import("../netlify/lib/content.mjs");
+  const { structureNow } = await import("../netlify/lib/structure.mjs");
+  useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
+  let { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  const ROOM = "sac-caucus";
+  await page.locator(`[data-room="${ROOM}"]`).click({ timeout: 5000 });
+  const form = page.locator("form.staff-room");
+  await form.waitFor({ timeout: 5000 });
+  const values = () => form.evaluate((f) => [...f.querySelectorAll("input, textarea, select")].map((x) => x.value));
+  const since = () => form.evaluate((f) => [...f.querySelectorAll(".staff-since")].filter((l) => !l.hidden).map((l) => l.textContent));
+  const note = () => form.evaluate((f) => { const n = f.querySelector(".staff-note"); return n && !n.closest("[hidden]") ? n.textContent : ""; });
+  const noteIs = (w) => page.waitForFunction((x) => document.querySelector("form.staff-room .staff-note")?.textContent === x, w, { timeout: 5000 }).then(() => true, () => false);
+  const label = (key) => words(key);
+  const steps = serverContent().render.places[ROOM].steps;
+
+  await page.getByLabel(label("staff.rooms.field.name"), { exact: true }).focus();
+  const order = [];
+  for (let i = 0; i < 6 + steps.length * 2 + 1; i++) {
+    order.push(await page.evaluate(() => { const a = document.activeElement; const by = a.getAttribute("aria-labelledby"); return a.labels?.[0]?.textContent || (by && document.getElementById(by)?.textContent) || a.textContent; }));
+    await page.keyboard.press("Tab");
+  }
+  const want = [...["name", "short", "building", "where", "address"].map((k) => label(`staff.rooms.field.${k}`)),
+    ...steps.flatMap((_, i) => [label("staff.rooms.step").replace("{{n}}", i + 1), label("staff.rooms.field.photo")]), label("staff.rooms.field.note"), label("staff.rooms.save")];
+  check(order.join("|") === want.join("|"), `rooms: a publisher opens a room, and Tab goes through its words, each step's words and photo, the note and Save Room (${JSON.stringify(order)})`);
+
+  await page.getByLabel(label("staff.rooms.field.name"), { exact: true }).fill("Sifting Room <b>Test</b>");
+  await page.getByLabel(label("staff.rooms.field.note"), { exact: true }).fill("A made-up note typed in the harness.");
+  const typed422 = await values();
+  await page.getByRole("button", { name: label("staff.rooms.save") }).click();
+  const why = label("staff.rooms.error.words").replace("{{field}}", label("staff.rooms.field.name")).replace("{{max}}", "80");
+  const refused = await noteIs(why);
+  const kept422 = await values();
+  check(refused && kept422.join("|") === typed422.join("|"), `rooms: a refused name says why and keeps every typed value (${JSON.stringify({ note: await note(), name: kept422[0], kept: kept422.join("|") === typed422.join("|") })})`);
+
+  // Someone else saves this room's name and its last step's photo after the room was opened.
+  const theirs = await staffSession(["site.publish"]);
+  const last = steps.at(-1).id;
+  const other = await handle(post("/api/staff/pages", { action: "room", room: ROOM, expected: (await structureNow()).version, fields: { name: "Their Harness Room", steps: { [last]: { photo: "m-hub-sea" } } } }, { headers: { cookie: `bss_staff=${theirs}` } }), { ip: "198.51.100.204" });
+  await page.getByLabel(label("staff.rooms.field.name"), { exact: true }).fill("Sifting Room Test");
+  const typed409 = await values();
+  await page.getByRole("button", { name: label("staff.rooms.save") }).click();
+  const conflict = await noteIs(label("staff.rooms.conflict"));
+  await sleep(300);
+  const kept409 = await values();
+  const lines = await since();
+  const alt = serverContent().media.items.find((m) => m.id === "m-hub-sea").alt;
+  const sinceWords = (v) => label("staff.settings.since").replace("{{value}}", v);
+  check(other.status === 200 && conflict && kept409.join("|") === typed409.join("|") && lines.join("|") === [sinceWords("Their Harness Room"), sinceWords(alt)].join("|"),
+    `rooms: a stale tab keeps the typed values and shows under each changed field what was saved since (${JSON.stringify({ other: other.status, note: await note(), kept: kept409.join("|") === typed409.join("|"), lines })})`);
+
+  await page.getByRole("button", { name: label("staff.rooms.save") }).click();
+  const saved = await page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, label("staff.rooms.done"), { timeout: 5000 }).then(() => true, () => false);
+  const stored = (await structureNow()).doc.rooms?.[ROOM] || {};
+  check(saved && stored.name === "Sifting Room Test" && stored.note === "A made-up note typed in the harness." && stored.steps?.[last]?.photo === null && !(await since()).length && !(await note()),
+    `rooms: Save Room again replaces theirs with the typed values and clears the lines (${JSON.stringify({ saved, stored })})`);
+  check(!errors.length, `rooms: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+
+  ({ ctx, page } = await openStaff({ session: ["site.edit"] }));
+  await page.locator("#staff-pages-h ~ div ul.staff-forms").first().waitFor({ timeout: 5000 });
+  const shown = await page.locator("#staff-rooms-h, form.staff-room").count();
+  check(shown === 0, `rooms: someone with site.edit only does not see Rooms (${shown})`);
   await ctx.close();
 });
 

@@ -20,7 +20,8 @@
  *   - for anyone who may change or publish words, the pages (structure.mjs): add or copy a draft, preview it at desktop
  *     and phone width, change its title, search description and address; for a publisher, put a draft on, retire a
  *     page, reorder the menu, and change the site's name, search description and accessibility email (one save for
- *     the three); and the published versions, with Bring back for a publisher, asked twice.
+ *     the three); for a publisher, each room's words and its steps' words and photos; and the published versions, with
+ *     Bring back for a publisher, asked twice.
  * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
  * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools
@@ -324,6 +325,8 @@ function editSection(me) {
 
 /* Set by the versions part: a change saved in the pages part lists its new version there too. */
 let published = () => {};
+/* Set by the pages part: a change saved elsewhere (a room) draws the pages list again, so its version is the newest. */
+let pagesChanged = () => {};
 
 /* Each change names the version of the pages it started from; a refusal keeps what was typed and says why. */
 const PAGE_ERRORS = { "page.path": "path", "page.path.reserved": "reserved", "page.path.taken": "taken", "page.title": "title",
@@ -725,6 +728,189 @@ function pagesSection(me) {
       .sort((a, b) => RANK[a.state] - RANK[b.state] || a.path.localeCompare(b.path));
     body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart(), me.canPublish && settingsPart()].filter(Boolean));
   }
+  pagesChanged = () => { if (section.isConnected) load(); };
+  load();
+  return section;
+}
+
+/* ---------- rooms ---------- */
+
+/* Rooms, a publisher's: each room's words and its steps' words and photos, one room open at a time and saved as one
+   change. The open room's form is made once, so what was typed stays through a refusal and through the list being
+   drawn again. It keeps its own version token and the values the token stands for (`seen`), as Site Settings does: a
+   stale save is refused with the room as saved since, shown under each field that differs from what the form started
+   with, and only then does the token move, so Save Room again replaces them knowingly. A refusal with nothing new to
+   show (another change) is sent again once with the new token. Only the fields that differ from the room as last known
+   saved are sent, so a room keeps the files' value for every field nobody changed. */
+const ROOM_WORDS = ["name", "short", "building", "where", "address"];
+const roomLabel = (k) => ({ name: t("staff.rooms.field.name"), short: t("staff.rooms.field.short"), building: t("staff.rooms.field.building"),
+  where: t("staff.rooms.field.where"), address: t("staff.rooms.field.address"), note: t("staff.rooms.field.note"), steps: t("staff.rooms.field.steps") })[k];
+const roomHelp = (k) => ({ name: t("staff.rooms.help.name"), short: t("staff.rooms.help.short"), address: t("staff.rooms.help.address") })[k] || null;
+const ROOM_ERRORS = { "room.name": "name", "room.short": "short", "room.building": "building", "room.where": "where", "room.address": "address", "room.note": "note", "room.text": "steps" };
+function roomsSection() {
+  const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
+  const section = el("section", { className: "staff-part" },
+    el("h2", { id: "staff-rooms-h", textContent: t("staff.rooms.title") }), el("p", { textContent: t("staff.rooms.how") }), body);
+  section.setAttribute("aria-labelledby", "staff-rooms-h");
+  let list = null, open = null;
+
+  /* The value a field shows for a room, and a value as the line under a field names it. */
+  const valuesOf = (r) => ({ ...Object.fromEntries([...ROOM_WORDS, "note"].map((k) => [k, r[k] || ""])),
+    steps: Object.fromEntries(r.steps.map((x) => [x.id, { text: x.text || "", photo: x.photo || null }])) });
+  const photoName = (id) => (id === null ? t("staff.rooms.photo.none") : list.photos.find((p) => p.id === id)?.alt || id);
+  const sinceWords = (v) => t("staff.settings.since", { value: v === "" ? t("staff.settings.none") : v });
+
+  function roomForm(room) {
+    const box = el("div", { hidden: true });
+    const lines = new Map();
+    /* The line under a control: what was saved since, or nothing (null). Read with the control while it shows. */
+    const since = (key, control) => {
+      const line = el("p", { className: "staff-since", id: `${control.id}-since`, hidden: true });
+      lines.set(key, { line, control });
+      return line;
+    };
+    const showSince = (key, words) => {
+      const { line, control } = lines.get(key);
+      line.hidden = words === null;
+      line.textContent = words === null ? "" : sinceWords(words);
+      const ids = (control.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== line.id);
+      control.setAttribute("aria-describedby", [...ids, ...(words === null ? [] : [line.id])].join(" "));
+    };
+    const inputs = {};
+    const fields = ROOM_WORDS.map((k) => {
+      inputs[k] = textInput();
+      const f = field(roomLabel(k), inputs[k], roomHelp(k));
+      f.append(since(k, inputs[k]));
+      return f;
+    });
+    const steps = room.steps.map((s, i) => {
+      const legend = el("legend", { id: `staff-room-${room.id}-${s.id}-h`, textContent: t("staff.rooms.step", { n: i + 1 }) });
+      const text = el("textarea", { rows: 4 });
+      text.setAttribute("aria-labelledby", legend.id);
+      text.id = `staff-room-${room.id}-${s.id}-text`;
+      const photo = el("select", {}, el("option", { value: "", textContent: t("staff.rooms.photo.none") }),
+        ...list.photos.map((p) => el("option", { value: p.id, textContent: p.alt.length > 90 ? `${p.alt.slice(0, 89)}…` : p.alt || p.id })));
+      const thumb = el("img", { className: "staff-thumb", alt: "", width: 96, height: 72, hidden: true });
+      const look = () => { const p = list.photos.find((x) => x.id === photo.value); thumb.hidden = !p; if (p) thumb.src = p.src; };
+      photo.addEventListener("change", look);
+      const photoField = field(t("staff.rooms.field.photo"), photo);
+      photoField.append(thumb, since(`${s.id}/photo`, photo));
+      inputs[`${s.id}/text`] = text;
+      inputs[`${s.id}/photo`] = photo;
+      return { look, el: el("fieldset", { className: "staff-step" }, legend, el("div", { className: "field" }, text, since(`${s.id}/text`, text)), photoField) };
+    });
+    inputs.note = el("textarea", { rows: 3 });
+    const noteField = field(roomLabel("note"), inputs.note);
+    noteField.append(since("note", inputs.note));
+    const save = el("button", { type: "submit", className: "btn", textContent: t("staff.rooms.save") });
+    const cancel = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.cancel") });
+    const form = el("form", { className: "staff-room", noValidate: true }, box, ...fields, ...steps.map((x) => x.el), noteField,
+      el("div", { className: "staff-actions" }, save, cancel));
+
+    const typed = () => ({ ...Object.fromEntries([...ROOM_WORDS, "note"].map((k) => [k, inputs[k].value])),
+      steps: Object.fromEntries(room.steps.map((s) => [s.id, { text: inputs[`${s.id}/text`].value, photo: inputs[`${s.id}/photo`].value || null }])) });
+    let started = null, seen = null;
+    const fill = (r) => {
+      started = valuesOf(r);
+      seen = { version: list.version, values: started };
+      for (const [k, input] of Object.entries(inputs)) {
+        const [sid, part] = k.split("/");
+        input.value = part ? (started.steps[sid][part] || "") : started[k];
+        showSince(k, null);
+      }
+      steps.forEach((x) => x.look());
+      box.hidden = true;
+    };
+    /* Only what differs from the room as last known saved: what the form opened with, or, after a stale tab, the values
+       saved since, so a second Save Room puts every field the form shows over theirs. */
+    const changed = () => {
+      const now = typed();
+      const base = seen.values;
+      const out = {};
+      for (const k of [...ROOM_WORDS, "note"]) if (now[k] !== base[k]) out[k] = now[k];
+      for (const s of room.steps) {
+        const a = now.steps[s.id], b = base.steps[s.id];
+        const step = { ...(a.text !== b.text ? { text: a.text } : {}), ...(a.photo !== b.photo ? { photo: a.photo } : {}) };
+        if (Object.keys(step).length) (out.steps ||= {})[s.id] = step;
+      }
+      return out;
+    };
+    const say2 = (words) => { box.replaceChildren(noteBox(words)); box.hidden = false; say(words); };
+    const sameAs = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    async function send(again = true) {
+      if (isBusy(save)) return;
+      const fieldsNow = changed();
+      if (!Object.keys(fieldsNow).length) return say2(t("staff.rooms.unchanged"));
+      const undo = busy(save, t("staff.pages.saving"));
+      const r = await call("/api/staff/pages", { method: "POST", body: { action: "room", room: room.id, fields: fieldsNow, expected: seen.version } }).catch(offline);
+      undo();
+      if (!section.isConnected) return;
+      if (r.status === 409 && r.body.room && r.body.current) {
+        const theirs = valuesOf(r.body.room);
+        const known = sameAs(theirs, seen.values);
+        seen = { version: r.body.current, values: theirs };
+        let differs = false;
+        for (const k of [...ROOM_WORDS, "note"]) { const d = theirs[k] !== started[k]; differs ||= d; showSince(k, d ? theirs[k] : null); }
+        for (const s of room.steps) for (const part of ["text", "photo"]) {
+          const d = theirs.steps[s.id][part] !== started.steps[s.id][part];
+          differs ||= d;
+          showSince(`${s.id}/${part}`, d ? (part === "photo" ? photoName(theirs.steps[s.id].photo) : theirs.steps[s.id].text) : null);
+        }
+        if ((known || !differs) && again) return send(false);
+        say2(known || !differs ? t("staff.pages.error.failed") : t("staff.rooms.conflict"));
+        await load();
+        return;
+      }
+      if (r.status === 422 || r.status === 400) {
+        const k = ROOM_ERRORS[r.body.error];
+        return say2(k ? t("staff.rooms.error.words", { field: roomLabel(k), max: list.limits[k === "steps" ? "text" : k] })
+          : r.body.error === "room.photo" ? t("staff.rooms.error.photo") : t("staff.pages.error.failed"));
+      }
+      if (r.status !== 200) { const [, words] = r.status === 0 ? [null, t("staff.pages.error.failed")] : refused(r); return say2(words); }
+      say(r.body.publishError ? t("staff.edit.updateFailed") : t("staff.rooms.done"));
+      published();
+      pagesChanged();
+      await load();
+      const fresh = list.rooms.find((x) => x.id === room.id);
+      if (fresh) fill(fresh);
+    }
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await send();
+      // The list is drawn again after a save or a stale tab, which moves the form: focus goes back to its button.
+      if (form.isConnected && (!document.activeElement || document.activeElement === document.body)) save.focus();
+    });
+    cancel.addEventListener("click", () => { const id = open.id; open = null; draw(); section.querySelector(`[data-room="${id}"]`)?.focus(); });
+    fill(room);
+    return { id: room.id, form, first: inputs.name, seen: () => seen, syncTo: (r) => { if (sameAs(valuesOf(r), seen.values)) seen = { ...seen, version: list.version }; } };
+  }
+
+  function draw() {
+    const items = list.rooms.map((r) => {
+      const change = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.rooms.open") });
+      change.setAttribute("aria-label", t("staff.rooms.openName", { name: r.name }));
+      change.dataset.room = r.id;
+      change.setAttribute("aria-expanded", String(open?.id === r.id));
+      change.addEventListener("click", () => {
+        if (open?.id === r.id) return open.first.focus();
+        open = roomForm(r);
+        draw();
+        open.first.focus();
+      });
+      return el("li", { className: "staff-form" }, el("h3", { textContent: r.name }), el("p", { textContent: [r.building, r.where].filter(Boolean).join(" · ") }),
+        el("div", { className: "staff-actions" }, change), open?.id === r.id && open.form);
+    });
+    body.replaceChildren(el("ul", { className: "staff-forms" }, ...items));
+  }
+  async function load() {
+    const r = await call("/api/staff/rooms").catch(offline);
+    if (!section.isConnected) return;
+    if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
+    list = r.body;
+    const mine = open && list.rooms.find((x) => x.id === open.id);
+    if (mine) open.syncTo(mine);
+    draw();
+  }
   load();
   return section;
 }
@@ -823,7 +1009,7 @@ function showTools(me) {
   const forms = me.canRead || me.canSwitch ? formsSection(me) : me.readAgain && readAgainSection();
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
   const pages = me.canEdit || me.canPublish;
-  app.replaceChildren(...[onward, whoBar(me), forms, pages && editSection(me), pages && pagesSection(me), pages && versionsSection(me)].filter(Boolean));
+  app.replaceChildren(...[onward, whoBar(me), forms, pages && editSection(me), pages && pagesSection(me), me.canPublish && roomsSection(), pages && versionsSection(me)].filter(Boolean));
   if (!forms && !me.canEdit && !me.canPublish) app.prepend(el("p", { className: "staff-note", textContent: t("staff.nothing") }));
   app.hidden = false;
   say(me.name ? t("staff.signedInAs", { name: me.name }) : t("staff.signedIn"));

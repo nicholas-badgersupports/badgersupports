@@ -17,6 +17,10 @@
  *   The document may also hold the site's settings: settings: { name?, description?, accessibilityEmail? }, only the
  *   keys a publisher saved; a key left out keeps the build's value (content/site.json). laySettings lays them.
  *
+ *   And rooms' words and photos: rooms: { "<room id>": { name?, short?, building?, where?, address?, note?,
+ *   steps?: { "<step id>": { text?, photo?: "<library id>" | null } } } }, only what a publisher saved; layRooms lays
+ *   them over the room records (content/places/) before anything draws a room.
+ *
  * Rules the operations below hold:
  *   - A page made here is a draft until someone with site.publish puts it on. A build page is live unless retired.
  *   - A page id is never given twice: a retired page keeps its record, and a new id skips every id ever listed.
@@ -32,12 +36,15 @@
  *   - A section a link on the site lands on (its anchor, or an id inside it) is not retired while that link stands.
  *   - A page's title is stored without the site's name; the name is added when the page is drawn (layout.mjs).
  *   - Only the site's name, search description and accessibility email change here; any other setting is refused.
+ *   - Of a room, only its words (name, short, building, where, address, note, each step's text) and each step's photo
+ *     change here; adding or taking down a room, its id, aliases, links, published flag and its steps' number and order
+ *     stay a change in the files. A step's photo is a library photo or none, drawn at its own shape.
  *
  * Pure: no files, no database, no clock.
  */
 
 import { BLOCKS } from "../render/registry.mjs";
-import { editProblem } from "./edits.mjs";
+import { editProblem, valueProblem } from "./edits.mjs";
 
 export const STRUCTURE_SCHEMA = "bss.structure/1";
 export const emptyStructure = () => ({ schema: STRUCTURE_SCHEMA, pages: {}, menu: null, removed: [], entries: {} });
@@ -130,6 +137,80 @@ export function laySettings(site, settings) {
   }
   return site;
 }
+
+/* ---------- rooms: their words and photos ---------- */
+
+/* The longest each word of a room may be. */
+export const ROOM_LIMITS = { name: 80, short: 60, building: 80, where: 120, address: 200, note: 600 };
+export const STEP_TEXT_MAX = 600;
+const ROOM_FIELDS = new Set([...Object.keys(ROOM_LIMITS), "steps"]);
+const STEP_FIELDS = new Set(["text", "photo"]);
+
+/* A word of a room, checked as a saved page word is (not empty, no markup, not a link), and at most `max` characters. */
+function roomWord(value, code, max) {
+  if (typeof value !== "string" || editProblem("page:pg-place-room:b-directions/text", value, "")) fail(code);
+  const v = clean(value);
+  if (v.length > max) fail(code);
+  return v;
+}
+/* A step's photo: an id in the photo library (the edit button's photo check), or null for none. */
+function stepPhoto(value, media) {
+  if (value === null) return null;
+  if (valueProblem("media", value, { media })) fail("room.photo");
+  return value.trim();
+}
+
+/* A room's change, merged over what was saved for it. Refuses a room the files do not hold (room.unknown), a step it
+   does not have (room.step), and any field but its words and its steps' words and photos (room.field). */
+function roomChange(doc, change, ctx) {
+  const id = change.room;
+  const place = typeof id === "string" && Object.hasOwn(ctx.places || {}, id) ? ctx.places[id] : null;
+  if (!place) fail("room.unknown");
+  const f = change.fields;
+  const isObject = (x) => !!x && typeof x === "object" && !Array.isArray(x) && Object.keys(x).length > 0;
+  if (!isObject(f) || Object.keys(f).some((k) => !ROOM_FIELDS.has(k))) fail("room.field");
+  if (f.steps !== undefined) {
+    if (!isObject(f.steps)) fail("room.field");
+    for (const [sid, step] of Object.entries(f.steps)) {
+      if (!isObject(step) || Object.keys(step).some((k) => !STEP_FIELDS.has(k))) fail("room.field");
+      if (!(place.steps || []).some((x) => x.id === sid)) fail("room.step");
+    }
+  }
+  const out = structuredClone(doc.rooms?.[id] || {});
+  for (const k of Object.keys(f)) if (k !== "steps") out[k] = roomWord(f[k], `room.${k}`, ROOM_LIMITS[k]);
+  for (const [sid, step] of Object.entries(f.steps || {})) {
+    const o = { ...(out.steps?.[sid] || {}) };
+    if (step.text !== undefined) o.text = roomWord(step.text, "room.text", STEP_TEXT_MAX);
+    if (step.photo !== undefined) o.photo = stepPhoto(step.photo, ctx.media);
+    out.steps = { ...(out.steps || {}), [sid]: o };
+  }
+  doc.rooms = { ...(doc.rooms || {}), [id]: out };
+  return { doc, room: id };
+}
+
+/* The room records with the saved words and photos laid over them: a new object, the records given untouched. Each
+   value is checked again; one that no longer passes keeps the file's. With nothing saved, `places` itself. */
+export function layRooms(places, rooms, { media = null } = {}) {
+  if (!rooms || !Object.keys(rooms).length) return places;
+  const out = { ...places };
+  const keep = (fn, fallback) => { try { return fn(); } catch { return fallback; } };
+  for (const [id, r] of Object.entries(rooms)) {
+    if (!places?.[id] || !r || typeof r !== "object") continue;
+    const p = structuredClone(places[id]);
+    for (const k of Object.keys(ROOM_LIMITS)) if (r[k] !== undefined) p[k] = keep(() => roomWord(r[k], "room", ROOM_LIMITS[k]), p[k]);
+    for (const s of p.steps || []) {
+      const o = r.steps?.[s.id];
+      if (o?.text !== undefined) s.text = keep(() => roomWord(o.text, "room", STEP_TEXT_MAX), s.text);
+      if (o?.photo !== undefined) s.photo = keep(() => stepPhoto(o.photo, media), s.photo);
+    }
+    out[id] = p;
+  }
+  return out;
+}
+
+/* What the staff page shows of a room: its words and its steps' words and photos. */
+export const roomFields = (p) => ({ id: p.id, published: !!p.published, name: p.name || "", short: p.short || "", building: p.building || "",
+  where: p.where || "", address: p.address || "", note: p.note || "", steps: (p.steps || []).map((s) => ({ id: s.id, text: s.text || "", photo: typeof s.photo === "string" ? s.photo : null })) });
 
 /* A title without the site's name: one trailing " — <name>" taken off, or, on the home page (`first`), one leading
    "<name> — ", for each name in `names` (the build's and the current one). A title stored before titles were kept
@@ -401,7 +482,8 @@ export function menuOutline(nav) {
 
 /* Apply one change. `ctx` = { pages: every page as composed now, in any state, with its current address; authored:
    the ids of the build's own page files; menu: the menu as composed now (menuOutline); offMenu: the entries that can
-   be put back (layStructure); site: { name, description, built: the build's name };
+   be put back (layStructure); site: { name, description, built: the build's name }; places: the build's room records;
+   media: the photo library's ids;
    redirected(path): whether a redirect line takes it; links: siteLinks() }. Returns { doc, page?, section? }: a new
    document, the old one untouched.
    Throws a Problem (code, status) when the change is not allowed; who may ask for it is the router's to check. */
@@ -414,6 +496,7 @@ export function applyChange(current, change, ctx) {
 
   if (SECTION_ACTIONS.has(change.action)) return sectionChange(doc, change, ctx, { find, authored });
   if (change.action === "settings") return settingsChange(doc, change);
+  if (change.action === "room") return roomChange(doc, change, ctx);
 
   switch (change.action) {
     case "add":

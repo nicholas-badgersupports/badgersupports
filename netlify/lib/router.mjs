@@ -9,8 +9,8 @@
  *             site.publish for Refresh now, site.publish to download the edits file. Pages (structure.mjs): site.edit
  *             to add or copy a draft page, preview, and change a page's title, search description or a draft's
  *             address; site.publish to put a page on, retire a live page, move a live page, change the menu,
- *             change the site's name, search description and accessibility email, and bring back an earlier
- *             version. Which roles hold which is a super admin's setting in Connect
+ *             change the site's name, search description and accessibility email, change a room's words and
+ *             step photos, and bring back an earlier version. Which roles hold which is a super admin's setting in Connect
  *             (Website Forms), not this site's.
  *
  * Sign-in itself (/api/auth/*) is public: it is how a session starts. Its failures are pages,
@@ -30,7 +30,7 @@ import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount }
 import { eventSections, calendarFile, forgetEvents } from "./live-events.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
-import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken } from "./structure.mjs";
+import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList } from "./structure.mjs";
 import { revisionEdits } from "./edits.mjs";
 import { SECTION_ACTIONS, laySettings } from "../../src/shared/structure.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
@@ -356,7 +356,7 @@ async function pagesRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await pagesList()) });
 }
 
-export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu", "settings", ...SECTION_ACTIONS]);
+export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu", "settings", "room", ...SECTION_ACTIONS]);
 
 /* One change to the pages, the menu or the site's settings. JSON from this site only; `expected` is the version the
    tab started from. Every change publishes and clears every page and feed (publishAll): the menu, the titles and the
@@ -368,6 +368,12 @@ async function pagesChangeRoute(req, _m, _c, who) {
   if (!PAGE_ACTIONS.has(body.action)) throw new HttpError(400, "pages.action");
   const r = await changeStructure(who, body, (scope) => need(who, scope));
   return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(await publishAll(who)) });
+}
+
+/* Every room's words and step photos, for the Rooms part: a publisher's, as changing them is. */
+async function roomsRoute(req, _m, _c, who) {
+  need(who, "site.publish");
+  return json(200, { ok: true, ...(await roomsList()) });
 }
 
 /* One page's sections, in order, and its retired ones. */
@@ -472,6 +478,7 @@ export const ROUTES = [
   { name: "pagesChange", method: "POST", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesChangeRoute },
   { name: "preview", method: "GET", pattern: /^\/api\/staff\/preview\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: previewRoute },
   { name: "sections", method: "GET", pattern: /^\/api\/staff\/sections\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: sectionsRoute },
+  { name: "rooms", method: "GET", pattern: /^\/api\/staff\/rooms$/, tier: "director", run: roomsRoute },
   { name: "versions", method: "GET", pattern: /^\/api\/staff\/versions$/, tier: "director", run: versionsRoute },
   { name: "restore", method: "POST", pattern: /^\/api\/staff\/versions\/([1-9][0-9]{0,8})\/restore$/, tier: "director", run: restoreRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },

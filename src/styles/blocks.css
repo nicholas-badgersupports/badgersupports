@@ -1171,6 +1171,13 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-settings .staff-note { margin-bottom: var(--s4); }
 /* The value someone else saved since the page was opened, under the field that kept what was typed. */
 .staff-since { margin: 0; font-size: var(--fs-small); line-height: 1.5; font-weight: 700; color: var(--ink); }
+/* An open room: its words, then each step as a group (its words and its photo, the photo shown small and whole). */
+.staff-room { margin-top: var(--s4); display: grid; gap: var(--s3); }
+.staff-room .field, .staff-step .field { margin-bottom: 0; }
+.staff-room .field + .field { margin-top: 0; }
+.staff-step { margin: 0; padding: var(--s3) var(--s4) var(--s4); border: var(--hairline); border-radius: var(--r-card); display: grid; gap: var(--s3); min-width: 0; }
+.staff-step legend { padding: 0 var(--s1); font-weight: 700; font-size: 1.0625rem; }
+.staff-thumb { width: 6rem; height: 4.5rem; object-fit: contain; background: var(--cream-soft); border: var(--hairline); border-radius: var(--r-input); }
 .staff-preview { margin-top: var(--s5); display: grid; gap: var(--s3); }
 .staff-preview[hidden] { display: none; }
 .staff-preview-frame { overflow: hidden; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }

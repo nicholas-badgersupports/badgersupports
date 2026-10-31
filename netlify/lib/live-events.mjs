@@ -23,6 +23,7 @@ import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { liveBlocks, renderBlock } from "../../src/render/registry.mjs";
 import { nextDated } from "../../src/render/events.mjs";
 import { eventIcs } from "../../src/render/ics.mjs";
+import { withRoomPlaces } from "../../src/render/places.mjs";
 import { siteNow } from "./pages.mjs";
 
 const FRESH_MS = 60_000;
@@ -59,8 +60,8 @@ export async function eventsNow(ev, now = Date.now()) {
   return held.promise;
 }
 
-/* The words as published now (pages.mjs): a saved word reaches the event blocks as it reaches the page. If the
-   revision cannot be read, the build's words. */
+/* The words as published now (pages.mjs): a saved word, and a room's saved words and photos, reach the event blocks and
+   calendar files as they reach the page. If the revision cannot be read, the build's. */
 async function published(c) {
   try { return await siteNow(); } catch { return null; }
 }
@@ -69,7 +70,7 @@ function context(c, page, events, today, now) {
   const ev = c.events;
   return makeContext({
     site: now?.site || c.site, media: c.media, builtPaths: c.builtPaths, programs: new Map([...ev.programs, ...page.sections]),
-    routes: c.routes, data: { events, places: ev.places }, text: now?.text || c.text, today, prototype: c.prototype, assets: c.assets,
+    routes: c.routes, data: { events: now ? withRoomPlaces(events, now.places, now.roomIds) : events, places: now?.places || ev.places }, text: now?.text || c.text, today, prototype: c.prototype, assets: c.assets,
     liveEvents: ev.source === "connect", path: page.path || null,
   });
 }
@@ -98,6 +99,7 @@ export async function calendarFile(eventId, { today = chicagoDate(), now = Date.
   const { events, stale } = await eventsNow(c.events, now);
   const r = nextDated(events, today, Infinity).find((x) => x.event === eventId);
   if (!r) return null;
-  const place = c.events.places[r.placeId] || (r.place ? { name: r.place.name } : null);
+  const places = (await published(c))?.places || c.events.places;
+  const place = places[r.placeId] || (r.place ? { name: r.place.name } : null);
   return { stale, text: eventIcs(r, { place, origin: c.site.origin, stamp: `${today.replace(/-/g, "")}T000000Z` }) };
 }

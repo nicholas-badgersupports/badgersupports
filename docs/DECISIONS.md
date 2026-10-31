@@ -479,3 +479,17 @@ that a section change on a live page publishes at once. How it is built: `ARCHIT
 | A retired section keeps its record and comes back with Put back where it was | his "archive, never delete" rule; the page menu's "taken off, only back by Restore" gap is not repeated | `sectionBack` and `withRetired()` |
 | The 404 page and the staff page keep their sections; the home page's may change | the home page is the page most edited; the other two are the site's own workings | `SECTION_FIXED` |
 | Restoring a version keeps a section made since as retired | an id is never given twice, so its history never attaches to another section | `restoredDoc()` in `netlify/lib/structure.mjs` |
+
+## 31 October 2026 · stale words after a save (queue item 8; routine calls made in the session)
+
+His item of 31 Oct: the edit button could put old words back into the cache. Two causes, both fixed. Each running copy
+of the page function held the published revision for a minute, so after a save cleared a page, a copy holding the old
+revision could draw the old words into the CDN for up to 30 minutes. And a save of a word on one page cleared that
+page but not its event answer (`/api/events/<page>`), which the page's script swaps in, words and all, and the CDN
+kept for up to 15 minutes. How it is built: `ARCHITECTURE.md`, "Publishing a save", "Every cache".
+
+| Call | Why | To reverse |
+|---|---|---|
+| The revision is read from the store at every draw; no running copy holds it | a held revision outlives the clearing and is drawn into a page the CDN keeps 30 minutes (Admin log ADM-448); the read happens only on a CDN miss | put a hold back in `currentRevision()` in `netlify/lib/published.mjs`, and accept that lag |
+| A page's event answer carries `events:<page>` beside `events`; a save of a word on that page clears `page:<page>` and `events:<page>` together | the answer carries the page's saved words; clearing every feed for one page's word would ask Connect again for every page | drop the tag in `eventsPage()` and the second entry in `tagsFor()`, `netlify/lib/router.mjs` |
+| Every page-word save clears `events:<page>`, whether or not the page has event blocks | clearing a tag nothing carries does nothing; one rule needs no list of which pages have events | narrow `tagsFor()` to the pages in `serverContent().events.pages` |

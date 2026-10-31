@@ -201,7 +201,7 @@ const authStatus = async (req) => json(200, { ok: true, signedIn: !!(await sessi
 /* The revision the pages are drawn with now, for the editor: its number and time, or why it cannot be read. */
 async function publishedNow() {
   try {
-    const r = await currentRevision({ fresh: true });
+    const r = await currentRevision();
     return { published: r ? { n: r.n, at: r.at } : null };
   } catch (e) {
     return { published: null, publishError: e.code || "publish.unavailable" };
@@ -276,11 +276,11 @@ async function editHistoryRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await editHistory(new URL(req.url).searchParams.get("target"))) });
 }
 
-/* The cache tags a saved word touches: its own page, or every page for the menus, footer and shared lines,
-   which the event feeds also print. */
+/* The cache tags a saved word touches: its own page and that page's event answer, whose blocks the page's script
+   swaps in words and all (eventsPage); or every page and every feed for the menus, footer and shared lines. */
 const tagsFor = (target) => {
   const m = String(target).match(/^page:(pg-[a-z0-9-]+):/);
-  return m ? [`page:${m[1]}`] : ["page", "events"];
+  return m ? [`page:${m[1]}`, `events:${m[1]}`] : ["page", "events"];
 };
 
 /* A permitted save publishes (owner, 24 Oct 2026): the saved words become the next revision the pages are
@@ -416,11 +416,13 @@ function noQuery(req) {
   if (new URL(req.url).search) throw new HttpError(400, "query.refused");
 }
 
+/* A page's event answer is also tagged for that page alone, so a save of a word on it clears the answer with the
+   page (tagsFor). */
 async function eventsPage(req, [pageId]) {
   noQuery(req);
   const r = await eventSections(pageId);
   if (!r) throw new HttpError(404, "not.found");
-  return json(200, { ok: true, today: r.today, blocks: r.blocks }, r.stale ? STALE_CACHE : LIVE_CACHE);
+  return json(200, { ok: true, today: r.today, blocks: r.blocks }, { ...(r.stale ? STALE_CACHE : LIVE_CACHE), "netlify-cache-tag": `events,events:${pageId}` });
 }
 
 async function eventCalendar(req, [eventId]) {

@@ -19,7 +19,6 @@ import { revisionEdits } from "./edits.mjs";
 import { structureNow } from "./structure.mjs";
 
 export const REVISION_SCHEMA = "bss.revision/1";
-const HOLD_MS = 60_000;
 
 /* A store keeps JSON documents by key. */
 export function memoryStore() {
@@ -49,26 +48,22 @@ export function blobsStore() {
 }
 
 let store = null;
-let held = null; // { until, revision }
 
 /* Tests may install their own. The local rig and the tests (LOCAL_DB) keep it in memory; anywhere else it is
    Netlify Blobs, never memory, which each instance would hold apart. */
-export function useStore(s) { store = s; held = null; }
+export function useStore(s) { store = s; }
 function current() {
   if (!store) store = process.env.LOCAL_DB ? memoryStore() : blobsStore();
   return store;
 }
 export const storeKind = () => current().kind;
 
-/* The revision now, held a minute in this instance. null when nothing was ever published. */
-export async function currentRevision({ now = Date.now(), fresh = false } = {}) {
-  if (!fresh && held && held.until > now) return held.revision;
-  const revision = await current().get("current");
-  held = { until: now + HOLD_MS, revision };
-  return revision;
+/* The revision now, read from the store on every call and never held in this instance. A save is published by
+   whichever running copy took it; a copy that held an older revision would draw it into a page the CDN has just
+   cleared and then keeps for up to 30 minutes. null when nothing was ever published. */
+export async function currentRevision() {
+  return current().get("current");
 }
-
-export const forgetRevision = () => { held = null; };
 
 export const VERSIONS_LIMIT = 50;
 
@@ -79,7 +74,7 @@ export async function readRevision(n) {
 
 /* The newest VERSIONS_LIMIT revisions, newest first: { n, at, by }. Older ones are kept but not listed. */
 export async function listRevisions() {
-  const top = await currentRevision({ fresh: true });
+  const top = await currentRevision();
   const out = [];
   for (let n = top?.n || 0; n >= 1 && out.length < VERSIONS_LIMIT; n--) {
     const r = await readRevision(n);
@@ -101,7 +96,7 @@ export async function publishRevision(who, { now = new Date() } = {}) {
   try { was = await s.get("current"); } catch (e) { throw Object.assign(new Error(e.message), { code: "publish.unavailable" }); }
   // A save that read the words before a later one has nothing newer to say, and the same words are not
   // published twice.
-  if (was && was.stamp >= stamp && (was.sstamp || 0) >= sstamp) { held = { until: now.getTime() + HOLD_MS, revision: was }; return { n: was.n, at: was.at, kept: true }; }
+  if (was && was.stamp >= stamp && (was.sstamp || 0) >= sstamp) return { n: was.n, at: was.at, kept: true };
   const revision = { schema: REVISION_SCHEMA, n: (was?.n || 0) + 1, at: now.toISOString(), by: who?.name || "", stamp, edits, ...(sstamp ? { sstamp, structure: doc } : {}) };
   try {
     await s.set(`revisions/${revision.n}`, revision);
@@ -109,7 +104,6 @@ export async function publishRevision(who, { now = new Date() } = {}) {
   } catch (e) {
     throw Object.assign(new Error(e.message), { code: "publish.unavailable" });
   }
-  held = { until: now.getTime() + HOLD_MS, revision };
   return { n: revision.n, at: revision.at };
 }
 

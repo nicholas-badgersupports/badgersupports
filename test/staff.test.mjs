@@ -774,7 +774,7 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   const me = await (await handle(get("/api/staff/me", { cookie }), ip())).json();
   assert.equal(me.waiting, 0);
   assert.equal(me.published.n, 1);
-  assert.deepEqual((await currentRevision({ fresh: true })).edits, { [HERO]: "badger supports, together" });
+  assert.deepEqual((await currentRevision()).edits, { [HERO]: "badger supports, together" });
 
   // Someone who opened the box before that save cannot overwrite it without seeing it.
   const stale = await handle(staffPost("/api/staff/edit/save", { target: HERO, expected: hero.current, value: "badger supports!" }, cookie), ip());
@@ -798,7 +798,7 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   assert.equal(back.entry.waiting, false);
   assert.equal(back.waiting, 0);
   assert.equal(back.published.n, 2, "putting it back publishes too");
-  assert.deepEqual((await currentRevision({ fresh: true })).edits, {});
+  assert.deepEqual((await currentRevision()).edits, {});
   const rows = await many("SELECT target, value, previous, edited_by FROM content_edits");
   assert.deepEqual(rows.map((r) => ({ ...r })), [{ target: HERO, value: hero.original, previous: "badger supports, together", edited_by: "u-test-0001" }]);
   const file = await (await handle(get("/api/staff/edits", { cookie }), ip())).json();
@@ -810,7 +810,7 @@ test("the edit button saves words, will not overwrite someone else's unseen, and
   const same = await (await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to the page", value: "Skip to the page" }, cookie), ip())).json();
   assert.equal(same.changed, false);
   assert.equal(same.published, null);
-  assert.equal((await currentRevision({ fresh: true })).n, 3);
+  assert.equal((await currentRevision()).n, 3);
 });
 
 test("every saved version is kept, newest first, and Restore saves an earlier one again as the newest", async () => {
@@ -897,7 +897,7 @@ test("values that are not words: each kind is checked on the server, saved with 
     assert.equal(body.entry.current, good);
     assert.ok(body.published?.n >= 1, `${target} is published`);
   }
-  const revision = await currentRevision({ fresh: true });
+  const revision = await currentRevision();
   assert.deepEqual(Object.keys(revision.edits).sort(), cases.map((c) => c[0]).sort());
   // A line filled in where it shows can be changed too, keeping each placeholder.
   assert.equal(shipped["text:strip.count"]?.shown, "{{n}} of {{total}}");
@@ -972,6 +972,27 @@ test("Refresh now: editors and publishers only, from this site, JSON, bounded, a
     assert.equal((await refresh(editor.cookie)).status, 200, "the sixth in the hour");
     await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'");
     assert.equal((await refresh(editor.cookie)).status, 429, "and no seventh");
+  } finally { usePurger(null); }
+});
+
+test("item 8: a save clears its page and the event answer that page's script reads back; a shared word clears them all", async () => {
+  await freshServer();
+  const cleared = [];
+  usePurger(async (tags) => { cleared.push(tags); });
+  try {
+    const fake = fakeConnect({ scopes: ["site.edit"] });
+    useConnect(fake.cfg);
+    const { cookie } = await signIn(fake);
+    const WEEK = "page:pg-home:b-home-week/title";
+    const source = await (await handle(get("/api/staff/edit/source?page=pg-home", { cookie }), ip())).json();
+    const week = source.entries.find((e) => e.target === WEEK);
+    assert.ok(week, "a word in the home page's event block can be edited");
+    const saved = await (await handle(staffPost("/api/staff/edit/save", { target: WEEK, expected: week.current, value: "This Week, Saved" }, cookie), ip())).json();
+    assert.equal(saved.published?.n, 1);
+    assert.deepEqual(cleared, [["page:pg-home", "events:pg-home"]], "the page, and its event blocks the script swaps in");
+    const skip = await (await handle(staffPost("/api/staff/edit/save", { target: "text:page.skip", expected: "Skip to Content", value: "Skip to the page" }, cookie), ip())).json();
+    assert.equal(skip.published?.n, 2);
+    assert.deepEqual(cleared[1], ["page", "events"], "a line every page shares clears every page and every feed");
   } finally { usePurger(null); }
 });
 

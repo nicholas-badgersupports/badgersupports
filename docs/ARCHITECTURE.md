@@ -403,7 +403,7 @@ build's own file, held one minute, so a fault is never cached for long.
 
 | Layer | Holds | Bound |
 |---|---|---|
-| The page function's copy of the revision | one JSON document | 60 s |
+| The page function's copy of the revision | none: read from the store at every draw | 0 |
 | Netlify's CDN, page HTML | `Netlify-CDN-Cache-Control: public, durable, s-maxage=1500, stale-while-revalidate=300` | 30 min |
 | The browser, page HTML | `Cache-Control: public, max-age=0, must-revalidate` | 0 |
 | `/api/events/<page>` | five minutes, ten more while it refetches; the browser one | 16 min |
@@ -411,7 +411,11 @@ build's own file, held one minute, so a fault is never cached for long.
 | Private and sign-in answers (`/api/staff/*`, `/api/auth/*`, forms) | `no-store` | never cached |
 
 The cache key ignores every query string but `topic` and `return` (`Netlify-Vary: query=topic|return`) and no
-cookie or header, so a visitor cannot ask past the cache. Each page is tagged `page` and `page:<id>`.
+cookie or header, so a visitor cannot ask past the cache. Each page is tagged `page` and `page:<id>`, and each page's
+event answer `events` and `events:<id>`. A save of a word on one page clears `page:<id>` and `events:<id>` together,
+because the page's script swaps its event blocks in from that answer, words and all; a shared word clears `page` and
+`events`. No running copy of the function holds the revision between draws, so whichever copy draws a cleared page
+draws it from the revision the store holds then.
 
 **Refresh now** (`POST /api/staff/refresh`): for a signed-in person holding `site.edit` or `site.publish`, checked on
 the server; JSON only and same-origin, so a page elsewhere cannot send it; at most six an hour per person and one a
@@ -430,8 +434,9 @@ again when laid over a page. What stays out, and why: `research/EDITABLE-INVENTO
 
 **Cost, modelled.** No database read on a page view. A page renders on a CDN miss: at most one per page per 25
 minutes from the durable cache, about 58 × 58 = 3,400 a day, under 5 credits a month at 50 ms and 1 GB. Blobs is
-listed in every plan; whether its reads draw credits is **not verified** (Netlify's docs could not be read from the
-cloud session). After a deploy, tagged pages may stay up to 30 minutes old, which is inside the bound.
+listed in every plan, and Netlify's page on how credits work (read 31 Oct 2026) names no meter for it: the six are
+production deploys, compute, AI inference, bandwidth, web requests and Forms. Reading the revision at every draw adds
+that read's wait to the function's run time, which compute bills, on a CDN miss only. After a deploy, tagged pages may stay up to 30 minutes old, which is inside the bound.
 
 **What it needs from the owner.** Two packages, exact-pinned (`@netlify/blobs`, `@netlify/functions`), the page
 function's lines in `netlify.toml`, and one deploy. Until then a deployed save behaves as today: kept, not
@@ -568,7 +573,7 @@ the platform offers it and nothing here uses it; **unknown** = needs the Netlify
 | Staff self-service | used: sign-in through Connect, the staff page, the editor | `netlify/lib/staff.mjs`, `edits.mjs` | database while staff use it |
 | Forms | used: the custom intake, authoritative | `netlify/lib/intake.mjs` | database wake per form page and send |
 | Netlify Forms | available, not used; a pilot is proposed below | — | form submissions 0 credits; the posting function's time |
-| Publishing | built locally: a save is the published revision | "Publishing a save" | Blobs (unknown), function on a CDN miss |
+| Publishing | built locally: a save is the published revision | "Publishing a save" | Blobs (no meter of its own), function on a CDN miss |
 | Approvals | Connect's (decisions, bulk mail) | `COMMUNICATIONS.md` | — |
 | Web Analytics | reported on by the owner (24 Oct); scope and billing **unknown**, needs the UI | `WORK.md` item 22 | unknown |
 | Rate limits, firewall | available, not enabled; proposed rule and checklist under "Crawlers and abuse"; plan entitlement **unknown** | — | unknown |

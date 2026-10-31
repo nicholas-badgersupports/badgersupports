@@ -3,7 +3,8 @@
  * reaches visitors with no deploy (owner, 24 Oct 2026; docs/ARCHITECTURE.md, "Publishing a save").
  *
  * Bounded: Netlify's CDN holds a page at most 30 minutes (25, then 5 while it draws it again), the browser
- * not at all, and the revision is held a minute (published.mjs). The cache key ignores every query string but
+ * not at all. The revision is read from the store at every draw and never held (published.mjs), so a page drawn
+ * after a save's clearing carries the save, whichever running copy draws it. The cache key ignores every query string but
  * the two the pages read, and no cookie or header, so nobody can ask past it. Only a page that shows a form's
  * state reads the database: each such form as it stands (intake.mjs currentForm), so a switch set on the staff
  * page is on the page once the switch clears its tags (formTags). Nothing is held between draws. If those forms

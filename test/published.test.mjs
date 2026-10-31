@@ -10,7 +10,7 @@ import path from "node:path";
 import { build, ROOT } from "../ops/build.mjs";
 import { useContent } from "../netlify/lib/content.mjs";
 import { handlePage, useDist, PAGE_CACHE } from "../netlify/lib/pages.mjs";
-import { useStore, memoryStore, forgetRevision } from "../netlify/lib/published.mjs";
+import { useStore, memoryStore } from "../netlify/lib/published.mjs";
 import { eventSections, forgetEvents } from "../netlify/lib/live-events.mjs";
 import { freshPglite, useAdapter } from "../netlify/lib/db.mjs";
 
@@ -157,7 +157,6 @@ test("an address whose %-escapes do not decode is the 404 page, never the home p
     assert.equal(r.headers.get("location"), "/about/our-team/", p);
   }
   useStore({ kind: "broken", get: async () => { throw new Error("store down"); }, set: async () => {} });
-  forgetRevision();
   const was = console.error;
   console.error = () => {};
   try {
@@ -180,7 +179,6 @@ test("Mendota Lodge's old address goes to the directions list", async () => {
 test("when the revision cannot be read, the build's file answers, held a minute", async () => {
   await given();
   useStore({ kind: "broken", get: async () => { throw new Error("store down"); }, set: async () => {} });
-  forgetRevision();
   const was = console.error;
   console.error = () => {};
   try {
@@ -200,6 +198,30 @@ test("the event feeds print the published words, so a refresh never puts the bui
   assert.match(all, />Come By</);
   assert.doesNotMatch(all, />Drop In</);
   assert.match(await (await get("/")).text(), />Come By</, "and the page itself agrees");
+});
+
+/* Each running copy of the page function draws pages, and a save is published by whichever copy took it. The store
+   is the one thing they share. A copy that drew a page before another copy's save must draw the next one from the
+   store, or it puts the old words back into a cache the save has just cleared. Here this process is the copy that
+   drew, and the other copy's save is the store moving to the next revision. */
+test("item 8: a page drawn after another copy publishes shows the new words, in the page and in its event blocks", async () => {
+  const WEEK = "page:pg-home:b-home-week/title";
+  const store = await given({ n: 1, edits: { [HERO]: "the words before the save", [WEEK]: "The Week Before" } });
+  const before = await get("/");
+  assert.match(await before.text(), /the words before the save/);
+  assert.equal(before.headers.get("x-bss-revision"), "1");
+  assert.match(Object.values((await eventSections("pg-home", { today: TODAY })).blocks).join(""), /The Week Before/);
+
+  await store.set("current", { schema: "bss.revision/1", n: 2, at: "2026-10-20T15:05:00.000Z", by: "Robin", stamp: 2, edits: { [HERO]: "the words after the save", [WEEK]: "The Week After" } });
+
+  const after = await get("/");
+  const home = await after.text();
+  assert.equal(after.headers.get("x-bss-revision"), "2", "drawn from the revision the store holds now");
+  assert.match(home, /the words after the save/);
+  assert.doesNotMatch(home, /the words before the save/);
+  const blocks = Object.values((await eventSections("pg-home", { today: TODAY })).blocks).join("");
+  assert.match(blocks, /The Week After/, "the event blocks the page's script asks for again");
+  assert.doesNotMatch(blocks, /The Week Before/);
 });
 
 test("a published value that is not a word: a section switched off, a link, a photo, a layout", async () => {

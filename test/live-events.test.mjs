@@ -183,6 +183,22 @@ test("the calendar route gives the file the publish wrote, and a friendly page f
   assert.match(page, /<a href="\/">/);
 });
 
+/* The page's script swaps these blocks in, words and all, so a save on that page must be able to clear this answer
+   by a tag of its own (router.mjs, tagsFor). The calendar files carry no saved words and keep the shared tag. */
+test("item 8: a page's event answer carries the page's own tag, from Connect or from the published list", async () => {
+  given(fakeConnect(PUBLISHED));
+  for (const pageId of ["pg-home", "pg-craft-nights"]) {
+    const res = await get(`/api/events/${pageId}`);
+    assert.equal(res.status, 200, pageId);
+    assert.equal(res.headers.get("netlify-cache-tag"), `events,events:${pageId}`, pageId);
+  }
+  assert.equal((await get("/api/calendar/connect-e1.ics", {})).headers.get("netlify-cache-tag"), "events");
+  given(fakeConnect(LATER, { fail: true }));
+  const stale = await quietly(() => get("/api/events/pg-home"));
+  assert.equal(stale.headers.get("netlify-cdn-cache-control"), "public, s-maxage=30", "(the published list)");
+  assert.equal(stale.headers.get("netlify-cache-tag"), "events,events:pg-home");
+});
+
 test("the routes refuse a query string, a page with no events and anything but GET", async () => {
   given(fakeConnect(PUBLISHED));
   const asked = async (p, init) => {

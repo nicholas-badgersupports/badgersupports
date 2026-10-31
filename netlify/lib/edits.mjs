@@ -31,10 +31,13 @@ export const original = (e) => (e.floor !== undefined ? e.floor : e.shown);
    floor is the page as it was made. */
 export function editableFor(doc) {
   const map = { ...buildMap() };
-  for (const r of Object.values(doc?.pages || {})) {
-    if (!r.page) continue;
-    for (const s of pageStrings(r.page)) map[s.target] = { shown: s.value };
-    for (const v of pageValues(r.page)) map[v.target] = { shown: v.value, kind: v.kind, ...(v.options && v.kind !== "icon" ? { options: v.options } : {}) };
+  const add = (page) => {
+    for (const s of pageStrings(page)) map[s.target] = { shown: s.value };
+    for (const v of pageValues(page)) map[v.target] = { shown: v.value, kind: v.kind, ...(v.options && v.kind !== "icon" ? { options: v.options } : {}) };
+  };
+  for (const [id, r] of Object.entries(doc?.pages || {})) {
+    if (r.page) add(r.page);
+    if (r.sections?.made) add({ id, blocks: Object.values(r.sections.made) });
   }
   return map;
 }

@@ -1191,6 +1191,68 @@ await part("staff page: pages, preview and earlier versions", async () => {
   await ctx.close();
 });
 
+/* The sections of one page (item 15): opened from its card, moved by keyboard and saved, copied, retired with a second
+   yes, put back, and a Text section added; the list redrawn from the server after each. */
+await part("staff page: the sections of a page", async () => {
+  await freshServer();
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  const box = page.locator(".staff-sections-box");
+  const names = () => box.evaluate((b) => [...b.querySelectorAll(".staff-sections > li > span")].map((s) => s.firstChild.textContent));
+  const retiredNames = () => box.evaluate((b) => [...b.querySelectorAll("h4 + .staff-menu > li > span")].map((s) => s.textContent));
+  const status = (key) => page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words(key), { timeout: 5000 }).then(() => true, () => false);
+  const fill = (key, name) => words(key).replace("{{name}}", name);
+  await page.locator(".staff-form").filter({ has: page.locator("p", { hasText: /^\/operations\/press\/$/ }) }).getByRole("button", { name: words("staff.sections.open") }).click();
+  await box.locator(".staff-sections > li > span").first().waitFor({ timeout: 5000 });
+  const opened = await names();
+  const heading = await page.evaluate(() => document.activeElement?.id);
+  check(opened.length === 3 && heading === "staff-sections-h", `sections: Sections opens the page's list and moves focus to its heading (${JSON.stringify({ opened, heading })})`);
+
+  await page.getByRole("button", { name: fill("staff.sections.down", opened[1]) }).focus();
+  await page.keyboard.press("Enter");
+  const moved = await names();
+  const kept = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+  await page.getByRole("button", { name: words("staff.sections.save") }).click();
+  const saved = await status("staff.sections.done.order");
+  const reloaded = await names();
+  check(moved[2] === opened[1] && kept === fill("staff.sections.up", opened[1]) && saved && reloaded.join("|") === moved.join("|"),
+    `sections: Down by keyboard moves a section to the bottom, focus stays on its other arrow, and Save the Order keeps it (${JSON.stringify({ moved, kept, saved, reloaded })})`);
+
+  await page.getByRole("button", { name: fill("staff.sections.copyName", opened[1]) }).click();
+  const copied = await status("staff.sections.done.copy");
+  const withCopy = await names();
+  check(copied && withCopy.length === 4 && withCopy.filter((n) => n === opened[1]).length === 2, `sections: Copy adds the section again, after the original (${JSON.stringify(withCopy)})`);
+
+  await page.getByRole("button", { name: fill("staff.sections.retireName", opened[2]) }).click();
+  const asked = await page.evaluate(() => document.activeElement?.textContent);
+  await page.keyboard.press("Enter");
+  const retired = await status("staff.sections.done.retire");
+  const gone = await names();
+  const listed = await retiredNames();
+  check(asked === words("staff.pages.retire.yes") && retired && !gone.includes(opened[2]) && listed.join("|") === opened[2],
+    `sections: Retire asks again, focused on the yes, and the section moves to Retired Sections (${JSON.stringify({ asked, gone, listed })})`);
+  await page.getByRole("button", { name: fill("staff.sections.backName", opened[2]) }).click();
+  const back = await status("staff.sections.done.back");
+  const returned = await names();
+  check(back && returned.includes(opened[2]) && !(await retiredNames()).length, `sections: Put Back returns it to the page (${JSON.stringify(returned)})`);
+
+  await box.getByLabel(words("staff.sections.field.title")).fill("Made-up Heading");
+  await box.getByLabel(words("staff.sections.field.words")).fill("Made-up words.\n\nA second paragraph.");
+  await box.getByRole("button", { name: words("staff.sections.add.button") }).click();
+  const added = await status("staff.sections.done.add");
+  const withNew = await names();
+  check(added && withNew.at(-1) === "Made-up Heading", `sections: Add Section puts a Text section at the end by default (${JSON.stringify(withNew)})`);
+  await box.scrollIntoViewIfNeeded();
+  await box.screenshot({ path: path.join(ROOT, "local", "staff-sections-1280.png") });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await box.screenshot({ path: path.join(ROOT, "local", "staff-sections-390.png") });
+  const wide = await box.evaluate((b) => b.scrollWidth <= b.clientWidth + 1);
+  check(wide, "sections: at 390 px the list fits its box, with no sideways scroll");
+  check(!errors.length, `sections: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+});
+
 /* A card's Suggest an Update names its resource in the address; the form's own page is closed until Connect files these,
    so the check reads the same address on the form's review page. */
 await part("resources: Suggest an Update opens with its resource chosen", async () => {

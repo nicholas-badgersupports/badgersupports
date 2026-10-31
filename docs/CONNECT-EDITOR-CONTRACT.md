@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-462 keys. Keys are permanent. Required text cannot be published empty and must keep each
+518 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -696,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (247)
+### Staff page and edit button (303)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -848,6 +848,62 @@ the site adds the markup.
 | `staff.pages.menu.remove` | Take {{label}} off the menu | Staff page, button that takes an entry off the menu. | `{{label}}` |
 | `staff.pages.menu.takeOff` | Take Off | Staff page, button that takes a menu entry off the menu; its spoken name says which. |  |
 | `staff.pages.menu.save` | Save the Menu | Staff page, button that saves the menu. |  |
+| `staff.sections.open` | Sections | Staff page, button that opens a page's sections. |  |
+| `staff.sections.title` | Sections of {{title}} | Staff page, heading of one page's sections. | `{{title}}` |
+| `staff.sections.up` | Move {{name}} up | Staff page, button name for screen readers. | `{{name}}` |
+| `staff.sections.down` | Move {{name}} down | Staff page, button name for screen readers. | `{{name}}` |
+| `staff.sections.save` | Save the Order | Staff page, button that saves the order of a page's sections. |  |
+| `staff.sections.copy` | Copy | Staff page, button that copies a section; its spoken name says which. |  |
+| `staff.sections.copyName` | Copy {{name}} | Staff page, button name for screen readers. | `{{name}}` |
+| `staff.sections.retire` | Retire | Staff page, button that opens retiring a section; its spoken name says which. |  |
+| `staff.sections.retireName` | Retire {{name}} | Staff page, button name for screen readers. | `{{name}}` |
+| `staff.sections.retire.confirm` | Retire {{name}}? It comes off the page and is kept, so it can be put back. | Staff page, the second yes before retiring a section. | `{{name}}` |
+| `staff.sections.retired` | Retired Sections | Staff page, heading of a page's retired sections. |  |
+| `staff.sections.back` | Put Back | Staff page, button that puts a retired section back; its spoken name says which. |  |
+| `staff.sections.backName` | Put {{name}} back | Staff page, button name for screen readers. | `{{name}}` |
+| `staff.sections.add.title` | Add a Section | Staff page, heading of the form that adds a section. |  |
+| `staff.sections.field.title` | Heading, if it has one | Staff page, label of a new section's heading. |  |
+| `staff.sections.field.words` | Words, with a blank line between paragraphs | Staff page, label of a new section's words. |  |
+| `staff.sections.field.after` | Put it after | Staff page, label of where a new section goes. |  |
+| `staff.sections.add.button` | Add Section | Staff page, button that adds a section. |  |
+| `staff.sections.done.add` | Section added. | Staff page, said after a section is added. |  |
+| `staff.sections.done.copy` | Section copied. | Staff page, said after a section is copied. |  |
+| `staff.sections.done.order` | Order saved. | Staff page, said after the order of sections saves. |  |
+| `staff.sections.done.retire` | Section retired. | Staff page, said after a section is retired. |  |
+| `staff.sections.done.back` | Section put back. | Staff page, said after a section is put back. |  |
+| `staff.sections.error.head` | The page's opening stays where it is. | Staff page, a section that cannot move, be copied or retired. |  |
+| `staff.sections.error.kind` | This section shows records from Connect or runs its own tools, so it cannot be copied. | Staff page, a section that cannot be copied. |  |
+| `staff.sections.error.linked` | A link on the site lands on this section. Change that link first. | Staff page, a section a link lands on. |  |
+| `staff.sections.error.words` | Write the words with no links and no < or > marks, up to 2,000 characters a paragraph. | Staff page, refused words for a new section. |  |
+| `staff.sections.error.title` | Keep the heading to 120 characters, with no links and no < or > marks. | Staff page, a refused heading for a new section. |  |
+| `staff.sections.error.changed` | The page changed in a way this cannot take. Reload this page and try again. | Staff page, a section change the page can no longer take. |  |
+| `staff.sections.kind.announcement` | Announcement strip | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.hero` | Hero | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.schedule` | Event timetable | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.program` | Program section | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.wall` | Wall of Support | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.involve` | Get involved doors | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.mood` | Mood check-in | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.form` | Form | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.text` | Text | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.directions` | Directions to a room | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.places` | List of rooms | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.questions` | Questions and answers | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.workshops` | Workshop previews | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.embed` | Instagram video | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.events` | Event cards | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.eventhero` | Event hero | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.expect` | What to expect | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.cta` | Closing call to action | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.team` | Team | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.person` | Profile | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.pagehead` | Page opening | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.cards` | Photo cards | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.words` | Word cloud | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.spill` | Badger SPILL | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.staff` | Staff sign-in and tools | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.resources` | Resource list | Staff page, kind of section in a page's list of sections. |  |
+| `staff.sections.kind.directory` | Directory | Staff page, kind of section in a page's list of sections. |  |
 | `staff.versions.title` | Earlier Versions of the Site | Staff page, heading of the published versions. |  |
 | `staff.versions.how` | Every save is a new version. Bringing one back puts its words and pages on the site again as the newest version; nothing is deleted. | Staff page, what bringing a version back does. |  |
 | `staff.versions.none` | Nothing has been published from this page yet. | Staff page, when there are no versions. |  |

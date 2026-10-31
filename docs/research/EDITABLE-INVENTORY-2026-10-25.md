@@ -35,7 +35,8 @@ Each of these keeps the editor's grants (`site.edit`), the conflict check, the h
 | The kind of a workshop's activity (network, bingo, choose, flip) | 4 | each kind has its own fields; changing it is a new block, not an edit |
 | A photo by a new link | — | the build fetches and encodes a linked photo on the laptop (`DESIGN.md`, "Photos"); a page drawn between publishes cannot, and the security policy serves photos from this site only. A library photo can be chosen at once |
 | The site's own settings (`name`, `origin`, `liveOrigin`, `connectOrigin`, `lang`, `description`, `footer.accessibilityEmail`) | 8 | addresses and identity the build and the security headers depend on; changed in the files and published |
-| Adding, removing, reordering or retiring sections | — | structure within a page; `WORK.md` item 15 (P2). Pages themselves are built: add, copy, move, retire, menu order (`ARCHITECTURE.md`, "Pages: drafts, preview, restore") |
+| Adding, copying, reordering, retiring and putting back sections | — | **built 31 Oct** on the staff page (`ARCHITECTURE.md`, "Sections within a page"); a new section is a Text section, and sections drawing Connect's records or carrying a script are not copied. Pages themselves are built too: add, copy, move, retire, menu order ("Pages: drafts, preview, restore") |
+| Putting a menu entry back once it is taken off | — | found 31 Oct: only Restore brings it back; the Menu part cannot add one (`WORK.md` item 15) |
 | Forms: questions, options, the open/closed switch | 9 forms | a form change is a new version that keeps its submissions; Connect owns the definitions and the switch (`WORK.md` item 17, `PUBLIC-SITE-FORMS`) |
 | Rooms (`content/places/`) | 7 | each room is its own record and page; editing them here is a later slice |
 | Events and resources | — | Connect's records; they reach the site from Connect (`ops/connect-feed.mjs`), never from this editor (one owner for each fact) |

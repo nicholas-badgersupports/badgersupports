@@ -149,6 +149,7 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | pages | GET | `/api/staff/pages` | director |
 | pagesChange | POST | `/api/staff/pages` | director |
 | preview | GET | `/api/staff/preview/<page id>` | director |
+| sections | GET | `/api/staff/sections/<page id>` | director |
 | versions | GET | `/api/staff/versions` | director |
 | restore | POST | `/api/staff/versions/<n>/restore` | director |
 | staffAny | any | `/api/staff/…` | director |
@@ -480,6 +481,35 @@ between draws (`/api/events/<page>` knows the build's pages only). If the revisi
 address answers the 404 page, because the build's fallback files do not hold it. A structure change shares item 8's
 window: a copy of the page function still holding the old revision for its minute can draw the old structure into
 the cache after the purge.
+
+### Sections within a page (item 15, first slice, 31 Oct 2026)
+
+A page's sections are part of the same structure document: its record holds the sections made here (`made`), the full
+order with retired ones in it (`order`), and the retired ones (`retired`). Changes go through `POST /api/staff/pages`
+with the actions `sectionAdd`, `sectionCopy`, `sectionOrder`, `sectionRetire` and `sectionBack`, so each one names the
+version its tab started from, writes a new row of `site_structure`, publishes the next revision and clears `page` and
+`events`, as a page change does. `GET /api/staff/sections/<page id>` lists a page's sections in order and its retired ones.
+
+**The rules** (`src/shared/structure.mjs`): a copy goes right after its original, with new ids for itself and for every
+id inside it and no anchor carried over, so no id appears on the page twice; only a section drawn from its own words
+alone (a block declaring no data source and no script) is copied. A new section is a Text section, its heading and
+words checked as a saved word is; it goes after the section chosen, never before the page's opening. The opening (a
+page head, hero or event hero) keeps its place and is not copied or retired. A section a link on the site lands on
+(its anchor, or an id inside it, from the same page or another) is not retired while that link stands. A retired
+section keeps its record and its place: Put back returns it after the section it followed when it went. A block the
+build adds later keeps its place from the build. The 404 page and the staff page keep their sections.
+
+**Words.** Made sections join the page before the saved words are laid (`composeSite`), so their words save with the
+edit button; the order and retiring come after the words, so a retired section's saved words stay valid and come back
+with it. Restoring a published revision brings its sections back as they were; a section made since stays listed as
+retired, so its id and history are never given to another.
+
+**Who.** `site.edit` adds, copies, reorders and puts back; retiring a section from a live page takes `site.publish`,
+as retiring the page does; on a draft, `site.edit` retires.
+
+**Limits.** Found in the code, not seen live: the edit button's list for a page also names a retired section's words.
+The edits file a build downloads leaves out made sections' words, as it leaves out made pages'. A section change shares
+item 8's one-minute window, as a page change does.
 
 ## Crawlers and abuse (25 Oct 2026, cloud run §6)
 

@@ -29,8 +29,9 @@ import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount }
 import { eventSections, calendarFile, forgetEvents } from "./live-events.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
-import { structureNow, pagesList, changeStructure, restoreRevision, restoreToken } from "./structure.mjs";
+import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken } from "./structure.mjs";
 import { revisionEdits } from "./edits.mjs";
+import { SECTION_ACTIONS } from "../../src/shared/structure.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
@@ -345,7 +346,7 @@ async function pagesRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await pagesList()) });
 }
 
-export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu"]);
+export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu", ...SECTION_ACTIONS]);
 
 /* One change to the pages or the menu. JSON from this site only; `expected` is the version the tab started from. */
 async function pagesChangeRoute(req, _m, _c, who) {
@@ -354,7 +355,13 @@ async function pagesChangeRoute(req, _m, _c, who) {
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   if (!PAGE_ACTIONS.has(body.action)) throw new HttpError(400, "pages.action");
   const r = await changeStructure(who, body, (scope) => need(who, scope));
-  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(await publishAll(who)) });
+  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(await publishAll(who)) });
+}
+
+/* One page's sections, in order, and its retired ones. */
+async function sectionsRoute(req, [pageId], _c, who) {
+  editsPages(who);
+  return json(200, { ok: true, ...(await sectionsList(pageId)) });
 }
 
 /* A page as it will be once published, drafts included, to look at in a frame at desktop and phone width. */
@@ -450,6 +457,7 @@ export const ROUTES = [
   { name: "pages", method: "GET", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesRoute },
   { name: "pagesChange", method: "POST", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesChangeRoute },
   { name: "preview", method: "GET", pattern: /^\/api\/staff\/preview\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: previewRoute },
+  { name: "sections", method: "GET", pattern: /^\/api\/staff\/sections\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: sectionsRoute },
   { name: "versions", method: "GET", pattern: /^\/api\/staff\/versions$/, tier: "director", run: versionsRoute },
   { name: "restore", method: "POST", pattern: /^\/api\/staff\/versions\/([1-9][0-9]{0,8})\/restore$/, tier: "director", run: restoreRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },

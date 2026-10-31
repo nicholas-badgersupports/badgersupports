@@ -365,13 +365,129 @@ function previewBox() {
   return { box, show(p) { label.textContent = t("staff.pages.previewOf", { title: p.title }); frame.src = open.href = `/api/staff/preview/${p.id}`; box.hidden = false; fit(); box.scrollIntoView({ block: "nearest" }); } };
 }
 
+/* One page's sections: move them with the arrows and save the order; copy, retire, put back and add each save at
+   once. Every change names the version of the pages it started from, as the pages part does. */
+const SECTION_ERRORS = { "section.head": "head", "section.kind": "kind", "section.linked": "linked", "section.words": "words", "section.title": "title" };
+function sectionsBox(me, changed) {
+  const heading = el("h3", { id: "staff-sections-h", tabIndex: -1 });
+  const problem = el("div", { hidden: true });
+  const list = el("ol", { className: "staff-menu staff-sections" });
+  const save = el("button", { type: "button", className: "btn", textContent: t("staff.sections.save") });
+  const confirm = el("div", { className: "staff-drawer", hidden: true });
+  const retired = el("div");
+  const addWrap = el("div");
+  const box = el("div", { className: "staff-form staff-sections-box", hidden: true }, heading, problem, list, el("div", { className: "staff-actions" }, save), confirm, retired, addWrap);
+  box.setAttribute("role", "region");
+  box.setAttribute("aria-labelledby", "staff-sections-h");
+  let page = null, now = null, order = [];
+  const named = (x) => x.name || t(`staff.sections.kind.${x.type}`);
+  const show = (words) => { problem.replaceChildren(noteBox(words)); problem.hidden = false; say(words); };
+
+  async function load(focus) {
+    const r = await call(`/api/staff/sections/${page.id}`).catch(offline);
+    if (!box.isConnected) return;
+    if (r.status !== 200) { const [b] = refused(r); list.replaceChildren(el("li", {}, b)); return; }
+    now = r.body;
+    order = [...now.sections];
+    draw(focus);
+  }
+  async function send(button, change, done, focus) {
+    if (isBusy(button)) return false;
+    const undo = busy(button, t("staff.pages.saving"));
+    const r = await call("/api/staff/pages", { method: "POST", body: { ...change, page: page.id, expected: now.version } }).catch(offline);
+    undo();
+    if (!box.isConnected) return false;
+    if (r.status !== 200) {
+      if (r.status === 409) { show(t("staff.pages.conflict")); await load(); return false; }
+      if (r.status === 422 || r.status === 400 || r.status === 404) { show(t(`staff.sections.error.${SECTION_ERRORS[r.body.error] || "changed"}`)); return false; }
+      const [b, words] = r.status === 0 ? [noteBox(t("staff.pages.error.failed")), t("staff.pages.error.failed")] : refused(r);
+      problem.replaceChildren(b); problem.hidden = false; say(words);
+      return false;
+    }
+    problem.hidden = true;
+    confirm.hidden = true;
+    say(r.body.publishError ? t("staff.edit.updateFailed") : done);
+    published();
+    changed();
+    await load(focus);
+    return true;
+  }
+  const iconButton = (words, label, onclick, extra = {}) => {
+    const b = el("button", { type: "button", className: "btn btn--quiet", textContent: words, onclick, ...extra });
+    b.setAttribute("aria-label", label);
+    return b;
+  };
+  const mayRetire = () => (page.state === "draft" ? me.canEdit : me.canPublish);
+  function row(x, i) {
+    const fixedAt = (j) => !order[j] || order[j].head;
+    const move = (by) => { const j = i + by; [order[i], order[j]] = [order[j], order[i]]; draw(`${x.id}:${by}`); };
+    const arrow = (by, sign) => {
+      const b = iconButton(sign, t(by < 0 ? "staff.sections.up" : "staff.sections.down", { name: named(x) }), () => move(by), { disabled: x.head || fixedAt(i + by) });
+      b.dataset.key = `${x.id}:${by}`;
+      return b;
+    };
+    const label = el("span", {}, named(x), el("span", { className: "staff-kind", textContent: ` · ${t(`staff.sections.kind.${x.type}`)}` }));
+    if (x.head) return el("li", {}, label);
+    return el("li", {}, label,
+      arrow(-1, "↑"), arrow(1, "↓"),
+      x.copy && iconButton(t("staff.sections.copy"), t("staff.sections.copyName", { name: named(x) }), (e) => send(e.currentTarget, { action: "sectionCopy", section: x.id }, t("staff.sections.done.copy"))),
+      mayRetire() && iconButton(t("staff.sections.retire"), t("staff.sections.retireName", { name: named(x) }), () => {
+        const yes = el("button", { type: "button", className: "btn", textContent: t("staff.pages.retire.yes") });
+        yes.addEventListener("click", () => send(yes, { action: "sectionRetire", section: x.id }, t("staff.sections.done.retire")));
+        confirm.replaceChildren(el("p", { textContent: t("staff.sections.retire.confirm", { name: named(x) }) }),
+          el("div", { className: "staff-actions" }, yes, el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.cancel"), onclick: () => { confirm.hidden = true; } })));
+        confirm.hidden = false;
+        yes.focus();
+      }));
+  }
+  function addForm() {
+    const title = textInput(), words = el("textarea", { rows: 4 });
+    const after = choice(now.sections.map((x) => [x.id, named(x)]).filter((_, i) => i >= now.sections.reduce((n, x, k) => (x.head ? k : n), 0)), now.sections.at(-1)?.id || "");
+    const go = el("button", { type: "submit", className: "btn", textContent: t("staff.sections.add.button") });
+    const f = el("form", { className: "staff-add" }, el("h4", { textContent: t("staff.sections.add.title") }),
+      field(t("staff.sections.field.title"), title), field(t("staff.sections.field.words"), words), field(t("staff.sections.field.after"), after), el("div", { className: "staff-actions" }, go));
+    f.addEventListener("submit", async (e) => { e.preventDefault(); await send(go, { action: "sectionAdd", title: title.value, words: words.value, after: after.value }, t("staff.sections.done.add")); });
+    return f;
+  }
+  function draw(focus) {
+    heading.textContent = t("staff.sections.title", { title: page.title });
+    list.replaceChildren(...order.map(row));
+    const moved = order.some((x, i) => x.id !== now.sections[i].id);
+    save.disabled = !moved;
+    retired.replaceChildren(...(now.retired.length ? [el("h4", { textContent: t("staff.sections.retired") }),
+      el("ul", { className: "staff-menu" }, ...now.retired.map((x) => el("li", {}, el("span", { textContent: named(x) }),
+        iconButton(t("staff.sections.back"), t("staff.sections.backName", { name: named(x) }), (e) => send(e.currentTarget, { action: "sectionBack", section: x.id }, t("staff.sections.done.back"))))))] : []));
+    addWrap.replaceChildren(...(me.canEdit ? [addForm()] : []));
+    if (!focus) return;
+    const [id, by] = focus.split(":");
+    const b = [`${id}:${by}`, `${id}:${-by}`].map((k) => list.querySelector(`[data-key="${k}"]`)).find((x) => x && !x.disabled);
+    (b || save).focus();
+  }
+  save.addEventListener("click", () => send(save, { action: "sectionOrder", order: order.map((x) => x.id) }, t("staff.sections.done.order")));
+  return {
+    box,
+    async show(p) {
+      page = p;
+      problem.hidden = true;
+      confirm.hidden = true;
+      box.hidden = false;
+      heading.textContent = t("staff.sections.title", { title: p.title });
+      list.replaceChildren(el("li", { textContent: t("staff.pages.loading") }));
+      box.scrollIntoView({ block: "nearest" });
+      heading.focus();
+      await load();
+    },
+  };
+}
+
 function pagesSection(me) {
   const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
   const problem = el("div", { hidden: true });
   const preview = previewBox();
+  const sections = sectionsBox(me, () => load());
   const section = el("section", { className: "staff-part" },
     el("h2", { id: "staff-pages-h", textContent: t("staff.pages.title") }),
-    el("p", { textContent: t("staff.pages.how") }), problem, body, preview.box);
+    el("p", { textContent: t("staff.pages.how") }), problem, body, sections.box, preview.box);
   section.setAttribute("aria-labelledby", "staff-pages-h");
   let now = null;
 
@@ -429,6 +545,7 @@ function pagesSection(me) {
     const actions = [];
     const button = (words, onclick) => actions.push(el("button", { type: "button", className: "btn btn--quiet", textContent: words, onclick }));
     if (p.state !== "retired") button(t("staff.pages.preview"), () => preview.show(p));
+    if (p.state !== "retired" && p.sections && me.canEdit) button(t("staff.sections.open"), () => sections.show(p));
     if (!p.fixed && me.canEdit) button(t("staff.pages.copy"), () => {
       const title = textInput(p.title), where = textInput(p.path, { spellcheck: false });
       open(form([field(t("staff.pages.field.title"), title), field(t("staff.pages.field.path"), where)], t("staff.pages.copy.button"),

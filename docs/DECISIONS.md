@@ -461,3 +461,21 @@ declined it then, and the editor has since moved to this site (24 Oct, above), s
 | `frame-src` gains `'self'`, so the staff page can frame the preview; only the preview answer allows framing (`frame-ancestors 'self'`) | a preview at two widths needs a frame; every other answer keeps `frame-ancestors 'none'` | drop `'self'` from `cspHeader()` and open the preview in a tab only |
 | Each structure change clears every page and feed (`page`, `events`) | the menu is on every page, and a 404 answer for a new page's address is cached under `page` | narrow `publishAll()` in `router.mjs` |
 | The edits file a build downloads leaves out made pages' words | a build does not know those pages; they live in the published revision | `editsFile()` in `netlify/lib/edits.mjs` |
+
+## 31 October 2026 · sections within a page (queue item 7, WORK item 15, first slice; routine calls made in the session)
+
+The rest of P2 starts with sections: add, copy, reorder, retire and put back, on the staff page, saved live like a page
+change. His 31 Oct answer for pages ("a draft is a new page only; edits to live pages keep publishing on save") decides
+that a section change on a live page publishes at once. How it is built: `ARCHITECTURE.md`, "Sections within a page".
+
+| Call | Why | To reverse |
+|---|---|---|
+| `site.edit` adds, copies, reorders and puts back a section; retiring one from a live page takes `site.publish`; on a draft `site.edit` retires | a section is words on a page, as a save is; taking content off a live page mirrors retiring the page; no new scope | `scopeFor()` in `netlify/lib/structure.mjs` |
+| A new section is a Text section with its heading and words typed in the form; any other kind comes by copying one that exists | a live page publishes on save, so a new section can carry no placeholder words; the edit-layer rule: structure changes clone, they do not invent layouts | `sectionAdd` in `sectionChange()`, `src/shared/structure.mjs` |
+| Only sections drawn from their own words copy (no data source, no script: announcement, text, questions, what to expect, call to action, photo cards, word cloud, directory) | a copy of an events, form, team or resources section would draw the same records twice, and some carry scripts that expect one per page | `copyable()` |
+| A copy gets `<id>-c<n>` and every id inside it gets `-c<n>`; its anchor is dropped | ids are never given twice; questions, cards and directory groups draw their ids into the page | `copySection()` |
+| A page's opening keeps its place and is not copied or retired | the page head is the page's title and first words; a page without one reads as broken | `isOpening()` and `HEADS` |
+| A section that a link on the site lands on is refused retirement, naming no link; the editor changes the link first | a retired section would leave the link landing on nothing (edit-layer: hide the references with it) | `linkedTo()` |
+| A retired section keeps its record and comes back with Put back where it was | his "archive, never delete" rule; the page menu's "taken off, only back by Restore" gap is not repeated | `sectionBack` and `withRetired()` |
+| The 404 page and the staff page keep their sections; the home page's may change | the home page is the page most edited; the other two are the site's own workings | `SECTION_FIXED` |
+| Restoring a version keeps a section made since as retired | an id is never given twice, so its history never attaches to another section | `restoredDoc()` in `netlify/lib/structure.mjs` |

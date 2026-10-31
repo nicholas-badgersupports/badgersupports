@@ -1421,3 +1421,156 @@ test("item 16: an earlier version of the site comes back as the newest, words an
   const h = await (await handle(get(`/api/staff/edit/history?target=${encodeURIComponent(HERO)}`, { cookie: editor }), ip())).json();
   assert.deepEqual(h.versions.slice(0, 3).map((x) => x.value), ["Made-up words, version A", "Made-up words, version B", "Made-up words, version A"], "history only grows");
 });
+
+/* ------------------------------------------------------------------ sections within a page (item 15, first slice) */
+
+const sectionsOf = async (cookie, id) => { const r = await handle(get(`/api/staff/sections/${id}`, { cookie }), ip()); return { status: r.status, body: await r.json() }; };
+const blockOrder = (html) => [...html.matchAll(/data-block="(b-[a-z0-9-]+)"/g)].map((m) => m[1]).filter((x, i, a) => a.indexOf(x) === i);
+const twice = (html) => { const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]); return ids.filter((x, i) => ids.indexOf(x) !== i); };
+
+test("item 15: a copied section has new ids and the words as they stand, its words save like any other, and the order saves", async (t) => {
+  const { as, cleared, content } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const W = "page:pg-press:b-pr-herald/title";
+  assert.equal((await saveWord(editor, W, content.editable[W].shown, "The Herald, Again")).changed, true);
+  const s = await sectionsOf(editor, "pg-press");
+  assert.equal(s.status, 200, JSON.stringify(s.body));
+  assert.deepEqual(s.body.sections.map((x) => x.id), ["b-pr-head", "b-pr-herald", "b-pr-cardinal"]);
+  assert.deepEqual(s.body.sections.map((x) => x.head), [true, false, false], "the page's opening is marked");
+  assert.equal(s.body.sections[1].name, "The Herald, Again", "named by its words as they stand");
+  cleared.length = 0;
+  const c = await change(editor, { action: "sectionCopy", expected: s.body.version, page: "pg-press", section: "b-pr-herald" });
+  assert.equal(c.status, 200, JSON.stringify(c.body));
+  assert.equal(c.body.section, "b-pr-herald-c1");
+  assert.ok(c.body.published?.n >= 1, "published like a save");
+  assert.ok(cleared.includes("page"));
+  const html = await (await visit("/operations/press/")).text();
+  assert.deepEqual(blockOrder(html).filter((x) => x.startsWith("b-pr-")), ["b-pr-head", "b-pr-herald", "b-pr-herald-c1", "b-pr-cardinal"], "the copy sits after its original");
+  assert.equal((html.match(/The Herald, Again/g) || []).length, 2, "the copy carries the words as they stand");
+  assert.deepEqual(twice(html), [], "no id on the page twice");
+  const own = (await sourceOf(editor, "pg-press")).find((e) => e.target === "page:pg-press:b-pr-herald-c1/title");
+  assert.ok(own, "the copy's words are in the edit list");
+  assert.equal((await saveWord(editor, own.target, own.current, "The Herald, Copied")).changed, true);
+  const after = await (await visit("/operations/press/")).text();
+  assert.match(after, /The Herald, Copied/);
+  assert.match(after, /The Herald, Again/, "the original keeps its words");
+  const now = await sectionsOf(editor, "pg-press");
+  const order = ["b-pr-head", "b-pr-cardinal", "b-pr-herald-c1", "b-pr-herald"];
+  const o = await change(editor, { action: "sectionOrder", expected: now.body.version, page: "pg-press", order });
+  assert.equal(o.status, 200, JSON.stringify(o.body));
+  assert.deepEqual(blockOrder(await (await visit("/operations/press/")).text()).filter((x) => x.startsWith("b-pr-")), order);
+  for (const bad of [["b-pr-cardinal", "b-pr-head", "b-pr-herald-c1", "b-pr-herald"], ["b-pr-head", "b-pr-herald"],
+    ["b-pr-head", "b-pr-cardinal", "b-pr-herald-c1", "b-pr-herald", "b-pr-herald"], ["b-pr-head", "b-pr-cardinal", "b-pr-herald-c1", "b-nobody"], "b-pr-head"]) {
+    const no = await change(editor, { action: "sectionOrder", expected: o.body.version, page: "pg-press", order: bad });
+    assert.deepEqual([no.status, no.body.error], [422, "section.order"], JSON.stringify(bad));
+  }
+  const again = await change(editor, { action: "sectionCopy", expected: o.body.version, page: "pg-press", section: "b-pr-herald" });
+  assert.equal(again.body.section, "b-pr-herald-c2", "an id is never given twice");
+  const head = await change(editor, { action: "sectionCopy", expected: again.body.version, page: "pg-press", section: "b-pr-head" });
+  assert.deepEqual([head.status, head.body.error], [422, "section.head"]);
+  const feed = await change(editor, { action: "sectionCopy", expected: again.body.version, page: "pg-craft-nights", section: "b-cn-next" });
+  assert.deepEqual([feed.status, feed.body.error], [422, "section.kind"], "a section drawn from Connect's records is not copied");
+  const gone = await change(editor, { action: "sectionCopy", expected: again.body.version, page: "pg-press", section: "b-nobody" });
+  assert.deepEqual([gone.status, gone.body.error], [404, "section.unknown"]);
+});
+
+test("item 15: a retired section leaves the page and comes back where it was; the opening and linked sections stay; on a live page only a publisher retires", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const P = "pg-about-what-we-do", URL_ = "/about/what-we-do/";
+  const s = await sectionsOf(publisher, P);
+  assert.deepEqual(s.body.sections.map((x) => x.id), ["b-wwd-head", "b-wwd-groups", "b-wwd-craft", "b-wwd-workshops", "b-wwd-more", "b-wwd-uhs"]);
+  const first = await change(editor, { action: "sectionOrder", expected: s.body.version, page: P, order: ["b-wwd-head", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-more", "b-wwd-uhs"] });
+  assert.equal(first.status, 200, JSON.stringify(first.body));
+  const no = await change(editor, { action: "sectionRetire", expected: first.body.version, page: P, section: "b-wwd-craft" });
+  assert.equal(no.status, 403, "retiring from a live page is a publisher's");
+  const r = await change(publisher, { action: "sectionRetire", expected: first.body.version, page: P, section: "b-wwd-craft" });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.ok(!blockOrder(await (await visit(URL_)).text()).includes("b-wwd-craft"), "off the page visitors get");
+  const listed = await sectionsOf(editor, P);
+  assert.deepEqual(listed.body.retired.map((x) => x.id), ["b-wwd-craft"]);
+  const o = await change(editor, { action: "sectionOrder", expected: listed.body.version, page: P, order: ["b-wwd-head", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-uhs"] });
+  assert.equal(o.status, 200, JSON.stringify(o.body));
+  const back = await change(editor, { action: "sectionBack", expected: o.body.version, page: P, section: "b-wwd-craft" });
+  assert.equal(back.status, 200, JSON.stringify(back.body));
+  assert.deepEqual(blockOrder(await (await visit(URL_)).text()).filter((x) => x.startsWith("b-wwd-")),
+    ["b-wwd-head", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-uhs"], "back after the section it followed when it went");
+  const twiceBack = await change(editor, { action: "sectionBack", expected: back.body.version, page: P, section: "b-wwd-craft" });
+  assert.deepEqual([twiceBack.status, twiceBack.body.error], [422, "section.notRetired"]);
+  const head = await change(publisher, { action: "sectionRetire", expected: back.body.version, page: P, section: "b-wwd-head" });
+  assert.deepEqual([head.status, head.body.error], [422, "section.head"]);
+  const retireFrom = async (page, section) => change(publisher, { action: "sectionRetire", expected: (await sectionsOf(publisher, page)).body.version, page, section });
+  const linkTo = async (page, href) => (await sourceOf(publisher, page)).find((e) => e.kind === "link" && e.current === href);
+  assert.deepEqual((await retireFrom("pg-home", "b-home-craft")).body.error, "section.linked", "the hero's circle lands on its anchor");
+  assert.deepEqual((await retireFrom("pg-housing-hub", "b-hh-resources")).body.error, "section.linked", "another page links to its anchor");
+  const own = await linkTo("pg-about-faq", "#b-faq-ops");
+  assert.ok(own, "the FAQ links to its own section");
+  assert.equal((await saveWord(publisher, own.target, own.current, "/about/")).changed, true);
+  assert.deepEqual((await retireFrom("pg-about-faq", "b-faq-ops")).body.error, "section.linked", "a question inside it is still linked from What We Do");
+  const far = await linkTo(P, "/about/faq/#q-dual-registration");
+  assert.equal((await saveWord(publisher, far.target, far.current, "/about/faq/")).changed, true);
+  assert.equal((await retireFrom("pg-about-faq", "b-faq-ops")).status, 200, "with no link landing on it, it may go");
+  const v = await pagesNow(editor);
+  const made = await change(editor, { action: "add", expected: v.version, title: "Spring Retreat", path: "/spring-retreat/" });
+  const add = await change(editor, { action: "sectionAdd", expected: made.body.version, page: made.body.page, title: "When", words: "In April." });
+  assert.equal(add.status, 200, JSON.stringify(add.body));
+  const drop = await change(editor, { action: "sectionRetire", expected: add.body.version, page: made.body.page, section: add.body.section });
+  assert.equal(drop.status, 200, "on a draft an editor retires");
+});
+
+test("item 15: a new section is a Text section with the words typed in; bad words, stale tabs, fixed pages and other people are refused", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const reader = await as(["forms.read:*"]);
+  const P = "pg-equity-belonging";
+  const s = await sectionsOf(editor, P);
+  const add = await change(editor, { action: "sectionAdd", expected: s.body.version, page: P, after: "b-eb-body", title: "Our Commitments", words: "We listen first.\n\nWe follow up." });
+  assert.equal(add.status, 200, JSON.stringify(add.body));
+  assert.equal(add.body.section, "b-equity-belonging-s1");
+  const html = await (await visit("/about/equity-belonging/")).text();
+  assert.deepEqual(blockOrder(html).filter((x) => /^b-(eb|equity)/.test(x)), ["b-eb-head", "b-eb-body", "b-equity-belonging-s1", "b-eb-cta"]);
+  assert.match(html, /<h2 id="b-equity-belonging-s1-h">Our Commitments<\/h2>/);
+  assert.match(html, /<p>We listen first\.<\/p><p>We follow up\.<\/p>/);
+  const words = (await sourceOf(editor, P)).map((e) => e.target);
+  assert.ok(words.includes("page:pg-equity-belonging:b-equity-belonging-s1/body/1"), "its words save with the edit button");
+  const v = add.body.version;
+  for (const [body, code] of [[{ words: "" }, "section.words"], [{ words: "   " }, "section.words"], [{ words: "<b>Bold</b>" }, "section.words"],
+    [{ words: "https://example.invalid/" }, "section.words"], [{ words: "x".repeat(2001) }, "section.words"], [{ title: "x".repeat(121), words: "Fine." }, "section.title"],
+    [{ after: "b-nobody", words: "Fine." }, "section.after"]]) {
+    const no = await change(editor, { action: "sectionAdd", expected: v, page: P, ...body });
+    assert.deepEqual([no.status, no.body.error], [422, code], JSON.stringify(body));
+  }
+  const stale = await change(editor, { action: "sectionAdd", expected: s.body.version, page: P, words: "Late." });
+  assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", v]);
+  for (const page of ["pg-staff", "pg-not-found"]) {
+    const no = await change(editor, { action: "sectionAdd", expected: v, page, words: "Fine." });
+    assert.deepEqual([no.status, no.body.error], [422, "section.fixed"], page);
+    assert.equal((await sectionsOf(editor, page)).body.fixed, true, page);
+  }
+  assert.equal((await sectionsOf(editor, "pg-nobody")).status, 404);
+  assert.equal((await sectionsOf("", P)).status, 401);
+  assert.equal((await sectionsOf(reader, P)).status, 403);
+  assert.equal((await change(reader, { action: "sectionAdd", expected: v, page: P, words: "Fine." })).status, 403);
+  assert.equal((await change("", { action: "sectionAdd", expected: v, page: P, words: "Fine." })).status, 401);
+});
+
+test("item 15: an earlier version brings back the sections as they were, and a section made since stays listed as retired", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const first = await saveWord(publisher, HERO, content.editable[HERO].shown, "Made-up words, before the sections");
+  const P = "pg-press";
+  const s = await sectionsOf(publisher, P);
+  const c = await change(publisher, { action: "sectionCopy", expected: s.body.version, page: P, section: "b-pr-cardinal" });
+  assert.equal(c.status, 200, JSON.stringify(c.body));
+  const o = await change(publisher, { action: "sectionOrder", expected: c.body.version, page: P, order: ["b-pr-head", "b-pr-cardinal", "b-pr-cardinal-c1", "b-pr-herald"] });
+  assert.equal(o.status, 200, JSON.stringify(o.body));
+  const list = await (await handle(get("/api/staff/versions", { cookie: publisher }), ip())).json();
+  const res = await handle(staffPost(`/api/staff/versions/${first.published.n}/restore`, { expected: list.expected }, publisher), ip());
+  assert.equal(res.status, 200, await res.clone().text());
+  assert.deepEqual(blockOrder(await (await visit("/operations/press/")).text()).filter((x) => x.startsWith("b-pr-")), ["b-pr-head", "b-pr-herald", "b-pr-cardinal"]);
+  const after = await sectionsOf(publisher, P);
+  assert.deepEqual(after.body.retired.map((x) => x.id), ["b-pr-cardinal-c1"], "kept, so its id and history are never given again");
+  const again = await change(publisher, { action: "sectionCopy", expected: after.body.version, page: P, section: "b-pr-cardinal" });
+  assert.equal(again.body.section, "b-pr-cardinal-c2");
+});

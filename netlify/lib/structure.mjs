@@ -13,7 +13,7 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { editableFor, revisionEdits, original, problemFor } from "./edits.mjs";
 import { redirectFor } from "./pages.mjs";
-import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, FIXED_PAGES } from "../../src/shared/structure.mjs";
+import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, siteLinks, sectionName, isOpening, copyable, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 
 const parse = (d) => (typeof d === "string" ? JSON.parse(d) : d);
@@ -44,23 +44,41 @@ export async function pagesList() {
   const pages = site.all
     .filter((p) => site.authored.has(p.id) || doc.pages[p.id]?.page)
     .map((p) => ({ id: p.id, path: p.file ? `/${p.file}` : p.path, title: shortTitle(p.title), description: p.description || "",
-      state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id) }));
+      state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id), sections: !SECTION_FIXED.has(p.id) }));
   return { version, menu: menuOutline(site.site.nav), pages };
 }
 
+/* One page's sections for the editor: those on the page in order, and the retired ones, each with its id, kind, first
+   words, whether it is the page's opening and whether it may be copied. */
+export async function sectionsList(pageId) {
+  const { version, doc } = await structureNow();
+  const site = await siteAsSaved(doc);
+  const p = site.all.find((x) => x.id === pageId);
+  if (!p || !(site.authored.has(p.id) || doc.pages[p.id]?.page)) throw new HttpError(404, "page.unknown");
+  const one = (b) => ({ id: b.id, type: b.type, name: sectionName(b), head: isOpening(b), copy: copyable(b.type) });
+  return {
+    version, fixed: SECTION_FIXED.has(p.id),
+    page: { id: p.id, title: String(p.title || "").replace(new RegExp(` — ${site.site.name}$`), ""), path: p.path, state: stateOf(doc, p.id) },
+    sections: (p.blocks || []).map(one), retired: (p.retiredSections || []).map(one),
+  };
+}
+
 /* The scope a change needs, from the state of the page it names: words and drafts are an editor's (site.edit); what
-   visitors can reach, the menu, a live page's address and bringing back a version are a publisher's (site.publish). */
+   visitors can reach, the menu, a live page's address and bringing back a version are a publisher's (site.publish).
+   A page's sections are words too, but taking one off a live page is a publisher's, as retiring the page is. */
 export function scopeFor(change, doc) {
   const draft = change.page && doc.pages[change.page]?.state === "draft";
   switch (change.action) {
     case "add": case "copy": return "site.edit";
+    case "sectionAdd": case "sectionCopy": case "sectionOrder": case "sectionBack": return "site.edit";
+    case "sectionRetire": return draft ? "site.edit" : "site.publish";
     case "details": return change.path !== undefined && !draft ? "site.publish" : "site.edit";
     case "retire": return draft ? "site.edit" : "site.publish";
     default: return "site.publish";
   }
 }
 
-/* Apply one change for `who`, after `allow(scope)` has said they may. Returns { version, page? }. */
+/* Apply one change for `who`, after `allow(scope)` has said they may. Returns { version, page?, section? }. */
 export async function changeStructure(who, change, allow) {
   const before = await structureNow();
   allow(scopeFor(change, before.doc));
@@ -72,6 +90,7 @@ export async function changeStructure(who, change, allow) {
     out = applyChange(before.doc, change, {
       pages: site.all, authored: site.authored, menu: menuOutline(site.site.nav),
       site: { name: site.site.name, description: site.site.description }, redirected: (p) => !!redirectFor(c, p),
+      links: siteLinks(site.site, site.pages.concat(site.drafts)),
     });
   } catch (e) {
     if (isProblem(e)) throw new HttpError(e.status, e.code);
@@ -86,14 +105,23 @@ export async function changeStructure(who, change, allow) {
       [JSON.stringify(out.doc), change.action, out.page || null, who.sub, who.name]);
     return String(row.id);
   });
-  return { version, page: out.page };
+  return { version, page: out.page, section: out.section };
 }
 
-/* The structure a restore writes: the revision's, with every page made since it retired rather than dropped. */
+/* The structure a restore writes: the revision's, with every page and section made since it retired rather than
+   dropped, so no id is given twice. */
 function restoredDoc(theirs, ours) {
   const doc = structuredClone(theirs || emptyStructure());
   for (const [id, r] of Object.entries(ours.pages)) {
     if (r.page && !doc.pages[id]) doc.pages[id] = { state: "retired", page: r.page, ...(r.path ? { path: r.path } : {}), ...(r.oldPaths ? { oldPaths: r.oldPaths } : {}) };
+    for (const [bid, b] of Object.entries(r.sections?.made || {})) {
+      const sec = ((doc.pages[id] ||= { state: "live" }).sections ||= { made: {}, order: null, retired: [] });
+      sec.made ||= {};
+      sec.retired ||= [];
+      if (sec.made[bid]) continue;
+      sec.made[bid] = b;
+      sec.retired.push(bid);
+    }
   }
   return doc;
 }

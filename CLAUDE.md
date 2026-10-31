@@ -19,3 +19,11 @@ On Nicholas's laptop this session's inbox is `../../Admin/Handoffs/Exchange/to-p
 finishing, handle each `open` item as `../../Admin/Handoffs/Exchange/README.md` says, and send requests for Connect to
 `to-intranet/` and for Badger SPILL to `to-spill/`. A session that cloned this repository cannot reach that folder: it says so
 and leaves the inbox to the next laptop session.
+
+<!-- BEGIN NICHOLAS WEBSITE WORDING -->
+## Website wording
+
+Before writing or revising site text, read [WORDING-RULES.md](WORDING-RULES.md). It carries Nicholas’s current preferences for interface text, public pages, tutorials, errors, and site emails. Use the **nicholas-website-wording** skill for approved examples and the saved wording library.
+
+These contextual choices supersede older generic style formulas on wording. Existing project rules for facts, policy, privacy, permissions, data, source ownership, verification, and publication remain in force. Preserve the scope of manual overrides and explicitly protected text. The local wording file remains usable in a clone without the shared Admin folder.
+<!-- END NICHOLAS WEBSITE WORDING -->

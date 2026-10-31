@@ -1191,3 +1191,233 @@ test("item 17: at launch a form points to its Google Form until the switch decid
   const shut = await currentForm("workshop-request");
   assert.deepEqual([shut.state, shut.def.elsewhere], ["closed", undefined], "closed by a director: its own message, not the Google Form");
 });
+
+/* ------------------------------------------------------------------ pages: drafts, preview, restore (item 16) */
+
+let pagesBuild = null;
+/* One build for these cases, a fresh database and store for each, and every purge recorded. */
+async function pagesSite(t) {
+  await freshServer();
+  if (!pagesBuild) {
+    const out = path.join(ROOT, "local/test-build-pages");
+    await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+    pagesBuild = { out, content: JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8")) };
+  }
+  useContent(pagesBuild.content);
+  useDist(pagesBuild.out);
+  const cleared = [];
+  usePurger(async (tags) => { cleared.push(...tags); });
+  t.after(() => usePurger(null));
+  const as = async (scopes, name) => { const f = fakeConnect({ scopes, name }); useConnect(f.cfg); return (await signIn(f)).cookie; };
+  return { cleared, as, content: pagesBuild.content };
+}
+const pagesNow = async (cookie) => (await handle(get("/api/staff/pages", { cookie }), ip())).json();
+const change = async (cookie, body, opts) => { const r = await handle(staffPost("/api/staff/pages", body, cookie, opts), ip()); return { status: r.status, body: await r.json() }; };
+const visit = (p) => handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20" });
+const preview = (cookie, id) => handle(get(`/api/staff/preview/${id}`, { cookie, json: false }), ip());
+const saveWord = async (cookie, target, expected, value) => (await handle(staffPost("/api/staff/edit/save", { target, expected, value }, cookie), ip())).json();
+const sourceOf = async (cookie, id) => (await (await handle(get(`/api/staff/edit/source?page=${id}`, { cookie }), ip())).json()).entries;
+const menuOf = (html) => html.match(/<nav\b[\s\S]*?<\/nav>/)[0];
+
+test("item 16: a new page is a draft only staff can preview; its words save like any other; a publisher puts it on", async (t) => {
+  const { as, cleared } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"], "Avery Example");
+  const before = await pagesNow(editor);
+  assert.equal(before.ok, true);
+  assert.ok(before.pages.some((p) => p.id === "pg-press" && p.state === "live" && p.path === "/operations/press/"));
+  const made = await change(editor, { action: "add", expected: before.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });
+  assert.equal(made.status, 200, JSON.stringify(made.body));
+  const id = made.body.page;
+  assert.equal(id, "pg-spring-retreat");
+  assert.equal((await visit("/programs/spring-retreat/")).status, 404, "nobody outside the staff page sees a draft");
+  const pv = await preview(editor, id);
+  assert.equal(pv.status, 200);
+  assert.equal(pv.headers.get("cache-control"), "no-store");
+  assert.match(pv.headers.get("x-robots-tag") || "", /noindex/);
+  assert.match(pv.headers.get("content-security-policy") || "", /frame-ancestors 'self'/);
+  assert.match(await pv.text(), /<h1[^>]*>Spring Retreat</);
+  assert.equal((await preview("", id)).status, 401);
+  assert.equal((await preview(editor, "pg-nobody-made-this")).status, 404);
+
+  const head = (await sourceOf(editor, id)).find((e) => /^page:pg-spring-retreat:b-[a-z0-9-]+\/title$/.test(e.target));
+  assert.ok(head, "the new page's words are in the edit list");
+  assert.equal((await saveWord(editor, head.target, head.current, "Spring Retreat 2027")).changed, true);
+  assert.match(await (await preview(editor, id)).text(), /Spring Retreat 2027/);
+  assert.equal((await visit("/programs/spring-retreat/")).status, 404, "a saved word does not put a draft on");
+
+  const now = await pagesNow(editor);
+  assert.equal((await change(editor, { action: "publish", expected: now.version, page: id, group: "nav-programs", label: "Spring Retreat" })).status, 403);
+  cleared.length = 0;
+  const on = await change(publisher, { action: "publish", expected: now.version, page: id, group: "nav-programs", label: "Spring Retreat" });
+  assert.equal(on.status, 200, JSON.stringify(on.body));
+  assert.ok(on.body.published?.n >= 1);
+  assert.ok(cleared.includes("page"), "every page is cleared: the menu is on each, and the address was the 404 page");
+  const live = await visit("/programs/spring-retreat/");
+  assert.equal(live.status, 200);
+  assert.match(await live.text(), /Spring Retreat 2027/);
+  assert.match(menuOf(await (await visit("/")).text()), /<a [^>]*href="\/programs\/spring-retreat\/"[^>]*>\s*Spring Retreat\s*</, "in the menu, linked here");
+  assert.equal((await pagesNow(editor)).pages.find((p) => p.id === id).state, "live");
+});
+
+test("item 16: a copy is a draft with new ids and the words as they stand, and none of the original's history", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const PR = "page:pg-press:b-pr-head/title";
+  assert.equal((await saveWord(editor, PR, content.editable[PR].shown, "Press and Mentions")).changed, true);
+  const v = await pagesNow(editor);
+  const r = await change(editor, { action: "copy", expected: v.version, page: "pg-press", title: "Press Kit", path: "/operations/press-kit/" });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  const id = r.body.page;
+  assert.equal(id, "pg-press-kit");
+  const html = await (await preview(editor, id)).text();
+  assert.match(html, /Press and Mentions/, "the words as they stand now");
+  assert.match(html, /<title>Press Kit — Badger Supports<\/title>/);
+  const original = new Set(Object.keys(content.editable).filter((k) => k.startsWith("page:pg-press:")).map((k) => k.split(":")[2].split("/")[0]));
+  const copied = await sourceOf(editor, id);
+  const own = copied.filter((e) => e.target.startsWith(`page:${id}:`));
+  assert.ok(own.length >= 3);
+  for (const e of own) assert.ok(!original.has(e.target.split(":")[2].split("/")[0]), `a new block id: ${e.target}`);
+  const h = await (await handle(get(`/api/staff/edit/history?target=${encodeURIComponent(own[0].target)}`, { cookie: editor }), ip())).json();
+  assert.deepEqual(h.versions, []);
+  assert.equal((await visit("/operations/press/")).status, 200, "the original stays on");
+  assert.equal((await visit("/operations/press-kit/")).status, 404, "the copy is a draft");
+  const again = await change(editor, { action: "copy", expected: r.body.version, page: "pg-press", title: "Press Kit", path: "/operations/press-kit/" });
+  assert.deepEqual([again.status, again.body.error], [422, "page.path.taken"]);
+  const other = await change(editor, { action: "copy", expected: r.body.version, page: "pg-press", title: "Press Kit", path: "/press-kit/" });
+  assert.equal(other.body.page, "pg-press-kit-2", "an id is never used twice");
+  for (const page of ["pg-staff", "pg-not-found"]) {
+    const no = await change(editor, { action: "copy", expected: other.body.version, page, title: "A Copy", path: "/a-copy/" });
+    assert.deepEqual([no.status, no.body.error], [422, "page.fixed"], page);
+  }
+});
+
+test("item 16: a retired page leaves the menu, its address goes where the publisher says or to the 404 page, and its id stays used", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  const what = v.pages.find((p) => p.path === "/about/what-we-do/").id;
+  assert.equal((await change(editor, { action: "retire", expected: v.version, page: "pg-press", to: what })).status, 403);
+  const r = await change(publisher, { action: "retire", expected: v.version, page: "pg-press", to: what });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  for (const p of ["/operations/press/", "/operations/press"]) {
+    const res = await visit(p);
+    assert.equal(res.status, 301, p);
+    assert.equal(res.headers.get("location"), "/about/what-we-do/");
+    assert.match(res.headers.get("netlify-cache-tag") || "", /(^|,)page(,|$)/, "a purge reaches the move");
+  }
+  const faq = await change(publisher, { action: "retire", expected: r.body.version, page: "pg-about-faq" });
+  assert.equal(faq.status, 200, JSON.stringify(faq.body));
+  const gone = await visit("/about/faq/");
+  assert.equal(gone.status, 404);
+  assert.doesNotMatch(menuOf(await (await visit("/")).text()), /href="\/about\/faq\/"/, "off the menu");
+  const taken = await change(editor, { action: "add", expected: faq.body.version, title: "Press", path: "/operations/press/" });
+  assert.deepEqual([taken.status, taken.body.error], [422, "page.path.taken"]);
+  const fresh = await change(editor, { action: "add", expected: faq.body.version, title: "Press", path: "/press/" });
+  assert.equal(fresh.body.page, "pg-press-2", "a retired page's id is never given again");
+  for (const page of ["pg-home", "pg-not-found", "pg-staff"]) {
+    const no = await change(publisher, { action: "retire", expected: fresh.body.version, page });
+    assert.deepEqual([no.status, no.body.error], [422, "page.fixed"], page);
+  }
+  const listed = (await pagesNow(editor)).pages.find((p) => p.id === "pg-press");
+  assert.equal(listed.state, "retired");
+});
+
+test("item 16: a new address keeps the old one working, and the menu reorders by entry, so its saved words follow", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const ABOUT = "site:nav/0/label";
+  assert.equal((await saveWord(editor, ABOUT, content.editable[ABOUT].shown, "Who We Are")).changed, true);
+  const v = await pagesNow(publisher);
+  assert.equal((await change(editor, { action: "details", expected: v.version, page: "pg-about-faq", path: "/about/questions/" })).status, 403);
+  const moved = await change(publisher, { action: "details", expected: v.version, page: "pg-about-faq", path: "/about/questions/" });
+  assert.equal(moved.status, 200, JSON.stringify(moved.body));
+  assert.equal((await visit("/about/questions/")).status, 200);
+  for (const p of ["/about/faq/", "/about/faq"]) {
+    const res = await visit(p);
+    assert.deepEqual([res.status, res.headers.get("location")], [301, "/about/questions/"], p);
+  }
+  let menu = menuOf(await (await visit("/")).text());
+  assert.match(menu, /href="\/about\/questions\/"/);
+  assert.doesNotMatch(menu, /href="\/about\/faq\/"/);
+
+  const m = (await pagesNow(publisher)).menu;
+  assert.deepEqual(m.slice(0, 2).map((x) => x.id), ["nav-about", "nav-programs"]);
+  const order = [m[1], m[0], ...m.slice(2)].map((x) => ({ id: x.id, ...(x.children ? { children: x.children.map((c) => c.id) } : {}) }));
+  const re = await change(publisher, { action: "menu", expected: moved.body.version, menu: order });
+  assert.equal(re.status, 200, JSON.stringify(re.body));
+  menu = menuOf(await (await visit("/")).text());
+  assert.ok(menu.indexOf("Programs") < menu.indexOf("Who We Are"), "Programs first, and About keeps its saved name");
+  for (const bad of [[...order, { id: "nav-nobody" }], [...order, { id: order[0].id }]]) {
+    const no = await change(publisher, { action: "menu", expected: re.body.version, menu: bad });
+    assert.deepEqual([no.status, no.body.error], [422, "menu.entry"]);
+  }
+  const back = await change(publisher, { action: "details", expected: re.body.version, page: "pg-about-faq", path: "/about/faq/" });
+  assert.equal(back.status, 200, JSON.stringify(back.body));
+  assert.equal((await visit("/about/faq/")).status, 200, "moving back takes the address back");
+  assert.equal((await visit("/about/questions/")).headers.get("location"), "/about/faq/");
+});
+
+test("item 16: a stale tab is refused with what is there now; bad addresses and titles are refused; visitors reach none of it", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const reader = await as(["forms.read:*"]);
+  const v = await pagesNow(editor);
+  const first = await change(editor, { action: "add", expected: v.version, title: "First Page", path: "/first-page/" });
+  assert.equal(first.status, 200);
+  const stale = await change(editor, { action: "add", expected: v.version, title: "Second Page", path: "/second-page/" });
+  assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", first.body.version]);
+  for (const p of ["/api/x/", "/assets/x/", "/staff/x/", "no-slash/", "/no-final-slash", "/Caps/", "/two//slashes/", "/a/b/c/d/e/", "/", "/home/", "/about/faq/"]) {
+    const no = await change(editor, { action: "add", expected: first.body.version, title: "A Page", path: p });
+    assert.equal(no.status, 422, p);
+    assert.match(no.body.error, /^page\.path/, p);
+  }
+  for (const title of ["", "   ", "x".repeat(121)]) {
+    const no = await change(editor, { action: "add", expected: first.body.version, title, path: "/a-page/" });
+    assert.deepEqual([no.status, no.body.error], [422, "page.title"]);
+  }
+  const unknown = await change(editor, { action: "fly", expected: first.body.version });
+  assert.deepEqual([unknown.status, unknown.body.error], [400, "pages.action"]);
+  assert.equal((await change(editor, { action: "add", expected: first.body.version, title: "A Page", path: "/a-page/" }, { json: false })).status, 415);
+  assert.equal((await handle(get("/api/staff/pages"), ip())).status, 401);
+  assert.equal((await handle(get("/api/staff/pages", { cookie: reader }), ip())).status, 403);
+  assert.equal((await change("", { action: "add", expected: first.body.version, title: "A Page", path: "/a-page/" })).status, 401);
+  assert.equal((await preview(reader, first.body.page)).status, 403);
+});
+
+test("item 16: an earlier version of the site comes back as the newest, words and pages together, and only a publisher may bring it", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const shown = content.editable[HERO].shown;
+  const a = await saveWord(publisher, HERO, shown, "Made-up words, version A");
+  assert.equal(a.published.n, 1);
+  const v = await pagesNow(publisher);
+  const made = await change(publisher, { action: "add", expected: v.version, title: "Winter Fair", path: "/winter-fair/" });
+  const on = await change(publisher, { action: "publish", expected: made.body.version, page: made.body.page });
+  assert.equal(on.status, 200, JSON.stringify(on.body));
+  assert.equal((await visit("/winter-fair/")).status, 200);
+  const b = await saveWord(publisher, HERO, "Made-up words, version A", "Made-up words, version B");
+  const list = await (await handle(get("/api/staff/versions", { cookie: editor }), ip())).json();
+  assert.equal(list.ok, true);
+  assert.deepEqual(list.versions.map((x) => x.n), [b.published.n, ...list.versions.slice(1).map((x) => x.n)]);
+  assert.equal(list.versions.at(-1).n, 1);
+  const restore = (cookie, n, expected) => handle(staffPost(`/api/staff/versions/${n}/restore`, { expected }, cookie), ip());
+  assert.equal((await restore(editor, 1, list.expected)).status, 403);
+  const stale = await restore(publisher, 1, "0:0");
+  assert.equal(stale.status, 409);
+  const res = await restore(publisher, 1, list.expected);
+  const body = await res.json();
+  assert.equal(res.status, 200, JSON.stringify(body));
+  assert.equal(body.published.n, b.published.n + 1, "the earlier version is published as the newest");
+  const home = await (await visit("/")).text();
+  assert.match(home, /Made-up words, version A/);
+  assert.doesNotMatch(home, /version B/);
+  assert.equal((await visit("/winter-fair/")).status, 404, "a page made since that version comes off");
+  const listed = (await pagesNow(editor)).pages.find((p) => p.id === made.body.page);
+  assert.equal(listed.state, "retired", "and stays listed, so its id is never given again");
+  const h = await (await handle(get(`/api/staff/edit/history?target=${encodeURIComponent(HERO)}`, { cookie: editor }), ip())).json();
+  assert.deepEqual(h.versions.slice(0, 3).map((x) => x.value), ["Made-up words, version A", "Made-up words, version B", "Made-up words, version A"], "history only grows");
+});

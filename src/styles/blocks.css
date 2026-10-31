@@ -1161,6 +1161,22 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-table caption { text-align: left; padding: var(--s2) var(--s3); color: var(--muted); }
 .staff-table th, .staff-table td { padding: var(--s2) var(--s3); border-top: var(--hairline); text-align: left; vertical-align: top; max-width: 28rem; }
 .staff-table thead th { background: var(--cream-soft); white-space: nowrap; }
+.staff-drawer { margin-top: var(--s3); }
+.staff-drawer form, .staff-drawer { display: grid; gap: var(--s3); }
+.staff-drawer[hidden] { display: none; }
+.staff-drawer p, .staff-preview p { margin: 0; }
+.staff-form .field + .field { margin-top: var(--s3); }
+.staff-preview { margin-top: var(--s5); display: grid; gap: var(--s3); }
+.staff-preview[hidden] { display: none; }
+.staff-preview-frame { overflow: hidden; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }
+.staff-preview-frame iframe { display: block; border: 0; transform-origin: 0 0; margin-inline: auto; }
+.staff-add { margin-bottom: var(--s4); }
+.staff-menu, .staff-menu ol { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.staff-menu ol { padding-left: var(--s5); }
+.staff-menu li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.staff-menu li > span { font-weight: 600; flex: 0 0 14rem; }
+.staff-menu ol li > span { flex-basis: calc(14rem - var(--s5)); font-weight: 400; }
+.staff-menu li > ol { flex-basis: 100%; }
 
 /* the edit button (edit.js): a bar in the corner, and the words under it outlined while it is on */
 .edit-ui { position: fixed; right: var(--s4); bottom: var(--s4); z-index: 40; display: grid; justify-items: end; gap: var(--s2); max-width: calc(100vw - 2 * var(--s4)); font-family: var(--font-body); }

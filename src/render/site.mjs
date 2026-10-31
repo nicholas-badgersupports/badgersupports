@@ -14,6 +14,7 @@ import { personPages } from "./team.mjs";
 import { formPreviewPages } from "./blocks/form.mjs";
 import { resolveText, makeT } from "../shared/text.mjs";
 import { applyEdits } from "../shared/edits.mjs";
+import { layStructure } from "../shared/structure.mjs";
 
 /* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
 export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
@@ -25,15 +26,26 @@ export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team
   return { schema: "bss.render/1", floor, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
 }
 
-/* Every page with the edits laid over the floor, as loadContent() does. */
-export function composeSite(snap, edits = {}) {
+/* Every page with the edits laid over the floor, as loadContent() does, then the page structure (src/shared/structure.mjs):
+   pages made on the staff page join the build's before the words are laid, so their words save like any other; drafts
+   and retired pages leave the list visitors get; moved and retired addresses are in `moves`. With no structure the
+   result is the build's, byte for byte. */
+export function composeSite(snap, edits = {}, structure = null) {
   const site = structuredClone(snap.floor.site);
-  const authored = structuredClone(snap.floor.pages);
+  const made = Object.values(structure?.pages || {}).filter((r) => r.page).map((r) => structuredClone(r.page));
+  const authored = [...structuredClone(snap.floor.pages), ...made];
   const overlay = applyEdits(edits, { site, pages: authored, text: snap.floor.text }, { media: new Set((snap.media?.items || []).map((m) => m.id)) });
   const text = resolveText(snap.textRegistry, { ...snap.textEdits, ...overlay.textEdits });
   const t = makeT(text);
-  const pages = [...authored, ...placePages(snap.places, t), ...personPages(snap.team, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
-  return { site, pages, text, applied: overlay.applied, skipped: overlay.problems, programs: pagePrograms(pages) };
+  const every = [...authored, ...placePages(snap.places, t), ...personPages(snap.team, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
+  const laid = layStructure(structure, { site, pages: every });
+  const pages = laid.pages;
+  const builtPaths = structure ? [...new Set([...(snap.builtPaths || []), ...pages.map((p) => p.path).filter(Boolean)])] : snap.builtPaths;
+  return {
+    site, pages, drafts: laid.drafts, retired: laid.retired, moves: laid.moves, all: [...pages, ...laid.drafts, ...laid.retired],
+    authored: new Set(snap.floor.pages.map((p) => p.id)), builtPaths,
+    text, applied: overlay.applied, skipped: overlay.problems, programs: pagePrograms(pages),
+  };
 }
 
 /* The forms a page shows the state of: its form blocks and the doors that name a form. A review page's
@@ -48,7 +60,7 @@ export const formsOn = (page) => [...new Set((page.blocks || []).flatMap((b) => 
 export function renderSitePage(snap, composed, page, today, forms = null) {
   const data = forms ? { ...snap.data, forms: { ...snap.data.forms, ...forms } } : snap.data;
   const ctx = makeContext({
-    site: composed.site, media: snap.media, builtPaths: snap.builtPaths, programs: new Map([...composed.programs, ...sectionPrograms(page)]),
+    site: composed.site, media: snap.media, builtPaths: composed.builtPaths || snap.builtPaths, programs: new Map([...composed.programs, ...sectionPrograms(page)]),
     routes: snap.routes, data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null,
   });
   return String(renderPage(ctx, page));

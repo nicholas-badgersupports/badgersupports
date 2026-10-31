@@ -20,6 +20,7 @@ import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
 import { currentForm } from "./intake.mjs";
 import { composeSite, renderSitePage, formsOn } from "../../src/render/site.mjs";
+import { trimSlash as dropSlash } from "../../src/shared/structure.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 
 const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -37,8 +38,8 @@ const FALLBACK_CACHE = { "cache-control": "public, max-age=0, must-revalidate", 
 let composed = null; // { key, site }
 
 function siteFor(snap, revision) {
-  const key = revision ? `${revision.n}:${revision.stamp}` : "none";
-  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits || {}) };
+  const key = revision ? `${revision.n}:${revision.stamp}:${revision.sstamp || 0}` : "none";
+  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits || {}, revision?.structure || null) };
   return composed.site;
 }
 
@@ -86,7 +87,7 @@ const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l
    folder, with or without the "/", and everything below it. Case counts; the first matching line wins.
    A target's placeholders (":splat") are not filled in, so a line that needs one does not belong here. */
 const trimSlash = (p) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
-function redirectFor(c, pathname) {
+export function redirectFor(c, pathname) {
   const asked = trimSlash(pathname);
   for (const line of String(c.redirects || "").split("\n")) {
     const [from, to, status] = line.trim().split(/\s+/);
@@ -120,15 +121,21 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
 
   const moved = redirectFor(c, pathname);
   if (moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
-  // A page's address ends in "/", as the static site's do. The address goes back as it came, encoded: a header
-  // cannot carry a letter outside Latin-1, and building one throws.
-  if (!malformed && !pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
 
   const snap = c.render;
+  let revision = null, site = null, fault = null;
+  try { revision = await currentRevision(); site = siteFor(snap, revision); } catch (e) { fault = e; }
+  // A page moved or retired on the staff page: its old address moves in one step, with or without its final "/", and
+  // is tagged like a page, so the next structure change clears it. Retired with nowhere to go, it is the 404 page.
+  const shifted = site && !malformed ? site.moves.get(dropSlash(pathname)) : null;
+  if (shifted?.to) return new Response(null, { status: 301, headers: { location: shifted.to + u.search, ...base, ...PAGE_CACHE, "netlify-cache-tag": `page,page:${shifted.page}` } });
+  // A page's address ends in "/", as the static site's do. The address goes back as it came, encoded: a header
+  // cannot carry a letter outside Latin-1, and building one throws.
+  if (!shifted && !malformed && !pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
+
   try {
-    const revision = await currentRevision();
-    const site = siteFor(snap, revision);
-    const page = site.pages.find((p) => (p.file ? `/${p.file}` : p.path) === pathname);
+    if (fault) throw fault;
+    const page = shifted ? null : site.pages.find((p) => (p.file ? `/${p.file}` : p.path) === pathname);
     const notFound = !page;
     const shown = page || site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
@@ -140,4 +147,23 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
     if (file) return html(200, file, { ...FALLBACK_CACHE, "x-bss-revision": "build" });
     return html(404, staticFile("/404.html") || "", { ...FALLBACK_CACHE, "x-bss-revision": "build" });
   }
+}
+
+/* A page as it will be once published, for the staff page's preview: the saved words and the structure now, drafts
+   included. Never cached, never indexed, and framed only by this site's own pages. null for a page that is not there
+   or is retired. */
+export async function previewResponse(pageId, { edits, structure, today = chicagoDate() }) {
+  const c = serverContent();
+  if (!c.render) return null;
+  const site = composeSite(c.render, edits, structure);
+  const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId);
+  if (!page) return null;
+  const { forms } = await formsNow(page);
+  const base = headerPairs(c.headers || []);
+  const csp = String(base["content-security-policy"] || "").split(";").map((d) => d.trim()).filter((d) => d && !d.startsWith("frame-ancestors"));
+  return new Response(renderSitePage(c.render, site, page, today, forms), { status: 200, headers: {
+    "content-type": "text/html; charset=utf-8", ...base,
+    "content-security-policy": [...csp, "frame-ancestors 'self'"].join("; "),
+    "x-frame-options": "SAMEORIGIN", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow",
+  } });
 }

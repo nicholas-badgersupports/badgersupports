@@ -440,3 +440,24 @@ Connect's "Who May Do What on the Website" grants who may use it. Sent to Connec
 | The page function reads the database for pages that show a form's state (5 form pages, Home and Get Involved), fresh each draw | a value held in one instance could be drawn into a page the CDN then keeps for 25 minutes | hold it, and accept the lag |
 | Someone who may switch a form but not read it sees its title and switch, no counts | counts are about answers, which their role does not read | show counts to switchers |
 | The row records the Connect id, not the name | an id does not change; Connect maps it to a person | store `who.name` beside it |
+
+## 31 October 2026 · pages: drafts, preview, restore (queue item 6, WORK item 16; Owner, then routine calls made in the session)
+
+His answer, given with a button on 31 Oct, to "A save already publishes at once. So what should a draft be?": **"New
+pages only"**. A new or copied page stays hidden, previewable at desktop and phone width, until someone with publish
+rights puts it on; edits to live pages keep publishing on save. How it is built: `ARCHITECTURE.md`, "Pages: drafts,
+preview, restore". The 20 Oct Exchange item `PUBLIC-SITE-EDITOR-REVISIONS` asked Connect to build this; Connect
+declined it then, and the editor has since moved to this site (24 Oct, above), so this site built it.
+
+| Call | Why | To reverse |
+|---|---|---|
+| `site.edit` adds and copies drafts, previews, and changes titles, search descriptions and a draft's address; `site.publish` puts a page on, retires a live page, moves a live page, changes the menu and brings back a version | the charter's "do not widen access by default": anything that changes what visitors can reach stays with the higher grant; no new scope, so Connect's grant screen needs no change | `scopeFor()` in `netlify/lib/structure.mjs` |
+| Every structure version and every published revision is kept; the staff page lists the newest 50 | his "archive, never delete" rule; the edit history already keeps every row | nothing to reverse; a retention limit would delete rows in `site_structure` and keys `revisions/<n>` |
+| A retired page answers a 301 to a page the publisher names, or the 404 page; its id and addresses are never given again | the 20 Oct item: "never a different page under the same id"; old links keep landing | `layStructure()` and `newPath()` in `src/shared/structure.mjs` |
+| A moved page's old address answers a 301 to the new one | printed and shared links keep working | drop `oldPaths` from the move in `applyChange()` |
+| Restoring a version retires a page made since it, rather than dropping it | an id is never given twice; nothing is deleted | `restoredDoc()` in `netlify/lib/structure.mjs` |
+| The home page, the 404 page, the staff page, rooms, people and form previews cannot be copied, moved or retired here | the site cannot do without the first three; the rest are drawn from their own records | `FIXED_PAGES` and `changeable()` in `src/shared/structure.mjs` |
+| A copy's blocks get new ids (`b-<page>-<n>`); a block with no anchor keeps its old id as its anchor | the 20 Oct item: ids are never reused; the page's own `#` links keep landing | `copyBlocks()` |
+| `frame-src` gains `'self'`, so the staff page can frame the preview; only the preview answer allows framing (`frame-ancestors 'self'`) | a preview at two widths needs a frame; every other answer keeps `frame-ancestors 'none'` | drop `'self'` from `cspHeader()` and open the preview in a tab only |
+| Each structure change clears every page and feed (`page`, `events`) | the menu is on every page, and a 404 answer for a new page's address is cached under `page` | narrow `publishAll()` in `router.mjs` |
+| The edits file a build downloads leaves out made pages' words | a build does not know those pages; they live in the published revision | `editsFile()` in `netlify/lib/edits.mjs` |

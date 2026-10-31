@@ -1393,6 +1393,356 @@
       "text": "Save this file in the site as content/edits.json before you publish, or saved changes are left out.",
       "where": "Staff page, under the download button."
     },
+    "staff.pages.title": {
+      "group": "staff",
+      "text": "Pages on the Site",
+      "where": "Staff page, heading above the page tools."
+    },
+    "staff.pages.how": {
+      "group": "staff",
+      "text": "A new page or a copy starts as a draft, which only staff can see. Open its Preview and use Edit Text there to change its words; someone who may publish then puts it on the site.",
+      "where": "Staff page, what a draft is."
+    },
+    "staff.pages.loading": {
+      "group": "staff",
+      "text": "Loading…",
+      "where": "Staff page, while the pages or versions load."
+    },
+    "staff.pages.add.title": {
+      "group": "staff",
+      "text": "Add a Page",
+      "where": "Staff page, heading of the form that adds a draft page."
+    },
+    "staff.pages.add.button": {
+      "group": "staff",
+      "text": "Add Draft Page",
+      "where": "Staff page, button that adds a draft page."
+    },
+    "staff.pages.field.title": {
+      "group": "staff",
+      "text": "Page title",
+      "where": "Staff page, label of a page's title."
+    },
+    "staff.pages.field.path": {
+      "group": "staff",
+      "text": "Address, for example /programs/spring-retreat/",
+      "where": "Staff page, label of a page's address."
+    },
+    "staff.pages.field.description": {
+      "group": "staff",
+      "text": "Search description",
+      "where": "Staff page, label of a page's description for search engines."
+    },
+    "staff.pages.field.group": {
+      "group": "staff",
+      "text": "Where it goes in the menu",
+      "where": "Staff page, label of the menu choice when a draft goes on the site."
+    },
+    "staff.pages.field.label": {
+      "group": "staff",
+      "text": "Name in the menu",
+      "where": "Staff page, label of the menu entry's name."
+    },
+    "staff.pages.field.to": {
+      "group": "staff",
+      "text": "Send its visitors to",
+      "where": "Staff page, label of where a retired page's address leads."
+    },
+    "staff.pages.state.live": {
+      "group": "staff",
+      "text": "On the site",
+      "where": "Staff page, chip on a page visitors can reach."
+    },
+    "staff.pages.state.draft": {
+      "group": "staff",
+      "text": "Draft",
+      "where": "Staff page, chip on a draft page."
+    },
+    "staff.pages.state.retired": {
+      "group": "staff",
+      "text": "Retired",
+      "where": "Staff page, chip on a retired page."
+    },
+    "staff.pages.preview": {
+      "group": "staff",
+      "text": "Preview",
+      "where": "Staff page, button that shows a page as it will look."
+    },
+    "staff.pages.previewOf": {
+      "group": "staff",
+      "text": "Preview of {{title}}, as it will look once on the site.",
+      "where": "Staff page, line above the preview."
+    },
+    "staff.pages.preview.desktop": {
+      "group": "staff",
+      "text": "Desktop Width",
+      "where": "Staff page, preview at desktop width."
+    },
+    "staff.pages.preview.phone": {
+      "group": "staff",
+      "text": "Phone Width",
+      "where": "Staff page, preview at phone width."
+    },
+    "staff.pages.previewOpen": {
+      "group": "staff",
+      "text": "Open in a New Tab",
+      "where": "Staff page, opens the preview in its own tab."
+    },
+    "staff.pages.previewFrame": {
+      "group": "staff",
+      "text": "Page preview",
+      "where": "Staff page, name of the preview frame for screen readers."
+    },
+    "staff.pages.copy": {
+      "group": "staff",
+      "text": "Copy",
+      "where": "Staff page, button that copies a page as a draft."
+    },
+    "staff.pages.copy.button": {
+      "group": "staff",
+      "text": "Make the Copy",
+      "where": "Staff page, button that saves the copy."
+    },
+    "staff.pages.details": {
+      "group": "staff",
+      "text": "Change Details",
+      "where": "Staff page, button that opens a page's title, description and address."
+    },
+    "staff.pages.details.button": {
+      "group": "staff",
+      "text": "Save Details",
+      "where": "Staff page, button that saves a page's details."
+    },
+    "staff.pages.details.liveAddress": {
+      "group": "staff",
+      "text": "Only someone who may publish can change the address of a page on the site.",
+      "where": "Staff page, under a live page's address for an editor."
+    },
+    "staff.pages.publish": {
+      "group": "staff",
+      "text": "Put on the Site",
+      "where": "Staff page, button that opens putting a draft on the site."
+    },
+    "staff.pages.publish.button": {
+      "group": "staff",
+      "text": "Put It on the Site",
+      "where": "Staff page, button that puts a draft on the site."
+    },
+    "staff.pages.menu.none": {
+      "group": "staff",
+      "text": "Not in the menu",
+      "where": "Staff page, menu choice: leave the page out of the menu."
+    },
+    "staff.pages.menu.top": {
+      "group": "staff",
+      "text": "At the top of the menu",
+      "where": "Staff page, menu choice: a top-level entry."
+    },
+    "staff.pages.retire": {
+      "group": "staff",
+      "text": "Retire",
+      "where": "Staff page, button that opens retiring a page."
+    },
+    "staff.pages.discard": {
+      "group": "staff",
+      "text": "Retire Draft",
+      "where": "Staff page, button that opens retiring a draft."
+    },
+    "staff.pages.retire.nowhere": {
+      "group": "staff",
+      "text": "Nowhere: show the not-found page",
+      "where": "Staff page, choice for a retired page with nowhere to send visitors."
+    },
+    "staff.pages.retire.confirm": {
+      "group": "staff",
+      "text": "Retire {{title}}? Its address will stop showing it. The page and its words are kept.",
+      "where": "Staff page, the second yes before retiring."
+    },
+    "staff.pages.retire.yes": {
+      "group": "staff",
+      "text": "Yes, Retire It",
+      "where": "Staff page, button that retires a page."
+    },
+    "staff.pages.cancel": {
+      "group": "staff",
+      "text": "Cancel",
+      "where": "Staff page, closes a page form without saving."
+    },
+    "staff.pages.saving": {
+      "group": "staff",
+      "text": "Saving…",
+      "where": "Staff page, on a page button while it saves."
+    },
+    "staff.pages.done.add": {
+      "group": "staff",
+      "text": "Draft page added.",
+      "where": "Staff page, said after a draft is added."
+    },
+    "staff.pages.done.copy": {
+      "group": "staff",
+      "text": "Copy made as a draft.",
+      "where": "Staff page, said after a copy is made."
+    },
+    "staff.pages.done.details": {
+      "group": "staff",
+      "text": "Details saved.",
+      "where": "Staff page, said after a page's details save."
+    },
+    "staff.pages.done.publish": {
+      "group": "staff",
+      "text": "The page is on the site.",
+      "where": "Staff page, said after a draft goes on the site."
+    },
+    "staff.pages.done.retire": {
+      "group": "staff",
+      "text": "The page is retired.",
+      "where": "Staff page, said after a page is retired."
+    },
+    "staff.pages.done.menu": {
+      "group": "staff",
+      "text": "Menu saved.",
+      "where": "Staff page, said after the menu saves."
+    },
+    "staff.pages.conflict": {
+      "group": "staff",
+      "text": "Someone changed the pages since you opened them. The list now shows their change; check it, then try again.",
+      "where": "Staff page, when another change landed first."
+    },
+    "staff.pages.error.path": {
+      "group": "staff",
+      "text": "Use an address like /programs/spring-retreat/: lower-case words joined by hyphens, one to four folders, ending in /.",
+      "where": "Staff page, a refused address."
+    },
+    "staff.pages.error.reserved": {
+      "group": "staff",
+      "text": "That address belongs to the site's own workings. Choose another.",
+      "where": "Staff page, an address in a reserved folder."
+    },
+    "staff.pages.error.taken": {
+      "group": "staff",
+      "text": "A page has or had that address. Choose another, so old links keep working.",
+      "where": "Staff page, an address already used."
+    },
+    "staff.pages.error.title": {
+      "group": "staff",
+      "text": "Give the page a title of up to 120 characters.",
+      "where": "Staff page, a refused title."
+    },
+    "staff.pages.error.description": {
+      "group": "staff",
+      "text": "Keep the search description to 300 characters.",
+      "where": "Staff page, a refused description."
+    },
+    "staff.pages.error.fixed": {
+      "group": "staff",
+      "text": "This page comes from its own record, or the site needs it, so it cannot change here.",
+      "where": "Staff page, a page that cannot be copied, moved or retired."
+    },
+    "staff.pages.error.retireTo": {
+      "group": "staff",
+      "text": "Choose a page that is on the site.",
+      "where": "Staff page, a refused destination for a retired page."
+    },
+    "staff.pages.error.menu": {
+      "group": "staff",
+      "text": "The menu changed in a way it cannot take. Reload this page and try again.",
+      "where": "Staff page, a refused menu."
+    },
+    "staff.pages.error.failed": {
+      "group": "staff",
+      "text": "That did not save. What you typed is still here; try again.",
+      "where": "Staff page, a change that failed."
+    },
+    "staff.pages.menu.title": {
+      "group": "staff",
+      "text": "The Menu",
+      "where": "Staff page, heading of the menu tools."
+    },
+    "staff.pages.menu.how": {
+      "group": "staff",
+      "text": "Move entries up or down, or take one off, then save. Each entry keeps its saved name.",
+      "where": "Staff page, how to change the menu."
+    },
+    "staff.pages.menu.up": {
+      "group": "staff",
+      "text": "Move {{label}} up",
+      "where": "Staff page, button name for screen readers."
+    },
+    "staff.pages.menu.down": {
+      "group": "staff",
+      "text": "Move {{label}} down",
+      "where": "Staff page, button name for screen readers."
+    },
+    "staff.pages.menu.remove": {
+      "group": "staff",
+      "text": "Take {{label}} off the menu",
+      "where": "Staff page, button that takes an entry off the menu."
+    },
+    "staff.pages.menu.takeOff": {
+      "group": "staff",
+      "text": "Take Off",
+      "where": "Staff page, button that takes a menu entry off the menu; its spoken name says which."
+    },
+    "staff.pages.menu.save": {
+      "group": "staff",
+      "text": "Save the Menu",
+      "where": "Staff page, button that saves the menu."
+    },
+    "staff.versions.title": {
+      "group": "staff",
+      "text": "Earlier Versions of the Site",
+      "where": "Staff page, heading of the published versions."
+    },
+    "staff.versions.how": {
+      "group": "staff",
+      "text": "Every save is a new version. Bringing one back puts its words and pages on the site again as the newest version; nothing is deleted.",
+      "where": "Staff page, what bringing a version back does."
+    },
+    "staff.versions.none": {
+      "group": "staff",
+      "text": "Nothing has been published from this page yet.",
+      "where": "Staff page, when there are no versions."
+    },
+    "staff.versions.failed": {
+      "group": "staff",
+      "text": "The earlier versions could not be read. Try again later.",
+      "where": "Staff page, when the versions cannot be read."
+    },
+    "staff.versions.item": {
+      "group": "staff",
+      "text": "Version {{n}}, {{when}}, by {{by}}",
+      "where": "Staff page, one published version."
+    },
+    "staff.versions.current": {
+      "group": "staff",
+      "text": "On the site now",
+      "where": "Staff page, chip on the newest version."
+    },
+    "staff.versions.restore": {
+      "group": "staff",
+      "text": "Bring Back Version {{n}}",
+      "where": "Staff page, button that asks to bring a version back."
+    },
+    "staff.versions.confirm": {
+      "group": "staff",
+      "text": "Bring back version {{n}}? It replaces what is on the site now, as a new version.",
+      "where": "Staff page, the second yes before bringing a version back."
+    },
+    "staff.versions.yes": {
+      "group": "staff",
+      "text": "Yes, Bring It Back",
+      "where": "Staff page, button that brings a version back."
+    },
+    "staff.versions.done": {
+      "group": "staff",
+      "text": "Version {{n}} is back on the site as version {{m}}.",
+      "where": "Staff page, said after a version comes back."
+    },
+    "staff.versions.conflict": {
+      "group": "staff",
+      "text": "Something changed since this list was read. The list is fresh now; try again.",
+      "where": "Staff page, when a restore is refused as stale."
+    },
     "edit.button": {
       "group": "staff",
       "text": "Edit Text",

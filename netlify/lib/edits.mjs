@@ -17,14 +17,28 @@
 import { many, tx } from "./db.mjs";
 import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
-import { EDITS_SCHEMA, editProblem, valueProblem } from "../../src/shared/edits.mjs";
+import { EDITS_SCHEMA, editProblem, valueProblem, pageStrings, pageValues } from "../../src/shared/edits.mjs";
 import { ICONS } from "../../src/render/icons.mjs";
 import { currentRevision } from "./published.mjs";
+import { structureNow } from "./structure.mjs";
 
 const PAGE_RE = /^pg-[a-z0-9-]{1,60}$/;
 
-const editable = () => serverContent().editable || {};
-const original = (e) => (e.floor !== undefined ? e.floor : e.shown);
+const buildMap = () => serverContent().editable || {};
+export const original = (e) => (e.floor !== undefined ? e.floor : e.shown);
+
+/* The build's map, with every word and value of each page made on the staff page (src/shared/structure.mjs), whose
+   floor is the page as it was made. */
+export function editableFor(doc) {
+  const map = { ...buildMap() };
+  for (const r of Object.values(doc?.pages || {})) {
+    if (!r.page) continue;
+    for (const s of pageStrings(r.page)) map[s.target] = { shown: s.value };
+    for (const v of pageValues(r.page)) map[v.target] = { shown: v.value, kind: v.kind, ...(v.options && v.kind !== "icon" ? { options: v.options } : {}) };
+  }
+  return map;
+}
+const editable = async () => editableFor((await structureNow()).doc);
 
 async function saved() {
   return new Map((await many("SELECT target, value, edited_name, edited_at FROM content_edits")).map((r) => [r.target, r]));
@@ -59,20 +73,20 @@ export async function editSource(pageId) {
   const live = await liveWords();
   const own = `page:${pageId}:`;
   const out = [];
-  for (const [target, e] of Object.entries(editable())) {
+  for (const [target, e] of Object.entries(await editable())) {
     if (target.startsWith(own) || target.startsWith("site:") || target.startsWith("text:")) out.push(entry(target, e, rows.get(target), live));
   }
   return out;
 }
 
 export async function editEntry(target) {
-  const e = editable()[target];
+  const e = (await editable())[target];
   return e ? entry(target, e, (await saved()).get(target), await liveWords()) : null;
 }
 
 /* How many saved edits the pages do not show yet. */
 export async function waitingCount() {
-  const map = editable();
+  const map = await editable();
   const live = await liveWords();
   let n = 0;
   for (const [target, r] of await saved()) if (map[target] && live(target, map[target]) !== r.value) n++;
@@ -81,15 +95,19 @@ export async function waitingCount() {
 
 /* Save one edit. expected is the words the editor started from: if someone else saved in between,
    this refuses (409) and says what is there now, rather than overwrite it unseen. */
-export async function saveEdit(who, { target, expected, value } = {}) {
-  const e = editable()[String(target || "")];
-  if (!e) throw new HttpError(400, "edit.target");
-  if (typeof expected !== "string") throw new HttpError(400, "edit.value");
-  // a value that is not a word is checked by its kind: a link https or on this site, a photo from the library,
-  // a choice from its list (src/shared/edits.mjs, valueProblem)
-  const problem = e.kind
+/* What is wrong with a value for one place, as a code, or null: a value that is not a word is checked by its kind
+   (a link https or on this site, a photo from the library, a choice from its list; src/shared/edits.mjs). */
+export function problemFor(target, e, value) {
+  return e.kind
     ? valueProblem(e.kind, value, { options: e.options || (e.kind === "icon" ? ICONS : []), media: new Set((serverContent().media?.items || []).map((m) => m.id)) })
     : editProblem(target, value, original(e));
+}
+
+export async function saveEdit(who, { target, expected, value } = {}) {
+  const e = (await editable())[String(target || "")];
+  if (!e) throw new HttpError(400, "edit.target");
+  if (typeof expected !== "string") throw new HttpError(400, "edit.value");
+  const problem = problemFor(target, e, value);
   if (problem) throw new HttpError(422, problem);
   const words = value.trim();
   return tx(async (t) => {
@@ -114,7 +132,7 @@ export const HISTORY_LIMIT = 50;
 /* Every version saved for one place, newest first, with who saved it. The newest is what the
    place holds now. Older than the newest HISTORY_LIMIT are kept but not listed. */
 export async function editHistory(target) {
-  const e = editable()[String(target || "")];
+  const e = (await editable())[String(target || "")];
   if (!e) throw new HttpError(400, "edit.target");
   const rows = await many(
     "SELECT id, value, edited_name, edited_at FROM content_edit_history WHERE target = $1 ORDER BY id DESC LIMIT $2",
@@ -126,13 +144,20 @@ export async function editHistory(target) {
   };
 }
 
-/* The file a publish needs, as the build reads it: the edits the pages already show, every saved
-   row over them, and nothing that equals the shipped files. */
-export async function editsFile() {
-  const map = editable();
+/* The edits a map's pages already show, every saved row over them, and nothing that equals its floor. */
+async function editsOver(map) {
   const edits = {};
   for (const [target, e] of Object.entries(map)) if (e.floor !== undefined) edits[target] = e.shown;
   for (const [target, r] of await saved()) if (map[target]) edits[target] = r.value;
   for (const [target, words] of Object.entries(edits)) if (words === original(map[target])) delete edits[target];
-  return { schema: EDITS_SCHEMA, edits: Object.fromEntries(Object.entries(edits).sort(([a], [b]) => a.localeCompare(b))) };
+  return Object.fromEntries(Object.entries(edits).sort(([a], [b]) => a.localeCompare(b)));
 }
+
+/* The file a publish needs, as the build reads it. Only the build's own pages: a build knows nothing of a page made on
+   the staff page, which lives in the published revision. */
+export async function editsFile() {
+  return { schema: EDITS_SCHEMA, edits: await editsOver(buildMap()) };
+}
+
+/* Every saved word the published revision carries, the words of pages made on the staff page included. */
+export const revisionEdits = (doc) => editsOver(editableFor(doc));

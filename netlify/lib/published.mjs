@@ -1,19 +1,22 @@
-/* The published revision: every word saved with the edit button, as one numbered document the pages are
- * drawn with (netlify/lib/pages.mjs). A save that passes its checks publishes the next revision
- * (owner, 24 Oct 2026: "a permitted, valid save publishes"); Refresh now publishes again when the last
+/* The published revision: every word saved with the edit button, and the page structure, as one numbered document
+ * the pages are drawn with (netlify/lib/pages.mjs). A save or structure change that passes its checks publishes the
+ * next revision (owner, 24 Oct 2026: "a permitted, valid save publishes"); Refresh now publishes again when the last
  * write failed. The document lives outside the database, so drawing a page never wakes it.
  *
- *   { schema: "bss.revision/1", n, at, by, stamp, edits: { target: words } }
+ *   { schema: "bss.revision/1", n, at, by, stamp, edits: { target: words }, sstamp?, structure? }
  *
- * `stamp` is the newest history row the revision holds (content_edit_history.id), so a slower save that read
- * the words before a quicker one never writes over the quicker one's revision.
+ * `stamp` is the newest history row the revision holds (content_edit_history.id) and `sstamp` the structure's
+ * version (site_structure.id), so a slower save that read before a quicker one never writes over the quicker one's
+ * revision. A revision with no structure is drawn as the build's pages. Every revision is kept, under
+ * revisions/<n>, so any of them can be brought back (structure.mjs, restoreRevision).
  *
  * The store is a seam: Netlify Blobs when deployed (`@netlify/blobs`, an owner action to install), memory on
  * a laptop and in the tests. With no store, nothing is published and the editor is told so.
  */
 
 import { one } from "./db.mjs";
-import { editsFile } from "./edits.mjs";
+import { revisionEdits } from "./edits.mjs";
+import { structureNow } from "./structure.mjs";
 
 export const REVISION_SCHEMA = "bss.revision/1";
 const HOLD_MS = 60_000;
@@ -67,9 +70,30 @@ export async function currentRevision({ now = Date.now(), fresh = false } = {}) 
 
 export const forgetRevision = () => { held = null; };
 
-/* Publish every saved word as the next revision. Returns { n, at } or throws with code publish.unavailable. */
+export const VERSIONS_LIMIT = 50;
+
+/* One published revision by number, or null. */
+export async function readRevision(n) {
+  try { return await current().get(`revisions/${Number(n)}`); } catch (e) { throw Object.assign(new Error(e.message), { code: "publish.unavailable" }); }
+}
+
+/* The newest VERSIONS_LIMIT revisions, newest first: { n, at, by }. Older ones are kept but not listed. */
+export async function listRevisions() {
+  const top = await currentRevision({ fresh: true });
+  const out = [];
+  for (let n = top?.n || 0; n >= 1 && out.length < VERSIONS_LIMIT; n--) {
+    const r = await readRevision(n);
+    if (r) out.push({ n: r.n, at: r.at, by: r.by || "" });
+  }
+  return out;
+}
+
+/* Publish every saved word and the structure now as the next revision. Returns { n, at } or throws with code
+   publish.unavailable. */
 export async function publishRevision(who, { now = new Date() } = {}) {
-  const { edits } = await editsFile();
+  const { version, doc } = await structureNow();
+  const sstamp = Number(version);
+  const edits = await revisionEdits(doc);
   const row = await one("SELECT max(id) AS id FROM content_edit_history");
   const stamp = Number(row?.id || 0);
   const s = current();
@@ -77,8 +101,8 @@ export async function publishRevision(who, { now = new Date() } = {}) {
   try { was = await s.get("current"); } catch (e) { throw Object.assign(new Error(e.message), { code: "publish.unavailable" }); }
   // A save that read the words before a later one has nothing newer to say, and the same words are not
   // published twice.
-  if (was && was.stamp >= stamp) { held = { until: now.getTime() + HOLD_MS, revision: was }; return { n: was.n, at: was.at, kept: true }; }
-  const revision = { schema: REVISION_SCHEMA, n: (was?.n || 0) + 1, at: now.toISOString(), by: who?.name || "", stamp, edits };
+  if (was && was.stamp >= stamp && (was.sstamp || 0) >= sstamp) { held = { until: now.getTime() + HOLD_MS, revision: was }; return { n: was.n, at: was.at, kept: true }; }
+  const revision = { schema: REVISION_SCHEMA, n: (was?.n || 0) + 1, at: now.toISOString(), by: who?.name || "", stamp, edits, ...(sstamp ? { sstamp, structure: doc } : {}) };
   try {
     await s.set(`revisions/${revision.n}`, revision);
     await s.set("current", revision);

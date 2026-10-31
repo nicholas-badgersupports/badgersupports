@@ -88,8 +88,8 @@ at a `sitemap.xml` of every page that is not `noindex`.
 From `headersFile()` in `ops/build.mjs`, on every path:
 
 - **Content-Security-Policy**: `default-src 'self'`; scripts from `'self'` plus the hash of the one inline script;
-  styles, images (and `data:`), fonts and `connect-src` from `'self'`; `frame-src https://www.instagram.com` (the
-  reel, which loads only after Play); `form-action 'self'`; `frame-ancestors 'none'`; `base-uri 'none'`;
+  styles, images (and `data:`), fonts and `connect-src` from `'self'`; `frame-src 'self' https://www.instagram.com` (the
+  reel, which loads only after Play, and the staff page's preview of this site's own pages); `form-action 'self'`; `frame-ancestors 'none'`; `base-uri 'none'`;
   `object-src 'none'`. No inline style, so focal points are classes, not `style` attributes.
 - `X-Content-Type-Options: nosniff`; `Referrer-Policy: strict-origin-when-cross-origin`; a `Permissions-Policy`
   turning off camera, microphone, geolocation, payment and USB; `Cross-Origin-Opener-Policy: same-origin`.
@@ -142,9 +142,15 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | formSwitch | POST | `/api/staff/forms/<key>/switch` | director |
 | staffRetry | POST | `/api/staff/outbox/retry` | director |
 | editSource | GET | `/api/staff/edit/source` | director |
+| editHistory | GET | `/api/staff/edit/history?target=<target>` | director |
 | editSave | POST | `/api/staff/edit/save` | director |
 | editsFile | GET | `/api/staff/edits` | director |
 | refresh | POST | `/api/staff/refresh` | director |
+| pages | GET | `/api/staff/pages` | director |
+| pagesChange | POST | `/api/staff/pages` | director |
+| preview | GET | `/api/staff/preview/<page id>` | director |
+| versions | GET | `/api/staff/versions` | director |
+| restore | POST | `/api/staff/versions/<n>/restore` | director |
 | staffAny | any | `/api/staff/…` | director |
 
 - **public**: anyone. A POST must come from this site, and is rate-limited. Sign-in is public because it is how a
@@ -153,7 +159,8 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 - **director**: someone signed in through Connect ("Staff sign-in", below). The tier proves a session; each route
   then checks its scope: `forms.read:<key>` (or `forms.read:*`) to read a form's answers, `forms.switch:<key>` (or
   `forms.switch:*`) to open and close a form, `site.edit` to change words, `site.publish` to download saved changes
-  for a publish. A super admin sets which tiers carry which scope in
+  for a publish. Pages ("Pages: drafts, preview, restore", below) take `site.edit` for drafts and words and
+  `site.publish` for anything that changes what visitors can reach. A super admin sets which tiers carry which scope in
   Connect (Admin > Website Forms, `adminSetPublicSitePermissions`); a super admin always has all of them. Without a session, `requireDirector()` answers 401 with `configured`, which tells `/staff/` whether
   signing in can work on this copy at all.
 
@@ -428,6 +435,51 @@ cloud session). After a deploy, tagged pages may stay up to 30 minutes old, whic
 **What it needs from the owner.** Two packages, exact-pinned (`@netlify/blobs`, `@netlify/functions`), the page
 function's lines in `netlify.toml`, and one deploy. Until then a deployed save behaves as today: kept, not
 published, and said so.
+
+## Pages: drafts, preview, restore (item 16, 31 Oct 2026)
+
+The owner's answer of 31 Oct: a draft is a **new page only**. A page made or copied on the staff page is hidden from
+visitors until someone with `site.publish` puts it on; an edit to a live page still publishes on save. The rest of
+this section is how that is built (`DECISIONS.md`, 31 Oct, has the routine calls and how to reverse each).
+
+**One document, every version kept.** The page structure is one JSON document (`src/shared/structure.mjs`): each
+page's state (`draft`, `live`, `retired`), a made page's whole JSON, a moved page's address and old addresses, a
+retired page's destination, and the menu by entry id. Every change writes a new row of `site_structure` (migration
+008); rows are never changed or deleted, and the newest is the structure now. A change names the version its tab
+started from and is refused (409, with the version now) when another landed first.
+
+**Published like a word.** A structure change publishes the next revision, which now carries the structure beside
+the words (`sstamp`, `structure`; `published.mjs`). The page function lays it over the build's pages after the saved
+words (`composeSite`), so a made page's words save with the edit button like any other, and nothing is read from the
+database on a page view. Each change clears the tags `page` and `events`: the menu is on every page, and an address
+that answered the 404 page may now be a page.
+
+**Addresses.** A new address is one to four lower-case folders ending in `/`, in no reserved folder (`api`, `assets`,
+`media`, `calendar`, `staff`, `forms`, …), and held by no page, old address or redirect line. A moved page's old
+addresses answer a 301 to its new one in one step, with or without the final `/`, tagged `page` so the next change
+clears them. A retired page's addresses answer a 301 to the page the publisher named, or the 404 page. An id is never
+given twice: a retired page keeps its record. The home page, the 404 page, the staff page, and pages made from their
+own records (rooms, people, form previews) cannot be copied, moved or retired here.
+
+**The menu.** Stored by entry id, so a saved menu word follows its entry when the order changes. An entry the build
+adds later and the document does not name keeps its place from the build. An entry whose page is a draft or retired
+leaves the menu; one whose page moved follows it.
+
+**Preview.** `GET /api/staff/preview/<page id>` draws a page as it will be once published, drafts included, from the
+saved words and the structure now: `no-store`, `noindex`, and framed only by this site (`frame-ancestors 'self'`). The
+staff page shows it in a frame at 1280 and 390 px, scaled to fit.
+
+**Restore.** `GET /api/staff/versions` lists the newest 50 published revisions (all are kept in the store) and a token
+naming the structure version and newest saved word. `POST /api/staff/versions/<n>/restore` (`site.publish`) saves each
+place whose words differ again, with its history row, and writes the revision's structure as the newest, in one
+transaction; a page made since that revision is retired, not dropped. It is refused when the token is stale.
+
+**Limits.** Found in the code, not seen live: a page made here is not in `sitemap.xml` until the next build, and a
+retired one stays there until then. A made page's event sections are drawn when the page is drawn, not refreshed
+between draws (`/api/events/<page>` knows the build's pages only). If the revision cannot be read, a made page's
+address answers the 404 page, because the build's fallback files do not hold it. A structure change shares item 8's
+window: a copy of the page function still holding the old revision for its minute can draw the old structure into
+the cache after the purge.
 
 ## Crawlers and abuse (25 Oct 2026, cloud run §6)
 

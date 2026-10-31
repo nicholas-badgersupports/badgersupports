@@ -16,7 +16,10 @@
  *   - for anyone who may change words, how to, and how many saved changes are not on the site yet;
  *   - for anyone who may change or publish words: that changes take up to 30 minutes to show, when
  *     the site last updated (or that the last update failed), and Refresh now (router.mjs, refresh);
- *   - for anyone who may publish, the edits file, for a build (netlify/lib/edits.mjs).
+ *   - for anyone who may publish, the edits file, for a build (netlify/lib/edits.mjs);
+ *   - for anyone who may change or publish words, the pages (structure.mjs): add or copy a draft, preview it at desktop
+ *     and phone width, change its title, search description and address; for a publisher, put a draft on, retire a
+ *     page, reorder the menu; and the published versions, with Bring back for a publisher, asked twice.
  * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
  * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools
@@ -316,6 +319,236 @@ function editSection(me) {
   return section;
 }
 
+/* ---------- pages ---------- */
+
+/* Set by the versions part: a change saved in the pages part lists its new version there too. */
+let published = () => {};
+
+/* Each change names the version of the pages it started from; a refusal keeps what was typed and says why. */
+const PAGE_ERRORS = { "page.path": "path", "page.path.reserved": "reserved", "page.path.taken": "taken", "page.title": "title",
+  "page.description": "description", "page.fixed": "fixed", "page.retireTo": "retireTo", "menu.entry": "menu", "menu.group": "menu" };
+const STATE_CHIP = { live: "is-open", draft: "is-closed", retired: "is-closed" };
+let fieldCount = 0;
+function field(label, input) {
+  input.id = `staff-field-${++fieldCount}`;
+  return el("div", { className: "field" }, el("label", { htmlFor: input.id, textContent: label }), input);
+}
+const textInput = (value = "", extra = {}) => el("input", { type: "text", value, autocomplete: "off", ...extra });
+function choice(options, value) {
+  const s = el("select", {}, ...options.map(([v, words]) => el("option", { value: v, textContent: words })));
+  s.value = value;
+  return s;
+}
+
+/* The page as it will look once on the site, in a frame at desktop or phone width, scaled to fit. */
+function previewBox() {
+  const frame = el("iframe", { title: t("staff.pages.previewFrame") });
+  const holder = el("div", { className: "staff-preview-frame" }, frame);
+  const label = el("p");
+  const open = el("a", { className: "btn btn--quiet", target: "_blank", rel: "noopener", textContent: t("staff.pages.previewOpen") });
+  const sizes = [["desktop", 1280, 860], ["phone", 390, 760]];
+  let size = sizes[0];
+  const fit = () => {
+    const [, w, h] = size;
+    const k = Math.min(1, holder.clientWidth / w || 1);
+    Object.assign(frame.style, { width: `${w}px`, height: `${h}px`, transform: `scale(${k})` });
+    holder.style.height = `${Math.round(h * k)}px`;
+  };
+  const buttons = sizes.map(([key], i) => {
+    const b = el("button", { type: "button", className: "btn btn--quiet", textContent: t(`staff.pages.preview.${key}`) });
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.addEventListener("click", () => { size = sizes[i]; buttons.forEach((x, j) => x.setAttribute("aria-pressed", String(j === i))); fit(); });
+    return b;
+  });
+  addEventListener("resize", fit);
+  const box = el("div", { className: "staff-preview", hidden: true }, label, el("div", { className: "staff-actions" }, ...buttons, open), holder);
+  return { box, show(p) { label.textContent = t("staff.pages.previewOf", { title: p.title }); frame.src = open.href = `/api/staff/preview/${p.id}`; box.hidden = false; fit(); box.scrollIntoView({ block: "nearest" }); } };
+}
+
+function pagesSection(me) {
+  const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
+  const problem = el("div", { hidden: true });
+  const preview = previewBox();
+  const section = el("section", { className: "staff-part" },
+    el("h2", { id: "staff-pages-h", textContent: t("staff.pages.title") }),
+    el("p", { textContent: t("staff.pages.how") }), problem, body, preview.box);
+  section.setAttribute("aria-labelledby", "staff-pages-h");
+  let now = null;
+
+  const show = (box, words) => { problem.replaceChildren(box); problem.hidden = false; say(words); };
+  function failed(r) {
+    if (r.status === 409) return show(noteBox(t("staff.pages.conflict")), t("staff.pages.conflict"));
+    if (r.status === 422 || r.status === 400) { const w = t(`staff.pages.error.${PAGE_ERRORS[r.body.error] || "failed"}`); return show(noteBox(w), w); }
+    const [box, words] = r.status === 0 ? [noteBox(t("staff.pages.error.failed")), t("staff.pages.error.failed")] : refused(r);
+    return show(box, words);
+  }
+  async function load() {
+    const r = await call("/api/staff/pages").catch(offline);
+    if (!section.isConnected) return;
+    if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
+    now = r.body;
+    draw();
+  }
+  /* Send one change; on success the list is drawn again from the server. Returns whether it saved. */
+  async function send(button, change, done) {
+    if (isBusy(button)) return false;
+    const undo = busy(button, t("staff.pages.saving"));
+    const r = await call("/api/staff/pages", { method: "POST", body: { ...change, expected: now.version } }).catch(offline);
+    undo();
+    if (!section.isConnected) return false;
+    if (r.status !== 200) { failed(r); if (r.status === 409) await load(); return false; }
+    problem.hidden = true;
+    say(r.body.publishError ? t("staff.edit.updateFailed") : done);
+    published();
+    await load();
+    return true;
+  }
+
+  const addTitle = textInput();
+  const addPath = textInput("/", { spellcheck: false });
+  const addButton = el("button", { type: "submit", className: "btn", textContent: t("staff.pages.add.button") });
+  const addForm = el("form", { className: "staff-form staff-add" }, el("h3", { textContent: t("staff.pages.add.title") }),
+    field(t("staff.pages.field.title"), addTitle), field(t("staff.pages.field.path"), addPath), el("div", { className: "staff-actions" }, addButton));
+  addForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (await send(addButton, { action: "add", title: addTitle.value, path: addPath.value }, t("staff.pages.done.add"))) { addTitle.value = ""; addPath.value = "/"; }
+  });
+
+  function card(p) {
+    const drawer = el("div", { className: "staff-drawer", hidden: true });
+    const open = (...kids) => { drawer.replaceChildren(...kids); drawer.hidden = false; drawer.querySelector("input, select, button")?.focus(); };
+    const cancel = () => el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.cancel"), onclick: () => { drawer.hidden = true; } });
+    const form = (fields, words, make, done) => {
+      const go = el("button", { type: "submit", className: "btn", textContent: words });
+      const f = el("form", {}, ...fields, el("div", { className: "staff-actions" }, go, cancel()));
+      f.addEventListener("submit", (e) => { e.preventDefault(); send(go, make(), done); });
+      return f;
+    };
+    const live = now.pages.filter((x) => x.state === "live" && x.id !== p.id);
+    const groups = [["", t("staff.pages.menu.top")], ...now.menu.filter((x) => x.children).map((x) => [x.id, x.label])];
+    const actions = [];
+    const button = (words, onclick) => actions.push(el("button", { type: "button", className: "btn btn--quiet", textContent: words, onclick }));
+    if (p.state !== "retired") button(t("staff.pages.preview"), () => preview.show(p));
+    if (!p.fixed && me.canEdit) button(t("staff.pages.copy"), () => {
+      const title = textInput(p.title), where = textInput(p.path, { spellcheck: false });
+      open(form([field(t("staff.pages.field.title"), title), field(t("staff.pages.field.path"), where)], t("staff.pages.copy.button"),
+        () => ({ action: "copy", page: p.id, title: title.value, path: where.value }), t("staff.pages.done.copy")));
+    });
+    if (!p.fixed && p.state !== "retired" && me.canEdit) button(t("staff.pages.details"), () => {
+      const title = textInput(p.title), about = el("textarea", { value: p.description, rows: 3 });
+      const mayMove = p.state === "draft" || me.canPublish;
+      const where = textInput(p.path, { spellcheck: false, disabled: !mayMove });
+      open(form([field(t("staff.pages.field.title"), title), field(t("staff.pages.field.description"), about), field(t("staff.pages.field.path"), where),
+        !mayMove && el("p", { className: "staff-note", textContent: t("staff.pages.details.liveAddress") })].filter(Boolean), t("staff.pages.details.button"),
+      () => ({ action: "details", page: p.id, title: title.value, description: about.value, ...(mayMove && where.value !== p.path ? { path: where.value } : {}) }), t("staff.pages.done.details")));
+    });
+    if (p.state === "draft" && me.canPublish) button(t("staff.pages.publish"), () => {
+      const group = choice([["-", t("staff.pages.menu.none")], ...groups], "-"), name = textInput(p.title);
+      open(form([field(t("staff.pages.field.group"), group), field(t("staff.pages.field.label"), name)], t("staff.pages.publish.button"),
+        () => ({ action: "publish", page: p.id, ...(group.value === "-" ? {} : { group: group.value, label: name.value }) }), t("staff.pages.done.publish")));
+    });
+    if (!p.fixed && (p.state === "draft" ? me.canEdit : p.state === "live" && me.canPublish)) button(p.state === "draft" ? t("staff.pages.discard") : t("staff.pages.retire"), () => {
+      const to = choice([["", t("staff.pages.retire.nowhere")], ...live.map((x) => [x.id, `${x.title} (${x.path})`])], "");
+      open(form([el("p", { textContent: t("staff.pages.retire.confirm", { title: p.title }) }), p.state === "live" && field(t("staff.pages.field.to"), to)].filter(Boolean),
+        t("staff.pages.retire.yes"), () => ({ action: "retire", page: p.id, ...(p.state === "live" && to.value ? { to: to.value } : {}) }), t("staff.pages.done.retire")));
+    });
+    return el("li", { className: "staff-form" },
+      el("h3", {}, p.title, el("span", { className: `staff-chip ${STATE_CHIP[p.state]}`, textContent: t(`staff.pages.state.${p.state}`) })),
+      el("p", { textContent: p.path }), actions.length && el("div", { className: "staff-actions" }, ...actions), drawer);
+  }
+
+  /* The menu, reordered here and saved once. Up and Down move an entry within its level. */
+  function menuPart() {
+    let order = now.menu.map((x) => ({ ...x, children: x.children ? [...x.children] : undefined }));
+    const list = el("ol", { className: "staff-menu" });
+    const save = el("button", { type: "button", className: "btn", textContent: t("staff.pages.menu.save") });
+    const move = (arr, i, by) => { const j = i + by; if (j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; drawList(`${arr[j].id}:${by}`); };
+    const arrow = (x, by, sign, off, onclick) => {
+      const b = el("button", { type: "button", className: "btn btn--quiet", textContent: sign, disabled: off, onclick });
+      b.setAttribute("aria-label", t(by < 0 ? "staff.pages.menu.up" : "staff.pages.menu.down", { label: x.label }));
+      b.dataset.key = `${x.id}:${by}`;
+      return b;
+    };
+    const takeOff = (x, onclick) => {
+      const b = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.menu.takeOff"), onclick });
+      b.setAttribute("aria-label", t("staff.pages.menu.remove", { label: x.label }));
+      return b;
+    };
+    const row = (arr, i, x) => el("li", {}, el("span", { textContent: x.label }),
+      arrow(x, -1, "↑", i === 0, () => move(arr, i, -1)),
+      arrow(x, 1, "↓", i === arr.length - 1, () => move(arr, i, 1)),
+      takeOff(x, () => { arr.splice(i, 1); drawList(); }),
+      x.children && el("ol", {}, ...x.children.map((c, k) => row(x.children, k, c))));
+    function drawList(focus) {
+      list.replaceChildren(...order.map((x, i) => row(order, i, x)));
+      const b = focus && list.querySelector(`[data-key="${focus}"]`);
+      (b && !b.disabled ? b : save).focus();
+    }
+    list.replaceChildren(...order.map((x, i) => row(order, i, x)));
+    save.addEventListener("click", () => send(save, { action: "menu", menu: order.map((x) => ({ id: x.id, ...(x.children ? { children: x.children.map((c) => c.id) } : {}) })) }, t("staff.pages.done.menu")));
+    const part = el("div", { className: "staff-form" }, el("h3", { textContent: t("staff.pages.menu.title") }), el("p", { textContent: t("staff.pages.menu.how") }), list, el("div", { className: "staff-actions" }, save));
+    return part;
+  }
+
+  /* Drafts first, then the pages on the site by address, then retired pages made here. */
+  const RANK = { draft: 0, live: 1, retired: 2 };
+  function draw() {
+    const shown = now.pages.filter((p) => p.state !== "retired" || p.made)
+      .sort((a, b) => RANK[a.state] - RANK[b.state] || a.path.localeCompare(b.path));
+    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart()].filter(Boolean));
+  }
+  load();
+  return section;
+}
+
+/* ---------- earlier versions ---------- */
+
+function versionsSection(me) {
+  const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
+  const section = el("section", { className: "staff-part" },
+    el("h2", { id: "staff-versions-h", textContent: t("staff.versions.title") }), el("p", { textContent: t("staff.versions.how") }), body);
+  section.setAttribute("aria-labelledby", "staff-versions-h");
+  async function load(words) {
+    const r = await call("/api/staff/versions").catch(offline);
+    if (!section.isConnected) return;
+    if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
+    const { versions, expected } = r.body;
+    if (!versions.length) { body.replaceChildren(el("p", { textContent: r.body.publishError ? t("staff.versions.failed") : t("staff.versions.none") })); return; }
+    const items = versions.map((v, i) => {
+      const line = el("p", { textContent: t("staff.versions.item", { n: v.n, when: when(v.at), by: v.by || "—" }) });
+      if (i === 0) return el("li", { className: "staff-form" }, line, el("p", { className: "staff-chip is-open", textContent: t("staff.versions.current") }));
+      if (!me.canPublish) return el("li", { className: "staff-form" }, line);
+      const ask = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.versions.restore", { n: v.n }) });
+      const confirm = el("div", { className: "staff-drawer", hidden: true });
+      ask.addEventListener("click", () => {
+        const yes = el("button", { type: "button", className: "btn", textContent: t("staff.versions.yes") });
+        const no = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.cancel"), onclick: () => { confirm.hidden = true; ask.focus(); } });
+        yes.addEventListener("click", async () => {
+          if (isBusy(yes)) return;
+          const undo = busy(yes, t("staff.pages.saving"));
+          const back = await call(`/api/staff/versions/${v.n}/restore`, { method: "POST", body: { expected } }).catch(offline);
+          undo();
+          if (!section.isConnected) return;
+          if (back.status === 200) return load(t("staff.versions.done", { n: v.n, m: back.body.published?.n ?? "—" }));
+          const words2 = back.status === 409 ? t("staff.versions.conflict") : refused(back)[1];
+          if (back.status === 409) return load(words2);
+          confirm.replaceChildren(noteBox(words2));
+          say(words2);
+        });
+        confirm.replaceChildren(el("p", { textContent: t("staff.versions.confirm", { n: v.n }) }), el("div", { className: "staff-actions" }, yes, no));
+        confirm.hidden = false;
+        yes.focus();
+      });
+      return el("li", { className: "staff-form" }, line, el("div", { className: "staff-actions" }, ask), confirm);
+    });
+    body.replaceChildren(el("ul", { className: "staff-forms" }, ...items));
+    if (words) say(words);
+  }
+  published = () => { if (section.isConnected) load(); };
+  load();
+  return section;
+}
+
 /* ---------- who ---------- */
 
 function whoBar(me) {
@@ -361,7 +594,8 @@ function showTools(me) {
   if (quote) quote.hidden = true;
   const forms = me.canRead || me.canSwitch ? formsSection(me) : me.readAgain && readAgainSection();
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
-  app.replaceChildren(...[onward, whoBar(me), forms, (me.canEdit || me.canPublish) && editSection(me)].filter(Boolean));
+  const pages = me.canEdit || me.canPublish;
+  app.replaceChildren(...[onward, whoBar(me), forms, pages && editSection(me), pages && pagesSection(me), pages && versionsSection(me)].filter(Boolean));
   if (!forms && !me.canEdit && !me.canPublish) app.prepend(el("p", { className: "staff-note", textContent: t("staff.nothing") }));
   app.hidden = false;
   say(me.name ? t("staff.signedInAs", { name: me.name }) : t("staff.signedIn"));

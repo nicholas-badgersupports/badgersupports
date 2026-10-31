@@ -6,8 +6,11 @@
  *             route then checks the scope it needs: forms.read:<key> to read a form's answers,
  *             forms.switch:<key> to open and close a form, site.edit to change words with the edit
  *             button (a save publishes them), site.edit or
- *             site.publish for Refresh now, site.publish to download the edits file. Which roles hold which is a super
- *             admin's setting in Connect (Website Forms), not this site's.
+ *             site.publish for Refresh now, site.publish to download the edits file. Pages (structure.mjs): site.edit
+ *             to add or copy a draft page, preview, and change a page's title, search description or a draft's
+ *             address; site.publish to put a page on, retire a live page, move a live page, change the menu
+ *             and bring back an earlier version. Which roles hold which is a super admin's setting in Connect
+ *             (Website Forms), not this site's.
  *
  * Sign-in itself (/api/auth/*) is public: it is how a session starts. Its failures are pages,
  * since a person lands on them, not a script.
@@ -24,8 +27,10 @@ import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { eventSections, calendarFile, forgetEvents } from "./live-events.mjs";
-import { publishRevision, currentRevision, purgeTags } from "./published.mjs";
-import { formTags } from "./pages.mjs";
+import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
+import { formTags, previewResponse } from "./pages.mjs";
+import { structureNow, pagesList, changeStructure, restoreRevision, restoreToken } from "./structure.mjs";
+import { revisionEdits } from "./edits.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
@@ -319,6 +324,68 @@ async function refreshRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await publishedNow()), ...(publishError ? { publishError } : {}), ...(purgeError ? { purgeError } : {}) });
 }
 
+const editsPages = (who) => { if (!can(who, "site.edit") && !can(who, "site.publish")) throw new HttpError(403, "staff.forbidden"); };
+
+/* After a structure change or a restore: the next revision, and every page and feed cleared, since the menu is on each
+   and an address that was the 404 page may be a page now. A failure leaves the change saved and says so. */
+async function publishAll(who) {
+  let published = null, publishError = null;
+  try {
+    published = await publishRevision(who);
+    await purgeTags(["page", "events"]).catch((e) => console.error("purge:", e.code || e.message));
+  } catch (e) {
+    publishError = e.code || "publish.unavailable";
+    console.error("publish:", e.message);
+  }
+  return { published, publishError };
+}
+
+async function pagesRoute(req, _m, _c, who) {
+  editsPages(who);
+  return json(200, { ok: true, ...(await pagesList()) });
+}
+
+export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu"]);
+
+/* One change to the pages or the menu. JSON from this site only; `expected` is the version the tab started from. */
+async function pagesChangeRoute(req, _m, _c, who) {
+  editsPages(who);
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  if (!PAGE_ACTIONS.has(body.action)) throw new HttpError(400, "pages.action");
+  const r = await changeStructure(who, body, (scope) => need(who, scope));
+  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(await publishAll(who)) });
+}
+
+/* A page as it will be once published, drafts included, to look at in a frame at desktop and phone width. */
+async function previewRoute(req, [pageId], _c, who) {
+  editsPages(who);
+  const { doc } = await structureNow();
+  const res = await previewResponse(pageId, { edits: await revisionEdits(doc), structure: doc });
+  if (!res) throw new HttpError(404, "page.unknown");
+  return res;
+}
+
+/* The published versions, newest first, and the token a restore must send back. */
+async function versionsRoute(req, _m, _c, who) {
+  editsPages(who);
+  let versions = [], publishError = null;
+  try { versions = await listRevisions(); } catch (e) { publishError = e.code || "publish.unavailable"; }
+  return json(200, { ok: true, versions, expected: await restoreToken(), ...(publishError ? { publishError } : {}) });
+}
+
+/* Bring back an earlier published version as the newest: a publisher's, refused when anything changed since the list
+   was read. */
+async function restoreRoute(req, [n], _c, who) {
+  need(who, "site.publish");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  const revision = await readRevision(n);
+  if (!revision) throw new HttpError(404, "versions.unknown");
+  const r = await restoreRevision(who, revision, body.expected);
+  return json(200, { ok: true, ...r, ...(await publishAll(who)) });
+}
+
 /* ?download=1 is the file a publish lays over the site: saved as content/edits.json. Changing words
    and handing them to a publish are separate permissions, so this needs site.publish. */
 async function editsFileRoute(req, _m, _c, who) {
@@ -380,6 +447,11 @@ export const ROUTES = [
   { name: "editSave", method: "POST", pattern: /^\/api\/staff\/edit\/save$/, tier: "director", run: editSave },
   { name: "editsFile", method: "GET", pattern: /^\/api\/staff\/edits$/, tier: "director", run: editsFileRoute },
   { name: "refresh", method: "POST", pattern: /^\/api\/staff\/refresh$/, tier: "director", run: refreshRoute },
+  { name: "pages", method: "GET", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesRoute },
+  { name: "pagesChange", method: "POST", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesChangeRoute },
+  { name: "preview", method: "GET", pattern: /^\/api\/staff\/preview\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: previewRoute },
+  { name: "versions", method: "GET", pattern: /^\/api\/staff\/versions$/, tier: "director", run: versionsRoute },
+  { name: "restore", method: "POST", pattern: /^\/api\/staff\/versions\/([1-9][0-9]{0,8})\/restore$/, tier: "director", run: restoreRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },
 ];
 

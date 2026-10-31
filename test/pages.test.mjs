@@ -136,7 +136,7 @@ test("the reel loads nothing from Instagram until it is pressed, and the policy 
     assert.doesNotMatch(h, /<script[^>]+src="https?:\/\//, f);
   }
   const csp = read("_headers").match(/Content-Security-Policy: (.*)/)[1];
-  assert.match(csp, /frame-src https:\/\/www\.instagram\.com;/);
+  assert.match(csp, /frame-src 'self' https:\/\/www\.instagram\.com;/, "Instagram, and the staff page's own preview");
   assert.match(csp, /script-src 'self' 'sha256-[^']+';/, "no Instagram script");
   assert.deepEqual(embedProblems({ url: "https://www.instagram.com/reel/DecSxrys1OY/", title: "x" }), []);
   assert.equal(embedProblems({ url: "https://example.com/video", title: "x" }).length, 1);

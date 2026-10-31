@@ -1128,6 +1128,69 @@ await part("resources: a card's details and the filter", async () => {
   await ctx.close();
 });
 
+/* The pages part of the staff page (item 16) against the API in this process, with the build's own snapshot so pages
+   can be drawn: add a draft, preview it at both widths, a refused address that keeps what was typed, put it on, move a
+   menu entry, and bring back an earlier version, asked twice. */
+await part("staff page: pages, preview and earlier versions", async () => {
+  await freshServer();
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  const cardOf = (title) => page.locator(".staff-form").filter({ has: page.locator("h3", { hasText: title }) });
+  await page.getByLabel(words("staff.pages.field.title")).first().fill("Spring Retreat");
+  await page.getByLabel(words("staff.pages.field.path")).first().fill("/Spring Retreat/");
+  await page.getByRole("button", { name: words("staff.pages.add.button") }).click();
+  await page.waitForFunction((w) => [...document.querySelectorAll(".staff-note")].some((n) => n.textContent === w), words("staff.pages.error.path"), { timeout: 5000 }).catch(() => {});
+  const kept = await page.evaluate(() => [...document.querySelectorAll(".staff-part input")].slice(0, 2).map((i) => i.value));
+  check(kept.join("|") === "Spring Retreat|/Spring Retreat/", `pages: a refused address says why and keeps what was typed (${JSON.stringify(kept)})`);
+  await page.getByLabel(words("staff.pages.field.path")).first().fill("/programs/spring-retreat/");
+  await page.getByRole("button", { name: words("staff.pages.add.button") }).click();
+  await cardOf("Spring Retreat").waitFor({ timeout: 5000 });
+  const chip = await cardOf("Spring Retreat").locator(".staff-chip").textContent();
+  check(chip === words("staff.pages.state.draft"), `pages: the new page is listed as a draft (${chip})`);
+
+  await cardOf("Spring Retreat").getByRole("button", { name: words("staff.pages.preview") }).click();
+  const frame = page.frameLocator(".staff-preview iframe");
+  await frame.locator("h1").waitFor({ timeout: 8000 });
+  const h1 = await frame.locator("h1").first().textContent();
+  const size = () => page.evaluate(() => { const f = document.querySelector(".staff-preview iframe"); const r = f.getBoundingClientRect(); return { w: f.style.width, shown: Math.round(r.width), box: Math.round(f.parentElement.getBoundingClientRect().width) }; });
+  const wide = await size();
+  await page.getByRole("button", { name: words("staff.pages.preview.phone") }).click();
+  const narrow = await size();
+  check(h1.trim() === "Spring Retreat" && wide.w === "1280px" && narrow.w === "390px" && wide.shown <= wide.box && narrow.shown <= narrow.box,
+    `pages: Preview shows the draft at desktop and phone width, scaled into its box (${JSON.stringify({ h1, wide, narrow })})`);
+  await page.screenshot({ path: path.join(ROOT, "local", "staff-pages-preview.png"), fullPage: true });
+
+  await cardOf("Spring Retreat").getByRole("button", { name: words("staff.pages.publish") }).click();
+  await cardOf("Spring Retreat").getByLabel(words("staff.pages.field.group")).selectOption("nav-programs");
+  await cardOf("Spring Retreat").getByRole("button", { name: words("staff.pages.publish.button") }).click();
+  await page.waitForFunction((w) => [...document.querySelectorAll(".staff-form")].some((c) => c.querySelector("h3")?.textContent.startsWith("Spring Retreat") && c.querySelector(".staff-chip")?.textContent === w), words("staff.pages.state.live"), { timeout: 5000 }).catch(() => {});
+  const on = await cardOf("Spring Retreat").locator(".staff-chip").textContent();
+  const menuNames = await page.evaluate(() => [...document.querySelectorAll(".staff-menu > li > span")].map((s) => s.textContent));
+  check(on === words("staff.pages.state.live") && menuNames.length > 2, `pages: Put on the Site makes it live, and the menu lists its entries (${JSON.stringify({ on, menuNames })})`);
+
+  const second = menuNames[1];
+  await page.getByRole("button", { name: words("staff.pages.menu.up").replace("{{label}}", second) }).click();
+  const focus = await page.evaluate(() => document.activeElement?.textContent);
+  await page.getByRole("button", { name: words("staff.pages.menu.save") }).click();
+  await page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words("staff.pages.done.menu"), { timeout: 5000 }).catch(() => {});
+  const after = await page.evaluate(() => [...document.querySelectorAll(".staff-menu > li > span")].map((s) => s.textContent));
+  check(after[0] === second && focus === words("staff.pages.menu.save"), `pages: Up moves an entry, keyboard focus stays in the menu, and Save keeps the order (${JSON.stringify({ after, focus })})`);
+
+  const versions = () => page.evaluate(() => [...document.querySelectorAll("#staff-versions-h ~ div .staff-form > p:first-child")].map((p) => p.textContent));
+  const before = await versions();
+  const oldest = before.at(-1);
+  await page.getByRole("button", { name: words("staff.versions.restore").replace("{{n}}", "1") }).click();
+  const asked = await page.evaluate(() => document.activeElement?.textContent);
+  await page.getByRole("button", { name: words("staff.versions.yes") }).click();
+  await page.waitForFunction((n) => document.querySelectorAll("#staff-versions-h ~ div .staff-form").length === n, before.length + 1, { timeout: 5000 }).catch(() => {});
+  const restored = await versions();
+  check(asked === words("staff.versions.yes") && restored.length === before.length + 1 && /^Version 1,/.test(oldest || ""),
+    `pages: Bring Back asks again, focused on the yes, and the restore is the newest version (${JSON.stringify({ asked, before: before.length, after: restored.length })})`);
+  check(!errors.length, `pages: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+});
+
 /* A card's Suggest an Update names its resource in the address; the form's own page is closed until Connect files these,
    so the check reads the same address on the form's review page. */
 await part("resources: Suggest an Update opens with its resource chosen", async () => {

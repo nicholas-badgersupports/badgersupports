@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-392 keys. Keys are permanent. Required text cannot be published empty and must keep each
+462 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -696,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (177)
+### Staff page and edit button (247)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -789,6 +789,76 @@ the site adds the markup.
 | `backup.closed` | Closed | Backup workbook, Dashboard: a form not taking answers. |  |
 | `staff.edit.download` | Download the Edits File | Staff page, button that saves every change as one file. |  |
 | `staff.edit.publish` | Save this file in the site as content/edits.json before you publish, or saved changes are left out. | Staff page, under the download button. |  |
+| `staff.pages.title` | Pages on the Site | Staff page, heading above the page tools. |  |
+| `staff.pages.how` | A new page or a copy starts as a draft, which only staff can see. Open its Preview and use Edit Text there to change its words; someone who may publish then puts it on the site. | Staff page, what a draft is. |  |
+| `staff.pages.loading` | Loading… | Staff page, while the pages or versions load. |  |
+| `staff.pages.add.title` | Add a Page | Staff page, heading of the form that adds a draft page. |  |
+| `staff.pages.add.button` | Add Draft Page | Staff page, button that adds a draft page. |  |
+| `staff.pages.field.title` | Page title | Staff page, label of a page's title. |  |
+| `staff.pages.field.path` | Address, for example /programs/spring-retreat/ | Staff page, label of a page's address. |  |
+| `staff.pages.field.description` | Search description | Staff page, label of a page's description for search engines. |  |
+| `staff.pages.field.group` | Where it goes in the menu | Staff page, label of the menu choice when a draft goes on the site. |  |
+| `staff.pages.field.label` | Name in the menu | Staff page, label of the menu entry's name. |  |
+| `staff.pages.field.to` | Send its visitors to | Staff page, label of where a retired page's address leads. |  |
+| `staff.pages.state.live` | On the site | Staff page, chip on a page visitors can reach. |  |
+| `staff.pages.state.draft` | Draft | Staff page, chip on a draft page. |  |
+| `staff.pages.state.retired` | Retired | Staff page, chip on a retired page. |  |
+| `staff.pages.preview` | Preview | Staff page, button that shows a page as it will look. |  |
+| `staff.pages.previewOf` | Preview of {{title}}, as it will look once on the site. | Staff page, line above the preview. | `{{title}}` |
+| `staff.pages.preview.desktop` | Desktop Width | Staff page, preview at desktop width. |  |
+| `staff.pages.preview.phone` | Phone Width | Staff page, preview at phone width. |  |
+| `staff.pages.previewOpen` | Open in a New Tab | Staff page, opens the preview in its own tab. |  |
+| `staff.pages.previewFrame` | Page preview | Staff page, name of the preview frame for screen readers. |  |
+| `staff.pages.copy` | Copy | Staff page, button that copies a page as a draft. |  |
+| `staff.pages.copy.button` | Make the Copy | Staff page, button that saves the copy. |  |
+| `staff.pages.details` | Change Details | Staff page, button that opens a page's title, description and address. |  |
+| `staff.pages.details.button` | Save Details | Staff page, button that saves a page's details. |  |
+| `staff.pages.details.liveAddress` | Only someone who may publish can change the address of a page on the site. | Staff page, under a live page's address for an editor. |  |
+| `staff.pages.publish` | Put on the Site | Staff page, button that opens putting a draft on the site. |  |
+| `staff.pages.publish.button` | Put It on the Site | Staff page, button that puts a draft on the site. |  |
+| `staff.pages.menu.none` | Not in the menu | Staff page, menu choice: leave the page out of the menu. |  |
+| `staff.pages.menu.top` | At the top of the menu | Staff page, menu choice: a top-level entry. |  |
+| `staff.pages.retire` | Retire | Staff page, button that opens retiring a page. |  |
+| `staff.pages.discard` | Retire Draft | Staff page, button that opens retiring a draft. |  |
+| `staff.pages.retire.nowhere` | Nowhere: show the not-found page | Staff page, choice for a retired page with nowhere to send visitors. |  |
+| `staff.pages.retire.confirm` | Retire {{title}}? Its address will stop showing it. The page and its words are kept. | Staff page, the second yes before retiring. | `{{title}}` |
+| `staff.pages.retire.yes` | Yes, Retire It | Staff page, button that retires a page. |  |
+| `staff.pages.cancel` | Cancel | Staff page, closes a page form without saving. |  |
+| `staff.pages.saving` | Saving… | Staff page, on a page button while it saves. |  |
+| `staff.pages.done.add` | Draft page added. | Staff page, said after a draft is added. |  |
+| `staff.pages.done.copy` | Copy made as a draft. | Staff page, said after a copy is made. |  |
+| `staff.pages.done.details` | Details saved. | Staff page, said after a page's details save. |  |
+| `staff.pages.done.publish` | The page is on the site. | Staff page, said after a draft goes on the site. |  |
+| `staff.pages.done.retire` | The page is retired. | Staff page, said after a page is retired. |  |
+| `staff.pages.done.menu` | Menu saved. | Staff page, said after the menu saves. |  |
+| `staff.pages.conflict` | Someone changed the pages since you opened them. The list now shows their change; check it, then try again. | Staff page, when another change landed first. |  |
+| `staff.pages.error.path` | Use an address like /programs/spring-retreat/: lower-case words joined by hyphens, one to four folders, ending in /. | Staff page, a refused address. |  |
+| `staff.pages.error.reserved` | That address belongs to the site's own workings. Choose another. | Staff page, an address in a reserved folder. |  |
+| `staff.pages.error.taken` | A page has or had that address. Choose another, so old links keep working. | Staff page, an address already used. |  |
+| `staff.pages.error.title` | Give the page a title of up to 120 characters. | Staff page, a refused title. |  |
+| `staff.pages.error.description` | Keep the search description to 300 characters. | Staff page, a refused description. |  |
+| `staff.pages.error.fixed` | This page comes from its own record, or the site needs it, so it cannot change here. | Staff page, a page that cannot be copied, moved or retired. |  |
+| `staff.pages.error.retireTo` | Choose a page that is on the site. | Staff page, a refused destination for a retired page. |  |
+| `staff.pages.error.menu` | The menu changed in a way it cannot take. Reload this page and try again. | Staff page, a refused menu. |  |
+| `staff.pages.error.failed` | That did not save. What you typed is still here; try again. | Staff page, a change that failed. |  |
+| `staff.pages.menu.title` | The Menu | Staff page, heading of the menu tools. |  |
+| `staff.pages.menu.how` | Move entries up or down, or take one off, then save. Each entry keeps its saved name. | Staff page, how to change the menu. |  |
+| `staff.pages.menu.up` | Move {{label}} up | Staff page, button name for screen readers. | `{{label}}` |
+| `staff.pages.menu.down` | Move {{label}} down | Staff page, button name for screen readers. | `{{label}}` |
+| `staff.pages.menu.remove` | Take {{label}} off the menu | Staff page, button that takes an entry off the menu. | `{{label}}` |
+| `staff.pages.menu.takeOff` | Take Off | Staff page, button that takes a menu entry off the menu; its spoken name says which. |  |
+| `staff.pages.menu.save` | Save the Menu | Staff page, button that saves the menu. |  |
+| `staff.versions.title` | Earlier Versions of the Site | Staff page, heading of the published versions. |  |
+| `staff.versions.how` | Every save is a new version. Bringing one back puts its words and pages on the site again as the newest version; nothing is deleted. | Staff page, what bringing a version back does. |  |
+| `staff.versions.none` | Nothing has been published from this page yet. | Staff page, when there are no versions. |  |
+| `staff.versions.failed` | The earlier versions could not be read. Try again later. | Staff page, when the versions cannot be read. |  |
+| `staff.versions.item` | Version {{n}}, {{when}}, by {{by}} | Staff page, one published version. | `{{n}}` `{{when}}` `{{by}}` |
+| `staff.versions.current` | On the site now | Staff page, chip on the newest version. |  |
+| `staff.versions.restore` | Bring Back Version {{n}} | Staff page, button that asks to bring a version back. | `{{n}}` |
+| `staff.versions.confirm` | Bring back version {{n}}? It replaces what is on the site now, as a new version. | Staff page, the second yes before bringing a version back. | `{{n}}` |
+| `staff.versions.yes` | Yes, Bring It Back | Staff page, button that brings a version back. |  |
+| `staff.versions.done` | Version {{n}} is back on the site as version {{m}}. | Staff page, said after a version comes back. | `{{n}}` `{{m}}` |
+| `staff.versions.conflict` | Something changed since this list was read. The list is fresh now; try again. | Staff page, when a restore is refused as stale. |  |
 | `edit.button` | Edit Text | The edit button, bottom corner of every page, for staff who may change words. |  |
 | `edit.buttonWaiting` | Edit Text ({{n}} waiting) | The edit button, when saved changes wait for a publish. | `{{n}}` |
 | `edit.done` | Done Editing | The edit button while words are outlined. |  |

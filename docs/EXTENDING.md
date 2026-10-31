@@ -224,7 +224,7 @@ the Sheets backup must too.
 |---|---|---|
 | The Connect editor | editors cannot change a page without the repository | Exchange `PUBLIC-SITE-EDITOR` |
 | Publishing | one versioned bundle that records who published it | Exchange `PUBLIC-SITE-EDITOR` |
-| Drafts, preview, restore | §10 asks for revisions; today the repository's history is the only one | Exchange `PUBLIC-SITE-EDITOR-REVISIONS` |
+| Drafts, preview, restore | built on the staff page for pages (ARCHITECTURE, "Pages: drafts, preview, restore"); adding, copying, reordering or retiring a block within a page is not | `WORK.md` item 15 (P2) |
 | Connect sign-in | needed before any per-block or per-page permission | Exchange `PUBLIC-SITE-SSO` |
 | A dated block changing on its day | dates take effect at the next build, not at midnight; only an event block on a page built from Connect hides after its `endsOn` between publishes | a scheduled build, which would deploy without the owner (run log §7, decision 7.1) |
 | The rest of `blocks.css` split by block | 4 blocks have their own file; the others share `blocks.css` | move each when it is next worked on (§4) |

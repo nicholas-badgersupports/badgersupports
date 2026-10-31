@@ -106,6 +106,9 @@ it go to the live page:
 - `redirectsFile()` writes a redirect for each route in `content/routes.json` marked `redirect` (or `replace`
   with a new path) whose target exists in `dist/`. Old `/resources/*` pages map to `/resources/?topic=…`. Page
   aliases follow, then the team's, so a member's own old address wins.
+- The page function answers these lines itself (`redirectFor()`, `netlify/lib/pages.mjs`), because it claims every
+  page address and Netlify does not document whether `_redirects` runs before it. It matches as Netlify's own matcher
+  does: a line with or without its final `/`, and a `/*` line for its folder and everything below it. Case counts.
 - `resolveLink()` (`src/render/context.mjs`) sends a link to an unbuilt internal page to the same path on the
   live site, marked `data-pending`. No link is ever `#`.
 

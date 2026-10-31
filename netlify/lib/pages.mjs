@@ -48,10 +48,19 @@ export async function siteNow() {
 
 const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l.indexOf(":"); return [l.slice(0, i).toLowerCase(), l.slice(i + 1).trim()]; }));
 
+/* Matches as Netlify's own matcher does, so the answer is the same whichever of _redirects and this function
+   Netlify runs first: a line takes its address with or without a final "/", and a line ending "/*" takes its
+   folder, with or without the "/", and everything below it. Case counts; the first matching line wins.
+   A target's placeholders (":splat") are not filled in, so a line that needs one does not belong here. */
+const trimSlash = (p) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
 function redirectFor(c, pathname) {
+  const asked = trimSlash(pathname);
   for (const line of String(c.redirects || "").split("\n")) {
     const [from, to, status] = line.trim().split(/\s+/);
-    if (from && decodeURI(from) === pathname) return { to, status: Number(status) || 301 };
+    if (!from) continue;
+    const f = decodeURI(from);
+    const hit = f.endsWith("/*") ? asked === f.slice(0, -2) || asked.startsWith(f.slice(0, -1)) : asked === trimSlash(f);
+    if (hit) return { to, status: Number(status) || 301 };
   }
   return null;
 }
@@ -75,8 +84,9 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
 
   const moved = redirectFor(c, pathname);
   if (moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
-  // A page's address ends in "/", as the static site's do.
-  if (!pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
+  // A page's address ends in "/", as the static site's do. The address goes back as it came, encoded: a header
+  // cannot carry a letter outside Latin-1, and building one throws.
+  if (!pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
 
   const snap = c.render;
   try {

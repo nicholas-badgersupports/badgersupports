@@ -98,6 +98,48 @@ test("an old address still moves, a page address gains its slash, and an unknown
   assert.equal((await get("/", { method: "POST" })).status, 405);
 });
 
+/* Netlify's matcher (netlify-redirector, the one its command line uses) takes a line's address with or without
+   a final "/", and a "/*" line takes its folder, with or without the "/", and everything below it. The page
+   function answers the same, so the result does not depend on which of the two Netlify runs first. */
+test("every old address moves with or without its final slash, and a team catch-all takes everything below it", async () => {
+  await given();
+  const lines = read("_redirects").trim().split("\n").map((l) => l.trim().split(/\s+/));
+  const tried = [];
+  for (const [from, to, status] of lines) {
+    const forms = from.endsWith("/*")
+      ? [from.slice(0, -2), from.slice(0, -1), `${from.slice(0, -1)}made-up-person`, `${from.slice(0, -1)}made-up-person/`]
+      : [from, `${from}/`];
+    for (const f of forms) {
+      const r = await get(f);
+      assert.equal(r.status, Number(status), f);
+      assert.equal(r.headers.get("location"), to, f);
+      tried.push(f);
+    }
+  }
+  const splats = lines.filter(([from]) => from.endsWith("/*")).length;
+  assert.equal(tried.length, (lines.length - splats) * 2 + splats * 4, "every line was tried in every form");
+  assert.ok(splats >= 4 && lines.length >= 17, `${lines.length} lines, ${splats} catch-alls`);
+  // Not past them: a longer name is a different address.
+  for (const near of ["/homex/", "/about/our-team/directorsx/", "/about/f-a-q/more/"]) assert.equal((await get(near)).status, 404, near);
+});
+
+test("an address with letters outside Latin-1 gains its slash, still encoded, instead of failing", async () => {
+  await given();
+  for (const p of ["/initiatives/ribbons-%E0%B1%A8%E0%A7%8Ex", "/caf%C3%A9"]) {
+    const r = await get(`${p}?topic=x`);
+    assert.equal(r.status, 301, p);
+    assert.equal(r.headers.get("location"), `${p}/?topic=x`, p);
+  }
+});
+
+test("Mendota Lodge's old address goes to the directions list", async () => {
+  await given();
+  assert.ok(read("_redirects").split("\n").includes("/operations/directions/mendota-lodge  /directions/  301"));
+  const r = await get("/operations/directions/mendota-lodge");
+  assert.equal(r.status, 301);
+  assert.equal(r.headers.get("location"), "/directions/");
+});
+
 test("when the revision cannot be read, the build's file answers, held a minute", async () => {
   await given();
   useStore({ kind: "broken", get: async () => { throw new Error("store down"); }, set: async () => {} });

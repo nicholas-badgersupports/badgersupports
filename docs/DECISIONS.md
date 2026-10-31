@@ -380,3 +380,17 @@ The checks, the blockers and the switch plan are in `SWITCH.md`.
 | Mendota Lodge, `redirectFor()`, the www sign-in callback and public production are blockers in the plan, not fixed here | item 25 asks for checks and a plan; Mendota is the owner's call; a code change needs its own gate | fix them inside item 25 |
 | Shortlinks that leave www are named by kind, not address | they open internal Docs, Sheets and Drive folders, and this repository is public | list their targets |
 | Lighthouse ran behind a compressing proxy | Netlify compresses text and the rig does not | measure without the proxy |
+
+## 30 October 2026 · redirects in the page function (queue item 3a; routine calls, made in the session)
+
+Asked for by the owner on 30 Oct, answering item 25: `redirectFor()` learns the splat and the optional `/`, and Mendota
+Lodge is retired with a 301.
+
+| Call | Why | To reverse |
+|---|---|---|
+| Mendota Lodge's old address goes to `/directions/` | the old `/operations/directions/<room>` addresses go to their room under `/directions/`; with no Mendota page, the list of rooms is the nearest page that still helps | point its row in `content/routes.json` at another page |
+| `redirectFor()` copies Netlify's matcher, case and all, rather than a looser rule | the answer must be the same whichever of `_redirects` and the page function Netlify runs first; checked against `netlify-redirector` 0.5.0, the matcher Netlify's command line uses | match without regard to case |
+| A target's `:splat` is not filled in | no line uses one; the comment above `redirectFor()` says so | fill it in, with a test |
+| The page function's own 301 that adds a final `/` sends the address back encoded | the cross-check found that an address with a letter outside Latin-1 and no final `/` (`/initiatives/ribbons-…x`) threw while building its header | send the decoded address, which throws again |
+| No Connect deploy for the www sign-in address | the switch waits for Connect's team export, and that arrives with a Connect deploy; a deploy just for this costs 15 credits | press Trigger deploy on Connect's project |
+| The owner's steps are double-click files in `../../SWITCH-SETUP-2026-10-30/` (laptop only) | three of the steps are his, two in Netlify's pages | follow `SWITCH.md` by hand |

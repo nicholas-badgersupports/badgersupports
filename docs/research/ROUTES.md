@@ -187,7 +187,7 @@ and `content/forms/programming-feedback.json` records it under `source.aliases`.
 ## Not checked
 
 - ~~Where the six addresses above lead~~ and ~~shortlinks~~: read 30 Oct 2026, in `../SWITCH.md`. One shortlink,
-  `mendota`, forwards to a live page this map does not have.
+  `mendota`, forwarded to a live page this map lacked; it has a row now, a 301 to `/directions/` (queue item 3a).
 - **Links from outside the site**: search results, printed material, Instagram, Connect and old emails. No
   referrer data was read; the GA4 property is not verified (`../ANALYTICS.md`).
 - **Whether Netlify matches the ribbons path** on its servers. Netlify's command-line matcher does (`../SWITCH.md`).

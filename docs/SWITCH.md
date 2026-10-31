@@ -1,8 +1,9 @@
 # The switch
 
 How www.badgersupports.org moves from Google Sites to this site, what was checked before it, and how to undo it.
-Queue item 25 (`../WORK.md`). Checked 30 Oct 2026 on `23afc2e`. Nothing here has been switched, published or changed
-in DNS; every step below is the owner's.
+Queue item 25 (`../WORK.md`). Checked 30 Oct 2026 on `23afc2e`; blockers 3 and 4 fixed the same day (queue item 3a).
+Nothing here has been switched, published or changed in DNS; every step below is the owner's. The owner's three steps
+before the switch (1, 2 and 6) are double-click files in `../../SWITCH-SETUP-2026-10-30/`, on the laptop.
 
 ## How it was checked
 
@@ -24,10 +25,10 @@ is not verified.
 
 | Check | Result | Left |
 |---|---|---|
-| Shortlinks | 52 `*.badgersupports.org` names are Squarespace forwards (`ext-sq.squarespace.com`). 12 forward to pages on www (below); 40 go to Google Docs, Sheets, Drive and Forms, Canva, Instagram, LinkedIn, WIN and a UW PDF. Changing only the `www` record touches none of them | Mendota Lodge (blocker 3) |
+| Shortlinks | 52 `*.badgersupports.org` names are Squarespace forwards (`ext-sq.squarespace.com`). 12 forward to pages on www (below); 40 go to Google Docs, Sheets, Drive and Forms, Canva, Instagram, LinkedIn, WIN and a UW PDF. Changing only the `www` record touches none of them | none: `mendota` now 301s to `/directions/` (blocker 3, fixed) |
 | The six subdomains | `win`, `insta`, `feedback`, `toolkit` forward away from www; `housing` and `apply` forward to www pages that this site answers (below) | `feedback` can point at `/forms/programming-feedback/` once that form opens (item 31) |
 | The ribbons path | The rig sends `/initiatives/ribbons-%E0%B1%A8%E0%A7%8E` to `/initiatives/ribbons/` in upper or lower case. Netlify's matcher matches the upper-case form, which is what browsers send, with or without a final `/`; it does not match lower case | Confirm on the live site after the switch |
-| Redirects | All 34 live addresses in `content/routes.json`, typed as the live site links them, end on their page. With a final `/` added, all 13 redirected addresses answer 404 in the rig, and so do the four team catch-alls; Netlify's matcher sends every case tried (four of the 13, and a team address with and without the `/`) to the right page | Blocker 4 |
+| Redirects | All 34 live addresses in `content/routes.json`, typed as the live site links them, end on their page. With a final `/` added, all 13 redirected addresses answered 404 in the rig, and so did the four team catch-alls (blocker 4). Fixed in queue item 3a: every `_redirects` line now answers with and without its `/`, and a team catch-all for its folder and everything below it; the page function and Netlify's matcher agree on 115 of 116 forms tried (every line in every form, plus near misses and case changes) | Only the page function matches a lower-case %-escape (the ribbons path); Netlify's matcher does not |
 | The privacy policy | `/operations/privacy-policy/` is built, and still names Google Sites, Google Analytics and Google Forms | Blocker 5 (queue item 4) |
 | SEO | 40 pages: 36 indexable, all 36 in `sitemap.xml`, none of the 4 noindex pages in it; canonical `https://www.badgersupports.org/…` on all 40; one `<h1>`, `lang="en"` and a viewport on each; `robots.txt` names the sitemap. The live site has no `robots.txt` or sitemap | No page has a share picture (`og:image`); the live homepage has one. `/crawlers/` has no description; two descriptions run past 160 characters; `/forms/workshop-request/` and `/join/request-a-workshop/` share a title |
 | Accessibility | axe 4.14 (WCAG 2.0, 2.1 and 2.2 A and AA) on all 40 pages at 390 and 1280 px: 80 of 80 measured, no violations. No sideways scroll at 320 px on any page | axe cannot score text on a gradient (the announcement bar and similar): check its contrast by eye. Lighthouse adds an ARIA role on the home page's support-network card, a skipped heading level there, and a "Learn More" link on Peer Support Groups |
@@ -48,7 +49,7 @@ The 12 shortlinks that forward to www, and what this site does with each page:
 | `mhh` | `/about/mh-hub` | 301 to `/directions/sac-mhh/` |
 | `hearts` | `/initiatives/little-hearts` | 301 to `/directions/sac-mhh/` |
 | `res` | `/resources/health` | 301 to `/resources/?topic=health` |
-| `mendota` | `/operations/directions/mendota-lodge` | **404**: the live page exists ("Mendota Lodge"), but it was not in the 19 Oct crawl or `content/routes.json` |
+| `mendota` | `/operations/directions/mendota-lodge` | 301 to `/directions/` (retired, owner, 30 Oct; it was not in the 19 Oct crawl) |
 
 ## The domain today (read 30 Oct 2026)
 
@@ -66,24 +67,28 @@ first. The switch changes one record.
 ## Before the switch
 
 1. **Make production public.** Netlify, project `badgersupports-public`: team login protects every deploy today. Set it
-   to protect non-production deploys only, at the moment of the switch, not before.
+   to protect non-production deploys only, at the moment of the switch, not before. Setup folder, part 4: Project
+   configuration › General › Visitor access › Project visibility › Edit visibility › **Private**, Preview access
+   **Previews only** (Netlify's docs, read 30 Oct; the page itself was not opened).
 2. **Let staff sign in from www.** Connect registers one callback for this site,
    `https://badgersupports-public.netlify.app/api/auth/callback` (Connect's reply, Exchange
    `done/PUBLIC-EVENT-IDS-AND-SIGN-IN-2026-10-23.md`). Add `https://www.badgersupports.org/api/auth/callback` to
-   Connect's `PUBLIC_SSO_CLIENTS`. It is a Netlify setting on Connect, so it is the owner's edit.
-3. **Mendota Lodge.** Decide what `/operations/directions/mendota-lodge` becomes (a directions page here, or a 301),
-   then add it to `content/routes.json`. Until it is there, `cutoverProblems()` cannot see it.
-4. **Redirects with a final `/`.** The page function matches redirect lines exactly (`redirectFor()` in
-   `netlify/lib/pages.mjs`): no splat, no optional `/`. Whether Netlify applies `_redirects` before the page function
-   is not known. Teach `redirectFor()` the splat and the optional `/`, so the answer does not depend on it.
+   Connect's `PUBLIC_SSO_CLIENTS`. It is a Netlify setting on Connect, so it is the owner's edit: setup folder, part 1.
+   Connect reads it from its next deploy; the team export, which the switch waits for, comes with one.
+3. ~~**Mendota Lodge.**~~ Fixed (queue item 3a): retired at the owner's word, its row in `content/routes.json` 301s it
+   to `/directions/`. Lost: directions to Mendota Lodge.
+4. ~~**Redirects with a final `/`.**~~ Fixed (queue item 3a): `redirectFor()` in `netlify/lib/pages.mjs` matches as
+   Netlify's matcher does, so the answer no longer depends on whether Netlify applies `_redirects` before the page
+   function (still not documented). Tests: `test/published.test.mjs`.
 5. **The privacy policy** describes Google Sites, Analytics and Forms (queue item 4).
-6. **Publish** the commit the switch will serve, with `../PUBLISH-WEBSITE-2026-10-23.command`.
+6. **Publish** the commit the switch will serve, with `../PUBLISH-WEBSITE-2026-10-23.command` (setup folder, parts 2 and 3).
 7. **Shorten the undo.** If Squarespace offers a lower TTL for the `www` record (not checked), set it at least one
    current TTL before the switch, so an undo reaches visitors sooner.
 
-Three things change for visitors and are the owner's to accept: the team page shows no people until Connect sends its
-team export (`exports.team`), so the 38 member addresses of the 19 Oct crawl land on `/about/our-team/`; Google Analytics stops counting
-www, because this site loads no tag (`ANALYTICS.md`); and links shared on social media show no picture.
+The switch waits for Connect's team export (`exports.team`, owner, 30 Oct), so the team page has its people when www
+moves; a member's old address (`/about/our-team/<group>/<name>`) goes to the team page. Two things change for visitors
+and are the owner's to accept: Google Analytics stops counting www, because this site loads no tag (`ANALYTICS.md`);
+and links shared on social media show no picture.
 
 ## The switch
 

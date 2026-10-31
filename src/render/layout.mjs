@@ -12,6 +12,23 @@ import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
+import { bareTitle, TITLE_JOIN } from "../shared/structure.mjs";
+
+/* The page whose title puts the site's name first, and whose description is the site's search description. */
+const HOME = "pg-home";
+
+/* A page's title as drawn: its own words with the site's name added, first on the home page and last on every other,
+   so a change of name reaches every title. A title that already carries the build's name or the current one (stored
+   before titles were kept without it) carries it once. An empty title draws the name alone. */
+export function pageTitle(page, site) {
+  const first = page.id === HOME;
+  const own = bareTitle(page.title, [...new Set([site.built?.name, site.name])], { first });
+  if (!own) return site.name;
+  return first ? site.name + TITLE_JOIN + own : own + TITLE_JOIN + site.name;
+}
+
+/* The search description a page draws: the site's on the home page, the page's own on every other. */
+export const pageDescription = (page, site) => (page.id === HOME ? site.description : page.description);
 
 /* The one inline script. Its hash goes into the Content-Security-Policy (ops/build.mjs). A browser
    that was signed in as staff also gets staff-hint, so the staff page shows "Checking your sign-in"
@@ -58,10 +75,23 @@ function supportLine(ctx) {
   return html`<aside class="support-line" aria-label="${ctx.t("support.label")}"><div class="wrap"><img src="/assets/brand/bss-hand-cream.png" width="301" height="440" alt=""><p>${parts}</p></div></aside>`;
 }
 
+/* The footer's accessibility line: its words with the build's address (or the current one, if the words were saved
+   with it) replaced by the current address, linked. Words that hold neither are drawn, and the address linked after. */
+function accessibility(ctx) {
+  const f = ctx.site.footer;
+  const words = f.accessibility;
+  const email = f.accessibilityEmail;
+  if (!email) return words;
+  const a = html`<a href="mailto:${email}">${email}</a>`;
+  for (const was of new Set([ctx.site.built?.accessibilityEmail, email])) {
+    const i = was ? words.indexOf(was) : -1;
+    if (i >= 0) return [words.slice(0, i), a, words.slice(i + was.length)];
+  }
+  return [words, " ", a];
+}
+
 function footer(ctx) {
   const f = ctx.site.footer;
-  const email = f.accessibilityEmail;
-  const acc = email ? f.accessibility.split(email) : [f.accessibility];
   return html`<footer class="site-footer"><div class="wrap">
   <div class="footer-top">
     <div class="footer-brand">
@@ -74,7 +104,7 @@ function footer(ctx) {
     ${f.columns.map((c) => html`<div><h2>${c.title}</h2><ul>${c.links.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}</ul></div>`)}
   </div>
   <div class="footer-bottom">
-    <p>${acc[0]}${email ? html`<a href="mailto:${email}">${email}</a>${acc[1] || ""}` : ""}</p>
+    <p>${accessibility(ctx)}</p>
     <ul class="social" aria-label="${ctx.t("footer.socialLabel")}">${f.social.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}</ul>
     <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, f.staffSignIn.label)}</li>` : ""}</ul>
   </div>
@@ -98,18 +128,20 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(refreshing ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
   const a = ctx.assets;
   const canonical = ctx.site.origin + page.path;
+  const title = pageTitle(page, ctx.site);
+  const description = pageDescription(page, ctx.site);
   const preload = page.preloadImage ? html`<link rel="preload" as="image" href="${page.preloadImage.href}" imagesrcset="${page.preloadImage.srcset}" imagesizes="${page.preloadImage.sizes}" type="${page.preloadImage.type}" fetchpriority="high">` : "";
   return html`<!doctype html>
 <html lang="${ctx.site.lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${page.title}</title>
-${page.description ? html`<meta name="description" content="${page.description}">` : ""}
+<title>${title}</title>
+${description ? html`<meta name="description" content="${description}">` : ""}
 ${page.noindex || ctx.prototype ? html`<meta name="robots" content="noindex">` : ""}
 <link rel="canonical" href="${canonical}">
-<meta property="og:title" content="${page.title}">
-${page.description ? html`<meta property="og:description" content="${page.description}">` : ""}
+<meta property="og:title" content="${title}">
+${description ? html`<meta property="og:description" content="${description}">` : ""}
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#B60000">

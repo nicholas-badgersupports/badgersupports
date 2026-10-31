@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-resources",
   "path": "/resources/",
-  "title": "Resources — Badger Supports",
+  "title": "Resources",
   "description": "General student resources, basic needs, health resources and identity based resources, on and off campus.",
   "analytics": "none",
   "blocks": [

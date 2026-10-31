@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-referral-cards",
   "path": "/initiatives/referral-cards/",
-  "title": "Resource Referral Cards — Badger Supports",
+  "title": "Resource Referral Cards",
   "description": "Resource Referral Cards make it easier to get connected with resources on and off campus.",
   "analytics": "public",
   "blocks": [

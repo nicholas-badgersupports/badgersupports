@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-peer-groups",
   "path": "/join/peer-support-groups/",
-  "title": "Peer Support Groups — Badger Supports",
+  "title": "Peer Support Groups",
   "description": "Free drop-in peer support groups for UW–Madison students, Monday to Thursday at the Student Mental Health Hub.",
   "analytics": "public",
   "program": "peer",

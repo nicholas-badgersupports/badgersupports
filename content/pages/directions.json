@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-directions",
   "path": "/directions/",
-  "title": "Rooms and Directions — Badger Supports",
+  "title": "Rooms and Directions",
   "description": "Where Badger Supports meets, with step-by-step directions to each room.",
   "analytics": "public",
   "blocks": [

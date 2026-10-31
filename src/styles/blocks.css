@@ -1166,6 +1166,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-drawer[hidden] { display: none; }
 .staff-drawer p, .staff-preview p { margin: 0; }
 .staff-form .field + .field { margin-top: var(--s3); }
+.staff-settings { margin-top: var(--s4); }
+/* A refused settings save says why above the fields it kept. */
+.staff-settings .staff-note { margin-bottom: var(--s4); }
+/* The value someone else saved since the page was opened, under the field that kept what was typed. */
+.staff-since { margin: 0; font-size: var(--fs-small); line-height: 1.5; font-weight: 700; color: var(--ink); }
 .staff-preview { margin-top: var(--s5); display: grid; gap: var(--s3); }
 .staff-preview[hidden] { display: none; }
 .staff-preview-frame { overflow: hidden; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }

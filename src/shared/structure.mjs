@@ -14,6 +14,9 @@
  *   A page's record may also hold its sections: sections: { made: { "<b-id>": <a block made or copied here> },
  *     order: null | [every block id, retired ones included], retired: [block ids] }.
  *
+ *   The document may also hold the site's settings: settings: { name?, description?, accessibilityEmail? }, only the
+ *   keys a publisher saved; a key left out keeps the build's value (content/site.json). laySettings lays them.
+ *
  * Rules the operations below hold:
  *   - A page made here is a draft until someone with site.publish puts it on. A build page is live unless retired.
  *   - A page id is never given twice: a retired page keeps its record, and a new id skips every id ever listed.
@@ -27,6 +30,8 @@
  *   - A page's opening (a page head, hero or event hero) keeps its place: it is not moved, copied or retired.
  *   - Only a section drawn from its own words alone (no data source, no script) is copied; a new one is a Text section.
  *   - A section a link on the site lands on (its anchor, or an id inside it) is not retired while that link stands.
+ *   - A page's title is stored without the site's name; the name is added when the page is drawn (layout.mjs).
+ *   - Only the site's name, search description and accessibility email change here; any other setting is refused.
  *
  * Pure: no files, no database, no clock.
  */
@@ -43,6 +48,10 @@ const RESERVED = new Set(["api", "assets", "media", "calendar", "staff", "forms"
 const PATH_RE = /^\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/){1,4}$/;
 export const TITLE_MAX = 120;
 export const DESCRIPTION_MAX = 300;
+export const NAME_MAX = 60;
+export const EMAIL_MAX = 254;
+/* What joins a page's title and the site's name. The name may not hold it, so a title splits on it one way only. */
+export const TITLE_JOIN = " — ";
 
 export const trimSlash = (p) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
 /* A link's address as a page address compares: no query, no fragment, no final "/". */
@@ -62,10 +71,77 @@ function title(value) {
   if (!v || v.length > TITLE_MAX || CONTROL.test(String(value ?? "").replace(/[\n\t]/g, ""))) fail("page.title");
   return v;
 }
-function description(value) {
+function description(value, code = "page.description") {
   const v = clean(value);
-  if (v.length > DESCRIPTION_MAX) fail("page.description");
+  if (v.length > DESCRIPTION_MAX) fail(code);
   return v;
+}
+
+/* ---------- the site's settings ---------- */
+
+export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail"];
+const EMAIL_RE = /^[a-z0-9._%+-]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/;
+
+/* The site's name: checked as a page title is, at most NAME_MAX characters, and without the dash that joins it to a
+   title, so a title that carries it can be told apart from it. */
+function siteName(value) {
+  if (typeof value !== "string") fail("settings.name");
+  let v;
+  try { v = title(value); } catch { fail("settings.name"); }
+  if (v.length > NAME_MAX || v.includes(TITLE_JOIN.trim())) fail("settings.name");
+  return v;
+}
+function siteDescription(value) {
+  if (typeof value !== "string") fail("settings.description");
+  return description(value, "settings.description");
+}
+/* One address, lower-cased: a local part, "@" and a domain with a dot; no name, no "mailto:", no second address. */
+function siteEmail(value) {
+  if (typeof value !== "string") fail("settings.email");
+  const v = value.trim().toLowerCase();
+  if (!v || v.length > EMAIL_MAX || !EMAIL_RE.test(v)) fail("settings.email");
+  return v;
+}
+const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail };
+
+/* The settings a change saves, merged over the saved ones. Refuses any key but the three, and a change naming none. */
+function settingsChange(doc, change) {
+  const s = change.settings;
+  if (!s || typeof s !== "object" || Array.isArray(s)) fail("settings.field");
+  const keys = Object.keys(s);
+  if (!keys.length || keys.some((k) => !SETTINGS_KEYS.includes(k))) fail("settings.field");
+  const out = { ...(doc.settings || {}) };
+  for (const k of keys) out[k] = SETTING_CHECKS[k](s[k]);
+  doc.settings = out;
+  return { doc };
+}
+
+/* Lay the saved settings over a site, in place, checking each again: one that no longer passes keeps the build's
+   value. The build's own name and address stay readable as site.built (not enumerable, so never saved or sent), so a
+   title or footer line written with them still draws the name or address once. */
+export function laySettings(site, settings) {
+  const built = { name: site.built?.name ?? site.name, accessibilityEmail: site.built?.accessibilityEmail ?? site.footer?.accessibilityEmail ?? null };
+  Object.defineProperty(site, "built", { value: built, enumerable: false, configurable: true });
+  for (const k of SETTINGS_KEYS) {
+    if (settings?.[k] === undefined) continue;
+    let v;
+    try { v = SETTING_CHECKS[k](settings[k]); } catch { continue; }
+    if (k === "accessibilityEmail") { if (site.footer) site.footer.accessibilityEmail = v; } else site[k] = v;
+  }
+  return site;
+}
+
+/* A title without the site's name: one trailing " — <name>" taken off, or, on the home page (`first`), one leading
+   "<name> — ", for each name in `names` (the build's and the current one). A title stored before titles were kept
+   without the name draws it once. */
+export function bareTitle(value, names, { first = false } = {}) {
+  const t = String(value ?? "");
+  for (const n of names) {
+    if (!n) continue;
+    if (first && t.startsWith(n + TITLE_JOIN)) return t.slice(n.length + TITLE_JOIN.length);
+    if (!first && t.endsWith(TITLE_JOIN + n)) return t.slice(0, -(n.length + TITLE_JOIN.length));
+  }
+  return t;
 }
 
 /* Every address a page holds or held, and every id ever listed, across the composed pages and this document. */
@@ -325,7 +401,7 @@ export function menuOutline(nav) {
 
 /* Apply one change. `ctx` = { pages: every page as composed now, in any state, with its current address; authored:
    the ids of the build's own page files; menu: the menu as composed now (menuOutline); offMenu: the entries that can
-   be put back (layStructure); site: { name, description };
+   be put back (layStructure); site: { name, description, built: the build's name };
    redirected(path): whether a redirect line takes it; links: siteLinks() }. Returns { doc, page?, section? }: a new
    document, the old one untouched.
    Throws a Problem (code, status) when the change is not allowed; who may ask for it is the router's to check. */
@@ -337,6 +413,7 @@ export function applyChange(current, change, ctx) {
   const changeable = (id) => { find(id); if (FIXED_PAGES.has(id) || !authored(id)) fail("page.fixed"); return id; };
 
   if (SECTION_ACTIONS.has(change.action)) return sectionChange(doc, change, ctx, { find, authored });
+  if (change.action === "settings") return settingsChange(doc, change);
 
   switch (change.action) {
     case "add":
@@ -346,8 +423,8 @@ export function applyChange(current, change, ctx) {
       const path = newPath(change.path, doc, pages, redirected);
       const id = newId(path, doc, pages);
       const page = from
-        ? { ...structuredClone(from), id, path, title: `${t} — ${site.name}`, blocks: copyBlocks(from.blocks || [], id) }
-        : { schema: "bss.page/1", id, path, title: `${t} — ${site.name}`, description: description(change.description ?? site.description), analytics: "public",
+        ? { ...structuredClone(from), id, path, title: t, blocks: copyBlocks(from.blocks || [], id) }
+        : { schema: "bss.page/1", id, path, title: t, description: description(change.description ?? site.description), analytics: "public",
             blocks: [{ id: `b-${id.slice(3, 33).replace(/-+$/, "")}-1`, type: "pagehead", title: t }] };
       delete page.file;
       doc.pages[id] = { state: "draft", page };
@@ -357,7 +434,7 @@ export function applyChange(current, change, ctx) {
       const id = changeable(change.page);
       const r = (doc.pages[id] ||= { state: "live" });
       if (r.state === "retired") fail("page.retired");
-      if (change.title !== undefined) r.title = `${title(change.title)} — ${site.name}`;
+      if (change.title !== undefined) r.title = title(change.title);
       if (change.description !== undefined) r.description = description(change.description);
       if (change.path !== undefined) {
         const was = find(id).path;
@@ -375,7 +452,7 @@ export function applyChange(current, change, ctx) {
       if (!r || r.state !== "draft") fail("page.notDraft");
       r.state = "live";
       if (change.group !== undefined && change.group !== null) {
-        const label = title(change.label ?? clean(find(id).title).replace(new RegExp(` — ${site.name}$`), ""));
+        const label = title(change.label ?? bareTitle(clean(find(id).title), [site.built, site.name]));
         const entry = `nav-${id.slice(3)}`;
         const outline = change.menu || ctx.menu;
         const tree = outline.map((x) => ({ id: x.id, ...(x.children ? { children: x.children.map((c) => c.id) } : {}) }));

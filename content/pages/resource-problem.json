@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-form-resource-problem",
   "path": "/forms/resource-problem/",
-  "title": "Report a Problem — Badger Supports",
+  "title": "Report a Problem",
   "description": "Report a problem with a resource on the Badger Supports resource list.",
   "analytics": "none",
   "noindex": true,

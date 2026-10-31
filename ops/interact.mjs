@@ -23,7 +23,8 @@
  *    ended, coming back to the page that sent you, an editor who reads nothing, answers refused,
  *    Back after signing out, a dropped connection, a phone, and no JavaScript; and the edit
  *    button when the sign-in ends with words in its box, or when other words are opened in the box
- *    while a save is still going; its key, earlier versions and Restore.
+ *    while a save is still going; its key, earlier versions and Restore; and the pages, sections, menu and Site
+ *    Settings parts (a refused or stale Site Settings save keeps what was typed and shows what was saved since).
  * 5. The events between publishes (src/client/schedule.js), on the home page served as a page built
  *    from Connect's events, with the answers made up here from its own markup: a section with focus
  *    in it is not replaced until focus leaves; Back or Forward to a kept page moves "Today" and asks
@@ -1292,6 +1293,77 @@ await part("staff page: a menu entry taken off and put back", async () => {
   check(back.at(-1) === label && focus === fill("staff.pages.menu.up", label) && saved2 && end.at(-1) === label && !(await offNames()).length,
     `menu: Put Back by keyboard returns it to the end of its group, focus on its Up arrow, and Save keeps it (${JSON.stringify({ back, focus, end })})`);
   check(!errors.length, `menu: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+});
+
+/* Site Settings (item 15): a publisher's part, after the menu. Tab goes name, description, email, Save Settings; a refused
+   address keeps all three typed values and says why; a stale tab keeps them too and shows, under each field, the value
+   someone else saved since; Save Settings again replaces theirs and clears those lines; site.edit alone does not see it. */
+await part("staff page: Site Settings", async () => {
+  await freshServer();
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  const { structureNow } = await import("../netlify/lib/structure.mjs");
+  useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
+  const label = { name: words("staff.settings.field.name"), description: words("staff.settings.field.description"), email: words("staff.settings.field.email") };
+  let { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  const form = page.locator("form.staff-settings");
+  await form.waitFor({ timeout: 5000 });
+  const values = () => form.evaluate((f) => [...f.querySelectorAll("input, textarea")].map((x) => x.value));
+  const since = () => form.evaluate((f) => [...f.querySelectorAll(".field")].map((d) => { const l = d.querySelector(".staff-since"); return l && !l.hidden ? l.textContent : ""; }));
+  const note = () => form.evaluate((f) => { const n = f.querySelector(".staff-note"); return n && !n.closest("[hidden]") ? n.textContent : ""; });
+  const noteIs = (key) => page.waitForFunction((w) => document.querySelector("form.staff-settings .staff-note")?.textContent === w, words(key), { timeout: 5000 }).then(() => true, () => false);
+  const save = () => page.getByRole("button", { name: words("staff.settings.save") }).click();
+
+  await page.getByLabel(label.name, { exact: true }).focus();
+  const order = [];
+  for (let i = 0; i < 4; i++) {
+    order.push(await page.evaluate(() => { const a = document.activeElement; return a.labels?.[0]?.textContent || a.textContent; }));
+    await page.keyboard.press("Tab");
+  }
+  check(order.join("|") === [label.name, label.description, label.email, words("staff.settings.save")].join("|"),
+    `settings: a publisher sees Site Settings, and Tab goes name, description, email, Save Settings (${JSON.stringify(order)})`);
+
+  const typed = ["Sifting Badgers Test", "A made-up search description typed in the harness.", "not an address"];
+  await page.getByLabel(label.name, { exact: true }).fill(typed[0]);
+  await page.getByLabel(label.description, { exact: true }).fill(typed[1]);
+  await page.getByLabel(label.email, { exact: true }).fill(typed[2]);
+  await save();
+  const refused = await noteIs("staff.pages.error.email");
+  const keptAfter422 = await values();
+  check(refused && keptAfter422.join("|") === typed.join("|"), `settings: a refused address says why and keeps all three typed values (${JSON.stringify({ note: await note(), kept: keptAfter422 })})`);
+
+  // Someone else saves a name and an empty description after this page was opened.
+  const theirs = await staffSession(["site.publish"]);
+  const other = await handle(post("/api/staff/pages", { action: "settings", expected: (await structureNow()).version, settings: { name: "Their Harness Name", description: "" } }, { headers: { cookie: `bss_staff=${theirs}` } }), { ip: "198.51.100.203" });
+  typed[2] = "a11y-test@example.org";
+  await page.getByLabel(label.email, { exact: true }).fill(typed[2]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await save();
+  const conflict = await noteIs("staff.settings.conflict");
+  await sleep(300);
+  const keptAfter409 = await values();
+  const lines = await since();
+  const want = [words("staff.settings.since").replace("{{value}}", "Their Harness Name"), words("staff.settings.since").replace("{{value}}", words("staff.settings.none")), ""];
+  check(other.status === 200 && conflict && keptAfter409.join("|") === typed.join("|") && lines.join("|") === want.join("|"),
+    `settings: a stale tab keeps the typed values and shows under each changed field the value saved since (${JSON.stringify({ other: other.status, note: await note(), kept: keptAfter409, lines })})`);
+  await form.scrollIntoViewIfNeeded();
+  await form.screenshot({ path: path.join(ROOT, "local", "staff-settings-conflict-390.png") });
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  await save();
+  const saved = await page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words("staff.settings.done"), { timeout: 5000 }).then(() => true, () => false);
+  const stored = (await structureNow()).doc.settings || {};
+  const cleared = await since();
+  check(saved && stored.name === typed[0] && stored.description === typed[1] && stored.accessibilityEmail === typed[2] && cleared.every((x) => !x) && !(await note()),
+    `settings: Save Settings again replaces theirs with the typed values and clears the lines (${JSON.stringify({ saved, stored, cleared })})`);
+  check(!errors.length, `settings: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+
+  ({ ctx, page } = await openStaff({ session: ["site.edit"] }));
+  await page.locator("#staff-pages-h ~ div ul.staff-forms").first().waitFor({ timeout: 5000 });
+  const shown = await page.locator("form.staff-settings").count();
+  const headings = await page.evaluate(() => [...document.querySelectorAll("h3")].map((h) => h.textContent));
+  check(shown === 0 && !headings.includes(words("staff.settings.title")), `settings: someone with site.edit only does not see Site Settings (forms ${shown})`);
   await ctx.close();
 });
 

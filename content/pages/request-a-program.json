@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-request-a-program",
   "path": "/request-a-program/",
-  "title": "Request a Program — Badger Supports",
+  "title": "Request a Program",
   "description": "Programs are available for free to any UW–Madison student or student group.",
   "analytics": "public",
   "blocks": [

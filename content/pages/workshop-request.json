@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-form-workshop-request",
   "path": "/forms/workshop-request/",
-  "title": "Request a Workshop — Badger Supports",
+  "title": "Request a Workshop",
   "description": "Request a free, peer-led wellness workshop for your student organization, residence hall, class or campus group.",
   "analytics": "public",
   "noindex": false,

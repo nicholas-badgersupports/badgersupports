@@ -8,8 +8,9 @@
  *             button (a save publishes them), site.edit or
  *             site.publish for Refresh now, site.publish to download the edits file. Pages (structure.mjs): site.edit
  *             to add or copy a draft page, preview, and change a page's title, search description or a draft's
- *             address; site.publish to put a page on, retire a live page, move a live page, change the menu
- *             and bring back an earlier version. Which roles hold which is a super admin's setting in Connect
+ *             address; site.publish to put a page on, retire a live page, move a live page, change the menu,
+ *             change the site's name, search description and accessibility email, and bring back an earlier
+ *             version. Which roles hold which is a super admin's setting in Connect
  *             (Website Forms), not this site's.
  *
  * Sign-in itself (/api/auth/*) is public: it is how a session starts. Its failures are pages,
@@ -31,7 +32,7 @@ import { publishRevision, currentRevision, purgeTags, listRevisions, readRevisio
 import { formTags, previewResponse } from "./pages.mjs";
 import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken } from "./structure.mjs";
 import { revisionEdits } from "./edits.mjs";
-import { SECTION_ACTIONS } from "../../src/shared/structure.mjs";
+import { SECTION_ACTIONS, laySettings } from "../../src/shared/structure.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
@@ -43,14 +44,23 @@ import { clientTable } from "../../src/shared/text.mjs";
 export const TIERS = new Set(["public", "director"]);
 export const FORM_PER_HOUR = 40;
 
-function renderContext() {
+/* `settings`: the site's saved settings (structure.mjs), laid over the build's site for a page this API draws. */
+function renderContext(settings = null) {
   const c = serverContent();
-  return makeContext({ site: c.site, media: c.media, builtPaths: c.builtPaths, routes: c.routes, data: { forms: c.forms, mood: c.mood }, text: c.text, prototype: c.prototype, assets: c.assets });
+  const site = settings ? laySettings(structuredClone(c.site), settings) : c.site;
+  return makeContext({ site, media: c.media, builtPaths: c.builtPaths, routes: c.routes, data: { forms: c.forms, mood: c.mood }, text: c.text, prototype: c.prototype, assets: c.assets });
 }
 
-/* pageInfo.titleKey names a text key for the <title> when the page has no content title. */
-function page(status, pageInfo, body, clients = []) {
-  const ctx = renderContext();
+/* The site's settings as published now, for a page this API draws: none when the revision cannot be read, so a page
+   about a failure still draws, with the build's name and address. */
+async function settingsNow() {
+  try { return (await currentRevision())?.structure?.settings || null; } catch { return null; }
+}
+
+/* pageInfo.titleKey names a text key for the <title> when the page has no content title. The site's name is added to
+   the title when the page is drawn (layout.mjs), from the published settings. */
+async function page(status, pageInfo, body, clients = []) {
+  const ctx = renderContext(await settingsNow());
   const title = pageInfo.title || ctx.t(pageInfo.titleKey);
   return htmlResponse(status, String(renderPage(ctx, { analytics: "none", noindex: true, ...pageInfo, title }, { body: body(ctx), clients })));
 }
@@ -60,7 +70,7 @@ function formPage(def) {
   return { id: p?.id || `pg-form-${def.key}`, path: p?.path || `/forms/${def.key}/`, title: p?.title || def.title, blockId: p?.blockId, blockTitle: p?.blockTitle };
 }
 
-const formReply = (status, def, inner) => {
+const formReply = async (status, def, inner) => {
   const p = formPage(def);
   return page(status, p, (ctx) => formSection(def, inner(ctx), { id: p.blockId, title: p.blockTitle, ctx }), ["form.js"]);
 };
@@ -111,7 +121,7 @@ async function formSubmit(req, [key], context) {
     if (e.code !== "rate.limited" || asJson) throw e;
     const f = await currentForm(key);
     if (!f) throw new HttpError(404, "form.unknown");
-    const reply = formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
+    const reply = await formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
     for (const [k, v] of Object.entries(e.headers || {})) reply.headers.set(k, v);
     return reply;
   }
@@ -346,9 +356,11 @@ async function pagesRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await pagesList()) });
 }
 
-export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu", ...SECTION_ACTIONS]);
+export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu", "settings", ...SECTION_ACTIONS]);
 
-/* One change to the pages or the menu. JSON from this site only; `expected` is the version the tab started from. */
+/* One change to the pages, the menu or the site's settings. JSON from this site only; `expected` is the version the
+   tab started from. Every change publishes and clears every page and feed (publishAll): the menu, the titles and the
+   footer are on each. */
 async function pagesChangeRoute(req, _m, _c, who) {
   editsPages(who);
   const body = await readBody(req);
@@ -470,7 +482,7 @@ for (const r of ROUTES) if (!TIERS.has(r.tier)) throw new Error(`route ${r.name}
 /* What a person reads when signing in goes wrong, by error code. */
 const AUTH_WHY = { "auth.unavailable": "unavailable", "auth.state": "state", "auth.expired": "expired", "auth.unreachable": "unreachable", "auth.refused": "refused", "rate.limited": "rateLimited" };
 
-function errorReply(req, status, code, extra = {}, headers = {}) {
+async function errorReply(req, status, code, extra = {}, headers = {}) {
   const { pathname } = new URL(req.url);
   if (wantsJson(req) || pathname.startsWith("/api/staff") || pathname.startsWith("/api/events/") || /^\/api\/forms\/[^/]+\/files$/.test(pathname)) return json(status, { ok: false, error: code, ...extra }, headers);
   if (pathname.startsWith("/api/calendar/") && status === 404) {
@@ -508,12 +520,12 @@ export async function handle(req, context) {
     return await route.run(req, pathname.match(route.pattern).slice(1), context, who);
   } catch (e) {
     if (e instanceof HttpError) {
-      const reply = errorReply(req, e.status, e.code, e.extra, e.headers);
+      const reply = await errorReply(req, e.status, e.code, e.extra, e.headers);
       for (const [k, v] of Object.entries(e.headers || {})) reply.headers.set(k, v);
       return reply;
     }
-    if (e?.code === "config.missing") return errorReply(req, 503, "config.missing");
+    if (e?.code === "config.missing") return await errorReply(req, 503, "config.missing");
     console.error(`api ${route.name}:`, e);
-    return errorReply(req, 500, "server.error");
+    return await errorReply(req, 500, "server.error");
   }
 }

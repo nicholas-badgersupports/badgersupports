@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-email-list",
   "path": "/join/email-list/",
-  "title": "Join Our Email List — Badger Supports",
+  "title": "Join Our Email List",
   "description": "Join our email list to stay up-to-date on our latest updates, events, and more! Badger Supports sends out updates about every two weeks.",
   "analytics": "public",
   "blocks": [

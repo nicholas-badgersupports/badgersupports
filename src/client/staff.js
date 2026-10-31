@@ -19,7 +19,8 @@
  *   - for anyone who may publish, the edits file, for a build (netlify/lib/edits.mjs);
  *   - for anyone who may change or publish words, the pages (structure.mjs): add or copy a draft, preview it at desktop
  *     and phone width, change its title, search description and address; for a publisher, put a draft on, retire a
- *     page, reorder the menu; and the published versions, with Bring back for a publisher, asked twice.
+ *     page, reorder the menu, and change the site's name, search description and accessibility email (one save for
+ *     the three); and the published versions, with Bring back for a publisher, asked twice.
  * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
  * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools
@@ -326,12 +327,16 @@ let published = () => {};
 
 /* Each change names the version of the pages it started from; a refusal keeps what was typed and says why. */
 const PAGE_ERRORS = { "page.path": "path", "page.path.reserved": "reserved", "page.path.taken": "taken", "page.title": "title",
-  "page.description": "description", "page.fixed": "fixed", "page.retireTo": "retireTo", "menu.entry": "menu", "menu.group": "menu" };
+  "page.description": "description", "page.fixed": "fixed", "page.retireTo": "retireTo", "menu.entry": "menu", "menu.group": "menu",
+  "settings.name": "siteName", "settings.description": "description", "settings.email": "email" };
 const STATE_CHIP = { live: "is-open", draft: "is-closed", retired: "is-closed" };
 let fieldCount = 0;
-function field(label, input) {
+/* A labelled field; `help`, when given, goes between the label and the control and is read with the control. */
+function field(label, input, help = null) {
   input.id = `staff-field-${++fieldCount}`;
-  return el("div", { className: "field" }, el("label", { htmlFor: input.id, textContent: label }), input);
+  const note = help && el("div", { className: "field-help", id: `${input.id}-help` }, el("p", { textContent: help }));
+  if (note) input.setAttribute("aria-describedby", note.id);
+  return el("div", { className: "field" }, el("label", { htmlFor: input.id, textContent: label }), note, input);
 }
 const textInput = (value = "", extra = {}) => el("input", { type: "text", value, autocomplete: "off", ...extra });
 function choice(options, value) {
@@ -491,18 +496,20 @@ function pagesSection(me) {
   section.setAttribute("aria-labelledby", "staff-pages-h");
   let now = null;
 
-  const show = (box, words) => { problem.replaceChildren(box); problem.hidden = false; say(words); };
-  function failed(r) {
-    if (r.status === 409) return show(noteBox(t("staff.pages.conflict")), t("staff.pages.conflict"));
-    if (r.status === 422 || r.status === 400) { const w = t(`staff.pages.error.${PAGE_ERRORS[r.body.error] || "failed"}`); return show(noteBox(w), w); }
+  /* `where`: the box a refusal is shown in, the part's own or the one at the top of the pages. */
+  const show = (box, words, where = problem) => { where.replaceChildren(box); where.hidden = false; say(words); };
+  function failed(r, where) {
+    if (r.status === 409) return show(noteBox(t("staff.pages.conflict")), t("staff.pages.conflict"), where);
+    if (r.status === 422 || r.status === 400) { const w = t(`staff.pages.error.${PAGE_ERRORS[r.body.error] || "failed"}`); return show(noteBox(w), w, where); }
     const [box, words] = r.status === 0 ? [noteBox(t("staff.pages.error.failed")), t("staff.pages.error.failed")] : refused(r);
-    return show(box, words);
+    return show(box, words, where);
   }
   async function load() {
     const r = await call("/api/staff/pages").catch(offline);
     if (!section.isConnected) return;
     if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
     now = r.body;
+    syncSettings();
     draw();
   }
   /* Send one change; on success the list is drawn again from the server. Returns whether it saved. */
@@ -625,12 +632,98 @@ function pagesSection(me) {
     return part;
   }
 
+  /* The site's settings, a publisher's: its name, search description and accessibility email, saved together as one
+     change. The fields are made once, so what was typed stays through a refusal and through the list being drawn again;
+     they take the saved values only when first drawn and after a save that lands. The part keeps its own version token
+     and the values that token stands for (`seen`): a stale save is refused with the settings saved since (structure.mjs),
+     each shown under its field when it differs from what the fields started with, and only then does the token move to
+     theirs, so Save Settings again replaces them knowingly. A refusal with nothing new to show (settings already seen,
+     or back to what the fields started with: another part's change) is sent again once with the new token. A list drawn
+     again moves the token only when its settings are the ones already seen. */
+  const settingsProblem = el("div", { hidden: true });
+  const siteName = textInput();
+  const siteDescription = el("textarea", { rows: 4 });
+  const siteEmail = el("input", { type: "email", autocomplete: "off", spellcheck: false });
+  const SETTINGS = [["name", siteName], ["description", siteDescription], ["accessibilityEmail", siteEmail]];
+  const settingsSave = el("button", { type: "submit", className: "btn", textContent: t("staff.settings.save") });
+  const settingsFields = {
+    name: field(t("staff.settings.field.name"), siteName, t("staff.settings.help.name")),
+    description: field(t("staff.settings.field.description"), siteDescription, t("staff.settings.help.description")),
+    accessibilityEmail: field(t("staff.settings.field.email"), siteEmail, t("staff.settings.help.email")),
+  };
+  const sinceLines = Object.fromEntries(SETTINGS.map(([k, input]) => {
+    const line = el("p", { className: "staff-since", id: `${input.id}-since`, hidden: true });
+    settingsFields[k].append(line);
+    return [k, line];
+  }));
+  const settingsForm = el("form", { className: "staff-form staff-settings", noValidate: true },
+    el("h3", { textContent: t("staff.settings.title") }), settingsProblem, ...Object.values(settingsFields),
+    el("div", { className: "staff-actions" }, settingsSave));
+  const valuesOf = (site) => ({ name: site?.name || "", description: site?.description || "", accessibilityEmail: site?.accessibilityEmail || "" });
+  const sameValues = (a, b) => SETTINGS.every(([k]) => a[k] === b[k]);
+  let started = null, seen = null;
+  /* The line under a field: the value saved since, or none (null). Read with the field while it shows. */
+  function showSince(k, value) {
+    const [, input] = SETTINGS.find(([x]) => x === k);
+    const line = sinceLines[k];
+    line.hidden = value === null;
+    line.textContent = value === null ? "" : t("staff.settings.since", { value: value === "" ? t("staff.settings.none") : value });
+    const ids = (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== line.id);
+    input.setAttribute("aria-describedby", [...ids, ...(value === null ? [] : [line.id])].join(" "));
+  }
+  const fillSettings = () => {
+    started = valuesOf(now.site);
+    seen = { version: now.version, values: started };
+    for (const [k, input] of SETTINGS) { input.value = started[k]; showSince(k, null); }
+  };
+  function syncSettings() {
+    if (seen && sameValues(valuesOf(now.site), seen.values)) seen = { ...seen, version: now.version };
+  }
+  async function saveSettings(again = true) {
+    if (isBusy(settingsSave)) return;
+    const settings = Object.fromEntries(SETTINGS.map(([k, input]) => [k, input.value]));
+    const undo = busy(settingsSave, t("staff.pages.saving"));
+    const r = await call("/api/staff/pages", { method: "POST", body: { action: "settings", settings, expected: seen.version } }).catch(offline);
+    undo();
+    if (!section.isConnected) return;
+    if (r.status === 409 && r.body.site && r.body.current) {
+      const theirs = valuesOf(r.body.site);
+      const known = sameValues(theirs, seen.values);
+      seen = { version: r.body.current, values: theirs };
+      for (const [k] of SETTINGS) showSince(k, theirs[k] === started[k] ? null : theirs[k]);
+      const differs = SETTINGS.some(([k]) => theirs[k] !== started[k]);
+      if (known || !differs) {
+        if (again) return saveSettings(false);
+        show(noteBox(t("staff.pages.error.failed")), t("staff.pages.error.failed"), settingsProblem);
+      } else show(noteBox(t("staff.settings.conflict")), t("staff.settings.conflict"), settingsProblem);
+      await load();
+      return;
+    }
+    if (r.status !== 200) { failed(r, settingsProblem); return; }
+    problem.hidden = true;
+    settingsProblem.hidden = true;
+    say(r.body.publishError ? t("staff.edit.updateFailed") : t("staff.settings.done"));
+    published();
+    await load();
+    fillSettings();
+  }
+  settingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await saveSettings();
+    // The list is drawn again after a save or a stale tab, which moves the form: focus goes back to its button.
+    if (settingsForm.isConnected && (!document.activeElement || document.activeElement === document.body)) settingsSave.focus();
+  });
+  function settingsPart() {
+    if (!started) fillSettings();
+    return settingsForm;
+  }
+
   /* Drafts first, then the pages on the site by address, then retired pages made here. */
   const RANK = { draft: 0, live: 1, retired: 2 };
   function draw() {
     const shown = now.pages.filter((p) => p.state !== "retired" || p.made)
       .sort((a, b) => RANK[a.state] - RANK[b.state] || a.path.localeCompare(b.path));
-    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart()].filter(Boolean));
+    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart(), me.canPublish && settingsPart()].filter(Boolean));
   }
   load();
   return section;

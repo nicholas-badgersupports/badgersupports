@@ -1658,3 +1658,241 @@ test("item 15: a group taken off is offered only with an entry that can come bac
   assert.deepEqual(lay({}), [{ id: "g", label: "G", group: "", children: [{ id: "a", label: "A", href: "/a/" }] }]);
   assert.deepEqual(lay({ "pg-a": { state: "retired" } }), [], "its one entry's page is retired, so the group would draw nothing");
 });
+
+/* ------------------------------------------------------------------ the site's settings (item 15, third slice) */
+
+/* Values no file, fallback or build holds, so a test can only pass when the setting itself is drawn. */
+const SITE_NAME = "Sifting Badgers Test";
+const SITE_DESC = "A made-up search description for this test alone, held by no file of the site.";
+const SITE_EMAIL = "a11y-test@example.org";
+const titlesOf = (html) => [html.match(/<title>([^<]*)<\/title>/)?.[1], html.match(/<meta property="og:title" content="([^"]*)"/)?.[1]];
+const descOf = (html) => [html.match(/<meta name="description" content="([^"]*)"/)?.[1], html.match(/<meta property="og:description" content="([^"]*)"/)?.[1]];
+const footerOf = (html) => html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)[0];
+const accessLine = (html) => footerOf(html).match(/<div class="footer-bottom">\s*<p>([\s\S]*?)<\/p>/)[1];
+const saveSettings = (cookie, settings, expected) => change(cookie, { action: "settings", expected, settings });
+const newestDoc = async () => { const d = (await one("SELECT doc FROM site_structure ORDER BY id DESC LIMIT 1")).doc; return typeof d === "string" ? JSON.parse(d) : d; };
+const homeTitle = async () => titlesOf(await (await visit("/")).text())[0];
+
+test("item 15, settings (a): a publisher's new site name is in every page's title once, first on the home page and last on every other", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"], "Avery Example");
+  const v = await pagesNow(editor);
+  const made = await change(editor, { action: "add", expected: v.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });
+  assert.equal(made.status, 200, JSON.stringify(made.body));
+  assert.equal((await newestDoc()).pages[made.body.page].page.title, "Spring Retreat", "a page made here stores its title without the site's name");
+  const on = await change(publisher, { action: "publish", expected: made.body.version, page: made.body.page });
+  assert.equal(on.status, 200, JSON.stringify(on.body));
+  assert.equal(titlesOf(await (await visit("/programs/spring-retreat/")).text())[0], "Spring Retreat — Badger Supports", "before the change, the build's name");
+
+  const saved = await saveSettings(publisher, { name: SITE_NAME }, on.body.version);
+  assert.equal(saved.status, 200, `the settings save: ${JSON.stringify(saved.body)}`);
+  assert.ok(saved.body.published?.n >= 1, "the change is published");
+  const want = {
+    "/": `${SITE_NAME} — peer support at UW–Madison`,
+    "/about/our-team/": `Our Team — ${SITE_NAME}`,
+    "/directions/sac-mhh/": `Directions to Student Mental Health Hub — ${SITE_NAME}`,
+    "/about/our-team/avery-example/": `Avery Example, Executive Director — ${SITE_NAME}`,
+    "/forms/email-list/preview/": `Preview: Join Our Email List — ${SITE_NAME}`,
+    "/programs/spring-retreat/": `Spring Retreat — ${SITE_NAME}`,
+    "/staff/": `Staff Sign-In — ${SITE_NAME}`,
+    "/no-such-page-here/": `Page Not Found — ${SITE_NAME}`,
+  };
+  for (const [p, title] of Object.entries(want)) {
+    const [tab, og] = titlesOf(await (await visit(p)).text());
+    assert.deepEqual([tab, og], [title, title], `${p}: <title> and og:title`);
+    assert.equal(tab.split(SITE_NAME).length - 1, 1, `${p}: the name once`);
+    assert.doesNotMatch(tab, /Badger Supports/, `${p}: the build's name is gone from the title`);
+  }
+  assert.deepEqual(titlesOf(await (await preview(editor, made.body.page)).text()), [want["/programs/spring-retreat/"], want["/programs/spring-retreat/"]], "the preview");
+  const mood = await handle(post("/api/mood", { mood: "burnt_out" }, { json: false }), ip(9));
+  assert.equal(titlesOf(await mood.text())[0], `Thanks for Checking In — ${SITE_NAME}`, "a page the API draws itself");
+  const list = await pagesNow(editor);
+  assert.equal(list.pages.find((p) => p.id === "pg-about-team").title, "Our Team", "the staff page lists titles without the name");
+  assert.equal(list.pages.find((p) => p.id === made.body.page).title, "Spring Retreat");
+  assert.equal(list.site.name, SITE_NAME, "the pages list carries the name now");
+});
+
+test("item 15, settings (b): the search description is the home page's, and a page made afterwards starts with it", async (t) => {
+  const { as } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  const saved = await saveSettings(publisher, { description: SITE_DESC }, v.version);
+  assert.equal(saved.status, 200, `the settings save: ${JSON.stringify(saved.body)}`);
+  assert.deepEqual(descOf(await (await visit("/")).text()), [SITE_DESC, SITE_DESC], "the home page's meta description and og:description");
+  assert.notEqual(descOf(await (await visit("/about/our-team/")).text())[0], SITE_DESC, "another page keeps its own");
+  const made = await change(publisher, { action: "add", expected: saved.body.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });
+  assert.equal(made.status, 200, JSON.stringify(made.body));
+  assert.deepEqual(descOf(await (await preview(publisher, made.body.page)).text()), [SITE_DESC, SITE_DESC], "a page made on the staff page starts with it");
+  assert.equal((await pagesNow(publisher)).site.description, SITE_DESC);
+});
+
+test("item 15, settings (c): the accessibility email is the address the footer links, in its words or after them", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  const saved = await saveSettings(publisher, { accessibilityEmail: SITE_EMAIL }, v.version);
+  assert.equal(saved.status, 200, `the settings save: ${JSON.stringify(saved.body)}`);
+  const link = `<a href="mailto:${SITE_EMAIL}">${SITE_EMAIL}</a>`;
+  for (const p of ["/", "/about/our-team/", "/no-such-page-here/"]) {
+    const html = await (await visit(p)).text();
+    assert.equal(accessLine(html), `Feedback, questions or accessibility issues: ${link}`, `${p}: the footer's accessibility line`);
+    assert.doesNotMatch(footerOf(html), /accessibility@badgersupports\.org/, `${p}: the build's address is gone from the footer`);
+  }
+  const T = "site:footer/accessibility";
+  assert.equal((await saveWord(publisher, T, content.editable[T].shown, "Tell us what gets in your way.")).changed, true);
+  assert.equal(accessLine(await (await visit("/")).text()), `Tell us what gets in your way. ${link}`, "words with no address: the words, then the address linked after them");
+  assert.equal((await pagesNow(publisher)).site.accessibilityEmail, SITE_EMAIL);
+});
+
+test("item 15, settings (d): someone with site.edit alone is refused each of the three, and the structure does not move", async (t) => {
+  const { as, cleared } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const v = await pagesNow(editor);
+  for (const values of [{ name: SITE_NAME }, { description: SITE_DESC }, { accessibilityEmail: SITE_EMAIL }]) {
+    const no = await saveSettings(editor, values, v.version);
+    assert.deepEqual([no.status, no.body.error], [403, "staff.forbidden"], JSON.stringify(values));
+  }
+  assert.equal((await pagesNow(editor)).version, v.version, "the structure version did not move");
+  assert.deepEqual(cleared, [], "nothing was cleared");
+  assert.equal(await homeTitle(), "Badger Supports — peer support at UW–Madison");
+});
+
+test("item 15, settings (e): a stale tab is refused 409; another field, a bad address, an empty name or one with a dash are refused 422", async (t) => {
+  const { as } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  const first = await saveSettings(publisher, { name: SITE_NAME }, v.version);
+  assert.equal(first.status, 200, `the settings save: ${JSON.stringify(first.body)}`);
+  const stale = await saveSettings(publisher, { name: "Another Test Name" }, v.version);
+  assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", first.body.version]);
+  const now = first.body.version;
+  const refused = [
+    [{ origin: "https://elsewhere.example" }, "settings.field"],
+    [{ liveOrigin: "https://elsewhere.example" }, "settings.field"],
+    [{ connectOrigin: "https://elsewhere.example" }, "settings.field"],
+    [{ lang: "fr" }, "settings.field"],
+    [{ name: "Fine Name", footer: { accessibilityEmail: SITE_EMAIL } }, "settings.field"],
+    [{}, "settings.field"],
+    [null, "settings.field"],
+    [["name"], "settings.field"],
+    [{ name: "" }, "settings.name"],
+    [{ name: "   " }, "settings.name"],
+    [{ name: "Badgers — Test" }, "settings.name"],
+    [{ name: "x".repeat(61) }, "settings.name"],
+    [{ name: 42 }, "settings.name"],
+    [{ description: "x".repeat(301) }, "settings.description"],
+    [{ accessibilityEmail: "not an address" }, "settings.email"],
+    [{ accessibilityEmail: "a11y-test@example" }, "settings.email"],
+    [{ accessibilityEmail: "one@example.org, two@example.org" }, "settings.email"],
+    [{ accessibilityEmail: "mailto:one@example.org" }, "settings.email"],
+    [{ accessibilityEmail: "Robin Example <one@example.org>" }, "settings.email"],
+    [{ accessibilityEmail: "one@@example.org" }, "settings.email"],
+    [{ accessibilityEmail: `${"x".repeat(243)}@example.org` }, "settings.email"],
+    [{ accessibilityEmail: "" }, "settings.email"],
+  ];
+  for (const [values, code] of refused) {
+    const no = await saveSettings(publisher, values, now);
+    assert.deepEqual([no.status, no.body.error], [422, code], JSON.stringify(values));
+  }
+  assert.equal((await pagesNow(publisher)).version, now, "no refusal moved the structure");
+  const mixed = await saveSettings(publisher, { accessibilityEmail: "A11Y-TEST@example.org" }, now);
+  assert.equal(mixed.status, 200, JSON.stringify(mixed.body));
+  assert.equal((await pagesNow(publisher)).site.accessibilityEmail, SITE_EMAIL, "an address is kept lower-cased");
+  assert.equal((await pagesNow(publisher)).site.name, SITE_NAME, "a save of one setting keeps the others");
+});
+
+test("item 15, settings (f): one save sets all three, publishes them, and clears every page and every feed", async (t) => {
+  const { as, cleared } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  const all = { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL };
+  const saved = await saveSettings(publisher, all, v.version);
+  assert.equal(saved.status, 200, `the settings save: ${JSON.stringify(saved.body)}`);
+  assert.ok(cleared.includes("page"), `the purge list ${JSON.stringify(cleared)} clears every page`);
+  assert.ok(cleared.includes("events"), `the purge list ${JSON.stringify(cleared)} clears every feed`);
+  assert.deepEqual((await newestDoc()).settings, all, "the structure document holds the three");
+  assert.deepEqual((await currentRevision()).structure.settings, all, "the published revision carries them");
+  const list = await pagesNow(publisher);
+  assert.deepEqual(list.settings, all);
+  assert.deepEqual(list.site, { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL });
+});
+
+test("item 15, settings (g): bringing back an earlier version brings back its settings, and one from before any brings back the build's", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const before = await saveWord(publisher, HERO, content.editable[HERO].shown, "Made-up words, version A");
+  assert.equal(before.published?.n, 1);
+  const v = await pagesNow(publisher);
+  const one = await saveSettings(publisher, { name: SITE_NAME, accessibilityEmail: SITE_EMAIL }, v.version);
+  assert.equal(one.status, 200, `the settings save: ${JSON.stringify(one.body)}`);
+  const two = await saveSettings(publisher, { name: "Second Test Name", accessibilityEmail: "second-test@example.org" }, one.body.version);
+  assert.equal(two.status, 200, JSON.stringify(two.body));
+  assert.equal(await homeTitle(), "Second Test Name — peer support at UW–Madison");
+  const restore = async (n) => {
+    const list = await (await handle(get("/api/staff/versions", { cookie: publisher }), ip())).json();
+    const r = await handle(staffPost(`/api/staff/versions/${n}/restore`, { expected: list.expected }, publisher), ip());
+    return { status: r.status, body: await r.json() };
+  };
+  const back = await restore(one.body.published.n);
+  assert.equal(back.status, 200, JSON.stringify(back.body));
+  assert.equal(await homeTitle(), `${SITE_NAME} — peer support at UW–Madison`, "the earlier version's name");
+  assert.match(accessLine(await (await visit("/")).text()), new RegExp(`mailto:${SITE_EMAIL}`), "and its address");
+  const first = await restore(before.published.n);
+  assert.equal(first.status, 200, JSON.stringify(first.body));
+  assert.equal(await homeTitle(), "Badger Supports — peer support at UW–Madison", "a version from before any setting: the build's name");
+  assert.match(accessLine(await (await visit("/")).text()), /mailto:accessibility@badgersupports\.org/);
+});
+
+test("item 15, settings (h): a title saved earlier with the site's name in it draws the name once", async (t) => {
+  const { as, content } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"]);
+  // A page made on the staff page before titles were stored without the name.
+  const legacy = { schema: "bss.structure/1", menu: null, removed: [], entries: {}, pages: { "pg-legacy-page": { state: "live", page: {
+    schema: "bss.page/1", id: "pg-legacy-page", path: "/legacy-page/", title: "Legacy Page — Badger Supports", description: "", analytics: "public",
+    blocks: [{ id: "b-legacy-page-1", type: "pagehead", title: "Legacy Page" }] } } } };
+  await q("INSERT INTO site_structure (doc, action, page_id, edited_by, edited_name) VALUES ($1::jsonb, 'add', 'pg-legacy-page', 'u-test-0001', 'Robin Example')", [JSON.stringify(legacy)]);
+  // A room's title line saved with the edit button while the line still carried the name.
+  const ROOM = "text:directions.pageTitle";
+  assert.equal((await saveWord(editor, ROOM, content.editable[ROOM].shown, "Find Your Way to {{place}} — Badger Supports")).changed, true);
+  assert.equal(titlesOf(await (await visit("/legacy-page/")).text())[0], "Legacy Page — Badger Supports", "the made page, once");
+  assert.equal(titlesOf(await (await visit("/directions/sac-mhh/")).text())[0], "Find Your Way to Student Mental Health Hub — Badger Supports", "the saved line, once");
+  assert.equal((await pagesNow(editor)).pages.find((p) => p.id === "pg-legacy-page").title, "Legacy Page", "listed without the name");
+
+  const v = await pagesNow(publisher);
+  const saved = await saveSettings(publisher, { name: SITE_NAME }, v.version);
+  assert.equal(saved.status, 200, `the settings save: ${JSON.stringify(saved.body)}`);
+  assert.equal(titlesOf(await (await visit("/legacy-page/")).text())[0], `Legacy Page — ${SITE_NAME}`, "the build's name swapped for the setting's");
+  assert.equal(titlesOf(await (await visit("/directions/sac-mhh/")).text())[0], `Find Your Way to Student Mental Health Hub — ${SITE_NAME}`);
+  assert.equal((await saveWord(editor, ROOM, "Find Your Way to {{place}} — Badger Supports", `Find Your Way to {{place}} — ${SITE_NAME}`)).changed, true);
+  assert.equal(titlesOf(await (await visit("/directions/sac-mhh/")).text())[0], `Find Your Way to Student Mental Health Hub — ${SITE_NAME}`, "a line carrying the current name, once");
+  const { pageTitle } = await import("../src/render/layout.mjs");
+  assert.equal(typeof pageTitle, "function", "layout.mjs draws a title from the page and the site");
+  const site = { name: SITE_NAME };
+  Object.defineProperty(site, "built", { value: { name: "Badger Supports" } });
+  assert.equal(pageTitle({ id: "pg-home", title: "Badger Supports — peer support at UW–Madison" }, site), `${SITE_NAME} — peer support at UW–Madison`, "the home page's leading form");
+  assert.equal(pageTitle({ id: "pg-home", title: `${SITE_NAME} — peer support at UW–Madison` }, site), `${SITE_NAME} — peer support at UW–Madison`);
+  assert.equal(pageTitle({ id: "pg-x", title: `Our Team — ${SITE_NAME}` }, site), `Our Team — ${SITE_NAME}`);
+});
+
+test("item 15, settings (i): a stale tab's refusal carries the settings saved since and the version they belong to, so a second save is a knowing one", async (t) => {
+  const { as } = await pagesSite(t);
+  const mine = await as(["site.edit", "site.publish"]);
+  const theirs = await as(["site.edit", "site.publish"], "Avery Example");
+  const v = await pagesNow(mine);
+  const other = await saveSettings(theirs, { name: "Their Test Name", description: "" }, v.version);
+  assert.equal(other.status, 200, JSON.stringify(other.body));
+  const typed = { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL };
+  const stale = await saveSettings(mine, typed, v.version);
+  assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", other.body.version]);
+  assert.deepEqual(stale.body.site, { name: "Their Test Name", description: "", accessibilityEmail: "accessibility@badgersupports.org" },
+    "the refusal carries the settings as saved at the version it names");
+  assert.equal(await homeTitle(), "Their Test Name — peer support at UW–Madison", "nothing of mine was saved");
+  const page = await change(mine, { action: "add", expected: v.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });
+  assert.equal(page.status, 409);
+  assert.equal(page.body.site, undefined, "a refused page change carries no settings");
+  const again = await saveSettings(mine, typed, stale.body.current);
+  assert.equal(again.status, 200, JSON.stringify(again.body));
+  assert.equal(await homeTitle(), `${SITE_NAME} — peer support at UW–Madison`, "pressed again with that version, mine replace theirs");
+});

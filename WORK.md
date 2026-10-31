@@ -63,11 +63,11 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-Cloud run, 31 Oct 2026, queue item 7's second slice (a menu entry put back), without the photos (`node ops/check.mjs --browser --no-media` on
-`db64dd7` plus the change; Chromium 1243 in place of the pinned 1234; exit 0): 522 text keys over 75 files, every word editable; the editor contract current;
-colours from tokens, no text under 14px; nothing private (222 files read); 65 pages; delivered files clean (104); tests 232 passed, 0 failed, 1 skipped
-(the photos); 195 captures, no console errors or sideways scroll; a11y 202 and forms passed; 152 pressed and timed. The menu test failed first on
-`db64dd7` twice, the list missing and the put-back refused (`_work/badgersupports/item7-menu-fail-first-a.txt`, `-b.txt`); 6 guard breaks each caught by name. All local or fixture.
+Cloud run, 31 Oct 2026, item 15's third slice (the site's settings), without the photos (`node ops/check.mjs --browser --no-media` on
+`96b32cd` plus the change; Chromium 1234; exit 0): 536 text keys over 75 files, every word editable; the editor contract current;
+colours from tokens, no text under 14px; nothing private (222 files read); 65 pages; delivered files clean (104); tests 241 passed, 0 failed, 1 skipped
+(the photos); 195 captures, no console errors or sideways scroll; a11y 202 and forms passed; 158 pressed and timed. The nine settings tests failed first
+(eight, then the stale-tab one); 6 server and 2 browser guard breaks each caught by name; titles, descriptions and footers as built before. All local or fixture.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers
@@ -119,7 +119,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 15. **Editor and publishing** → **words done** 20 Oct; 25 Oct: every field a value, earlier versions, Restore, a save that publishes **shipped** in `9bf0ed5`. P2 → every field
     (links, media, forms, navigation, sections, layouts, settings) saved live with grants, conflicts, immutable history, restore, sanitising, keyboard use;
     a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16. **Sections** (add, copy, reorder, retire, put back; ARCHITECTURE,
-    "Sections") **shipped** in `598ce71`. **Stale words after a save** (queue item 8; DECISIONS) **shipped** in `db64dd7`. **A menu entry put back built** 31 Oct (Off the Menu, Put Back; ARCHITECTURE, "The menu"); not deployed. Left: rooms, the site's own settings (`research/EDITABLE-INVENTORY-2026-10-25.md`).
+    "Sections") **shipped** in `598ce71`. **Stale words after a save** (queue item 8; DECISIONS) **shipped** in `db64dd7`. **A menu entry put back built** 31 Oct (Off the Menu, Put Back; ARCHITECTURE, "The menu"); not deployed. **The site's settings** (name, search description, accessibility email; ARCHITECTURE, "Site settings") **built** 31 Oct, gate exit 0; not committed, not deployed. Left: rooms.
 16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2). **Shipped** in `1aaf44a` (a draft is a new page only, his answer; `docs/ARCHITECTURE.md`, "Pages"; migration 008 applied). Connect: card words only (Exchange `PUBLIC-SITE-PAGES`).
 17. **Connect: forms** (`PUBLIC-SITE-FORMS`; answers reach Website Forms, **done** 20 Oct). The switch **built** 30 Oct: Open (asked
     twice) and Close on `/staff/` for `forms.switch:<key>`, on the page with no deploy; a stale tab refused (`test/intake.test.mjs`). Waits for Connect's grant (Exchange `PUBLIC-FORM-SWITCH-GRANT`). "34 passing tests" was Connect's count.

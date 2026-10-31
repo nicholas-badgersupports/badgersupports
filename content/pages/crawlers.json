@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-crawlers",
   "path": "/crawlers/",
-  "title": "Crawlers — Badger Supports",
+  "title": "Crawlers",
   "analytics": "none",
   "blocks": [
     {

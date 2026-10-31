@@ -14,7 +14,7 @@ import { personPages } from "./team.mjs";
 import { formPreviewPages } from "./blocks/form.mjs";
 import { resolveText, makeT } from "../shared/text.mjs";
 import { applyEdits } from "../shared/edits.mjs";
-import { layStructure, addMadeSections } from "../shared/structure.mjs";
+import { layStructure, addMadeSections, laySettings } from "../shared/structure.mjs";
 
 /* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
 export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
@@ -28,10 +28,11 @@ export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team
 
 /* Every page with the edits laid over the floor, as loadContent() does, then the page structure (src/shared/structure.mjs):
    pages and sections made on the staff page join the build's before the words are laid, so their words save like any other; drafts
-   and retired pages leave the list visitors get; moved and retired addresses are in `moves`. With no structure the
-   result is the build's, byte for byte. */
+   and retired pages leave the list visitors get; moved and retired addresses are in `moves`. The site's saved
+   settings (name, search description, accessibility email) are laid over its own, the build's kept as site.built.
+   With no structure the result is the build's, byte for byte. */
 export function composeSite(snap, edits = {}, structure = null) {
-  const site = structuredClone(snap.floor.site);
+  const site = laySettings(structuredClone(snap.floor.site), structure?.settings);
   const made = Object.values(structure?.pages || {}).filter((r) => r.page).map((r) => structuredClone(r.page));
   const authored = [...structuredClone(snap.floor.pages), ...made];
   if (structure) addMadeSections(structure, authored);

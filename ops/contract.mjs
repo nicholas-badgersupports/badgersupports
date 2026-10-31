@@ -80,7 +80,7 @@ export function contract() {
     ["id", "permanent, `pg-…`; never reused"],
     ["path", "the address, starting and ending with `/`"],
     ["aliases", "old addresses that should 301 to this page"],
-    ["title, description", "the browser tab and search result"],
+    ["title, description", "the browser tab and search result. The title is the page's own words: the site's name is added when the page is drawn, first on the home page and last on every other. The home page draws the site's search description, not one of its own"],
     ["analytics", "`public` or `none` (docs/ANALYTICS.md)"],
     ["noindex", "keep this page out of search engines"],
     ["program", "the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (red); left out, brand red. The header, footer and announcements stay red on every page"],
@@ -226,7 +226,9 @@ export function contract() {
   }
   w("## Also edited in Connect");
   w();
-  w("- **Site settings** (`content/site.json`): menus, the header button, the support line, the footer.");
+  w("- **Site settings** (`content/site.json`): menus, the header button, the support line, the footer. The site's name, search");
+  w("  description and accessibility email are changed live on this site's staff page, by someone with `site.publish`; the");
+  w("  addresses and the language stay a change in the file.");
   w("- **Media library** (`media/manifest.json`): each photo's description (alt text), focal point and provenance. Any slot");
   w("  may instead hold a pasted link (see Photos), so a photo can be swapped without adding it to the library.");
   w("- **Mood check-in** (`content/widgets/mood.json`): the moods, their colours and messages.");

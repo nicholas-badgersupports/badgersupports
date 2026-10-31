@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-staff",
   "path": "/staff/",
-  "title": "Staff Sign-In — Badger Supports",
+  "title": "Staff Sign-In",
   "analytics": "none",
   "noindex": true,
   "blocks": [

@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-about-team",
   "path": "/about/our-team/",
-  "title": "Our Team — Badger Supports",
+  "title": "Our Team",
   "description": "The students and advisors who run Badger Supports at UW–Madison.",
   "analytics": "public",
   "blocks": [

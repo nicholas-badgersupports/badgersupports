@@ -520,6 +520,56 @@ as retiring the page does; on a draft, `site.edit` retires.
 The edits file a build downloads leaves out made sections' words, as it leaves out made pages'. A section change shares
 item 8's one-minute window, as a page change does.
 
+### Site settings (item 15, third slice, 31 Oct 2026)
+
+The site's **name**, **search description** and **accessibility email** change live on the staff page, under Site
+Settings, for someone with `site.publish` (draft or not; the server is the gate, and the part is drawn only for them).
+The addresses (`origin`, `liveOrigin`, `connectOrigin`) and the language (`lang`) stay a change in `content/site.json`;
+any other field is refused (422 `settings.field`). The routine calls and how to reverse each: `DECISIONS.md`, 31 Oct,
+"the site's settings".
+
+**Stored and published like a page change.** The settings are part of the structure document (`settings: { name,
+description, accessibilityEmail }`, only the keys a publisher saved; one left out keeps the file's value). The three
+are saved as one change, the action `settings` through `POST /api/staff/pages`: it names the version its tab started
+from (409 when stale), writes a new row of `site_structure`, publishes the next revision and clears `page` and
+`events`, since every page's title and footer change. Restoring a published revision brings back its settings, and
+one from before any setting brings back the file's. `composeSite` lays them over the build's site (`laySettings`),
+keeping the build's own name and address as `site.built` for the two rules below; the pages the API draws itself (a
+no-script form reply, the mood reply, a sign-in failure, the error page) lay them from the published revision, or
+draw the file's when it cannot be read.
+
+**A stale tab.** A settings change refused as stale (409) carries the version now and the three settings as saved at
+it (`site`). The staff page keeps what was typed, shows under each field whose saved value differs from what the fields
+started with "Saved since you opened this page: …" ("(none)" for an empty one), and says someone saved settings
+since; only then does the part's own token move to that version, so Save Settings again replaces theirs knowingly and,
+landing, clears the lines. The part's token is its own, beside the pages part's: a list drawn again moves it only when
+its settings are the ones the token stands for, and a 409 with nothing new to show (another part's change) is sent
+again once.
+
+**Checks** (`src/shared/structure.mjs`): the name as a page title is checked, at most 60 characters and without "—",
+the dash that joins it to a title (`settings.name`); the description as a page's (`settings.description`; it may be
+empty, and the home page then draws none); the email one address shaped like `name@example.org`, lower-cased, at most 254
+characters (`settings.email`). A saved value is checked again when it is laid; one that fails keeps the file's.
+
+**How each takes effect.** A page's title is stored without the name, in its file, in a page made on the staff page
+and in the text keys that build titles (rooms, people, form previews). `pageTitle()` (`src/render/layout.mjs`) adds the
+name when the page is drawn: first on the home page ("Badger Supports — peer support at UW–Madison"), last on every
+other ("Our Team — Badger Supports"). A title that still carries " — " and the build's name or the current one (a page
+made on the staff page before this, or a title line saved with the edit button) has it taken off first, so the name is
+drawn once. The home page draws the site's description, not one of its own; a page made on the staff page starts with
+it. The footer's accessibility line draws its words with the build's address (or the current one) replaced by the
+setting's, linked; words holding neither are drawn with the address linked after them.
+
+**Limits.** Found in the code, not seen live. The header's wordmark ("badger supports") and every other line that names
+the site (`footer.socialLabel`, `hero.photosLabel`, `team.pageDescription`, `media.linkAlt`, the support line and the
+footer's affiliation line, page words) stay words for the edit button; a calendar file's `PRODID` names the site as
+written. Five page files hold the accessibility address in their own words or links; those stay words and links too. A
+change of name is in a page's title once the page is drawn again, so a page the CDN holds keeps the old title up to
+30 minutes; a settings change shares item 8's one-minute window, as a page change does. Search engines read a new
+description when they next crawl the home page. The edits file a build downloads does not carry the settings (they live
+in the published revision, as made pages do), so when the revision cannot be read a page is the build's own file, with
+the file's name, description and address.
+
 ## Crawlers and abuse (25 Oct 2026, cloud run §6)
 
 **What limits each public route** (`netlify/lib/http.mjs`, `router.mjs`):

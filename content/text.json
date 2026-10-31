@@ -800,8 +800,8 @@
     },
     "form.preview.pageTitle": {
       "group": "forms",
-      "text": "Preview: {{form}} — Badger Supports",
-      "where": "The browser-tab title of a closed form's preview page on the prototype site."
+      "text": "Preview: {{form}}",
+      "where": "The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it."
     },
     "form.preview.pageDescription": {
       "group": "forms",
@@ -830,8 +830,8 @@
     },
     "team.pageTitle": {
       "group": "team",
-      "text": "{{name}}, {{title}} — Badger Supports",
-      "where": "Browser tab and search result title of a profile page."
+      "text": "{{name}}, {{title}}",
+      "where": "Browser tab and search result title of a profile page; the site's name is added after it."
     },
     "team.pageDescription": {
       "group": "team",
@@ -885,8 +885,8 @@
     },
     "directions.pageTitle": {
       "group": "rooms",
-      "text": "Directions to {{place}} — Badger Supports",
-      "where": "A room page’s title in the browser tab and in search results."
+      "text": "Directions to {{place}}",
+      "where": "A room page’s title in the browser tab and in search results; the site’s name is added after it."
     },
     "directions.pageDescription": {
       "group": "rooms",
@@ -1707,6 +1707,76 @@
       "group": "staff",
       "text": "Put {{label}} back on the menu",
       "where": "Staff page, button name for screen readers."
+    },
+    "staff.pages.error.siteName": {
+      "group": "staff",
+      "text": "Give the site a name of up to 60 characters, without a long dash (—).",
+      "where": "Under Site Settings on the staff page, when the site name is empty, too long or holds the dash that joins it to page titles."
+    },
+    "staff.pages.error.email": {
+      "group": "staff",
+      "text": "Use one email address, like name@example.org.",
+      "where": "Under Site Settings on the staff page, when the accessibility email is not one address."
+    },
+    "staff.settings.title": {
+      "group": "staff",
+      "text": "Site Settings",
+      "where": "Heading of the part of the staff page, for a publisher, that changes the site's name, search description and accessibility email."
+    },
+    "staff.settings.field.name": {
+      "group": "staff",
+      "text": "Site Name",
+      "where": "Label of the site name field under Site Settings."
+    },
+    "staff.settings.help.name": {
+      "group": "staff",
+      "text": "Added to the title of every page.",
+      "where": "Under the Site Name label: what the name changes."
+    },
+    "staff.settings.field.description": {
+      "group": "staff",
+      "text": "Search Description",
+      "where": "Label of the search description field under Site Settings."
+    },
+    "staff.settings.help.description": {
+      "group": "staff",
+      "text": "What search engines show for the home page. A new page starts with it as its own.",
+      "where": "Under the Search Description label: what the description changes."
+    },
+    "staff.settings.field.email": {
+      "group": "staff",
+      "text": "Accessibility Email",
+      "where": "Label of the accessibility email field under Site Settings."
+    },
+    "staff.settings.help.email": {
+      "group": "staff",
+      "text": "Linked in the accessibility line at the foot of every page.",
+      "where": "Under the Accessibility Email label: where the address shows."
+    },
+    "staff.settings.save": {
+      "group": "staff",
+      "text": "Save Settings",
+      "where": "Button under Site Settings: saves the three settings as one change, which publishes."
+    },
+    "staff.settings.done": {
+      "group": "staff",
+      "text": "Settings saved.",
+      "where": "Read out once Site Settings are saved and published."
+    },
+    "staff.settings.conflict": {
+      "group": "staff",
+      "text": "Someone saved settings since you opened this page. Their values are under each field. Save Settings again to replace them with yours.",
+      "where": "Under Site Settings, when someone else saved settings after this page was opened; the fields keep what was typed."
+    },
+    "staff.settings.since": {
+      "group": "staff",
+      "text": "Saved since you opened this page: {{value}}",
+      "where": "Under a Site Settings field whose saved value changed after this page was opened, with that value."
+    },
+    "staff.settings.none": {
+      "group": "staff",
+      "text": "(none)",
+      "where": "Shown as the value saved since when that value is empty (a search description left blank)."
     },
     "staff.sections.open": { "group": "staff", "text": "Sections", "where": "Staff page, button that opens a page's sections." },
     "staff.sections.title": { "group": "staff", "text": "Sections of {{title}}", "where": "Staff page, heading of one page's sections." },

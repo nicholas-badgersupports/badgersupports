@@ -14,7 +14,7 @@ it with the reasons listed, so an editor can show the same reasons before a dire
 | `id` | permanent, `pg-…`; never reused |
 | `path` | the address, starting and ending with `/` |
 | `aliases` | old addresses that should 301 to this page |
-| `title, description` | the browser tab and search result |
+| `title, description` | the browser tab and search result. The title is the page's own words: the site's name is added when the page is drawn, first on the home page and last on every other. The home page draws the site's search description, not one of its own |
 | `analytics` | `public` or `none` (docs/ANALYTICS.md) |
 | `noindex` | keep this page out of search engines |
 | `program` | the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (red); left out, brand red. The header, footer and announcements stay red on every page |
@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-522 keys. Keys are permanent. Required text cannot be published empty and must keep each
+536 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -555,7 +555,7 @@ the site adds the markup.
 | `directions.nextHere` | Next Here | Heading over the next events held in a room. |  |
 | `directions.arrive` | You’re there: {{place}} | End of the route on a room’s directions. | `{{place}}` |
 | `directions.ticket` | Directions | The stub of each room’s ticket on the list of rooms. |  |
-| `directions.pageTitle` | Directions to {{place}} — Badger Supports | A room page’s title in the browser tab and in search results. | `{{place}}` |
+| `directions.pageTitle` | Directions to {{place}} | A room page’s title in the browser tab and in search results; the site’s name is added after it. | `{{place}}` |
 | `directions.pageDescription` | How to find {{place}}: {{address}}. | A room page’s summary in search results and link previews. | `{{place}}` `{{address}}` |
 | `directions.eventRooms` | Event Rooms | Heading over the rooms events are held in, under the Hub on the list of rooms. |  |
 
@@ -674,7 +674,7 @@ the site adds the markup.
 | `form.left` | Characters left: {{n}} | Under a long answer box, once a tenth of its room is left. | `{{n}}` |
 | `form.preview.sent` | Preview only: these answers pass every check. Nothing was sent. | Under the Send button of a form preview once the answers would have been accepted. |  |
 | `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
-| `form.preview.pageTitle` | Preview: {{form}} — Badger Supports | The browser-tab title of a closed form's preview page on the prototype site. | `{{form}}` |
+| `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
 
 ### Team and profiles (7)
@@ -685,7 +685,7 @@ the site adds the markup.
 | `team.classOf` | Class of {{year}} | After a student's pronouns on their profile page, from the class year in their Connect profile. | `{{year}}` |
 | `team.connectWith` | Connect with {{first}} | The email link on a profile page, shown only when the person chose to publish a contact. | `{{first}}` |
 | `team.more` | More of Our Team | Heading over the other people in the same group, at the foot of a profile page. |  |
-| `team.pageTitle` | {{name}}, {{title}} — Badger Supports | Browser tab and search result title of a profile page. | `{{name}}` `{{title}}` |
+| `team.pageTitle` | {{name}}, {{title}} | Browser tab and search result title of a profile page; the site's name is added after it. | `{{name}}` `{{title}}` |
 | `team.pageDescription` | {{name}} is {{title}} at Badger Supports. | Search result description of a profile page. | `{{name}}` `{{title}}` |
 | `team.none` | Profiles of our directors, staff and volunteers will appear here. | Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does. |  |
 
@@ -696,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (307)
+### Staff page and edit button (321)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -852,6 +852,20 @@ the site adds the markup.
 | `staff.pages.menu.offGroup` | {{label}}, with {{entries}} | Staff page, a menu group taken off the menu, with the entries that come back with it. | `{{label}}` `{{entries}}` |
 | `staff.pages.menu.back` | Put Back | Staff page, button that puts a menu entry back on the menu; its spoken name says which. |  |
 | `staff.pages.menu.backName` | Put {{label}} back on the menu | Staff page, button name for screen readers. | `{{label}}` |
+| `staff.pages.error.siteName` | Give the site a name of up to 60 characters, without a long dash (—). | Under Site Settings on the staff page, when the site name is empty, too long or holds the dash that joins it to page titles. |  |
+| `staff.pages.error.email` | Use one email address, like name@example.org. | Under Site Settings on the staff page, when the accessibility email is not one address. |  |
+| `staff.settings.title` | Site Settings | Heading of the part of the staff page, for a publisher, that changes the site's name, search description and accessibility email. |  |
+| `staff.settings.field.name` | Site Name | Label of the site name field under Site Settings. |  |
+| `staff.settings.help.name` | Added to the title of every page. | Under the Site Name label: what the name changes. |  |
+| `staff.settings.field.description` | Search Description | Label of the search description field under Site Settings. |  |
+| `staff.settings.help.description` | What search engines show for the home page. A new page starts with it as its own. | Under the Search Description label: what the description changes. |  |
+| `staff.settings.field.email` | Accessibility Email | Label of the accessibility email field under Site Settings. |  |
+| `staff.settings.help.email` | Linked in the accessibility line at the foot of every page. | Under the Accessibility Email label: where the address shows. |  |
+| `staff.settings.save` | Save Settings | Button under Site Settings: saves the three settings as one change, which publishes. |  |
+| `staff.settings.done` | Settings saved. | Read out once Site Settings are saved and published. |  |
+| `staff.settings.conflict` | Someone saved settings since you opened this page. Their values are under each field. Save Settings again to replace them with yours. | Under Site Settings, when someone else saved settings after this page was opened; the fields keep what was typed. |  |
+| `staff.settings.since` | Saved since you opened this page: {{value}} | Under a Site Settings field whose saved value changed after this page was opened, with that value. | `{{value}}` |
+| `staff.settings.none` | (none) | Shown as the value saved since when that value is empty (a search description left blank). |  |
 | `staff.sections.open` | Sections | Staff page, button that opens a page's sections. |  |
 | `staff.sections.title` | Sections of {{title}} | Staff page, heading of one page's sections. | `{{title}}` |
 | `staff.sections.up` | Move {{name}} up | Staff page, button name for screen readers. | `{{name}}` |
@@ -1050,7 +1064,9 @@ the site adds the markup.
 
 ## Also edited in Connect
 
-- **Site settings** (`content/site.json`): menus, the header button, the support line, the footer.
+- **Site settings** (`content/site.json`): menus, the header button, the support line, the footer. The site's name, search
+  description and accessibility email are changed live on this site's staff page, by someone with `site.publish`; the
+  addresses and the language stay a change in the file.
 - **Media library** (`media/manifest.json`): each photo's description (alt text), focal point and provenance. Any slot
   may instead hold a pasted link (see Photos), so a photo can be swapped without adding it to the library.
 - **Mood check-in** (`content/widgets/mood.json`): the moods, their colours and messages.

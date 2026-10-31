@@ -13,7 +13,7 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { editableFor, revisionEdits, original, problemFor } from "./edits.mjs";
 import { redirectFor } from "./pages.mjs";
-import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, siteLinks, sectionName, isOpening, copyable, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
+import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 
 const parse = (d) => (typeof d === "string" ? JSON.parse(d) : d);
@@ -36,17 +36,28 @@ export async function siteAsSaved(doc) {
   return composeSite(snap, await revisionEdits(doc), doc);
 }
 
-/* The editor's list: every page the build's files or the staff page made, with its state, the menu, and the entries
-   taken off it that can be put back. */
+/* The site's settings as drawn at structure `doc`: the build's, with that version's saved ones laid over them. */
+function settingsAt(doc) {
+  const c = serverContent();
+  const s = laySettings(structuredClone(c.render?.floor?.site || c.site), doc.settings);
+  return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null };
+}
+
+/* A page's title as the staff page lists it: without the site's name, the build's or the current one. */
+const listedTitle = (p, site) => bareTitle(p.title, [site.built?.name, site.name], { first: p.id === "pg-home" });
+
+/* The editor's list: every page the build's files or the staff page made, with its state, the menu, the entries
+   taken off it that can be put back, and the site's settings: as drawn now (`site`) and as saved (`settings`, only
+   the keys a publisher saved). */
 export async function pagesList() {
   const { version, doc } = await structureNow();
   const site = await siteAsSaved(doc);
-  const shortTitle = (t) => String(t || "").replace(new RegExp(` — ${site.site.name}$`), "");
+  const shortTitle = (t, id) => listedTitle({ title: t, id }, site.site);
   const pages = site.all
     .filter((p) => site.authored.has(p.id) || doc.pages[p.id]?.page)
-    .map((p) => ({ id: p.id, path: p.file ? `/${p.file}` : p.path, title: shortTitle(p.title), description: p.description || "",
+    .map((p) => ({ id: p.id, path: p.file ? `/${p.file}` : p.path, title: shortTitle(p.title, p.id), description: p.description || "",
       state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id), sections: !SECTION_FIXED.has(p.id) }));
-  return { version, menu: menuOutline(site.site.nav), offMenu: site.offMenu, pages };
+  return { version, menu: menuOutline(site.site.nav), offMenu: site.offMenu, pages, site: settingsAt(doc), settings: doc.settings || {} };
 }
 
 /* One page's sections for the editor: those on the page in order, and the retired ones, each with its id, kind, first
@@ -59,14 +70,15 @@ export async function sectionsList(pageId) {
   const one = (b) => ({ id: b.id, type: b.type, name: sectionName(b), head: isOpening(b), copy: copyable(b.type) });
   return {
     version, fixed: SECTION_FIXED.has(p.id),
-    page: { id: p.id, title: String(p.title || "").replace(new RegExp(` — ${site.site.name}$`), ""), path: p.path, state: stateOf(doc, p.id) },
+    page: { id: p.id, title: listedTitle(p, site.site), path: p.path, state: stateOf(doc, p.id) },
     sections: (p.blocks || []).map(one), retired: (p.retiredSections || []).map(one),
   };
 }
 
 /* The scope a change needs, from the state of the page it names: words and drafts are an editor's (site.edit); what
    visitors can reach, the menu, a live page's address and bringing back a version are a publisher's (site.publish).
-   A page's sections are words too, but taking one off a live page is a publisher's, as retiring the page is. */
+   A page's sections are words too, but taking one off a live page is a publisher's, as retiring the page is. The site's
+   settings are a publisher's, draft or not: every page's title and footer change with them. */
 export function scopeFor(change, doc) {
   const draft = change.page && doc.pages[change.page]?.state === "draft";
   switch (change.action) {
@@ -75,22 +87,26 @@ export function scopeFor(change, doc) {
     case "sectionRetire": return draft ? "site.edit" : "site.publish";
     case "details": return change.path !== undefined && !draft ? "site.publish" : "site.edit";
     case "retire": return draft ? "site.edit" : "site.publish";
+    case "settings": return "site.publish";
     default: return "site.publish";
   }
 }
 
-/* Apply one change for `who`, after `allow(scope)` has said they may. Returns { version, page?, section? }. */
+/* Apply one change for `who`, after `allow(scope)` has said they may. Returns { version, page?, section? }. A stale
+   change is refused 409 with the version now; a stale settings change also carries the settings as saved at that
+   version, so the staff page can show them before a second save replaces them knowingly. */
 export async function changeStructure(who, change, allow) {
   const before = await structureNow();
   allow(scopeFor(change, before.doc));
-  if (String(change.expected) !== before.version) throw new HttpError(409, "pages.conflict", { current: before.version });
+  const stale = (now) => new HttpError(409, "pages.conflict", { current: now.version, ...(change.action === "settings" ? { site: settingsAt(now.doc) } : {}) });
+  if (String(change.expected) !== before.version) throw stale(before);
   const c = serverContent();
   const site = await siteAsSaved(before.doc);
   let out;
   try {
     out = applyChange(before.doc, change, {
       pages: site.all, authored: site.authored, menu: menuOutline(site.site.nav), offMenu: site.offMenu,
-      site: { name: site.site.name, description: site.site.description }, redirected: (p) => !!redirectFor(c, p),
+      site: { name: site.site.name, description: site.site.description, built: site.site.built?.name }, redirected: (p) => !!redirectFor(c, p),
       links: siteLinks(site.site, site.pages.concat(site.drafts)),
     });
   } catch (e) {
@@ -100,7 +116,7 @@ export async function changeStructure(who, change, allow) {
   const version = await tx(async (t) => {
     await t.query("LOCK TABLE site_structure IN EXCLUSIVE MODE");
     const now = await structureNow(t);
-    if (now.version !== before.version) throw new HttpError(409, "pages.conflict", { current: now.version });
+    if (now.version !== before.version) throw stale(now);
     const row = await t.one(
       "INSERT INTO site_structure (doc, action, page_id, edited_by, edited_name) VALUES ($1::jsonb, $2, $3, $4, $5) RETURNING id",
       [JSON.stringify(out.doc), change.action, out.page || null, who.sub, who.name]);

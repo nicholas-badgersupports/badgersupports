@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-request-a-workshop",
   "path": "/join/request-a-workshop/",
-  "title": "Request a Workshop — Badger Supports",
+  "title": "Request a Workshop",
   "description": "Badger Supports workshops help groups build connection and individuals gain practical tools for everyday challenges. Led by trained student Peer Facilitators.",
   "analytics": "public",
   "blocks": [

@@ -84,7 +84,7 @@ The prototype build reads three fixtures. Every person, wall note and event in t
 - `content/fixtures/events.json`: craft nights and peer support groups. Connect's public events
   export will replace it (Exchange request `PUBLIC-EVENTS-EXPORT`).
 - `content/fixtures/wall-notes.json`: Wall of Support notes.
-- `content/fixtures/team.json`: the team page. Connect's opt-in public profiles will replace it
+- `content/fixtures/team.json`: the team page. Connect's public profiles will replace it
   (Exchange request `PUBLIC-TEAM-PROFILES-2026-10-20`).
 
 Every page the prototype builds carries `noindex`. `--production` refuses to build until each fixture

@@ -98,7 +98,7 @@ repository. The inventory is `PEOPLE-ROUTES-2026-10-19.md`, beside the repositor
 
 - Each group's old addresses 301 to the team page: four catch-all lines, `/about/our-team/{group}/*`
   (`teamRedirects()`, `ops/build.mjs`).
-- A person's new page comes only from their own opt-in profile on Connect. Nothing is copied from the old pages.
+- A person's new page comes only from their own public profile on Connect. Nothing is copied from the old pages.
 - A person's own old address can be carried as an alias on their profile. It is written before the
   catch-alls, so it wins.
 

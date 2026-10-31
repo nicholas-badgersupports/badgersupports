@@ -289,6 +289,10 @@ test("the published site shows Connect's events, each page its own, and no sampl
   const team = read(path.join(TEAM_PATH.slice(1), "index.html"));
   assert.equal(team.match(/class="team-none"/g)?.length, 1);
   assert.doesNotMatch(team, /Advisors &amp; Campus Partners<\/h2>/);
+  // Profiles are public unless their owner turns them off, so the page never says a person chooses to share one.
+  assert.doesNotMatch(team.match(/<p class="team-none">[^<]*<\/p>/)?.[0] ?? "", /choose|opt[- ]in|share theirs/i,
+    "the empty team page says profiles are shared by choice");
+  assert.match(team, /<p class="team-none">[^<]+<\/p>/, "the empty team page says something");
 
   // The live site, not a prototype: no notice saying so, and open to search engines.
   assert.doesNotMatch(read("index.html"), /class="proto"|noindex/);

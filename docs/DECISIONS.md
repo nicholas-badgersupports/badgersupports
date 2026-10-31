@@ -406,3 +406,21 @@ answer a malformed %-escape with the 404 page.
 | Migration `001_intake`'s stale comment is left as it is; `ARCHITECTURE.md` § Migrations says so | an applied migration is a record of what ran; whether Netlify checks its bytes on a later deploy was not checked | edit the comment, after checking that |
 | Line numbers in `ANALYTICS.md` and `COMMUNICATIONS.md` became names (`announce()`, `idem_key`, a test's title) | most had moved; a name survives an edit above it | write line numbers again |
 | The lists of form keys and `none` blocks in `ANALYTICS.md` point at their source | each had fallen behind the code (three keys of twelve, two blocks of six) | list them again by hand |
+
+## 30 October 2026 · team profiles on by default (queue item 4c; Owner, then routine calls made in the session)
+
+His answers, given with buttons, quoted. For profiles they replace "Resource-editing directors" as the reviewer in "the
+team and the Wall" above; Wall of Support notes and resource suggestions keep that answer. Sent to Connect as Exchange
+`to-intranet/PUBLIC-TEAM-PROFILES-DEFAULT-ON-2026-10-30.md`.
+
+| Question | Answer | Effect |
+|---|---|---|
+| Who is included by default | "Everyone, each can opt out, all student supporters either have to opt in to be dispalyed, or if they hold anothe rrole at Badger Supports they should opt in to display their student supporter status" | Connect's to set: a profile is in `publicTeam` with `published: true` unless its owner turns it off. The reader is unchanged; it counts only `published: true` (`mapTeam`) |
+| Approval | "No approval, there is a notification in admin of changes that were made" | no approval step; Connect's Admin notification of changes is the oversight |
+| Notice to members | "No notice" | nothing is sent before the team page turns on |
+
+| Call | Why | To reverse |
+|---|---|---|
+| `team.none` reads "Profiles of our directors, staff and volunteers will appear here." | the old sentence said each person chooses to share theirs, and profiles are now shared unless turned off | restore the old text in `content/text.json`, run `node ops/contract.mjs`, drop the test's choice assertion |
+| The website does not check Student Supporter status itself | `bss.team/1` has no field for that choice; the amendment asks Connect to name one | add the check to `mapTeam` once Connect names the field |
+| "opt-in" is taken out of the docs, notes and comments that describe the team now; the 20 Oct record in § 2 is left as written | a dated record says what was decided then | put the word back |

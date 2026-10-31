@@ -401,8 +401,8 @@ Adding a room is adding a record. A published room gets its own page at `/direct
 
 ## Team (Connect's public profiles, `bss.team-fixture/1`)
 
-The team is not edited here. Each member writes their own profile in their Connect account and chooses whether it
-is public; Connect exports the public ones and the build gives each a card on `/about/our-team/` and a page of its own
+The team is not edited here. Each member writes their own profile in their Connect account; it is public unless they
+turn it off. Connect exports the public ones and the build gives each a card on `/about/our-team/` and a page of its own
 at `/about/our-team/<slug>/`. A page only says which groups the Team block shows, in what order, and what to call them.
 A profile that is not public gets no card and no page. The old addresses under each group 301 to the team page.
 
@@ -687,7 +687,7 @@ the site adds the markup.
 | `team.more` | More of Our Team | Heading over the other people in the same group, at the foot of a profile page. |  |
 | `team.pageTitle` | {{name}}, {{title}} — Badger Supports | Browser tab and search result title of a profile page. | `{{name}}` `{{title}}` |
 | `team.pageDescription` | {{name}} is {{title}} at Badger Supports. | Search result description of a profile page. | `{{name}}` `{{title}}` |
-| `team.none` | Profiles of our directors, staff and volunteers appear here as each person chooses to share theirs. | Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does. |  |
+| `team.none` | Profiles of our directors, staff and volunteers will appear here. | Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does. |  |
 
 ### Problems (2)
 

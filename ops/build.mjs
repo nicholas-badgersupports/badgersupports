@@ -270,7 +270,7 @@ export function loadContent({ production = false, launch = production, textEdits
   // The wall and the team: Connect's exports when the build read them (ops/connect-feed.mjs). Without them a
   // published site shows neither sample: the wall renders nothing and the team page its words without people.
   const wall = feed?.wall ? structuredClone(feed.wall) : production ? { schema: "bss.wall-fixture/1", fixture: false, notes: [] } : readJson("content/fixtures/wall-notes.json");
-  // The team: Connect's opt-in public profiles (src/render/team.mjs). Each published one gets a page.
+  // The team: Connect's public profiles (src/render/team.mjs). Each published one gets a page.
   const teamAt = feed?.team ? "Connect's public team export" : "content/fixtures/team.json";
   const team = feed?.team ? structuredClone(feed.team) : production ? { schema: "bss.team-fixture/1", fixture: false, people: [] } : readJson("content/fixtures/team.json");
   for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`${teamAt}: ${p}`);

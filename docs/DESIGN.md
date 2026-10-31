@@ -360,7 +360,7 @@ Each kind of page has its own shape, so that pages are not all alike (owner, Rou
 | A room | numbered route steps beside a red card holding the address and the next events there |
 | Craft nights | purple (the brand rainbow's lilac, deepened for text), in sections: an event hero in the full colour with the next night and Drop In; what to expect; the schedule; recent nights in photos (none on the live site until Connect sends past nights, item 30); a closing call; the accessibility line (Round 6) |
 | Peer support groups | green: what a group is, in the live page's words, under a heading band; the Hub directions; the reel, which loads only after Play |
-| Our team | groups of people cards, from Connect's opt-in profiles (fictional samples in the prototype; on the live site, until the export exists, a tint panel saying profiles appear as each person shares theirs) |
+| Our team | groups of people cards, from Connect's public profiles (fictional samples in the prototype; on the live site, until the export exists, a tint panel saying profiles will appear here) |
 | Forms | two columns: the form head, a white card with its colour along the top, beside the questions |
 
 Every page is checked at 1280, 390 and 320 px by `npm run shots`. Nothing may scroll sideways at 320.

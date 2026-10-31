@@ -840,7 +840,7 @@
     },
     "team.none": {
       "group": "team",
-      "text": "Profiles of our directors, staff and volunteers appear here as each person chooses to share theirs.",
+      "text": "Profiles of our directors, staff and volunteers will appear here.",
       "where": "Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does."
     },
     "errors.server.title": {

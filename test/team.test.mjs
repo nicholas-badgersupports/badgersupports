@@ -1,4 +1,4 @@
-/* The About pages: the team from Connect's opt-in profiles, each person's own page, What We Do and
+/* The About pages: the team from Connect's public profiles, each person's own page, What We Do and
    the FAQ. Every person here is fictional (content/fixtures/team.json). */
 
 import test from "node:test";

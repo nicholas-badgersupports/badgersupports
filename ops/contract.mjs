@@ -149,8 +149,8 @@ export function contract() {
   w();
   w(`## Team (Connect's public profiles, \`${TEAM_SCHEMA}\`)`);
   w();
-  w("The team is not edited here. Each member writes their own profile in their Connect account and chooses whether it");
-  w(`is public; Connect exports the public ones and the build gives each a card on \`${TEAM_PATH}\` and a page of its own`);
+  w("The team is not edited here. Each member writes their own profile in their Connect account; it is public unless they");
+  w(`turn it off. Connect exports the public ones and the build gives each a card on \`${TEAM_PATH}\` and a page of its own`);
   w(`at \`${TEAM_PATH}<slug>/\`. A page only says which groups the Team block shows, in what order, and what to call them.`);
   w("A profile that is not public gets no card and no page. The old addresses under each group 301 to the team page.");
   w();

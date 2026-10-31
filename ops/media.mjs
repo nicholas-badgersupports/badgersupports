@@ -86,7 +86,9 @@ async function encodeItem(item, buf, outDir, files, log, cacheDir = CACHE) {
       if (!fs.existsSync(cached)) {
         // sharp drops all metadata unless asked to keep it: no camera, place or device data ships
         let img = sharp(buf, { failOn: "error" }).rotate().resize({ width: w, withoutEnlargement: true });
-        if (ext === "avif") img = img.avif({ quality: QUALITY.avif, effort: 4 });
+        // tune "ssim" keeps the AVIF encoding sharp 0.34 made: from 0.35 sharp's default tuning softens fine detail
+        // at this quality, and cached variants keep their names whichever sharp made them
+        if (ext === "avif") img = img.avif({ quality: QUALITY.avif, effort: 4, tune: "ssim" });
         if (ext === "webp") img = img.webp({ quality: QUALITY.webp });
         if (ext === "jpg") img = img.flatten({ background: "#FAF7F2" }).jpeg({ quality: QUALITY.jpg, mozjpeg: true, progressive: true });
         await img.toFile(cached);

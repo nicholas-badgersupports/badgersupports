@@ -3,6 +3,7 @@
   "about": "How the site reads Connect's public event list (ops/connect-feed.mjs). Connect sends each event's type, title, date, times and the room in the words it was saved with; this file says which program each type belongs to, which events make up a page's series, and which words name which room here. Nothing in it is an event: the events are whatever a director ticks in Connect, Admin > Resources > Public Website List.",
   "types": {
     "craft": { "program": "craft", "href": "/join/craft-nights" },
+    "craftnight": { "program": "craft", "href": "/join/craft-nights" },
     "peergroup": { "program": "peer", "href": "/join/peer-support-groups" },
     "workshop": { "program": "workshops" }
   },

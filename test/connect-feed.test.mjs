@@ -127,6 +127,18 @@ test("events become rows: program by type, series by title, room by words, and n
   assert.equal(events.fixture, false);
 });
 
+/* Connect's live Craft Night type is `craftnight`; its shipped default is `craft`. Either one is a craft night, so the
+   Craft Nights page lists it and its card links there. */
+test("an event of either Craft Night type id is a craft night", () => {
+  const night = (id, type) => ({ id, type, title: "Example craft night", short: "", date: "2026-11-18", endDate: "2026-11-18", start: "17:30", end: "20:00", room: "SAC Caucus Room", full: false });
+  const { events, dropped } = mapEvents({ ...EVENTS, events: [night("n1", "craftnight"), night("n2", "craft")] }, RULES);
+  assert.deepEqual(dropped, []);
+  assert.deepEqual(events.dated.map((e) => [e.id, e.program, e.href]), [
+    ["connect-n1", "craft", "/join/craft-nights"],
+    ["connect-n2", "craft", "/join/craft-nights"],
+  ]);
+});
+
 test("a bad row is left out and named, never guessed", () => {
   const { events, dropped } = mapEvents({ events: [{ id: "a", title: "T", date: "next week", start: "17:00" }, { id: "b", title: "", date: "2026-10-21", start: "17:00" }], weekly: [{ id: "c", weekday: 9, start: "17:00" }] }, RULES);
   assert.deepEqual(events.dated, []);

@@ -234,7 +234,7 @@ question (404), not a PDF by type or by its first bytes (415), too big (413). Al
 before a byte is read. The reply is an id; Send carries only that. Nothing serves a file back: there is no route out.
 An upload nobody claimed is deleted after a day. Twenty uploads an hour per form per connection.
 
-**Rate limits.** Forms: 10 an hour per form per connection. Mood: 30 an hour. Files: 20 an hour. The connection is an HMAC of the
+**Rate limits.** Forms: 40 an hour per form per connection (`FORM_PER_HOUR`, `netlify/lib/router.mjs`). Mood: 30 an hour. Files: 20 an hour. The connection is an HMAC of the
 address with `RATE_SALT`, cut to 32 characters. It is kept only in `rate_limits`, and windows older than a day are cleared at the next write. **No address is stored
 with a submission.**
 
@@ -289,7 +289,7 @@ in on this browser, so pages know to load the edit button; every staff call chec
 ends this site's session only. **Reading answers lasts an hour from signing in** (built 24 Oct 2026); after that
 the staff page asks for a fresh sign-in, while editing and publishing words last the eight hours. Someone switched
 off in Connect cannot sign in again, and so loses the answers within the hour. "Staying signed in", below, has the
-proposed change that would make a session follow Connect within minutes.
+check that makes a session follow Connect within minutes once `CONNECT_SESSION_STATUS` is `on`.
 
 **Handing a submission to Connect** (`deliver.mjs`). After a submission is saved and the reply sent, the function
 sends due `connect.ingest` rows to Connect's Website Forms queue, signed with `PUBLIC_SITE_SERVICE_SECRET`. Since 25
@@ -325,7 +325,7 @@ folder. **This is a local rig with demo keys and in-memory databases, not a live
 
 ### Staying signed in
 
-**Source check, 30 Oct 2026: Connect's `publicSsoStatus` is built locally, not verified live.** Its action is in
+**Source check, 30 Oct 2026: Connect's `publicSsoStatus` is in its production source (`860a37f`), not called live.** Its action is in
 Connect's `netlify/actions/publicsite.mjs`; SIGNIN-PARITY progress records the 25 Oct implementation and fixture
 checks. This site's half was built 24 Oct and stays off until `CONNECT_SESSION_STATUS=on`: `sessionFrom()` in
 `staff.mjs`, `sessionStatus()` in `connect.mjs`, tests in `test/staff.test.mjs`. Published availability was not checked
@@ -523,7 +523,9 @@ database (mail, a fetch) happens inside one. That is what the outbox is for.
 ### Migrations
 
 Numbered folders, `netlify/database/migrations/<NNN_name>/migration.sql`, the layout Badger SPILL uses. Each is
-idempotent, and `bss_migrations` records which ran. `001_intake`:
+idempotent, and `bss_migrations` records which ran. An applied migration is never edited, its comments included, so a
+comment in one describes the day it was written: `001_intake`'s worker "not built in slice 1" is `netlify/lib/deliver.mjs`.
+`001_intake`:
 
 | Table | Holds |
 |---|---|
@@ -610,13 +612,14 @@ Each photo is encoded at build time and served from this site (`DESIGN.md`, "Pho
 | `CONNECT_URL` | sign-in and delivery: Connect's origin | sign-in says "not set up"; submissions wait in the outbox |
 | `PUBLIC_SITE_SERVICE_KEY_ID`, `PUBLIC_SITE_SERVICE_SECRET` | signing calls to Connect; the pair Connect lists in its `PUBLIC_SITE_SERVICE_KEYS` | as above |
 | `PUBLIC_SSO_SECRET` | checking Connect's sign-in note; the same value Connect signs with | as above |
-| `CONNECT_SESSION_STATUS` | `on` once Connect answers `publicSsoStatus` ("Staying signed in", a proposed change) | reading answers lasts an hour from signing in |
+| `CONNECT_SESSION_STATUS` | `on` turns on the status check, Connect's `publicSsoStatus` ("Staying signed in") | reading answers lasts an hour from signing in |
 | `RECEIPT_SENDER` | the verified sender of receipts, an `@badgersupports.org` address; set by the owner once Connect's mail path accepts it (`publicReceipt`, proposed) | receipts stay held as `sender-unverified` |
 | `BACKUP_SPREADSHEET_ID`, `GOOGLE_SERVICE_ACCOUNT` | the directors' backup workbook and the service account it is shared with (`netlify/lib/backup.mjs`) | backup rows wait |
 | `BACKUP_CONFIDENTIAL` | `include` puts confidential answers in the workbook | they are left out (the default, a question for the owner) |
 | `LOCAL_DB`, `LOCAL_DB_DIR` | the local rig and tests only | — |
 
-None has been set: the project was created empty on 20 Oct 2026. Set values never go in a file here.
+Which of these production has is read in Netlify (Project configuration, Environment variables), never written here:
+this table says what each one does. Set values never go in a file here.
 
 ## Cost
 

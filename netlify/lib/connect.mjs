@@ -3,9 +3,9 @@
  * Calls, all signed server to server and never made from a browser:
  *   publicSsoToken    trade the one-time code Connect's sign-in page sent back for a signed note
  *                     of who this is and what they may do here (staff.mjs).
- *   publicSsoStatus   PROPOSED CHANGE, not in Connect yet: a fresh note for someone already signed
- *                     in, so a session here follows Connect within minutes (staff.mjs). Made only
- *                     with CONNECT_SESSION_STATUS=on; docs/ARCHITECTURE.md, "Staying signed in".
+ *   publicSsoStatus   a fresh note for someone already signed in, so a session here follows Connect
+ *                     within minutes (staff.mjs). Made only with CONNECT_SESSION_STATUS=on;
+ *                     docs/ARCHITECTURE.md, "Staying signed in".
  *   publicFormIngest  hand one submission to Connect's Website Forms queue (deliver.mjs).
  *   publicEvents      the public event list, which the build reads (ops/connect-feed.mjs) and the
  *                     events refresh reads again between publishes (live-events.mjs).
@@ -22,8 +22,8 @@
  *   PUBLIC_SITE_SERVICE_SECRET   that key's secret (32 characters or more)
  *   PUBLIC_SSO_SECRET            the secret Connect signs sign-in notes with (32 or more)
  * With any of them missing, staff sign-in answers "not set up" and submissions wait in the outbox.
- *   CONNECT_SESSION_STATUS       "on" once Connect answers publicSsoStatus. Anything else, and
- *                                reading answers lasts an hour from signing in (staff.mjs).
+ *   CONNECT_SESSION_STATUS       "on" makes the publicSsoStatus check. Anything else, and reading
+ *                                answers lasts an hour from signing in (staff.mjs).
  */
 
 import crypto from "node:crypto";

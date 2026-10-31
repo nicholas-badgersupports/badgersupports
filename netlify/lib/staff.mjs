@@ -18,7 +18,7 @@
  * script could use, and every staff call checks the real session.
  *
  * Signing out here ends this site's session only. How long Connect's note holds (sessionFrom):
- *   - Until Connect answers publicSsoStatus (a proposed change, CONNECT_SESSION_STATUS=on), reading
+ *   - Until CONNECT_SESSION_STATUS=on turns on Connect's publicSsoStatus check, reading
  *     answers lasts an hour from signing in; after that the page asks for a fresh sign-in, while
  *     editing and publishing words last the working day. Someone switched off in Connect cannot sign
  *     in again, and so loses the answers within the hour.
@@ -26,7 +26,7 @@
  *     scopes take effect at once, more never do (sign in again for those), and switched off ends the
  *     session. Connect not answering, or answering with anything that does not check out, keeps the
  *     session as it was for half an hour from that last answer, then nothing works until it answers.
- * docs/ARCHITECTURE.md, "Staying signed in", has the proposed Connect side.
+ * docs/ARCHITECTURE.md, "Staying signed in", has the Connect side.
  */
 
 import crypto from "node:crypto";

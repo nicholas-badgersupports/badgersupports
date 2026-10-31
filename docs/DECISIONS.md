@@ -394,3 +394,15 @@ Lodge is retired with a 301.
 | The page function's own 301 that adds a final `/` sends the address back encoded | the cross-check found that an address with a letter outside Latin-1 and no final `/` (`/initiatives/ribbons-…x`) threw while building its header | send the decoded address, which throws again |
 | No Connect deploy for the www sign-in address | the switch waits for Connect's team export, and that arrives with a Connect deploy; a deploy just for this costs 15 credits | press Trigger deploy on Connect's project |
 | The owner's steps are double-click files in `../../SWITCH-SETUP-2026-10-30/` (laptop only) | three of the steps are his, two in Netlify's pages | follow `SWITCH.md` by hand |
+
+## 30 October 2026 · the docs pass and malformed addresses (queue item 4a; routine calls, made in the session)
+
+Asked for by the owner on 30 Oct, answering the item 3a report: correct each document that disagrees with the code, and
+answer a malformed %-escape with the 404 page.
+
+| Call | Why | To reverse |
+|---|---|---|
+| A malformed address keeps its redirect lines; only the page and the slash 301 are refused | Netlify's matcher (`netlify-redirector` 0.5.0) still sends `/about/our-team/directors/%E0/` to its group and matches nothing else; the rig now agrees on all 60 malformed forms tried | skip `redirectFor()` too, and the team catch-alls answer 404 where the page function runs first |
+| Migration `001_intake`'s stale comment is left as it is; `ARCHITECTURE.md` § Migrations says so | an applied migration is a record of what ran; whether Netlify checks its bytes on a later deploy was not checked | edit the comment, after checking that |
+| Line numbers in `ANALYTICS.md` and `COMMUNICATIONS.md` became names (`announce()`, `idem_key`, a test's title) | most had moved; a name survives an edit above it | write line numbers again |
+| The lists of form keys and `none` blocks in `ANALYTICS.md` point at their source | each had fallen behind the code (three keys of twelve, two blocks of six) | list them again by hand |

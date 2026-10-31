@@ -75,8 +75,11 @@ function staticFile(pathname) {
 /* A page's answer, or null for a path this function does not draw (an asset, the API). */
 export async function handlePage(req, { today = chicagoDate() } = {}) {
   const u = new URL(req.url);
+  // An address whose %-escapes do not decode is kept as it came: it names no page, so it answers the 404 page, and
+  // only a redirect line can still take it, as Netlify's matcher does.
   let pathname;
-  try { pathname = decodeURI(u.pathname); } catch { pathname = "/"; }
+  let malformed = false;
+  try { pathname = decodeURI(u.pathname); } catch { pathname = u.pathname; malformed = true; }
   if (req.method !== "GET" && req.method !== "HEAD") return new Response("", { status: 405, headers: { allow: "GET, HEAD" } });
   const c = serverContent();
   const base = headerPairs(c.headers || []);
@@ -86,7 +89,7 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
   if (moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
   // A page's address ends in "/", as the static site's do. The address goes back as it came, encoded: a header
   // cannot carry a letter outside Latin-1, and building one throws.
-  if (!pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
+  if (!malformed && !pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
 
   const snap = c.render;
   try {

@@ -2,7 +2,7 @@
 
 How www.badgersupports.org moves from Google Sites to this site, what was checked before it, and how to undo it.
 Queue item 25 (`../WORK.md`). Checked 30 Oct 2026 on `23afc2e`; blockers 3 and 4 fixed the same day (queue item 3a).
-Nothing here has been switched, published or changed in DNS; every step below is the owner's. The owner's three steps
+Nothing here has been switched or changed in DNS; every step below is the owner's. The owner's three steps
 before the switch (1, 2 and 6) are double-click files in `../../SWITCH-SETUP-2026-10-30/`, on the laptop.
 
 ## How it was checked
@@ -80,13 +80,18 @@ first. The switch changes one record.
 4. ~~**Redirects with a final `/`.**~~ Fixed (queue item 3a): `redirectFor()` in `netlify/lib/pages.mjs` matches as
    Netlify's matcher does, so the answer no longer depends on whether Netlify applies `_redirects` before the page
    function (still not documented). Tests: `test/published.test.mjs`.
-5. **The privacy policy** describes Google Sites, Analytics and Forms (queue item 4).
+5. **The privacy policy** describes Google Sites, Analytics and Forms. A draft of what the site does now is
+   `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (queue item 4); after the owner's and a legal review it replaces
+   `content/pages/privacy-policy.json`.
 6. **Publish** the commit the switch will serve, with `../PUBLISH-WEBSITE-2026-10-23.command` (setup folder, parts 2 and 3).
+   `2bab970`, with the item 3a fix, was published 30 Oct (deploy `6ae54b99`); publish again if the site changes first.
 7. **Shorten the undo.** If Squarespace offers a lower TTL for the `www` record (not checked), set it at least one
    current TTL before the switch, so an undo reaches visitors sooner.
 
-The switch waits for Connect's team export (`exports.team`, owner, 30 Oct), so the team page has its people when www
-moves; a member's old address (`/about/our-team/<group>/<name>`) goes to the team page. Two things change for visitors
+**The switch waits for the owner's word** (30 Oct: "continue to serve on netlify.app until I ask for it to switch"). Until
+then production stays on `badgersupports-public.netlify.app` behind the team login, where the owner tests the forms
+and Connect's connections signed in. It also waits for Connect's team export (`exports.team`, owner, 30 Oct), so the
+team page has its people when www moves; a member's old address (`/about/our-team/<group>/<name>`) goes to the team page. Two things change for visitors
 and are the owner's to accept: Google Analytics stops counting www, because this site loads no tag (`ANALYTICS.md`);
 and links shared on social media show no picture.
 

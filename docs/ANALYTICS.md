@@ -27,10 +27,10 @@ unknown.
 
 | Hook | What it says | Where |
 |---|---|---|
-| `<body data-analytics>` | `public` by default; `none` on `/staff/`, the not-found page and every page the API renders (form outcomes without JavaScript) | `src/render/layout.mjs:118`; `content/pages/staff.json`; `content/pages/not-found.json`; `netlify/lib/router.mjs:31` |
-| A block's `analytics` field | `page` (the block may emit events from the dictionary below, nothing else) or `none` (it emits nothing). The mood check-in and the Wall of Support are `none`; the other 19 blocks are `page` | `src/render/registry.mjs:11`; `CONNECT-EDITOR-CONTRACT.md` lists each block's value |
-| `data-analytics="off"` on the mood check-in's section | a marker a forwarder can test without knowing which block it is in | `src/render/blocks/mood.mjs:18`; `test/build.test.mjs:49` |
-| The `bss:analytics` event | `form.js` announces `form_start` on the first input into a form and `form_submit_success` only once the server answered that the submission was stored. The detail is `{ name, form }`, where `form` is the form's key | `src/client/form.js:18`, `:137`, `:163` |
+| `<body data-analytics>` | `public` by default; `none` on `/staff/`, the not-found page and every page the API renders (form outcomes without JavaScript) | `<body>` in `src/render/layout.mjs`; `content/pages/staff.json`; `content/pages/not-found.json`; `analytics: "none"` in `netlify/lib/router.mjs` |
+| A block's `analytics` field | `page` (the block may emit events from the dictionary below, nothing else) or `none` (it emits nothing). Each block declares its own; `CONNECT-EDITOR-CONTRACT.md`, which the gate keeps current, lists every block's value | the header of `src/render/registry.mjs`; each block's file in `src/render/blocks/` |
+| `data-analytics="off"` on the mood check-in's section | a marker a forwarder can test without knowing which block it is in | `src/render/blocks/mood.mjs`; `test/build.test.mjs`, "the mood check-in is excluded from analytics" |
+| The `bss:analytics` event | `form.js` announces `form_start` on the first input into a form and `form_submit_success` only once the server answered that the submission was stored. The detail is `{ name, form }`, where `form` is the form's key | `announce()` in `src/client/form.js` |
 
 **Nothing listens to `bss:analytics` yet.** The event goes nowhere.
 
@@ -50,14 +50,14 @@ Every event the site may send, with every parameter it may carry. Anything not i
 | `calendar_add` | an Add to calendar link is pressed | none | proposed, not announced |
 | `reel_play` | the reel's Play button is pressed | none | proposed, not announced |
 
-Form keys today: `programming-feedback`, `staff-application`, `workshop-request`.
+Form keys: the `key` of each file in `content/forms/` (`ls content/forms/`).
 
 ### Durable success
 
 `form_submit_success` counts stored submissions, not presses of a button: it fires after `res.ok && body.ok`,
 and the server answers `ok` only after the submission's transaction has committed (`ARCHITECTURE.md`, "Intake").
 A rejected, closed, rate-limited or failed submission sends nothing. Two other cases also answer `ok`
-(`netlify/lib/intake.mjs:74`, `:88`): a resend of a submission already stored, which stores nothing new, and a
+(`netlify/lib/intake.mjs`, its `idem_key` and `_website` checks): a resend of a submission already stored, which stores nothing new, and a
 form whose hidden trap field was filled, which stores nothing at all. So the event can count a little high; the
 database cannot.
 

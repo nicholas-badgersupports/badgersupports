@@ -1,8 +1,9 @@
 # Communications
 
-**Nothing leaves this site yet.** No email has been sent, no spreadsheet exists and nothing reaches Connect. A
-submission is stored in the site's own database, and the work of carrying it onward is written down beside it
-as rows in an outbox. No worker reads the outbox: it is not built.
+**Only the hand-off to Connect leaves this site.** A submission is stored in the site's own database, and the work
+of carrying it onward is written down beside it as rows in an outbox. After the reply, `netlify/lib/deliver.mjs`
+sends its `connect.ingest` row to Connect's Website Forms. Receipts and the backup workbook are built and switched
+off, so no email has been sent and no spreadsheet exists; no schedule runs the outbox (below).
 
 This page records what happens today, which public forms exist and who is proposed to own them, and a plan for
 email and the backup spreadsheet. Everything after "What happens to a submission today" is a **proposal**
@@ -78,8 +79,8 @@ switch row and a rebuild.
 In `netlify/lib/intake.mjs`:
 
 1. The answers are checked against the form's questions. A form whose hidden trap field was filled answers
-   `ok` with a reference and **stores nothing** (`:74`). A resend of a submission already stored answers with
-   the first reference and stores nothing new (`:88`).
+   `ok` with a reference and **stores nothing** (the `_website` trap). A resend of a submission already stored answers with
+   the first reference and stores nothing new (`idem_key`).
 2. **One transaction** writes, together:
    - the submission (`submissions`), its answers keyed by stable question id, with no record of who sent it
      or from where;
@@ -87,10 +88,10 @@ In `netlify/lib/intake.mjs`:
    - an outbox row `connect.ingest`, state `pending`;
    - an outbox row `sheets.backup`, state `pending`;
    - an outbox row `mail.receipt`, state **`held`**, reason `sender-unverified`, but only where the form is not
-     anonymous, its `workflow.receipt` is `on`, and an email answer exists (`:107`). **No form has `on` today**,
+     anonymous, its `workflow.receipt` is `on`, and an email answer exists (`mail.receipt`). **No form has `on` today**,
      so no receipt row is written.
 3. Only after the commit does the server answer `ok` with the reference, such as `WR-` and two groups of four
-   characters for a workshop request (`:39`).
+   characters for a workshop request (`newRef()`).
 
 Each outbox row carries `dedupe_key` = `<kind>:<reference>`, which the table holds unique
 (`netlify/database/migrations/001_intake/migration.sql`). A retry cannot queue the same work twice. The table
@@ -99,7 +100,8 @@ also allows `mail.notify`; nothing writes one.
 **Only the Connect row is sent** (20 Oct 2026). `netlify/lib/deliver.mjs` hands each `connect.ingest` row to
 Connect's Website Forms, and a director signed in at `/staff/` reads the latest answers (`ARCHITECTURE.md`, "Staff
 sign-in and Connect"). `sheets.backup` and `mail.receipt` rows stay `pending` or `held`. This has run only against a
-local Connect rig: Connect's half is unpushed and no secret is set, so the forms still launch closed (above).
+local Connect rig: Connect's half (`publicFormIngest`) is in its production source, but nothing has been sent to it
+live (`../WORK.md`, Blocker 1), so the forms still launch closed (above).
 
 ## Proposal: who gets told what
 
@@ -132,7 +134,7 @@ The rules this keeps:
 - **Anonymous stays anonymous.** An anonymous form never asks for an address, so it never gets a receipt. No
   submission records the sender's connection, for any form. The rate limit counts by a keyed hash of the
   connection in its own table, kept apart from submissions; rows over a day old are deleted at the next count
-  (`netlify/lib/http.mjs:67`).
+  (`rateLimit()` in `netlify/lib/http.mjs`).
 
 ## Built locally, 25 Oct 2026: delivery, receipts and the backup workbook
 
@@ -197,7 +199,7 @@ The rules the backup keeps either way:
   per question id, in order, across every published version, so a renamed or retired question keeps its column.
 - **Formula guard.** `cellText()` in the same file puts an apostrophe in front of any answer that starts with
   `=`, `+`, `-`, `@`, a tab or a carriage return, because answers are untrusted. Tested in
-  `test/forms.test.mjs:58`. Both are called by the workbook writer (`netlify/lib/backup.mjs`, 25 Oct 2026).
+  `test/forms.test.mjs`, "a spreadsheet cell can never start a formula". Both are called by the workbook writer (`netlify/lib/backup.mjs`, 25 Oct 2026).
 - **Out of the request path.** The worker writes rows later, never while the visitor waits.
 - **Idempotent.** A row is keyed by its reference; the worker writes it only if that reference is not in the
   tab already.

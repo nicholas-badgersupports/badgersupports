@@ -13,8 +13,8 @@ Every person named in `content/` is fictional; real team members appear only thr
 |---|---|
 | Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text**. 24–25 Oct (run log §1–8): upload race and failure states, phone menu, a form changed while open, sign-in states and access freshness, width and helper text, stale replies and Back/Forward, the editor's keys, earlier versions and Restore, characters left |
 | Tested | `node ops/check.mjs --browser`: see "Evidence". Connect's feed against a fake Connect (`test/connect-feed.test.mjs`); the rest against a local rig with demo keys (setup file 5): not a live connection. A quick, source-only security audit, 23 Oct (run log §13; its report is kept outside the repository) |
-| Committed | GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository), is `78fb864` (`git ls-remote`, 30 Oct; the commits after `a78d13e` are not published). `9bf0ed5`, the owner's publish of 25 Oct 11:36, holds the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006); the editor patch `3106704` followed it |
-| Deployed | Read from Netlify 30 Oct (read-only): production is `a78d13e` (deploy `6ae4da91`, `ready`, published 17:58 UTC; `007_staff_method` applied by it; functions `api` and `pages`). `9bf0ed5` was deploy `6ade3037` (25 Oct, with its packages; migrations 001–006). Connect's production is `860a37f` (deploy `6ae52ec0`, 30 Oct 23:57 UTC, no migrations) |
+| Committed | GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository), is `2bab970` (`git ls-remote`, 30 Oct), and it is published. `9bf0ed5`, the owner's publish of 25 Oct 11:36, holds the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006); the editor patch `3106704` followed it |
+| Deployed | Read from Netlify 30 Oct (read-only): production is `2bab970` (deploy `6ae54b99`, `ready`, published 31 Oct 02:01 UTC from the laptop; no migration pending; functions `api` and `pages`). `a78d13e` was deploy `6ae4da91` (`007_staff_method` applied by it). `9bf0ed5` was deploy `6ade3037` (25 Oct, with its packages; migrations 001–006). Connect's production is `860a37f` (deploy `6ae52ec0`, 30 Oct 23:57 UTC, no migrations) |
 | Verified live | Netlify's deploy records only (`ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
 
 ## Slice 1 against §12
@@ -80,7 +80,7 @@ they then passed with the server's day at 26 and 31 Oct, 1 and 5 Nov and 31 Dec.
    and the synced `dist/` holds conflict copies that cannot be deleted here (`docs/DESIGN.md`).
 5. **Connect** has no Wall or team export (item 19) and does not file the three resource forms (item 21): off, and closed.
 6. **Cost**: prices read 23 Oct (`docs/ARCHITECTURE.md`, "Cost"); what each database used is in Billing → Usage only.
-7. **The privacy policy** still names Google Sites, Analytics and Forms: the owner's and a legal review before launch.
+7. **The privacy policy** page still names Google Sites, Analytics and Forms. The draft of what the site does now, `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (`2bab970`), waits for the owner's and a legal review.
 8. **Analytics is off.** The GA4 property is unverified; the connector asked to reauthenticate.
 
 ## Owner actions
@@ -141,8 +141,8 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     → check form state at first keystroke. No new subscriptions (24 Oct): every change is costed against the allowance.
 24. ~~The §12 server tests~~ **mapped, shipped** in `9bf0ed5` (cloud run §4): each scenario has a fixture test; three new
     (staff-only caching, analytics leakage, editor to public page). Revocation stays Connect's (`publicSsoStatus`, item 20).
-25. **Before the switch** → **checked** 30 Oct (`23afc2e`); plan and undo in `docs/SWITCH.md`. Mendota Lodge and a final `/` **fixed**
-    (queue 3a). Owed: www sign-in at Connect, item 4, Connect's team export; the owner's steps: `../SWITCH-SETUP-2026-10-30/`.
+25. **Before the switch** → **checked** 30 Oct (`23afc2e`); plan and undo in `docs/SWITCH.md`. Mendota Lodge and a final `/` **fixed**,
+    published in `2bab970` (queue 3a). Owed: www sign-in at Connect, the reviewed privacy policy, Connect's team export, the owner's word; his steps: `../SWITCH-SETUP-2026-10-30/`.
 26. **The one-week promise** on the workshop confirmation → confirmed by Programs, or removed.
 30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, now in its production `202b88f`); the site reads it
     (`ops/connect-feed.mjs`). `endDate` **shipped** in `9bf0ed5` (cloud run §2): an event over several days shows on each day, names its dates, leaves after its last.

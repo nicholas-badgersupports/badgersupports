@@ -132,6 +132,41 @@ test("an address with letters outside Latin-1 gains its slash, still encoded, in
   }
 });
 
+/* An address whose %-escapes do not decode names no page. It answers the 404 page, with or without its final "/",
+   whether the page is drawn or the build's file answers; never the home page. A catch-all line still takes it, as
+   Netlify's matcher does, so the answer does not depend on which of the two runs first. */
+test("an address whose %-escapes do not decode is the 404 page, never the home page", async () => {
+  const MALFORMED = ["/%E0%A4", "/%E0%A4/", "/%", "/about/%FF/", "/about/faq%E0", "/home/%E0"];
+  const notFound = read("404.html");
+  const home = read("index.html");
+  await given();
+  for (const p of MALFORMED) {
+    const r = await get(`${p}?topic=x`);
+    assert.equal(r.status, 404, p);
+    assert.equal(r.headers.get("location"), null, p);
+    const body = await r.text();
+    assert.notEqual(body, home, p);
+    assert.equal(body, notFound, p);
+  }
+  assert.equal((await get("/%E0%A4", { method: "HEAD" })).status, 404, "HEAD");
+  for (const p of ["/about/our-team/directors/%E0/", "/about/our-team/directors/%E0"]) {
+    const r = await get(p);
+    assert.equal(r.status, 301, p);
+    assert.equal(r.headers.get("location"), "/about/our-team/", p);
+  }
+  useStore({ kind: "broken", get: async () => { throw new Error("store down"); }, set: async () => {} });
+  forgetRevision();
+  const was = console.error;
+  console.error = () => {};
+  try {
+    for (const p of MALFORMED) {
+      const r = await get(p);
+      assert.equal(r.status, 404, `${p}, from the build's file`);
+      assert.equal(await r.text(), notFound, `${p}, from the build's file`);
+    }
+  } finally { console.error = was; }
+});
+
 test("Mendota Lodge's old address goes to the directions list", async () => {
   await given();
   assert.ok(read("_redirects").split("\n").includes("/operations/directions/mendota-lodge  /directions/  301"));

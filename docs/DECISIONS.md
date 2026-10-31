@@ -368,3 +368,15 @@ queue asked for Connect's Suggest an Update store rather than a second one, and 
 | No contact question on any of the three | anonymous; "none of the three stores who sent it unless they chose to say" (20 Oct item); a director cannot reply | add an optional email question |
 | Suggest an Update offers Connect's fields except Full Description, which the public card does not show; `act_url` stands for `actUrl` | option ids are lower case | add `long` |
 | The three pages are not indexed and load no analytics | they carry anonymous reports | `noindex: false`, `analytics: "public"` |
+
+## 30 October 2026 · before the switch (item 25; proposals, made in the session)
+
+The checks, the blockers and the switch plan are in `SWITCH.md`.
+
+| Call | Why | To reverse |
+|---|---|---|
+| Checked on a production build in the local rig, against a fake Connect | Deploy Previews are off, production answers 401, and a real build needs Connect's key | run the same checks on the live site after the switch |
+| The switch changes only the `www` CNAME; the nameservers, the bare domain's forward and the 52 forwards stay | fewest records touched, and one record to set back | point the bare domain at Netlify as well |
+| Mendota Lodge, `redirectFor()`, the www sign-in callback and public production are blockers in the plan, not fixed here | item 25 asks for checks and a plan; Mendota is the owner's call; a code change needs its own gate | fix them inside item 25 |
+| Shortlinks that leave www are named by kind, not address | they open internal Docs, Sheets and Drive folders, and this repository is public | list their targets |
+| Lighthouse ran behind a compressing proxy | Netlify compresses text and the rig does not | measure without the proxy |

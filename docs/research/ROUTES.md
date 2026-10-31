@@ -186,13 +186,10 @@ and `content/forms/programming-feedback.json` records it under `source.aliases`.
 
 ## Not checked
 
-- **Where the six addresses above lead**, and who controls them.
-- **Shortlinks.** Earlier notes in `content/routes.json` named some pages as targets of a "craft", "join",
-  "workshops", "apply" or "housing" shortlink. No source for those names was found, so the notes were removed
-  on 20 Oct 2026.
+- ~~Where the six addresses above lead~~ and ~~shortlinks~~: read 30 Oct 2026, in `../SWITCH.md`. One shortlink,
+  `mendota`, forwards to a live page this map does not have.
 - **Links from outside the site**: search results, printed material, Instagram, Connect and old emails. No
   referrer data was read; the GA4 property is not verified (`../ANALYTICS.md`).
-- **Whether Netlify matches the ribbons path.** `redirectsFile()` writes it percent-encoded (`encodeURI`).
-  Test it on a deploy preview before relying on it.
+- **Whether Netlify matches the ribbons path** on its servers. Netlify's command-line matcher does (`../SWITCH.md`).
 - **The live site after 19 Oct 2026.** A page added or renamed since then is not in this map.
 - **The Google My Maps embed** on the live resources pages.

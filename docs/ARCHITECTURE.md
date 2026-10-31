@@ -469,7 +469,11 @@ own records (rooms, people, form previews) cannot be copied, moved or retired he
 
 **The menu.** Stored by entry id, so a saved menu word follows its entry when the order changes. An entry the build
 adds later and the document does not name keeps its place from the build. An entry whose page is a draft or retired
-leaves the menu; one whose page moved follows it.
+leaves the menu; one whose page moved follows it. An entry taken off stays listed under Off the Menu (the pages list's
+`offMenu`, worked out when the structure is laid) until Put Back returns it to the end of its own group: the build's
+group, or the group a made entry was put on the site in (`entries[id].group`, recorded from 31 Oct; one without it
+goes to the top). A group taken off comes back with its entries that are off. An entry whose page is a draft, retired
+or gone is not offered. Put Back changes the list in the browser; Save the Menu publishes it, as Take Off does.
 
 **Preview.** `GET /api/staff/preview/<page id>` draws a page as it will be once published, drafts included, from the
 saved words and the structure now: `no-store`, `noindex`, and framed only by this site (`frame-ancestors 'self'`). The

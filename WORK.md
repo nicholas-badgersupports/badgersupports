@@ -13,9 +13,9 @@ Every person named in `content/` is fictional; real team members appear only thr
 |---|---|
 | Built locally | **The live build** (`--production`, what a publish now runs): 37 pages, its events and resources read from Connect as it builds, forms closed and linking their Google Forms, no team or wall until Connect exports them. **The prototype** (fixtures, noindex): 58 pages, adding 14 fictional team pages and 7 form previews. 27 block types; 5 native forms (both applications and the letter closed, with PDF uploads); the intake API on PGlite; SPILL's moving logo; staff sign-in through Connect, answers handed to Connect, **Edit text**. 24–25 Oct (run log §1–8): upload race and failure states, phone menu, a form changed while open, sign-in states and access freshness, width and helper text, stale replies and Back/Forward, the editor's keys, earlier versions and Restore, characters left |
 | Tested | `node ops/check.mjs --browser`: see "Evidence". Connect's feed against a fake Connect (`test/connect-feed.test.mjs`); the rest against a local rig with demo keys (setup file 5): not a live connection. A quick, source-only security audit, 23 Oct (run log §13; its report is kept outside the repository) |
-| Committed | GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository), is `598ce71` (`git ls-remote`, 31 Oct; item 15's sections, after item 16's `1aaf44a`), not yet published; production is `b880da4` (Deployed). `9bf0ed5`, the owner's publish of 25 Oct 11:36, holds the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006); the editor patch `3106704` followed it |
-| Deployed | Read from Netlify 31 Oct (read-only): production is `b880da4` (deploy `6ae57e7e`, `ready`, published 31 Oct 05:38 UTC from the laptop; no migration pending; functions `api` and `pages`). `2fc83bd` was deploy `6ae5698d`. `a78d13e` was deploy `6ae4da91` (`007_staff_method` applied by it). `9bf0ed5` was deploy `6ade3037` (25 Oct, with its packages; migrations 001–006). Connect's production is `860a37f` (deploy `6ae52ec0`, 30 Oct 23:57 UTC, no migrations) |
-| Verified live | Netlify's deploy records only (`ready`, migrations applied). The site answers **401** (team sign-in on all projects), so no session can read it. Forms and sign-in not yet tried live |
+| Committed | GitHub `main`, `nicholas-badgersupports/badgersupports` (a public repository), is `db64dd7` (`git ls-remote`, 31 Oct; queue item 8, after item 15's sections `598ce71` and item 16's `1aaf44a`), all three published (Deployed). `9bf0ed5`, the owner's publish of 25 Oct 11:36, holds the 24–25 Oct run and the 25 Oct cloud run (run log, "Cloud run"; migration 006); the editor patch `3106704` followed it |
+| Deployed | Read from Netlify 31 Oct (read-only): production is `db64dd7` (deploy `6ae5aeae`, `ready`, published 31 Oct 09:04 UTC from the laptop; `008_site_structure` applied; functions `api` and `pages`). `b880da4` was deploy `6ae57e7e`; `2fc83bd` was deploy `6ae5698d`. `a78d13e` was deploy `6ae4da91` (`007_staff_method` applied by it). `9bf0ed5` was deploy `6ade3037` (25 Oct, with its packages; migrations 001–006). Connect's production is `860a37f` (deploy `6ae52ec0`, 30 Oct 23:57 UTC, no migrations) |
+| Verified live | Read signed in to Netlify and Connect, 31 Oct, read only: `/staff/` lists 34 pages and a page's Sections opens; the home page carries `x-bss-revision: 4`. The site's CSP refuses Netlify's injected RUM script's reports and an inline script and style that are not the site's own, on every page. Forms not yet tried live |
 
 ## Slice 1 against §12
 
@@ -63,11 +63,11 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-Cloud run, 31 Oct 2026, queue item 8 (stale words after a save), without the photos (`node ops/check.mjs --browser --no-media` on `598ce71`
-plus the fix; Chromium 1243 in place of the pinned 1234; exit 0): 518 text keys over 75 files, every word editable; the editor contract current;
-colours from tokens, no text under 14px; nothing private (222 files read); 65 pages; delivered files clean (104); tests 230 passed, 0 failed, 1 skipped
-(the photos); 195 captures, no console errors or sideways scroll; a11y 202 and forms passed; 148 pressed and timed. The three "item 8" tests failed
-first on `598ce71` (`_work/badgersupports/item8-fail-first-2026-10-31.txt`); 6 guard breaks each caught by name. No screen changed. All local or fixture.
+Cloud run, 31 Oct 2026, queue item 7's second slice (a menu entry put back), without the photos (`node ops/check.mjs --browser --no-media` on
+`db64dd7` plus the change; Chromium 1243 in place of the pinned 1234; exit 0): 522 text keys over 75 files, every word editable; the editor contract current;
+colours from tokens, no text under 14px; nothing private (222 files read); 65 pages; delivered files clean (104); tests 232 passed, 0 failed, 1 skipped
+(the photos); 195 captures, no console errors or sideways scroll; a11y 202 and forms passed; 152 pressed and timed. The menu test failed first on
+`db64dd7` twice, the list missing and the put-back refused (`_work/badgersupports/item7-menu-fail-first-a.txt`, `-b.txt`); 6 guard breaks each caught by name. All local or fixture.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers
@@ -118,9 +118,9 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
 15. **Editor and publishing** → **words done** 20 Oct; 25 Oct: every field a value, earlier versions, Restore, a save that publishes **shipped** in `9bf0ed5`. P2 → every field
     (links, media, forms, navigation, sections, layouts, settings) saved live with grants, conflicts, immutable history, restore, sanitising, keyboard use;
-    a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16. **Sections built** 31 Oct on `/staff/` (add, copy, reorder, retire, put back; ARCHITECTURE,
-    "Sections"); not deployed. Left: rooms, the site's own settings, a menu entry put back (`research/EDITABLE-INVENTORY-2026-10-25.md`). **Stale words after a save fixed** 31 Oct (queue item 8; no running copy holds the revision; a page's event answer is cleared with it; DECISIONS); not deployed.
-16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2). **Built** 31 Oct on `/staff/` (a draft is a new page only, his answer; `docs/ARCHITECTURE.md`, "Pages"; migration 008); not deployed. Connect: card words only (Exchange `PUBLIC-SITE-PAGES`).
+    a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16. **Sections** (add, copy, reorder, retire, put back; ARCHITECTURE,
+    "Sections") **shipped** in `598ce71`. **Stale words after a save** (queue item 8; DECISIONS) **shipped** in `db64dd7`. **A menu entry put back built** 31 Oct (Off the Menu, Put Back; ARCHITECTURE, "The menu"); not deployed. Left: rooms, the site's own settings (`research/EDITABLE-INVENTORY-2026-10-25.md`).
+16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2). **Shipped** in `1aaf44a` (a draft is a new page only, his answer; `docs/ARCHITECTURE.md`, "Pages"; migration 008 applied). Connect: card words only (Exchange `PUBLIC-SITE-PAGES`).
 17. **Connect: forms** (`PUBLIC-SITE-FORMS`; answers reach Website Forms, **done** 20 Oct). The switch **built** 30 Oct: Open (asked
     twice) and Close on `/staff/` for `forms.switch:<key>`, on the page with no deploy; a stale tab refused (`test/intake.test.mjs`). Waits for Connect's grant (Exchange `PUBLIC-FORM-SWITCH-GRANT`). "34 passing tests" was Connect's count.
 18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **shipped, switched off**, in `9bf0ed5` (cloud run §5): claims across instances

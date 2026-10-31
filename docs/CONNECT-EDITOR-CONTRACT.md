@@ -473,7 +473,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-518 keys. Keys are permanent. Required text cannot be published empty and must keep each
+522 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -696,7 +696,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (303)
+### Staff page and edit button (307)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -842,12 +842,16 @@ the site adds the markup.
 | `staff.pages.error.menu` | The menu changed in a way it cannot take. Reload this page and try again. | Staff page, a refused menu. |  |
 | `staff.pages.error.failed` | That did not save. What you typed is still here; try again. | Staff page, a change that failed. |  |
 | `staff.pages.menu.title` | The Menu | Staff page, heading of the menu tools. |  |
-| `staff.pages.menu.how` | Move entries up or down, or take one off, then save. Each entry keeps its saved name. | Staff page, how to change the menu. |  |
+| `staff.pages.menu.how` | Move entries up or down, take one off or put one back, then save. Each entry keeps its saved name. | Staff page, how to change the menu. |  |
 | `staff.pages.menu.up` | Move {{label}} up | Staff page, button name for screen readers. | `{{label}}` |
 | `staff.pages.menu.down` | Move {{label}} down | Staff page, button name for screen readers. | `{{label}}` |
 | `staff.pages.menu.remove` | Take {{label}} off the menu | Staff page, button that takes an entry off the menu. | `{{label}}` |
 | `staff.pages.menu.takeOff` | Take Off | Staff page, button that takes a menu entry off the menu; its spoken name says which. |  |
 | `staff.pages.menu.save` | Save the Menu | Staff page, button that saves the menu. |  |
+| `staff.pages.menu.off` | Off the Menu | Staff page, heading of the menu entries taken off the menu. |  |
+| `staff.pages.menu.offGroup` | {{label}}, with {{entries}} | Staff page, a menu group taken off the menu, with the entries that come back with it. | `{{label}}` `{{entries}}` |
+| `staff.pages.menu.back` | Put Back | Staff page, button that puts a menu entry back on the menu; its spoken name says which. |  |
+| `staff.pages.menu.backName` | Put {{label}} back on the menu | Staff page, button name for screen readers. | `{{label}}` |
 | `staff.sections.open` | Sections | Staff page, button that opens a page's sections. |  |
 | `staff.sections.title` | Sections of {{title}} | Staff page, heading of one page's sections. | `{{title}}` |
 | `staff.sections.up` | Move {{name}} up | Staff page, button name for screen readers. | `{{name}}` |

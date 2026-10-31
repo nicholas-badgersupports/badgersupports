@@ -493,3 +493,16 @@ kept for up to 15 minutes. How it is built: `ARCHITECTURE.md`, "Publishing a sav
 | The revision is read from the store at every draw; no running copy holds it | a held revision outlives the clearing and is drawn into a page the CDN keeps 30 minutes (Admin log ADM-448); the read happens only on a CDN miss | put a hold back in `currentRevision()` in `netlify/lib/published.mjs`, and accept that lag |
 | A page's event answer carries `events:<page>` beside `events`; a save of a word on that page clears `page:<page>` and `events:<page>` together | the answer carries the page's saved words; clearing every feed for one page's word would ask Connect again for every page | drop the tag in `eventsPage()` and the second entry in `tagsFor()`, `netlify/lib/router.mjs` |
 | Every page-word save clears `events:<page>`, whether or not the page has event blocks | clearing a tag nothing carries does nothing; one rule needs no list of which pages have events | narrow `tagsFor()` to the pages in `serverContent().events.pages` |
+
+## 31 October 2026 · a menu entry put back (item 15, second slice; routine calls made in the session)
+
+Before this, an entry taken off the menu came back only by restoring an earlier version: the Menu part listed the
+entries on the menu and the server refused any other. How it is built: `ARCHITECTURE.md`, "The menu".
+
+| Call | Why | To reverse |
+|---|---|---|
+| Put Back returns an entry to the end of its own group, not to the place it held | the menu stores an order, not where an entry once stood; at the end it is seen at once, and Up and Down then place it | `putBack()` in `src/client/staff.js` |
+| A made entry records the group it was put on the site in (`entries[id].group`) | the Menu part moves an entry within its level only, so without it a made entry could not get back into its group | drop `group` in the `publish` case and in `offMenu()`, `src/shared/structure.mjs` |
+| A group taken off comes back with its entries that are off, listed once, inside it | a group with no entries draws nothing (`layMenu()` drops it) | `offMenu()` |
+| An entry whose page is a draft, retired or gone is not offered, and the server refuses it | putting it back would draw nothing, or a link to the 404 page | `link()` in `offMenu()` |
+| Put Back changes the list in the browser; Save the Menu publishes it | one save for the menu, one version and one clearing, as Take Off already works | send `menu` from `putBack()` |

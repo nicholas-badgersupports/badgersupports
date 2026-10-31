@@ -574,10 +574,13 @@ function pagesSection(me) {
       el("p", { textContent: p.path }), actions.length && el("div", { className: "staff-actions" }, ...actions), drawer);
   }
 
-  /* The menu, reordered here and saved once. Up and Down move an entry within its level. */
+  /* The menu, reordered here and saved once. Up and Down move an entry within its level; an entry taken off is listed
+     under Off the Menu, and Put Back returns it to the end of its own group (the top, when that group is off too). */
   function menuPart() {
     let order = now.menu.map((x) => ({ ...x, children: x.children ? [...x.children] : undefined }));
+    let offEntries = (now.offMenu || []).map((x) => ({ ...x, children: x.children ? [...x.children] : undefined }));
     const list = el("ol", { className: "staff-menu" });
+    const offList = el("div");
     const save = el("button", { type: "button", className: "btn", textContent: t("staff.pages.menu.save") });
     const move = (arr, i, by) => { const j = i + by; if (j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; drawList(`${arr[j].id}:${by}`); };
     const arrow = (x, by, sign, off, onclick) => {
@@ -591,19 +594,34 @@ function pagesSection(me) {
       b.setAttribute("aria-label", t("staff.pages.menu.remove", { label: x.label }));
       return b;
     };
-    const row = (arr, i, x) => el("li", {}, el("span", { textContent: x.label }),
+    const row = (arr, i, x, group = "") => el("li", {}, el("span", { textContent: x.label }),
       arrow(x, -1, "↑", i === 0, () => move(arr, i, -1)),
       arrow(x, 1, "↓", i === arr.length - 1, () => move(arr, i, 1)),
-      takeOff(x, () => { arr.splice(i, 1); drawList(); }),
-      x.children && el("ol", {}, ...x.children.map((c, k) => row(x.children, k, c))));
+      takeOff(x, () => { arr.splice(i, 1); offEntries.push({ ...x, group }); drawList(null); }),
+      x.children && el("ol", {}, ...x.children.map((c, k) => row(x.children, k, c, x.id))));
+    const putBack = (x) => {
+      offEntries = offEntries.filter((y) => y !== x);
+      const { group, ...entry } = x;
+      const home = group && order.find((y) => y.id === group && y.children);
+      (home ? home.children : order).push(entry);
+      drawList(`${x.id}:-1`);
+    };
+    const offRow = (x) => {
+      const b = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.menu.back"), onclick: () => putBack(x) });
+      b.setAttribute("aria-label", t("staff.pages.menu.backName", { label: x.label }));
+      const words = x.children ? t("staff.pages.menu.offGroup", { label: x.label, entries: x.children.map((c) => c.label).join(", ") }) : x.label;
+      return el("li", {}, el("span", { textContent: words }), b);
+    };
     function drawList(focus) {
       list.replaceChildren(...order.map((x, i) => row(order, i, x)));
+      offList.replaceChildren(...(offEntries.length ? [el("h4", { textContent: t("staff.pages.menu.off") }), el("ul", { className: "staff-menu" }, ...offEntries.map(offRow))] : []));
+      if (focus === undefined) return;
       const b = focus && list.querySelector(`[data-key="${focus}"]`);
       (b && !b.disabled ? b : save).focus();
     }
-    list.replaceChildren(...order.map((x, i) => row(order, i, x)));
+    drawList();
     save.addEventListener("click", () => send(save, { action: "menu", menu: order.map((x) => ({ id: x.id, ...(x.children ? { children: x.children.map((c) => c.id) } : {}) })) }, t("staff.pages.done.menu")));
-    const part = el("div", { className: "staff-form" }, el("h3", { textContent: t("staff.pages.menu.title") }), el("p", { textContent: t("staff.pages.menu.how") }), list, el("div", { className: "staff-actions" }, save));
+    const part = el("div", { className: "staff-form" }, el("h3", { textContent: t("staff.pages.menu.title") }), el("p", { textContent: t("staff.pages.menu.how") }), list, el("div", { className: "staff-actions" }, save), offList);
     return part;
   }
 

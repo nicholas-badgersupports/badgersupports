@@ -1660,7 +1660,7 @@
     },
     "staff.pages.menu.how": {
       "group": "staff",
-      "text": "Move entries up or down, or take one off, then save. Each entry keeps its saved name.",
+      "text": "Move entries up or down, take one off or put one back, then save. Each entry keeps its saved name.",
       "where": "Staff page, how to change the menu."
     },
     "staff.pages.menu.up": {
@@ -1687,6 +1687,26 @@
       "group": "staff",
       "text": "Save the Menu",
       "where": "Staff page, button that saves the menu."
+    },
+    "staff.pages.menu.off": {
+      "group": "staff",
+      "text": "Off the Menu",
+      "where": "Staff page, heading of the menu entries taken off the menu."
+    },
+    "staff.pages.menu.offGroup": {
+      "group": "staff",
+      "text": "{{label}}, with {{entries}}",
+      "where": "Staff page, a menu group taken off the menu, with the entries that come back with it."
+    },
+    "staff.pages.menu.back": {
+      "group": "staff",
+      "text": "Put Back",
+      "where": "Staff page, button that puts a menu entry back on the menu; its spoken name says which."
+    },
+    "staff.pages.menu.backName": {
+      "group": "staff",
+      "text": "Put {{label}} back on the menu",
+      "where": "Staff page, button name for screen readers."
     },
     "staff.sections.open": { "group": "staff", "text": "Sections", "where": "Staff page, button that opens a page's sections." },
     "staff.sections.title": { "group": "staff", "text": "Sections of {{title}}", "where": "Staff page, heading of one page's sections." },

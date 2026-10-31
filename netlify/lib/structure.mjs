@@ -36,7 +36,8 @@ export async function siteAsSaved(doc) {
   return composeSite(snap, await revisionEdits(doc), doc);
 }
 
-/* The editor's list: every page the build's files or the staff page made, with its state, and the menu. */
+/* The editor's list: every page the build's files or the staff page made, with its state, the menu, and the entries
+   taken off it that can be put back. */
 export async function pagesList() {
   const { version, doc } = await structureNow();
   const site = await siteAsSaved(doc);
@@ -45,7 +46,7 @@ export async function pagesList() {
     .filter((p) => site.authored.has(p.id) || doc.pages[p.id]?.page)
     .map((p) => ({ id: p.id, path: p.file ? `/${p.file}` : p.path, title: shortTitle(p.title), description: p.description || "",
       state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id), sections: !SECTION_FIXED.has(p.id) }));
-  return { version, menu: menuOutline(site.site.nav), pages };
+  return { version, menu: menuOutline(site.site.nav), offMenu: site.offMenu, pages };
 }
 
 /* One page's sections for the editor: those on the page in order, and the retired ones, each with its id, kind, first
@@ -88,7 +89,7 @@ export async function changeStructure(who, change, allow) {
   let out;
   try {
     out = applyChange(before.doc, change, {
-      pages: site.all, authored: site.authored, menu: menuOutline(site.site.nav),
+      pages: site.all, authored: site.authored, menu: menuOutline(site.site.nav), offMenu: site.offMenu,
       site: { name: site.site.name, description: site.site.description }, redirected: (p) => !!redirectFor(c, p),
       links: siteLinks(site.site, site.pages.concat(site.drafts)),
     });

@@ -24,6 +24,7 @@ import { currentRevision, useStore, memoryStore, usePurger } from "../netlify/li
 import { handlePage, useDist } from "../netlify/lib/pages.mjs";
 import { currentForm, setSwitch } from "../netlify/lib/intake.mjs";
 import { launchForms } from "../src/shared/forms.mjs";
+import { layStructure, emptyStructure } from "../src/shared/structure.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECT = "http://connect.test";
@@ -1594,4 +1595,66 @@ test("item 15: an earlier version brings back the sections as they were, and a s
   assert.deepEqual(after.body.retired.map((x) => x.id), ["b-pr-cardinal-c1"], "kept, so its id and history are never given again");
   const again = await change(publisher, { action: "sectionCopy", expected: after.body.version, page: P, section: "b-pr-cardinal" });
   assert.equal(again.body.section, "b-pr-cardinal-c2");
+});
+
+const outline = (menu) => menu.map((x) => ({ id: x.id, ...(x.children ? { children: x.children.map((c) => c.id) } : {}) }));
+
+test("item 15: an entry taken off the menu is listed and can be put back; a group comes back with its entries, a made entry to its group", async (t) => {
+  const { as } = await pagesSite(t);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  assert.deepEqual(v.offMenu, [], "nothing is off the menu before a change");
+  const without = outline(v.menu).filter((x) => x.id !== "nav-initiatives")
+    .map((x) => (x.id === "nav-about" ? { ...x, children: x.children.filter((c) => c !== "nav-faq") } : x));
+  const off = await change(publisher, { action: "menu", expected: v.version, menu: without });
+  assert.equal(off.status, 200, JSON.stringify(off.body));
+  let menu = menuOf(await (await visit("/")).text());
+  assert.doesNotMatch(menu, /href="\/about\/faq\/"/);
+  assert.doesNotMatch(menu, />\s*Initiatives\s*</);
+
+  const listed = await pagesNow(publisher);
+  const faq = listed.offMenu.find((x) => x.id === "nav-faq");
+  assert.deepEqual([faq?.group, faq?.href], ["nav-about", "/about/faq/"], "an entry is listed with the group it goes back to");
+  const ini = listed.offMenu.find((x) => x.id === "nav-initiatives");
+  assert.deepEqual(ini?.children?.map((c) => c.id), ["nav-housing", "nav-cards", "nav-ribbons", "nav-dogs", "nav-open-house"], "a group comes back with its entries");
+  assert.ok(!listed.offMenu.some((x) => x.id === "nav-housing"), "a group's entries are listed once, inside it");
+
+  const back = outline(listed.menu).map((x) => (x.id === "nav-about" ? { ...x, children: [...x.children, "nav-faq"] } : x));
+  back.push({ id: "nav-initiatives", children: ["nav-housing", "nav-cards", "nav-ribbons", "nav-dogs", "nav-open-house"] });
+  const on = await change(publisher, { action: "menu", expected: off.body.version, menu: back });
+  assert.equal(on.status, 200, JSON.stringify(on.body));
+  menu = menuOf(await (await visit("/")).text());
+  assert.match(menu, /href="\/about\/faq\/"/, "put back");
+  assert.match(menu, /href="\/initiatives\/housing\/"|>\s*Initiatives\s*</);
+  assert.deepEqual((await pagesNow(publisher)).offMenu, []);
+
+  const made = await change(publisher, { action: "add", expected: on.body.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });
+  const now = await pagesNow(publisher);
+  const pub = await change(publisher, { action: "publish", expected: now.version, page: made.body.page, group: "nav-programs", label: "Spring Retreat" });
+  assert.equal(pub.status, 200, JSON.stringify(pub.body));
+  const m2 = outline((await pagesNow(publisher)).menu).map((x) => (x.id === "nav-programs" ? { ...x, children: x.children.filter((c) => c !== "nav-spring-retreat") } : x));
+  const off2 = await change(publisher, { action: "menu", expected: pub.body.version, menu: m2 });
+  assert.equal(off2.status, 200, JSON.stringify(off2.body));
+  const spring = (await pagesNow(publisher)).offMenu.find((x) => x.id === "nav-spring-retreat");
+  assert.deepEqual([spring?.label, spring?.group], ["Spring Retreat", "nav-programs"], "a made entry goes back to the group it was put on in");
+
+  const ret = await change(publisher, { action: "retire", expected: off2.body.version, page: made.body.page });
+  assert.equal(ret.status, 200, JSON.stringify(ret.body));
+  const after = await pagesNow(publisher);
+  assert.ok(!after.offMenu.some((x) => x.id === "nav-spring-retreat"), "an entry whose page is retired is not offered");
+  const stale = outline(after.menu).map((x) => (x.id === "nav-programs" ? { ...x, children: [...x.children, "nav-spring-retreat"] } : x));
+  const no = await change(publisher, { action: "menu", expected: ret.body.version, menu: stale });
+  assert.deepEqual([no.status, no.body.error], [422, "menu.entry"]);
+  const wrong = outline(after.menu).map((x) => (x.id === "nav-about" ? { ...x, children: [...x.children, "nav-housing"] } : x));
+  assert.equal((await change(publisher, { action: "menu", expected: ret.body.version, menu: wrong })).status, 422, "an entry already on the menu is not named twice");
+});
+
+test("item 15: a group taken off is offered only with an entry that can come back", () => {
+  const lay = (pages) => {
+    const site = { nav: [{ id: "g", label: "G", children: [{ id: "a", label: "A", href: "/a/" }] }, { id: "b", label: "B", href: "/b/" }] };
+    const doc = { ...emptyStructure(), menu: [{ id: "b" }], removed: ["g", "a"], pages };
+    return layStructure(doc, { site, pages: [{ id: "pg-a", path: "/a/" }, { id: "pg-b", path: "/b/" }] }).offMenu;
+  };
+  assert.deepEqual(lay({}), [{ id: "g", label: "G", group: "", children: [{ id: "a", label: "A", href: "/a/" }] }]);
+  assert.deepEqual(lay({ "pg-a": { state: "retired" } }), [], "its one entry's page is retired, so the group would draw nothing");
 });

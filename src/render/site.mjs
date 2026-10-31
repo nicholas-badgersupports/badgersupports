@@ -43,7 +43,7 @@ export function composeSite(snap, edits = {}, structure = null) {
   const pages = laid.pages;
   const builtPaths = structure ? [...new Set([...(snap.builtPaths || []), ...pages.map((p) => p.path).filter(Boolean)])] : snap.builtPaths;
   return {
-    site, pages, drafts: laid.drafts, retired: laid.retired, moves: laid.moves, all: [...pages, ...laid.drafts, ...laid.retired],
+    site, pages, drafts: laid.drafts, retired: laid.retired, moves: laid.moves, offMenu: laid.offMenu, all: [...pages, ...laid.drafts, ...laid.retired],
     authored: new Set(snap.floor.pages.map((p) => p.id)), builtPaths,
     text, applied: overlay.applied, skipped: overlay.problems, programs: pagePrograms(pages),
   };

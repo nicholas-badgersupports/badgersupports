@@ -1253,6 +1253,48 @@ await part("staff page: the sections of a page", async () => {
   await ctx.close();
 });
 
+/* A menu entry taken off and put back (item 15): Take Off lists it under Off the Menu, the list comes back from the
+   server after Save, and Put Back by keyboard returns it to the end of its own group with focus on its arrow. */
+await part("staff page: a menu entry taken off and put back", async () => {
+  await freshServer();
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
+  const { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  const fill = (key, label) => words(key).replace("{{label}}", label);
+  const status = (key) => page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words(key), { timeout: 5000 }).then(() => true, () => false);
+  const group = () => page.evaluate(() => [...(document.querySelector(".staff-menu > li > ol")?.querySelectorAll(":scope > li > span") || [])].map((s) => s.textContent));
+  const offNames = () => page.evaluate((h) => [...document.querySelectorAll(".staff-form h4")].filter((x) => x.textContent === h).flatMap((x) => [...x.nextElementSibling.querySelectorAll("li > span")].map((s) => s.textContent)), words("staff.pages.menu.off"));
+  await page.getByRole("button", { name: words("staff.pages.menu.save") }).waitFor({ timeout: 5000 });
+  const first = await group();
+  const label = first[0];
+  await page.getByRole("button", { name: fill("staff.pages.menu.remove", label) }).click();
+  const listedNow = await offNames();
+  await page.getByRole("button", { name: words("staff.pages.menu.save") }).click();
+  const saved = await status("staff.pages.done.menu");
+  const listedAfter = await offNames();
+  check(listedNow.join("|") === label && saved && listedAfter.join("|") === label && !(await group()).includes(label),
+    `menu: Take Off lists the entry under Off the Menu, and it is still there after Save (${JSON.stringify({ label, listedNow, listedAfter })})`);
+  const part = page.locator(".staff-form").filter({ has: page.locator("h3", { hasText: words("staff.pages.menu.title") }) });
+  await part.scrollIntoViewIfNeeded();
+  await part.screenshot({ path: path.join(ROOT, "local", "staff-menu-off-1280.png") });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await part.screenshot({ path: path.join(ROOT, "local", "staff-menu-off-390.png") });
+  const fits = await part.evaluate((b) => b.scrollWidth <= b.clientWidth + 1);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  check(fits, "menu: at 390 px the menu part fits its box, with no sideways scroll");
+  await page.getByRole("button", { name: fill("staff.pages.menu.backName", label) }).focus();
+  await page.keyboard.press("Enter");
+  const back = await group();
+  const focus = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+  await page.getByRole("button", { name: words("staff.pages.menu.save") }).click();
+  const saved2 = await status("staff.pages.done.menu");
+  const end = await group();
+  check(back.at(-1) === label && focus === fill("staff.pages.menu.up", label) && saved2 && end.at(-1) === label && !(await offNames()).length,
+    `menu: Put Back by keyboard returns it to the end of its group, focus on its Up arrow, and Save keeps it (${JSON.stringify({ back, focus, end })})`);
+  check(!errors.length, `menu: no script errors (${errors.join("; ")})`);
+  await ctx.close();
+});
+
 /* A card's Suggest an Update names its resource in the address; the form's own page is closed until Connect files these,
    so the check reads the same address on the form's review page. */
 await part("resources: Suggest an Update opens with its resource chosen", async () => {

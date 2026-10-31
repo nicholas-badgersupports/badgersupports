@@ -8,7 +8,8 @@
  *                             path?, title?, description?, oldPaths?: ["/was/"], retiredTo?: "<pg-id>" } },
  *     menu:    null | [ { id, children?: [ids] } ],   the menu by entry id; null keeps the build's
  *     removed: [ entry ids taken off the menu ],
- *     entries: { "<nav-id>": { label, page: "<pg-id>" } } }   menu entries made here
+ *     entries: { "<nav-id>": { label, page: "<pg-id>", group?: "<nav-id>" | "" } } }   menu entries made here, with
+ *              the group they were put in ("" the top), so one taken off goes back there
  *
  *   A page's record may also hold its sections: sections: { made: { "<b-id>": <a block made or copied here> },
  *     order: null | [every block id, retired ones included], retired: [block ids] }.
@@ -19,6 +20,8 @@
  *   - A retired page's addresses answer a 301 to the page it names, or the 404 page; never another page under its id.
  *   - A moved page's old addresses answer a 301 to its new one, until a page takes that address again.
  *   - A menu entry the build adds later and the menu document does not name keeps its place from the build.
+ *   - An entry taken off the menu stays listed as off until it is put back, and goes back to its own group: the one the
+ *     build puts it in, or the one it was put on the site in. A group comes back with its entries that are off.
  *   - A section is never deleted: a retired one keeps its record and its place, so Put back returns it there, and a
  *     block id is never given twice on a page. A block the build adds later keeps its place from the build.
  *   - A page's opening (a page head, hero or event hero) keeps its place: it is not moved, copied or retired.
@@ -321,7 +324,8 @@ export function menuOutline(nav) {
 }
 
 /* Apply one change. `ctx` = { pages: every page as composed now, in any state, with its current address; authored:
-   the ids of the build's own page files; menu: the menu as composed now (menuOutline); site: { name, description };
+   the ids of the build's own page files; menu: the menu as composed now (menuOutline); offMenu: the entries that can
+   be put back (layStructure); site: { name, description };
    redirected(path): whether a redirect line takes it; links: siteLinks() }. Returns { doc, page?, section? }: a new
    document, the old one untouched.
    Throws a Problem (code, status) when the change is not allowed; who may ask for it is the router's to check. */
@@ -381,7 +385,7 @@ export function applyChange(current, change, ctx) {
           if (!g) fail("menu.group");
           g.children.push(entry);
         }
-        doc.entries[entry] = { label, page: id };
+        doc.entries[entry] = { label, page: id, group: change.group };
         doc.menu = tree;
         doc.removed = (doc.removed || []).filter((x) => x !== entry);
       }
@@ -400,7 +404,7 @@ export function applyChange(current, change, ctx) {
       return { doc, page: id };
     }
     case "menu": {
-      const known = new Map(ctx.menu.flatMap((x) => [[x.id, !!x.children], ...(x.children || []).map((c) => [c.id, false])]));
+      const known = new Map([...ctx.menu, ...(ctx.offMenu || [])].flatMap((x) => [[x.id, !!x.children], ...(x.children || []).map((c) => [c.id, false])]));
       const seen = new Set();
       const take = (id, group) => {
         if (typeof id !== "string" || !known.has(id) || seen.has(id) || known.get(id) !== group) fail("menu.entry");
@@ -423,7 +427,8 @@ export function applyChange(current, change, ctx) {
 }
 
 /* Lay the document over the composed pages and menu, in place. Returns { pages: what visitors get, drafts, retired,
-   moves: Map(address without its final "/" → { to: address | null, page }) }. */
+   moves: Map(address without its final "/" → { to: address | null, page }), offMenu: the entries taken off the menu
+   that can be put back, [{ id, label, href?, group, children? }], `group` the group each goes back to ("" the top) }. */
 export function layStructure(doc, { site, pages }) {
   const s = doc || emptyStructure();
   const recs = s.pages || {};
@@ -446,8 +451,9 @@ export function layStructure(doc, { site, pages }) {
     const to = r.retiredTo ? live.find((x) => x.id === r.retiredTo)?.path || null : null;
     for (const old of [p.path, ...(r.oldPaths || [])]) if (old) moveTo(old, to, p.id);
   }
-  site.nav = layMenu(site.nav || [], s, { live, moves, gone: new Set([...drafts, ...retired].map((p) => trimSlash(p.path || ""))) });
-  return { pages: live, drafts, retired, moves };
+  const menu = layMenu(site.nav || [], s, { live, moves, gone: new Set([...drafts, ...retired].map((p) => trimSlash(p.path || ""))) });
+  site.nav = menu.tree;
+  return { pages: live, drafts, retired, moves, offMenu: menu.off };
 }
 
 function layMenu(nav, s, { live, moves, gone }) {
@@ -488,7 +494,28 @@ function layMenu(nav, s, { live, moves, gone }) {
     if (m) return m.to ? { ...item, href: m.to } : null;
     return item;
   };
-  return tree
+  const laid = tree
     .map((x) => (x.children ? { ...x, children: x.children.map(fix).filter(Boolean) } : fix(x)))
     .filter((x) => x && (!x.children || x.children.length || x.href));
+  return { tree: laid, off: offMenu({ flat, home, removed, entries: s.entries || {}, fix }) };
+}
+
+/* The entries taken off the menu that can come back: an entry whose page is a draft, retired or gone is not offered.
+   A group that is off carries its entries that are off; each other entry names the group it goes back to. */
+function offMenu({ flat, home, removed, entries, fix }) {
+  const off = [...flat.keys()].filter((id) => removed.has(id));
+  const groupOf = (id) => home.get(id) ?? entries[id]?.group ?? "";
+  const link = (id) => { const x = fix(flat.get(id)); return x && x.href ? { id, label: x.label, href: x.href } : null; };
+  const groups = new Map();
+  for (const id of off) {
+    if (!flat.get(id).children) continue;
+    const children = off.filter((c) => !flat.get(c).children && groupOf(c) === id).map(link).filter(Boolean);
+    if (children.length) groups.set(id, { id, label: flat.get(id).label, group: "", children });
+  }
+  return off.flatMap((id) => {
+    if (flat.get(id).children) return groups.has(id) ? [groups.get(id)] : [];
+    if (groups.has(groupOf(id))) return [];
+    const x = link(id);
+    return x ? [{ ...x, group: groupOf(id) }] : [];
+  });
 }

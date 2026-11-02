@@ -17,12 +17,15 @@ configuration asks for, not something seen running.
 | Connect | `netlify/lib/connect.mjs`, `staff.mjs`, `deliver.mjs`, `edits.mjs` | the only code that talks to Badger Supports Connect: staff sign-in, handing each submission to Connect, and the words staff change with the edit button |
 | The local rig | `ops/dev-server.mjs` | serves `dist/` with `_headers` and `_redirects` applied as Netlify would, and sends `/api/*` into the real function. It talks to no network |
 | The gates | `ops/check.mjs` | `npm run check`; ends in a one-line verdict (`README.md`) |
+| Installed packages | `ops/deps-match.mjs` | whether `node_modules` holds what `package-lock.json` requires, at its versions; exit 0 matches, 1 lists each difference, 2 cannot read |
 
 `netlify.toml` asks for `node ops/build.mjs --production --fetch-media` in the production context and the
 **prototype** build (fixtures in, every page `noindex`) everywhere else. It publishes `dist/`, bundles functions with
 esbuild, includes `.build/server.json` and the migrations in the function, and keeps PGlite, Playwright, axe-core and
 sharp out of the bundle (`!node_modules/@electric-sql/**`). The owner's publish file runs it on the laptop through
-the Netlify CLI; the repository is never linked to Netlify. Since 23 Oct 2026 the production build reads Connect's
+the Netlify CLI; the repository is never linked to Netlify. The publish file copies the laptop's `node_modules` into
+the deploy, so before its checks it runs `ops/deps-match.mjs`, installs with `npm ci` when anything differs, and reads
+the result back; a dependency change reaches the deploy with no step by hand. Since 23 Oct 2026 the production build reads Connect's
 public events and resources when it runs (`ops/connect-feed.mjs`). Netlify gives a build run on a laptop only a short
 stand-in for a secret, so the publish file passes the key from the owner's keys file as `PUBLISH_SERVICE_SECRET`, a
 name Netlify does not hold; the address and key id come from the project. If Connect cannot be read, nothing is built and the deploy online stays.

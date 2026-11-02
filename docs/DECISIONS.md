@@ -575,3 +575,17 @@ browser kept a page's event answer a minute. How it is built: `ARCHITECTURE.md`,
 | Refresh now writes a new token beside the revision; a copy compares its held list's token at every events answer and calendar file | one read of the store per answer the CDN did not already hold; a token is equal or not, so no copy's clock matters | drop `forgetToken()` from `eventsNow` and call `forgetEvents()` in `refreshRoute` |
 | When the token cannot be read, a copy uses the list it holds | asking Connect on every answer while the store is down would load Connect; the same store holds the revision, so Refresh now reports it as `publish.unavailable` | treat an unreadable token as changed in `eventsNow` |
 | The browser keeps no event answer and no calendar file (`Cache-Control: public, max-age=0, must-revalidate`); the CDN's five minutes and half a minute stand | the item names the event blocks; the calendar files share the constant, and a saved room name reaches them too | give `eventCalendar` its own `cache-control` in `router.mjs` |
+
+## 2 November 2026 · the publish file installs what the lockfile names (queue item 11; routine calls made in the session)
+
+His item of 31 Oct, given with a button. The publish file copied the laptop's `node_modules` into each deploy and never
+installed (Admin log ADM-461), so a dependency change reached a deploy only by hand; and its first step stated a time
+estimate. How it is built: `ARCHITECTURE.md`, "The pieces" and the paragraph under it.
+
+| Call | Why | To reverse |
+|---|---|---|
+| The comparison is a script in the repository (`ops/deps-match.mjs`), tested with the gate; the publish file calls it | logic in a `.command` file outside the repository is tested by nothing | put the comparison inline in the publish file |
+| It reads each installed `package.json` against `package-lock.json`, not npm's own record (`node_modules/.package-lock.json`) | the installed files are what the deploy copies; npm's record does not see a hand-changed folder | compare with `node_modules/.package-lock.json` |
+| A package the lockfile marks optional may be absent; installed, it must be the locked version; anything extra at the top of `node_modules` is a difference | npm on the Mac left out `@img/sharp-wasm32`, `@emnapi/runtime` and a nested `pglite`, which the lockfile gives no `os` or `cpu` and which npm on Linux installed, so a rule built from the lockfile's `os` and `cpu` would have run `npm ci` on every publish and then stopped; a leftover package would ship in the deploy | require optional packages in `depsDiffer()`, or drop the extras loop |
+| It installs with `npm ci`, only when the comparison finds a difference, and stops when the result does not read back as matching | `npm ci` installs exactly the lockfile and removes anything else; skipping it when nothing differs keeps a quiet publish quiet | run `npm ci` on every publish |
+| A failed `npm ci` stops the publish before the checks; the folder it half-emptied is reinstalled by the next run | nothing is saved, sent or put online with a broken folder | none needed |

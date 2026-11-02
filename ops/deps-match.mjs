@@ -55,7 +55,11 @@ export function depsDiffer(root, { names = [] } = {}) {
   return { checked, differences, versions };
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+/* Run as a command. argv[1] is the path it was started by, which may pass through a link (macOS's temporary folder
+   does); import.meta.url is the real path. Compared as given, a command through a link printed nothing and exited 0,
+   which the publish file reads as a match. */
+const realPath = (p) => { try { return fs.realpathSync(p); } catch { return path.resolve(p); } };
+if (process.argv[1] && realPath(process.argv[1]) === realPath(fileURLToPath(import.meta.url))) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   let r;
   try { r = depsDiffer(root, { names: process.argv.slice(2) }); } catch (e) {

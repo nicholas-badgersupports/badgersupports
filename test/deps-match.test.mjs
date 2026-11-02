@@ -83,3 +83,17 @@ test("the command: exit 0 with one line, 1 with the differences, 2 when it canno
   assert.equal(r.status, 1, r.stdout);
   assert.match(r.stdout, /missing: the node_modules folder/);
 });
+
+/* macOS's temporary folder (/var/folders/…) is a link to /private/var/folders/…, so on a Mac the command above runs
+   through a link. Node names the module by its real path and argv[1] by the path it was given. */
+test("the command answers when its folder is reached through a link, as macOS's temporary folder is", () => {
+  const lock = { lockfileVersion: 3, packages: { "node_modules/sharp": { version: "0.35.5" } } };
+  const root = tree(["sharp"], {}, lock);
+  fs.mkdirSync(path.join(root, "ops"));
+  fs.copyFileSync(SCRIPT, path.join(root, "ops", "deps-match.mjs"));
+  const link = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "deps-link-")), "site");
+  fs.symlinkSync(root, link, "dir");
+  const r = spawnSync(process.execPath, [path.join(link, "ops", "deps-match.mjs"), "sharp"], { encoding: "utf8" });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.equal(r.stdout, "deps: node_modules matches package-lock.json, 1 packages compared; sharp 0.35.5.\n", "a silent exit 0 reads as a match in the publish file");
+});

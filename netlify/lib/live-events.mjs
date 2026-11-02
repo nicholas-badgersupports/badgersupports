@@ -25,14 +25,31 @@ import { nextDated } from "../../src/render/events.mjs";
 import { eventIcs } from "../../src/render/ics.mjs";
 import { withRoomPlaces } from "../../src/render/places.mjs";
 import { siteNow } from "./pages.mjs";
+import { noteGet, noteSet } from "./published.mjs";
 
 const FRESH_MS = 60_000;
 const FAILED_MS = 30_000;
 
 let held = null;
 
-/* Tests start each case with nothing held. */
+/* This copy forgets the list it holds. Tests start each case with nothing held. */
 export function forgetEvents() { held = null; }
+
+/* Refresh now, in whichever running copy took it, writes a new token beside the revision. A copy whose held list was
+   asked for under another token asks Connect again, so no copy draws a list held from before the refresh into the
+   answers the refresh cleared. The token is read before Connect is asked, so a refresh during the ask is seen on the
+   next call. When the token cannot be read, the held list is used as before. */
+const FORGET_NOTE = "events-forgotten";
+async function forgetToken() {
+  try { return (await noteGet(FORGET_NOTE))?.token || ""; } catch (e) {
+    console.error(`events: the refresh note could not be read (${e.message}); using the list this copy holds`);
+    return undefined;
+  }
+}
+export async function forgetEventsEverywhere() {
+  forgetEvents();
+  await noteSet(FORGET_NOTE, { token: crypto.randomUUID(), at: new Date().toISOString() });
+}
 
 async function readEvents(ev) {
   const cfg = serviceConfigNow();
@@ -46,17 +63,17 @@ async function readEvents(ev) {
 /* { events, stale }: Connect's list now, or the publish's when Connect cannot be read. */
 export async function eventsNow(ev, now = Date.now()) {
   if (ev.source !== "connect") return { events: ev.built, stale: false };
-  if (!held || held.until <= now) {
-    const promise = readEvents(ev).then(
-      (events) => ({ events, stale: false }),
-      (e) => {
-        console.error(`events: Connect could not be read (${e.code || "error"}); answering with the published list`);
-        if (held?.promise === promise) held.until = now + FAILED_MS;
-        return { events: ev.built, stale: true };
-      },
-    );
-    held = { until: now + FRESH_MS, promise };
-  }
+  const token = await forgetToken();
+  if (held && held.until > now && (token === undefined || token === held.token)) return held.promise;
+  const promise = readEvents(ev).then(
+    (events) => ({ events, stale: false }),
+    (e) => {
+      console.error(`events: Connect could not be read (${e.code || "error"}); answering with the published list`);
+      if (held?.promise === promise) held.until = now + FAILED_MS;
+      return { events: ev.built, stale: true };
+    },
+  );
+  held = { until: now + FRESH_MS, promise, token };
   return held.promise;
 }
 

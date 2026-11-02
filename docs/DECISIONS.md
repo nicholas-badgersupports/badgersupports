@@ -560,3 +560,18 @@ published flag, links, and the number and order of its steps stay a change in th
 | A step's photo is a labelled choice of library photos with a small picture of the one chosen | the edit button's photo control is a typed id with no picker to call | `roomForm()` |
 | A room saved redraws the pages list, so the pages part's token stays the newest | otherwise the user's next page change would be refused as someone else's | `pagesChanged` in `src/client/staff.js` |
 | The line under a changed field reuses Site Settings' words ("Saved since you opened this page: …", "(none)") | one fact, one place to edit it | give Rooms keys of its own in `content/text.json` |
+
+## 2 November 2026 · the gaps item 8 left (queue item 9; routine calls made in the session)
+
+His item of 31 Oct, given with a button: all three gaps item 8 left. A copy that read the revision just before a save
+could still answer after the save's clearing; Refresh now dropped Connect's list in the copy that took it only; and the
+browser kept a page's event answer a minute. How it is built: `ARCHITECTURE.md`, "Every cache" and "Refresh now".
+
+| Call | Why | To reverse |
+|---|---|---|
+| Every publish clears its tags a second time 5 seconds after the first: a saved word, a pages change (settings, rooms, the menu, sections), a restore and Refresh now | the race is the same for every publish; Netlify's synchronous limit is 60 seconds and `waitUntil` work runs inside it and is billed as run time (Netlify docs, Functions API and Functions configuration, read 2 Nov), so a short pause covers ordinary draws for little run time | change `SECOND_CLEAR_MS`, or call `purgeTags` for `clearTags` in `router.mjs` |
+| The second clearing runs only where Netlify gives `waitUntil` | a local server has no CDN to clear, and without it the work could outlive the function unseen | call `afterReply` without the `waitUntil` check in `clearTags` |
+| A form's switch clears once | the item names saves; the server goes by the switch at every send, so a stale page cannot let an answer in | use `clearTags` in `formSwitch` |
+| Refresh now writes a new token beside the revision; a copy compares its held list's token at every events answer and calendar file | one read of the store per answer the CDN did not already hold; a token is equal or not, so no copy's clock matters | drop `forgetToken()` from `eventsNow` and call `forgetEvents()` in `refreshRoute` |
+| When the token cannot be read, a copy uses the list it holds | asking Connect on every answer while the store is down would load Connect; the same store holds the revision, so Refresh now reports it as `publish.unavailable` | treat an unreadable token as changed in `eventsNow` |
+| The browser keeps no event answer and no calendar file (`Cache-Control: public, max-age=0, must-revalidate`); the CDN's five minutes and half a minute stand | the item names the event blocks; the calendar files share the constant, and a saved room name reaches them too | give `eventCalendar` its own `cache-control` in `router.mjs` |

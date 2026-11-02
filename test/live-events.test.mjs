@@ -10,7 +10,9 @@ import { build, ROOT } from "../ops/build.mjs";
 import { useContent } from "../netlify/lib/content.mjs";
 import { useConnect } from "../netlify/lib/connect.mjs";
 import { handle } from "../netlify/lib/router.mjs";
+import * as liveEvents from "../netlify/lib/live-events.mjs";
 import { eventSections, calendarFile, forgetEvents } from "../netlify/lib/live-events.mjs";
+import { useStore, memoryStore } from "../netlify/lib/published.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
 
 const ORIGIN = "http://site.test";
@@ -60,11 +62,12 @@ const read = (out, p) => fs.readFileSync(path.join(out, p), "utf8");
 
 const get = (p, headers = { accept: "application/json" }) => handle(new Request(ORIGIN + p, { headers }));
 
-/* Each case starts with the Connect build's content, the given Connect, and nothing held. */
+/* Each case starts with the Connect build's content, the given Connect, nothing held, and an empty store. */
 function given(connect, content = LIVE) {
   useContent(content);
   useConnect(connect.cfg);
   forgetEvents();
+  useStore(memoryStore());
 }
 
 /* Connect being unreachable is said on stderr; the cases that cause it keep the test output clean. */
@@ -124,7 +127,7 @@ test("an event added and one taken off in Connect show without a publish, and Co
   given(connect);
   const res = await get("/api/events/pg-craft-nights");
   assert.equal(res.status, 200);
-  assert.equal(res.headers.get("cache-control"), "public, max-age=60");
+  assert.equal(res.headers.get("cache-control"), "public, max-age=0, must-revalidate");
   assert.match(res.headers.get("netlify-cdn-cache-control"), /s-maxage=300/);
   assert.match(res.headers.get("content-type"), /^application\/json/);
   const body = await res.json();
@@ -171,7 +174,7 @@ test("the calendar route gives the file the publish wrote, and a friendly page f
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("content-type"), "text/calendar; charset=utf-8");
   assert.equal(res.headers.get("x-content-type-options"), "nosniff");
-  assert.equal(res.headers.get("cache-control"), "public, max-age=60");
+  assert.equal(res.headers.get("cache-control"), "public, max-age=0, must-revalidate");
   assert.equal(await res.text(), read(OUT, "calendar/connect-e1.ics"));
   assert.equal((await calendarFile("connect-e2")).stale, false);
 
@@ -224,4 +227,61 @@ test("an event that began yesterday and ends tomorrow is still coming up, betwee
   const res = await get("/api/calendar/connect-e4.ics", {});
   assert.equal(res.status, 200);
   assert.match(await res.text(), new RegExp(`DTEND:${day(1).replace(/-/g, "")}T`));
+});
+
+/* Each running copy of the API holds Connect's list up to a minute. Refresh now runs in one copy; every other copy must
+   ask Connect again, or it draws the list from before the refresh into the answers the refresh has just cleared. This
+   file's import is the copy that took Refresh now, and a second import of the same module is another copy: the store is
+   the one thing they share. */
+test("item 9 (b): after Refresh now in one copy, another copy asks Connect again and shows Connect's list now", async () => {
+  const other = await import("../netlify/lib/live-events.mjs?copy=other");
+  const before = fakeConnect(PUBLISHED);
+  given(before);
+  other.forgetEvents();
+  const shows = async (copy) => Object.values((await copy.eventSections("pg-craft-nights", { today: TODAY })).blocks).join("");
+  assert.match(await shows(other), /Example night one/, "the other copy holds the published list");
+  assert.match(await shows(liveEvents), /Example night one/);
+  assert.equal(before.calls.length, 2, "each copy asked Connect once");
+
+  const after = fakeConnect(LATER);
+  useConnect(after.cfg);
+  await liveEvents.forgetEventsEverywhere();
+  const now = await shows(other);
+  assert.match(now, /Example night added later/, "the other copy shows Connect's list as it is after the refresh");
+  assert.doesNotMatch(now, /Example night one/);
+  assert.deepEqual(after.calls, ["publicEvents"], "it asked Connect once");
+  await shows(other);
+  assert.deepEqual(after.calls, ["publicEvents"], "and then holds the new list as before");
+});
+
+/* The note lives in the revision's store. When that store cannot be read, a copy keeps using the list it holds, so
+   Connect is asked no more often than before. */
+test("item 9 (b): when the refresh note cannot be read, a copy uses the list it holds and asks Connect no more often", async () => {
+  const connect = fakeConnect(PUBLISHED);
+  given(connect);
+  const store = memoryStore();
+  let down = false;
+  useStore({ kind: "flaky", get: (k) => (down ? Promise.reject(new Error("store down")) : store.get(k)), set: (k, v) => store.set(k, v) });
+  await eventSections("pg-home", { today: TODAY });
+  down = true;
+  const r = await quietly(() => eventSections("pg-craft-nights", { today: TODAY }));
+  assert.match(Object.values(r.blocks).join(""), /Example night one/);
+  await quietly(() => eventSections("pg-home", { today: TODAY }));
+  assert.deepEqual(connect.calls, ["publicEvents"], "asked once in the minute, as before");
+});
+
+/* The browser asks the CDN each time, so a reload after a save or Refresh now shows the answer the CDN holds now, never
+   one the browser kept from before. */
+test("item 9 (c): the browser keeps no event answer or calendar file, from Connect's list or from the published one", async () => {
+  given(fakeConnect(PUBLISHED));
+  for (const [p, headers] of [["/api/events/pg-home", undefined], ["/api/calendar/connect-e1.ics", {}]]) {
+    const res = await get(p, headers);
+    assert.equal(res.status, 200, p);
+    assert.equal(res.headers.get("cache-control"), "public, max-age=0, must-revalidate", p);
+    assert.match(res.headers.get("netlify-cdn-cache-control"), /s-maxage=300/, `${p}: the CDN still holds it five minutes`);
+  }
+  given(fakeConnect(LATER, { fail: true }));
+  const stale = await quietly(() => get("/api/events/pg-home"));
+  assert.equal(stale.headers.get("cache-control"), "public, max-age=0, must-revalidate", "(the published list)");
+  assert.equal(stale.headers.get("netlify-cdn-cache-control"), "public, s-maxage=30", "the CDN still holds it half a minute");
 });

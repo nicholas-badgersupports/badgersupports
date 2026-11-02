@@ -27,7 +27,7 @@ import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
-import { eventSections, calendarFile, forgetEvents } from "./live-events.mjs";
+import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
 import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList } from "./structure.mjs";
@@ -98,6 +98,20 @@ function afterReply(context, work) {
   const done = Promise.resolve().then(work).catch((e) => console.error("after reply:", e));
   context?.waitUntil?.(done);
   return done;
+}
+
+/* A running copy that read the revision just before a publish can draw the old words after the publish's clearing, and
+   the CDN then keeps them. The same tags are cleared again SECOND_CLEAR_MS later, after the reply, which removes any such
+   answer unless its draw took longer than that. The second clearing needs Netlify's waitUntil, inside the function's
+   execution limit: with none (a local server, which has no CDN) there is no second clearing. Its failure is logged only;
+   the first clearing's failure goes to the caller as before. */
+export const SECOND_CLEAR_MS = 5_000;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+let pause = sleep;
+export function usePause(p) { pause = p || sleep; }
+async function clearTags(context, tags) {
+  if (context?.waitUntil) afterReply(context, async () => { await pause(SECOND_CLEAR_MS); await purgeTags(tags); });
+  await purgeTags(tags);
 }
 
 /* Public, and the same for everyone, so the CDN holds it a minute: a burst of asks does not wake the
@@ -297,7 +311,7 @@ const tagsFor = (target) => {
    drawn with (published.mjs, pages.mjs), and the pages they touch are cleared from the CDN. It grants no
    scope and approves nothing else. If the revision cannot be written the save is still kept, and the reply
    says so; Refresh now tries again. */
-async function editSave(req, _m, _c, who) {
+async function editSave(req, _m, context, who) {
   need(who, "site.edit");
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
@@ -306,7 +320,7 @@ async function editSave(req, _m, _c, who) {
   if (r.changed) {
     try {
       published = await publishRevision(who);
-      await purgeTags(tagsFor(body.target)).catch((e) => console.error("purge:", e.code || e.message));
+      await clearTags(context, tagsFor(body.target)).catch((e) => console.error("purge:", e.code || e.message));
     } catch (e) {
       publishError = e.code || "publish.unavailable";
       console.error("publish:", e.message);
@@ -318,11 +332,11 @@ async function editSave(req, _m, _c, who) {
 /* Refresh now: the pages and the event feeds drawn again from now, for someone who may edit or publish
    words, checked here. JSON from this site only (a form elsewhere cannot send JSON without asking first),
    six an hour per person and one a minute for the whole site. It writes the revision again if the last
-   write failed, forgets the held Connect list and clears the `page` and `events` tags. A visitor has no way
-   to ask for this: no query string, header or cookie on a public address does it. */
+   write failed, makes every running copy forget the Connect list it holds, and clears the `page` and `events` tags.
+   A visitor has no way to ask for this: no query string, header or cookie on a public address does it. */
 export const REFRESH_PER_PERSON = 6;
 export const REFRESH_SITE_SECONDS = 60;
-async function refreshRoute(req, _m, _c, who) {
+async function refreshRoute(req, _m, context, who) {
   if (!can(who, "site.edit") && !can(who, "site.publish")) throw new HttpError(403, "staff.forbidden");
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
@@ -330,8 +344,9 @@ async function refreshRoute(req, _m, _c, who) {
   await rateLimit("refresh:site", 1, REFRESH_SITE_SECONDS);
   let publishError = null, purgeError = null;
   try { await publishRevision(who); } catch (e) { publishError = e.code || "publish.unavailable"; }
-  forgetEvents();
-  try { await purgeTags(["page", "events"]); } catch (e) { purgeError = e.code || "purge.unavailable"; }
+  // The note lives in the revision's store: when that store is down, publishError says so; a failure here alone is logged.
+  await forgetEventsEverywhere().catch((e) => console.error("events: the refresh note could not be written:", e.message));
+  try { await clearTags(context, ["page", "events"]); } catch (e) { purgeError = e.code || "purge.unavailable"; }
   return json(200, { ok: true, ...(await publishedNow()), ...(publishError ? { publishError } : {}), ...(purgeError ? { purgeError } : {}) });
 }
 
@@ -339,11 +354,11 @@ const editsPages = (who) => { if (!can(who, "site.edit") && !can(who, "site.publ
 
 /* After a structure change or a restore: the next revision, and every page and feed cleared, since the menu is on each
    and an address that was the 404 page may be a page now. A failure leaves the change saved and says so. */
-async function publishAll(who) {
+async function publishAll(who, context) {
   let published = null, publishError = null;
   try {
     published = await publishRevision(who);
-    await purgeTags(["page", "events"]).catch((e) => console.error("purge:", e.code || e.message));
+    await clearTags(context, ["page", "events"]).catch((e) => console.error("purge:", e.code || e.message));
   } catch (e) {
     publishError = e.code || "publish.unavailable";
     console.error("publish:", e.message);
@@ -361,13 +376,13 @@ export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retir
 /* One change to the pages, the menu or the site's settings. JSON from this site only; `expected` is the version the
    tab started from. Every change publishes and clears every page and feed (publishAll): the menu, the titles and the
    footer are on each. */
-async function pagesChangeRoute(req, _m, _c, who) {
+async function pagesChangeRoute(req, _m, context, who) {
   editsPages(who);
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   if (!PAGE_ACTIONS.has(body.action)) throw new HttpError(400, "pages.action");
   const r = await changeStructure(who, body, (scope) => need(who, scope));
-  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(await publishAll(who)) });
+  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(await publishAll(who, context)) });
 }
 
 /* Every room's words and step photos, for the Rooms part: a publisher's, as changing them is. */
@@ -401,14 +416,14 @@ async function versionsRoute(req, _m, _c, who) {
 
 /* Bring back an earlier published version as the newest: a publisher's, refused when anything changed since the list
    was read. */
-async function restoreRoute(req, [n], _c, who) {
+async function restoreRoute(req, [n], context, who) {
   need(who, "site.publish");
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   const revision = await readRevision(n);
   if (!revision) throw new HttpError(404, "versions.unknown");
   const r = await restoreRevision(who, revision, body.expected);
-  return json(200, { ok: true, ...r, ...(await publishAll(who)) });
+  return json(200, { ok: true, ...r, ...(await publishAll(who, context)) });
 }
 
 /* ?download=1 is the file a publish lays over the site: saved as content/edits.json. Changing words
@@ -426,9 +441,10 @@ async function editsFileRoute(req, _m, _c, who) {
 /* The events between publishes (live-events.mjs). The same answer serves everyone, so the CDN holds
    it: five minutes when it came from Connect, half a minute when Connect could not be read and it is
    the publish's list. A query string is refused rather than ignored, so nobody can ask past the
-   cache to Connect. */
-const LIVE_CACHE = { "cache-control": "public, max-age=60", "netlify-cdn-cache-control": "public, durable, s-maxage=300, stale-while-revalidate=600", "netlify-cache-tag": "events" };
-const STALE_CACHE = { "cache-control": "public, max-age=30", "netlify-cdn-cache-control": "public, s-maxage=30", "netlify-cache-tag": "events" };
+   cache to Connect. The browser keeps none and asks the CDN each time, so a reload after a save or
+   Refresh now shows what the CDN holds then. */
+const LIVE_CACHE = { "cache-control": "public, max-age=0, must-revalidate", "netlify-cdn-cache-control": "public, durable, s-maxage=300, stale-while-revalidate=600", "netlify-cache-tag": "events" };
+const STALE_CACHE = { "cache-control": "public, max-age=0, must-revalidate", "netlify-cdn-cache-control": "public, s-maxage=30", "netlify-cache-tag": "events" };
 
 function noQuery(req) {
   if (new URL(req.url).search) throw new HttpError(400, "query.refused");

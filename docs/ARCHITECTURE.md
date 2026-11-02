@@ -406,8 +406,8 @@ build's own file, held one minute, so a fault is never cached for long.
 | The page function's copy of the revision | none: read from the store at every draw | 0 |
 | Netlify's CDN, page HTML | `Netlify-CDN-Cache-Control: public, durable, s-maxage=1500, stale-while-revalidate=300` | 30 min |
 | The browser, page HTML | `Cache-Control: public, max-age=0, must-revalidate` | 0 |
-| `/api/events/<page>` | five minutes, ten more while it refetches; the browser one | 16 min |
-| `/api/calendar/<event>.ics` | the same | 16 min |
+| `/api/events/<page>` | five minutes, ten more while it refetches; the browser none (`max-age=0, must-revalidate`) | 15 min |
+| `/api/calendar/<event>.ics` | the same | 15 min |
 | Private and sign-in answers (`/api/staff/*`, `/api/auth/*`, forms) | `no-store` | never cached |
 
 The cache key ignores every query string but `topic` and `return` (`Netlify-Vary: query=topic|return`) and no
@@ -415,12 +415,19 @@ cookie or header, so a visitor cannot ask past the cache. Each page is tagged `p
 event answer `events` and `events:<id>`. A save of a word on one page clears `page:<id>` and `events:<id>` together,
 because the page's script swaps its event blocks in from that answer, words and all; a shared word clears `page` and
 `events`. No running copy of the function holds the revision between draws, so whichever copy draws a cleared page
-draws it from the revision the store holds then.
+draws it from the revision the store holds then. A copy that read the revision just before a publish can still answer
+after the clearing; so every publish (a save, a pages change, a restore, Refresh now) clears the same tags again five
+seconds later, after the reply (`clearTags` and `SECOND_CLEAR_MS` in `router.mjs`, through Netlify's `waitUntil`). A
+draw that took longer than that pause is not covered. With no `waitUntil` (a local server, which has no CDN) there is no
+second clearing. A form's switch clears once.
 
 **Refresh now** (`POST /api/staff/refresh`): for a signed-in person holding `site.edit` or `site.publish`, checked on
 the server; JSON only and same-origin, so a page elsewhere cannot send it; at most six an hour per person and one a
-minute for the site. It publishes the revision again if the last write failed, drops the held Connect list, and
-purges the tags `page` and `events`. Deployed, the purge is Netlify's (`purgeCache` in `@netlify/functions`); locally
+minute for the site. It publishes the revision again if the last write failed, makes every running copy drop the
+Connect list it holds, and purges the tags `page` and `events`, twice as above. Each running copy holds Connect's list
+up to a minute; Refresh now writes a new token beside the revision (`notes/events-forgotten`), and a copy whose list was
+asked for under another token asks Connect again (`forgetEventsEverywhere` in `live-events.mjs`). When the token cannot
+be read, a copy uses the list it holds. Deployed, the purge is Netlify's (`purgeCache` in `@netlify/functions`); locally
 it is recorded, nothing more.
 
 **What the editor sees.** The staff page says changes may take up to 30 minutes, and when the site last updated

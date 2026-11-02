@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { freshServer, workshopAnswers, post, ORIGIN } from "./helpers.mjs";
+import * as router from "../netlify/lib/router.mjs";
 import { handle } from "../netlify/lib/router.mjs";
 import { useConnect, resetQuoteCache } from "../netlify/lib/connect.mjs";
 import { deliverDue, deliveriesSettled } from "../netlify/lib/deliver.mjs";
@@ -20,7 +21,7 @@ import { serverContent, useContent } from "../netlify/lib/content.mjs";
 import { many, one, q, migrate } from "../netlify/lib/db.mjs";
 import { readEditsFile } from "../src/shared/edits.mjs";
 import { build, loadContent } from "../ops/build.mjs";
-import { currentRevision, useStore, memoryStore, usePurger } from "../netlify/lib/published.mjs";
+import { currentRevision, useStore, memoryStore, usePurger, noteGet } from "../netlify/lib/published.mjs";
 import { handlePage, useDist } from "../netlify/lib/pages.mjs";
 import { currentForm, setSwitch } from "../netlify/lib/intake.mjs";
 import { launchForms } from "../src/shared/forms.mjs";
@@ -963,9 +964,12 @@ test("Refresh now: editors and publishers only, from this site, JSON, bounded, a
     assert.equal(ok.status, 200);
     assert.equal(ok.headers.get("cache-control"), "no-store");
     assert.deepEqual(cleared, ["page", "events"]);
+    const first = await noteGet("events-forgotten");
+    assert.ok(first?.token, "item 9 (b): it leaves a note every running copy reads before using Connect's list it holds");
     assert.equal((await refresh(publisher.cookie)).status, 429, "one a minute for the whole site");
     await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'");
     assert.equal((await refresh(publisher.cookie)).status, 200, "site.publish may refresh too");
+    assert.notEqual((await noteGet("events-forgotten")).token, first.token, "each Refresh now leaves a new note");
     // The fake Connect gives each account the same Connect id (u-test-0001), so these count as one person's:
     // three so far, the refused one included.
     for (let i = 0; i < 2; i++) { await q("DELETE FROM rate_limits WHERE bucket = 'refresh:site'"); assert.equal((await refresh(editor.cookie)).status, 200); }
@@ -2047,4 +2051,41 @@ test("item 15, rooms (g, h): a room save clears every page and feed, and Restore
   const word = await saveWord(publisher, "text:page.skip", "Skip to Content", "Skip ahead");
   assert.ok(word.published?.n);
   assert.equal(await h1(), ROOM_WORDS.name, "a saved word keeps the room's words");
+});
+
+/* ------------------------------------------------------------------ a second clearing (item 9 a) */
+
+/* A running copy that read the revision just before a publish can answer after the publish's clearing, and the CDN then
+   keeps its old words. Here the CDN is a map of the answers it holds, cleared by tag as Netlify clears them; the copy
+   is a page drawn before the change whose answer the CDN stores after the first clearing. The second clearing runs
+   after the reply, through Netlify's waitUntil, once the pause has passed. */
+test("item 9 (a): a saved word, a settings change and Refresh now clear again after a pause, so a page drawn just before is not kept", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit", "site.publish"], "Avery Example");
+  const held = new Map(); // address -> the cache tags of the answer the CDN holds for it
+  usePurger(async (tags) => { for (const [address, its] of held) if (its.some((x) => tags.includes(x))) held.delete(address); });
+  const released = [];
+  router.usePause((ms) => { assert.equal(ms, router.SECOND_CLEAR_MS); return new Promise((r) => released.push(r)); });
+  t.after(() => router.usePause(null));
+  const pending = [];
+  const ctx = { ...ip(), waitUntil: (p) => { pending.push(p); } };
+  const tagsOf = async (p) => (await visit(p)).headers.get("netlify-cache-tag").split(",");
+  const settle = async () => { for (const r of released.splice(0)) r(); await Promise.all(pending.splice(0)); };
+
+  const HERO_TITLE = "page:pg-home:b-home-hero/title";
+  const hero = (await sourceOf(editor, "pg-home")).find((e) => e.target === HERO_TITLE);
+  const version = (await pagesNow(editor)).version;
+  const changes = [
+    ["a saved word on the home page", "/", () => staffPost("/api/staff/edit/save", { target: HERO_TITLE, expected: hero.current, value: "badger supports, saved again" }, editor)],
+    ["a change to the site's settings", "/about/faq/", () => staffPost("/api/staff/pages", { action: "settings", expected: version, settings: { name: "Badger Supports Example" } }, editor)],
+    ["Refresh now", "/join/craft-nights/", () => staffPost("/api/staff/refresh", {}, editor)],
+  ];
+  for (const [what, address, request] of changes) {
+    const tags = await tagsOf(address);             // a copy reads the revision as it was ...
+    const res = await handle(request(), ctx);       // ... the change publishes and clears ...
+    assert.equal(res.status, 200, `${what}: ${await res.text()}`);
+    held.set(address, tags);                        // ... and the CDN stores that copy's answer after the clearing
+    await settle();
+    assert.ok(!held.has(address), `${what}: the page drawn just before the change is not kept`);
+  }
 });

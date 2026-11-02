@@ -371,7 +371,7 @@ async function pagesRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await pagesList()) });
 }
 
-export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "menu", "settings", "room", ...SECTION_ACTIONS]);
+export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "putBack", "menu", "settings", "room", ...SECTION_ACTIONS]);
 
 /* One change to the pages, the menu or the site's settings. JSON from this site only; `expected` is the version the
    tab started from. Every change publishes and clears every page and feed (publishAll): the menu, the titles and the

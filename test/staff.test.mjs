@@ -26,6 +26,7 @@ import { handlePage, useDist } from "../netlify/lib/pages.mjs";
 import { currentForm, setSwitch } from "../netlify/lib/intake.mjs";
 import { launchForms } from "../src/shared/forms.mjs";
 import { layStructure, emptyStructure } from "../src/shared/structure.mjs";
+import * as structureModule from "../src/shared/structure.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECT = "http://connect.test";
@@ -1348,6 +1349,57 @@ test("item 16: a retired page leaves the menu, its address goes where the publis
   }
   const listed = (await pagesNow(editor)).pages.find((p) => p.id === "pg-press");
   assert.equal(listed.state, "retired");
+});
+
+test("item 13: Put Back returns a retired page with every change made since it was retired kept", async (t) => {
+  const { as } = await pagesSite(t);
+  const editor = await as(["site.edit"]);
+  const publisher = await as(["site.edit", "site.publish"]);
+  const v = await pagesNow(publisher);
+  const what = v.pages.find((p) => p.path === "/about/what-we-do/").id;
+  const ret = await change(publisher, { action: "retire", expected: v.version, page: "pg-about-faq", to: what });
+  assert.equal(ret.status, 200, JSON.stringify(ret.body));
+  const later = await change(publisher, { action: "details", expected: ret.body.version, page: "pg-press", title: "Press and Media" });
+  assert.equal(later.status, 200, JSON.stringify(later.body));
+  assert.equal((await pagesNow(editor)).pages.find((p) => p.id === "pg-about-faq").back, "live", "the list says where Put Back returns it");
+
+  assert.equal((await change(editor, { action: "putBack", expected: later.body.version, page: "pg-about-faq" })).status, 403, "back on the site is a publisher's");
+  const back = await change(publisher, { action: "putBack", expected: later.body.version, page: "pg-about-faq" });
+  assert.equal(back.status, 200, JSON.stringify(back.body));
+  assert.equal((await visit("/about/faq/")).status, 200, "its address shows it again");
+  assert.match(menuOf(await (await visit("/")).text()), /href="\/about\/faq\/"/, "and its menu entry is back");
+  const now = await pagesNow(publisher);
+  assert.equal(now.pages.find((p) => p.id === "pg-about-faq").state, "live");
+  assert.equal(now.pages.find((p) => p.id === "pg-press").title, "Press and Media", "a change made after it was retired stays");
+  const twice = await change(publisher, { action: "putBack", expected: back.body.version, page: "pg-about-faq" });
+  assert.deepEqual([twice.status, twice.body.error], [422, "page.notRetired"]);
+
+  const again = await change(publisher, { action: "retire", expected: back.body.version, page: "pg-about-faq" });
+  assert.equal(again.status, 200, JSON.stringify(again.body));
+  assert.equal((await visit("/about/faq/")).status, 404, "retired again with nowhere named, the earlier destination is not kept");
+
+  const made = await change(editor, { action: "add", expected: again.body.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });
+  const drop = await change(editor, { action: "retire", expected: made.body.version, page: made.body.page });
+  assert.equal(drop.status, 200, JSON.stringify(drop.body));
+  assert.equal((await pagesNow(editor)).pages.find((p) => p.id === made.body.page).back, "draft");
+  const up = await change(editor, { action: "putBack", expected: drop.body.version, page: made.body.page });
+  assert.equal(up.status, 200, "a retired draft comes back a draft, by an editor");
+  assert.equal((await pagesNow(editor)).pages.find((p) => p.id === made.body.page).state, "draft");
+  assert.equal((await visit("/programs/spring-retreat/")).status, 404, "and visitors still cannot reach it");
+
+  const made2 = await change(publisher, { action: "add", expected: up.body.version, title: "Fall Retreat", path: "/programs/fall-retreat/" });
+  const on = await change(publisher, { action: "publish", expected: made2.body.version, page: made2.body.page });
+  const off = await change(publisher, { action: "retire", expected: on.body.version, page: made2.body.page });
+  const onAgain = await change(publisher, { action: "putBack", expected: off.body.version, page: made2.body.page });
+  assert.equal(onAgain.status, 200, JSON.stringify(onAgain.body));
+  assert.equal((await visit("/programs/fall-retreat/")).status, 200, "a page made here and put on the site comes back on the site");
+});
+
+test("item 13: a page retired before Put Back existed comes back live from the build, and a draft when it was made here", async () => {
+  const backTo = structureModule.backTo || (() => "unknown");
+  assert.equal(backTo({ state: "retired" }), "live");
+  assert.equal(backTo({ state: "retired", page: { id: "pg-x" } }), "draft", "a restore retires a page made since without saying what it was");
+  assert.equal(backTo({ state: "retired", page: { id: "pg-x" }, retiredFrom: "live" }), "live");
 });
 
 test("item 16: a new address keeps the old one working, and the menu reorders by entry, so its saved words follow", async (t) => {

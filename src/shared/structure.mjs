@@ -5,7 +5,8 @@
  *
  *   { schema: "bss.structure/1",
  *     pages:   { "<pg-id>": { state: "draft" | "live" | "retired", page?: <a whole bss.page/1, for a page made here>,
- *                             path?, title?, description?, oldPaths?: ["/was/"], retiredTo?: "<pg-id>" } },
+ *                             path?, title?, description?, oldPaths?: ["/was/"], retiredTo?: "<pg-id>",
+ *                             retiredFrom?: "draft" | "live" } },
  *     menu:    null | [ { id, children?: [ids] } ],   the menu by entry id; null keeps the build's
  *     removed: [ entry ids taken off the menu ],
  *     entries: { "<nav-id>": { label, page: "<pg-id>", group?: "<nav-id>" | "" } } }   menu entries made here, with
@@ -25,6 +26,9 @@
  *   - A page made here is a draft until someone with site.publish puts it on. A build page is live unless retired.
  *   - A page id is never given twice: a retired page keeps its record, and a new id skips every id ever listed.
  *   - A retired page's addresses answer a 301 to the page it names, or the 404 page; never another page under its id.
+ *   - Put Back returns a retired page to the state it was retired from, and changes nothing else, so every change made
+ *     since stays. A record that does not say (retired before this was kept, or by a restore) returns a build page
+ *     live and a page made here as a draft. Its addresses, held while it was retired, and its menu entry come back.
  *   - A moved page's old addresses answer a 301 to its new one, until a page takes that address again.
  *   - A menu entry the build adds later and the menu document does not name keeps its place from the build.
  *   - An entry taken off the menu stays listed as off until it is put back, and goes back to its own group: the one the
@@ -473,6 +477,10 @@ export const SECTION_ACTIONS = new Set(["sectionAdd", "sectionCopy", "sectionOrd
 /* The state a page is in: a record's, or live for a build page. */
 export const stateOf = (doc, id) => doc.pages[id]?.state || "live";
 
+/* Where Put Back returns a retired page's record: the state it was retired from, or, unsaid, live for a build page
+   and a draft for a page made here (its record holds the whole page). */
+export const backTo = (r) => (r?.retiredFrom === "draft" || r?.retiredFrom === "live" ? r.retiredFrom : r?.page ? "draft" : "live");
+
 /* What the menu holds now, as the editor reorders it: [{ id, label, page?, children? }]. `nav` is the composed
    site's menu (the build's words, saved words and this document laid over it). */
 export function menuOutline(nav) {
@@ -560,7 +568,17 @@ export function applyChange(current, change, ctx) {
         if (to.id === id || stateOf(doc, to.id) !== "live") fail("page.retireTo");
         r.retiredTo = to.id;
       }
+      r.retiredFrom = r.state;
       r.state = "retired";
+      return { doc, page: id };
+    }
+    case "putBack": {
+      const id = changeable(change.page);
+      const r = doc.pages[id];
+      if (r?.state !== "retired") fail("page.notRetired");
+      r.state = backTo(r);
+      delete r.retiredTo;
+      delete r.retiredFrom;
       return { doc, page: id };
     }
     case "menu": {

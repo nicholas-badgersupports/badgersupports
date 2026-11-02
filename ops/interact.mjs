@@ -1171,6 +1171,20 @@ await part("staff page: pages, preview and earlier versions", async () => {
   const menuNames = await page.evaluate(() => [...document.querySelectorAll(".staff-menu > li > span")].map((s) => s.textContent));
   check(on === words("staff.pages.state.live") && menuNames.length > 2, `pages: Put on the Site makes it live, and the menu lists its entries (${JSON.stringify({ on, menuNames })})`);
 
+  /* Retired, its card offers Put Back, which asks first with focus on the yes; Enter returns it to the site. */
+  const chipIs = (w) => page.waitForFunction(([w2]) => [...document.querySelectorAll(".staff-form")].some((c) => c.querySelector("h3")?.textContent.startsWith("Spring Retreat") && c.querySelector(".staff-chip")?.textContent === w2), [w], { timeout: 5000 }).catch(() => {});
+  await cardOf("Spring Retreat").getByRole("button", { name: words("staff.pages.retire"), exact: true }).click({ timeout: 5000 });
+  await cardOf("Spring Retreat").getByRole("button", { name: words("staff.pages.retire.yes"), exact: true }).click({ timeout: 5000 });
+  await chipIs(words("staff.pages.state.retired"));
+  const gone = await cardOf("Spring Retreat").locator(".staff-chip").textContent();
+  await cardOf("Spring Retreat").getByRole("button", { name: words("staff.pages.putBack"), exact: true }).click({ timeout: 5000 });
+  const askedBack = await page.evaluate(() => document.activeElement?.textContent);
+  await page.keyboard.press("Enter");
+  await chipIs(words("staff.pages.state.live"));
+  const back = await cardOf("Spring Retreat").locator(".staff-chip").textContent();
+  check(gone === words("staff.pages.state.retired") && askedBack === words("staff.pages.putBack.yes") && back === words("staff.pages.state.live"),
+    `pages: a retired page's card offers Put Back, asks first with focus on the yes, and Enter returns it to the site (${JSON.stringify({ gone, askedBack, back })})`);
+
   const second = menuNames[1];
   await page.getByRole("button", { name: words("staff.pages.menu.up").replace("{{label}}", second) }).click();
   const focus = await page.evaluate(() => document.activeElement?.textContent);
@@ -1189,6 +1203,7 @@ await part("staff page: pages, preview and earlier versions", async () => {
   const restored = await versions();
   check(asked === words("staff.versions.yes") && restored.length === before.length + 1 && /^Version 1,/.test(oldest || ""),
     `pages: Bring Back asks again, focused on the yes, and the restore is the newest version (${JSON.stringify({ asked, before: before.length, after: restored.length })})`);
+
   check(!errors.length, `pages: no script errors (${errors.join("; ")})`);
   await ctx.close();
 });

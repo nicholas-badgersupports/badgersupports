@@ -13,7 +13,7 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { editableFor, revisionEdits, original, problemFor } from "./edits.mjs";
 import { redirectFor } from "./pages.mjs";
-import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
+import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, backTo, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
 import { variantName, variantWidths } from "../../src/render/media.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 
@@ -78,7 +78,8 @@ export async function pagesList() {
   const pages = site.all
     .filter((p) => site.authored.has(p.id) || doc.pages[p.id]?.page)
     .map((p) => ({ id: p.id, path: p.file ? `/${p.file}` : p.path, title: shortTitle(p.title, p.id), description: p.description || "",
-      state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id), sections: !SECTION_FIXED.has(p.id) }));
+      state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id), sections: !SECTION_FIXED.has(p.id),
+      ...(stateOf(doc, p.id) === "retired" ? { back: backTo(doc.pages[p.id]) } : {}) }));
   return { version, menu: menuOutline(site.site.nav), offMenu: site.offMenu, pages, site: settingsAt(doc), settings: doc.settings || {} };
 }
 
@@ -99,7 +100,8 @@ export async function sectionsList(pageId) {
 
 /* The scope a change needs, from the state of the page it names: words and drafts are an editor's (site.edit); what
    visitors can reach, the menu, a live page's address and bringing back a version are a publisher's (site.publish).
-   A page's sections are words too, but taking one off a live page is a publisher's, as retiring the page is. The site's
+   A page's sections are words too, but taking one off a live page is a publisher's, as retiring the page is. Putting a
+   page back follows where it goes back to: on the site, a publisher's; as a draft, an editor's. The site's
    settings are a publisher's, draft or not: every page's title and footer change with them; so are a room's words
    and photos, which show on its page, the list of rooms and every event held there. */
 export function scopeFor(change, doc) {
@@ -110,6 +112,7 @@ export function scopeFor(change, doc) {
     case "sectionRetire": return draft ? "site.edit" : "site.publish";
     case "details": return change.path !== undefined && !draft ? "site.publish" : "site.edit";
     case "retire": return draft ? "site.edit" : "site.publish";
+    case "putBack": return backTo(doc.pages[change.page]) === "draft" ? "site.edit" : "site.publish";
     case "settings": return "site.publish";
     case "room": return "site.publish";
     default: return "site.publish";

@@ -476,7 +476,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-559 keys. Keys are permanent. Required text cannot be published empty and must keep each
+564 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -699,7 +699,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (344)
+### Staff page and edit button (349)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -826,6 +826,10 @@ the site adds the markup.
 | `staff.pages.retire.nowhere` | Nowhere: show the not-found page | Staff page, choice for a retired page with nowhere to send visitors. |  |
 | `staff.pages.retire.confirm` | Retire {{title}}? Its address will stop showing it. The page and its words are kept. | Staff page, the second yes before retiring. | `{{title}}` |
 | `staff.pages.retire.yes` | Yes, Retire It | Staff page, button that retires a page. |  |
+| `staff.pages.putBack` | Put Back | Staff page, button that opens putting a retired page back. |  |
+| `staff.pages.putBack.confirm` | Put {{title}} back on the site? Its address will show it again, and its menu entry, if it had one, comes back. Changes made since it was retired stay. | Staff page, the question before a retired page goes back on the site. | `{{title}}` |
+| `staff.pages.putBack.confirmDraft` | Put {{title}} back as a draft? Only staff can see it until someone puts it on the site. | Staff page, the question before a retired draft comes back. | `{{title}}` |
+| `staff.pages.putBack.yes` | Yes, Put It Back | Staff page, button that puts a retired page back. |  |
 | `staff.pages.cancel` | Cancel | Staff page, closes a page form without saving. |  |
 | `staff.pages.saving` | Saving… | Staff page, on a page button while it saves. |  |
 | `staff.pages.done.add` | Draft page added. | Staff page, said after a draft is added. |  |
@@ -833,6 +837,7 @@ the site adds the markup.
 | `staff.pages.done.details` | Details saved. | Staff page, said after a page's details save. |  |
 | `staff.pages.done.publish` | The page is on the site. | Staff page, said after a draft goes on the site. |  |
 | `staff.pages.done.retire` | The page is retired. | Staff page, said after a page is retired. |  |
+| `staff.pages.done.putBack` | The page is put back. | Staff page, said after a retired page is put back. |  |
 | `staff.pages.done.menu` | Menu saved. | Staff page, said after the menu saves. |  |
 | `staff.pages.conflict` | Someone changed the pages since you opened them. The list now shows their change; check it, then try again. | Staff page, when another change landed first. |  |
 | `staff.pages.error.path` | Use an address like /programs/spring-retreat/: lower-case words joined by hyphens, one to four folders, ending in /. | Staff page, a refused address. |  |

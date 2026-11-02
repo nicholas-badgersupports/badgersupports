@@ -1563,6 +1563,26 @@
       "text": "Yes, Retire It",
       "where": "Staff page, button that retires a page."
     },
+    "staff.pages.putBack": {
+      "group": "staff",
+      "text": "Put Back",
+      "where": "Staff page, button that opens putting a retired page back."
+    },
+    "staff.pages.putBack.confirm": {
+      "group": "staff",
+      "text": "Put {{title}} back on the site? Its address will show it again, and its menu entry, if it had one, comes back. Changes made since it was retired stay.",
+      "where": "Staff page, the question before a retired page goes back on the site."
+    },
+    "staff.pages.putBack.confirmDraft": {
+      "group": "staff",
+      "text": "Put {{title}} back as a draft? Only staff can see it until someone puts it on the site.",
+      "where": "Staff page, the question before a retired draft comes back."
+    },
+    "staff.pages.putBack.yes": {
+      "group": "staff",
+      "text": "Yes, Put It Back",
+      "where": "Staff page, button that puts a retired page back."
+    },
     "staff.pages.cancel": {
       "group": "staff",
       "text": "Cancel",
@@ -1597,6 +1617,11 @@
       "group": "staff",
       "text": "The page is retired.",
       "where": "Staff page, said after a page is retired."
+    },
+    "staff.pages.done.putBack": {
+      "group": "staff",
+      "text": "The page is put back.",
+      "where": "Staff page, said after a retired page is put back."
     },
     "staff.pages.done.menu": {
       "group": "staff",

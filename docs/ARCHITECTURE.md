@@ -494,6 +494,15 @@ naming the structure version and newest saved word. `POST /api/staff/versions/<n
 place whose words differ again, with its history row, and writes the revision's structure as the newest, in one
 transaction; a page made since that revision is retired, not dropped. It is refused when the token is stale.
 
+**Put Back.** A retired page's card offers Put Back (`putBack`), which changes that page's state and nothing else, so
+every change made since it was retired stays; Restore brings back a whole revision and undoes them. The page returns to
+the state it was retired from (`retiredFrom`, recorded by Retire). A record that does not say, because it was retired
+before Put Back existed or by a restore, returns a build page live and a page made here as a draft. Its addresses were
+held while it was retired, so no other page can have taken them; they show it again, its retired destination
+(`retiredTo`) is dropped, and its menu entry, which was left in the stored menu, is drawn again. Back on the site is a
+publisher's; back as a draft, an editor's. The list gives each retired page's `back`, so the card offers the button only
+to someone who may press it, and asks first, as Retire does.
+
 **Limits.** Found in the code, not seen live: a page made here is not in `sitemap.xml` until the next build, and a
 retired one stays there until then. A made page's event sections are drawn when the page is drawn, not refreshed
 between draws (`/api/events/<page>` knows the build's pages only). If the revision cannot be read, a made page's

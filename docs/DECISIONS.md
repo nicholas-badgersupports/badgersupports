@@ -602,3 +602,17 @@ craft night (item 4b). How it is built: `ARCHITECTURE.md`, the paragraph under "
 | An event its series placed is listed too | the type is still unnamed, and the next event of that type may have no series | list only the events shown as `otherProgram` |
 | It warns and builds; it never stops the build | the events still show, as Other; stopping would keep a whole publish back for one label | throw in `build()` when `unnamed` is not empty |
 | A type is cut to 40 characters, and an empty one reads "(no type)" | the line is for a person; Connect's ids are short | change `slice(0, 40)` in `mapEvents()` |
+
+## 2 November 2026 · Put Back for a retired page (queue item 13; routine calls made in the session)
+
+His item of 2 Nov, given with a button: "a retired page can be put back without undoing later changes, as menu entries
+can". Retire had no inverse: a retired page's card offered Copy only, and Restore brought it back only with every later
+change undone. How it is built: `ARCHITECTURE.md`, "Put Back".
+
+| Call | Why | To reverse |
+|---|---|---|
+| Put Back returns the page to the state it was retired from, recorded by Retire from now on | it undoes the retirement and nothing else, as Put Back does for a menu entry | return every page live in `backTo()` |
+| A record that does not say returns a build page live and a page made here as a draft; this covers pages a restore retired | a build page is always live unless retired; a made page's earlier state is unknown, and a draft shows nothing to visitors until a publisher puts it on | change the fallback in `backTo()` |
+| Back on the site needs `site.publish`; back as a draft needs `site.edit` | the same line Retire draws: what visitors can reach is a publisher's | change `scopeFor()`'s `putBack` case |
+| The card asks first, with a Yes button, as Retire does | putting a page back on the site changes what visitors see at once | open the action without the question in `card()` |
+| A page retired again with no destination answers the 404 page; the earlier destination is not kept | a second retirement is a new choice | keep `retiredTo` in the `putBack` case |

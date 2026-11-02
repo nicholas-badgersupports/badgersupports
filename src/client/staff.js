@@ -579,6 +579,12 @@ function pagesSection(me) {
       open(form([el("p", { textContent: t("staff.pages.retire.confirm", { title: p.title }) }), p.state === "live" && field(t("staff.pages.field.to"), to)].filter(Boolean),
         t("staff.pages.retire.yes"), () => ({ action: "retire", page: p.id, ...(p.state === "live" && to.value ? { to: to.value } : {}) }), t("staff.pages.done.retire")));
     });
+    /* A retired page goes back to where it was retired from (the list's `back`): on the site, a publisher's; as a draft, an
+       editor's. Nothing else changes, unlike bringing back an earlier version. */
+    if (p.state === "retired" && !p.fixed && (p.back === "draft" ? me.canEdit : me.canPublish)) button(t("staff.pages.putBack"), () => {
+      const ask = t(p.back === "draft" ? "staff.pages.putBack.confirmDraft" : "staff.pages.putBack.confirm", { title: p.title });
+      open(form([el("p", { textContent: ask })], t("staff.pages.putBack.yes"), () => ({ action: "putBack", page: p.id }), t("staff.pages.done.putBack")));
+    });
     return el("li", { className: "staff-form" },
       el("h3", {}, p.title, el("span", { className: `staff-chip ${STATE_CHIP[p.state]}`, textContent: t(`staff.pages.state.${p.state}`) })),
       el("p", { textContent: p.path }), actions.length && el("div", { className: "staff-actions" }, ...actions), drawer);

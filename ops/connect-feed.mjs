@@ -118,11 +118,13 @@ function seriesFor(rules, title) {
 
 /* Connect's two lists as the site's event source (src/render/events.mjs): recurring rows from the
    weekly groups, dated rows from the events. Words that name no room become a place of their own,
-   shown unlinked. Returns { events, dropped }, `dropped` naming each event left out and why. */
+   shown unlinked. Returns { events, dropped, unnamed }, `dropped` naming each event left out and why, and `unnamed` each
+   event type the rules do not name, sorted by type, with the events of that type and the program each was shown as. */
 export function mapEvents(reply, rules) {
   const recurring = [];
   const dated = [];
   const dropped = [];
+  const unknown = new Map(); // event type -> program -> event ids, for the types the rules do not name
   const rooms = {};
   const placeFor = (room, fallback) => {
     const id = roomFor(rules, room);
@@ -166,6 +168,13 @@ export function mapEvents(reply, rules) {
     if (!HM.test(e.start || "")) { dropped.push(`event ${e.id} (${e.date}): no start time`); continue; }
     const t = rules.types?.[e.type] || { program: rules.otherProgram || "other" };
     const s = seriesFor(rules, e.title);
+    if (!rules.types?.[e.type]) {
+      const type = e.type ? String(e.type).slice(0, 40) : "(no type)";
+      const shown = unknown.get(type) || new Map();
+      const program = s?.program || t.program;
+      shown.set(program, [...(shown.get(program) || []), String(e.id)]);
+      unknown.set(type, shown);
+    }
     const href = s?.href || t.href || null;
     dated.push({
       id: `connect-${e.id}`, program: s?.program || t.program, ...(s ? { series: s.id } : {}),
@@ -174,7 +183,8 @@ export function mapEvents(reply, rules) {
       place: placeFor(e.room, null), signup: "none", ...(href ? { href } : {}),
     });
   }
-  return { events: { schema: "bss.events-fixture/1", fixture: false, source: "connect", timezone: reply.tz || "America/Chicago", recurring, dated, rooms }, dropped };
+  const unnamed = [...unknown].sort(([a], [b]) => a.localeCompare(b)).map(([type, shown]) => ({ type, shown: [...shown].map(([program, events]) => ({ program, events })) }));
+  return { events: { schema: "bss.events-fixture/1", fixture: false, source: "connect", timezone: reply.tz || "America/Chicago", recurring, dated, rooms }, dropped, unnamed };
 }
 
 /* The resource footer needs a calendar day. Connect sends a timestamp; keep date-only values as
@@ -272,8 +282,8 @@ export async function readConnectFeed(cfg, rules, env = process.env) {
       wall = m.wall;
       more.push(...m.dropped);
     }
-    const { events, dropped } = mapEvents(ev, rules);
-    return { events, resources: mapResources(res), team, wall, dropped: [...dropped, ...more], version: { events: ev.version || null, resources: res.catalogVersion || null }, today: ev.today || null };
+    const { events, dropped, unnamed } = mapEvents(ev, rules);
+    return { events, resources: mapResources(res), team, wall, dropped: [...dropped, ...more], unnamed, version: { events: ev.version || null, resources: res.catalogVersion || null }, today: ev.today || null };
   } catch (e) {
     const which = { publicTeam: "team", publicWallNotes: "wall" }[step];
     const hint = which && e.code === "connect.refused" ? `. Connect answers this way when it does not have ${step} yet; until it does, set exports.${which} to false in content/connect-feed.json` : "";

@@ -455,6 +455,15 @@ export function eventsForServer(content, { connect }) {
    fixtures; production always does, and refuses to build when Connect cannot be read, so the site
    already published stays up. `connectConfig` is for tests: Connect's address, key and a fetch.
    `feedRules` is for tests too: content/connect-feed.json with its `exports` turned on or off. */
+/* One line per event type Connect uses that content/connect-feed.json does not name: how many events, the program each
+   was shown as, and their ids. The command line prints these on every production build, not only with --verbose. */
+export function unnamedLines(unnamed = []) {
+  return unnamed.map(({ type, shown }) => {
+    const n = shown.reduce((sum, s) => sum + s.events.length, 0);
+    return `event type ${JSON.stringify(type)} is not named in content/connect-feed.json: ${n} event${n === 1 ? "" : "s"} shown as ${shown.map((s) => `${s.program} (${s.events.join(", ")})`).join(", ")}`;
+  });
+}
+
 export async function build({ production = false, launch = production, today = null, out = path.join(ROOT, "dist"), serverDir = path.join(ROOT, ".build"), media = true, fetchMedia = false, textEdits = {}, edits = undefined, connect = production, connectConfig = undefined, feedRules = null, log = () => {} } = {}) {
   const prototype = !production;
   let feed = null;
@@ -462,6 +471,7 @@ export async function build({ production = false, launch = production, today = n
     feed = await readConnectFeed(connectConfig === undefined ? feedConfig() : connectConfig, feedRules || JSON.parse(fs.readFileSync(path.join(ROOT, "content/connect-feed.json"), "utf8")));
     if (feed.problem) throw Object.assign(new Error(`Connect: ${feed.problem}. Nothing was built.`), { problems: [feed.problem] });
     for (const d of feed.dropped) log(`connect: left out ${d}`);
+    for (const line of unnamedLines(feed.unnamed)) log(`connect: ${line}`);
   }
   const content = loadContent({ production, launch, textEdits, edits, feed });
   const day = today || chicagoDate();
@@ -575,7 +585,7 @@ export async function build({ production = false, launch = production, today = n
 
   const report = {
     today: day, prototype, launch,
-    connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, ...(feed.team ? { team: publicPeople(feed.team).length } : {}), ...(feed.wall ? { wall: feed.wall.notes.length } : {}), dropped: feed.dropped, version: feed.version } : null,
+    connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, unnamed: feed.unnamed || [], ...(feed.team ? { team: publicPeople(feed.team).length } : {}), ...(feed.wall ? { wall: feed.wall.notes.length } : {}), dropped: feed.dropped, version: feed.version } : null,
     edits: content.edits,
     pages: pageReport,
     calendar: calendar.map((r) => icsPath(r.event)),
@@ -616,6 +626,7 @@ if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
     console.log(r.connect ? `  from Connect: ${r.connect.events} events, ${r.connect.weekly} weekly groups, ${r.connect.resources} resources${r.connect.team != null ? `, ${r.connect.team} team profiles` : ""}${r.connect.wall != null ? `, ${r.connect.wall} Wall notes` : ""}${r.connect.dropped.length ? `; left out ${r.connect.dropped.length} (--verbose names them)` : ""}` : "  events and resources from the hand-typed fixtures");
     console.log(`  css ${r.css.bytes} B · js ${Object.values(r.js).reduce((a, b) => a + b, 0)} B · ${r.media.variants} image variants (${r.media.encoded} newly encoded)`);
     console.log(`  ${r.pendingLinks.length} internal links still point at the live site · ${r.redirectsWaiting.length} redirects wait for their page`);
+    for (const line of unnamedLines(r.connect?.unnamed)) console.log(`  warning: ${line}`);
     if (r.edits.applied.length || r.edits.skipped.length) console.log(`  ${r.edits.applied.length} edited words laid over the files${r.edits.skipped.length ? `; skipped ${r.edits.skipped.length}: ${r.edits.skipped.join(", ")}` : ""}`);
   } catch (e) {
     console.error(e.message);

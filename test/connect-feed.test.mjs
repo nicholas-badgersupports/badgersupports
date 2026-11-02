@@ -5,7 +5,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { build, ROOT, loadContent } from "../ops/build.mjs";
+import { build, ROOT, loadContent, unnamedLines } from "../ops/build.mjs";
 import { TEAM_PATH, teamProblems } from "../src/render/team.mjs";
 import { feedConfig, feedConfigGaps, feedRuleProblems, mapEvents, mapResources, mapTeam, mapWall, readConnectFeed, readFeedRules, roomFor } from "../ops/connect-feed.mjs";
 import { BLOCKS } from "../src/render/registry.mjs";
@@ -125,6 +125,22 @@ test("events become rows: program by type, series by title, room by words, and n
     ["connect-weekly-w2", "peer", "Peer support group", 3, "sac-caucus", "/join/peer-support-groups"],
   ], "a weekly group with no room meets at the Hub");
   assert.equal(events.fixture, false);
+});
+
+/* An event type the rules file does not name falls to Other, or to its series when its title names one. The build names
+   each such type, how many events carry it and where they went, so a new type in Connect never hides an event unseen. */
+test("item 12: an event type the rules file does not name is named, with its events and where they went", () => {
+  const night = (id, type, title = "An example evening") => ({ id, type, title, short: "", date: "2026-10-25", endDate: "2026-10-25", start: "18:00", end: "19:00", room: "", full: false });
+  const r = mapEvents({ ...EVENTS, events: [...EVENTS.events, night("e5", "openhouse"), night("e6", "openhouse"), night("e7", "", "Another example")] }, RULES);
+  assert.deepEqual(r.unnamed, [
+    { type: "(no type)", shown: [{ program: "other", events: ["e7"] }] },
+    { type: "hub", shown: [{ program: "other", events: ["e3"] }] },
+    { type: "openhouse", shown: [{ program: "other", events: ["e5", "e6"] }] },
+    { type: "outreach", shown: [{ program: "other", events: ["e2"] }] },
+  ]);
+  assert.equal(unnamedLines(r.unnamed)[2], 'event type "openhouse" is not named in content/connect-feed.json: 2 events shown as other (e5, e6)', "the line the build prints");
+  assert.deepEqual(mapEvents({ ...EVENTS, events: [EVENTS.events[0]] }, RULES).unnamed, [], "a named type is not listed");
+  assert.deepEqual(mapEvents({ ...EVENTS, events: [EVENTS.events[3]] }, RULES).unnamed, [], "an event left out is not listed twice");
 });
 
 /* Connect's live Craft Night type is `craftnight`; its shipped default is `craft`. Either one is a craft night, so the
@@ -258,8 +274,10 @@ test("the published site shows Connect's events, each page its own, and no sampl
   const read = (p) => fs.readFileSync(path.join(out, p), "utf8");
   assert.match(read("resources/index.html"), /<span class="res-updated">Last Updated August 1, 2026<\/span>/,
     "Connect's timestamp renders as its Chicago calendar day in the production resource list");
-  assert.deepEqual({ ...report.connect, dropped: report.connect.dropped.length }, { events: 3, weekly: 2, resources: RESOURCES.resources.length, dropped: 1, version: { events: "ev-1", resources: "cat-1" } });
+  assert.deepEqual({ ...report.connect, dropped: report.connect.dropped.length, unnamed: report.connect.unnamed.length }, { unnamed: 2, events: 3, weekly: 2, resources: RESOURCES.resources.length, dropped: 1, version: { events: "ev-1", resources: "cat-1" } });
   assert.ok(said.some((s) => s.includes("left out event e4")), "the build says what it left out");
+  assert.ok(said.some((s) => s === 'connect: event type "outreach" is not named in content/connect-feed.json: 1 event shown as other (e2)'), `item 12: the build names an unnamed type; it said: ${said.filter((s) => s.includes("type")).join(" | ") || "nothing about types"}`);
+  assert.deepEqual(report.connect.unnamed?.map((u) => u.type), ["hub", "outreach"], "item 12: and the report lists them");
 
   const week = section(read("index.html"), "b-home-week");
   assert.match(week, /Paint an example|Craft night: paint an example/);

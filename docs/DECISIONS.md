@@ -589,3 +589,16 @@ estimate. How it is built: `ARCHITECTURE.md`, "The pieces" and the paragraph und
 | A package the lockfile marks optional may be absent; installed, it must be the locked version; anything extra at the top of `node_modules` is a difference | npm on the Mac left out `@img/sharp-wasm32`, `@emnapi/runtime` and a nested `pglite`, which the lockfile gives no `os` or `cpu` and which npm on Linux installed, so a rule built from the lockfile's `os` and `cpu` would have run `npm ci` on every publish and then stopped; a leftover package would ship in the deploy | require optional packages in `depsDiffer()`, or drop the extras loop |
 | It installs with `npm ci`, only when the comparison finds a difference, and stops when the result does not read back as matching | `npm ci` installs exactly the lockfile and removes anything else; skipping it when nothing differs keeps a quiet publish quiet | run `npm ci` on every publish |
 | A failed `npm ci` stops the publish before the checks; the folder it half-emptied is reinstalled by the next run | nothing is saved, sent or put online with a broken folder | none needed |
+
+## 2 November 2026 · the build names event types the rules do not (queue item 12; routine calls made in the session)
+
+His item of 2 Nov, given with a button: "the build warns by name when Connect uses an event type that
+content/connect-feed.json does not name". Such an event fell to Other with no word in the build's log, which hid a
+craft night (item 4b). How it is built: `ARCHITECTURE.md`, the paragraph under "The pieces".
+
+| Call | Why | To reverse |
+|---|---|---|
+| Every production build prints one warning line per unnamed type, with the count, the program each event was shown as and the event ids; the build's log gets the same lines | a line behind `--verbose` is the silence the item names; the ids let a reader find the events in Connect | print them only under `--verbose` in `ops/build.mjs` |
+| An event its series placed is listed too | the type is still unnamed, and the next event of that type may have no series | list only the events shown as `otherProgram` |
+| It warns and builds; it never stops the build | the events still show, as Other; stopping would keep a whole publish back for one label | throw in `build()` when `unnamed` is not empty |
+| A type is cut to 40 characters, and an empty one reads "(no type)" | the line is for a person; Connect's ids are short | change `slice(0, 40)` in `mapEvents()` |

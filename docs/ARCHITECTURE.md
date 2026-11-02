@@ -28,7 +28,7 @@ the deploy, so before its checks it runs `ops/deps-match.mjs`, installs with `np
 the result back; a dependency change reaches the deploy with no step by hand. Since 23 Oct 2026 the production build reads Connect's
 public events and resources when it runs (`ops/connect-feed.mjs`). Netlify gives a build run on a laptop only a short
 stand-in for a secret, so the publish file passes the key from the owner's keys file as `PUBLISH_SERVICE_SECRET`, a
-name Netlify does not hold; the address and key id come from the project. If Connect cannot be read, nothing is built and the deploy online stays.
+name Netlify does not hold; the address and key id come from the project. If Connect cannot be read, nothing is built and the deploy online stays. An event whose type `content/connect-feed.json` does not name is shown as Other, or as its series when its title names one, and every production build names each such type with its events (`unnamedLines` in `ops/build.mjs`), whether or not `--verbose` is given.
 
 ## The build
 

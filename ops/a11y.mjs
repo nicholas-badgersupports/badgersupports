@@ -6,7 +6,8 @@
  *    browser's clock held one minute after the first listed event ends, so ended and coming events are
  *    both on the page whatever the hour; then every page with events again, held after its last one
  *    ends, so every event view is measured ended. A page whose clock is not the held one, or a run
- *    with no ended or no coming event in it, fails.
+ *    with no ended or no coming event in it, fails. On each page held after its last event, an ended row's
+ *    "Ended" sits after a dot on a desktop and starts its own line, with no dot, on a phone.
  * 2. Keyboard: the first Tab reaches the skip link (found by its target, since its words are editable).
  * 3. The workshop request, filled in and sent with JavaScript on: a mistake is announced and
  *    focused, the corrected form sends, and the confirmation shows a reference.
@@ -107,6 +108,56 @@ for (const p of withEvents) {
   }
 }
 (withEvents.length ? pass : fail)(`axe, all ended: ${withEvents.length} of ${PAGES.length} pages list events`);
+
+/* An ended row's "Ended": on a desktop it sits after a dot in the row's sign-up cell; on a phone, where the row is one
+   column and the cell wraps, it starts its own line with no dot. Each page with events is held a minute after its own
+   last one, so every listed row is ended and every one is measured. An ended row hides its Drop in, so the pages' cells
+   hold "Ended" alone; the first row of each page is measured again with its sign-up words ("No Sign-Up") put back. */
+{
+  const words = JSON.parse(fs.readFileSync(path.join(ROOT, "content/text.json"), "utf8")).text["schedule.signup.none"].text;
+  const seen = { rows: 0, worded: 0, wrong: [], unmeasured: [] };
+  const counts = {};
+  for (const p of withEvents) {
+    const at = Math.max(...ENDS.get(p)) + 60_000;
+    for (const width of [1280, 390, 320]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+      const page = await ctx.newPage();
+      await page.clock.setFixedTime(at);
+      await page.goto(BASE + p, { waitUntil: "networkidle" });
+      const r = await page.evaluate((words) => {
+        const measure = (ev) => {
+          const tag = ev.querySelector(".ended-tag");
+          const box = tag?.getClientRects()[0];
+          if (!box) return { shown: false };
+          const cell = tag.parentElement;
+          const start = cell.getBoundingClientRect().left + parseFloat(getComputedStyle(cell).paddingLeft);
+          return { shown: true, dot: getComputedStyle(tag, "::before").content, lineStart: Math.abs(box.left - start) < 1 };
+        };
+        const ended = [...document.querySelectorAll(".ev.is-past")];
+        const rows = ended.map(measure);
+        let worded = null;
+        if (ended[0]) {
+          ended[0].querySelector(".ended-tag").before(document.createTextNode(words));
+          worded = measure(ended[0]);
+        }
+        return { listed: document.querySelectorAll(".ev[data-ends]").length, rows, worded };
+      }, words);
+      await ctx.close();
+      const phone = width <= 860;
+      const judge = (x, what) => {
+        const ok = phone ? x.dot === "none" && x.lineStart : x.dot === '"·"';
+        if (!ok) seen.wrong.push(`${p} @${width}${what}: dot ${x.dot}${phone ? `, ${x.lineStart ? "starts a line" : "mid-line"}` : ""}`);
+      };
+      const shown = r.rows.filter((x) => x.shown);
+      counts[width] = (counts[width] || 0) + shown.length;
+      if (shown.length !== r.listed) seen.unmeasured.push(`${p} @${width}: ${shown.length} of ${r.listed} rows`);
+      for (const x of shown) { seen.rows++; judge(x, ""); }
+      if (r.worded?.shown) { seen.worded++; judge(r.worded, ` with "${words}"`); }
+    }
+  }
+  (seen.rows && seen.worded && !seen.wrong.length && !seen.unmeasured.length ? pass : fail)(
+    `ended rows: "· Ended" on a desktop, "Ended" on its own line with no dot on a phone — ${Object.entries(counts).map(([w, n]) => `${n} rows at ${w}`).join(", ")}, ${seen.worded} with sign-up words${seen.wrong.length ? `; wrong: ${[...new Set(seen.wrong)].slice(0, 4).join("; ")} (${seen.wrong.length})` : ""}${seen.unmeasured.length ? `; not measured: ${seen.unmeasured.join("; ")}` : ""}`);
+}
 
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });

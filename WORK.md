@@ -63,10 +63,10 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-Cloud run, 2 Nov 2026, 21:55 Chicago, queue item 20 (the suites' cut reports), without the photos (`node ops/check.mjs --browser --no-media` on `bf89c25` plus the change;
-Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (228 files);
-65 pages; delivered files clean (104); tests 265 passed, 0 failed, 1 skipped (the photos); shots all 195; a11y all 230; interact all 169, each judged by its tally line against the result lines that arrived. Before the fix a 20,001-line
-report ending in `process.exit()` reached `check.mjs` cut to between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard breaks each failed alone, by name (`test/suites.test.mjs`). Earlier runs: items 24 and 16, 2 Nov 20:36 and 21:20 (DECISIONS, 2 Nov). All local or fixture.
+Cloud runs, 2 Nov 2026, 21:55 and 22:29 Chicago, queue items 20 (the suites' cut reports) and 25 (no dot before Ended on a phone), without the photos (`node ops/check.mjs --browser --no-media` on `bf89c25` plus the change;
+Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (228 files); 65 pages; delivered files clean (104); tests 265 passed, 0 failed,
+1 skipped (the photos); shots all 195; a11y all 231; interact all 169, each judged by its tally line against the result lines that arrived. Item 20: before the fix a 20,001-line report ending in `process.exit()` reached `check.mjs` cut to
+between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard breaks each failed alone. Item 25: the new check failed first at 390 and 320 px; four CSS breaks each failed alone. DECISIONS, 2 Nov. All local or fixture.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers

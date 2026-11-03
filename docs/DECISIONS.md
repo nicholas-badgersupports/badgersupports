@@ -688,3 +688,13 @@ its tally included, and `check.mjs` judged the suite by its exit status alone. E
 | The remaining `process.exit()` calls in `ops/` are on a closed list in `test/suites.test.mjs`, each printing a line or a few | a pipe takes a short message whole; a new call off the list fails the test | delete the list and its test |
 | `shots.mjs`'s last line reads `shots: all N passed — …` or `shots: F of N failed (…)` | all three suites now end in one tally form that `check.mjs` can read | the old two lines, and the shots pattern in `ops/suites.mjs` |
 | `check.mjs` also fails a suite whose tally differs from the result lines that arrived, or whose exit status disagrees with its tally | a tally is a claim about what ran; both are checked against what arrived | delete those two checks in `judgeSuite` |
+
+## 2 November 2026 · no dot before an ended event's "Ended" on a phone (queue item 25; routine calls made in the session)
+
+His answer of 2 Nov, given with a button: "Keep the dot on desktop only". On a phone an event row is one column, its sign-up
+cell wraps, and "Ended" started its own line with its dot ("· Ended").
+
+| Call | Why | To reverse |
+|---|---|---|
+| "On a phone" is the one-column event layout, 860 px and narrower | the dot started a line only there; the desktop cell never wraps | move the two rules to another width |
+| There, "Ended" always takes its own line | without the dot, sign-up words before it ("No Sign-Up") would run into it; an ended row hides its Drop in, so today it stands alone | delete `display: block` in that block |

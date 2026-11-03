@@ -674,3 +674,17 @@ machine the check saw the page still pinned.
 | Call | Why | To reverse |
 |---|---|---|
 | The check waits for the dialog's close event, with a 3-second bound that only a dialog which never closes reaches | the bound is the one wait the suite needs to prove a non-event; it ends early on the event itself | read the state straight after the key press again |
+
+## 2 November 2026 · the browser suites keep their whole report, and check.mjs reads each one's tally (queue item 20; routine calls made in the session)
+
+His item of 2 Nov, given with a button: "Queue after item 16". The three browser suites called `process.exit()` straight after
+printing; `check.mjs` reads them through a pipe, which a child writes asynchronously, so the end of a report could be lost,
+its tally included, and `check.mjs` judged the suite by its exit status alone. Each suite now ends through `ops/finish.mjs`, and
+`ops/suites.mjs` holds the three suites and how `check.mjs` reads a report.
+
+| Call | Why | To reverse |
+|---|---|---|
+| `check.mjs`, `editable.mjs` and `build.mjs` end through `finish()` too | each prints a report and then exits, the same loss in any pipe | put `process.exit(…)` back in each |
+| The remaining `process.exit()` calls in `ops/` are on a closed list in `test/suites.test.mjs`, each printing a line or a few | a pipe takes a short message whole; a new call off the list fails the test | delete the list and its test |
+| `shots.mjs`'s last line reads `shots: all N passed — …` or `shots: F of N failed (…)` | all three suites now end in one tally form that `check.mjs` can read | the old two lines, and the shots pattern in `ops/suites.mjs` |
+| `check.mjs` also fails a suite whose tally differs from the result lines that arrived, or whose exit status disagrees with its tally | a tally is a claim about what ran; both are checked against what arrived | delete those two checks in `judgeSuite` |

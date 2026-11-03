@@ -63,10 +63,10 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 ## Evidence
 
-Cloud runs, 2 Nov 2026, 20:36 and 21:20 Chicago, queue items 24 (past events) and 16 (the Resources Escape check), without the photos (`node ops/check.mjs --browser --no-media` on `3cc7c52` plus the change;
-Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (225 files);
-65 pages; delivered files clean (104); tests 259 passed, 0 failed, 1 skipped (the photos); 195 captures; a11y 230 (the clock held, 3 ended and 36 coming); 169
-pressed and timed. Before the fix the held suite failed 12 checks for builds of 2 and 3 Nov alike; the old suite, same files, failed 3 (2 Nov) and passed (3 Nov); four guard breaks (clock, both states, all ended, selector) each failed alone, by name. Item 16: with every dialog close handler slowed 300 ms the old check failed and the new one passed; with Escape unable to close, it failed with no close event. DECISIONS, 2 Nov. All local or fixture.
+Cloud run, 2 Nov 2026, 21:55 Chicago, queue item 20 (the suites' cut reports), without the photos (`node ops/check.mjs --browser --no-media` on `bf89c25` plus the change;
+Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (228 files);
+65 pages; delivered files clean (104); tests 265 passed, 0 failed, 1 skipped (the photos); shots all 195; a11y all 230; interact all 169, each judged by its tally line against the result lines that arrived. Before the fix a 20,001-line
+report ending in `process.exit()` reached `check.mjs` cut to between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard breaks each failed alone, by name (`test/suites.test.mjs`). Earlier runs: items 24 and 16, 2 Nov 20:36 and 21:20 (DECISIONS, 2 Nov). All local or fixture.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers

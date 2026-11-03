@@ -16,7 +16,7 @@ configuration asks for, not something seen running.
 | The database | `netlify/lib/db.mjs`, `netlify/database/migrations/` | Postgres: PGlite on a laptop, Netlify Database when deployed |
 | Connect | `netlify/lib/connect.mjs`, `staff.mjs`, `deliver.mjs`, `edits.mjs` | the only code that talks to Badger Supports Connect: staff sign-in, handing each submission to Connect, and the words staff change with the edit button |
 | The local rig | `ops/dev-server.mjs` | serves `dist/` with `_headers` and `_redirects` applied as Netlify would, and sends `/api/*` into the real function. It talks to no network |
-| The gates | `ops/check.mjs` | `npm run check`; ends in a one-line verdict (`README.md`) |
+| The gates | `ops/check.mjs` | `npm run check`; ends in a one-line verdict (`README.md`). A browser suite passes only with its tally line, counted against the results that arrived (`ops/suites.mjs`); every command that prints a report ends through `ops/finish.mjs` |
 | Installed packages | `ops/deps-match.mjs` | whether `node_modules` holds what `package-lock.json` requires, at its versions; exit 0 matches, 1 lists each difference, 2 cannot read |
 
 `netlify.toml` asks for `node ops/build.mjs --production --fetch-media` in the production context and the

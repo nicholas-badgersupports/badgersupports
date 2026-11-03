@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import { chromium } from "playwright";
+import { finish } from "./finish.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const BASE = process.env.BASE || "http://127.0.0.1:8899";
@@ -26,7 +27,6 @@ const WIDTHS = [[1280, 800], [390, 844], [320, 640]];
 const browser = await chromium.launch();
 fs.mkdirSync(OUT, { recursive: true });
 const report = [];
-let failed = false;
 for (const p of PAGES) {
   for (const [w, h] of WIDTHS) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
@@ -50,7 +50,6 @@ for (const p of PAGES) {
       await page.screenshot({ path: path.join(OUT, `${name}-full.png`), fullPage: true });
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    if (errors.length || overflow > 0) failed = true;
     report.push({ page: p, width: w, bytes, images, overflow, errors });
     await ctx.close();
   }
@@ -58,5 +57,6 @@ for (const p of PAGES) {
 await browser.close();
 for (const r of report) console.log(`${r.page.padEnd(32)} ${String(r.width).padStart(4)}px  ${(r.bytes / 1024).toFixed(0).padStart(5)} KB loaded (${(r.images / 1024).toFixed(0)} KB images)${r.overflow > 0 ? `  SCROLLS SIDEWAYS by ${r.overflow}px` : ""}${r.errors.length ? `  ERRORS: ${r.errors.join(" | ")}` : ""}`);
 fs.writeFileSync(path.join(OUT, "report.json"), JSON.stringify(report, null, 2));
-console.log(failed ? "shots: problems above" : `shots: ${report.length} captures in ${path.relative(ROOT, OUT)}/, no console errors, nothing scrolls sideways`);
-process.exit(failed ? 1 : 0);
+const bad = report.filter((r) => r.errors.length || r.overflow > 0).length;
+console.log(bad ? `shots: ${bad} of ${report.length} failed (console errors or sideways scroll, above)` : `shots: all ${report.length} passed — captures in ${path.relative(ROOT, OUT)}/, no console errors, nothing scrolls sideways`);
+finish(bad ? 1 : 0);

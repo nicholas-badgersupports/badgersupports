@@ -19,6 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import { CLIENT_TEXT } from "../src/shared/text.mjs";
+import { finish } from "./finish.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const WORD = /[A-Za-z]{2,}/;
@@ -170,5 +171,5 @@ if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
   for (const p of r.problems) console.log(`  not editable: ${p}`);
   for (const k of r.unused) console.log(`  unused key:   ${k}`);
   console.log(`${r.files} files, ${r.keys} text keys: ${r.problems.length} words not editable, ${r.unused.length} keys unused`);
-  process.exit(r.problems.length ? 1 : 0);
+  finish(r.problems.length ? 1 : 0);
 }

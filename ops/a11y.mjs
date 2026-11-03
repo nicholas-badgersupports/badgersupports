@@ -19,6 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import { chromium } from "playwright";
+import { finish } from "./finish.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const BASE = process.env.BASE || "http://127.0.0.1:8899";
@@ -190,4 +191,4 @@ await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;
 console.log(failed ? `a11y: ${failed} of ${results.length} failed` : `a11y: all ${results.length} passed`);
-process.exit(failed ? 1 : 0);
+finish(failed ? 1 : 0);

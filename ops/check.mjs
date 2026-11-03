@@ -12,9 +12,11 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import net from "node:net";
-import { spawn, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { deliveredProblems, build } from "./build.mjs";
 import { editableReport } from "./editable.mjs";
+import { SUITES, runSuite, judgeSuite } from "./suites.mjs";
+import { finish } from "./finish.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const media = !process.argv.includes("--no-media");
@@ -159,17 +161,9 @@ if (process.argv.includes("--browser")) {
   /* One day for the whole run: the server draws its pages for the build's day, and the suites are told it as TODAY. */
   const server = await startServer({ port, media, today: report?.today || null });
   const env = { ...process.env, BASE: `http://127.0.0.1:${port}`, ...(report ? { TODAY: report.today } : {}) };
-  for (const [name, script] of [["screenshots and page weight", "ops/shots.mjs"], ["accessibility and the real forms", "ops/a11y.mjs"], ["menus and uploads, pressed and timed", "ops/interact.mjs"]]) {
-    /* Not spawnSync: the server runs in this process, and a blocked event loop never answers the browser. */
-    const r = await new Promise((ok) => {
-      const c = spawn(process.execPath, [script], { cwd: ROOT, env });
-      let out = "";
-      c.stdout.on("data", (d) => (out += d));
-      c.stderr.on("data", (d) => (out += d));
-      c.on("close", (status) => ok({ status, out }));
-    });
-    const lines = r.out.trim().split("\n");
-    gate(name, r.status === 0 ? [] : lines.filter((l) => /FAIL|ERROR|SCROLLS|Error/.test(l)), lines.at(-1));
+  for (const suite of SUITES) {
+    const { problems, note } = judgeSuite(suite, await runSuite(suite.script, { cwd: ROOT, env }));
+    gate(suite.name, problems, note);
   }
   server.close();
 }
@@ -181,4 +175,4 @@ console.log(failed.length
   : !media
     ? `verdict: everything passed without the photos (--no-media)${process.argv.includes("--browser") ? ", in the browser too" : ""}. A publish runs these gates with them, on the laptop. Nothing was deployed.`
     : `verdict: everything passed${process.argv.includes("--browser") ? ", in the browser too" : " (browser checks not run: add --browser)"} — ready for Nicholas to review. Nothing was deployed; publishing stays the owner's decision.`);
-process.exit(failed.length ? 1 : 0);
+finish(failed.length ? 1 : 0);

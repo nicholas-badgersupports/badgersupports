@@ -39,6 +39,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import { chromium } from "playwright";
+import { finish } from "./finish.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
 import { addDays } from "../src/render/events.mjs";
 
@@ -1545,4 +1546,4 @@ await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;
 console.log(failed ? `interact: ${failed} of ${results.length} failed` : `interact: all ${results.length} passed`);
-process.exit(failed ? 1 : 0);
+finish(failed ? 1 : 0);

@@ -51,6 +51,7 @@ import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
 import { definitionProblems, launchForms, withResources } from "../src/shared/forms.mjs";
+import { finish } from "./finish.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
 import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings, pageValues, siteValues } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
@@ -630,6 +631,6 @@ if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
     if (r.edits.applied.length || r.edits.skipped.length) console.log(`  ${r.edits.applied.length} edited words laid over the files${r.edits.skipped.length ? `; skipped ${r.edits.skipped.length}: ${r.edits.skipped.join(", ")}` : ""}`);
   } catch (e) {
     console.error(e.message);
-    process.exit(1);
+    finish(1);
   }
 }

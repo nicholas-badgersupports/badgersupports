@@ -1196,7 +1196,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-sections-box h4 { margin: var(--s3) 0 var(--s2); }
 .staff-sections li > span { flex: 1 1 14rem; min-width: 0; overflow-wrap: anywhere; }
 .staff-sections .staff-kind { font-weight: 400; color: var(--muted); }
-@media (max-width: 40rem) { .staff-sections li > span { flex-basis: 100%; } }
+@media (max-width: 40rem) {
+  .staff-sections li > span { flex-basis: 100%; }
+  /* A row's buttons share the line under its name: narrower sides, never under a 44 px target, no label broken. */
+  .staff-sections li > .btn { min-width: 44px; padding-inline: var(--s3); white-space: nowrap; }
+}
 
 /* the edit button (edit.js): a bar in the corner, and the words under it outlined while it is on */
 .edit-ui { position: fixed; right: var(--s4); bottom: var(--s4); z-index: 40; display: grid; justify-items: end; gap: var(--s2); max-width: calc(100vw - 2 * var(--s4)); font-family: var(--font-body); }

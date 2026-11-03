@@ -529,13 +529,17 @@ build adds later keeps its place from the build. The 404 page and the staff page
 
 **Words.** Made sections join the page before the saved words are laid (`composeSite`), so their words save with the
 edit button; the order and retiring come after the words, so a retired section's saved words stay valid and come back
-with it. Restoring a published revision brings its sections back as they were; a section made since stays listed as
+with it. The edit button's list for a page (`editSource`) leaves out a retired section's words, and Put back returns
+them to it. Restoring a published revision brings its sections back as they were; a section made since stays listed as
 retired, so its id and history are never given to another.
 
 **Who.** `site.edit` adds, copies, reorders and puts back; retiring a section from a live page takes `site.publish`,
 as retiring the page does; on a draft, `site.edit` retires.
 
-**Limits.** Found in the code, not seen live: the edit button's list for a page also names a retired section's words.
+**On a phone.** Under 40rem a section's name takes its own line and its buttons share the line below, each at least
+44 px wide, no label broken.
+
+**Limits.** A save already open on a retired section's words is still taken, and shows when the section is put back.
 The edits file a build downloads leaves out made sections' words, as it leaves out made pages'. A section change shares
 item 8's one-minute window, as a page change does.
 

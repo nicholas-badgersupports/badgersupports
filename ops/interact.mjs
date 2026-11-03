@@ -1266,6 +1266,17 @@ await part("staff page: the sections of a page", async () => {
   await box.screenshot({ path: path.join(ROOT, "local", "staff-sections-390.png") });
   const wide = await box.evaluate((b) => b.scrollWidth <= b.clientWidth + 1);
   check(wide, "sections: at 390 px the list fits its box, with no sideways scroll");
+  /* Each row's buttons on one line under its name, Retire among them, and no button's label broken over two lines. A
+     button with no box measures as zero lines, so it fails rather than drops out. */
+  const rows = await box.evaluate((b, retire) => [...b.querySelectorAll(".staff-sections > li")].filter((li) => li.querySelector(":scope > button")).map((li) => {
+    const buttons = [...li.querySelectorAll(":scope > button")];
+    const lines = (n) => { const r = document.createRange(); r.selectNodeContents(n); return new Set([...r.getClientRects()].map((q) => Math.round(q.top))).size; };
+    return { name: li.querySelector(":scope > span").firstChild.textContent, rows: new Set(buttons.map((x) => Math.round(x.getBoundingClientRect().top))).size,
+      labels: buttons.map((x) => `${x.textContent}:${lines(x)}`), retire: buttons.some((x) => x.textContent === retire) };
+  }), words("staff.sections.retire"));
+  const listedRows = withNew.length - 1;
+  check(rows.length === listedRows && rows.every((r) => r.retire && r.rows === 1 && r.labels.every((l) => l.endsWith(":1"))),
+    `sections: at 390 px Retire sits on one line with the arrows and Copy, each label on one line (${rows.length} of ${listedRows} rows measured; ${JSON.stringify(rows)})`);
   check(!errors.length, `sections: no script errors (${errors.join("; ")})`);
   await ctx.close();
 });

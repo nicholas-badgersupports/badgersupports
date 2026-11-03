@@ -616,3 +616,16 @@ change undone. How it is built: `ARCHITECTURE.md`, "Put Back".
 | Back on the site needs `site.publish`; back as a draft needs `site.edit` | the same line Retire draws: what visitors can reach is a publisher's | change `scopeFor()`'s `putBack` case |
 | The card asks first, with a Yes button, as Retire does | putting a page back on the site changes what visitors see at once | open the action without the question in `card()` |
 | A page retired again with no destination answers the 404 page; the earlier destination is not kept | a second retirement is a new choice | keep `retiredTo` in the `putBack` case |
+
+## 2 November 2026 · Retire at phone width, and a retired section's words (queue item 14; routine calls made in the session)
+
+His item of 2 Nov, given with a button: "the Retire button stays on one line at phone width, and a retired section's
+words leave the Edit Text list". At 390 px a section row's Retire button wrapped to its own line under the arrows and
+Copy, and the edit button's list for a page still offered a retired section's words under More words.
+
+| Call | Why | To reverse |
+|---|---|---|
+| Under 40rem a section row's buttons get narrower sides (`--s3`), at least 44 px wide, labels never broken; the words stay as they are | his words are kept and every button stays a 44 px target; ↑ ↓ Copy Retire then fit the line under the name | delete the `.staff-sections li > .btn` rule in `blocks.css`'s 40rem query |
+| Only the sections list changes; the menu's rows keep their buttons on the line under the name | the item names Retire on a section row; the menu's rows were not asked about | add `.staff-menu li > .btn` to the same rule |
+| The server's list for a page (`editSource`) leaves the retired section's words out, so Edit Text and More words never offer them | it is the one list the edit button draws from; Put Back returns the words with the section | drop the `retired` filter in `editSource()` |
+| A save already open on those words is still taken | refusing would lose typing for a section that can come back; nothing reaches visitors while it is retired | refuse in `saveEdit()` when the target's section is retired |

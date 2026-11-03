@@ -1563,9 +1563,15 @@ test("item 15: a retired section leaves the page and comes back where it was; th
   assert.equal(first.status, 200, JSON.stringify(first.body));
   const no = await change(editor, { action: "sectionRetire", expected: first.body.version, page: P, section: "b-wwd-craft" });
   assert.equal(no.status, 403, "retiring from a live page is a publisher's");
+  const craftWords = async (page = P, block = "b-wwd-craft") => (await sourceOf(editor, page)).filter((e) => e.target.startsWith(`page:${page}:${block}/`)).length;
+  const offered = await craftWords();
+  assert.ok(offered > 0, "the section's words are in the edit list while it is on the page");
+  const open = (await sourceOf(editor, P)).find((e) => e.target.startsWith(`page:${P}:b-wwd-craft/`) && !e.kind);
   const r = await change(publisher, { action: "sectionRetire", expected: first.body.version, page: P, section: "b-wwd-craft" });
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.ok(!blockOrder(await (await visit(URL_)).text()).includes("b-wwd-craft"), "off the page visitors get");
+  assert.equal(await craftWords(), 0, "a retired section's words leave the edit list");
+  assert.equal((await saveWord(editor, open.target, open.current, "Made-up Words Kept")).changed, true, "a save already open on its words is still taken");
   const listed = await sectionsOf(editor, P);
   assert.deepEqual(listed.body.retired.map((x) => x.id), ["b-wwd-craft"]);
   const o = await change(editor, { action: "sectionOrder", expected: listed.body.version, page: P, order: ["b-wwd-head", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-uhs"] });
@@ -1574,6 +1580,8 @@ test("item 15: a retired section leaves the page and comes back where it was; th
   assert.equal(back.status, 200, JSON.stringify(back.body));
   assert.deepEqual(blockOrder(await (await visit(URL_)).text()).filter((x) => x.startsWith("b-wwd-")),
     ["b-wwd-head", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-uhs"], "back after the section it followed when it went");
+  assert.equal(await craftWords(), offered, "Put Back returns its words to the edit list");
+  assert.match(await (await visit(URL_)).text(), /Made-up Words Kept/, "the words saved while it was retired show when it is back");
   const twiceBack = await change(editor, { action: "sectionBack", expected: back.body.version, page: P, section: "b-wwd-craft" });
   assert.deepEqual([twiceBack.status, twiceBack.body.error], [422, "section.notRetired"]);
   const head = await change(publisher, { action: "sectionRetire", expected: back.body.version, page: P, section: "b-wwd-head" });
@@ -1593,8 +1601,10 @@ test("item 15: a retired section leaves the page and comes back where it was; th
   const made = await change(editor, { action: "add", expected: v.version, title: "Spring Retreat", path: "/spring-retreat/" });
   const add = await change(editor, { action: "sectionAdd", expected: made.body.version, page: made.body.page, title: "When", words: "In April." });
   assert.equal(add.status, 200, JSON.stringify(add.body));
+  assert.ok(await craftWords(made.body.page, add.body.section) > 0, "a section made here has its words in the edit list");
   const drop = await change(editor, { action: "sectionRetire", expected: add.body.version, page: made.body.page, section: add.body.section });
   assert.equal(drop.status, 200, "on a draft an editor retires");
+  assert.equal(await craftWords(made.body.page, add.body.section), 0, "a retired section made here leaves the edit list too");
 });
 
 test("item 15: a new section is a Text section with the words typed in; bad words, stale tabs, fixed pages and other people are refused", async (t) => {

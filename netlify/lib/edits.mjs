@@ -69,14 +69,18 @@ function entry(target, e, row, live) {
 }
 
 /* Every word the button can reach from one page: the page's own blocks, then the menus, footer
-   and lines every page shares. */
+   and lines every page shares. A retired section's words are not offered: the section is off the page, and Put Back
+   returns them to the list with it. */
 export async function editSource(pageId) {
   if (!PAGE_RE.test(String(pageId || ""))) throw new HttpError(400, "edit.page");
   const rows = await saved();
   const live = await liveWords();
+  const { doc } = await structureNow();
   const own = `page:${pageId}:`;
+  const retired = new Set(doc?.pages?.[pageId]?.sections?.retired || []);
   const out = [];
-  for (const [target, e] of Object.entries(await editable())) {
+  for (const [target, e] of Object.entries(editableFor(doc))) {
+    if (target.startsWith(own) && retired.has(target.slice(own.length).split("/")[0])) continue;
     if (target.startsWith(own) || target.startsWith("site:") || target.startsWith("text:")) out.push(entry(target, e, rows.get(target), live));
   }
   return out;

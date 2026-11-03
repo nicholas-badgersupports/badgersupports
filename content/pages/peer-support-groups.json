@@ -19,11 +19,11 @@
         "Peer Support Groups are entirely drop-in.",
         "No sign-ups, no commitment, & no stigma here!",
         "Come alone or bring friends — all are welcome :D",
-        "Psst, even if you arrive late, don’t be shy — come in!"
+        "Check the group’s listed date, time and room before heading over."
       ],
       "links": [
         {
-          "label": "Get Directions",
+          "label": "Hub Directions",
           "href": "#get-directions",
           "icon": "pin"
         },
@@ -31,12 +31,46 @@
           "label": "Join Our Email List",
           "href": "/join/email-list/",
           "icon": "mail"
+        },
+        {
+          "label": "Choose a Group",
+          "href": "#b-pg-days",
+          "icon": "calendar"
+        },
+        {
+          "label": "What to Expect",
+          "href": "#b-pg-how-details",
+          "icon": "down"
         }
       ],
       "embed": {
         "title": "Badger Supports on Instagram: peer support groups at midterms",
         "url": "https://www.instagram.com/reel/DecSxrys1OY/",
         "caption": "Midterms feeling spooky? Take a break and come hang out with us at Peer Support Groups!"
+      },
+      "upcoming": {
+        "source": "events",
+        "program": "peer"
+      },
+      "list": {
+        "label": "Your First Visit",
+        "ordered": true,
+        "items": [
+          {
+            "term": "Choose a Group",
+            "text": "Pick a dated group from the current schedule.",
+            "href": "#b-pg-days"
+          },
+          {
+            "term": "Find the Room",
+            "text": "Open the directions attached to that group; its location can change."
+          },
+          {
+            "term": "Know What to Expect",
+            "text": "Read about the check-in, activity and conversation.",
+            "href": "#b-pg-how-details"
+          }
+        ]
       }
     },
     {
@@ -159,7 +193,7 @@
       "variant": "topics",
       "program": "peer",
       "title": "What a Group Is Like",
-      "lead": "Free, confidential, and open to all UW–Madison students.",
+      "lead": "Free, student-led peer support for enrolled UW–Madison students.",
       "topics": [
         {
           "term": "Why",
@@ -167,16 +201,17 @@
         },
         {
           "term": "What",
-          "text": "Every group starts with a simple check-in, moves into a low-pressure activity, and opens into authentic conversation about how life is going. You choose what to share, and your privacy is always respected."
+          "text": "Groups include a short check-in and an activity, with room for conversation. You choose what to share."
         },
         {
           "term": "How",
-          "text": "Come as you are. We hope you leave feeling lighter, supported, and reminded that you belong here. No sign-ups, no requirements, only community."
+          "text": "Come as you are. Check the current schedule for a group that works for you."
         }
       ],
       "photos": [
         "m-hub-peer-poster"
-      ]
+      ],
+      "disclosure": "Read What to Expect"
     },
     {
       "id": "b-pg-spill",
@@ -216,8 +251,9 @@
       "title": "Good to Know",
       "body": [
         "Peer support groups are not a substitute for ongoing counseling and do not provide mental health treatment. Facilitators listen to shared concerns, support reflection and problem solving, and help participants experience what peer support can feel like in a supportive, student led setting.",
-        "Badger Supports value inclusion and access for all participants and are pleased to provide reasonable accommodations for any Badger Support Peer Support Group. Please contact accessibility@badgersupports.org to make a reasonable accommodation request. Requests should be made 3 days before any peer support group."
-      ]
+        "Badger Supports values inclusion and access for all participants. Please contact accessibility@badgersupports.org about an accommodation request or an access question."
+      ],
+      "anchor": "b-pg-note"
     }
   ]
 }

@@ -366,3 +366,36 @@ test("exact end moves today's event out of the live hero and calendar file", asy
   assert.doesNotMatch(hero,/Example ended today/);assert.match(hero,/Example tomorrow/);
   assert.equal(await calendarFile("connect-e1",{today:TODAY,now}),null);
 });
+
+
+test("peer first-visit actions use current rooms in refresh, initial HTML and private preview", async () => {
+  const changed = { ...reply([]), weekly: [{ id: "peer-visit", title: "Example Peer Visit", weekday: new Date(`${TODAY}T12:00:00Z`).getUTCDay(), start: "17:00", end: "18:00", room: "SAC Caucus Room", from: null, until: null, skip: [] }] };
+  const now = Date.parse(`${TODAY}T12:00:00${chicagoOffset(TODAY)}`);
+  given(fakeConnect(changed));
+  const first = html => html.match(/<div data-live="visit">([\s\S]*?)<\/article><\/div>/)?.[1] || "";
+  const r = await eventSections("pg-peer-groups", { today: TODAY, now });
+  assert.match(first(r.blocks["b-pg-intro"]), /href="\/directions\/sac-caucus\/"/);
+  let res = await handlePage(new Request(ORIGIN + "/join/peer-support-groups/"), { today: TODAY, now });
+  assert.equal(res.status, 200);
+  assert.match(first(await res.text()), /href="\/directions\/sac-caucus\/"/);
+  res = await previewResponse("pg-peer-groups", { edits: {}, structure: null, today: TODAY, now });
+  assert.equal(res.headers.get("cache-control"), "no-store");
+  assert.match(first(await res.text()), /href="\/directions\/sac-caucus\/"/);
+  const ended = await eventSections("pg-peer-groups", { today: TODAY, now: Date.parse(`${TODAY}T18:00:00${chicagoOffset(TODAY)}`) });
+  assert.doesNotMatch(ended.blocks["b-pg-intro"], /class="btn visit-action"/);
+});
+
+test("peer empty and unavailable schedules remain distinct across API and no-JS HTML", async () => {
+  const now = Date.parse(`${TODAY}T12:00:00${chicagoOffset(TODAY)}`);
+  given(fakeConnect({ ...reply([]), weekly: [] }));
+  const empty = await get("/api/events/pg-peer-groups");
+  assert.match((await empty.json()).blocks["b-pg-intro"], /No upcoming peer support group/);
+  given(fakeConnect(PUBLISHED, { fail: true }));
+  const stale = await quietly(() => eventSections("pg-peer-groups", { today: TODAY, now }));
+  assert.equal(stale.stale, true);
+  assert.match(stale.blocks["b-pg-intro"], /couldn’t confirm the current schedule/);
+  assert.doesNotMatch(stale.blocks["b-pg-intro"], /class="btn visit-action"/);
+  const res = await quietly(() => handlePage(new Request(ORIGIN + "/join/peer-support-groups/"), { today: TODAY, now }));
+  assert.equal(res.headers.get("cache-control"), "no-store");
+  assert.match(await res.text(), /couldn’t confirm the current schedule/);
+});

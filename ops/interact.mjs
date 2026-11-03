@@ -41,7 +41,7 @@ import url from "node:url";
 import { chromium } from "playwright";
 import { finish } from "./finish.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
-import { addDays } from "../src/render/events.mjs";
+import { addDays, chicagoOffset } from "../src/render/events.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const BASE = process.env.BASE || "http://127.0.0.1:8899";
@@ -1583,6 +1583,89 @@ await part("resources: Suggest an Update opens with its resource chosen", async 
   check(got === id && unknown === "" && none === "",
     `resources: Suggest an Update opens with its resource chosen, and an address naming no resource chooses nothing (${JSON.stringify({ id, got, unknown, none })})`);
   check(!errors.length, `resources: the update form has no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
+await part("FAQ and first visit: keyboard, links and no JavaScript", async () => {
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 844 }, javaScriptEnabled, reducedMotion: "reduce" });
+    const page = await ctx.newPage(), errors = [], remote = [];
+    page.on("pageerror", e => errors.push(e.message));
+    page.on("request", r => { if (/instagram\.com/.test(r.url())) remote.push(r.url()); });
+    await page.goto(BASE + "/about/faq/#q-group-therapy", { waitUntil: "networkidle" });
+    const answer = page.locator("#q-group-therapy"), summary = answer.locator("summary");
+    if (javaScriptEnabled) check(await answer.getAttribute("open") !== null, `FAQ ${width}px: deep-linked answer opens`);
+    await summary.focus();
+    if (await answer.getAttribute("open") !== null) await page.keyboard.press("Enter");
+    await page.keyboard.press("Enter");
+    check(await answer.getAttribute("open") !== null && await answer.locator("a").first().isVisible(), `FAQ ${width}px JS=${javaScriptEnabled}: answer and action open by keyboard`);
+    const links = await page.locator(".qa-list a").evaluateAll(nodes => nodes.map(n => n.getAttribute("href")));
+    let lands = true;
+    for (const href of [...new Set(links)]) {
+      if (!href.startsWith("/")) continue;
+      const u = new URL(href, BASE), response = await ctx.request.get(u.href.split("#")[0]);
+      const html = await response.text();
+      if (response.status() !== 200 || (u.hash && !html.includes(`id="${u.hash.slice(1)}"`))) lands = false;
+    }
+    check(lands, `FAQ ${width}px JS=${javaScriptEnabled}: answer actions land at existing pages and anchors`);
+    if (javaScriptEnabled) { await page.goto(BASE + "/about/faq/#%bad"); await sleep(100); }
+    await page.goto(BASE + "/join/peer-support-groups/#b-pg-how-details", { waitUntil: "networkidle" });
+    const disclosure = page.locator("#b-pg-how-details");
+    await disclosure.locator("summary").focus();
+    if (await disclosure.getAttribute("open") !== null) await page.keyboard.press("Enter");
+    await page.keyboard.press("Enter");
+    check(await disclosure.getAttribute("open") !== null && await disclosure.locator("ol").isVisible(), `first visit ${width}px JS=${javaScriptEnabled}: expectations open by keyboard`);
+    const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, reflection: document.querySelectorAll("main input, main textarea").length, steps: document.querySelectorAll(".talk ol li").length, room: document.querySelector(".visit-action")?.getAttribute("href") }));
+    check(!state.scrolls && !state.reflection && state.steps === 3 && /^\/directions\//.test(state.room || ""), `first visit ${width}px JS=${javaScriptEnabled}: room action, arrival steps and no personal input or overflow`);
+    check(!errors.length && !remote.length, `FAQ/first visit ${width}px JS=${javaScriptEnabled}: no script error or unsolicited reel request`);
+    await ctx.close();
+  }
+});
+
+await part("first visit: current-room refresh waits for focus and exact end", async () => {
+  const { makeContext } = await import("../src/render/context.mjs");
+  const { renderBlock } = await import("../src/render/registry.mjs");
+  const DAY = process.env.TODAY || chicagoDate();
+  const at = time => Date.parse(`${DAY}T${time}:00${chicagoOffset(DAY)}`);
+  const intro = JSON.parse(fs.readFileSync(path.join(ROOT, "content/pages/peer-support-groups.json"))).blocks[0];
+  const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json")));
+  const text = Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text]));
+  const markup = (place, now = at("17:59"), stale = false, empty = false) => String(renderBlock(intro, makeContext({ site, text, today: DAY, now, builtPaths: ["/directions/sac-mhh/", "/directions/sac-caucus/", "/join/email-list/"], data: { eventsState: { stale }, events: { recurring: [], dated: empty ? [] : [{ id: "example-visit", title: "Example Group", program: "peer", date: DAY, start: "17:00", end: "18:00", place }], places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } } } })));
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }), page = await ctx.newPage();
+  await page.clock.install({ time: at("17:59") });
+  let release;
+  const waiting = new Promise(ok => { release = ok; });
+  await page.route("**/join/peer-support-groups/", async route => {
+    const response = await route.fetch(), html = await response.text();
+    await route.fulfill({ response, body: html.replace(/<body(?=\s)/, '<body data-refresh="events"').replace(/<section\b(?=[^>]*data-block="b-pg-intro")[\s\S]*?<\/section>/, markup("hub")) });
+  });
+  await page.route("**/api/events/pg-peer-groups", async route => { await waiting; await route.fulfill({ json: { ok: true, today: DAY, blocks: { "b-pg-intro": markup("changed") } } }); });
+  await page.goto(BASE + "/join/peer-support-groups/", { waitUntil: "load" });
+  await page.locator(".visit-action").focus();
+  release(); await sleep(200);
+  check(await page.locator(".visit-action").getAttribute("href") === "/directions/sac-mhh/", "first visit: a changed-room reply waits while its Directions action has focus");
+  await page.locator("#b-pg-how-details > summary").focus(); await sleep(200);
+  check(await page.locator(".visit-action").getAttribute("href") === "/directions/sac-caucus/", "first visit: current-room directions replace the old room once focus leaves");
+  await page.locator(".visit-action").focus();
+  await page.clock.fastForward(60_000);
+  check(await page.locator(".visit-action").isVisible(), "first visit: exact end preserves the focused action until focus leaves");
+  await page.locator("#b-pg-how-details > summary").focus(); await sleep(100);
+  check(!await page.locator(".visit-action").isVisible(), "first visit: ended directions disappear after focus leaves");
+  await page.locator(".visit-event .ended-tag").evaluate((n, words) => n.before(document.createTextNode(words)), words("schedule.signup.none"));
+  const endedRows = [];
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    endedRows.push(await page.locator(".visit-event .ended-tag").evaluate((tag, width) => {
+      const cell = tag.parentElement, box = tag.getBoundingClientRect();
+      const start = cell.getBoundingClientRect().left + parseFloat(getComputedStyle(cell).paddingLeft);
+      return { width, dot: getComputedStyle(tag, "::before").content, lineStart: Math.abs(box.left - start) < 1 };
+    }, width));
+  }
+  check(endedRows.every(r => r.width <= 860 ? r.dot === "none" && r.lineStart : r.dot === '\"·\"'), `first visit: Ended starts its own phone line with sign-up text, with the desktop separator retained (${JSON.stringify(endedRows)})`);
+  for (const [name, html, phrase] of [["empty", markup("hub", at("17:59"), false, true), words("program.groupNone")], ["unavailable", markup("hub", at("17:59"), true), words("program.groupUnavailable")]]) {
+    await page.locator('[data-block="b-pg-intro"]').evaluate((n, html) => { n.outerHTML = html; }, html);
+    check(await page.locator(".visit-notice").textContent() === phrase && await page.locator(".visit-action").count() === 0, `first visit: ${name} state offers an honest next step without directions`);
+  }
   await ctx.close();
 });
 

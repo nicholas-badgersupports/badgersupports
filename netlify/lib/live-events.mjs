@@ -89,11 +89,11 @@ async function published(c) {
   try { return await siteNow({ catalogues: false }); } catch { return null; }
 }
 
-function context(c, page, events, today, publishedSite, now) {
+function context(c, page, events, today, publishedSite, now, stale = false) {
   const ev = c.events;
   return makeContext({
     site: publishedSite?.site || c.site, media: c.media, builtPaths: c.builtPaths, programs: new Map([...ev.programs, ...page.sections]),
-    routes: c.routes, data: { events: publishedSite ? withRoomPlaces(events, publishedSite.places, publishedSite.roomIds) : events, places: publishedSite?.places || ev.places }, text: publishedSite?.text || c.text, today, now, prototype: c.prototype, assets: c.assets,
+    routes: c.routes, data: { events: publishedSite ? withRoomPlaces(events, publishedSite.places, publishedSite.roomIds) : events, eventsState: { stale }, places: publishedSite?.places || ev.places }, text: publishedSite?.text || c.text, today, now, prototype: c.prototype, assets: c.assets,
     liveEvents: ev.source === "connect", path: page.path || null,
   });
 }
@@ -108,7 +108,7 @@ export async function eventSections(pageId, { today = chicagoDate(), now = Date.
   // the blocks with their saved words, so a refreshed block never puts the build's words back
   const edited = site?.pages.find((p) => p.id === pageId)?.blocks;
   const own = page.blocks.map((b) => edited?.find((x) => x.id === b.id) || b);
-  const ctx = context(c, page, events, today, site, now);
+  const ctx = context(c, page, events, today, site, now, stale);
   const showing = new Set(liveBlocks({ blocks: own }, today).map((b) => b.id));
   const blocks = {};
   for (const b of own) blocks[b.id] = showing.has(b.id) ? String(renderBlock(b, ctx)) : "";

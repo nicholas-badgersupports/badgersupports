@@ -67,7 +67,9 @@ document.addEventListener("pointerover", (e) => {
 
 /* A link to a folded answer (#q-…) opens it. */
 function openTarget() {
-  const el = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+  const el = id ? document.getElementById(id) : null;
   if (el && el.tagName === "DETAILS") el.open = true;
 }
 window.addEventListener("hashchange", openTarget);

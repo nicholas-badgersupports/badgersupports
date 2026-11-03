@@ -27,7 +27,7 @@ export default {
   render(b, ctx) {
     if (b.variant === "days" && b.source === "events") {
       const groups = groupByDate(rowsBetween(ctx.data.events, ctx.today, 7).filter(r => r.program === (b.program || "peer")));
-      return html`<section class="cards cards--days band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+      return html`<section class="cards cards--days band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
         <h2 id="${b.id}-h">${b.title}</h2>${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
         ${groups.length ? html`<ul class="card-list">${groups.map(({ date, items }) => {
           const day = dateParts(date, ctx.t);

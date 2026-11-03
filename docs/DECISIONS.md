@@ -802,3 +802,14 @@ Nicholas requested continued building through badger-build-handoff, preserving t
 | Add early program choices and request context using existing blocks | Canonical 34–37: attend, request and written support are distinct tasks | Restore the same page fields/links; no backend or intake store changes |
 
 Existing word and typed-edit target paths remain stable. Saved overrides continue to win at their existing scope; actual live overrides were not read. The local migration record separates URL disposition, content and whole-task acceptance. Current recruitment/pay/hours, approved alumni display data, mail enrollment, privacy review and cutover remain outside this local proof.
+
+
+## 3 November 2026 · FAQ and first visit (canonical 39–40)
+
+Nicholas requested resuming the saved build-d working copy, preserving tested candidate 6be6f13, finishing testing and calibration, and updating the same shared handoff. This remains local implementation; no push or publication.
+
+FAQ display groups reference original question IDs instead of moving answer arrays, preserving saved edits and question anchors. Answer actions lead to the schedule, program, room or contact relevant to the question. Question validation rejects hidden, missing or repeated references and unsafe addresses; section copies remap question references independently of group IDs. Linked generated group and expectations anchors protect their sections from retirement. These are reversible implementation choices within the authorized refinement, not new program or governance policy.
+
+The peer introduction uses current event occurrences and their actual room directions. Empty, unavailable, unresolved-time and missing-room states offer the appropriate updates/contact action. A short ordered arrival walkthrough and an optional native expectations disclosure retain the existing peer block order, activity/day photos, reel consent, non-clinical boundary and existing edit targets. Saved overrides continue at their original scope; their live contents were not read.
+
+The shared source review records governing text and current correspondence supporting drop-in visits, check-in/activity, access contact and UHS consultation. No fixed group count, unconditional confidentiality/late-arrival promise or numeric accommodation cutoff was established. Broader affiliation wording remains the existing source-verification dependency; the approved Equity statement is unchanged. Exact test results, source fingerprints and recovery files belong in the shared PUBLIC-SITE handoff.

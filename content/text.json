@@ -2989,6 +2989,31 @@
       "group": "events",
       "text": "Confirm the Time",
       "where": "Contact action instead of Drop In for an unresolved event time."
+    },
+    "program.nextGroup": {
+      "group": "events",
+      "text": "Next Peer Support Group",
+      "where": "Peer-group first-visit action from the current event source."
+    },
+    "program.groupNone": {
+      "group": "events",
+      "text": "No upcoming peer support group is listed in the next seven days.",
+      "where": "Peer-group first-visit action from the current event source."
+    },
+    "program.groupUnavailable": {
+      "group": "events",
+      "text": "We couldn’t confirm the current schedule. Please email us before you visit.",
+      "where": "Peer-group first-visit action from the current event source."
+    },
+    "program.askSchedule": {
+      "group": "events",
+      "text": "Ask About the Schedule",
+      "where": "Peer-group first-visit action from the current event source."
+    },
+    "program.askLocation": {
+      "group": "events",
+      "text": "Ask About the Location",
+      "where": "Peer-group first-visit action from the current event source."
     }
   }
 }

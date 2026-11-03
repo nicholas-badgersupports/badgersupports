@@ -1,4 +1,4 @@
-import { timeNotice } from "../event-status.mjs";
+import { timeNotice, timeContact, eventClass, eventTags } from "../event-status.mjs";
 /* A program section. Three variants so the three programs do not read as three identical cards:
  *   feature  — a large photo and the program's facts as a timetable (peer support groups)
  *   gallery  — the next dates, and a swipeable strip of photos (craft nights)
@@ -12,8 +12,10 @@ import { timeNotice } from "../event-status.mjs";
 import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { picture } from "../media.mjs";
-import { nextDated, dateParts, timeRange } from "../events.mjs";
+import { nextDated, rowsBetween, dateParts, timeRange, dayRange } from "../events.mjs";
 import { reel } from "./embed.mjs";
+import { eventState } from "../../shared/event-state.mjs";
+import { timeUnconfirmed } from "../ics.mjs";
 
 const ARROW_L = html`<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ARROW_R = html`<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m7.5 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -22,6 +24,26 @@ const paras = (body) => (Array.isArray(body) ? body : body ? [body] : []).map((p
 const links = (ctx, list) => (list?.length ? html`<ul class="more-links">${list.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : "");
 
 const heading = (b) => (b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`);
+
+function firstVisit(b, ctx) {
+  if (!b.upcoming) return "";
+  if (ctx.data.eventsState?.stale) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupUnavailable")}</p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askSchedule"), "mail")}</div>`;
+  const [next] = rowsBetween(ctx.data.events || {}, ctx.today, 7).filter(r => r.program === b.upcoming.program && eventState(r, ctx.now) !== "ended");
+  if (!next) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupNone")}</p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"), "mail")}</div>`;
+  const p = dateParts(next.date, ctx.t), days = dayRange(next, ctx.t);
+  return html`<div data-live="visit"><article${attrs({ class: eventClass("visit-event ev", next, ctx.now), "data-starts": next.startsAt, "data-ends": next.endsAt, "data-date": next.date })}>
+    <p class="visit-label">${b.upcoming.label || ctx.t("program.nextGroup")}</p>
+    <p class="ev-time"><strong>${days ? days.long : `${p.dowLong}, ${p.monLong} ${p.dom}`}</strong> · ${timeRange(next.start, next.end, ctx.t)}</p>
+    ${next.place ? html`<p class="visit-room">${next.place.name}${next.place.detail ? ` · ${next.place.detail}` : ""}</p>` : ""}
+    <div class="visit-actions">${timeUnconfirmed(next) ? timeContact(ctx) : next.place?.href ? link(ctx, next.place.href, ctx.t("schedule.directions"), { class: "btn visit-action", icon: "pin" }) : go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askLocation"), "mail")}${eventTags(ctx, next)}</div>
+  </article></div>`;
+}
+
+function featureList(b, ctx) {
+  if (!b.list) return "";
+  const items = b.list.items.map(i => html`<li><strong>${i.href ? link(ctx, i.href, i.term) : i.term}:</strong> ${i.text}</li>`);
+  return html`<div class="talk"><h3>${b.list.label}</h3>${b.list.ordered ? html`<ol>${items}</ol>` : html`<ul>${items}</ul>`}</div>`;
+}
 
 /* feature: a big photo (or, on a program's own page, its Instagram video) and the facts */
 function feature(b, ctx) {
@@ -32,9 +54,10 @@ function feature(b, ctx) {
   <div>
     ${heading(b)}
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+    ${firstVisit(b, ctx)}
     ${paras(b.body)}
     ${b.facts?.length ? html`<dl class="facts">${b.facts.map((f) => html`<dt>${f.term}</dt><dd>${f.text}</dd>`)}</dl>` : ""}
-    ${b.list ? html`<div class="talk"><h3>${b.list.label}</h3><ul>${b.list.items.map((i) => html`<li><strong>${i.term}:</strong> ${i.text}</li>`)}</ul></div>` : ""}
+    ${featureList(b, ctx)}
     ${b.note ? html`<p class="not-therapy">${b.note}</p>` : ""}
     ${links(ctx, b.links)}
   </div>
@@ -64,6 +87,7 @@ function gallery(b, ctx) {
 }
 
 function topics(b, ctx) {
+  const list = html`<ol class="topics">${b.topics.map((t) => html`<li><div><strong>${t.href ? link(ctx, t.href, t.term) : t.term}</strong>${t.text ? html`<p>${t.text}</p>` : ""}</div></li>`)}</ol>`;
   return html`<div class="wrap">
   <header>
     ${heading(b)}
@@ -71,7 +95,7 @@ function topics(b, ctx) {
     ${paras(b.body)}
   </header>
   ${b.photos?.length ? html`<div class="photo">${picture(ctx, b.photos[0], { sizes: "(max-width: 860px) calc(100vw - 2rem), 22rem" })}</div>` : ""}
-  <ol class="topics">${b.topics.map((t) => html`<li><div><strong>${t.href ? link(ctx, t.href, t.term) : t.term}</strong>${t.text ? html`<p>${t.text}</p>` : ""}</div></li>`)}</ol>
+  ${b.disclosure ? html`<details class="program-details" id="${b.anchor || b.id}-details"><summary>${b.disclosure}${ARROW_R}</summary>${list}</details>` : list}
   <div class="topics-foot">${b.primary ? link(ctx, b.primary.href, b.primary.label, { class: "btn", icon: "arrow" }) : ""}${(b.links || []).map((l) => go(ctx, l.href, l.label, l.icon || "arrow"))}</div>
 </div>`;
 }
@@ -81,8 +105,8 @@ const VARIANTS = { feature, gallery, topics };
 export default {
   type: "program",
   label: "Program section",
-  fields: { variant: "choice:feature|gallery|topics!", program: "choice:peer|craft|workshops!", heading: "choice:h1|h2", title: "text!", lead: "text", body: "paragraphs", list: "termlist", facts: "termlist", note: "text", photos: "media[]", embed: "embed", links: "link[]", upcoming: "eventquery", topics: "termlist", primary: "link" },
-  data: ["events"],
+  fields: { variant: "choice:feature|gallery|topics!", program: "choice:peer|craft|workshops!", heading: "choice:h1|h2", title: "text!", lead: "text", body: "paragraphs", list: "visitlist", facts: "termlist", note: "text", photos: "media[]", embed: "embed", links: "link[]", upcoming: "eventquery", topics: "termlist", disclosure: "text", primary: "link" },
+  data: ["events", "eventsState"],
   client: ["strip.js", "embed.js"],
   refresh: (b) => !!b.upcoming,
   analytics: "page",

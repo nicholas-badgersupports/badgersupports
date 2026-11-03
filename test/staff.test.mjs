@@ -2181,3 +2181,36 @@ test("a resource form with no choices refuses Open without persisting a false op
   assert.equal(res.status, 409); assert.equal((await res.json()).error, "switch.empty");
   assert.equal((await many("SELECT * FROM form_state WHERE form_key = 'resource-problem'")).length, 0);
 });
+
+
+test("FAQ saved answers, question-section copies and page copies work through staff APIs", async t => {
+  const { as } = await pagesSite(t), editor = await as(["site.edit", "site.publish"]);
+  const target = "page:pg-about-faq:b-faq-groups/items/0/a";
+  const entry = (await sourceOf(editor, "pg-about-faq")).find(e => e.target === target);
+  assert.ok(entry, "the original saved answer target remains available");
+  assert.equal((await saveWord(editor, target, entry.current, "Example saved peer support answer.")).changed, true);
+  const sections = await sectionsOf(editor, "pg-about-faq");
+  const copied = await change(editor, { action: "sectionCopy", expected: sections.body.version, page: "pg-about-faq", section: "b-faq-groups" });
+  assert.equal(copied.status, 200, JSON.stringify(copied.body));
+  let html = await (await visit("/about/faq/")).text();
+  assert.deepEqual(twice(html), [], "question and display group ids are unique after copying");
+  assert.equal((html.match(/Example saved peer support answer/g) || []).length, 2);
+  const pages = await pagesNow(editor);
+  const page = await change(editor, { action: "copy", expected: pages.version, page: "pg-about-faq", title: "Example FAQ Copy", path: "/about/example-faq/" });
+  assert.equal(page.status, 200, JSON.stringify(page.body));
+  html = await (await preview(editor, page.body.page)).text();
+  assert.deepEqual(twice(html), []);
+  assert.match(html, /id="b-faq-groups-first-visit"/);
+  assert.match(html, /id="q-group-therapy"/);
+  assert.match(html, /Example saved peer support answer/);
+});
+
+test("FAQ grouping and peer expectations links protect their sections through the staff API", async t => {
+  const { as } = await pagesSite(t), publisher = await as(["site.edit", "site.publish"]);
+  for (const [page, section] of [["pg-about-faq", "b-faq-groups"], ["pg-peer-groups", "b-pg-how"]]) {
+    const state = await sectionsOf(publisher, page);
+    const r = await change(publisher, { action: "sectionRetire", expected: state.body.version, page, section });
+    assert.equal(r.status, 422, JSON.stringify(r.body));
+    assert.equal(r.body.error, "section.linked");
+  }
+});

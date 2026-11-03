@@ -341,6 +341,11 @@ export function siteLinks(site, pages) {
 /* The ids a section draws on the page: its anchor and every id or anchor inside it. */
 function idsIn(b) {
   const ids = new Set([b.anchor || b.id]);
+  if (b.type === "questions") for (const g of b.groups || []) {
+    ids.add(`${b.anchor || b.id}-${g.id}`);
+    ids.add(`${b.anchor || b.id}-${g.id}-h`);
+  }
+  if (b.type === "program" && b.disclosure) ids.add(`${b.anchor || b.id}-details`);
   const walk = (n) => {
     if (Array.isArray(n)) { n.forEach(walk); return; }
     if (!n || typeof n !== "object") return;
@@ -385,6 +390,10 @@ function copySection(b, used, nested) {
     for (const [key, v] of Object.entries(n)) if (key !== "id") rekey(v);
   };
   for (const [key, v] of Object.entries(copy)) if (key !== "id") rekey(v);
+  if (copy.type === "questions") {
+    const questions = new Map(b.items.map((q, i) => [q.id, copy.items[i].id]));
+    for (const g of copy.groups || []) g.questionIds = g.questionIds.map(id => questions.get(id) || id);
+  }
   return copy;
 }
 

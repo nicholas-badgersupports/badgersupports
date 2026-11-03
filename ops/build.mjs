@@ -47,6 +47,7 @@ import { cardProblems } from "../src/render/blocks/cards.mjs";
 import { wordProblems } from "../src/render/blocks/words.mjs";
 import { resourceProblems } from "../src/render/blocks/resources.mjs";
 import { directoryProblems } from "../src/render/blocks/directory.mjs";
+import { questionProblems } from "../src/render/blocks/questions.mjs";
 import { ICONS } from "../src/render/icons.mjs";
 import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
@@ -243,7 +244,7 @@ export function loadContent({ production = false, launch = production, textEdits
   }
   for (const page of pages) for (const b of page.blocks || []) {
     if (b.type === "directions" && !places[b.place]?.published) problems.push(`content/pages: ${page.id}.${b.id} names room "${b.place}", which is not a published room`);
-    if (b.type === "questions") for (const q of b.items || []) if (!/^q-[a-z0-9-]{2,60}$/.test(q.id || "") || !q.q || !q.a) problems.push(`content/pages: ${page.id}.${b.id}: every question needs an id like q-something, a question and an answer`);
+    if (b.type === "questions") for (const p of questionProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "workshops") for (const p of workshopProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "cards") for (const p of cardProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "words") for (const p of wordProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
@@ -527,7 +528,7 @@ export async function build({ production = false, launch = production, today = n
 
   const data = {
     alumni: content.alumni, alumniState: content.alumniState,
-    events: content.events,
+    events: content.events, eventsState: null,
     wallNotes: content.wall.notes,
     wallSample: content.wall.fixture ? content.wall.label : null,
     team: content.team, teamState: null, resourcesState: null,

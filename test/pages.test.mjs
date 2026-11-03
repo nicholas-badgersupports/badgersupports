@@ -94,7 +94,8 @@ test("the peer support groups page keeps the live page's order: drop in, the wee
   const how = block(page, "b-pg-how");
   for (const w of ["Why", "What", "How"]) assert.match(how, new RegExp(`<strong>${w}</strong>`), w);
   assert.match(block(page, "b-pg-request"), /<a href="[^"]*\/request-a-program\/?" class="btn btn--big"/);
-  assert.match(block(page, "b-pg-note"), /Requests should be made 3 days before any peer support group\./);
+  assert.match(block(page, "b-pg-note"), /accessibility@badgersupports\.org/);
+  assert.doesNotMatch(block(page, "b-pg-note"), /Requests should be made \d+ days before/);
 });
 
 test("a cards or words block that is missing a part fails the build instead of showing half a row", () => {

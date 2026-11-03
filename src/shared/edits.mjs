@@ -17,6 +17,7 @@
 import { BLOCKS } from "../render/registry.mjs";
 import { ICONS } from "../render/icons.mjs";
 import { embedProblems } from "../render/blocks/embed.mjs";
+import { linkProblem } from "./links.mjs";
 
 export const EDITS_SCHEMA = "bss.edits/1";
 
@@ -25,7 +26,7 @@ const STRUCTURAL = new Set([
   "id", "type", "href", "media", "icon", "anchor", "form", "variant", "heading", "place", "person", "program",
   "path", "schema", "analytics", "photo", "photos", "aliases", "home", "kind", "group", "card", "show", "source",
   "tone", "startsOn", "endsOn", "file", "lang", "connectOrigin", "liveOrigin", "origin", "url", "accessibilityEmail",
-  "description", "category", "series",
+  "description", "category", "series", "questionIds",
 ]);
 /* The parts of site.json a visitor reads on every page. */
 const SITE_PARTS = ["nav", "headerAction", "supportLine", "footer"];
@@ -181,9 +182,6 @@ export function siteValues(site) {
   return out;
 }
 
-const ANCHOR = /^#[a-z0-9-]{1,80}$/;
-const PATH = /^\/[a-z0-9\-/]*(\?[a-z]+=[a-z0-9_-]+)?(#[a-z0-9-]{1,80})?$/;
-
 /* What is wrong with a new value of a given kind, as a code, or null. media: the library's ids. */
 export function valueProblem(kind, value, { options = [], media = null } = {}) {
   if (typeof value !== "string") return "edit.value";
@@ -191,14 +189,7 @@ export function valueProblem(kind, value, { options = [], media = null } = {}) {
   if (!v) return "edit.empty";
   if (/[\s<>"'`\\]/.test(v) && kind !== "choice") return "edit.markup";
   if (kind === "link") {
-    if (v.length > 500) return "edit.long";
-    if (PATH.test(v) || ANCHOR.test(v)) return null;
-    if (/^mailto:[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v)) return null;
-    if (/^tel:\+?[0-9-]{3,20}$/.test(v)) return null;
-    let u;
-    try { u = new URL(v); } catch { return "edit.link"; }
-    // web addresses are https only, with no name or password in them
-    return u.protocol === "https:" && !u.username && !u.password && u.hostname.includes(".") ? null : "edit.link";
+    return linkProblem(v);
   }
   if (kind === "video") return embedProblems({ url: v, title: "-" }).length ? "edit.video" : null;
   if (kind === "media") return /^m-[a-z0-9-]{2,80}$/.test(v) && (!media || media.has(v)) ? null : "edit.media";

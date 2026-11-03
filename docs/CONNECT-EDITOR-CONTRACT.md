@@ -67,7 +67,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 
 ### Program section — `program`
 
-Reads: `events` · analytics: `page` · photos load lazy · browser modules `strip.js`, `embed.js`
+Reads: `events`, `eventsState` · analytics: `page` · photos load lazy · browser modules `strip.js`, `embed.js`
 
 | Field | Type | |
 |---|---|---|
@@ -77,7 +77,7 @@ Reads: `events` · analytics: `page` · photos load lazy · browser modules `str
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
 | `body` | one or more paragraphs |  |
-| `list` | rows of a term and its text (and, for topics, an optional link) |  |
+| `list` | a label and items of term/text with optional href; ordered chooses a native numbered list without moving item paths |  |
 | `facts` | rows of a term and its text (and, for topics, an optional link) |  |
 | `note` | one line of text |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
@@ -85,6 +85,7 @@ Reads: `events` · analytics: `page` · photos load lazy · browser modules `str
 | `links` | several links, in order |  |
 | `upcoming` | which events to list: source, program, how many |  |
 | `topics` | rows of a term and its text (and, for topics, an optional link) |  |
+| `disclosure` | one line of text |  |
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 
 ### Wall of Support — `wall`
@@ -169,7 +170,8 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | Field | Type | |
 |---|---|---|
 | `title` | one line of text | **required** |
-| `items` | questions with an id, the question, and one or more answer paragraphs | **required** |
+| `items` | questions with an id, the question, one or more answer paragraphs and optional answer links (label, href, icon) | **required** |
+| `groups` | optional display groups (id, title, questionIds); each existing question appears exactly once without moving its source or edit paths |  |
 | `ask` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 | `note` | one line of text |  |
 
@@ -493,7 +495,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-587 keys. Keys are permanent. Required text cannot be published empty and must keep each
+592 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -552,7 +554,7 @@ the site adds the markup.
 | `mood.back` | Back to the Homepage | Link on that page. |  |
 | `schedule.happening` | Happening Now | Shown on an event once it has finished. |  |
 
-### Event cards (14)
+### Event cards (19)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -570,6 +572,11 @@ the site adds the markup.
 | `schedule.weekEmpty` | No peer support groups are scheduled in the next seven days. | Peer day cards when the current seven-day window has no occurrences. |  |
 | `schedule.timeUnconfirmed` | Time needs confirmation. Please contact us before attending. | Event with a nonexistent local time or invalid start/end order. |  |
 | `schedule.confirmTime` | Confirm the Time | Contact action instead of Drop In for an unresolved event time. |  |
+| `program.nextGroup` | Next Peer Support Group | Peer-group first-visit action from the current event source. |  |
+| `program.groupNone` | No upcoming peer support group is listed in the next seven days. | Peer-group first-visit action from the current event source. |  |
+| `program.groupUnavailable` | We couldn’t confirm the current schedule. Please email us before you visit. | Peer-group first-visit action from the current event source. |  |
+| `program.askSchedule` | Ask About the Schedule | Peer-group first-visit action from the current event source. |  |
+| `program.askLocation` | Ask About the Location | Peer-group first-visit action from the current event source. |  |
 
 ### Rooms and directions (9)
 

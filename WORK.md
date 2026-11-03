@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 3 Nov 2026 (isolated candidate; not published). Candidate: Connect catalogues/team photos, Wall intake, resource invariants, live day cards, phone Other fields and command symlinks. Evidence and remaining work: `../../Admin/Handoffs/active/PUBLIC-SITE-HANDOFF-2026-10-30.md`.
+brief is `../MASTER-PROMPT.md`. Updated 3 Nov 2026 (isolated candidate; not published). Candidate: current-room first visits, grouped task-linked FAQ answers, Connect catalogues/team photos, Wall intake and event lifecycle corrections. Evidence and remaining work: `../../Admin/Handoffs/active/PUBLIC-SITE-HANDOFF-2026-10-30.md`.
 
 ## Where it stands
 
@@ -62,7 +62,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
   and Multipurpose take the Caucus steps with their own map, Marquee and Tripp show their address only (20 Oct 2026).
 
 ## Evidence
-Continuation candidate: separate `codex/public-queue-2026-11-03-b` tree; runtime-only team, closed shared email request, disabled alumni history, workshop context, event lifecycle and source-backed page refinements. Current checks/limits live in the shared PUBLIC-SITE handoff. No push/publication.
+Continuation candidate: separate `codex/public-queue-2026-11-03-d` tree; grouped task-linked FAQ answers, current-room first visits, runtime-only team, closed shared email request, disabled alumni history, workshop context and event lifecycle corrections. Current checks/limits live in the shared PUBLIC-SITE handoff. No push/publication.
 
 Cloud runs, 2 Nov 2026, 21:55 and 22:29 Chicago, queue items 20 (the suites' cut reports) and 25 (no dot before Ended on a phone), without the photos (`node ops/check.mjs --browser --no-media` on `bf89c25` plus the change;
 Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (228 files); 65 pages; delivered files clean (104); tests 265 passed, 0 failed,

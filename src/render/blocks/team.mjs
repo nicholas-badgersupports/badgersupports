@@ -13,13 +13,13 @@
 
 import { html } from "../html.mjs";
 import { picture } from "../media.mjs";
-import { publicPeople, personPath, initials } from "../team.mjs";
+import { publicPeople, personPath, initials, personPhoto } from "../team.mjs";
 
 export function personCard(ctx, p, card = "role") {
   const words = card === "title" ? p.title : p.role || p.title;
   return html`<li class="person is-${card}"><a class="person-link" href="${ctx.link(personPath(p.slug)).href}">
-    <span class="person-photo">${p.photo ? picture(ctx, p.photo, { sizes: "(max-width: 860px) 45vw, 16rem", alt: "" }) : html`<span class="monogram" aria-hidden="true">${initials(p.name)}</span>`}</span>
-    <span class="person-name">${p.name}</span>
+    <span class="person-photo">${p.photo ? personPhoto(ctx, p, { sizes: "(max-width: 860px) 45vw, 16rem", alt: "" }) : html`<span class="monogram" aria-hidden="true">${initials(p.name) || "?"}</span>`}</span>
+    <span class="person-name">${p.name || ctx.t("team.unnamed")}</span>
     ${words ? html`<span class="person-role">${words}</span>` : ""}
   </a></li>`;
 }
@@ -33,7 +33,7 @@ export default {
   type: "team",
   label: "Team",
   fields: { title: "text!", heading: "choice:h1|h2", lead: "text", photos: "media[]", source: "source!", groups: "teamgroups!", card: "choice:role|title" },
-  data: ["team", "teamSample"],
+  data: ["team", "teamSample", "teamState"],
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
@@ -53,7 +53,7 @@ export default {
       ${h}
       ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
       ${note ? html`<p class="sample-note">${ctx.data.teamSample}</p>` : ""}
-      ${none ? html`<p class="team-none">${ctx.t("team.none")}</p>` : ""}
+      ${none ? html`<p class="team-none">${ctx.t(ctx.data.teamState?.unavailable ? "team.unavailable" : "team.none")}</p>` : ctx.data.teamState?.stale ? html`<p class="team-none">${ctx.t("team.stale")}</p>` : ""}
     </div>
     ${photo ? html`<div class="photo team-photo">${picture(ctx, photo, { sizes: "(max-width: 860px) calc(100vw - 2rem), 34rem", eager: b.heading === "h1" })}</div>` : ""}
   </header>

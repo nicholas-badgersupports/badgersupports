@@ -22,8 +22,8 @@ export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && 
 export const sectionPrograms = (page) => (page.blocks || []).filter((b) => PROGRAMS.includes(b.program)).map((b) => [`#${b.anchor || b.id}`, b.program]);
 
 /* What a snapshot holds: the files before any saved word (floor), and everything else the pages read. */
-export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths }) {
-  return { schema: "bss.render/1", floor, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
+export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null }) {
+  return { shared, schema: "bss.render/1", floor, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
 }
 
 /* Every page with the edits laid over the floor, as loadContent() does, then the page structure (src/shared/structure.mjs):
@@ -33,7 +33,9 @@ export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team
    Rooms' saved words and photos are laid over the room records before anything draws a room: the room pages, the
    blocks that read `places`, and the room names the event lists carry (`places`, `data`, `roomIds`).
    With no structure the result is the build's, byte for byte. */
-export function composeSite(snap, edits = {}, structure = null) {
+export function composeSite(snap, edits = {}, structure = null, shared = null) {
+  const team = shared?.team?.value || snap.team;
+  const liveData = { ...snap.data, ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}) };
   const site = laySettings(structuredClone(snap.floor.site), structure?.settings);
   const made = Object.values(structure?.pages || {}).filter((r) => r.page).map((r) => structuredClone(r.page));
   const authored = [...structuredClone(snap.floor.pages), ...made];
@@ -43,11 +45,11 @@ export function composeSite(snap, edits = {}, structure = null) {
   const t = makeT(text);
   const roomIds = Object.keys(structure?.rooms || {});
   const places = layRooms(snap.places, structure?.rooms, { media: new Set((snap.media?.items || []).map((m) => m.id)) });
-  const data = places === snap.places ? snap.data : { ...snap.data, places, events: withRoomPlaces(snap.data?.events, places, roomIds) };
-  const every = [...authored, ...placePages(places, t), ...personPages(snap.team, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
+  const data = places === snap.places ? liveData : { ...liveData, places, events: withRoomPlaces(liveData.events, places, roomIds) };
+  const every = [...authored, ...placePages(places, t), ...personPages(team, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
   const laid = layStructure(structure, { site, pages: every });
   const pages = laid.pages;
-  const builtPaths = structure ? [...new Set([...(snap.builtPaths || []), ...pages.map((p) => p.path).filter(Boolean)])] : snap.builtPaths;
+  const builtPaths = structure || shared?.team ? [...new Set([...(snap.builtPaths || []).filter(p => !shared?.team || !p.startsWith("/about/our-team/") || p === "/about/our-team/"), ...pages.map((p) => p.path).filter(Boolean)])] : snap.builtPaths;
   return {
     site, pages, drafts: laid.drafts, retired: laid.retired, moves: laid.moves, offMenu: laid.offMenu, all: [...pages, ...laid.drafts, ...laid.retired],
     authored: new Set(snap.floor.pages.map((p) => p.id)), builtPaths,

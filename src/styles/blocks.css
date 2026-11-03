@@ -1316,3 +1316,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .res-dialog-head { padding-left: var(--s4); }
   .res-dialog-body { padding: 0 var(--s4) var(--s5); }
 }
+
+/* Each day can contain groups in different rooms; their time and route stay together. */
+.cards--days .ev { display: block; padding: var(--s2) 0; }
+.cards--days .ev .go { margin-top: var(--s1); }
+.cards--days .where-detail { display: block; }

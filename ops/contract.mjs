@@ -1,3 +1,4 @@
+import { isDirect } from "./direct.mjs";
 /* The Connect editor contract: what the editor in Badger Supports Connect has to offer so that
  * every word, block, room and form on this site can be changed there. Generated from the code that
  * enforces it — the block declarations, the room rules, the form question types and the text
@@ -83,7 +84,7 @@ export function contract() {
     ["title, description", "the browser tab and search result. The title is the page's own words: the site's name is added when the page is drawn, first on the home page and last on every other. The home page draws the site's search description, not one of its own"],
     ["analytics", "`public` or `none` (docs/ANALYTICS.md)"],
     ["noindex", "keep this page out of search engines"],
-    ["program", "the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (red); left out, brand red. The header, footer and announcements stay red on every page"],
+    ["program", "the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (blue); left out, brand red. The header, footer and announcements stay red on every page"],
     ["blocks", "the page's blocks, in order; each has a permanent `b-…` id, a type below, `enabled`, and optional `startsOn` / `endsOn`"],
   ]) w(`| \`${f}\` | ${d} |`);
   w();
@@ -238,7 +239,7 @@ export function contract() {
   return out.join("\n") + "\n";
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+if (isDirect(import.meta.url)) {
   const text = contract();
   if (process.argv.includes("--check")) {
     const current = fs.existsSync(FILE) ? fs.readFileSync(FILE, "utf8") : "";

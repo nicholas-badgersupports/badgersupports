@@ -1,3 +1,4 @@
+import { isDirect } from "./direct.mjs";
 /* Responsive variants for every photo in media/manifest.json.
  *
  * Reads each original from local/media-originals/ (never committed), checks its sha256 against
@@ -229,7 +230,7 @@ export function linkPlaceholders(links, { cacheDir = LINKS } = {}) {
   });
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+if (isDirect(import.meta.url)) {
   const out = path.join(ROOT, "dist", "media");
   const r = await buildMedia(out, { fetchMissing: process.argv.includes("--fetch"), log: console.log });
   console.log(`${r.files.length} variants, ${r.encoded} newly encoded`);

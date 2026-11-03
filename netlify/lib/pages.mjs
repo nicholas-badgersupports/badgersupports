@@ -17,6 +17,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
+import { sharedNow } from "./live-content.mjs";
 import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
 import { currentForm } from "./intake.mjs";
@@ -38,18 +39,18 @@ const FALLBACK_CACHE = { "cache-control": "public, max-age=0, must-revalidate", 
 
 let composed = null; // { key, site }
 
-function siteFor(snap, revision) {
-  const key = revision ? `${revision.n}:${revision.stamp}:${revision.sstamp || 0}` : "none";
-  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits || {}, revision?.structure || null) };
+function siteFor(snap, revision, shared = null) {
+  const key = (revision ? `${revision.n}:${revision.stamp}:${revision.sstamp || 0}` : "none") + (shared?.key || "");
+  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits || {}, revision?.structure || null, shared) };
   return composed.site;
 }
 
 /* The site as published now: the snapshot with the current revision laid over it, or null when this build
    carries no snapshot (an older server.json, or a test's own content). */
-export async function siteNow() {
+export async function siteNow({ catalogues = true } = {}) {
   const c = serverContent();
   if (!c.render) return null;
-  return siteFor(c.render, await currentRevision());
+  return siteFor(c.render, await currentRevision(), catalogues ? await sharedNow(c.render) : null);
 }
 
 /* The forms this page shows, as they stand now: { forms } (null when it shows none), or { failed: true } when
@@ -124,8 +125,9 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
   if (moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
 
   const snap = c.render;
-  let revision = null, site = null, fault = null;
-  try { revision = await currentRevision(); site = siteFor(snap, revision); } catch (e) { fault = e; }
+  let revision = null, site = null, fault = null, shared = null;
+  try { revision = await currentRevision(); } catch (e) { fault = e; }
+  try { if (!fault || snap?.shared) { shared = await sharedNow(snap); site = siteFor(snap, revision, shared); } } catch (e) { fault = e; }
   // A page moved or retired on the staff page: its old address moves in one step, with or without its final "/", and
   // is tagged like a page, so the next structure change clears it. Retired with nowhere to go, it is the 404 page.
   const shifted = site && !malformed ? site.moves.get(dropSlash(pathname)) : null;
@@ -135,15 +137,20 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
   if (!shifted && !malformed && !pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
 
   try {
-    if (fault) throw fault;
+    if (fault && !site) throw fault;
     const page = shifted ? null : site.pages.find((p) => (p.file ? `/${p.file}` : p.path) === pathname);
     const notFound = !page;
     const shown = page || site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
     const { forms, failed } = await formsNow(shown);
-    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms), { ...(failed ? FALLBACK_CACHE : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms), { ...(fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
+    if (snap?.shared?.exports?.team && pathname.startsWith("/about/our-team/")) {
+      const safe = composeSite(snap, {}, null, { team: { value: { ...snap.team, people: [] }, stale: true, unavailable: true } });
+      const unavailable = safe.pages.find(p => p.id === "pg-about-team");
+      return html(503, renderSitePage(snap, safe, unavailable, today), { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store", "retry-after": "60" });
+    }
     const file = staticFile(pathname);
     if (file) return html(200, file, { ...FALLBACK_CACHE, "x-bss-revision": "build" });
     return html(404, staticFile("/404.html") || "", { ...FALLBACK_CACHE, "x-bss-revision": "build" });
@@ -156,7 +163,7 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
 export async function previewResponse(pageId, { edits, structure, today = chicagoDate() }) {
   const c = serverContent();
   if (!c.render) return null;
-  const site = composeSite(c.render, edits, structure);
+  const site = composeSite(c.render, edits, structure, await sharedNow(c.render));
   const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId);
   if (!page) return null;
   const { forms } = await formsNow(page);

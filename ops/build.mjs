@@ -1,3 +1,4 @@
+import { isDirect } from "./direct.mjs";
 /* The build: content in, a static site out.
  *
  *   node ops/build.mjs                       # the prototype: fixtures allowed, noindex everywhere
@@ -275,7 +276,7 @@ export function loadContent({ production = false, launch = production, textEdits
   const teamAt = feed?.team ? "Connect's public team export" : "content/fixtures/team.json";
   const team = feed?.team ? structuredClone(feed.team) : production ? { schema: "bss.team-fixture/1", fixture: false, people: [] } : readJson("content/fixtures/team.json");
   for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`${teamAt}: ${p}`);
-  photos({ people: publicPeople(team) }, teamAt);
+  if (team.source !== "connect") photos({ people: publicPeople(team) }, teamAt);
   const slugs = new Set(publicPeople(team).map((p) => p.slug));
   for (const page of pages) for (const b of page.blocks || []) {
     if (b.type === "team") for (const g of b.groups || []) if (!GROUPS.includes(g.group)) problems.push(`content/pages: ${page.id}.${b.id}: each group is one of ${GROUPS.join(", ")}`);
@@ -520,7 +521,7 @@ export async function build({ production = false, launch = production, today = n
     events: content.events,
     wallNotes: content.wall.notes,
     wallSample: content.wall.fixture ? content.wall.label : null,
-    team: content.team,
+    team: content.team, teamState: null, resourcesState: null,
     teamSample: content.team.fixture ? content.team.label : null,
     mood: content.mood,
     forms: content.forms,
@@ -576,8 +577,9 @@ export async function build({ production = false, launch = production, today = n
     headers: siteHeaders({ prototype }), redirects: redirects.text,
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({
-      floor: content.floor, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team,
+      floor: content.floor, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team, teamState: null, resourcesState: null,
       forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths,
+      shared: feed ? { source: "connect", exports: { team: !!feed.team, wall: !!feed.wall }, builtAt: new Date().toISOString() } : null,
     }),
     formPages: Object.fromEntries(content.pages.flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null }]))),
   };
@@ -609,7 +611,7 @@ export async function build({ production = false, launch = production, today = n
   return report;
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+if (isDirect(import.meta.url)) {
   const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
   try {
     const r = await build({

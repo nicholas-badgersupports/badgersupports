@@ -90,7 +90,7 @@ export async function sectionsList(pageId) {
   const site = await siteAsSaved(doc);
   const p = site.all.find((x) => x.id === pageId);
   if (!p || !(site.authored.has(p.id) || doc.pages[p.id]?.page)) throw new HttpError(404, "page.unknown");
-  const one = (b) => ({ id: b.id, type: b.type, name: sectionName(b), head: isOpening(b), copy: copyable(b.type) });
+  const one = (b) => ({ id: b.id, type: b.type, name: sectionName(b), head: isOpening(b), copy: copyable(b.type, b) });
   return {
     version, fixed: SECTION_FIXED.has(p.id),
     page: { id: p.id, title: listedTitle(p, site.site), path: p.path, state: stateOf(doc, p.id) },

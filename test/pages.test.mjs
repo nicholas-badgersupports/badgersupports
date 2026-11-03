@@ -74,13 +74,13 @@ test("the peer support groups page keeps the live page's order: drop in, the wee
   assert.match(block(page, "b-pg-intro"), /href="[^"]*\/join\/email-list\/?"[^>]*><span class="go-label">Join Our Email List</, "the email list, as the live hero has it (the live page until ours is built)");
 
   const days = block(page, "b-pg-days");
-  const cards = [...days.matchAll(/<li class="card has-photo" id="([a-z]+)">([\s\S]*?)<\/li>/g)];
-  assert.deepEqual(cards.map((m) => m[1]), ["monday", "tuesday", "wednesday", "thursday"]);
+  const cards = [...days.matchAll(/<li class="card has-photo" id="(day-[0-9-]+)">([\s\S]*?)<\/li>/g)];
+  assert.deepEqual(cards.map((m) => m[1]), ["day-2026-10-20", "day-2026-10-21", "day-2026-10-22", "day-2026-10-26"]);
   for (const [, id, card] of cards) {
     assert.match(card, /<div class="photo"><picture/, `${id}: a photo of people`);
-    assert.match(card, /href="#get-directions"/, `${id}: its own Get directions`);
+    assert.match(card, /href="\/directions\/sac-mhh\/"/, `${id}: its own Get directions`);
   }
-  assert.equal([...cards[0][2].matchAll(/<p class="card-line">/g)].length, 2, "Monday has two groups");
+  assert.equal([...cards.at(-1)[2].matchAll(/<p class="card-line ev-time">/g)].length, 2, "Monday has two groups");
 
   const talk = block(page, "b-pg-talk");
   assert.equal([...talk.matchAll(/<li class="w-[123] tone-[123]">/g)].length, 15);
@@ -357,4 +357,12 @@ test("each application, the letter form and the four request forms has a preview
     assert.ok(notes.length > 5, `${key} has notes to keep out`);
     for (const n of notes) assert.ok(!page.includes(n) && !page.includes(esc(n)), `${key} shows a reviewer's note: ${n}`);
   }
+});
+
+
+test("404 recovery gives direct useful routes without changing status/indexing policy", () => {
+  const page = read("404.html");
+  const recovery = block(page, "b-404");
+  for (const target of ["/", "/join/peer-support-groups/", "/resources/", "mailto:directors@badgersupports.org"]) assert.ok(recovery.includes(`href="${target}"`), target);
+  assert.match(page, /noindex/);
 });

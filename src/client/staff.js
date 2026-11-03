@@ -1066,7 +1066,8 @@ async function loadQuote() {
 let runs = 0;
 async function start() {
   const run = ++runs;
-  const hinted = HINT.test(document.cookie);
+  // Another module can clear the cookie before this page checks; keep the initial page-load hint.
+  const hinted = HINT.test(document.cookie) || document.documentElement.classList.contains("staff-hint");
   const had = state.contains(document.activeElement);
   document.documentElement.classList.remove("staff-hint");
   // Pressed Try again: it stays where it is, busy, while the page checks again.

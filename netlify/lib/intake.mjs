@@ -13,7 +13,8 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { fileRecords, claimFiles } from "./files.mjs";
 import { definitionFor } from "./deliver.mjs";
-import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER } from "../../src/shared/forms.mjs";
+import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources } from "../../src/shared/forms.mjs";
+import { sharedNow } from "./live-content.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 
 const REF_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
@@ -33,11 +34,15 @@ export async function currentForm(key) {
   let def = shipped;
   if (published && (!shipped || published.definition.version > shipped.version)) def = published.definition;
   if (!def) return null;
+  if (Array.isArray(def.sections) && def.sections.some(s => Array.isArray(s.questions) && s.questions.some(q => q.type === "resource"))) {
+    const live = await sharedNow(serverContent().render, { kinds: ["resources"] });
+    if (live?.resources) def = withResources(def, live.resources.value.resources);
+  }
   if (definitionProblems({ ...def, state: "closed" }).length) throw new HttpError(503, "form.broken");
   const sw = await one("SELECT state, closed_message FROM form_state WHERE form_key = $1", [key]);
   if (sw && def.elsewhere) { const { elsewhere, ...own } = def; def = own; }
   let state = sw ? sw.state : def.state;
-  if (state === "open" && allQuestions(def).length === 0) state = "closed";
+  if (state === "open" && (allQuestions(def).length === 0 || allQuestions(def).some(({ q }) => q.type === "resource" && !q.resources?.length))) state = "closed";
   return { def, state, closedMessage: (sw && sw.closed_message) || def.closedMessage };
 }
 

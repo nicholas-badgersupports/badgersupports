@@ -1110,8 +1110,8 @@
     },
     "staff.switch.empty": {
       "group": "staff",
-      "text": "This form has no questions yet, so it cannot open.",
-      "where": "Staff page, when Open is refused for a form with no questions."
+      "text": "This form needs questions and any required choices before it can open.",
+      "where": "Staff page, when Open is refused for a form with no questions or no required resource choices."
     },
     "staff.delivery.sent": {
       "group": "staff",
@@ -2543,6 +2543,61 @@
       "group": "resources",
       "text": "Suggest a Resource",
       "where": "On the resource list: the link under the list to suggest a resource it does not have."
+    },
+    "team.unnamed": {
+      "group": "team",
+      "text": "Team Member",
+      "where": "A published profile whose display name is not supplied."
+    },
+    "team.pageIncomplete": {
+      "group": "team",
+      "text": "Read {{name}}\u2019s Badger Supports profile.",
+      "where": "Profile description when no title is supplied."
+    },
+    "team.unavailable": {
+      "group": "team",
+      "text": "Team profiles are temporarily unavailable. Please try again later.",
+      "where": "Team section when the source and recent safe fallback are unavailable."
+    },
+    "team.stale": {
+      "group": "team",
+      "text": "These are the most recently available profiles. Some details may have changed.",
+      "where": "Team section when Connect could not refresh its public export."
+    },
+    "resources.empty": {
+      "group": "resources",
+      "text": "No resources are listed right now. Please contact us if you need help finding a resource.",
+      "where": "Resource catalogue state or recovery action."
+    },
+    "resources.unavailable": {
+      "group": "resources",
+      "text": "The resource list is temporarily unavailable. Please try again later, or contact us.",
+      "where": "Resource catalogue state or recovery action."
+    },
+    "resources.stale": {
+      "group": "resources",
+      "text": "Showing the most recently available resource list. Some details may have changed.",
+      "where": "Resource catalogue state or recovery action."
+    },
+    "resources.contact": {
+      "group": "resources",
+      "text": "Email Us",
+      "where": "Resource catalogue state or recovery action."
+    },
+    "schedule.directions": {
+      "group": "events",
+      "text": "Get Directions",
+      "where": "Day-card directions or no-upcoming-group action."
+    },
+    "schedule.updates": {
+      "group": "events",
+      "text": "Join Our Email List",
+      "where": "Day-card directions or no-upcoming-group action."
+    },
+    "schedule.weekEmpty": {
+      "group": "events",
+      "text": "No peer support groups are scheduled in the next seven days.",
+      "where": "Peer day cards when the current seven-day window has no occurrences."
     }
   }
 }

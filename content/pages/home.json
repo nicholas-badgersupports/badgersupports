@@ -333,7 +333,11 @@
       "title": "Wall of Support",
       "source": "wall-notes",
       "show": 8,
-      "more": "Show other notes"
+      "more": "Show other notes",
+      "contribute": {
+        "label": "Leave a Note",
+        "href": "/forms/wall-note/"
+      }
     },
     {
       "id": "b-home-involved",

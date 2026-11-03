@@ -276,7 +276,7 @@ function copyBlocks(blocks, id) {
 export const SECTION_FIXED = new Set(["pg-not-found", "pg-staff"]);
 const HEADS = new Set(["pagehead", "hero", "eventhero"]);
 export const isOpening = (b) => HEADS.has(b?.type);
-export const copyable = (type) => { const d = BLOCKS[type]; return !!d && !HEADS.has(type) && !(d.data || []).length && !d.client; };
+export const copyable = (type, block = null) => { const d = BLOCKS[type]; return type === "cards" ? block?.source !== "events" : !!d && !HEADS.has(type) && !(d.data || []).length && !d.client; };
 
 /* What a section is called in a list: its first words, cut to 80 characters, or "" when it has none. */
 export function sectionName(b) {
@@ -438,7 +438,7 @@ function sectionChange(doc, change, ctx, { find, authored }) {
     case "sectionCopy": {
       const b = named(change.section) || fail("section.retired");
       if (isOpening(b)) fail("section.head");
-      if (!copyable(b.type)) fail("section.kind");
+      if (!copyable(b.type, b)) fail("section.kind");
       const copy = copySection(b, used, nested);
       sec.made[copy.id] = copy;
       sec.order = after(full, b.id, copy.id);

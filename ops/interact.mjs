@@ -52,6 +52,7 @@ const check = (ok, what) => results.push({ ok: !!ok, what });
 const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
 /* A part that throws is a failure of that part, and the rest still run. */
 async function part(name, fn) {
+  if (process.env.INTERACT_PART && !name.includes(process.env.INTERACT_PART)) return;
   try { await fn(); } catch (e) { check(false, `${name}: ${String(e.message).split("\n")[0]}`); }
 }
 
@@ -291,6 +292,32 @@ await part("a form's width", async () => {
     if (width === 1280) check(r.compacts.length && r.compacts.every(Boolean), `@1280: a short value's control stays compact (${r.compacts.length} of them)`);
     check(r.sideways <= 0, `@${width}: nothing scrolls sideways`);
     await ctx.close();
+  }
+});
+
+await part("Other answer fields at phone and desktop widths", async () => {
+  const paths = ["/forms/staff-application/preview/", "/forms/volunteer-application/preview/", "/forms/program-request/preview/", "/forms/programming-feedback/"];
+  for (const js of [true, false]) for (const width of [1280, 768, 390, 320]) for (const path of paths) {
+    const branches = js && path.includes("programming-feedback") ? ["workshop", "craft", "peer"] : [null];
+    for (const branch of branches) {
+      const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled: js });
+      const page = await ctx.newPage();
+      await page.goto(BASE + path, { waitUntil: "load" });
+      if (branch) await page.locator(`input[name="category"][value="${branch}"]`).check();
+      if (js) for (const control of await page.locator('input[value="__other"]').all()) if (await control.isVisible()) await control.check();
+      const inputs = await page.locator("input.other-text:visible").all();
+      let fits = inputs.length > 0;
+      for (const input of inputs) {
+        await input.fill("An example Other answer");
+        const r = await input.evaluate(el => {
+          const b = el.getBoundingClientRect(), p = el.closest(".choices").getBoundingClientRect();
+          return { width: b.width, right: b.right, parentRight: p.right, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, value: el.value };
+        });
+        fits &&= r.width >= 100 && r.right <= r.parentRight + 1 && r.overflow <= 0 && r.value === "An example Other answer";
+      }
+      check(fits, `Other input ${js ? "JS" : "no JS"} @${width} ${path}${branch ? `/${branch}` : ""}: ${inputs.length} fields fit, stay usable and accept typing`);
+      await ctx.close();
+    }
   }
 });
 
@@ -556,7 +583,7 @@ async function staffSession(scopes) {
    lost connection. */
 /* `auth`: the sign-in start cookie a press of Sign in leaves. Each redirect the API answers is sent as Netlify sends it,
    and its Location is kept in `redirects`. */
-async function openStaff({ session = null, hint = !!session, auth = null, slow = 0, fail, path = STAFF, js = true, viewport = { width: 1280, height: 900 } } = {}) {
+async function openStaff({ session = null, hint = !!session, auth = null, slow = 0, fail, path = STAFF, js = true, viewport = { width: 1280, height: 900 }, init = null } = {}) {
   const ctx = await browser.newContext({ viewport, javaScriptEnabled: js });
   const cookies = [];
   if (session) cookies.push({ name: "bss_staff", value: await staffSession(session), url: BASE });
@@ -564,6 +591,7 @@ async function openStaff({ session = null, hint = !!session, auth = null, slow =
   if (auth) cookies.push({ name: "bss_auth", value: auth, url: BASE });
   if (cookies.length) await ctx.addCookies(cookies);
   const page = await ctx.newPage();
+  if (init) await page.addInitScript(init);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   /* Every frame, whether the sign-in button or the checking line could be seen. */
@@ -656,6 +684,22 @@ await part("staff page: a past sign-in that has ended", async () => {
   const s = await staffState(page);
   check(s.signIn && s.notes.includes(words("staff.ended")) && !s.hint && !s.who,
     `staff ended: says the sign-in has ended, offers Sign in, and forgets the hint (notes ${JSON.stringify(s.notes)}, hint ${s.hint})`);
+  await ctx.close();
+});
+
+await part("staff page: another module clears the hint before staff starts", async () => {
+  const { ctx, page } = await openStaff({ hint: true, init: () => {
+    const observer = new MutationObserver(() => {
+      if (!document.documentElement?.classList.contains("staff-hint")) return;
+      document.cookie = "bss_staff_hint=; Path=/; Max-Age=0; SameSite=Lax";
+      observer.disconnect();
+    });
+    observer.observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
+  } });
+  await page.waitForFunction((w) => [...document.querySelectorAll(".staff-note")].some((n) => n.textContent === w), words("staff.ended"), { timeout: 3000 }).catch(() => {});
+  const s = await staffState(page);
+  check(s.signIn && s.notes.includes(words("staff.ended")) && !s.hint && !s.who,
+    "staff ended: the page remembers its initial hint after another module clears the cookie");
   await ctx.close();
 });
 

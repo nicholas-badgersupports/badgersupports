@@ -16,7 +16,7 @@ export async function freshServer({ textEdits = {} } = {}) {
   useContent({
     schema: "bss.server/1", prototype: true, site: c.site, routes: c.routes, builtPaths: c.pages.map((p) => p.path),
     forms: c.forms, mood: c.mood, media: c.media, text: c.text, editable: c.editable, assets: { css: "/assets/css/test.css", js: { "site.js": "/s.js", "form.js": "/f.js", "mood.js": "/m.js" } },
-    formPages: { "workshop-request": { id: "pg-form-workshop-request", path: "/forms/workshop-request/", title: "Request a workshop — Badger Supports", blockId: "b-form-workshop", blockTitle: "request a workshop" } },
+    formPages: Object.fromEntries(c.pages.flatMap(p => (p.blocks || []).filter(b => b.type === "form").map(b => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null }]))),
   });
   return db;
 }

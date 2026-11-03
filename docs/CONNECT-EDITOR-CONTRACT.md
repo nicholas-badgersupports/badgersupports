@@ -17,7 +17,7 @@ it with the reasons listed, so an editor can show the same reasons before a dire
 | `title, description` | the browser tab and search result. The title is the page's own words: the site's name is added when the page is drawn, first on the home page and last on every other. The home page draws the site's search description, not one of its own |
 | `analytics` | `public` or `none` (docs/ANALYTICS.md) |
 | `noindex` | keep this page out of search engines |
-| `program` | the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (red); left out, brand red. The header, footer and announcements stay red on every page |
+| `program` | the colour the page wears: `peer` (green), `craft` (purple) or `workshops` (blue); left out, brand red. The header, footer and announcements stay red on every page |
 | `blocks` | the page's blocks, in order; each has a permanent `b-…` id, a type below, `enabled`, and optional `startsOn` / `endsOn` |
 
 ## Blocks
@@ -98,6 +98,7 @@ Reads: `wallNotes`, `wallSample` · analytics: `none` · photos load lazy · bro
 | `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `show` | a whole number |  |
 | `more` | one line of text |  |
+| `contribute` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 
 ### Get involved doors — `involve`
 
@@ -257,7 +258,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 
 ### Team — `team`
 
-Reads: `team`, `teamSample` · analytics: `page` · photos load lazy
+Reads: `team`, `teamSample`, `teamState` · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|
@@ -293,7 +294,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 
 ### Photo cards — `cards`
 
-Reads: nothing but its own fields · analytics: `page` · photos load lazy
+Reads: `events` · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|
@@ -302,6 +303,8 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `lead` | one line of text |  |
 | `items` | cards, each with an id, a title, short lines shown in bold (a time, a slogan), one quieter line of text, an optional photo (a library photo or a pasted link), an optional icon shown when there is no photo, and an optional link | **required** |
 | `links` | several links, in order |  |
+| `source` | a named data source (events, wall notes, team, resources) |  |
+| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 
 ### Word cloud — `words`
 
@@ -336,7 +339,7 @@ Reads: nothing but its own fields · analytics: `none` · photos load eager · b
 
 ### Resource list — `resources`
 
-Reads: `resources`, `resourcesSample`, `resourcesUpdated` · analytics: `none` · photos load lazy · browser module `resources.js`
+Reads: `resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState` · analytics: `none` · photos load lazy · browser module `resources.js`
 
 | Field | Type | |
 |---|---|---|
@@ -476,7 +479,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-564 keys. Keys are permanent. Required text cannot be published empty and must keep each
+575 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -534,7 +537,7 @@ the site adds the markup.
 | `mood.pageTitle` | Thanks for Checking In | Heading of the page shown after a mood tap without JavaScript. |  |
 | `mood.back` | Back to the Homepage | Link on that page. |  |
 
-### Event cards (9)
+### Event cards (12)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -547,6 +550,9 @@ the site adds the markup.
 | `calendar.gone.title` | That event is not coming up any more | Heading on the page an Add to Calendar button opens when the event has happened, moved or been taken off since the page was loaded. |  |
 | `calendar.gone.body` | It may have happened already, or moved to another day. The timetable has what is coming up. | Under that heading. |  |
 | `calendar.gone.back` | See What’s Coming Up | Link under it, to the home page and its timetable. |  |
+| `schedule.directions` | Get Directions | Day-card directions or no-upcoming-group action. |  |
+| `schedule.updates` | Join Our Email List | Day-card directions or no-upcoming-group action. |  |
+| `schedule.weekEmpty` | No peer support groups are scheduled in the next seven days. | Peer day cards when the current seven-day window has no occurrences. |  |
 
 ### Rooms and directions (9)
 
@@ -680,7 +686,7 @@ the site adds the markup.
 | `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
 
-### Team and profiles (7)
+### Team and profiles (11)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -691,6 +697,10 @@ the site adds the markup.
 | `team.pageTitle` | {{name}}, {{title}} | Browser tab and search result title of a profile page; the site's name is added after it. | `{{name}}` `{{title}}` |
 | `team.pageDescription` | {{name}} is {{title}} at Badger Supports. | Search result description of a profile page. | `{{name}}` `{{title}}` |
 | `team.none` | Profiles of our directors, staff and volunteers will appear here. | Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does. |  |
+| `team.unnamed` | Team Member | A published profile whose display name is not supplied. |  |
+| `team.pageIncomplete` | Read {{name}}’s Badger Supports profile. | Profile description when no title is supplied. | `{{name}}` |
+| `team.unavailable` | Team profiles are temporarily unavailable. Please try again later. | Team section when the source and recent safe fallback are unavailable. |  |
+| `team.stale` | These are the most recently available profiles. Some details may have changed. | Team section when Connect could not refresh its public export. |  |
 
 ### Problems (2)
 
@@ -735,7 +745,7 @@ the site adds the markup.
 | `staff.switch.opened` | {{title}} is open. | Staff page, under a form once it has opened. | `{{title}}` |
 | `staff.switch.closed` | {{title}} is closed. Anyone who sends it from a page opened earlier gets their answers back. | Staff page, under a form once it has closed. | `{{title}}` |
 | `staff.switch.slow` | Its page may take up to 30 minutes to show it. | Staff page, after either line above, when the site could not clear the old page. |  |
-| `staff.switch.empty` | This form has no questions yet, so it cannot open. | Staff page, when Open is refused for a form with no questions. |  |
+| `staff.switch.empty` | This form needs questions and any required choices before it can open. | Staff page, when Open is refused for a form with no questions or no required resource choices. |  |
 | `staff.delivery.sent` | {{n}} in Connect | Staff page, how many answers reached Connect. | `{{n}}` |
 | `staff.delivery.waiting` | {{n}} waiting to send | Staff page, how many answers have not gone to Connect yet. | `{{n}}` |
 | `staff.delivery.failed` | {{n}} could not be sent | Staff page, how many answers failed to reach Connect. | `{{n}}` |
@@ -1053,7 +1063,7 @@ the site adds the markup.
 | `auth.error.failed` | Something went wrong signing in. Start again from the staff page. | Sign-in problem: anything else. |  |
 | `auth.error.back` | Back to the Staff Page | Link at the bottom of the sign-in problem page. |  |
 
-### Resource list (35)
+### Resource list (39)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1092,6 +1102,10 @@ the site adds the markup.
 | `resources.report.problem` | Report a Problem | On the resource list: in each resource's Additional Details, the link to report a problem with it. |  |
 | `resources.report.update` | Suggest an Update | On the resource list: in each resource's Additional Details, the link to suggest a change to it. |  |
 | `resources.report.suggest` | Suggest a Resource | On the resource list: the link under the list to suggest a resource it does not have. |  |
+| `resources.empty` | No resources are listed right now. Please contact us if you need help finding a resource. | Resource catalogue state or recovery action. |  |
+| `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
+| `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
+| `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
 
 ## Also edited in Connect
 

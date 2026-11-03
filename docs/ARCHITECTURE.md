@@ -793,20 +793,30 @@ SQL, stops the deploy before it publishes, and the site online stays as it was. 
 (`test/migrations-guard.test.mjs`). Publishes from 23 October on carry `003_files`; the next carries
 `004_session_check` as well, and the guard checks both the same way.
 
-## What is not built
+## Delivery and release state
 
-| Piece | State | Waits on |
+The candidate implementation has local/fixture verification; publication and live confirmation are separate.
+
+| Piece | Candidate behavior | Still to verify or enable |
 |---|---|---|
-| Connect's half | built in the intranet working tree, uncommitted: `publicsite.mjs`, migration `032_public_site`, `public-sso.html` | the owner running Connect's `_xfer/Public website setup` files: 1 saves the 17 files, 2 sets the keys and the one allowed return (`badgersupports-public.netlify.app`) in both projects, 3 publishes |
-| Receipts and the Sheets backup | built locally 25 Oct 2026 (`deliver.mjs`, `backup.mjs`), tested against a fake Connect and a fake Sheets API; off until set up | Connect's `publicReceipt` (proposed), `RECEIPT_SENDER`, the workbook and its service account, the scheduled function (owner actions) |
-| Application files reaching Connect | stored and claimed here; `delivered_at` is never set | Connect fetching them by id (Exchange `APPLICATION-FILES-HANDOVER`) |
-| Publishing edits | built locally 25 Oct 2026: a save is the published revision, drawn by the page function ("Publishing a save") | the two packages, the function's lines in `netlify.toml` and a deploy (owner actions) |
-| Opening and closing forms | built: Open and Close on `/staff/` ("The switch"); nobody holds `forms.switch` until Connect's "Who May Do What on the Website" offers it | Exchange `PUBLIC-FORM-SWITCH-GRANT-2026-10-30` |
-| Wall, team | samples in the prototype; the reader is built against a fake Connect and off (`exports`), so a production build shows neither | Connect's `publicTeam` and `publicWallNotes` and the owner's decisions they name (Exchange `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`) |
-| Recent events | a production build lists none: Connect's public export holds upcoming events only. The site reads a `recent` list when Connect sends one (`ops/connect-feed.mjs`) | Exchange `PUBLIC-EVENTS-RECENT-2026-10-23`; `../WORK.md` item 30 |
-| The resource viewer | not started | `PUBLIC-RESOURCES-AND-WALL`; `../../MASTER-PROMPT.md` §8 |
+| Connect integration | Signed public team, Wall, events and resources use the existing service contract | Real deployed consumer, current credentials/configuration and effective public data |
+| Public catalogues | Team, resources and moderated Wall notes refresh between publishes; source reads are held one minute; pages hold at most 25 minutes plus that minute | Actual CDN/function behavior after the authorized release |
+| Team profiles | Current published fields drive listing and individual routes; missing optional details do not suppress a valid identity; no private fields or static photo copies | Connect's producer still excludes some incomplete profiles; companion Exchange request |
+| Profile photos | Same-origin bounded proxy checks eligibility and the exact Connect photo path, refuses redirects, and refreshes its source bucket each minute | Real photo upload/change/withdrawal and source/CDN behavior |
+| Outages | Last-good catalogues use the existing publication store; personal recognition/notes expire after 30 minutes; stale personal HTML is never cached anew | Store outages and eligibility changes on real hosting; no immutable personal-page fallback |
+| Events | Current read uses last-good persisted public events on failure, falling back to build only if no successful read exists | Deployed cold-instance behavior |
+| Editor | Permissioned saves, history, Restore, pages, sections, settings and rooms are implemented; static cards remain copyable | Current live grants and end-to-end saved overrides |
+| Resource reports | Definitions retain consumer-required IDs/types/visibility; empty catalogues keep resource-specific forms closed | Owner-controlled form opening and actual Connect delivery |
+| Wall form | Closed, anonymous, note only, maximum 280 characters; no receipt; Connect moderates | Connect switch-grant registration, owner opening, and live delivery; existing backup policy remains |
+| Receipts and backup | Existing machinery remains, with no new sender or subscription | Configured sender, workbook/account and schedule under the existing release rules |
+| Privacy/cutover | Existing policy draft remains a draft | Required review and Nicholas's separate domain-switch instruction |
 
-**Single owner, proposed.** This site owns its submission rows, and hands Connect a copy through the outbox.
+Public catalogues use `netlify/lib/live-content.mjs`; editorial composition stays in `pages.mjs` and
+`src/render/site.mjs`. Shared data never becomes editable roster/profile values in this site's source. A published
+editorial revision cannot substitute private account fields. Source failure, successful empty export and expired
+personal fallback are different states. Effective remote behavior is not established by these local tests.
+
+**Submission ownership.** This site owns its submission rows, and hands Connect a copy through the outbox.
 Connect's copy is what the team works from. Nothing here copies Connect's roster (`../../MASTER-PROMPT.md` §5).
 
 ## Photos at build time

@@ -109,13 +109,17 @@ export default {
   type: "resources",
   label: "Resource list",
   fields: { title: "text!", lead: "text", source: "source!", topics: "resourcetopics!" },
-  data: ["resources", "resourcesSample", "resourcesUpdated"],
+  data: ["resources", "resourcesSample", "resourcesUpdated", "resourcesState"],
   client: "resources.js",
   analytics: "none",
   loading: "lazy",
   render(b, ctx) {
     const all = (ctx.data.resources || []).filter((r) => r && r.id && r.name);
-    if (!all.length) return html``;
+    if (!all.length) return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+      <h2 id="${b.id}-h">${b.title}</h2>
+      <p>${ctx.t(ctx.data.resourcesState?.stale ? "resources.unavailable" : "resources.empty")}</p>
+      <p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("resources.contact"))}</p>
+    </div></section>`;
     const topics = (b.topics || []).filter((tp) => all.some((r) => (r.categories || []).includes(tp.category)));
     const topicOf = new Map(topics.map((tp) => [tp.category, tp.label]));
     const rank = (r) => { const i = CAMPUS.indexOf(r.location?.campus); return i < 0 ? CAMPUS.length : i; };
@@ -125,6 +129,7 @@ export default {
     return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+  ${ctx.data.resourcesState?.stale ? html`<p class="sample-note">${ctx.t("resources.stale")}</p>` : ""}
   ${ctx.data.resourcesSample ? html`<p class="sample-note">${ctx.data.resourcesSample}</p>` : ""}
   <div class="res-tools" data-res-tools hidden>
     <div class="res-search">

@@ -27,6 +27,7 @@ import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
+import { forgetSharedEverywhere, teamPhotoResponse } from "./live-content.mjs";
 import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
@@ -281,7 +282,7 @@ async function formSwitch(req, [key], _c, who) {
   const f = await currentForm(key);
   if (!f) throw new HttpError(404, "form.unknown");
   if (state === "open" && body.confirm !== key) throw new HttpError(409, "switch.confirm");
-  if (state === "open" && !allQuestions(f.def).length) throw new HttpError(409, "switch.empty");
+  if (state === "open" && (!allQuestions(f.def).length || allQuestions(f.def).some(({ q }) => q.type === "resource" && !q.resources?.length))) throw new HttpError(409, "switch.empty");
   await setSwitch(key, state, who.sub);
   let purgeError = null;
   try { await purgeTags(await formTags(key)); } catch (e) { purgeError = e.code || "purge.unavailable"; console.error("purge:", e.code || e.message); }
@@ -345,6 +346,7 @@ async function refreshRoute(req, _m, context, who) {
   let publishError = null, purgeError = null;
   try { await publishRevision(who); } catch (e) { publishError = e.code || "publish.unavailable"; }
   // The note lives in the revision's store: when that store is down, publishError says so; a failure here alone is logged.
+  await forgetSharedEverywhere().catch((e) => console.error("public content: refresh note unavailable", e.code || "error"));
   await forgetEventsEverywhere().catch((e) => console.error("events: the refresh note could not be written:", e.message));
   try { await clearTags(context, ["page", "events"]); } catch (e) { purgeError = e.code || "purge.unavailable"; }
   return json(200, { ok: true, ...(await publishedNow()), ...(publishError ? { publishError } : {}), ...(purgeError ? { purgeError } : {}) });
@@ -467,6 +469,7 @@ async function eventCalendar(req, [eventId]) {
 }
 
 export const ROUTES = [
+  ...["GET", "HEAD"].map(method => ({ name: "teamPhoto", method, pattern: /^\/api\/team-photo\/([A-Za-z0-9_-]{1,100})$/, tier: "public", run: (req, [id]) => teamPhotoResponse(req, id) })),
   { name: "health", method: "GET", pattern: /^\/api\/health$/, tier: "public", run: async () => json(200, { ok: true }) },
   { name: "formState", method: "GET", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/state$/, tier: "public", run: formState },
   { name: "formSubmit", method: "POST", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/submit$/, tier: "public", run: formSubmit },

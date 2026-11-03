@@ -1,3 +1,4 @@
+import { isDirect } from "./direct.mjs";
 /* Is every word editable? Lists any word the code prints that is not a text key.
  *
  *   node ops/editable.mjs
@@ -166,7 +167,7 @@ export function editableReport() {
   return { problems, unused, keys: keys.size, files: files.length };
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+if (isDirect(import.meta.url)) {
   const r = editableReport();
   for (const p of r.problems) console.log(`  not editable: ${p}`);
   for (const k of r.unused) console.log(`  unused key:   ${k}`);

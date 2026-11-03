@@ -698,3 +698,83 @@ cell wraps, and "Ended" started its own line with its dot ("· Ended").
 |---|---|---|
 | "On a phone" is the one-column event layout, 860 px and narrower | the dot started a line only there; the desktop cell never wraps | move the two rules to another width |
 | There, "Ended" always takes its own line | without the dot, sign-up words before it ("No Sign-Up") would run into it; an ended row hides its Drop in, so today it stands alone | delete `display: block` in that block |
+
+
+## 3 November 2026 · Connect delivery and incomplete profiles (Owner; queued, not built)
+
+Source: Nicholas's queue-intake interview in Codex, 3 November 2026. He expressly requested **queue updates only**.
+This records future work and makes no code, switch, deployment, sending or account change.
+
+- **Priority one:** get Connect information onto the public website, starting with team profiles that are not
+  appearing. His answer: “Update automatically, I should be able to select in the settings waht the required public
+  profile fields are, right now something is blocking any profiels from reaching”. Public WORK item 19 is first;
+  Connect companion is CONNECT-PUBLIC-DELIVERY-P1.
+- **Incomplete profiles still publish.** His later answer settles how the required fields work: “if the public
+  profile details are missing, have notifications or prompts until the information is complete, it should still
+  get published to the public website even if details are missing”. Settings requirements measure completeness and
+  drive prompts/reminders, not approval or publication blocking. This supersedes earlier profile-field validation
+  to the extent it hides an eligible profile or stops the whole website because its details are incomplete.
+- **Preserve visibility and privacy.** Existing default-public/opt-out, Student Supporter-only opt-in, and dual-role
+  supporter-disclosure choices remain. Missing optional display elements are omitted; no biography, credentials,
+  photo or other personal fact is invented. Public display fields stay separate from private roster/payroll/access
+  data and SPILL cases. Existing uploaded-photo/public-contact restrictions remain.
+- **Automatic updates:** retain the agreed refresh bound, within 30 minutes, and authorized Refresh Now. Finish the
+  export/consumer connection and explain failures; do not require a manual publish or paid build for each profile edit.
+  Verify existing events/resources/approved Wall paths as part of delivery; team profiles are the first finish line,
+  not authorization to add unrelated new content types.
+- **Website Forms:** Connect's screen needs a truthful state and useful action, distinguishing no answers, filters,
+  closed forms, permissions, connection trouble and failed loads. Verify website submission delivery rather than
+  treating an empty list as a successful connection. Coordinate existing WORK items 17 and 21 with Connect ADMIN-A6.
+- **Report notifications:** resource and bug report alerts and member subscriptions/reminders are controlled through
+  customizable Connect Settings. Nicholas named nicholas@badgersupports.org for report alerts and
+  directors@badgersupports.org as sender. Connect owns preferences, sending and delivery; do not add a second public
+  mail mechanism. Opening forms or enabling sending is outside this queue update.
+- **Shared sign-in:** Connect owns the change from Opening Google to Authenticating in its ordinary and shared SSO
+  doors (CONNECT-AUTHENTICATING). This does not independently rewrite this site's other sign-in wording.
+
+Read-only evidence: Connect's `netlify/actions/public.mjs` and this site's `ops/connect-feed.mjs` already contain the
+export and consumer. `content/connect-feed.json` still has team/wall off. Exchange
+`to-public/CONNECT-SESSION3-LIVE-2026-11-02.md` reports Connect published in `b9d7ebd` and the website's pickup at
+23:00 Chicago; it explicitly did not call the production exports. Verify actual current availability when the queued
+work is selected. Local/fixture proof, a reported deployment and independent live verification are different claims.
+
+Accept: eligible complete/incomplete profiles and saved edits reach the rendered site automatically within the
+agreed refresh window; completion requirements prompt without suppressing; hidden/private data stays absent; one
+incomplete profile cannot stop other content. Record the actual export/consumer state and remaining live actions.
+
+
+## 3 November 2026 · Authorized queue implementation and Claude verification
+
+Nicholas authorized building as much of the public website queue as practical, beginning with Connect team delivery,
+in a separate working copy with fresh baseline checks. Codex does not publish; Claude verifies the resulting candidate
+before the release. This supersedes the earlier audit-only phase for application implementation.
+
+Implementation choices (delegated, not new Board policy): keep the existing site identity and layout; accept valid public
+identities with incomplete optional display fields; isolate corrupt identity rows; never derive private fields or supporter
+consent. Refresh approved catalogues through the existing publication store, use a bounded same-origin photo proxy,
+and prevent immutable-page fallback from reviving a withdrawn profile. Personal fallback is limited to 30 minutes and
+stale personal HTML receives no new cache lease. Resources/events retain last-good approved reads. These choices are
+reversible in the candidate branch; no live setting, sender, subscription, roster, form opening or domain was changed.
+
+The Wall form remains closed and uses the existing anonymous intake, moderation, idempotency and backup policy.
+Consumer-required resource fields cannot be hidden, made optional, retyped or replaced with sender questions. Peer day
+cards retain their photos/position while times and each room follow approved occurrences. Other-answer inputs preserve
+their indent within their question width. Static card sections retain Copy; dynamic source cards are not copyable.
+
+Alumni remains email-first for former BSS/BSN and SPILL staff, supporters, volunteers and leaders. The existing email-list
+route is reused; the restricted testimonial link is removed from this email-only page. This does not create an alumni
+subscription destination, restore unapproved historical data, or prove real enrollment/delivery. Those remain in the
+queue and release checks. Newly proposed policy text remains a draft, and the existing publication/cutover boundaries
+still apply where Nicholas has not changed them.
+
+The final local gate exposed a sign-in hint race: the edit module can clear the cookie before the staff module reads
+it. The staff page now also reads its captured initial hint, preserving the ended-session message without granting
+access. Prototype event cards load the local clock without calling Connect. Resource-suggestion definitions retain
+an explicit single-link limit, and photo responses are bounded by origin/path, raster type and byte size. These are
+delegated correctness fixes; the source-bound handoff records their tests and the final gate outcome.
+
+An overlapping unpublished Connect candidate supplies a content-version photo query. The public proxy accepts only
+its exact optional `v` content hash, preserves it and adds a separate bounded refresh bucket; arbitrary or repeated
+parameters remain refused. A frozen fictional producer fixture covers sparse profiles and this photo shape. This is
+candidate pairing evidence, not a live-export claim. Preserve both public candidates and reconcile their reviewed
+changes in a new integration tree; do not overlay one working folder onto the other.

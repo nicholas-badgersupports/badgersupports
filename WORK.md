@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 2 Nov 2026. `node ops/check.mjs` keeps this file under 180 lines.
+brief is `../MASTER-PROMPT.md`. Updated 3 Nov 2026 (isolated candidate; not published). Candidate: Connect catalogues/team photos, Wall intake, resource invariants, live day cards, phone Other fields and command symlinks. Evidence and remaining work: `../../Admin/Handoffs/active/PUBLIC-SITE-HANDOFF-2026-10-30.md`.
 
 ## Where it stands
 
@@ -31,7 +31,7 @@ Every person named in `content/` is fictional; real team members appear only thr
 
 ## Decisions
 
-The owner's rulings, quoted, are in `docs/DECISIONS.md`, Rounds 1–7 and the sets of answers; the newest win. Everything
+The owner's rulings are in `docs/DECISIONS.md`; the newest win. Current rule index: `docs/ACTIVE-RULES.md`. Everything
 else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 
 - **Editing, delivery, platform** (24 Oct 2026; `docs/DECISIONS.md`, "Two answers", "The platform"): Edit text grows
@@ -77,7 +77,7 @@ between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard br
    only the functions; without them a publish stops with "Nothing was built" and the last deploy stays.
 3. **Releases come from the laptop**, in a new folder outside the synced one: only it has the 23 Drive originals,
    and the synced `dist/` holds conflict copies that cannot be deleted here (`docs/DESIGN.md`).
-5. **Connect** has no Wall or team export (item 19) and does not file the three resource forms (item 21): off, and closed.
+5. **Connect** reports exports/resource ingestion published in its 2 Nov handoff; website verification/consumer completion is still owed (priority item 19; item 21). Exports remain off and forms closed in this tree.
 6. **Cost**: prices read 23 Oct (`docs/ARCHITECTURE.md`, "Cost"); what each database used is in Billing → Usage only.
 7. **The privacy policy** page still names Google Sites, Analytics and Forms. The draft of what the site does now, `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (`2bab970`), waits for the owner's and a legal review.
 8. **Analytics is off.** The GA4 property is unverified; the connector asked to reauthenticate.
@@ -113,6 +113,9 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 §10), 29 (events between publishes, §7). **Added 24 Oct, queued only:** 33–39, from the brief, `../PUBLIC-PLATFORM-PROMPT-2026-10-24.md`
 (P1–P5) and `../PUBLIC-EXCHANGE-AND-SECURITY-PROMPT-2026-10-24.md` (X1–X4). P2 extends 15 and 16; P3, 18; P5, 22 and 23.
 
+19. **PRIORITY ONE · Complete Connect → public website delivery** (queued 3 Nov; Connect CONNECT-PUBLIC-DELIVERY-P1; Decisions, 3 Nov).
+    Finish the existing connection, starting with team profiles. Publish eligible profiles even when incomplete; configurable required fields prompt/remind, never block publication. Preserve opt-out/supporter disclosure and public-field restrictions; invent no facts.
+    Accept: verify the live export/consumer against Connect's 2 Nov handoff; saved changes arrive automatically within 30 minutes, incomplete profiles render without stopping other content, and private data stays absent. Verify existing events/resources/Wall paths too. No switch changes in this queue update.
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
 15. **Editor and publishing** → **words done** 20 Oct; 25 Oct: every field a value, earlier versions, Restore, a save that publishes **shipped** in `9bf0ed5`. P2 → every field
@@ -128,12 +131,10 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     submission → one record, receipt, row. Off until: Connect's `publicReceipt`, the sender, the workbook and its account,
     the schedule (owner, `docs/COMMUNICATIONS.md`). Confidential answers left out unless the owner says (R.46).
     Decisions and bulk mail stay Connect's, behind a director's approval.
-19. **Connect: exports**: events and resources **done** 23 Oct; team and wall read against a fake Connect, off (`exports`), 30 Oct
-    (`test/connect-feed.test.mjs`). Still → Connect's `publicTeam`, `publicWallNotes` (Exchange, 30 Oct); a person appears only from their own profile, public unless they turn it off (DECISIONS, 4c).
 20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is on Connect's GitHub `main`
     and in its production `202b88f` (read 30 Oct); not tried live. **Google sign-in consumer live 30 Oct, a78d13e** (Connect GOOGLE-SIGNIN): no `/staff/`
     help; Connect's shared quote (`/api/signin-quotes`); sessions keep `method` (migration 007) for the status check. No Google code here. **The address after signing in** (queue item 15; DECISIONS; ARCHITECTURE, "Signing in"): Netlify puts the callback's query on its redirect (read live 2 Nov); the inline script takes `code` and `state` off; committed and pushed 2 Nov, not deployed.
-21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated. **Built closed** 30 Oct (`docs/DECISIONS.md`); waits for Connect.
+21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated. **Built closed** 30 Oct; Connect reports ingestion published 2 Nov: verify delivery before website activation. Queued 3 Nov: clear form/connection state and next actions (ADMIN-A6); report alerts configured in Connect Settings, not a new public mail engine.
 22. **Analytics** (Q1; §9) → an event dictionary; exclusions before any tag loads; no Connect identity; network read.
     Netlify Web Analytics, reported on 24 Oct → verified per project and in billing; no other collector.
 23. ~~Netlify~~ keys and database 20 Oct; **cost plan** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Waits for a yes

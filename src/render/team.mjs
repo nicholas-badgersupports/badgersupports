@@ -12,7 +12,8 @@
  * person's address should not move with it.
  */
 
-import { photoProblems } from "./media.mjs";
+import { photoProblems, picture } from "./media.mjs";
+import { html, attrs } from "./html.mjs";
 
 export const TEAM_SCHEMA = "bss.team-fixture/1";
 export const GROUPS = ["directors", "associate-directors", "staff", "volunteers", "advisors"];
@@ -37,7 +38,7 @@ export function teamProblems(team, { media = null, production = false } = {}) {
     if (!SLUG_RE.test(p.slug || "")) out.push(`${at}: slug must use a–z, 0–9 and single hyphens`);
     if (slugs.has(p.slug)) out.push(`${at}: duplicate slug`);
     slugs.add(p.slug);
-    for (const k of ["name", "title", "role"]) if (!p[k]) out.push(`${at}: needs a ${k}`);
+    for (const k of (team.source === "connect" ? [] : ["name", "title", "role"])) if (!p[k]) out.push(`${at}: needs a ${k}`);
     if (!GROUPS.includes(p.group)) out.push(`${at}: group must be one of ${GROUPS.join(", ")}`);
     if (!Array.isArray(p.bio) || p.bio.some((x) => typeof x !== "string")) out.push(`${at}: bio is a list of paragraphs`);
     if (p.contact && !CONTACT_RE.test(String(p.contact).replace(/^mailto:/, ""))) out.push(`${at}: a public contact is a badgersupports.org or wisc.edu address`);
@@ -50,7 +51,7 @@ export function teamProblems(team, { media = null, production = false } = {}) {
 /* The published people, in order: by group, then the order Connect gives, then name. */
 export function publicPeople(team) {
   return (team?.people || []).filter((p) => p.published)
-    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order ?? 99) - (b.order ?? 99) || a.name.localeCompare(b.name));
+    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order ?? 99) - (b.order ?? 99) || String(a.name || "").localeCompare(String(b.name || "")));
 }
 
 /* One page per published person. t is the resolved word table, for the title and description. */
@@ -61,8 +62,8 @@ export function personPages(team, t) {
     path: personPath(p.slug),
     aliases: p.aliases || [],
     generated: "person",
-    title: t("team.pageTitle", { name: p.name, title: p.title }),
-    description: t("team.pageDescription", { name: p.name, title: p.title }),
+    title: p.title ? t("team.pageTitle", { name: p.name || t("team.unnamed"), title: p.title }) : p.name || t("team.unnamed"),
+    description: p.title ? t("team.pageDescription", { name: p.name || t("team.unnamed"), title: p.title }) : t("team.pageIncomplete", { name: p.name || t("team.unnamed") }),
     analytics: "public",
     blocks: [{ id: "b-person", type: "person", person: p.slug }],
   }));
@@ -72,3 +73,9 @@ export function personPages(team, t) {
    person's own old address, when Connect carries one as an alias, wins over it. */
 const OLD_GROUPS = ["advisors", "directors", "general-staff", "volunteers"];
 export const teamRedirects = () => OLD_GROUPS.map((g) => `${TEAM_PATH}${g}/*  ${TEAM_PATH}  301`);
+
+/* Public profile photos stay under the bounded proxy; library fixture photos retain responsive variants. */
+export function personPhoto(ctx, p, options) {
+  if (ctx.data.team?.source !== "connect") return picture(ctx, p.photo, options);
+  return html`<picture><img${attrs({ src: `/api/team-photo/${encodeURIComponent(p.id)}`, width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", decoding: "async" })}></picture>`;
+}

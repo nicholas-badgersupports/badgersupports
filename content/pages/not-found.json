@@ -14,6 +14,24 @@
       "title": "We couldn't find that page",
       "body": [
         "It may have moved while the site was rebuilt. The menu above has every section, and the homepage has this week's groups and events."
+      ],
+      "links": [
+        {
+          "label": "Home",
+          "href": "/"
+        },
+        {
+          "label": "Peer Support Groups",
+          "href": "/join/peer-support-groups/"
+        },
+        {
+          "label": "Resources",
+          "href": "/resources/"
+        },
+        {
+          "label": "Email Us",
+          "href": "mailto:directors@badgersupports.org"
+        }
       ]
     }
   ]

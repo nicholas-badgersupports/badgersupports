@@ -76,7 +76,7 @@ export function withResources(def, resources) {
   if (!def || !Array.isArray(def.sections) || !def.sections.some((s) => (s.questions || []).some((q) => q.type === "resource"))) return def;
   const list = (resources || []).filter((r) => r && r.id && r.name).map((r) => ({ id: String(r.id), name: String(r.name) }))
     .sort((a, z) => a.name.localeCompare(z.name, "en") || a.id.localeCompare(z.id));
-  return { ...def, sections: def.sections.map((s) => ({ ...s, questions: (s.questions || []).map((q) => (q.type === "resource" ? { ...q, resources: list } : q)) })) };
+  return { ...def, ...(list.length ? {} : { state: "closed" }), sections: def.sections.map((s) => ({ ...s, questions: (s.questions || []).map((q) => (q.type === "resource" ? { ...q, resources: list } : q)) })) };
 }
 
 /* ------------------------------------------------------------------ walking a definition */
@@ -139,7 +139,7 @@ export function definitionProblems(def) {
         }
       }
       if (type.list) {
-        if (!Array.isArray(q.resources) || q.resources.length === 0) add("resources-missing", qat);
+        if (!Array.isArray(q.resources) || (!q.resources.length && def.state !== "closed")) add("resources-missing", qat);
         const ids = new Set();
         for (const r of q.resources || []) {
           if (!RESOURCE_ID_RE.test(String(r?.id || ""))) add("resource-id-shape", `${qat}.${r?.id}`);
@@ -167,6 +167,26 @@ export function definitionProblems(def) {
   /* An open form with nothing to answer is how an application "opens" with no questions on it.
      Refused by name rather than rendered as an empty page with a Send button. */
   if (def.state === "open" && answerable === 0) add("open-without-questions", "state");
+  const delivery = {
+    "resource-problem": { resource: ["resource", true], problem: ["long", true] },
+    "resource-update": { resource: ["resource", true], field: ["select", true], words: ["long", true] },
+    "resource-suggestion": { name: ["short", true], link: ["links", false], about: ["long", false] },
+    "wall-note": { note: ["long", true] },
+  }[def.key];
+  if (delivery) {
+    const qs = def.sections.flatMap(s => (s.questions || []).map(q => ({ q, section: s })));
+    for (const [id, [type, required]] of Object.entries(delivery)) {
+      const row = qs.find(({ q }) => q.id === id);
+      if (required && (!row || row.q.required !== true || row.q.showIf || row.section.showIf)) add("delivery-required", id);
+      if (row && row.q.type !== type) add("delivery-type", id);
+    }
+    const link = qs.find(({ q }) => q.id === "link")?.q;
+    if (link && link.maxLinks !== 1) add("delivery-links", "link");
+    if (qs.some(({ q }) => !Object.hasOwn(delivery, q.id))) add("delivery-fields", def.key);
+    if (def.anonymous !== true || def.workflow?.receipt !== "none") add("delivery-anonymous", def.key);
+    if (def.key === "wall-note" && (qs.length !== 1 || qs[0]?.q.maxLength !== 280)) add("wall-shape", def.key);
+  }
+
   return problems;
 }
 

@@ -1,0 +1,105 @@
+{
+  "ok": true,
+  "schema": "bss.team/1",
+  "generatedAt": "2026-11-03T09:29:01.265Z",
+  "people": [
+    {
+      "id": "p82ea2ab92dd6ef7d47d2cd92",
+      "published": true,
+      "name": "Ari Teamfictional",
+      "title": "Faculty Advisor",
+      "role": "Advisor",
+      "group": "advisors",
+      "bio": [],
+      "slug": "ari-teamfictional"
+    },
+    {
+      "id": "pde210ffc338174101427cad0",
+      "published": true,
+      "name": "Abel Renamedfictional",
+      "title": "Associate Director of Outreach",
+      "role": "Associate Director",
+      "group": "associate-directors",
+      "bio": [],
+      "slug": "abel-teamfictional"
+    },
+    {
+      "id": "p20b16b9315ad7b52852fa380",
+      "published": true,
+      "name": "Bo Teamfictional",
+      "title": "Peer Facilitator, SPILL Student Supporter",
+      "role": "Peer Facilitator",
+      "group": "staff",
+      "bio": [],
+      "slug": "bo-teamfictional"
+    },
+    {
+      "id": "pb252ea1160931786e5ba3752",
+      "published": true,
+      "name": "Dana Teamfictional",
+      "pronouns": "they/them",
+      "classYear": "2027",
+      "title": "Director of Programs",
+      "role": "Director",
+      "group": "directors",
+      "bio": [
+        "First fictional paragraph.",
+        "Second one."
+      ],
+      "slug": "dana-teamfictional",
+      "photo": {
+        "url": "https://home.badgersupports.org/p/pb252ea1160931786e5ba3752?v=624fc0a006e31b1610bb226be8b1a879",
+        "alt": "Dana Teamfictional"
+      }
+    },
+    {
+      "id": "p122213592dbeca3d62c0a882",
+      "published": true,
+      "group": "staff",
+      "bio": [],
+      "slug": "profile-122213592dbeca3d62c0a882"
+    },
+    {
+      "id": "p356d5d30dddde17b57a070e1",
+      "published": true,
+      "name": "Sol Teamfictional",
+      "title": "Programs Coordinator",
+      "role": "Coordinator",
+      "group": "staff",
+      "bio": [
+        "A completed fictional biography."
+      ],
+      "contact": "programs@badgersupports.org",
+      "slug": "sol-teamfictional"
+    },
+    {
+      "id": "pf2e1cdbbcf4798c4fd3fc45f",
+      "published": true,
+      "name": "Dana Teamfictional",
+      "title": "Coordinator",
+      "role": "Coordinator",
+      "group": "staff",
+      "bio": [],
+      "slug": "dana-teamfictional-2"
+    },
+    {
+      "id": "pa36dee715369d270464fbe3e",
+      "published": true,
+      "name": "李明",
+      "group": "staff",
+      "bio": [],
+      "slug": "profile-a36dee715369d270464fbe3e"
+    },
+    {
+      "id": "p444d3707250f13a70e275f7e",
+      "published": true,
+      "name": "Val Teamfictional",
+      "title": "Outreach Volunteer",
+      "role": "Volunteer",
+      "group": "volunteers",
+      "bio": [],
+      "contact": "name@wisc.edu",
+      "slug": "val-teamfictional"
+    }
+  ]
+}

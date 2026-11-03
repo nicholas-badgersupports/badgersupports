@@ -53,7 +53,7 @@ function fakeConnect(events, { fail = false } = {}) {
 
 const OUT = path.join(ROOT, "local", "test-build-live");
 const FIXTURE_OUT = path.join(ROOT, "local", "test-build-live-fixture");
-await build({ production: true, connectConfig: fakeConnect(PUBLISHED).cfg, out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: TODAY });
+await build({ production: true, feedRules: { ...JSON.parse(fs.readFileSync(path.join(ROOT, "content/connect-feed.json"))), exports: { team: false, wall: false } }, connectConfig: fakeConnect(PUBLISHED).cfg, out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: TODAY });
 await build({ out: FIXTURE_OUT, serverDir: path.join(FIXTURE_OUT, "_server"), media: false, today: TODAY });
 const server = (out) => JSON.parse(fs.readFileSync(path.join(out, "_server", "server.json"), "utf8"));
 const LIVE = server(OUT);
@@ -87,6 +87,7 @@ test("pages built from Connect's list ask for it again, and their calendar butto
   assert.doesNotMatch(craft, /href="\/calendar\//);
   assert.doesNotMatch(read(OUT, "about/what-we-do/index.html"), /data-refresh/, "a page with no event block never asks");
   assert.doesNotMatch(read(FIXTURE_OUT, "join/craft-nights/index.html"), /data-refresh|\/api\/calendar\//, "a prototype never asks");
+  assert.match(read(FIXTURE_OUT, "join/peer-support-groups/index.html"), /schedule\.js/, "prototype day cards still mark ended groups without requesting Connect");
   assert.ok(fs.existsSync(path.join(OUT, "calendar", "connect-e1.ics")), "the publish still writes its calendar files");
   assert.ok(!Object.hasOwn(LIVE.events.pages, "pg-about-what-we-do"));
   assert.ok(!JSON.stringify(LIVE.events).includes("test-key"), "no key in what the API reads");
@@ -108,6 +109,35 @@ test("with nothing changed in Connect, each block is what the publish wrote, byt
   assert.ok("b-home-week" in home.blocks && "b-home-craft" in home.blocks);
   assert.ok(!("b-home-wall" in home.blocks), "only the blocks that show events");
   assert.deepEqual(connect.calls, ["publicEvents"], "asked once for both pages");
+});
+
+test("peer day cards follow changed weekly times and rooms, then removal, without a publish", async () => {
+  const feed = structuredClone(PUBLISHED);
+  const connect = fakeConnect(feed);
+  given(connect);
+  const cards = async () => {
+    const reply = await eventSections("pg-peer-groups", { today: TODAY });
+    assert.equal(reply.stale, false);
+    assert.equal(typeof reply.blocks["b-pg-days"], "string");
+    return reply.blocks["b-pg-days"];
+  };
+  assert.match(await cards(), /SAC Caucus Room/);
+  feed.version = "ev-peer-moved";
+  feed.weekly = [{ ...feed.weekly[0], start: "12:15", end: "13:45", room: "SAC Hearing Room" }];
+  forgetEvents();
+  const moved = await cards();
+  assert.match(moved, /12:15–1:45/);
+  assert.match(moved, /SAC Hearing Room/);
+  assert.match(moved, /href="\/directions\/sac-hearing\/"/);
+  assert.doesNotMatch(moved, /SAC Caucus Room|Student Mental Health Hub|T17:00:00/);
+  feed.version = "ev-peer-removed";
+  feed.weekly = [];
+  forgetEvents();
+  const empty = await cards();
+  assert.ok(empty.includes(TEXT["schedule.weekEmpty"]));
+  assert.match(empty, /href="\/join\/email-list\/"/);
+  assert.doesNotMatch(empty, /class="card-list"|class="ev"/);
+  assert.deepEqual(connect.calls, ["publicEvents", "publicEvents", "publicEvents"]);
 });
 
 test("an event on the page it would link to is named, not linked: the page never links to itself, before or after a refresh", async () => {
@@ -284,4 +314,16 @@ test("item 9 (c): the browser keeps no event answer or calendar file, from Conne
   const stale = await quietly(() => get("/api/events/pg-home"));
   assert.equal(stale.headers.get("cache-control"), "public, max-age=0, must-revalidate", "(the published list)");
   assert.equal(stale.headers.get("netlify-cdn-cache-control"), "public, s-maxage=30", "the CDN still holds it half a minute");
+});
+
+test("item 17: an outage uses the last successful public read even in another cold instance", async () => {
+  given(fakeConnect(LATER));
+  const before = await eventSections("pg-craft-nights", { today: TODAY });
+  assert.match(Object.values(before.blocks).join(""), /Example night added later/);
+  useConnect(fakeConnect(PUBLISHED, { fail: true }).cfg);
+  const cold = await import("../netlify/lib/live-events.mjs?cold-last-good");
+  const after = await quietly(() => cold.eventSections("pg-craft-nights", { today: TODAY }));
+  assert.equal(after.stale, true);
+  assert.match(Object.values(after.blocks).join(""), /Example night added later/);
+  assert.doesNotMatch(Object.values(after.blocks).join(""), /Example night one/);
 });

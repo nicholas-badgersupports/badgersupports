@@ -126,8 +126,9 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   const main = blocks.filter((b) => BLOCKS[b.type].placement !== "top");
   // A page built from Connect's events with a block that can show them again asks for them between
   // publishes; schedule.js does the asking (netlify/lib/live-events.mjs answers).
-  const refreshing = ctx.liveEvents && blocks.some(refreshes);
-  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(refreshing ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
+  const eventClock = blocks.some(refreshes);
+  const refreshing = ctx.liveEvents && eventClock;
+  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(eventClock ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
   const a = ctx.assets;
   const canonical = ctx.site.origin + page.path;
   const title = pageTitle(page, ctx.site);

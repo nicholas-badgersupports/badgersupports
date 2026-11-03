@@ -101,6 +101,6 @@ test("a split list with nothing to show keeps an empty hidden place, and a hero 
     /<span class="evcard-chip"><svg class="ic" data-i="pin"[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg>Drop In<\/span>/, "a room with no page yet keeps the words, unlinked");
   const past = fixtureContext(only("2026-10-01"));
   const hero = String(BLOCKS.eventhero.render({ id: "b-x", type: "eventhero", title: "Example Nights", source: "events", program: "craft" }, past));
-  assert.match(hero, /<p class="evlist-none" data-live="next">/);
+  assert.match(hero, /<div data-live="next"><p class="evlist-none">/);
   assert.doesNotMatch(hero, /is-feature|btn--big/);
 });

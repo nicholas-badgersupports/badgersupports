@@ -96,7 +96,7 @@ fieldset.field { border: 0; padding: 0; margin-inline: 0; min-width: 0; }
 .choice { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: .6rem; align-items: start; min-height: 44px; padding: .55rem .25rem; border-radius: var(--r-input); cursor: pointer; }
 .choice:hover { background: var(--cream); }
 .choice input { width: 1.25rem; height: 1.25rem; margin: .15rem 0 0; accent-color: var(--accent); }
-.other-text { margin-left: 2.1rem; max-width: 24rem; }
+.field input.other-text { margin-left: 2.1rem; width: calc(100% - 2.1rem); max-width: 24rem; min-width: 0; }
 
 /* A ranking: each option's name beside its place. */
 .rank { display: grid; gap: var(--s1); }

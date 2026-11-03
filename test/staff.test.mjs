@@ -2163,3 +2163,16 @@ test("item 9 (a): a saved word, a settings change and Refresh now clear again af
     assert.ok(!held.has(address), `${what}: the page drawn just before the change is not kept`);
   }
 });
+
+test("a resource form with no choices refuses Open without persisting a false open state", async () => {
+  await freshServer();
+  const { serverContent } = await import("../netlify/lib/content.mjs");
+  const def = structuredClone(serverContent().forms["resource-problem"]);
+  for (const s of def.sections) for (const q of s.questions) if (q.type === "resource") q.resources = [];
+  serverContent().forms["resource-problem"] = def;
+  const f = fakeConnect({ scopes: ["forms.switch:resource-problem"] }); useConnect(f.cfg);
+  const { cookie } = await signIn(f);
+  const res = await handle(staffPost("/api/staff/forms/resource-problem/switch", { state: "open", confirm: "resource-problem" }, cookie), ip());
+  assert.equal(res.status, 409); assert.equal((await res.json()).error, "switch.empty");
+  assert.equal((await many("SELECT * FROM form_state WHERE form_key = 'resource-problem'")).length, 0);
+});

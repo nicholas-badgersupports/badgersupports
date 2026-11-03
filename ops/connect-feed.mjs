@@ -33,7 +33,8 @@ import path from "node:path";
 import { call, serviceConfig } from "../netlify/lib/connect.mjs";
 import { addDays } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
-import { TEAM_SCHEMA } from "../src/render/team.mjs";
+import { photoProblems } from "../src/render/media.mjs";
+import { TEAM_SCHEMA, GROUPS } from "../src/render/team.mjs";
 
 export const FEED_SCHEMA = "bss.connect-feed/1";
 const HM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -49,7 +50,7 @@ export const WALL_EXPORT = "bss.wall/1";
 export const WALL_NOTE_MAX = 280;
 // The only fields of a public profile that reach this site. Anything else Connect sends is dropped unread,
 // so a field Connect adds later reaches no page until it is named here.
-const PROFILE_FIELDS = ["id", "slug", "name", "pronouns", "classYear", "credentials", "title", "role", "group", "order", "bio", "contact", "aliases"];
+const PROFILE_FIELDS = ["id", "slug", "name", "pronouns", "classYear", "title", "role", "group", "bio", "contact"];
 
 /* A build run on the laptop never gets the key as Netlify holds it: Netlify hands it a short stand-in for every
    secret, and that stand-in wins over a variable of the same name (measured 23 Oct 2026). So the owner's publish
@@ -212,18 +213,26 @@ export function mapResources(reply) {
    nothing else. A profile not marked published is left out and named; any other field is dropped and named
    by its key, never its value. */
 export function mapTeam(reply) {
-  const people = [];
-  const dropped = [];
+  const people = [], dropped = [], ids = new Set(), slugs = new Set();
   for (const p of Array.isArray(reply?.people) ? reply.people : []) {
     const at = typeof p?.id === "string" && p.id ? p.id : "?";
     if (!p || typeof p !== "object" || p.published !== true) { dropped.push(`profile ${at}: not marked published`); continue; }
-    const person = { published: true };
-    for (const k of PROFILE_FIELDS) if (p[k] !== undefined && p[k] !== null && p[k] !== "") person[k] = p[k];
-    if (p.photo != null) {
-      if (typeof p.photo?.url === "string" && p.photo.url) person.photo = { link: p.photo.url, ...(typeof p.photo.alt === "string" && p.photo.alt.trim() ? { alt: p.photo.alt.trim() } : {}) };
-      else dropped.push(`profile ${at}: photo has no url, so none is shown`);
+    if (typeof p.id !== "string" || typeof p.slug !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(p.id || "") || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug || "") || ids.has(p.id) || slugs.has(p.slug) || !GROUPS.includes(p.group)) {
+      dropped.push(`profile ${at}: invalid or duplicate identity`); continue;
     }
-    const extra = Object.keys(p).filter((k) => k !== "published" && k !== "photo" && !PROFILE_FIELDS.includes(k)).sort();
+    ids.add(p.id); slugs.add(p.slug);
+    const person = { published: true, id: p.id, slug: p.slug, name: "", title: "", role: "", bio: [] };
+    for (const k of PROFILE_FIELDS) if (typeof p[k] === "string") person[k] = p[k].trim();
+    person.group = p.group;
+    person.bio = Array.isArray(p.bio) ? p.bio.filter(x => typeof x === "string").map(x => x.trim()).filter(Boolean) : [];
+    if (person.contact && !/@(badgersupports\.org|wisc\.edu|example\.org|example\.com)$/.test(person.contact)) {
+      delete person.contact; dropped.push(`profile ${at}: invalid public contact omitted`);
+    }
+    if (p.photo != null) {
+      if (typeof p.photo?.url === "string" && !photoProblems({ link: p.photo.url }, { production: true }).length) person.photo = { link: p.photo.url, ...(typeof p.photo.alt === "string" && p.photo.alt.trim() ? { alt: p.photo.alt.trim() } : {}) };
+      else dropped.push(`profile ${at}: photo has no approved url, so none is shown`);
+    }
+    const extra = Object.keys(p).filter(k => k !== "published" && k !== "photo" && !PROFILE_FIELDS.includes(k)).sort();
     if (extra.length) dropped.push(`profile ${at}: ignored ${extra.join(", ")}`);
     people.push(person);
   }

@@ -1,3 +1,4 @@
+import { isDirect } from "./direct.mjs";
 /* The local rig: the built site from dist/ with its _headers and _redirects applied as Netlify
  * would, and /api/* dispatched straight into the real function against PGlite.
  *
@@ -148,7 +149,7 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
   return server;
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+if (isDirect(import.meta.url)) {
   const today = arg("today") || null;
   const media = !process.argv.includes("--no-media");
   if (arg("connect")) useLocalConnect(arg("connect"));

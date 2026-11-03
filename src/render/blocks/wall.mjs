@@ -1,7 +1,8 @@
 /* The Wall of Support: short notes Badgers leave for each other, as paper notes taped up.
    Kept from the live homepage, where it is one of the two things that is unmistakably BSS.
-   The notes come from a moderated source; with none, the block renders nothing at all. */
+   The notes come from a moderated source; an empty list retains an available contribution link. */
 
+import { go } from "../context.mjs";
 import { html, jsonIsland } from "../html.mjs";
 
 /* The same eight on every request for a given day, so a static page and its no-JS reader agree. */
@@ -20,7 +21,7 @@ function pick(notes, n, seed) {
 export default {
   type: "wall",
   label: "Wall of Support",
-  fields: { title: "text!", intro: "text", source: "source!", show: "number", more: "text" },
+  fields: { title: "text!", intro: "text", source: "source!", show: "number", more: "text", contribute: "link" },
   data: ["wallNotes", "wallSample"],
   styles: "wall.css",
   client: "wall.js",
@@ -28,12 +29,13 @@ export default {
   loading: "lazy",
   render(b, ctx) {
     const notes = (ctx.data.wallNotes || []).filter((n) => typeof n === "string" && n.trim());
-    if (!notes.length) return html``;
+    if (!notes.length && !b.contribute) return html``;
     const n = Math.min(b.show || 8, notes.length);
     const shown = pick(notes, n, ctx.today);
     return html`<section class="wall band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-wall="${n}"><div class="wrap">
   <div class="wall-head"><div><h2 id="${b.id}-h">${b.title}</h2>${b.intro ? html`<p>${b.intro}</p>` : ""}</div>${notes.length > n ? html`<button type="button" class="btn btn--quiet" data-wall-more hidden>${b.more || ctx.t("wall.more")}</button>` : ""}</div>
   ${ctx.data.wallSample ? html`<p class="sample-note">${ctx.data.wallSample}</p>` : ""}
+  ${b.contribute ? html`<p>${go(ctx, b.contribute.href, b.contribute.label)}</p>` : ""}
   <ul class="notes" aria-live="polite">${shown.map((t) => html`<li class="note">${t}</li>`)}</ul>
   ${notes.length > n ? jsonIsland(`${b.id}-notes`, notes) : ""}
 </div></section>`;

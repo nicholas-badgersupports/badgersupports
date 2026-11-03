@@ -12,7 +12,7 @@
    data-live, the card or the line saying nothing is coming, so the photos beside it are not loaded twice. */
 
 import { html, attrs } from "../html.mjs";
-import { link } from "../context.mjs";
+import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref } from "../ics.mjs";
@@ -60,7 +60,7 @@ export default {
   <div class="eventhero-main">
     <h1 id="${b.id}-h">${b.title}</h1>
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
-    ${next ? feature(ctx, b, next) : html`<p class="evlist-none" data-live="next">${ctx.t("events.none")}</p>`}
+    ${next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t("events.none")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p></div>`}
   </div>
   ${photos.length ? html`<div class="eventhero-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: i === 0 })}</div>`)}</div>` : ""}
 </div></section>`;

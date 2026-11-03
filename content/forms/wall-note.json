@@ -1,0 +1,40 @@
+{
+  "schema": "bss.form/1",
+  "key": "wall-note",
+  "version": 1,
+  "title": "Leave a Note",
+  "audience": "public",
+  "anonymous": true,
+  "state": "closed",
+  "closedMessage": "The Wall of Support form is closed.",
+  "review": "Anonymous notes are reviewed in Connect before they appear on the Wall of Support. Opening the form requires its existing switch permission and confirmation.",
+  "sections": [
+    {
+      "id": "note",
+      "title": "Your Note",
+      "questions": [
+        {
+          "id": "note",
+          "type": "long",
+          "label": "What would you like to share?",
+          "required": true,
+          "maxLength": 280,
+          "rows": 5
+        }
+      ]
+    }
+  ],
+  "confirmation": {
+    "title": "Thank You",
+    "body": [
+      "Your note has been received for review. Only approved notes appear on the Wall of Support."
+    ]
+  },
+  "workflow": {
+    "connectQueue": "wall.notes",
+    "owner": "Wall of Support moderators",
+    "receipt": "none",
+    "backup": "proposed"
+  },
+  "refPrefix": "WN"
+}

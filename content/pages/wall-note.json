@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-wall-note",
+  "path": "/forms/wall-note/",
+  "title": "Leave a Note",
+  "description": "Leave an anonymous note for the moderated Wall of Support.",
+  "analytics": "none",
+  "noindex": true,
+  "blocks": [
+    {
+      "id": "b-form-wall-note",
+      "type": "form",
+      "form": "wall-note",
+      "title": "Leave a Note"
+    }
+  ]
+}

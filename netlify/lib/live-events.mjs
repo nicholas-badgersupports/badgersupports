@@ -12,7 +12,7 @@
  * rendered (ops/build.mjs eventsForServer), the same escaping, and Connect's public list only.
  * Connect is asked at most once a minute by a warm function and the CDN holds an answer five
  * minutes (router.mjs), so a busy page costs Connect next to nothing. When Connect cannot be read the
- * answer is the list the last publish used, held for half a minute. A site built from the fixture,
+ * answer is the last successful public read, or the publish's list if none was saved, held for half a minute. A site built from the fixture,
  * a prototype, answers from the fixture and never calls Connect.
  */
 
@@ -60,17 +60,23 @@ async function readEvents(ev) {
   return { ...events, places: { ...ev.placeNames, ...rooms } };
 }
 
-/* { events, stale }: Connect's list now, or the publish's when Connect cannot be read. */
+/* { events, stale }: Connect's list now, or the last good public list when Connect cannot be read. */
 export async function eventsNow(ev, now = Date.now()) {
   if (ev.source !== "connect") return { events: ev.built, stale: false };
   const token = await forgetToken();
   if (held && held.until > now && (token === undefined || token === held.token)) return held.promise;
   const promise = readEvents(ev).then(
-    (events) => ({ events, stale: false }),
-    (e) => {
-      console.error(`events: Connect could not be read (${e.code || "error"}); answering with the published list`);
+    async (events) => {
+      await noteSet("events-last-good", { source: serviceConfigNow()?.url || "", events }).catch(() => {});
+      return { events, stale: false };
+    },
+    async (e) => {
+      console.error(`events: Connect could not be read (${e.code || "error"}); answering with the most recent public list`);
       if (held?.promise === promise) held.until = now + FAILED_MS;
-      return { events: ev.built, stale: true };
+      let previous = null;
+      try { previous = await noteGet("events-last-good"); } catch { /* fall back to the built public list */ }
+      const events = previous?.source === (serviceConfigNow()?.url || "") && previous?.events ? previous.events : ev.built;
+      return { events, stale: true };
     },
   );
   held = { until: now + FRESH_MS, promise, token };
@@ -80,7 +86,7 @@ export async function eventsNow(ev, now = Date.now()) {
 /* The words as published now (pages.mjs): a saved word, and a room's saved words and photos, reach the event blocks and
    calendar files as they reach the page. If the revision cannot be read, the build's. */
 async function published(c) {
-  try { return await siteNow(); } catch { return null; }
+  try { return await siteNow({ catalogues: false }); } catch { return null; }
 }
 
 function context(c, page, events, today, now) {

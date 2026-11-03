@@ -12,16 +12,39 @@
 import { html } from "../html.mjs";
 import { go } from "../context.mjs";
 import { icon } from "../icons.mjs";
+import { rowsBetween, groupByDate, dateParts, timeRange, weekday } from "../events.mjs";
 import { picture } from "../media.mjs";
 
 export default {
   type: "cards",
   label: "Photo cards",
-  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", items: "cards!", links: "link[]" },
-  data: [],
+  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other" },
+  data: ["events"],
+  refresh: b => b.variant === "days" && b.source === "events",
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
+    if (b.variant === "days" && b.source === "events") {
+      const groups = groupByDate(rowsBetween(ctx.data.events, ctx.today, 7).filter(r => r.program === (b.program || "peer")));
+      return html`<section class="cards cards--days band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+        <h2 id="${b.id}-h">${b.title}</h2>${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+        ${groups.length ? html`<ul class="card-list">${groups.map(({ date, items }) => {
+          const day = dateParts(date, ctx.t);
+          const template = (b.items || []).find(it => it.id === ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][weekday(date)]);
+          const photo = template?.photo;
+          return html`<li class="${photo ? "card has-photo" : "card"}" id="day-${date}">
+            ${photo ? html`<div class="photo">${picture(ctx, photo, { sizes: "(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), 17rem" })}</div>` : html`<div class="card-mark">${icon("calendar")}</div>`}
+            <div class="card-words"><h3>${template?.title || day.dowLong}</h3><p class="card-text">${day.monLong} ${day.dom}</p>
+              ${items.map(r => html`<div class="ev" data-starts="${r.startsAt}" data-ends="${r.endsAt}" data-date="${r.date}">
+                <p class="card-line ev-time">${timeRange(r.start, r.end, ctx.t)}<span class="ended-tag">${ctx.t("schedule.ended")}</span></p>
+                ${r.place ? html`<p class="card-text">${r.place.name}${r.place.detail ? html`<span class="where-detail">${r.place.detail}</span>` : ""}</p>` : ""}
+                ${r.place?.href ? go(ctx, r.place.href, ctx.t("schedule.directions"), "pin") : ""}
+              </div>`)}
+            </div></li>`;
+        })}</ul>` : html`<p class="evlist-none">${ctx.t("schedule.weekEmpty")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p>`}
+        ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
+      </div></section>`;
+    }
     const sizes = `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
     return html`<section class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>

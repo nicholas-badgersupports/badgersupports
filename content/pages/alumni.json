@@ -10,20 +10,15 @@
       "id": "b-al-head",
       "type": "pagehead",
       "title": "Badger Supports Alumni",
-      "lead": "We value all alumni from both our predecessor, Badger Support Network, and our current organization, Badger Supports. Alumni remain an important part of our community, and we love staying connected.",
+      "lead": "Alumni of Badger Supports, Badger Support Network, and Badger SPILL remain part of our community. Former staff, volunteers, Student Supporters and leaders are welcome to stay connected.",
       "body": [
-        "Please share your email through our email list to receive updates, opportunities, and invitations to future events."
+        "Join our email list to receive Badger Supports updates. Stay in touch through an email address you plan to keep after graduation."
       ],
       "primary": {
         "label": "Join Our Email List",
         "href": "/join/email-list/"
       },
       "links": [
-        {
-          "label": "Share Your Testimonial",
-          "href": "https://forms.gle/AFMihiPYpqUpeALJ8",
-          "icon": "out"
-        },
         {
           "label": "View Our Current Leadership",
           "href": "/about/our-team/"

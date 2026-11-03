@@ -1,3 +1,4 @@
+import { isDirect } from "./direct.mjs";
 /* Floor maps for rooms the live site has no map for, drawn from one it has.
  *
  * The live SAC Caucus directions page shows the SAC 4th-floor plan with the Caucus Room in orange.
@@ -107,7 +108,7 @@ export async function drawRoomMap(parentBuf, spec) {
   return { png: await sharp(px, { raw: { width: W, height: H, channels: 3 } }).png({ compressionLevel: 9 }).toBuffer(), box };
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+if (isDirect(import.meta.url)) {
   for (const [out, spec] of Object.entries(ROOM_MAPS)) {
     const { png, box } = await drawRoomMap(fs.readFileSync(path.join(ORIG, spec.from)), spec);
     fs.writeFileSync(path.join(ORIG, out), png);

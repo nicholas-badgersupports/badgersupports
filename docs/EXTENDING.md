@@ -4,10 +4,10 @@ How to add a page and how to add a block, with one real example of each from thi
 developer side of `../../MASTER-PROMPT.md` §10. The editor side, what Connect would show an approved editor, is
 `CONNECT-EDITOR-CONTRACT.md`, which `npm run contract` writes from the same declarations.
 
-**Not built:** the Connect editor itself (drafts, previews, publishing and restoring revisions), Connect
-sign-in, and any check of who may edit what. Today a page is a JSON file and a block is a module, and both
-change by editing the repository. Connect's side is two Exchange requests: `PUBLIC-SITE-EDITOR` (the editor and publishing) and
-`PUBLIC-SITE-EDITOR-REVISIONS` (drafts, preview, restore, and adding, duplicating, reordering and retiring pages).
+The website has Connect sign-in, permission checks, live text/field editing, revision history, Restore, and page/section
+controls on `/staff/`. A draft is a new page; permitted saves to live pages publish. Connect owns sign-in and grants;
+see `CONNECT-EDITOR-CONTRACT.md` for the current website controls and `ARCHITECTURE.md` for runtime delivery.
+Repository modules still define new block types and operations the editor does not yet offer.
 
 ## What a block declares
 

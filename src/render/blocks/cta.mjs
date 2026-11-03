@@ -17,10 +17,10 @@ export default {
   loading: "lazy",
   render(b, ctx) {
     // Quiet text-only calls keep the existing field IDs; a photo retains the feature layout.
-    if (b.quiet && !b.photos?.length) return text.render({ ...b, body: b.body ? [b.body] : [], links: [b.primary, ...(b.links || [])] }, ctx);
+    if (b.quiet && !b.photos?.length) return text.render({ ...b, anchor: b.anchor || b.id, body: b.body ? [b.body] : [], links: [b.primary, ...(b.links || [])] }, ctx);
     const [photo] = b.photos || [];
     const whole = Boolean(photo && b.whole);
-    return html`<section class="${["cta", photo ? "has-photo" : null, whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section id="${b.anchor || b.id}" class="${["cta", photo ? "has-photo" : null, whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   ${photo ? html`<div class="photo cta-photo">${picture(ctx, photo, { sizes: whole ? "(max-width: 860px) calc(100vw - 2rem), 34rem" : "(max-width: 860px) 9rem, 15rem" })}</div>` : ""}
   <div class="cta-words">
     <h2 id="${b.id}-h">${b.title}</h2>

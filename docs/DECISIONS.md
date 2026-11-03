@@ -813,3 +813,14 @@ FAQ display groups reference original question IDs instead of moving answer arra
 The peer introduction uses current event occurrences and their actual room directions. Empty, unavailable, unresolved-time and missing-room states offer the appropriate updates/contact action. A short ordered arrival walkthrough and an optional native expectations disclosure retain the existing peer block order, activity/day photos, reel consent, non-clinical boundary and existing edit targets. Saved overrides continue at their original scope; their live contents were not read.
 
 The shared source review records governing text and current correspondence supporting drop-in visits, check-in/activity, access contact and UHS consultation. No fixed group count, unconditional confidentiality/late-arrival promise or numeric accommodation cutoff was established. Broader affiliation wording remains the existing source-verification dependency; the approved Equity statement is unchanged. Exact test results, source fingerprints and recovery files belong in the shared PUBLIC-SITE handoff.
+
+
+## 3 November 2026 · Craft Night visit and recap (canonical 41)
+
+Nicholas authorized item41 in a separate working copy, preserving8aac3d8 and6be6f13, with testing/fixes and the same handoff updated. No push or publication is authorized for this batch.
+
+The Craft page retains its purple identity, source-driven hero/current room/calendar, existing block IDs, original word/value targets and people photos. Stable jumps lead to practical expectations, a captioned look back and the existing suggestion route. The archived Nostalgic Crafts and planter images were already approved in the library and used on this page; their supported captions avoid claiming to show the latest event. Whole-image recap proportions preserve the people rather than imposing a portrait crop.
+
+Current public invitations support free/drop-in attendance, no registration/experience, and the access email. They do not establish that all future materials are supplied or a universal funding promise. Conflicting three-day/five-day access messages are not a verified governing deadline; contact-only wording replaces the five-day sentence at the same saved target. The shared source review records the dated evidence and draft limitations. No new program policy is created.
+
+Shared event heroes/lists use the existing stale status to withhold unconfirmed current attendance/calendar links and offer contact/updates, while preserving historical recaps. Raw last-good feed storage, retry/cache timing and direct calendar fallback retain their existing behavior. A missing room offers a location question. Common section anchors also work for copied pages and quiet CTAs. These are delegated implementation choices within the usable Craft refinement, not new owner rulings. The source-bound handoff holds the exact tests, recovery and remaining source-owner/live limits.

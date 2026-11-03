@@ -17,7 +17,7 @@ import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref, hasCalendarTimes, timeUnconfirmed } from "../ics.mjs";
 import { nextDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
-import { eventClass, eventTags, timeContact } from "../event-status.mjs";
+import { eventClass, eventTags, timeContact, unavailableEvents } from "../event-status.mjs";
 
 function feature(ctx, b, r) {
   const p = dateParts(r.date, ctx.t);
@@ -34,7 +34,7 @@ function feature(ctx, b, r) {
       ${r.place ? html`<p class="evcard-where">${icon("pin")}<span><strong>${r.place.name}</strong>${r.place.detail ? html`<span class="where-detail"><span class="sr-only">, </span>${r.place.detail}</span>` : ""}</span></p>` : ""}
       ${r.note ? html`<p class="evcard-note">${r.note}</p>` : ""}
       <div class="feature-actions">
-        ${timeUnconfirmed(r) ? timeContact(ctx) : r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "btn btn--big", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
+        ${timeUnconfirmed(r) ? timeContact(ctx) : r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "btn btn--big", icon: "pin" }) : go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askLocation"), "mail")}
         ${hasCalendarTimes(r) ? html`<a class="go" href="${calendarHref(ctx, r.event)}"><span class="go-label">${ctx.t("events.calendar")}<span class="sr-only">: ${r.short}</span></span>${icon("calendar", "go-ic")}</a>` : ""}
         ${eventTags(ctx, r)}
       </div>
@@ -46,7 +46,7 @@ export default {
   type: "eventhero",
   label: "Event hero",
   fields: { title: "text!", lead: "text", nextLabel: "text", source: "source!", program: "choice:peer|craft|workshops|other", series: "series", photos: "media[]", links: "link[]" },
-  data: ["events"],
+  data: ["events", "eventsState"],
   client: "schedule.js",
   refresh: true,
   analytics: "page",
@@ -57,11 +57,11 @@ export default {
     const [next] = nextDated(src, ctx.today, 1, { program: b.program, series: b.series }, ctx.now);
     const photos = (b.photos || []).slice(0, 3);
     const sizes = ["(max-width: 860px) 46vw, 24rem", "(max-width: 860px) 23vw, 14rem", "(max-width: 860px) 23vw, 14rem"];
-    return html`<section${attrs({ class: ["eventhero", photos.length ? "has-photos" : null].filter(Boolean).join(" "), "aria-labelledby": `${b.id}-h`, "data-block": b.id, "data-program": b.program })}><div class="wrap">
+    return html`<section${attrs({ id: b.anchor || b.id, class: ["eventhero", photos.length ? "has-photos" : null].filter(Boolean).join(" "), "aria-labelledby": `${b.id}-h`, "data-block": b.id, "data-program": b.program })}><div class="wrap">
   <div class="eventhero-main">
     <h1 id="${b.id}-h">${b.title}</h1>
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
-    ${next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t("events.none")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p></div>`}
+    ${ctx.data.eventsState?.stale ? html`<div data-live="next">${unavailableEvents(ctx)}</div>` : next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t("events.none")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p></div>`}
     ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
   </div>
   ${photos.length ? html`<div class="eventhero-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: i === 0 })}</div>`)}</div>` : ""}

@@ -2214,3 +2214,28 @@ test("FAQ grouping and peer expectations links protect their sections through th
     assert.equal(r.body.error, "section.linked");
   }
 });
+
+
+test("Craft saved wording, archive copies and copied page anchors work through staff APIs", async t => {
+  const { as } = await pagesSite(t), editor = await as(["site.edit", "site.publish"]);
+  const targets = ["page:pg-craft-nights:b-cn-expect/items/2/text", "page:pg-craft-nights:b-cn-access/body/0"];
+  for (const [i,target] of targets.entries()) {
+    const row = (await sourceOf(editor, "pg-craft-nights")).find(e=>e.target===target);assert.ok(row,target);
+    assert.equal((await saveWord(editor,target,row.current,`Example saved craft wording ${i}.`)).changed,true);
+  }
+  let state = await sectionsOf(editor,"pg-craft-nights");
+  const copied = await change(editor,{action:"sectionCopy",expected:state.body.version,page:"pg-craft-nights",section:"b-cn-past-work"});
+  assert.equal(copied.status,200,JSON.stringify(copied.body));
+  let html = await (await visit("/join/craft-nights/")).text();assert.deepEqual(twice(html),[]);
+  const source = await sourceOf(editor,"pg-craft-nights");
+  assert.ok(source.some(r=>r.target===`page:pg-craft-nights:${copied.body.section}/items/0/title`));
+  for (const section of ["b-cn-expect","b-cn-past-work","b-cn-cta"]) {
+    state=await sectionsOf(editor,"pg-craft-nights");
+    const refused=await change(editor,{action:"sectionRetire",expected:state.body.version,page:"pg-craft-nights",section});
+    assert.equal(refused.body.error,"section.linked",JSON.stringify(refused.body));
+  }
+  const pages=await pagesNow(editor),r=await change(editor,{action:"copy",expected:pages.version,page:"pg-craft-nights",title:"Example Craft Copy",path:"/join/example-craft/"});
+  assert.equal(r.status,200,JSON.stringify(r.body));html=await(await preview(editor,r.body.page)).text();assert.deepEqual(twice(html),[]);
+  for (const id of ["b-cn-expect","b-cn-past-work","b-cn-cta"])assert.ok(html.includes(`id="${id}"`),id);
+  assert.match(html,/Example saved craft wording 0/);assert.match(html,/Example saved craft wording 1/);
+});

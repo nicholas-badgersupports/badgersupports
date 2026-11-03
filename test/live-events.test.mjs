@@ -12,7 +12,7 @@ import { useConnect } from "../netlify/lib/connect.mjs";
 import { handle } from "../netlify/lib/router.mjs";
 import * as liveEvents from "../netlify/lib/live-events.mjs";
 import { eventSections, calendarFile, forgetEvents } from "../netlify/lib/live-events.mjs";
-import { useStore, memoryStore } from "../netlify/lib/published.mjs";
+import { useStore, memoryStore, noteGet } from "../netlify/lib/published.mjs";
 import { chicagoOffset } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
 import { handlePage, previewResponse } from "../netlify/lib/pages.mjs";
@@ -176,15 +176,15 @@ test("an event added and one taken off in Connect show without a publish, and Co
   assert.deepEqual(connect.calls, ["publicEvents", "publicEvents"], "a minute later it asks again");
 });
 
-test("when Connect cannot be read the page gets the published list, held half a minute", async () => {
+test("when Connect cannot be read attendance is unavailable and the fallback is held half a minute", async () => {
   const connect = fakeConnect(LATER, { fail: true });
   given(connect);
   const res = await quietly(() => get("/api/events/pg-craft-nights"));
   assert.equal(res.status, 200);
   assert.equal(res.headers.get("netlify-cdn-cache-control"), "public, s-maxage=30");
   const all = Object.values((await res.json()).blocks).join("");
-  assert.match(all, /Example night one/);
-  assert.doesNotMatch(all, /added later/);
+  assert.match(all, /couldn’t confirm the current event schedule/);
+  assert.doesNotMatch(all, /Example night one|added later|href="[^\"]*calendar\//);
   await quietly(() => eventSections("pg-home", { now: Date.now() + 10_000 }));
   assert.equal(connect.calls.length, 1, "not asked again within half a minute");
   await quietly(() => eventSections("pg-home", { now: Date.now() + 31_000 }));
@@ -334,11 +334,13 @@ test("item 17: an outage uses the last successful public read even in another co
   given(fakeConnect(LATER));
   const before = await eventSections("pg-craft-nights", { today: TODAY });
   assert.match(Object.values(before.blocks).join(""), /Example night added later/);
+  assert.match(JSON.stringify((await noteGet("events-last-good")).events), /Example night added later/, "the raw last-good source remains available for historical use");
   useConnect(fakeConnect(PUBLISHED, { fail: true }).cfg);
   const cold = await import("../netlify/lib/live-events.mjs?cold-last-good");
   const after = await quietly(() => cold.eventSections("pg-craft-nights", { today: TODAY }));
   assert.equal(after.stale, true);
-  assert.match(Object.values(after.blocks).join(""), /Example night added later/);
+  assert.match(Object.values(after.blocks).join(""), /couldn’t confirm the current event schedule/);
+  assert.doesNotMatch(Object.values(after.blocks).join(""), /href="[^\"]*calendar\//);
   assert.doesNotMatch(Object.values(after.blocks).join(""), /Example night one/);
 });
 
@@ -355,7 +357,8 @@ test("server-rendered event pages and private previews read current Connect even
   useConnect(fakeConnect(PUBLISHED, { fail: true }).cfg);forgetEvents();
   res = await quietly(() => handlePage(new Request(ORIGIN + "/join/craft-nights/"), { today: TODAY }));
   assert.equal(res.headers.get("cache-control"), "no-store");
-  body = await res.text();assert.match(body, /Example night added later/);
+  body = await res.text();assert.match(body, /couldn’t confirm the current event schedule/);
+  assert.doesNotMatch(body.match(/<article[^>]*data-live="next"[\s\S]*?<\/article>/)?.[0] || "", /calendar\//);
 });
 
 test("exact end moves today's event out of the live hero and calendar file", async () => {
@@ -398,4 +401,29 @@ test("peer empty and unavailable schedules remain distinct across API and no-JS 
   const res = await quietly(() => handlePage(new Request(ORIGIN + "/join/peer-support-groups/"), { today: TODAY, now }));
   assert.equal(res.headers.get("cache-control"), "no-store");
   assert.match(await res.text(), /couldn’t confirm the current schedule/);
+});
+
+
+test("Craft current room and calendar agree in API, no-JS HTML and private preview", async () => {
+  given(fakeConnect(reply([craft("craft-visit", "Example Craft Visit", 1)])));
+  const r = await eventSections("pg-craft-nights", { today: TODAY });
+  const hero = r.blocks["b-cn-hero"];
+  assert.match(hero, /href="\/directions\/sac-caucus\/" class="btn btn--big"/);
+  assert.match(hero, /href="\/api\/calendar\/connect-craft-visit.ics"/);
+  const file = await get("/api/calendar/connect-craft-visit.ics", {});
+  const ics = await file.text();assert.equal(file.status, 200);assert.match(ics, /SUMMARY:Example Craft Visit/);assert.match(ics, /LOCATION:.*Caucus/);
+  let res = await handlePage(new Request(ORIGIN + "/join/craft-nights/"), { today: TODAY });
+  assert.match(await res.text(), /href="\/directions\/sac-caucus\/" class="btn btn--big"/);
+  res = await previewResponse("pg-craft-nights", { edits: {}, structure: null, today: TODAY });
+  assert.equal(res.headers.get("cache-control"), "no-store");assert.match(await res.text(), /href="\/directions\/sac-caucus\/" class="btn btn--big"/);
+});
+
+test("Craft unavailable visits recover to current actions while private previews remain honest", async () => {
+  given(fakeConnect(PUBLISHED, { fail: true }));
+  let r = await quietly(() => eventSections("pg-craft-nights", { today: TODAY }));
+  assert.equal(r.stale, true);assert.match(r.blocks["b-cn-hero"], /couldn’t confirm/);assert.doesNotMatch(r.blocks["b-cn-hero"], /href="[^\"]*calendar\/|class="btn btn--big"/);
+  let res = await quietly(() => previewResponse("pg-craft-nights", { edits: {}, structure: null, today: TODAY }));
+  assert.match(await res.text(), /couldn’t confirm the current event schedule/);
+  useConnect(fakeConnect(LATER).cfg);forgetEvents();r = await eventSections("pg-craft-nights", { today: TODAY });
+  assert.equal(r.stale, false);assert.match(r.blocks["b-cn-hero"], /Example night added later/);assert.match(r.blocks["b-cn-hero"], /href="\/api\/calendar\/connect-e3.ics"/);
 });

@@ -1669,6 +1669,74 @@ await part("first visit: current-room refresh waits for focus and exact end", as
   await ctx.close();
 });
 
+await part("Craft refinement: hierarchy, captions and no JavaScript", async () => {
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    const page = await ctx.newPage(), errors = [];
+    page.on("pageerror", e => errors.push(e.message));
+    await page.goto(BASE + "/join/craft-nights/", { waitUntil: "networkidle" });
+    const jumps = await page.locator("#b-cn-hero .more-links a").evaluateAll(nodes => nodes.map(n => n.getAttribute("href")));
+    let lands = true;
+    for (const href of jumps) {
+      const link = page.locator(`#b-cn-hero a[href="${href}"]`); await link.focus(); await page.keyboard.press("Enter");
+      if (!page.url().endsWith(href) || !(await page.locator(href).isVisible())) lands = false;
+    }
+    check(lands && jumps.length === 3, `Craft ${width}px JS=${javaScriptEnabled}: keyboard jumps reach expectations, past work and suggestions`);
+    const contacts = await page.locator("#b-cn-expect a").evaluateAll(nodes => nodes.map(n => n.getAttribute("href")));
+    const suggestion = await page.locator("#b-cn-cta .btn").getAttribute("href");
+    check(contacts.includes("mailto:directors@badgersupports.org") && contacts.includes("mailto:accessibility@badgersupports.org") && suggestion === "/forms/programming-feedback/", `Craft ${width}px JS=${javaScriptEnabled}: materials, access and suggestion actions have usable destinations`);
+    let whole = true;
+    for (const img of await page.locator("#b-cn-past-work img").all()) {
+      await img.scrollIntoViewIfNeeded(); await img.evaluate(img => img.decode());
+      const dimensions = await img.evaluate(img => { const b = img.getBoundingClientRect(), frame = img.closest(".photo").getBoundingClientRect(); return { clipped: b.bottom > frame.bottom + 2 || b.right > frame.right + 2 || b.top < frame.top - 2 || b.left < frame.left - 2, shown: b.width > 0 && b.height > 0, ratio: b.width / b.height, natural: img.naturalWidth / img.naturalHeight, alt: img.alt }; });
+      if (!dimensions.shown || dimensions.clipped || !dimensions.alt || Math.abs(dimensions.ratio - dimensions.natural) > .02) whole = false;
+    }
+    const captions = await page.locator("#b-cn-past-work .card-words").allTextContents();
+    const visibleCaptions = await Promise.all((await page.locator("#b-cn-past-work .card-words").all()).map(n => n.isVisible()));
+    const visibleTitles = await Promise.all((await page.locator("#b-cn-past-work .card-words h3").all()).map(n => n.isVisible()));
+    check(whole && visibleCaptions.every(Boolean) && visibleTitles.length === 2 && visibleTitles.every(Boolean) && captions.length === 2 && /Nostalgic Crafts[\s\S]*September 2026/.test(captions[0]) && /Paint a Planter/.test(captions[1]), `Craft ${width}px JS=${javaScriptEnabled}: captioned people photos retain their whole image`);
+    const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, inputs: document.querySelectorAll("main input, main textarea").length, cutoff: /\b[35] days before/.test(document.querySelector("#b-cn-access").textContent) }));
+    check(!state.scrolls && !state.inputs && !state.cutoff && !errors.length, `Craft ${width}px JS=${javaScriptEnabled}: no overflow, personal input, unsupported cutoff or script error`);
+    await ctx.close();
+  }
+});
+
+await part("Craft refinement: stale recovery preserves focus and recap photos", async () => {
+  const { makeContext } = await import("../src/render/context.mjs");
+  const { renderBlock } = await import("../src/render/registry.mjs");
+  const DAY = process.env.TODAY || chicagoDate(), at = Date.parse(`${DAY}T17:59:00${chicagoOffset(DAY)}`);
+  const source = JSON.parse(fs.readFileSync(path.join(ROOT, "content/pages/craft-nights.json"))), hero = source.blocks[0], recent = source.blocks.find(b => b.id === "b-cn-recent");
+  const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json"))), media = JSON.parse(fs.readFileSync(path.join(ROOT, "media/manifest.json")));
+  const text = Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text]));
+  const render = (b, room = "hub", stale = false) => String(renderBlock(b, makeContext({ site, media, text, today: DAY, now: at, builtPaths: ["/directions/sac-mhh/", "/directions/sac-caucus/", "/join/email-list/"], data: { eventsState: { stale }, events: { recurring: [], dated: [{ id: "example-current", title: "Example Current Night", program: "craft", date: DAY, start: "17:00", end: "18:00", place: room }, { id: "example-past", title: "Example Past Night", program: "craft", date: addDays(DAY,-1), start: "17:00", end: "18:00", place: "hub", media: "m-people-nostalgic" }], places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } } } })));
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await ctx.newPage();
+  await page.clock.setFixedTime(at);
+  let release, n = 0; const waiting = new Promise(ok => { release = ok; });
+  await page.route("**/join/craft-nights/", async route => {
+    const response = await route.fetch(), html = await response.text();
+    await route.fulfill({ response, body: html.replace(/<body(?=\s)/, '<body data-refresh="events"').replace(/<section\b(?=[^>]*data-block="b-cn-hero")[\s\S]*?<\/section>/, render(hero)) });
+  });
+  await page.route("**/api/events/pg-craft-nights", async route => { const mine = ++n; if (mine === 1) await waiting; await route.fulfill({ json: { ok: true, today: DAY, blocks: { "b-cn-hero": render(hero,"changed",mine===1), "b-cn-recent": render(recent,"changed",mine===1) } } }); });
+  await page.goto(BASE + "/join/craft-nights/", { waitUntil: "load" });
+  await page.evaluate(() => { window.__craftPhoto = document.querySelector("#b-cn-hero img"); });
+  await page.locator("#b-cn-hero .btn").focus(); release(); await sleep(200);
+  check(await page.locator("#b-cn-hero .btn").count() === 1, "Craft: stale reply waits while the visit action has focus");
+  await page.locator("#b-cn-expect a").first().focus(); await sleep(200);
+  check(await page.locator("#b-cn-hero .event-help").count() === 1 && await page.locator("#b-cn-hero a[href*='calendar/']").count() === 0, "Craft: unavailable state replaces unconfirmed attendance and calendar actions after focus leaves");
+  await page.locator("#b-cn-hero .event-help a").first().focus();
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow",{persisted:true}))); await sleep(200);
+  check(await page.locator("#b-cn-hero .event-help").count() === 1, "Craft: recovered current event waits while its contact action has focus");
+  await page.locator("#b-cn-expect a").first().focus(); await sleep(200);
+  const recovered = await page.locator("#b-cn-hero .btn").getAttribute("href");
+  const samePhoto = await page.evaluate(() => window.__craftPhoto === document.querySelector("#b-cn-hero img"));
+  check(recovered === "/directions/sac-caucus/" && samePhoto, "Craft: recovered event uses its current room and preserves the existing hero photos");
+  const image = page.locator("#b-cn-recent .evshot img").first(); await image.scrollIntoViewIfNeeded(); await image.evaluate(img => img.decode());
+  const ratios = [];
+  for (const width of [1280,390,320]) { await page.setViewportSize({width,height:900}); ratios.push(await image.evaluate(img => {const b=img.getBoundingClientRect(), frame=img.closest(".photo").getBoundingClientRect(); return Math.abs(b.width/b.height-img.naturalWidth/img.naturalHeight)<.02 && b.bottom<=frame.bottom+2 && b.right<=frame.right+2;})); }
+  check(ratios.every(Boolean) && await page.locator("#b-cn-recent .evshot h3").first().isVisible() && await page.locator("#b-cn-recent a[href*='calendar/'], #b-cn-recent .drop").count()===0, "Craft: current recap photos stay whole and captioned at every width without attendance actions");
+  await ctx.close();
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

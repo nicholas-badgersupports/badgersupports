@@ -22,7 +22,7 @@ import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref, hasCalendarTimes, timeUnconfirmed } from "../ics.mjs";
 import { nextDated, lastDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
-import { eventClass, eventTags, timeContact } from "../event-status.mjs";
+import { eventClass, eventTags, timeContact, unavailableEvents } from "../event-status.mjs";
 
 /* A night that has happened, as its photo: the date and name under it. One without a photo keeps
    the card. */
@@ -61,7 +61,7 @@ function card(ctx, r, { past = false } = {}) {
       ${r.note && !past ? html`<p class="evcard-note">${r.note}</p>` : ""}
       ${past ? "" : html`<div class="evcard-row">
         ${hasCalendarTimes(r) ? html`<a class="evcard-cal" href="${calendarHref(ctx, r.event)}">${icon("calendar")}<span class="sr-only">${ctx.t("events.calendar")}: ${r.short}</span></a>` : ""}
-        ${timeUnconfirmed(r) ? timeContact(ctx) : r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "drop", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
+        ${timeUnconfirmed(r) ? timeContact(ctx) : r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "drop", icon: "pin" }) : go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askLocation"), "mail")}
         ${eventTags(ctx, r)}
       </div>`}
     </div>
@@ -72,7 +72,7 @@ export default {
   type: "events",
   label: "Event cards",
   fields: { title: "text!", heading: "choice:h1|h2", lead: "text", note: "text", source: "source!", program: "choice:peer|craft|workshops|other", series: "series", count: "number", recent: "number", upcomingTitle: "text", recentTitle: "text", suggest: "link", photos: "media[]", show: "choice:all|upcoming|recent", skip: "number" },
-  data: ["events"],
+  data: ["events", "eventsState"],
   client: "schedule.js",
   refresh: true,
   analytics: "page",
@@ -82,9 +82,10 @@ export default {
     if (!src) throw new Error(`${b.id}: no event source "${b.source}"`);
     const show = b.show || "all";
     const skip = b.skip || 0;
-    const next = show === "recent" ? [] : nextDated(src, ctx.today, (b.count || 6) + skip, { program: b.program, series: b.series }, ctx.now).slice(skip);
+    const stale = !!ctx.data.eventsState?.stale;
+    const next = show === "recent" || stale ? [] : nextDated(src, ctx.today, (b.count || 6) + skip, { program: b.program, series: b.series }, ctx.now).slice(skip);
     const last = show === "upcoming" || b.recent === 0 ? [] : lastDated(src, ctx.today, b.recent || 4, { program: b.program, series: b.series }, ctx.now);
-    if ((show === "recent" && !last.length) || (show === "upcoming" && !next.length && skip)) return html`<section data-block="${b.id}" hidden></section>`;
+    if ((show === "recent" && !last.length) || (show === "upcoming" && !next.length && skip && !stale)) return html`<section data-block="${b.id}" hidden></section>`;
     const h = b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`;
     /* A split list is titled by its block; the whole list titles each half under the block's heading. */
     const sub = (x, id) => (show !== "all" ? "" : b.heading === "h1" ? html`<h2 class="evlist-title" id="${id}">${x}</h2>` : html`<h3 class="evlist-title" id="${id}">${x}</h3>`);
@@ -100,7 +101,7 @@ export default {
     </div>
     ${photos.length ? mosaic(ctx, photos) : ""}
   </header>
-  ${show === "recent" ? "" : next.length ? html`${sub(b.upcomingTitle || ctx.t("schedule.laterTitle"), `${b.id}-next`)}<ol class="evcards" aria-labelledby="${label(`${b.id}-next`)}">${next.map((r) => card(ctx, r))}</ol>` : html`<p class="evlist-none">${ctx.t("events.none")}</p>`}
+  ${show === "recent" ? "" : stale ? unavailableEvents(ctx) : next.length ? html`${sub(b.upcomingTitle || ctx.t("schedule.laterTitle"), `${b.id}-next`)}<ol class="evcards" aria-labelledby="${label(`${b.id}-next`)}">${next.map((r) => card(ctx, r))}</ol>` : html`<p class="evlist-none">${ctx.t("events.none")}</p>`}
   ${last.length ? html`${sub(b.recentTitle || ctx.t("events.recentTitle"), `${b.id}-last`)}<ol class="evcards evcards--recent" aria-labelledby="${label(`${b.id}-last`)}">${last.map((r) => shot(ctx, r))}</ol>` : ""}
   ${b.suggest ? html`<p class="evlist-foot">${go(ctx, b.suggest.href, b.suggest.label, b.suggest.icon || "bulb")}</p>` : ""}
 </div></section>`;

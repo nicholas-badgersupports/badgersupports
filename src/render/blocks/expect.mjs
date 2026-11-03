@@ -22,7 +22,7 @@ export default {
     const body = b.body ? (Array.isArray(b.body) ? b.body : [b.body]) : [];
     const photos = (b.photos || []).slice(0, 2);
     const sizes = ["(max-width: 860px) calc(100vw - 2rem), 30rem", "(max-width: 860px) 40vw, 13rem"];
-    return html`<section class="${["expect band", photos.length ? "has-photos" : null, photos.length && b.flip ? "is-flip" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section id="${b.anchor || b.id}" class="${["expect band", photos.length ? "has-photos" : null, photos.length && b.flip ? "is-flip" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   ${photos.length ? html`<div class="expect-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i] })}</div>`)}</div>` : ""}
   <div class="expect-words">
     <h2 id="${b.id}-h">${b.title}</h2>

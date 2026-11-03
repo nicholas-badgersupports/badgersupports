@@ -3014,6 +3014,16 @@
       "group": "events",
       "text": "Ask About the Location",
       "where": "Peer-group first-visit action from the current event source."
+    },
+    "events.unavailable": {
+      "group": "events",
+      "text": "We couldn’t confirm the current event schedule. Please check with us before you visit.",
+      "where": "Event hero and upcoming event list when their source is unavailable."
+    },
+    "events.askSchedule": {
+      "group": "events",
+      "text": "Ask About an Event",
+      "where": "Contact action when the current event schedule cannot be confirmed."
     }
   }
 }

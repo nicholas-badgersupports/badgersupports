@@ -1,4 +1,4 @@
-/* Event cards and the craft nights page. The page is in sections: a red hero with the next night
+/* Event cards and the craft nights page. The page is in sections: a program-colored hero with the next night
    and its one big button, what to expect, the schedule after it, the nights that have happened as
    photos, and a closing call. Every event here is fictional. */
 
@@ -29,7 +29,7 @@ test.before(async () => {
 test("the craft nights page is in sections, in order", () => {
   const page = read("join/craft-nights/index.html");
   const order = [...page.matchAll(/<section [^>]*data-block="(b-cn-[a-z-]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(order, ["b-cn-hero", "b-cn-expect", "b-cn-next", "b-cn-recent", "b-cn-cta", "b-cn-access"]);
+  assert.deepEqual(order, ["b-cn-hero", "b-cn-expect", "b-cn-next", "b-cn-recent", "b-cn-past-work", "b-cn-cta", "b-cn-access"]);
   assert.equal([...page.matchAll(/<h1[ >]/g)].length, 1, "one h1, the hero's");
 });
 
@@ -66,8 +66,9 @@ test("the nights that have happened are their photos, with no actions", () => {
 test("what to expect has its points, and the page closes on one big button", () => {
   const page = read("join/craft-nights/index.html");
   const expect = section(page, "b-cn-expect");
-  assert.equal([...expect.matchAll(/<li>/g)].length, 3);
-  assert.equal([...expect.matchAll(/class="ic expect-ic"/g)].length, 3);
+  const points = expect.match(/<ul class="expect-points">([\s\S]*?)<\/ul>/)[1];
+  assert.equal([...points.matchAll(/<li>/g)].length, 4);
+  assert.equal([...expect.matchAll(/class="ic expect-ic"/g)].length, 4);
   const cta = section(page, "b-cn-cta");
   assert.match(cta, /<a href="\/forms\/programming-feedback\/" class="btn btn--big">/);
   assert.match(cta, /class="go go--light"[^>]*>[\s\S]*?Join Our Email List/);
@@ -97,8 +98,10 @@ test("a split list with nothing to show keeps an empty hidden place, and a hero 
   const future = fixtureContext(only("2026-11-01"));
   assert.equal(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Recent", source: "events", program: "craft", show: "recent" }, future)), '<section data-block="b-x" hidden></section>');
   assert.equal(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Schedule", source: "events", program: "craft", show: "upcoming", skip: 1 }, future)), '<section data-block="b-x" hidden></section>');
-  assert.match(String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Schedule", source: "events", program: "craft", show: "upcoming" }, future)),
-    /<span class="evcard-chip"><svg class="ic" data-i="pin"[^>]*>(?:(?!<\/svg>)[\s\S])*<\/svg>Drop In<\/span>/, "a room with no page yet keeps the words, unlinked");
+  const missing = String(BLOCKS.events.render({ id: "b-x", type: "events", title: "Schedule", source: "events", program: "craft", show: "upcoming" }, future));
+  assert.match(missing, /href="mailto:directors@badgersupports.org"/);
+  assert.match(missing, /Ask About the Location/, "a room with no directions offers a location question");
+  assert.doesNotMatch(missing, /<span class="evcard-chip">/);
   const past = fixtureContext(only("2026-10-01"));
   const hero = String(BLOCKS.eventhero.render({ id: "b-x", type: "eventhero", title: "Example Nights", source: "events", program: "craft" }, past));
   assert.match(hero, /<div data-live="next"><p class="evlist-none">/);

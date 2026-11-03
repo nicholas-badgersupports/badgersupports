@@ -47,7 +47,7 @@ export default {
       </div></section>`;
     }
     const sizes = `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
-    return html`<section class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section id="${b.anchor || b.id}" class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   <ul class="card-list">${b.items.map((it) => html`<li class="${it.photo ? "card has-photo" : "card"}" id="${it.id}">

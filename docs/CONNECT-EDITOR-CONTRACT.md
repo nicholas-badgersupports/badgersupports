@@ -199,7 +199,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy · br
 
 ### Event cards — `events`
 
-Reads: `events` · analytics: `page` · photos load eager · browser module `schedule.js`
+Reads: `events`, `eventsState` · analytics: `page` · photos load eager · browser module `schedule.js`
 
 | Field | Type | |
 |---|---|---|
@@ -221,7 +221,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 
 ### Event hero — `eventhero`
 
-Reads: `events` · analytics: `page` · photos load eager · browser module `schedule.js`
+Reads: `events`, `eventsState` · analytics: `page` · photos load eager · browser module `schedule.js`
 
 | Field | Type | |
 |---|---|---|
@@ -495,7 +495,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-592 keys. Keys are permanent. Required text cannot be published empty and must keep each
+594 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -554,7 +554,7 @@ the site adds the markup.
 | `mood.back` | Back to the Homepage | Link on that page. |  |
 | `schedule.happening` | Happening Now | Shown on an event once it has finished. |  |
 
-### Event cards (19)
+### Event cards (21)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -577,6 +577,8 @@ the site adds the markup.
 | `program.groupUnavailable` | We couldn’t confirm the current schedule. Please email us before you visit. | Peer-group first-visit action from the current event source. |  |
 | `program.askSchedule` | Ask About the Schedule | Peer-group first-visit action from the current event source. |  |
 | `program.askLocation` | Ask About the Location | Peer-group first-visit action from the current event source. |  |
+| `events.unavailable` | We couldn’t confirm the current event schedule. Please check with us before you visit. | Event hero and upcoming event list when their source is unavailable. |  |
+| `events.askSchedule` | Ask About an Event | Contact action when the current event schedule cannot be confirmed. |  |
 
 ### Rooms and directions (9)
 

@@ -305,7 +305,10 @@ Connect's `public-sso.html` with the state and the verifier's hash in the fragme
 they always do. Connect sends them back to `/api/auth/callback` with a one-time code; the state must match the cookie
 and a start not yet used, and the code is traded server to server for a note Connect signs with `PUBLIC_SSO_SECRET`
 (`connect.mjs`, `verifyAssertion()`). The note gives Connect's own id for the person, their first name (empty when
-Connect's setting says not to share first names) and their scopes. A row in `staff_sessions`, keyed by a hash of the cookie, keeps it for **eight hours**. The cookies are
+Connect's setting says not to share first names) and their scopes. A row in `staff_sessions`, keyed by a hash of the cookie, keeps it for **eight hours**. The callback then
+redirects to the page Sign in was pressed on. Netlify puts the callback's query on that redirect, because it has none of its own
+(read on the live site 2 Nov 2026; the local rig does the same, `ops/dev-server.mjs`, `netlifyLocation()`), so the page's inline
+script takes `code` and `state` off the address in a browser that has just signed in, and leaves the rest. The cookies are
 HttpOnly, `SameSite=Lax`, and `__Host-` on https. A third cookie, `bss_staff_hint`, says only that someone signed
 in on this browser, so pages know to load the edit button; every staff call checks the real session. Signing out
 ends this site's session only. **Reading answers lasts an hour from signing in** (built 24 Oct 2026); after that

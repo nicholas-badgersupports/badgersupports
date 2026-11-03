@@ -13,6 +13,8 @@
  *                                          # opened at localhost fails its same-site check. PORT
  *                                          # 8899 or 8901, the two returns that rig accepts.
  *
+ * A function's redirect carries the request's query as Netlify sends it (netlifyLocation).
+ *
  * Nothing here talks to the network: no Netlify, no email, and Connect only when --connect names
  * a local rig. Every page address is answered by the page function (netlify/lib/pages.mjs), as on
  * Netlify, so a word saved with the edit button is published to the rig's in-memory revision and shows
@@ -39,6 +41,16 @@ function useLocalConnect(origin) {
   const keys = JSON.parse(fs.readFileSync(process.env.CONNECT_FIXTURE || CONNECT_FIXTURE, "utf8"));
   process.env.CONNECT_URL = u.origin;
   for (const k of ["PUBLIC_SITE_SERVICE_KEY_ID", "PUBLIC_SITE_SERVICE_SECRET", "PUBLIC_SSO_SECRET"]) process.env[k] ||= keys[k];
+}
+
+/* Netlify keeps a request's query on a function's redirect whose Location has none of its own: a redirect that drops
+   the query in the code arrives with it. The rig does as Netlify does, so a page reached by such a redirect is tested
+   with the address the browser really shows. Where the query goes when the Location has a fragment
+   is not known; it goes before the fragment here. */
+export function netlifyLocation(search, status, location) {
+  if (!search || search === "?" || status < 300 || status > 399 || !location || location.includes("?")) return location;
+  const hash = location.indexOf("#");
+  return hash < 0 ? location + search : location.slice(0, hash) + search + location.slice(hash);
 }
 
 const TYPES = {
@@ -94,6 +106,7 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
         const request = new Request(u, { method: req.method, headers: req.headers, body: ["GET", "HEAD"].includes(req.method) ? undefined : Buffer.concat(chunks) });
         const response = await handle(request, { ip: req.socket.remoteAddress });
         const headers = Object.fromEntries(response.headers);
+        if (headers.location) headers.location = netlifyLocation(u.search, response.status, headers.location);
         const cookies = response.headers.getSetCookie();
         if (cookies.length) headers["set-cookie"] = cookies;
         res.writeHead(response.status, headers);
@@ -104,7 +117,9 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
       // A page address: the page function, as Netlify sends it (netlify/functions/pages.mjs).
       if (["GET", "HEAD"].includes(req.method) && !/^\/(assets|media|calendar)\//.test(pathname) && (!path.extname(pathname) || pathname.endsWith(".html"))) {
         const response = await handlePage(new Request(u, { method: req.method, headers: req.headers }), { today: today || chicagoDate() });
-        res.writeHead(response.status, Object.fromEntries(response.headers));
+        const headers = Object.fromEntries(response.headers);
+        if (headers.location) headers.location = netlifyLocation(u.search, response.status, headers.location);
+        res.writeHead(response.status, headers);
         res.end(Buffer.from(await response.arrayBuffer()));
         return;
       }

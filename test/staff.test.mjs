@@ -18,6 +18,7 @@ import { handle } from "../netlify/lib/router.mjs";
 import { useConnect, resetQuoteCache } from "../netlify/lib/connect.mjs";
 import { deliverDue, deliveriesSettled } from "../netlify/lib/deliver.mjs";
 import { serverContent, useContent } from "../netlify/lib/content.mjs";
+import { netlifyLocation } from "../ops/dev-server.mjs";
 import { many, one, q, migrate } from "../netlify/lib/db.mjs";
 import { readEditsFile } from "../src/shared/edits.mjs";
 import { build, loadContent } from "../ops/build.mjs";
@@ -249,6 +250,17 @@ test("on https the cookies are __Host- cookies, sent only over https", async () 
   assert.match(c, /Path=\//);
   assert.ok(!/Domain=/i.test(c));
   assert.equal(new URLSearchParams(start.headers.get("location").split("#")[1]).get("redirect"), "https://site.test/api/auth/callback");
+});
+
+/* The rig's redirects arrive as Netlify sends them: the request's query goes onto a function's redirect that has none of
+   its own, so the callback's code and state reach the page after it (src/render/layout.mjs takes them off there). */
+test("the rig sends a function's redirect as Netlify does", () => {
+  assert.equal(netlifyLocation("?probe=item15&x=1", 303, "/staff/"), "/staff/?probe=item15&x=1");
+  assert.equal(netlifyLocation("?code=c&state=s", 302, "/staff/"), "/staff/?code=c&state=s");
+  assert.equal(netlifyLocation("?code=c&state=s", 301, "/resources/?topic=health"), "/resources/?topic=health");
+  assert.equal(netlifyLocation("?return=%2F", 302, "https://connect.example.test/public-sso.html#state=s"), "https://connect.example.test/public-sso.html?return=%2F#state=s");
+  assert.equal(netlifyLocation("", 302, "/staff/"), "/staff/");
+  assert.equal(netlifyLocation("?a=1", 200, "/staff/"), "/staff/");
 });
 
 test("a sign-in start works once, only in the browser that began it, and not for long", async () => {

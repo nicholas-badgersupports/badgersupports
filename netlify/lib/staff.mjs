@@ -8,7 +8,10 @@
  *                               with a one-time code and the same state.
  *   3. GET /api/auth/callback   the state must match the cookie and a start not yet used; the code
  *                               and verifier are traded server to server for Connect's signed note
- *                               (connect.mjs); a session row and an HttpOnly cookie follow.
+ *                               (connect.mjs); a session row and an HttpOnly cookie follow. Netlify
+ *                               puts this request's query on the redirect back, which has none of
+ *                               its own; the page's inline script takes code and state off the
+ *                               address (src/render/layout.mjs, INLINE_JS).
  *
  * Scopes come from the note: forms.read:<key> (or forms.read:*) to read a form's answers here,
  * forms.switch:<key> (or forms.switch:*) to open and close a form, site.edit to change words on the

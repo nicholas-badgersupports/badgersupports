@@ -519,15 +519,27 @@ await part("a long answer near its limit", async () => {
    in through a fake Connect. Robin Example and their answers are made up. */
 const crypto = await import("node:crypto");
 const { post, workshopAnswers } = await import("../test/helpers.mjs");
-const { useConnect } = await import("../netlify/lib/connect.mjs");
+const { useConnect, canonicalJson, hmacB64u, CLIENT_ID } = await import("../netlify/lib/connect.mjs");
+const { netlifyLocation } = await import("./dev-server.mjs");
 const STAFF = "/staff/";
-/* Sign-in switched on, with no Connect behind it: nothing here signs in through Connect or delivers. The one call it
-   answers is Connect's shared sign-in quotes (Connect GOOGLE-SIGNIN), one made-up line, so the quote under the button
-   is pressed and timed like the rest. */
+/* Sign-in switched on, with no Connect behind it: nothing here delivers. Two calls are answered: Connect's shared sign-in
+   quotes (Connect GOOGLE-SIGNIN), one made-up line, so the quote under the button is pressed and timed like the rest; and
+   the trade of a one-time code this harness made itself (harnessCodes), for a note signed with the harness's made-up key,
+   so one sign-in goes through the real callback. */
 const HARNESS_QUOTE = "A made-up line for the harness.";
-useConnect({ url: "https://connect.example.test", keyId: "harness-key", secret: "h".repeat(40), ssoSecret: "s".repeat(40), statusCheck: false,
+const HARNESS_SSO = "s".repeat(40);
+const harnessCodes = new Map();   // a code the harness made → the nonce of the sign-in start it wrote
+const reply = (body) => new Response(JSON.stringify(body), { headers: { "content-type": "application/json" } });
+useConnect({ url: "https://connect.example.test", keyId: "harness-key", secret: "h".repeat(40), ssoSecret: HARNESS_SSO, statusCheck: false,
   fetch: async (href, init) => {
-    if (JSON.parse(init.body).action === "publicSigninQuotes") return new Response(JSON.stringify({ ok: true, quotes: [HARNESS_QUOTE] }), { headers: { "content-type": "application/json" } });
+    const body = JSON.parse(init.body);
+    if (body.action === "publicSigninQuotes") return reply({ ok: true, quotes: [HARNESS_QUOTE] });
+    if (body.action === "publicSsoToken" && harnessCodes.has(body.code)) {
+      const now = Math.floor(Date.now() / 1000);
+      const assertion = { v: 1, aud: CLIENT_ID, iat: now, exp: now + 120, nonce: harnessCodes.get(body.code), sub: "u-harness-1", name: "Robin Example", active: true, scopes: ["site.edit"] };
+      harnessCodes.delete(body.code);
+      return reply({ ok: true, assertion, sig: hmacB64u(HARNESS_SSO, canonicalJson(assertion)) });
+    }
     throw new TypeError("no Connect in this harness");
   } });
 
@@ -541,11 +553,14 @@ async function staffSession(scopes) {
 /* `session`: scopes for a signed-in director, or null. `hint`: the cookie a past sign-in leaves.
    `slow`: ms each answer waits, or `(path) => ms`. `fail(path, n)`: true to drop that request, as a
    lost connection. */
-async function openStaff({ session = null, hint = !!session, slow = 0, fail, path = STAFF, js = true, viewport = { width: 1280, height: 900 } } = {}) {
+/* `auth`: the sign-in start cookie a press of Sign in leaves. Each redirect the API answers is sent as Netlify sends it,
+   and its Location is kept in `redirects`. */
+async function openStaff({ session = null, hint = !!session, auth = null, slow = 0, fail, path = STAFF, js = true, viewport = { width: 1280, height: 900 } } = {}) {
   const ctx = await browser.newContext({ viewport, javaScriptEnabled: js });
   const cookies = [];
   if (session) cookies.push({ name: "bss_staff", value: await staffSession(session), url: BASE });
   if (hint) cookies.push({ name: "bss_staff_hint", value: "1", url: BASE });
+  if (auth) cookies.push({ name: "bss_auth", value: auth, url: BASE });
   if (cookies.length) await ctx.addCookies(cookies);
   const page = await ctx.newPage();
   const errors = [];
@@ -558,6 +573,7 @@ async function openStaff({ session = null, hint = !!session, slow = 0, fail, pat
     requestAnimationFrame(look);
   });
   const calls = {};
+  const redirects = [];
   await page.route("**/api/**", async (route) => {
     const r = route.request();
     const u = new URL(r.url());
@@ -570,12 +586,13 @@ async function openStaff({ session = null, hint = !!session, slow = 0, fail, pat
     for (const h of ["content-type", "accept", "cookie"]) if (all[h]) headers[h] = all[h];
     const res = await handle(new Request(ORIGIN + u.pathname + u.search, { method: r.method(), headers, body: r.method() === "POST" ? r.postData() : undefined, redirect: "manual" }), { ip: "198.51.100.200" });
     const out = { status: res.status, headers: Object.fromEntries(res.headers), body: Buffer.from(await res.arrayBuffer()) };
+    if (out.headers.location) redirects.push(out.headers.location = netlifyLocation(u.search, res.status, out.headers.location));
     const set = res.headers.getSetCookie();
     if (set.length) out.headers["set-cookie"] = set.join("\n");
     await route.fulfill(out).catch(() => {});
   });
   await page.goto(BASE + path, { waitUntil: js ? "networkidle" : "load" });
-  return { ctx, page, errors, calls };
+  return { ctx, page, errors, calls, redirects };
 }
 
 const staffState = (page) => page.evaluate(() => {
@@ -649,6 +666,30 @@ await part("staff page: the place to come back to", async () => {
   ({ ctx, page } = await openStaff({ path: `${STAFF}?return=//elsewhere.test/` }));
   s = await staffState(page);
   check(s.href === "/api/auth/start?return=/staff/", `staff return: an address off this site is ignored (${s.href})`);
+  await ctx.close();
+});
+
+/* Signing in comes back with nothing after the page's address: Netlify puts the callback's code and state on the
+   router's redirect, and the page takes those two back off for a browser that has just signed in, and only those two. */
+await part("staff sign-in: the address bar", async () => {
+  await freshServer();
+  const b64 = (n) => crypto.randomBytes(n).toString("base64url");
+  const state = b64(24), code = b64(24), nonce = b64(16);
+  await q(`INSERT INTO auth_starts (state_hash, verifier, nonce, return_to, expires_at) VALUES ($1, $2, $3, $4, now() + interval '10 minutes')`,
+    [crypto.createHash("sha256").update(state).digest("hex"), b64(48), nonce, STAFF]);
+  harnessCodes.set(code, nonce);
+  let { ctx, page, errors, redirects } = await openStaff({ auth: state, path: `/api/auth/callback?code=${code}&state=${state}` });
+  const s = await staffState(page);
+  const bar = () => { const u = new URL(page.url()); return u.pathname + u.search; };
+  const sent = redirects.join(" ");
+  check(sent.startsWith(`${STAFF}?code=`) && bar() === STAFF && s.who === "Signed in as Robin Example" && !errors.length,
+    `staff sign-in: after signing in the address bar reads ${STAFF}, though the redirect arrived as Netlify sends it (bar "${bar()}", redirect sent "${sent.replace(/=[^&]{6,}/g, "=…")}", "${s.who}"${errors.length ? `, errors: ${errors.join(" | ")}` : ""})`);
+  await ctx.close();
+  ({ ctx, page } = await openStaff({ path: "/?code=a&state=b" }));
+  check(bar() === "/?code=a&state=b", `staff sign-in: a page's own code and state stay for a browser that has not signed in (bar "${bar()}")`);
+  await ctx.close();
+  ({ ctx, page } = await openStaff({ hint: true, path: "/?keep=1&code=a&state=b" }));
+  check(bar() === "/?keep=1", `staff sign-in: only code and state leave the address, the rest of it stays (bar "${bar()}")`);
   await ctx.close();
 });
 

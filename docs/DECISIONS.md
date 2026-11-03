@@ -629,3 +629,23 @@ Copy, and the edit button's list for a page still offered a retired section's wo
 | Only the sections list changes; the menu's rows keep their buttons on the line under the name | the item names Retire on a section row; the menu's rows were not asked about | add `.staff-menu li > .btn` to the same rule |
 | The server's list for a page (`editSource`) leaves the retired section's words out, so Edit Text and More words never offer them | it is the one list the edit button draws from; Put Back returns the words with the section | drop the `retired` filter in `editSource()` |
 | A save already open on those words is still taken | refusing would lose typing for a section that can come back; nothing reaches visitors while it is retired | refuse in `saveEdit()` when the target's section is retired |
+
+## 2 November 2026 · the address bar after Sign in with Connect (queue item 15; routine calls made in the session)
+
+His item of 2 Nov, given with a button: "the address bar drops ?code=…&state= after Sign in with Connect". Seen 31 Oct: the
+bar kept `/staff/?code=…&state=…` though `finishSignIn` answers a 302 to `/staff/`.
+
+The cause, read on the live site (deploy `6ae91d6b`, a browser with no staff session, so nothing was deleted): a `POST
+/api/auth/signout?probe=item15&x=1`, whose answer is a 303 to `/staff/`, arrived at `/staff/?probe=item15&x=1`; the same call
+with no query arrived at `/staff/`. Netlify puts a request's query on a function's redirect that has none of its own. Netlify
+staff describe the same rule for proxy rules and say a Location with a query of its own is left alone
+(answers.netlify.com/t/31604, /t/95642; posters there report that Netlify's CLI does not do it). The rig passed the
+handler's Location through untouched, so no check could see it. Not read live: a Location with a
+query of its own from a function, and where the query goes when the Location has a fragment.
+
+| Call | Why | To reverse |
+|---|---|---|
+| The page's inline script takes `code` and `state` off the address, only in a browser holding `bss_staff_hint`, and only when both are there; the rest of the query stays | a redirect cannot take the query off (Netlify would put it back, and a redirect from `/staff/?code…` to `/staff/` would loop); the inline script runs first on every page Sign in can come back to, with no new words | delete the `var u=…` part of `INLINE_JS` in `src/render/layout.mjs` |
+| The callback stays a 302 rather than a page that moves on by itself | a page in between adds words and a step for the same result; with the script, the history entry the redirect made has its address replaced, so no entry keeps the code | answer the callback with a page carrying `<meta http-equiv="refresh">` |
+| The rig puts the request's query on a function's redirect that has none, in the dev server and in the browser suite's API stand-in (`netlifyLocation()`) | a check that runs where Netlify's rule does not hold cannot see this defect; the browser check refuses to pass if the redirect it sent lacks the query | drop the `netlifyLocation` calls in `ops/dev-server.mjs` and `ops/interact.mjs` |
+| The query goes before a fragment in the rig's model | where Netlify puts it is not known; this is how a URL is put together | change `netlifyLocation()` when it is read live |

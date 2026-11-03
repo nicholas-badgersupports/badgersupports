@@ -493,7 +493,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-585 keys. Keys are permanent. Required text cannot be published empty and must keep each
+587 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -552,7 +552,7 @@ the site adds the markup.
 | `mood.back` | Back to the Homepage | Link on that page. |  |
 | `schedule.happening` | Happening Now | Shown on an event once it has finished. |  |
 
-### Event cards (12)
+### Event cards (14)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -568,6 +568,8 @@ the site adds the markup.
 | `schedule.directions` | Get Directions | Day-card directions or no-upcoming-group action. |  |
 | `schedule.updates` | Join Our Email List | Day-card directions or no-upcoming-group action. |  |
 | `schedule.weekEmpty` | No peer support groups are scheduled in the next seven days. | Peer day cards when the current seven-day window has no occurrences. |  |
+| `schedule.timeUnconfirmed` | Time needs confirmation. Please contact us before attending. | Event with a nonexistent local time or invalid start/end order. |  |
+| `schedule.confirmTime` | Confirm the Time | Contact action instead of Drop In for an unresolved event time. |  |
 
 ### Rooms and directions (9)
 

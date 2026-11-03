@@ -786,3 +786,19 @@ Nicholas requested continued priority-order implementation in a separate working
 This continuation selectively reconciles the paired Connect team's runtime module with the broader public candidate, adds the closed shared email request route, prepares a disabled runtime alumni history component, preserves topic choices through workshop links, improves ended/ongoing event behavior and corrects verified public destinations. Existing block IDs and manual override paths are retained. Source-backed copy and proposed stewardship/page-purpose records refine the current design. The alumni status review resolves eight former members and one onboarding-only exclusion; actual display subset approval and a current appointment recheck remain separate. No real alumni roster is committed.
 
 Verification belongs to the dated shared handoff and its source manifest; local fictional tests do not prove live delivery, CDN invalidation, enrollment or publication. Pre-transition/repeated-hour DST conversion remains a queue limitation. No new policy, owner role or approval ceremony is established by these implementation choices.
+
+
+## 3 November 2026 · Continued local public build (canonical 30–37/62)
+
+Nicholas requested continued building through badger-build-handoff, preserving the tested candidate and using a separate working copy, without publication. The previous candidate and other dirty trees remain protected.
+
+| Routine implementation choice | Basis | Reversal / limit |
+|---|---|---|
+| Preserve dated source startUtc/endUtc only when they round-trip to the supplied Chicago date and minute | Connect already projects these public fields; the consumer discarded them | Revert the consumer mapping; do not reinterpret mismatched source timestamps |
+| Resolve weekly wall times at the event hour; use the earlier occurrence for a repeated hour when no exact instant exists | Matches the existing producer convention; noon offsets are wrong before the switch | Change the resolver only with a coordinated source contract; an exact valid producer timestamp still wins |
+| Leave nonexistent times unresolved; offer time confirmation rather than attendance/calendar actions | A source wall time in the spring gap has no matching instant | Student source owner corrects the event; no false duration or future time is invented |
+| Retain each multiday event's original start, and order resolved repeated-hour rows by instant | All views and calendar files must describe the same event | Revert row/order changes; regression checks demonstrate the failure |
+| Home's existing When/Where fields point to its current timetable | Avoids static promises contradicting approved schedule changes while retaining field paths | Restore wording in those same fields only after deliberately resolving schedule ownership |
+| Add early program choices and request context using existing blocks | Canonical 34–37: attend, request and written support are distinct tasks | Restore the same page fields/links; no backend or intake store changes |
+
+Existing word and typed-edit target paths remain stable. Saved overrides continue to win at their existing scope; actual live overrides were not read. The local migration record separates URL disposition, content and whole-task acceptance. Current recruitment/pay/hours, approved alumni display data, mail enrollment, privacy review and cutover remain outside this local proof.

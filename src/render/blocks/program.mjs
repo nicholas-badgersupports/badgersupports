@@ -1,3 +1,4 @@
+import { timeNotice } from "../event-status.mjs";
 /* A program section. Three variants so the three programs do not read as three identical cards:
  *   feature  — a large photo and the program's facts as a timetable (peer support groups)
  *   gallery  — the next dates, and a swipeable strip of photos (craft nights)
@@ -43,7 +44,7 @@ function feature(b, ctx) {
 
 function gallery(b, ctx) {
   const src = ctx.data.events;
-  const next = b.upcoming && src ? nextDated(src, ctx.today, b.upcoming.count || 2, b.upcoming.program) : [];
+  const next = b.upcoming && src ? nextDated(src, ctx.today, b.upcoming.count || 2, b.upcoming.program, ctx.now) : [];
   return html`<div class="wrap">
   <div>
     ${heading(b)}
@@ -51,7 +52,7 @@ function gallery(b, ctx) {
     ${paras(b.body)}
     <div data-live="next">${next.length ? html`<h3 class="sr-only">${b.upcoming.label || ctx.t("program.upcomingLabel")}</h3><ul class="next-list">${next.map((r) => {
       const p = dateParts(r.date, ctx.t);
-      return html`<li${attrs({ "data-starts": r.startsAt, "data-ends": r.endsAt })}><div class="dateblock" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span></div><div><strong>${r.short}</strong><span><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${timeRange(r.start, r.end, ctx.t)}${r.place ? ` · ${r.place.name}` : ""}</span></div></li>`;
+      return html`<li${attrs({ "data-starts": r.startsAt, "data-ends": r.endsAt })}><div class="dateblock" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span></div><div><strong>${r.short}</strong><span><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${timeRange(r.start, r.end, ctx.t)}${r.place ? ` · ${r.place.name}` : ""}</span>${timeNotice(ctx, r)}</div></li>`;
     })}</ul>` : ""}</div>
     ${links(ctx, b.links)}
   </div>

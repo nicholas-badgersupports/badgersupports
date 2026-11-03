@@ -10,6 +10,7 @@
  * be served for days before the next publish.
  */
 import { eventState } from "../shared/event-state.mjs";
+import { chicagoInstant } from "../shared/chicago-time.mjs";
 
 import { TZ } from "./context.mjs";
 
@@ -70,7 +71,6 @@ export const lastDay = (e) => (e.endDate && e.endDate > e.date ? e.endDate : e.d
 
 function row(src, e, date) {
   const place = src.places?.[e.place] || null;
-  const off = chicagoOffset(date);
   // a dated event's first and last day; a weekly one's row is its one day
   const dated = e.weekday === undefined;
   const last = dated ? lastDay(e) : date;
@@ -86,8 +86,8 @@ function row(src, e, date) {
     until: last,
     start: e.start,
     end: e.end || null,
-    startsAt: `${date}T${e.start}:00${off}`,
-    endsAt: e.end ? `${last}T${e.end}:00${chicagoOffset(last)}` : null,
+    startsAt: chicagoInstant(dated ? e.date : date, e.start, dated ? e.startUtc : null),
+    endsAt: e.end ? chicagoInstant(last, e.end, dated ? e.endUtc : null) : null,
     place,
     placeId: e.place || null,
     signup: e.signup || "none",
@@ -97,6 +97,11 @@ function row(src, e, date) {
     media: e.media || null,
     event: e.id,
   };
+}
+
+function chronological(a, b) {
+  const start = Date.parse(a.startsAt), end = Date.parse(b.startsAt);
+  return a.date.localeCompare(b.date) || (Number.isFinite(start) && Number.isFinite(end) ? start - end : Number.isFinite(start) ? -1 : Number.isFinite(end) ? 1 : a.start.localeCompare(b.start)) || a.event.localeCompare(b.event);
 }
 
 /* Rows from `from` (inclusive) for `days` days, recurring and dated together, in time order. */
@@ -114,7 +119,7 @@ export function rowsBetween(src, from, days) {
     }
     for (const e of src.dated || []) if (e.date <= date && date <= lastDay(e)) out.push(row(src, e, date));
   }
-  return out.sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+  return out.sort(chronological);
 }
 
 /* Which events a block asks for: `which` is a program, or { program, series }. A series (a page's own
@@ -130,8 +135,8 @@ export function nextDated(src, from, count, which = null, now = null) {
   const keep = wanted(which);
   return (src.dated || [])
     .filter((e) => lastDay(e) >= from && keep(e))
-    .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))
     .map((e) => row(src, e, e.date))
+    .sort(chronological)
     .filter(r => eventState(r, now) !== "ended")
     .slice(0, count);
 }
@@ -141,9 +146,9 @@ export function lastDated(src, before, count, which = null, now = null) {
   const keep = wanted(which);
   return (src.dated || [])
     .filter((e) => (lastDay(e) < before || eventState(row(src, e, e.date), now) === "ended") && keep(e))
-    .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start))
-    .slice(0, count)
-    .map((e) => row(src, e, e.date));
+    .map((e) => row(src, e, e.date))
+    .sort((a, b) => chronological(b, a))
+    .slice(0, count);
 }
 
 export function groupByDate(rows) {

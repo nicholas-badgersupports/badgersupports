@@ -15,6 +15,27 @@
         "m-workshop-herald-team",
         "m-peer-circle",
         "m-workshop-room"
+      ],
+      "body": [
+        "Choose a workshop, a peer support group or volunteer training for your group. A request is not a confirmed booking."
+      ],
+      "primary": {
+        "label": "Request a Workshop",
+        "href": "/forms/workshop-request/"
+      },
+      "links": [
+        {
+          "label": "Request a Peer Support Group",
+          "href": "#b-rp-groups-h"
+        },
+        {
+          "label": "Request Volunteer Training",
+          "href": "#b-rp-training-h"
+        },
+        {
+          "label": "Written Support with Badger SPILL",
+          "href": "https://badgerspill.org/#spill-form"
+        }
       ]
     },
     {
@@ -63,12 +84,13 @@
       "title": "Peer Support Groups",
       "body": [
         "Confidential, judgement-free space to talk about whatever’s on your mind.",
-        "Topics, activities, & length can be tailored by request!"
+        "Topics, activities, & length can be tailored by request!",
+        "Describe the program you would like in the shared program request form."
       ],
       "links": [
         {
           "label": "Request a Peer Support Group",
-          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform",
+          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform?usp=pp_url&entry.70593572=Peer+Support+Group+%28for+you%2C+your+members+or+community%29",
           "icon": "out"
         }
       ],
@@ -84,12 +106,13 @@
       "flip": true,
       "body": [
         "Learn how to support your friends & classmates! This training adapts Badger Supports’ peer support framework for any student or student group.",
-        "Get familiar with campus resources & gain hands-on practice in active listening, confidentiality, inclusive practices, & more."
+        "Get familiar with campus resources & gain hands-on practice in active listening, confidentiality, inclusive practices, & more.",
+        "Describe the program you would like in the shared program request form."
       ],
       "links": [
         {
           "label": "Request a Volunteer Training",
-          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform",
+          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform?usp=pp_url&entry.70593572=Volunteer+Training+%28for+your+group+or+team%29",
           "icon": "out"
         }
       ],
@@ -108,7 +131,7 @@
       "links": [
         {
           "label": "Request a Navigating Housing Workshop",
-          "href": "/forms/workshop-request/"
+          "href": "/forms/workshop-request/?topic=housing"
         },
         {
           "label": "Learn More on Our Housing Page!",
@@ -127,10 +150,11 @@
       "body": [
         "Need to vent to a fellow Badger? Spill it!",
         "Badger SPILL is written peer support from Badger Supports. Write what’s on your mind, whenever it’s on your mind, and a trained UW–Madison Student Supporter writes back. It’s confidential.",
-        "Badger SPILL does not provide crisis support. If you or a friend are in a crisis, please call 911 or the UHS 24/7 Mental Health Crisis Line: 608-265-5600, option 9."
+        "Badger SPILL does not provide crisis support. If you or a friend are in a crisis, please call 911 or the UHS 24/7 Mental Health Crisis Line: 608-265-5600, option 9.",
+        "For written peer support, go directly to Badger SPILL. You do not need to request a program for a group."
       ],
       "primary": {
-        "label": "Submit a Spill",
+        "label": "Write Your SPILL",
         "href": "https://badgerspill.org/#spill-form"
       },
       "links": [

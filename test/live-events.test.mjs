@@ -261,6 +261,18 @@ test("an event that began yesterday and ends tomorrow is still coming up, betwee
   assert.match(await res.text(), new RegExp(`DTEND:${day(1).replace(/-/g, "")}T`));
 });
 
+test("unknown event times cannot create calendar files in the build or current API", async () => {
+  const event = { ...craft("unknown-time", "Example Unknown Duration", 1), end: null };
+  const cfg = fakeConnect(reply([event]));
+  given(cfg);
+  assert.equal(await calendarFile("connect-unknown-time", { today: TODAY }), null);
+  const out = path.join(ROOT, "local", "test-build-unknown-time");
+  const report = await build({ production: true, feedRules: { ...JSON.parse(fs.readFileSync(path.join(ROOT, "content/connect-feed.json"))), exports: { team: false, wall: false } }, connectConfig: cfg.cfg, out, serverDir: path.join(out, "_server"), media: false, today: TODAY });
+  assert.deepEqual(report.calendar, []);
+  assert.ok(!fs.existsSync(path.join(out, "calendar", "connect-unknown-time.ics")));
+  assert.doesNotMatch(read(out, "join/craft-nights/index.html"), /href="[^"]*calendar\/connect-unknown-time\.ics/);
+});
+
 /* Each running copy of the API holds Connect's list up to a minute. Refresh now runs in one copy; every other copy must
    ask Connect again, or it draws the list from before the refresh into the answers the refresh has just cleared. This
    file's import is the copy that took Refresh now, and a second import of the same module is another copy: the store is

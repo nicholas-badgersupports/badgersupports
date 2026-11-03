@@ -37,7 +37,7 @@ export default {
             ${photo ? html`<div class="photo">${picture(ctx, photo, { sizes: "(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), 17rem" })}</div>` : html`<div class="card-mark">${icon("calendar")}</div>`}
             <div class="card-words"><h3>${template?.title || day.dowLong}</h3><p class="card-text">${day.monLong} ${day.dom}</p>
               ${items.map(r => html`<div class="${eventClass("ev", r, ctx.now)}" data-starts="${r.startsAt}" data-ends="${r.endsAt}" data-date="${r.date}">
-                <p class="card-line ev-time">${timeRange(r.start, r.end, ctx.t)}${eventTags(ctx)}</p>
+                <p class="card-line ev-time">${timeRange(r.start, r.end, ctx.t)}${eventTags(ctx, r)}</p>
                 ${r.place ? html`<p class="card-text">${r.place.name}${r.place.detail ? html`<span class="where-detail">${r.place.detail}</span>` : ""}</p>` : ""}
                 ${r.place?.href ? go(ctx, r.place.href, ctx.t("schedule.directions"), "pin") : ""}
               </div>`)}

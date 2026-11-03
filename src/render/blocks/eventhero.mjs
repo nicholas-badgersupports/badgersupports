@@ -15,9 +15,9 @@ import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
-import { calendarHref } from "../ics.mjs";
+import { calendarHref, hasCalendarTimes, timeUnconfirmed } from "../ics.mjs";
 import { nextDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
-import { eventClass, eventTags } from "../event-status.mjs";
+import { eventClass, eventTags, timeContact } from "../event-status.mjs";
 
 function feature(ctx, b, r) {
   const p = dateParts(r.date, ctx.t);
@@ -34,9 +34,9 @@ function feature(ctx, b, r) {
       ${r.place ? html`<p class="evcard-where">${icon("pin")}<span><strong>${r.place.name}</strong>${r.place.detail ? html`<span class="where-detail"><span class="sr-only">, </span>${r.place.detail}</span>` : ""}</span></p>` : ""}
       ${r.note ? html`<p class="evcard-note">${r.note}</p>` : ""}
       <div class="feature-actions">
-        ${r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "btn btn--big", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
-        <a class="go" href="${calendarHref(ctx, r.event)}"><span class="go-label">${ctx.t("events.calendar")}<span class="sr-only">: ${r.short}</span></span>${icon("calendar", "go-ic")}</a>
-        ${eventTags(ctx)}
+        ${timeUnconfirmed(r) ? timeContact(ctx) : r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "btn btn--big", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
+        ${hasCalendarTimes(r) ? html`<a class="go" href="${calendarHref(ctx, r.event)}"><span class="go-label">${ctx.t("events.calendar")}<span class="sr-only">: ${r.short}</span></span>${icon("calendar", "go-ic")}</a>` : ""}
+        ${eventTags(ctx, r)}
       </div>
     </div>
   </article>`;

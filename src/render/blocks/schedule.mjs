@@ -5,8 +5,9 @@
 import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
+import { timeUnconfirmed } from "../ics.mjs";
 import { rowsBetween, nextDated, groupByDate, dateParts, timeRange, addDays, dayRange } from "../events.mjs";
-import { eventClass, eventTags } from "../event-status.mjs";
+import { eventClass, eventTags, timeContact } from "../event-status.mjs";
 
 function dateBlock(ctx, date, today) {
   const p = dateParts(date, ctx.t);
@@ -17,6 +18,7 @@ function dateBlock(ctx, date, today) {
    names one (peer support groups: what a group is, then the way to the Hub), otherwise to the
    room's directions. With neither, it just says no sign-up is needed. */
 function signup(ctx, r, dropIn) {
+  if (timeUnconfirmed(r)) return timeContact(ctx);
   if (r.signup === "connect" && r.signupUrl) return link(ctx, r.signupUrl, ctx.t("schedule.signup.connect"));
   if (r.signup === "none") {
     const to = dropIn?.[r.program] || r.place?.href;
@@ -33,7 +35,7 @@ function eventRow(ctx, r, { withDate = false, dropIn = null } = {}) {
   return html`<li${attrs({ class: eventClass("ev", r, ctx.now), "data-program": r.program, "data-starts": r.startsAt, "data-ends": r.endsAt })}>
     <span class="ev-time">${withDate ? html`<span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>` : ""}${when}</span>
     <span class="ev-what"><strong>${title}</strong>${days ? html`<span class="ev-days"><span aria-hidden="true">${days.short}</span><span class="sr-only">${days.long}</span></span>` : ""}${r.place ? html`<span>${r.place.href ? link(ctx, r.place.href, r.place.name) : r.place.name}${r.place.detail ? ` · ${r.place.detail}` : ""}</span>` : ""}</span>
-    <span class="ev-sign">${signup(ctx, r, dropIn)}${eventTags(ctx)}</span>
+    <span class="ev-sign">${signup(ctx, r, dropIn)}${eventTags(ctx, r)}</span>
   </li>`;
 }
 

@@ -2979,6 +2979,16 @@
       "group": "staff",
       "text": "Make the first link the main action",
       "where": "Name of a value: on or off."
+    },
+    "schedule.timeUnconfirmed": {
+      "group": "events",
+      "text": "Time needs confirmation. Please contact us before attending.",
+      "where": "Event with a nonexistent local time or invalid start/end order."
+    },
+    "schedule.confirmTime": {
+      "group": "events",
+      "text": "Confirm the Time",
+      "where": "Contact action instead of Drop In for an unresolved event time."
     }
   }
 }

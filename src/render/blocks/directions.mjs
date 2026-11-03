@@ -1,3 +1,4 @@
+import { timeNotice } from "../event-status.mjs";
 /* One room's page: the room's photo when it has one over a red card saying where it is, with one
    button to a map, then the way in as a route — numbered stops on a dotted line, each with its own
    photo when there is one — ending at the room, with a photo of the arrival when the room has one.
@@ -54,7 +55,7 @@ export default {
     ${p.note ? html`<p class="dir-note">${p.note}</p>` : ""}
     <div class="dir-next" data-live="next">${next.length ? html`${page ? html`<h2 class="dir-title">${ctx.t("directions.nextHere")}</h2>` : html`<h3 class="dir-title">${ctx.t("directions.nextHere")}</h3>`}<ul class="next-list">${next.map((r) => {
       const d = dateParts(r.date, ctx.t);
-      return html`<li><div class="dateblock" aria-hidden="true"><span class="dow">${d.dow}</span><span class="dom">${d.dom}</span><span class="mon">${d.mon}</span></div><div><strong>${r.href && !ctx.here(r.href) ? link(ctx, r.href, r.title) : r.title}</strong><span><span class="sr-only">${d.dowLong}, ${d.monLong} ${d.dom}, </span>${timeRange(r.start, r.end, ctx.t)}</span></div></li>`;
+      return html`<li><div class="dateblock" aria-hidden="true"><span class="dow">${d.dow}</span><span class="dom">${d.dom}</span><span class="mon">${d.mon}</span></div><div><strong>${r.href && !ctx.here(r.href) ? link(ctx, r.href, r.title) : r.title}</strong><span><span class="sr-only">${d.dowLong}, ${d.monLong} ${d.dom}, </span>${timeRange(r.start, r.end, ctx.t)}</span>${timeNotice(ctx, r)}</div></li>`;
     })}</ul>` : ""}</div>
   </div>` : ""}
 </div></section>`;

@@ -27,8 +27,16 @@ export const icsPath = (eventId) => `/calendar/${eventId}.ics`;
    the build wrote. */
 export const calendarHref = (ctx, eventId) => (ctx.liveEvents ? `/api/calendar/${eventId}.ics` : icsPath(eventId));
 
+export function hasCalendarTimes(row) {
+  const start = Date.parse(row.startsAt), end = Date.parse(row.endsAt);
+  return Number.isFinite(start) && Number.isFinite(end) && end > start;
+}
+
+export const timeUnconfirmed = row => !Number.isFinite(Date.parse(row.startsAt)) || !!(row.end && !hasCalendarTimes(row));
+
 /* row: from src/render/events.mjs. place: the room record or null. origin: the site's origin. */
 export function eventIcs(row, { place, origin, stamp }) {
+  if (!hasCalendarTimes(row)) throw new Error("An event calendar needs confirmed start and end times");
   const where = place ? [place.name, place.building, place.address].filter(Boolean).join(", ") : "";
   const lines = [
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Badger Supports//Public site//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",

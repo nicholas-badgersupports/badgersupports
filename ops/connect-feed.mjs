@@ -33,6 +33,7 @@ import path from "node:path";
 import { call, serviceConfig } from "../netlify/lib/connect.mjs";
 import { addDays } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
+import { validChicagoInstant } from "../src/shared/chicago-time.mjs";
 import { photoProblems } from "../src/render/media.mjs";
 import { TEAM_SCHEMA, GROUPS } from "../src/render/team.mjs";
 
@@ -181,6 +182,8 @@ export function mapEvents(reply, rules) {
       id: `connect-${e.id}`, program: s?.program || t.program, ...(s ? { series: s.id } : {}),
       title: String(e.title).slice(0, 160), short: String(e.short || e.title).slice(0, 160),
       date: e.date, ...(endDate ? { endDate } : {}), start: e.start, ...(HM.test(e.end || "") ? { end: e.end } : {}),
+      ...(validChicagoInstant(e.startUtc, e.date, e.start) ? { startUtc: e.startUtc } : {}),
+      ...(validChicagoInstant(e.endUtc, endDate || e.date, e.end) ? { endUtc: e.endUtc } : {}),
       place: placeFor(e.room, null), signup: "none", ...(href ? { href } : {}),
     });
   }

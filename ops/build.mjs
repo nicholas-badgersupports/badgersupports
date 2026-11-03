@@ -61,7 +61,7 @@ import { formPreviewPages } from "../src/render/blocks/form.mjs";
 import { teamProblems, personPages, publicPeople, teamRedirects, GROUPS, TEAM_PATH } from "../src/render/team.mjs";
 import { buildMedia, buildLinks, linkPlaceholders, loadManifest } from "./media.mjs";
 import { nextDated } from "../src/render/events.mjs";
-import { eventIcs, icsPath } from "../src/render/ics.mjs";
+import { eventIcs, icsPath, hasCalendarTimes } from "../src/render/ics.mjs";
 import { feedConfig, feedRuleProblems, readConnectFeed, seriesIds } from "./connect-feed.mjs";
 import { pagePrograms, sectionPrograms, siteSnapshot } from "../src/render/site.mjs";
 
@@ -555,7 +555,7 @@ export async function build({ production = false, launch = production, today = n
 
   // One calendar file per upcoming dated event: the round calendar button on its card opens it.
   const stamp = `${day.replace(/-/g, "")}T000000Z`;
-  const calendar = nextDated(content.events, day, Infinity);
+  const calendar = nextDated(content.events, day, Infinity).filter(hasCalendarTimes);
   for (const r of calendar) {
     const file = path.join(out, icsPath(r.event));
     fs.mkdirSync(path.dirname(file), { recursive: true });

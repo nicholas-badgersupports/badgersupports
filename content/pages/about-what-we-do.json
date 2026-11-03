@@ -16,13 +16,28 @@
         "We empower students to support themselves, show up for one another, and build bridges to campus resources and communities of support."
       ],
       "primary": {
-        "label": "Join a Group!",
+        "label": "View Group Schedule",
         "href": "/join/peer-support-groups/"
       },
       "photos": [
         "m-peer-couch",
         "m-people-welcome",
         "m-craft-friends"
+      ],
+      "links": [
+        {
+          "label": "Craft Night Schedule",
+          "href": "/join/craft-nights/",
+          "icon": "calendar"
+        },
+        {
+          "label": "Request a Workshop",
+          "href": "/forms/workshop-request/"
+        },
+        {
+          "label": "Written Support with Badger SPILL",
+          "href": "https://badgerspill.org/#spill-form"
+        }
       ]
     },
     {
@@ -64,8 +79,9 @@
       "title": "Craft Nights",
       "flip": true,
       "body": [
-        "Need a break from classes? Drop in to a Badger Supports Craft Night! Every other week we host fun, creative events where you can relax, meet new people, and make something cool—like bracelets, vision boards, bedazzled crafts, shrinky dinks, & more!",
-        "No experience needed, no sign-ups required—just show up, hang out, and unwind with fellow Badgers."
+        "Need a break from classes? Drop in to a Badger Supports Craft Night! We host creative events where you can relax, meet new people, and make something cool—like bracelets, vision boards, bedazzled crafts, shrinky dinks, & more!",
+        "No experience needed, no sign-ups required—just show up, hang out, and unwind with fellow Badgers.",
+        "Check the Craft Night Schedule for the next date, time and location."
       ],
       "links": [
         {

@@ -22,7 +22,7 @@ import { mapEvents } from "../../ops/connect-feed.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { liveBlocks, renderBlock } from "../../src/render/registry.mjs";
 import { nextDated } from "../../src/render/events.mjs";
-import { eventIcs } from "../../src/render/ics.mjs";
+import { eventIcs, hasCalendarTimes } from "../../src/render/ics.mjs";
 import { withRoomPlaces } from "../../src/render/places.mjs";
 import { siteNow } from "./pages.mjs";
 import { noteGet, noteSet } from "./published.mjs";
@@ -121,7 +121,7 @@ export async function calendarFile(eventId, { today = chicagoDate(), now = Date.
   if (!c.events) return null;
   const { events, stale } = await eventsNow(c.events, now);
   const r = nextDated(events, today, Infinity, null, now).find((x) => x.event === eventId);
-  if (!r) return null;
+  if (!r || !hasCalendarTimes(r)) return null;
   const places = (await published(c))?.places || c.events.places;
   const place = places[r.placeId] || (r.place ? { name: r.place.name } : null);
   return { stale, text: eventIcs(r, { place, origin: c.site.origin, stamp: `${today.replace(/-/g, "")}T000000Z` }) };

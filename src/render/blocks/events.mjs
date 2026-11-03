@@ -20,9 +20,9 @@ import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
-import { calendarHref } from "../ics.mjs";
+import { calendarHref, hasCalendarTimes, timeUnconfirmed } from "../ics.mjs";
 import { nextDated, lastDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
-import { eventClass, eventTags } from "../event-status.mjs";
+import { eventClass, eventTags, timeContact } from "../event-status.mjs";
 
 /* A night that has happened, as its photo: the date and name under it. One without a photo keeps
    the card. */
@@ -60,9 +60,9 @@ function card(ctx, r, { past = false } = {}) {
       ${r.place && !past ? html`<p class="evcard-where">${icon("pin")}<span><strong>${r.place.name}</strong>${r.place.detail ? ` · ${r.place.detail}` : ""}</span></p>` : ""}
       ${r.note && !past ? html`<p class="evcard-note">${r.note}</p>` : ""}
       ${past ? "" : html`<div class="evcard-row">
-        <a class="evcard-cal" href="${calendarHref(ctx, r.event)}">${icon("calendar")}<span class="sr-only">${ctx.t("events.calendar")}: ${r.short}</span></a>
-        ${r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "drop", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
-        ${eventTags(ctx)}
+        ${hasCalendarTimes(r) ? html`<a class="evcard-cal" href="${calendarHref(ctx, r.event)}">${icon("calendar")}<span class="sr-only">${ctx.t("events.calendar")}: ${r.short}</span></a>` : ""}
+        ${timeUnconfirmed(r) ? timeContact(ctx) : r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "drop", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
+        ${eventTags(ctx, r)}
       </div>`}
     </div>
   </li>`;

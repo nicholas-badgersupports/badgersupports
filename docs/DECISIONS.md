@@ -664,3 +664,13 @@ The suite judged "ended" by the browser's real clock, so the same build failed a
 | `ops/a11y.mjs` holds the browser's clock a minute after the first listed event ends, for every page; then each page with events again, a minute after its last | ended and coming events are both measured whatever the hour; every event view is measured ended | drop `setFixedTime` and the second loop in `ops/a11y.mjs` |
 | The suite fails a page whose clock is not the held one, a run with no ended or no coming event, and a selector that differs from `schedule.js`'s | a held clock no content reaches measures nothing | delete those three checks |
 | The suite names every element a rule failed, not the first | item 24 was queued as "the time" because only the first was printed | print `nodes[0]` again |
+
+## 2 November 2026 · the Resources Escape check waits for the dialog's close (queue item 16; routine call made in the session)
+
+His item of 2 Nov, given with a button: "Queue as item 16". `ops/interact.mjs` read the page straight after pressing Escape.
+The dialog closes at once, but its close event, which unpins the page and scrolls it back, runs as a later task, so on a busy
+machine the check saw the page still pinned.
+
+| Call | Why | To reverse |
+|---|---|---|
+| The check waits for the dialog's close event, with a 3-second bound that only a dialog which never closes reaches | the bound is the one wait the suite needs to prove a non-event; it ends early on the event itself | read the state straight after the key press again |

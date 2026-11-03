@@ -1153,11 +1153,20 @@ await part("resources: a card's details and the filter", async () => {
   const before = await resState(page);
   await page.keyboard.press("Enter");
   const opened = await resState(page);
+  /* The dialog's close event, which unpins the page and scrolls it back, is a task queued after the
+     key press resolves; the state is read once it has run. This listener is added after the page's
+     own, so it runs after it. */
+  await page.evaluate(() => {
+    const d = document.querySelector("[data-res-dialog]");
+    window.__resClosed = new Promise((ok) => d.addEventListener("close", () => ok(true), { once: true }));
+  });
   await page.keyboard.press("Escape");
+  // the one bounded wait: it ends early on the close event, and only proves a dialog that never closes
+  const closed = await page.evaluate(() => Promise.race([window.__resClosed, new Promise((ok) => setTimeout(() => ok(false), 3000))]));
   const shut = await resState(page);
   const back = await summary.evaluate((s) => s === document.activeElement);
-  check(opened.open && !shut.open && back && shut.y === before.y && !shut.locked,
-    `resources: a card's details open by keyboard, Escape closes them, focus and scroll come back to the card, and the page scrolls again (${JSON.stringify({ opened: opened.open, shut: shut.open, focusBack: back, y: [before.y, shut.y], locked: shut.locked })})`);
+  check(opened.open && closed && !shut.open && back && shut.y === before.y && !shut.locked,
+    `resources: a card's details open by keyboard, Escape closes them, focus and scroll come back to the card, and the page scrolls again (${JSON.stringify({ opened: opened.open, closeEvent: closed, shut: shut.open, focusBack: back, y: [before.y, shut.y], locked: shut.locked })})`);
   await page.click('[data-topic="housing"]');
   const word = (await page.locator(".res-card:not([hidden]) h3").first().textContent()).match(/[A-Za-z]{4,}/)[0].toLowerCase();
   await page.fill("#b-res-list-q", word);

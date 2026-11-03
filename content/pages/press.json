@@ -81,6 +81,19 @@
       "title": "From The Daily Cardinal",
       "items": [
         {
+          "id": "pr-cardinal-housing",
+          "icon": "pin",
+          "title": "Student peers discuss how to navigate Madison’s housing market",
+          "lines": [
+            "October 10, 2026"
+          ],
+          "text": "Badger Supports held a student panel on Oct. 8 with tips for finding housing in Madison.",
+          "link": {
+            "label": "Read the Article",
+            "href": "https://www.dailycardinal.com/article/2026/10/student-peers-discuss-how-to-navigate-madisons-housing-market"
+          }
+        },
+        {
           "id": "pr-cardinal-crisis",
           "icon": "chat",
           "title": "Campus organizations help UW-Madison students with mental health crisis",

@@ -239,8 +239,11 @@
 }
 .drop .go-ic { order: -1; width: 1.85rem; height: 1.85rem; padding: .38rem; border-radius: 50%; background: var(--accent); color: var(--cream); }
 .drop:hover { color: var(--accent-deep); text-decoration: none; background: var(--accent-tint); }
+/* An event that has ended keeps every word at full contrast: its time and name drop to the muted ink at
+   regular weight, its Drop in goes and its Ended tag shows. Never opacity, which takes every word in the
+   row under 4.5:1. */
 .ev.is-past .drop { display: none; }
-.ev.is-past { opacity: .55; }
+.ev.is-past .ev-time, .ev.is-past .ev-what strong { color: var(--muted); font-weight: 400; }
 .ended-tag { display: none; }
 .ev.is-past .ended-tag { display: inline; }
 .ev.is-past .ended-tag::before { content: "·"; margin-inline: .35em; }
@@ -873,7 +876,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .evcard-cal:hover { background: var(--accent); color: var(--cream); }
 .evcard-chip { display: inline-flex; align-items: center; gap: .35rem; font-size: var(--fs-small); font-weight: 700; color: var(--muted); background: var(--paper-deep); border-radius: var(--r-chip); padding: .3rem .75rem; }
 .evcard-chip .ic { width: 1rem; height: 1rem; color: var(--accent); }
-.evcard.is-past { opacity: .6; }
+/* an ended card, like an ended row, is never faded: its red date and its name take the muted ink */
+.evcard.is-past:not(.is-feature) .evcard-date .dom, .evcard.is-past:not(.is-feature) h3 { color: var(--muted); }
 .evcard.is-past .drop, .evcard.is-past .evcard-cal, .evcard.is-past .evcard-chip { display: none; }
 .evcard.is-past .ended-tag { display: inline; font-weight: 700; color: var(--muted); }
 .evcard.is-past .ended-tag::before { content: none; }
@@ -944,9 +948,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .feature-actions .btn--big { padding-inline: 2rem; }
 .evcard.is-feature .evcard-chip { font-size: var(--fs-body); padding: .55rem 1rem; }
 .evcard.is-feature.is-past .btn, .evcard.is-feature.is-past .go { display: none; }
-/* the featured card sits on the red band, where fading it turns its date pink and unreadable; once its
-   event has ended it stays at full strength, drops "Next up", and its Ended tag and missing buttons say so */
-.evcard.is-feature.is-past { opacity: 1; }
+/* the featured card, once its event has ended, keeps its red date on the band, drops "Next up", and its
+   Ended tag and missing buttons say so */
 .evcard.is-feature.is-past .feature-label { display: none; }
 
 /* what to expect: two people photos, one large and one tucked over its corner, beside the words;

@@ -649,3 +649,18 @@ query of its own from a function, and where the query goes when the Location has
 | The callback stays a 302 rather than a page that moves on by itself | a page in between adds words and a step for the same result; with the script, the history entry the redirect made has its address replaced, so no entry keeps the code | answer the callback with a page carrying `<meta http-equiv="refresh">` |
 | The rig puts the request's query on a function's redirect that has none, in the dev server and in the browser suite's API stand-in (`netlifyLocation()`) | a check that runs where Netlify's rule does not hold cannot see this defect; the browser check refuses to pass if the redirect it sent lacks the query | drop the `netlifyLocation` calls in `ops/dev-server.mjs` and `ops/interact.mjs` |
 | The query goes before a fragment in the rig's model | where Netlify puts it is not known; this is how a URL is put together | change `netlifyLocation()` when it is read live |
+
+## 2 November 2026 · past events' words at full contrast (queue item 24; routine calls made in the session)
+
+His item of 2 Nov, given with a button: "Queue it before item 16". An ended event was marked by fading its whole row
+(`opacity: .55`) or card (`.6`). With the clock past an event's end, axe failed every word in it, not only the time the
+suite reported: the time and name 2.97:1, the place, its link and the Ended tag 2.5:1, a card's date and room 3.26 and 3.71.
+The suite judged "ended" by the browser's real clock, so the same build failed after 6 PM on a Monday and passed earlier.
+
+| Call | Why | To reverse |
+|---|---|---|
+| An ended row keeps full strength; its time and name drop to `--muted` at regular weight; the Ended tag and the missing Drop in stay | the muted ink measures above 4.5 on the darkest ground; colour alone was hard to see beside the bold rows (screenshot read at 1280 and 390 px), weight makes it plain | restore `.ev.is-past { opacity: .55; }` in `src/styles/blocks.css` (fails contrast) |
+| An ended card keeps full strength; its red date and its name take `--muted`; the featured card keeps its red date | the card already loses its buttons and says Ended; a grey date is the card's own "over" sign | restore `.evcard.is-past { opacity: .6; }` |
+| `ops/a11y.mjs` holds the browser's clock a minute after the first listed event ends, for every page; then each page with events again, a minute after its last | ended and coming events are both measured whatever the hour; every event view is measured ended | drop `setFixedTime` and the second loop in `ops/a11y.mjs` |
+| The suite fails a page whose clock is not the held one, a run with no ended or no coming event, and a selector that differs from `schedule.js`'s | a held clock no content reaches measures nothing | delete those three checks |
+| The suite names every element a rule failed, not the first | item 24 was queued as "the time" because only the first was printed | print `nodes[0]` again |

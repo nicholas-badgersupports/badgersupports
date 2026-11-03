@@ -71,7 +71,7 @@ export const CLIENT_TEXT = {
   "form.js": ["form.errors.one", "form.errors.many", "form.closedNow.title", "form.closedNow.body", "form.updated.title", "form.updated.body", "form.updated.ahead", "form.sending", "form.status.*", "form.done.title", "form.done.ref", "form.error.*", "form.upload.*", "form.preview.sent", "form.preview.file", "form.left"],
   "mood.js": ["mood.error", "mood.count.one", "mood.count.other"],
   "strip.js": ["strip.count"],
-  "schedule.js": ["schedule.today"],
+  "schedule.js": ["schedule.today", "schedule.happening"],
   "hero.js": ["hero.pause", "hero.play"],
   "staff.js": ["staff.*"],
   "edit.js": ["edit.*"],

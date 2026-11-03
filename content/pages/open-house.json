@@ -12,8 +12,8 @@
       "title": "Student Mental Health Hub Open House",
       "lead": "Snacks, therapy dogs, crafts, & FUN!",
       "body": [
-        "Hosted on Friday, September 25th",
-        "12:00 PM – 8:00 PM | 333 E. Campus Mall Rm. 3203"
+        "A look back at the Student Mental Health Hub Open House on Friday, September 25, 2026.",
+        "Past event hours: 12:00 PM–8:00 PM at 333 E. Campus Mall, Room 3203."
       ],
       "links": [
         {
@@ -26,37 +26,45 @@
         "m-openhouse-hub-table",
         "m-openhouse-cow-toys",
         "m-openhouse-stickers"
-      ]
+      ],
+      "label": "September 25, 2026 · Recap",
+      "primary": {
+        "label": "Find a Peer Support Group",
+        "href": "/join/peer-support-groups/"
+      }
     },
     {
       "id": "b-oh-recap",
       "type": "expect",
-      "title": "At the second semesterly Student Mental Health Hub Open House, students explored the space & learned how to get involved in peer support!",
+      "title": "A Look Back",
       "items": [
         {
           "icon": "pencil",
-          "text": "Add to our Wall of Support!"
+          "text": "Wall of Support notes"
         },
         {
           "icon": "star",
-          "text": "Grab free stickers!"
+          "text": "Stickers"
         },
         {
           "icon": "hand",
-          "text": "Adopt a stress cow :)"
+          "text": "Stress-cow toys"
         },
         {
           "icon": "bulb",
-          "text": "Learn more about the Student Mental Health Hub!"
+          "text": "Student Mental Health Hub introductions"
         },
         {
           "icon": "scissors",
-          "text": "Add to communal art!"
+          "text": "Community art"
         }
       ],
       "photos": [
         "m-openhouse-counter",
         "m-openhouse-garden-wall"
+      ],
+      "body": [
+        "At the second semesterly Student Mental Health Hub Open House, students explored the space & learned how to get involved in peer support!"
       ]
     },
     {
@@ -64,33 +72,33 @@
       "type": "program",
       "variant": "topics",
       "program": "peer",
-      "title": "Activities & Events",
+      "title": "Activities at the Open House",
       "topics": [
         {
-          "term": "Dogs on Call · 12:00–1:30 PM",
+          "term": "Dogs on Call · 12:00–1:30 PM (event-day schedule)",
           "href": "/initiatives/dogs-on-call/",
-          "text": "Pet therapy dogs!"
+          "text": "A therapy-dog visit was part of the Open House."
         },
         {
-          "term": "Make a Button or Ribbon",
-          "text": "Get crafty, show solidarity with a variety of causes, & express your personality with a custom button!"
+          "term": "Buttons and Ribbons",
+          "text": "Button and ribbon making were among the activities."
         },
         {
-          "term": "Freebies & Giveaways!",
-          "text": "Take a cow or cheese stress toy or mini duck! Or, pick up one of our famous Snoopy stickers!"
+          "term": "Freebies and Giveaways",
+          "text": "The event offered cow and cheese stress toys, mini ducks, and Snoopy stickers."
         },
         {
           "term": "Community Art Project",
-          "text": "Make your mark & contribute to communal art!"
+          "text": "A communal art activity was offered."
         },
         {
-          "term": "Free Resources",
-          "text": "Pick up a Resource Referral Card, Navigating Housing in Madison toolkit, & more!"
+          "term": "Resources",
+          "text": "Resource Referral Cards and Navigating Housing in Madison toolkit materials were available."
         },
         {
-          "term": "Learn How to Get Involved!",
+          "term": "Getting Involved",
           "href": "/join/get-involved/",
-          "text": "Get connected with Badger Supports & the American Foundation for Suicide Prevention and learn about upcoming events!"
+          "text": "Visitors could learn about Badger Supports, the American Foundation for Suicide Prevention, and ways to get involved."
         }
       ],
       "photos": [
@@ -123,6 +131,26 @@
           "label": "accessibility@badgersupports.org",
           "href": "mailto:accessibility@badgersupports.org",
           "icon": "mail"
+        }
+      ]
+    },
+    {
+      "id": "b-oh-next",
+      "type": "cta",
+      "title": "Find What’s Happening Now",
+      "body": "Explore the current peer support group schedule, find ways to get involved, or request email updates.",
+      "primary": {
+        "label": "Current Peer Support Groups",
+        "href": "/join/peer-support-groups/"
+      },
+      "links": [
+        {
+          "label": "Get Involved",
+          "href": "/join/get-involved/"
+        },
+        {
+          "label": "Request Email Updates",
+          "href": "/forms/email-list/"
         }
       ]
     }

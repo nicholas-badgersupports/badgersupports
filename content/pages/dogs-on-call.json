@@ -18,12 +18,19 @@
         "m-dogs-corgi",
         "m-dogs-black-dog",
         "m-openhouse-golden-retriever"
+      ],
+      "links": [
+        {
+          "label": "Dogs on Call Partner Calendar",
+          "href": "https://dogsoncall.org/calendar-of-events/",
+          "icon": "out"
+        }
       ]
     },
     {
       "id": "b-dc-visits",
       "type": "events",
-      "title": "Fall 2026 Visits",
+      "title": "More Upcoming Visits",
       "source": "events",
       "program": "other",
       "series": "dogs-on-call",

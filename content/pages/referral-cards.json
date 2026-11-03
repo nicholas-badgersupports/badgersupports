@@ -10,7 +10,11 @@
       "id": "b-rc-head",
       "type": "pagehead",
       "title": "Resource Referral Cards",
-      "lead": "Resource Referral Cards make it easier to get connected with resources on and off campus. Each card highlights a specific type of support, such as mental health, housing, or financial help, and includes a QR code that links directly to more detailed resources online."
+      "lead": "Resource Referral Cards make it easier to get connected with resources on and off campus. Each card highlights a specific type of support, such as mental health, housing, or financial help, and includes a QR code that links directly to more detailed resources online.",
+      "primary": {
+        "label": "Browse Resources",
+        "href": "/resources/"
+      }
     },
     {
       "id": "b-rc-cards",
@@ -22,7 +26,12 @@
           "id": "d-rc-financial",
           "title": "Financial Resources",
           "photo": "m-referral-card-wish",
-          "icon": "jar"
+          "icon": "jar",
+          "link": {
+            "label": "Wisconsin Scholarship Hub (WiSH)",
+            "href": "https://wisc.academicworks.com",
+            "icon": "out"
+          }
         },
         {
           "id": "d-rc-housing",
@@ -31,7 +40,7 @@
           "icon": "pin",
           "link": {
             "label": "Navigating Housing Resources",
-            "href": "/initiatives/housing-hub/#resources"
+            "href": "/initiatives/housing-hub/"
           }
         },
         {
@@ -59,12 +68,15 @@
     {
       "id": "b-rc-propose",
       "type": "cta",
-      "title": "Propose A New Resource Card By Completing Our Survey",
+      "title": "Suggest a Referral Card",
+      "links": [],
+      "body": "Share a topic you would like a future referral card to cover.",
       "primary": {
         "label": "Complete Our Survey",
         "href": "https://forms.gle/eYdEzbosWkjfUQyN8",
         "icon": "out"
-      }
+      },
+      "quiet": true
     }
   ]
 }

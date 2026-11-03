@@ -27,7 +27,7 @@ behaviour. Here is where each one is, and how far the build holds it:
 | | `refresh`: `true`, or a function of the block | a block that shows Connect's events. On a page built from Connect it is rendered again by `/api/events/<page>` and swapped in as the page loads (`ARCHITECTURE.md`, "Events between publishes"). Mark the parts that change with `data-live="<name>"` so only those are swapped; a block without them is replaced whole. `test/live-events.test.mjs` holds the answer to the published page, byte for byte |
 
 `ctx.data` holds `events`, `wallNotes`, `wallSample`, `team`, `teamSample`, `mood`, `forms`, `places`,
-`resources`, `resourcesSample` and `resourcesUpdated` (`ops/build.mjs`, where `ctx` is made; `test/blocks.test.mjs`
+`resources`, `resourcesSample`, `resourcesUpdated`, `alumni` and `alumniState` (`ops/build.mjs`, where `ctx` is made; `test/blocks.test.mjs`
 holds every block to that list).
 
 **Editors never add code.** An editor fills a block's fields; they cannot write HTML or a script. Where a page
@@ -228,3 +228,7 @@ the Sheets backup must too.
 | Connect sign-in | needed before any per-block or per-page permission | Exchange `PUBLIC-SITE-SSO` |
 | A dated block changing on its day | dates take effect at the next build, not at midnight; only an event block on a page built from Connect hides after its `endsOn` between publishes | a scheduled build, which would deploy without the owner (run log §7, decision 7.1) |
 | The rest of `blocks.css` split by block | 4 blocks have their own file; the others share `blocks.css` | move each when it is next worked on (§4) |
+
+## Preserving saved fields
+
+Refinements retain existing block IDs and field paths. `pagehead.firstLinkPrimary` promotes the existing first link without moving `links/0`; `cta.quiet` changes presentation while keeping `primary` and the existing words. Both are declared editable booleans with descriptive labels. The alumni block uses native disclosures and no client script. Workshop topic context is request-local, never a mutation of the shared form definition. New shared browser modules must be copied beside client modules in `ops/build.mjs` so relative imports resolve in delivered assets.

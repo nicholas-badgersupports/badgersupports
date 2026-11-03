@@ -62,6 +62,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
   and Multipurpose take the Caucus steps with their own map, Marquee and Tripp show their address only (20 Oct 2026).
 
 ## Evidence
+Continuation candidate: separate `codex/public-queue-2026-11-03-b` tree; runtime-only team, closed shared email request, disabled alumni history, workshop context, event lifecycle and source-backed page refinements. Current checks/limits live in the shared PUBLIC-SITE handoff. No push/publication.
 
 Cloud runs, 2 Nov 2026, 21:55 and 22:29 Chicago, queue items 20 (the suites' cut reports) and 25 (no dot before Ended on a phone), without the photos (`node ops/check.mjs --browser --no-media` on `bf89c25` plus the change;
 Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (228 files); 65 pages; delivered files clean (104); tests 265 passed, 0 failed,
@@ -170,9 +171,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 `site/` is git, `main`, pushed to the public `nicholas-badgersupports/badgersupports`. A session commits and pushes its own work (Nicholas, 2 Nov 2026), every commit carrying `[skip netlify]`; only the owner
 publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`, which first makes `node_modules` match `package-lock.json` (`ops/deps-match.mjs`, then `npm ci` when they differ). A session reads git with `git --no-optional-locks`.
 The laptop's shell cannot push: a cloud clone pushes, then the laptop's `site/` is brought up to it (`git fetch`, `git merge --ff-only`). The 25 Oct cloud run's patch was published as `9bf0ed5`. Never link it to Netlify: a Netlify build creates a database.
-
 ## Exchange
-
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
 `PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`; 30 Oct, from SPILL: `SPILL-CRAWLER-CONTACT` (`/crawlers/` now speaks for this site only).
 Their replies say migration 035 "applies on publish": `73cf3cf` is in Connect's production `202b88f`, whose deploy applied only 036, so 035 ran before it (inferred from the deploy record, not read). SPILL answered its inbox registration. Open from this session: Connect's inbox registration; item 19's `PUBLIC-TEAM-PROFILES-2026-10-30`, `PUBLIC-WALL-OF-SUPPORT-2026-10-30`; item 21's `PUBLIC-RESOURCE-SUGGESTIONS-2026-10-30` (30 Oct); item 17's `PUBLIC-FORM-SWITCH-GRANT-2026-10-30`; item 16's `PUBLIC-SITE-PAGES-2026-10-31`. Owed by Connect: its XSEC-1 handoffs.

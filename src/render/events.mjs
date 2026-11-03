@@ -9,6 +9,7 @@
  * uses to grey out an event that has ended since the page was built — the page is static and may
  * be served for days before the next publish.
  */
+import { eventState } from "../shared/event-state.mjs";
 
 import { TZ } from "./context.mjs";
 
@@ -86,7 +87,7 @@ function row(src, e, date) {
     start: e.start,
     end: e.end || null,
     startsAt: `${date}T${e.start}:00${off}`,
-    endsAt: `${last}T${e.end || e.start}:00${chicagoOffset(last)}`,
+    endsAt: e.end ? `${last}T${e.end}:00${chicagoOffset(last)}` : null,
     place,
     placeId: e.place || null,
     signup: e.signup || "none",
@@ -125,20 +126,21 @@ function wanted(which) {
 
 /* The next `count` dated (one-off) events still running on or after `from`, optionally for one program or series.
    One that began before `from` and has not ended comes first. */
-export function nextDated(src, from, count, which = null) {
+export function nextDated(src, from, count, which = null, now = null) {
   const keep = wanted(which);
   return (src.dated || [])
     .filter((e) => lastDay(e) >= from && keep(e))
     .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))
-    .slice(0, count)
-    .map((e) => row(src, e, e.date));
+    .map((e) => row(src, e, e.date))
+    .filter(r => eventState(r, now) !== "ended")
+    .slice(0, count);
 }
 
 /* The `count` most recent dated events over before `before`, newest first, optionally for one program or series. */
-export function lastDated(src, before, count, which = null) {
+export function lastDated(src, before, count, which = null, now = null) {
   const keep = wanted(which);
   return (src.dated || [])
-    .filter((e) => lastDay(e) < before && keep(e))
+    .filter((e) => (lastDay(e) < before || eventState(row(src, e, e.date), now) === "ended") && keep(e))
     .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start))
     .slice(0, count)
     .map((e) => row(src, e, e.date));

@@ -6,6 +6,7 @@ import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { rowsBetween, nextDated, groupByDate, dateParts, timeRange, addDays, dayRange } from "../events.mjs";
+import { eventClass, eventTags } from "../event-status.mjs";
 
 function dateBlock(ctx, date, today) {
   const p = dateParts(date, ctx.t);
@@ -29,10 +30,10 @@ function eventRow(ctx, r, { withDate = false, dropIn = null } = {}) {
   const when = timeRange(r.start, r.end, ctx.t);
   const days = dayRange(r, ctx.t);
   const title = r.href && !ctx.here(r.href) ? link(ctx, r.href, r.title) : r.title;
-  return html`<li${attrs({ class: "ev", "data-program": r.program, "data-starts": r.startsAt, "data-ends": r.endsAt })}>
+  return html`<li${attrs({ class: eventClass("ev", r, ctx.now), "data-program": r.program, "data-starts": r.startsAt, "data-ends": r.endsAt })}>
     <span class="ev-time">${withDate ? html`<span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>` : ""}${when}</span>
     <span class="ev-what"><strong>${title}</strong>${days ? html`<span class="ev-days"><span aria-hidden="true">${days.short}</span><span class="sr-only">${days.long}</span></span>` : ""}${r.place ? html`<span>${r.place.href ? link(ctx, r.place.href, r.place.name) : r.place.name}${r.place.detail ? ` · ${r.place.detail}` : ""}</span>` : ""}</span>
-    <span class="ev-sign">${signup(ctx, r, dropIn)}<span class="ended-tag">${ctx.t("schedule.ended")}</span></span>
+    <span class="ev-sign">${signup(ctx, r, dropIn)}${eventTags(ctx)}</span>
   </li>`;
 }
 

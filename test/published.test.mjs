@@ -32,7 +32,7 @@ async function given(revision = null) {
   forgetEvents();
   return store;
 }
-const get = (p, init = {}) => handlePage(new Request(`http://site.test${p}`, init), { today: TODAY });
+const get = (p, init = {}) => handlePage(new Request(`http://site.test${p}`, init), { today: TODAY, now: Date.parse(`${TODAY}T12:00:00Z`) });
 
 test("with nothing published, every page is the build's file, byte for byte", async () => {
   await given();
@@ -193,7 +193,7 @@ test("when the revision cannot be read, the build's file answers, held a minute"
 
 test("the event feeds print the published words, so a refresh never puts the build's back", async () => {
   await given({ n: 2, edits: { "text:schedule.dropIn": "Come By" } });
-  const r = await eventSections("pg-home", { today: TODAY });
+  const r = await eventSections("pg-home", { today: TODAY, now: Date.parse(`${TODAY}T12:00:00Z`) });
   const all = Object.values(r.blocks).join("");
   assert.match(all, />Come By</);
   assert.doesNotMatch(all, />Drop In</);
@@ -210,7 +210,7 @@ test("item 8: a page drawn after another copy publishes shows the new words, in 
   const before = await get("/");
   assert.match(await before.text(), /the words before the save/);
   assert.equal(before.headers.get("x-bss-revision"), "1");
-  assert.match(Object.values((await eventSections("pg-home", { today: TODAY })).blocks).join(""), /The Week Before/);
+  assert.match(Object.values((await eventSections("pg-home", { today: TODAY, now: Date.parse(`${TODAY}T12:00:00Z`) })).blocks).join(""), /The Week Before/);
 
   await store.set("current", { schema: "bss.revision/1", n: 2, at: "2026-10-20T15:05:00.000Z", by: "Robin", stamp: 2, edits: { [HERO]: "the words after the save", [WEEK]: "The Week After" } });
 
@@ -219,7 +219,7 @@ test("item 8: a page drawn after another copy publishes shows the new words, in 
   assert.equal(after.headers.get("x-bss-revision"), "2", "drawn from the revision the store holds now");
   assert.match(home, /the words after the save/);
   assert.doesNotMatch(home, /the words before the save/);
-  const blocks = Object.values((await eventSections("pg-home", { today: TODAY })).blocks).join("");
+  const blocks = Object.values((await eventSections("pg-home", { today: TODAY, now: Date.parse(`${TODAY}T12:00:00Z`) })).blocks).join("");
   assert.match(blocks, /The Week After/, "the event blocks the page's script asks for again");
   assert.doesNotMatch(blocks, /The Week Before/);
 });

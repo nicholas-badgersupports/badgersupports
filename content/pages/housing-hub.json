@@ -136,7 +136,7 @@
       "topics": [
         {
           "term": "Download the Toolkit",
-          "href": "http://toolkit.badgersupports.org",
+          "href": "https://toolkit.badgersupports.org",
           "text": "Clarify your needs & wants · Make a plan · Find housing with confidence!"
         },
         {
@@ -191,7 +191,7 @@
       "body": "Drop in to a Peer Support Group to connect with other Badgers and hear about their off-campus housing experiences. Request a tailored Navigating Housing workshop for your RSO, department, or yourself!",
       "primary": {
         "label": "Request a Workshop",
-        "href": "/forms/workshop-request/"
+        "href": "/forms/workshop-request/?topic=housing"
       },
       "links": [
         {

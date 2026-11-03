@@ -16,11 +16,38 @@
    waits for them to leave it. */
 
 import { t } from "./text.js";
+import { eventState } from "./event-state.mjs";
+
+const waitingMarks = new WeakSet();
+function markEvent(ev, now) {
+  const state = eventState({ startsAt: ev.dataset.starts, endsAt: ev.dataset.ends }, now);
+  const ended = state === "ended", happening = state === "happening";
+  if (ended === ev.classList.contains("is-past") && happening === ev.classList.contains("is-happening")) return;
+  // Hiding an ended event's action waits until the person has left its row.
+  if (ev.contains(document.activeElement)) {
+    if (waitingMarks.has(ev)) return;
+    waitingMarks.add(ev);
+    const left = () => setTimeout(() => {
+      if (ev.contains(document.activeElement)) return;
+      ev.removeEventListener("focusout", left);
+      waitingMarks.delete(ev);
+      markEvent(ev, Date.now());
+    });
+    ev.addEventListener("focusout", left);
+    return;
+  }
+  ev.classList.toggle("is-past", ended);
+  ev.classList.toggle("is-happening", happening);
+  if (happening && !ev.querySelector(".ongoing-tag")) {
+    const target = ev.querySelector(".feature-actions") || ev.querySelector(".evcard-row") || ev.querySelector(".ev-sign") || ev.querySelector(".ev-time");
+    target?.append(Object.assign(document.createElement("span"), { className: "ongoing-tag", textContent: t("schedule.happening") }));
+  }
+}
 
 function mark() {
   const now = Date.now();
   for (const ev of document.querySelectorAll(".ev[data-ends], .evcard[data-ends]")) {
-    ev.classList.toggle("is-past", Date.parse(ev.dataset.ends) < now);
+    markEvent(ev, now);
   }
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
   for (const day of document.querySelectorAll(".day[data-date], .evcard[data-date]")) {
@@ -124,3 +151,10 @@ document.addEventListener("visibilitychange", () => {
   mark();
   if (refreshing && Date.now() - askedAt > AGAIN_MS) ask();
 });
+
+// A visible page keeps its time labels current without requiring another navigation.
+setInterval(() => {
+  if (document.visibilityState !== "visible") return;
+  mark();
+  if (refreshing && Date.now() - askedAt >= AGAIN_MS) ask();
+}, 30_000);

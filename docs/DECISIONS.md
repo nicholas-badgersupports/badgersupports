@@ -778,3 +778,11 @@ its exact optional `v` content hash, preserves it and adds a separate bounded re
 parameters remain refused. A frozen fictional producer fixture covers sparse profiles and this photo shape. This is
 candidate pairing evidence, not a live-export claim. Preserve both public candidates and reconcile their reviewed
 changes in a new integration tree; do not overlay one working folder onto the other.
+
+## 3 November continuation (Owner scope; delegated implementation)
+
+Nicholas requested continued priority-order implementation in a separate working copy, fixing check failures and leaving a handoff for Claude to verify and publish. Codex is not to publish. Existing form, mail, permissions, personal-data and domain boundaries remain.
+
+This continuation selectively reconciles the paired Connect team's runtime module with the broader public candidate, adds the closed shared email request route, prepares a disabled runtime alumni history component, preserves topic choices through workshop links, improves ended/ongoing event behavior and corrects verified public destinations. Existing block IDs and manual override paths are retained. Source-backed copy and proposed stewardship/page-purpose records refine the current design. The alumni status review resolves eight former members and one onboarding-only exclusion; actual display subset approval and a current appointment recheck remain separate. No real alumni roster is committed.
+
+Verification belongs to the dated shared handoff and its source manifest; local fictional tests do not prove live delivery, CDN invalidation, enrollment or publication. Pre-transition/repeated-hour DST conversion remains a queue limitation. No new policy, owner role or approval ceremony is established by these implementation choices.

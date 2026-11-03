@@ -1,0 +1,48 @@
+# Page purpose and next action
+
+This is the current composition brief, based on the audit and the existing source. It is not a claim that every
+page refinement has shipped. Keep the global Get Involved action, use one principal task action at a time, and give
+policy/utility pages proportionate navigation/contact. Photos, light interactions and layout serve the task.
+
+| Page | Audience / question | Principal task | Unavailable alternative / remaining work |
+|---|---|---|---|
+| /about/faq/ | Visitor using Frequently Asked Questions | Follow the answer to schedule, directions or contact | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 39 |
+| /about/our-team/ | Visitor using Our Team | Meet the published team; Get Involved secondary | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 38 |
+| /about/what-we-do/ | Visitor using What We Do | Choose a program; attend or request | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 36 |
+| /join/alumni/ | Former BSS/BSN/SPILL members seeking updates or recognition | Request shared email updates; read approved BSS/BSN history | Email request remains closed; source-disabled/history contact state. No participation platform. canonical 28, canonical 29 |
+| /join/request-a-workshop/behind-the-workshop/navigating-housing/ | Visitor using Behind the Workshop: Navigating Housing | Request This Workshop with topic retained | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 43, canonical 55, canonical 58 |
+| /join/request-a-workshop/behind-the-workshop/stress-management-self-care/ | Visitor using Behind the Workshop: Stress Management & Self Care | Request This Workshop with topic retained | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 43, canonical 55, canonical 58 |
+| /join/request-a-workshop/behind-the-workshop/support-networks/ | Visitor using Behind the Workshop: Building Support Networks | Request This Workshop with topic retained | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 43, canonical 55, canonical 58 |
+| /join/craft-nights/ | Visitor using Craft Night Schedule | Drop In to the next verified night; updates if none | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 33, canonical 41 |
+| /crawlers/ | Visitor using Crawlers | Read crawler guidance/contact | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 26, canonical 62 |
+| /directions/ | Visitor finding the Hub or an event room | Choose the Hub first or a named event room | Existing text routes/addresses work without photos or JS; access questions use established contact. canonical 52 |
+| /initiatives/dogs-on-call/ | Visitor seeking the next visit | Read approved next visit and directions; use partner calendar between visits | No upcoming event offers updates; evergreen heading avoids a stale semester promise. canonical 50, canonical 33 |
+| /forms/email-list/ | Visitor making an email-only request | Send an email-only request when explicitly opened | Closed by default with existing Google fallback; no new segmentation or subscription engine. Existing workflow / canonical34 |
+| /join/email-list/ | Students, community and alumni seeking updates | Request email updates; understand manual membership | Existing Google fallback; help joining/leaving. Request receipt never means subscribed. canonical 28, canonical 46, canonical 58 |
+| /about/equity-belonging/ | Visitor using Statement on Equity & Belonging | Read the statement; contact about access or an inquiry | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 56 |
+| /join/get-involved/ | Prospective student volunteer/staff/supporter | Understand the path and its actual access/form state | Volunteer Google sign-in explained; existing contact alternative. Preserve hiring/EEO text. canonical 45, canonical 58, canonical 59 |
+| / | Visitor using peer support at UW–Madison | Get Involved; contextual schedule/directions and written support below | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 35, canonical 31, canonical 59 |
+| /initiatives/housing-hub/ | Visitor using Navigating Housing in Madison | Use the toolkit or attend the next workshop | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 47, canonical 33 |
+| /404.html | Visitor using Page Not Found | Go directly to Home, schedules, Resources or contact | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 61 |
+| /initiatives/open-house/ | Visitor exploring a past Open House or finding the Hub | Read dated recap, then current groups/Get Involved | Past times are historical; no invented next event. canonical 33, canonical 51 |
+| /join/peer-support-groups/ | Visitor using Peer Support Groups | Find the next group and Get Directions | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 31, canonical 40 |
+| /operations/press/ | Visitor using Press | Read coverage or make a press inquiry | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 55 |
+| /operations/privacy-policy/ | Visitor using Privacy Policy | Understand data use; access privacy choices/contact | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 56 |
+| /forms/programming-feedback/ | Visitor using Programming Feedback | Complete the available workflow; use its valid fallback if closed | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 58, canonical 64 |
+| /initiatives/referral-cards/ | Visitor using a referral card on the same phone | Browse resources or open the card’s exact text destination | Survey remains secondary; no scanning your own display or distribution promise. canonical 48 |
+| /request-a-program/ | Visitor using Request a Program | Choose the appropriate program request | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 37, canonical 59 |
+| /join/request-a-workshop/ | Group organizer choosing an approved workshop topic | Choose a topic and request it | Changeable controlled topic reaches native or verified Google fallback; no booking/response-time promise. canonical 42, canonical 58 |
+| /forms/resource-problem/ | Visitor using Report a Problem | Complete the available workflow; use its valid fallback if closed | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 58 |
+| /forms/resource-suggestion/ | Visitor using Suggest a Resource | Complete the available workflow; use its valid fallback if closed | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 58 |
+| /forms/resource-update/ | Visitor using Suggest an Update | Complete the available workflow; use its valid fallback if closed | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 58 |
+| /resources/ | Visitor using Resources | Find an approved resource; report/suggest secondarily | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 32, canonical 54 |
+| /initiatives/ribbons/ | Visitor using Colors of Support Solidarity Ribbons | Find pickup/participation; request a station secondary | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 49 |
+| /staff/ | Visitor using Staff Sign-In | Sign in and carry out only permitted maintenance | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 57, canonical 38 |
+| /initiatives/student-activity-center/ | Visitor using Student Activity Center | Find a service or route | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 53 |
+| /initiatives/university-square/ | Visitor using University Square | Find a service or location | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 53 |
+| /forms/wall-note/ | Visitor using Leave a Note | Use the page’s existing task action or contact route | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. Existing workflow / canonical34 |
+| /forms/workshop-request/ | Visitor using Request a Workshop | Complete the available workflow; use its valid fallback if closed | Preserve current closed/empty/privacy state; confirm the remaining page-specific brief before redesign. canonical 58 |
+
+Generated room pages follow the directions/arrival brief. Generated profiles retain the approved square-photo grid
+and own-profile source. Form previews are review-only; their open appearance does not open the public form. The existing
+full browser suite checks their rendered states; visual design judgment remains a review of the actual page.

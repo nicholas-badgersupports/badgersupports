@@ -6,15 +6,18 @@
 import { html } from "../html.mjs";
 import { link } from "../context.mjs";
 import { picture } from "../media.mjs";
+import text from "./text.mjs";
 
 export default {
   type: "cta",
   label: "Closing call to action",
-  fields: { title: "text!", body: "text", primary: "link!", links: "link[]", photos: "media[]", whole: "boolean" },
+  fields: { title: "text!", body: "text", primary: "link!", links: "link[]", photos: "media[]", whole: "boolean", quiet: "boolean" },
   data: [],
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
+    // Quiet text-only calls keep the existing field IDs; a photo retains the feature layout.
+    if (b.quiet && !b.photos?.length) return text.render({ ...b, body: b.body ? [b.body] : [], links: [b.primary, ...(b.links || [])] }, ctx);
     const [photo] = b.photos || [];
     const whole = Boolean(photo && b.whole);
     return html`<section class="${["cta", photo ? "has-photo" : null, whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">

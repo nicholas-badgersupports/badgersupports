@@ -1,0 +1,16 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-email-list",
+  "path": "/forms/email-list/",
+  "title": "Request Email Updates",
+  "description": "Request Badger Supports email updates using an address you plan to keep. Membership is managed through Google Groups.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-form-email-list",
+      "type": "form",
+      "form": "email-list",
+      "title": "Request Email Updates"
+    }
+  ]
+}

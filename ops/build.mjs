@@ -52,6 +52,7 @@ import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
 import { definitionProblems, launchForms, withResources } from "../src/shared/forms.mjs";
+import { publicHistory, emptyHistory } from "../src/shared/alumni-history.mjs";
 import { finish } from "./finish.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
 import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings, pageValues, siteValues } from "../src/shared/edits.mjs";
@@ -274,7 +275,13 @@ export function loadContent({ production = false, launch = production, textEdits
   const wall = feed?.wall ? structuredClone(feed.wall) : production ? { schema: "bss.wall-fixture/1", fixture: false, notes: [] } : readJson("content/fixtures/wall-notes.json");
   // The team: Connect's public profiles (src/render/team.mjs). Each published one gets a page.
   const teamAt = feed?.team ? "Connect's public team export" : "content/fixtures/team.json";
-  const team = feed?.team ? structuredClone(feed.team) : production ? { schema: "bss.team-fixture/1", fixture: false, people: [] } : readJson("content/fixtures/team.json");
+  const alumniSource = readJson("content/alumni-history.json");
+  if (alumniSource.schema !== "bss.alumni-source/1" || typeof alumniSource.enabled !== "boolean") problems.push("content/alumni-history.json: a typed enabled flag is required");
+  const alumni = production ? emptyHistory() : publicHistory(readJson("content/fixtures/alumni-history.json"));
+  const alumniState = production ? (alumniSource.enabled ? "unavailable" : "disabled") : "fixture";
+  // Current public recognition is runtime-only; no immutable profile can outlive a withdrawal.
+  const team = production ? { schema: "bss.team-fixture/1", source: "connect", fixture: false, people: [] } : feed?.team ? structuredClone(feed.team) : readJson("content/fixtures/team.json");
+  if (production && feed?.team) for (const p of teamProblems(feed.team, { media: mediaIds, production })) problems.push(`${teamAt}: ${p}`);
   for (const p of teamProblems(team, { media: mediaIds, production })) problems.push(`${teamAt}: ${p}`);
   if (team.source !== "connect") photos({ people: publicPeople(team) }, teamAt);
   const slugs = new Set(publicPeople(team).map((p) => p.slug));
@@ -300,7 +307,7 @@ export function loadContent({ production = false, launch = production, textEdits
   const previewPages = production ? [] : formPreviewPages(forms, makeT(text));
   for (const p of previewPages) if (paths.has(p.path)) throw new Error(`content/forms: ${p.path} is also a page in content/pages`);
   return {
-    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, resources, textRegistry, text,
+    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, alumni, alumniState, alumniSource, resources, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
     // the files before any saved word, for the page function to lay a published revision over (src/render/site.mjs)
@@ -505,6 +512,7 @@ export async function build({ production = false, launch = production, today = n
   const jsFiles = fs.readdirSync(path.join(ROOT, "src/client")).filter((f) => f.endsWith(".js")).sort()
     .map((f) => ({ name: f, text: fs.readFileSync(path.join(ROOT, "src/client", f), "utf8") }));
   jsFiles.push({ name: "forms.mjs", text: fs.readFileSync(path.join(ROOT, "src/shared/forms.mjs"), "utf8") });
+  jsFiles.push({ name: "event-state.mjs", text: fs.readFileSync(path.join(ROOT, "src/shared/event-state.mjs"), "utf8") });
   for (const f of jsFiles) f.text = await min.js(f.text, f.name);
   const jsDir = hash(jsFiles.map((f) => f.name + "\0" + f.text).join("\0"));
   fs.mkdirSync(path.join(out, "assets/js", jsDir), { recursive: true });
@@ -518,6 +526,7 @@ export async function build({ production = false, launch = production, today = n
   const assets = { css: `/assets/css/${cssName}`, js };
 
   const data = {
+    alumni: content.alumni, alumniState: content.alumniState,
     events: content.events,
     wallNotes: content.wall.notes,
     wallSample: content.wall.fixture ? content.wall.label : null,
@@ -560,7 +569,9 @@ export async function build({ production = false, launch = production, today = n
 
   fs.writeFileSync(path.join(out, "_headers"), headersFile({ prototype }));
   const redirects = redirectsFile(content.routes, content.pages, new Set(builtPaths));
-  fs.writeFileSync(path.join(out, "_redirects"), redirects.text);
+  const teamCatchalls = new Set(teamRedirects());
+  const staticRedirects = production && feed?.team ? redirects.text.split("\n").filter(line => !teamCatchalls.has(line)).join("\n") : redirects.text;
+  fs.writeFileSync(path.join(out, "_redirects"), staticRedirects);
   fs.writeFileSync(path.join(out, "robots.txt"), prototype
     ? "# Prototype: not for search engines.\nUser-agent: *\nDisallow: /\n"
     : `# Crawlers: please send a working email address in the HTTP From header (${content.site.origin}/crawlers/).\nUser-agent: *\nDisallow: /staff/\nDisallow: /api/\nSitemap: ${content.site.origin}/sitemap.xml\n`);
@@ -577,6 +588,7 @@ export async function build({ production = false, launch = production, today = n
     headers: siteHeaders({ prototype }), redirects: redirects.text,
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({
+      alumniSource: content.alumniSource,
       floor: content.floor, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team, teamState: null, resourcesState: null,
       forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths,
       shared: feed ? { source: "connect", exports: { team: !!feed.team, wall: !!feed.wall }, builtAt: new Date().toISOString() } : null,

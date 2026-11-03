@@ -15,7 +15,7 @@ const where = (p) => [p.building, p.where].filter(Boolean).join(" · ");
 export default {
   type: "places",
   label: "List of rooms",
-  fields: { title: "text!", heading: "choice:h1|h2", roomsTitle: "text" },
+  fields: { title: "text!", heading: "choice:h1|h2", roomsTitle: "text", lead: "text" },
   data: ["places"],
   analytics: "page",
   loading: "lazy",
@@ -27,6 +27,7 @@ export default {
     const sub = b.heading === "h1" ? (x, id) => html`<h2 id="${id}">${x}</h2>` : (x, id) => html`<h3 id="${id}">${x}</h3>`;
     return html`<section class="places band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="places-head">${h}<span class="places-route" aria-hidden="true">${icon("pin")}</span></div>
+  ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${hubs.map((p) => html`<article class="${p.photo ? "hubcard has-photo" : "hubcard"}" aria-labelledby="${b.id}-${p.id}">
     <div class="hubcard-text">
       ${where(p) ? html`<p class="hubcard-where">${where(p)}</p>` : ""}

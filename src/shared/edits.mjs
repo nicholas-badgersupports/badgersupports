@@ -182,7 +182,7 @@ export function siteValues(site) {
 }
 
 const ANCHOR = /^#[a-z0-9-]{1,80}$/;
-const PATH = /^\/[a-z0-9\-/]*(\?[a-z]+=[a-z0-9-]+)?(#[a-z0-9-]{1,80})?$/;
+const PATH = /^\/[a-z0-9\-/]*(\?[a-z]+=[a-z0-9_-]+)?(#[a-z0-9-]{1,80})?$/;
 
 /* What is wrong with a new value of a given kind, as a code, or null. media: the library's ids. */
 export function valueProblem(kind, value, { options = [], media = null } = {}) {

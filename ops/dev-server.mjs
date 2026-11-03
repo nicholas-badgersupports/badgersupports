@@ -87,7 +87,7 @@ async function standIns() {
   return { ".avif": await flat().avif().toBuffer(), ".webp": await flat().webp().toBuffer(), ".jpg": await flat().jpeg().toBuffer() };
 }
 
-export async function startServer({ port = Number(process.env.PORT) || 8899, today = null, media = true } = {}) {
+export async function startServer({ port = Number(process.env.PORT) || 8899, today = null, now = null, media = true } = {}) {
   const { handle } = await import("../netlify/lib/router.mjs");
   const { useContent } = await import("../netlify/lib/content.mjs");
   const { handlePage } = await import("../netlify/lib/pages.mjs");
@@ -117,7 +117,7 @@ export async function startServer({ port = Number(process.env.PORT) || 8899, tod
       const pathname = decodeURIComponent(u.pathname);
       // A page address: the page function, as Netlify sends it (netlify/functions/pages.mjs).
       if (["GET", "HEAD"].includes(req.method) && !/^\/(assets|media|calendar)\//.test(pathname) && (!path.extname(pathname) || pathname.endsWith(".html"))) {
-        const response = await handlePage(new Request(u, { method: req.method, headers: req.headers }), { today: today || chicagoDate() });
+        const response = await handlePage(new Request(u, { method: req.method, headers: req.headers }), { today: today || chicagoDate(), ...(now === null ? {} : { now }) });
         const headers = Object.fromEntries(response.headers);
         if (headers.location) headers.location = netlifyLocation(u.search, response.status, headers.location);
         res.writeHead(response.status, headers);

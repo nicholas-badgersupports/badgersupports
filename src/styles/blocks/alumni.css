@@ -1,0 +1,13 @@
+.alumni-history h2 { margin-bottom: var(--s3); }
+.alumni-history .lead { max-width: 50rem; margin-bottom: var(--s5); }
+.alumni-cohorts { display: grid; gap: var(--s3); }
+.alumni-cohorts details { border: var(--rule-line); border-radius: var(--r-card); background: var(--paper); padding: var(--s3) var(--s4); }
+.alumni-cohorts summary { display: list-item; list-style-position: inside; min-height: 44px; cursor: pointer; font-weight: 800; }
+.alumni-cohorts summary::marker { color: var(--accent); }
+.alumni-origin { color: var(--muted); font-size: var(--fs-small); font-weight: 600; margin-inline-start: var(--s3); }
+.alumni-people { list-style: none; padding: 0; margin-top: var(--s4); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+.alumni-people h3 { font: 800 var(--fs-h3)/1.3 var(--font-body); color: var(--red); text-transform: none; margin-bottom: var(--s1); }
+.alumni-people p { color: var(--muted); margin-bottom: var(--s1); }
+.alumni-titles { padding-left: 1.2rem; }
+.alumni-contact { margin-top: var(--s4); }
+@media (max-width: 760px) { .alumni-people { grid-template-columns: minmax(0, 1fr); } .alumni-cohorts details { padding-inline: var(--s3); } .alumni-origin { display: block; margin-inline-start: 0; } }

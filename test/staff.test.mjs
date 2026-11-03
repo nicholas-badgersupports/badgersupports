@@ -1115,7 +1115,7 @@ test("§12 editor to public page: a save is on the page the next visitor gets, a
   const fake = fakeConnect({ scopes: ["site.edit"] });
   useConnect(fake.cfg);
   const { cookie } = await signIn(fake);
-  const visitor = async () => (await handlePage(new Request(`${ORIGIN}/`), { today: "2026-10-20" })).text();
+  const visitor = async () => (await handlePage(new Request(`${ORIGIN}/`), { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") })).text();
   const before = await visitor();
   assert.equal(before, fs.readFileSync(path.join(out, "index.html"), "utf8"));
   const shown = content.editable[HERO].shown;
@@ -1145,7 +1145,7 @@ test("item 17: the switch opens and closes a form with no deploy, Open needs a s
     const other = await as({ scopes: ["forms.switch:workshop-request"] });
     const switcher = await as({ scopes: ["forms.switch:*"], name: "Avery Example" });
     const flip = (cookie, key, body, opts) => handle(staffPost(`/api/staff/forms/${key}/switch`, body, cookie, opts), ip());
-    const visitor = async (p) => (await handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20" })).text();
+    const visitor = async (p) => (await handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") })).text();
     const FORM = "resource-problem", PAGE = "/forms/resource-problem/";
     const before = await visitor(PAGE);
     assert.equal(before, fs.readFileSync(path.join(out, "forms/resource-problem/index.html"), "utf8"), "no switch row: the build's page byte for byte");
@@ -1252,7 +1252,7 @@ async function pagesSite(t) {
 }
 const pagesNow = async (cookie) => (await handle(get("/api/staff/pages", { cookie }), ip())).json();
 const change = async (cookie, body, opts) => { const r = await handle(staffPost("/api/staff/pages", body, cookie, opts), ip()); return { status: r.status, body: await r.json() }; };
-const visit = (p) => handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20" });
+const visit = (p) => handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") });
 const preview = (cookie, id) => handle(get(`/api/staff/preview/${id}`, { cookie, json: false }), ip());
 const saveWord = async (cookie, target, expected, value) => (await handle(staffPost("/api/staff/edit/save", { target, expected, value }, cookie), ip())).json();
 const sourceOf = async (cookie, id) => (await (await handle(get(`/api/staff/edit/source?page=${id}`, { cookie }), ip())).json()).entries;
@@ -1601,6 +1601,11 @@ test("item 15: a retired section leaves the page and comes back where it was; th
   const retireFrom = async (page, section) => change(publisher, { action: "sectionRetire", expected: (await sectionsOf(publisher, page)).body.version, page, section });
   const linkTo = async (page, href) => (await sourceOf(publisher, page)).find((e) => e.kind === "link" && e.current === href);
   assert.deepEqual((await retireFrom("pg-home", "b-home-craft")).body.error, "section.linked", "the hero's circle lands on its anchor");
+  // Establish the cross-page anchor explicitly; referral defaults may link to the whole page.
+  const housingLink = await linkTo("pg-referral-cards", "/initiatives/housing-hub/");
+  assert.ok(housingLink);
+  const housingSaved = await saveWord(publisher, housingLink.target, housingLink.current, "/initiatives/housing-hub/#resources");
+  assert.equal(housingSaved.changed, true, JSON.stringify(housingSaved));
   assert.deepEqual((await retireFrom("pg-housing-hub", "b-hh-resources")).body.error, "section.linked", "another page links to its anchor");
   const own = await linkTo("pg-about-faq", "#b-faq-ops");
   assert.ok(own, "the FAQ links to its own section");
@@ -2010,11 +2015,11 @@ test("item 15, rooms (a): a publisher's new room words show on the list of rooms
   assert.doesNotMatch(craft, /SAC Caucus Room/, "the file's short name is gone from the page");
   const { eventSections, calendarFile, forgetEvents } = await import("../netlify/lib/live-events.mjs");
   forgetEvents();
-  const feed = await eventSections("pg-craft-nights", { today: "2026-10-20" });
+  const feed = await eventSections("pg-craft-nights", { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") });
   assert.ok(Object.values(feed.blocks).some((h) => unescape(h).includes(`<strong>${ROOM_WORDS.short}</strong>`)), "the page's event feed (/api/events)");
-  const roomFeed = await eventSections(`pg-place-${ROOM}`, { today: "2026-10-20" });
+  const roomFeed = await eventSections(`pg-place-${ROOM}`, { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") });
   assert.ok(Object.values(roomFeed.blocks).some((h) => new RegExp(`<h1 id="[^"]+">${ROOM_WORDS.name}</h1>`).test(unescape(h))), "the room page's own feed (/api/events), which draws the room");
-  const ics = (await calendarFile("craft-2026-10-20", { today: "2026-10-20" })).text.replace(/\r\n /g, "");
+  const ics = (await calendarFile("craft-2026-10-20", { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") })).text.replace(/\r\n /g, "");
   assert.match(ics, new RegExp(`LOCATION:${ROOM_WORDS.name}\\\\, ${ROOM_WORDS.building}\\\\, `), "the calendar file (/api/calendar)");
 });
 

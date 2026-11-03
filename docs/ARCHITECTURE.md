@@ -196,19 +196,15 @@ With JavaScript, `src/client/form.js` posts JSON and shows the same outcomes in 
 
 ### Events between publishes
 
-A page built from Connect's events carries `data-refresh="events"` when it has a block that declares `refresh`
-(schedule, events, event hero, directions, and program when it lists upcoming events). As it loads,
-`src/client/schedule.js` asks `/api/events/<page id>` and swaps in what changed: only the `data-live` parts where a
-block has them, otherwise the section; an empty answer hides the section. If the ask fails, the page stays as published.
+The initial page response and private preview read the current Connect event list for pages with refreshing blocks, so JavaScript is not required for schedule freshness. Resources and Wall retain their existing last-good behavior. An event read is held in a warm function for one minute; the API CDN holds it five minutes, browser zero. On failure the last successful public list is used, otherwise the build's list. A page containing stale source data is not cached; the event API failure answer is held thirty seconds.
 
-`netlify/lib/live-events.mjs` answers with the build's own renderer, from what the build wrote into `server.json`
-(`events`: each page's refreshing blocks, the places, the programs, Connect's reading rules; no key) and Connect's
-`publicEvents` now. A warm function asks Connect at most once a minute. The CDN holds an answer five minutes, and
-ten more while it refetches; a browser one minute. When Connect cannot be read the answer is the publish's list,
-held half a minute. Calendar buttons on these pages open `/api/calendar/<event>.ics`, made the same way; an event
-gone since the page loaded gets a short page saying so. Both routes refuse a query string, so nobody can ask past
-the cache. A prototype build answers from its fixtures and never calls Connect. A block that was not on the
-published page cannot appear before the next publish.
+The renderer and browser share the end-time classifier. At an explicit end instant, an event leaves upcoming cards and calendar lookup and can appear in recent events. Happening Now is editable. A missing end stays unknown; no duration is invented. Browser labels update every thirty seconds while visible, and Connect event blocks refresh every five minutes. Changes that would remove a focused action wait until focus leaves its row or section. Dates remain in America/Chicago. The existing day-based offset conversion still needs dedicated pre-transition/repeated-hour DST handling; ordinary afternoon dates and recess exclusions are covered.
+
+### Current team profiles and alumni history
+
+Connect team recognition is runtime-only. Production builds validate the export but serialize no people into HTML, sitemap, media copies or the server snapshot. Relevant page draws read the signed current export with no held or persisted roster fallback. Unavailable team data returns 503/no-store, including private preview. Current canonical profile routes win over legacy group catch-alls. The same-origin photo proxy accepts only the configured source origin and matching identity path, optional source version, no redirects, four approved raster types with magic bytes and a 4 MiB header/stream limit. Browser caching is zero; CDN caching is bounded at five minutes. An older version query may return the producer's current eligible upload; it is not a historical-photo guarantee.
+
+Alumni history is disabled in `content/alumni-history.json` until an approved display subset is installed in the existing private publication store note `public-alumni-history`. There is no public Sheet endpoint or new Connect action. `ops/alumni-history.mjs <review.json> [--out=<private-file>]` validates/prepares a local subset, filters confirmed former/display-approved/non-current records, writes with mode 600 without overwrite, and refuses output in a Git tree (including through symlinks). It never uploads. The runtime validates that exact envelope again and projects names, approximate periods, titles and BSS/BSN provenance into native disclosure groups; private contact/research/status data are excluded. Production has no fixture roster or last-good history fallback. Approval and current-status checks are existing content requirements, not inferred from file names.
 
 ## Intake
 

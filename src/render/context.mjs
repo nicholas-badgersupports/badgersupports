@@ -24,13 +24,15 @@ export const PROGRAMS = ["peer", "craft", "workshops"];
 /* liveEvents: the events came from Connect, so between publishes the page asks Connect's current list
    again (src/render/layout.mjs, netlify/lib/live-events.mjs) and a calendar button opens the file the
    API writes from it (src/render/ics.mjs calendarHref), not the one written at the last publish. */
-export function makeContext({ site, media, builtPaths, programs = new Map(), routes = [], data = {}, text, today, prototype = false, assets = {}, liveEvents = false, path = null }) {
+export function makeContext({ site, media, builtPaths, programs = new Map(), routes = [], data = {}, text, today, prototype = false, assets = {}, liveEvents = false, path = null, formTopic = null, now = null }) {
   const mediaById = new Map((media?.items || []).map((m) => [m.id, m]));
   return {
     site,
     t: makeT(text),
     media: mediaById,
     data,
+    formTopic,
+    now,
     today: today || chicagoDate(),
     prototype,
     assets,
@@ -70,12 +72,17 @@ export function resolveLink(ctx, href) {
   if (/^(#|mailto:|tel:)/.test(href)) return { href };
   if (href.startsWith(ctx.site.connectOrigin)) return { href, connect: true, external: true };
   if (/^https?:\/\//.test(href)) return { href, external: true };
-  const path = href.split("#")[0].replace(/index\.html$/, "");
+  const hashAt = href.indexOf("#");
+  const fragment = hashAt < 0 ? "" : href.slice(hashAt);
+  const beforeHash = hashAt < 0 ? href : href.slice(0, hashAt);
+  const queryAt = beforeHash.indexOf("?");
+  const query = queryAt < 0 ? "" : beforeHash.slice(queryAt);
+  const path = (queryAt < 0 ? beforeHash : beforeHash.slice(0, queryAt)).replace(/index\.html$/, "");
   const norm = path === "/" ? "/" : path.replace(/\/?$/, "/");
-  if (ctx.builtPaths.has(norm)) return { href: norm + (href.includes("#") ? "#" + href.split("#")[1] : "") };
+  if (ctx.builtPaths.has(norm)) return { href: norm + query + fragment };
   ctx.pendingLinks.add(norm);
   const live = ctx.liveFor.get(norm) ?? path.replace(/\/$/, "");
-  return { href: ctx.site.liveOrigin + encodeURI(live), pending: true };
+  return { href: ctx.site.liveOrigin + encodeURI(live) + query + fragment, pending: true };
 }
 
 /* An <a> with the right markers. Connect links say so in text a screen reader reads, and carry a

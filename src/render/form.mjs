@@ -174,8 +174,8 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
 /* A form that is switched off. One served elsewhere for now (`elsewhere`, set at launch by
    launchForms) shows only the way to its Google Form, as the page's one big button under its own
    title and intro; the closing message is for a form that is off, not one that has moved. */
-export function renderClosed(def, t, { title = null, answers = null } = {}) {
-  const away = def.elsewhere ? html`<p><a class="btn btn--big" href="${def.elsewhere}" data-form-elsewhere><span class="go-label">${t("form.elsewhere.go")}</span>${icon("out", "go-ic")}</a></p>` : "";
+export function renderClosed(def, t, { title = null, answers = null, elsewhere = def.elsewhere } = {}) {
+  const away = elsewhere ? html`<p><a class="btn btn--big" href="${elsewhere}" data-form-elsewhere><span class="go-label">${t("form.elsewhere.go")}</span>${icon("out", "go-ic")}</a></p>` : "";
   if (away && !answers) return html`<div class="closed-panel is-elsewhere" data-form-closed="${def.key}">${away}</div>`;
   return html`<div class="closed-panel" data-form-closed="${def.key}"><h2>${title || t("form.closed.title")}</h2><p>${breakAtSign(def.closedMessage)}</p>${away}${answers ? html`<p>${t("form.closedNow.copy")}</p><dl class="kept-answers">${answers.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}</div>`;
 }

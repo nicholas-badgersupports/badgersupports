@@ -1,21 +1,20 @@
-/* Approved public catalogues between publishes. Each source has its own bounded read and last-good
-   record in the existing publication store; one failed catalogue never replaces another with an empty
+/* Approved public catalogues between publishes. Resources and Wall notes use bounded last-good
+   records in the existing publication store; current profile eligibility is read without a roster cache; one failed catalogue never replaces another with an empty
    success. Only mapped public data is persisted. Prototype pages never contact Connect. */
 import crypto from 'node:crypto';
 import { call, serviceConfigNow } from './connect.mjs';
 import { noteGet, noteSet } from './published.mjs';
-import { mapTeam, mapResources, mapWall, TEAM_EXPORT, WALL_EXPORT } from '../../ops/connect-feed.mjs';
+import { mapResources, mapWall, WALL_EXPORT } from '../../ops/connect-feed.mjs';
 import { serverContent } from './content.mjs';
-import { initials } from '../../src/render/team.mjs';
-import { html } from '../../src/render/html.mjs';
+import { teamNow, teamPhoto } from "./live-team.mjs";
+import { alumniNow } from "./alumni-history.mjs";
 
 export const SHARED_FRESH_MS = 60_000;
-export const PROFILE_FALLBACK_MS = 30 * 60_000;
+export const WALL_FALLBACK_MS = 30 * 60_000;
 const held = new Map();
 const FORGET = 'public-content-forgotten';
 const hash = v => crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const SPECS = {
-  team: { action: 'publicTeam', schema: TEAM_EXPORT, field: 'people', map: r => mapTeam(r).team },
   resources: { action: 'publicResourceExport', schema: 1, field: 'resources', map: mapResources },
   wall: { action: 'publicWallNotes', schema: WALL_EXPORT, field: 'notes', map: r => mapWall(r).wall },
 };
@@ -63,52 +62,40 @@ async function oneCatalogue(snap, kind, now, token) {
       const record = previous?.source === source && previous.value && Number.isFinite(previous.at)
         ? previous : { at, value: built(snap, kind) };
       // Personal recognition and moderated notes are not held indefinitely after withdrawal could have occurred.
-      const expired = kind !== 'resources' && (!Number.isFinite(record.at) || now - record.at > PROFILE_FALLBACK_MS);
-      return { value: expired ? empty(kind) : record.value || empty(kind), stale: true, unavailable: expired || !record.value, ...(kind !== "resources" ? { expiresAt: record.at + PROFILE_FALLBACK_MS } : {}) };
+      const expired = kind !== 'resources' && (!Number.isFinite(record.at) || now - record.at > WALL_FALLBACK_MS);
+      return { value: expired ? empty(kind) : record.value || empty(kind), stale: true, unavailable: expired || !record.value, ...(kind !== "resources" ? { expiresAt: record.at + WALL_FALLBACK_MS } : {}) };
     }
   })();
   held.set(key, { until: now + SHARED_FRESH_MS, promise, token });
   return promise;
 }
 
-export async function sharedNow(snap, { now = Date.now(), kinds = ['team', 'resources', 'wall'] } = {}) {
-  if (snap?.shared?.source !== 'connect') return null;
-  const token = await tokenNow();
-  const wanted = kinds.filter(k => SPECS[k] && (k === 'resources' || snap.shared.exports?.[k] === true));
-  const entries = await Promise.all(wanted.map(async kind => [kind, await oneCatalogue(snap, kind, now, token)]));
-  const result = Object.fromEntries(entries);
-  result.key = hash(entries);
-  return result;
+export function combineShared(...parts) {
+  const value = Object.assign({}, ...parts.filter(Boolean).map(({ key, ...rest }) => rest));
+  value.key = hash(Object.entries(value));
+  return value;
 }
 
-/* A bounded same-origin proxy avoids permanent public copies of profile photos. It accepts an opaque
-   identity, never a caller-supplied URL, and checks current public eligibility before fetching a raster
-   from that identity's exact Connect photo path. Redirects, credentials and non-raster content are refused. */
-export async function teamPhotoResponse(req, id, { now = Date.now() } = {}) {
+export async function sharedNow(snap, { now = Date.now(), kinds = ['team', 'resources', 'wall'] } = {}) {
+  if (snap?.prototype || snap?.shared?.source !== 'connect') return null;
+  const wanted = kinds.filter(k => (k === 'alumni' || k === 'team' || SPECS[k]) && (k === 'alumni' || k === 'resources' || snap.shared.exports?.[k] === true));
+  const token = wanted.some(k => SPECS[k]) ? await tokenNow() : undefined;
+  const entries = await Promise.all(wanted.map(async kind => {
+    if (kind === 'alumni') return [kind, await alumniNow(snap.alumniSource)];
+    if (kind !== 'team') return [kind, await oneCatalogue(snap, kind, now, token)];
+    try { return [kind, { value: await teamNow(), stale: false, unavailable: false }]; }
+    catch (e) {
+      console.error(`public content: team could not be refreshed (${e.code || 'error'})`);
+      return [kind, { value: empty('team'), stale: true, unavailable: true }];
+    }
+  }));
+  return combineShared(Object.fromEntries(entries));
+}
+
+/* The reader is production-only; the image handler accepts only the fixed upload identity/version.
+   Connect checks present eligibility on every photo fetch. No roster is needed to answer an image. */
+export async function teamPhotoResponse(req, id) {
   const snap = serverContent().render;
-  if (!snap || new URL(req.url).search || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) return new Response(null, { status: 404, headers: { 'cache-control': 'no-store' } });
-  const shared = await sharedNow(snap, { now, kinds: ['team'] });
-  const p = shared?.team?.value?.people?.find(p => p.id === id && p.published === true);
-  if (!p || shared.team.unavailable) return new Response(null, { status: 404, headers: { 'cache-control': 'no-store' } });
-  const headers = { 'cache-control': 'public, max-age=0, must-revalidate', 'netlify-cdn-cache-control': 'public, s-maxage=60', 'netlify-vary': 'query', 'netlify-cache-tag': 'page,team-photo', 'x-content-type-options': 'nosniff' };
-  if (shared.team.stale) { headers['cache-control'] = 'no-store'; headers['netlify-cdn-cache-control'] = 'no-store'; }
-  const fallback = () => new Response(req.method === 'HEAD' ? null : String(html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><text x="200" y="230" text-anchor="middle" font-family="sans-serif" font-size="100">${initials(p.name) || '?'}</text></svg>`), { headers: { ...headers, 'content-type': 'image/svg+xml' } });
-  try {
-    if (shared.team.stale) return fallback();
-    const cfg = serviceConfigNow();
-    const url = new URL(p.photo?.link);
-    if (!cfg || url.origin !== new URL(cfg.url).origin || url.pathname !== `/p/${id}` || url.username || url.password || url.hash) return fallback();
-    // Connect may version an uploaded photo by its content hash; no other source query is accepted.
-    if (url.search && !/^\?v=[a-f0-9]{32}$/.test(url.search)) return fallback();
-    // Connect's path is stable while its photo changes; a bounded bucket prevents its hour-long cache hiding an edit.
-    url.searchParams.set('_bss', String(Math.floor(now / SHARED_FRESH_MS)));
-    const response = await (cfg.fetch || fetch)(url.href, { method: 'GET', redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(8000) });
-    const type = response.headers.get('content-type')?.split(';')[0];
-    if (!response.ok || !/^image\/(?:png|jpeg|webp|avif|gif)$/.test(type || '') || Number(response.headers.get('content-length') || 0) > 5 * 1024 * 1024) return fallback();
-    const reader = response.body?.getReader();
-    if (!reader) return fallback();
-    const chunks = []; let size = 0;
-    for (;;) { const { done, value } = await reader.read(); if (done) break; size += value.length; if (size > 5 * 1024 * 1024) { await reader.cancel(); return fallback(); } chunks.push(Buffer.from(value)); }
-    return new Response(req.method === 'HEAD' ? null : Buffer.concat(chunks), { headers: { ...headers, 'content-type': type } });
-  } catch { return fallback(); }
+  if (snap?.prototype || !snap?.shared?.exports?.team) return new Response(null, { status: 404, headers: { 'cache-control': 'no-store', 'netlify-cdn-cache-control': 'no-store' } });
+  return teamPhoto(req, id);
 }

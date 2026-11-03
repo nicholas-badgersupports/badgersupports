@@ -23,7 +23,7 @@
           "primary": true,
           "text": "A new program starting 2026–2027. Gain hands-on experience hosting workshops, staffing events, and supporting peer programs.",
           "link": {
-            "label": "Express Interest",
+            "label": "Express Interest · Google Sign-in",
             "href": "https://forms.gle/2pXzV917oPX4VodY7"
           },
           "icon": "hand",
@@ -42,9 +42,9 @@
                 ]
               }
             ],
-            "after": "New Volunteer Intake revolves around Volunteer Training, which is offered throughout the semester.",
+            "after": "New Volunteer Intake revolves around Volunteer Training, which is offered throughout the semester. The interest form requires Google sign-in. If you cannot sign in, email directors@badgersupports.org about volunteering.",
             "link": {
-              "label": "Express Interest & Apply Here",
+              "label": "Volunteer Interest Form · Google Sign-in",
               "href": "https://forms.gle/2pXzV917oPX4VodY7"
             }
           }
@@ -95,6 +95,21 @@
             "label": "Join Our Email List",
             "href": "/join/email-list"
           },
+          "icon": "mail"
+        }
+      ]
+    },
+    {
+      "id": "b-gi-contact",
+      "type": "text",
+      "title": "Questions About Volunteering",
+      "body": [
+        "The volunteer interest form requires Google sign-in. For help accessing it or asking about opportunities, email directors@badgersupports.org."
+      ],
+      "links": [
+        {
+          "label": "Email About Volunteering",
+          "href": "mailto:directors@badgersupports.org",
           "icon": "mail"
         }
       ]

@@ -10,7 +10,23 @@
       "id": "b-dir-rooms",
       "type": "places",
       "heading": "h1",
-      "title": "Find Us"
+      "title": "Find Us",
+      "lead": "The Student Mental Health Hub is our ongoing location. Other listed rooms are event locations. Choose the room shown on your event to find its address and directions."
+    },
+    {
+      "id": "b-dir-access",
+      "type": "text",
+      "title": "Access Questions",
+      "body": [
+        "For disability-related accommodations or access questions, email accessibility@badgersupports.org."
+      ],
+      "links": [
+        {
+          "label": "Contact Us About Access",
+          "href": "mailto:accessibility@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
     }
   ]
 }

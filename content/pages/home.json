@@ -60,7 +60,7 @@
         "title": "Need to vent?",
         "text": "Spill it to a fellow Badger, in writing.",
         "label": "Write Your SPILL",
-        "href": "https://badgerspill.org/#write"
+        "href": "https://badgerspill.org/#spill-form"
       }
     },
     {
@@ -122,7 +122,7 @@
       ],
       "primary": {
         "label": "Write Your SPILL",
-        "href": "https://badgerspill.org/#write"
+        "href": "https://badgerspill.org/#spill-form"
       },
       "links": [
         {

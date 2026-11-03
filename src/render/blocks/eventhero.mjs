@@ -17,13 +17,14 @@ import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref } from "../ics.mjs";
 import { nextDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
+import { eventClass, eventTags } from "../event-status.mjs";
 
 function feature(ctx, b, r) {
   const p = dateParts(r.date, ctx.t);
   const when = timeRange(r.start, r.end, ctx.t);
   const days = dayRange(r, ctx.t);
   const hid = `${b.id}-next`;
-  return html`<article${attrs({ class: "evcard is-feature", "data-live": "next", "data-starts": r.startsAt, "data-ends": r.endsAt, "data-date": r.date, "data-until": days ? r.until : null, "aria-labelledby": hid })}>
+  return html`<article${attrs({ class: eventClass("evcard is-feature", r, ctx.now), "data-live": "next", "data-starts": r.startsAt, "data-ends": r.endsAt, "data-date": r.date, "data-until": days ? r.until : null, "aria-labelledby": hid })}>
     <div class="evcard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span><span class="evcard-time">${when}</span>${runsOn(r, ctx.today) ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
     <div class="evcard-body">
       <p class="feature-label">${b.nextLabel || ctx.t("events.next")}</p>
@@ -35,7 +36,7 @@ function feature(ctx, b, r) {
       <div class="feature-actions">
         ${r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "btn btn--big", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
         <a class="go" href="${calendarHref(ctx, r.event)}"><span class="go-label">${ctx.t("events.calendar")}<span class="sr-only">: ${r.short}</span></span>${icon("calendar", "go-ic")}</a>
-        <span class="ended-tag">${ctx.t("schedule.ended")}</span>
+        ${eventTags(ctx)}
       </div>
     </div>
   </article>`;
@@ -44,7 +45,7 @@ function feature(ctx, b, r) {
 export default {
   type: "eventhero",
   label: "Event hero",
-  fields: { title: "text!", lead: "text", nextLabel: "text", source: "source!", program: "choice:peer|craft|workshops|other", series: "series", photos: "media[]" },
+  fields: { title: "text!", lead: "text", nextLabel: "text", source: "source!", program: "choice:peer|craft|workshops|other", series: "series", photos: "media[]", links: "link[]" },
   data: ["events"],
   client: "schedule.js",
   refresh: true,
@@ -53,7 +54,7 @@ export default {
   render(b, ctx) {
     const src = ctx.data.events;
     if (!src) throw new Error(`${b.id}: no event source "${b.source}"`);
-    const [next] = nextDated(src, ctx.today, 1, { program: b.program, series: b.series });
+    const [next] = nextDated(src, ctx.today, 1, { program: b.program, series: b.series }, ctx.now);
     const photos = (b.photos || []).slice(0, 3);
     const sizes = ["(max-width: 860px) 46vw, 24rem", "(max-width: 860px) 23vw, 14rem", "(max-width: 860px) 23vw, 14rem"];
     return html`<section${attrs({ class: ["eventhero", photos.length ? "has-photos" : null].filter(Boolean).join(" "), "aria-labelledby": `${b.id}-h`, "data-block": b.id, "data-program": b.program })}><div class="wrap">
@@ -61,6 +62,7 @@ export default {
     <h1 id="${b.id}-h">${b.title}</h1>
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
     ${next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t("events.none")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p></div>`}
+    ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
   </div>
   ${photos.length ? html`<div class="eventhero-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: i === 0 })}</div>`)}</div>` : ""}
 </div></section>`;

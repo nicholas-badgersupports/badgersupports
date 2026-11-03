@@ -77,5 +77,5 @@ export const teamRedirects = () => OLD_GROUPS.map((g) => `${TEAM_PATH}${g}/*  ${
 /* Public profile photos stay under the bounded proxy; library fixture photos retain responsive variants. */
 export function personPhoto(ctx, p, options) {
   if (ctx.data.team?.source !== "connect") return picture(ctx, p.photo, options);
-  return html`<picture><img${attrs({ src: `/api/team-photo/${encodeURIComponent(p.id)}`, width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", decoding: "async" })}></picture>`;
+  return html`<picture><img${attrs({ src: `/api/team-photo/${encodeURIComponent(p.photo.uploadId || p.id)}${p.photo.version ? `?v=${p.photo.version}` : ""}`, width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", decoding: "async" })}></picture>`;
 }

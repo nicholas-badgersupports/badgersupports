@@ -22,6 +22,7 @@ import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { calendarHref } from "../ics.mjs";
 import { nextDated, lastDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
+import { eventClass, eventTags } from "../event-status.mjs";
 
 /* A night that has happened, as its photo: the date and name under it. One without a photo keeps
    the card. */
@@ -46,7 +47,8 @@ function card(ctx, r, { past = false } = {}) {
   const when = timeRange(r.start, r.end, ctx.t);
   const today = runsOn(r, ctx.today);
   const days = dayRange(r, ctx.t);
-  const cls = ["evcard", r.media ? "has-photo" : null, past ? "is-recent" : null].filter(Boolean).join(" ");
+  const base = ["evcard", r.media ? "has-photo" : null, past ? "is-recent" : null].filter(Boolean).join(" ");
+  const cls = past ? base : eventClass(base, r, ctx.now);
   const hid = `ev-${r.event}`;
   return html`<li${attrs({ class: cls, "data-starts": past ? null : r.startsAt, "data-ends": past ? null : r.endsAt, "data-date": past ? null : r.date, "data-until": past || !days ? null : r.until })} aria-labelledby="${hid}">
     <div class="evcard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span>${past ? "" : html`<span class="evcard-time">${when}</span>`}${today && !past ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
@@ -60,7 +62,7 @@ function card(ctx, r, { past = false } = {}) {
       ${past ? "" : html`<div class="evcard-row">
         <a class="evcard-cal" href="${calendarHref(ctx, r.event)}">${icon("calendar")}<span class="sr-only">${ctx.t("events.calendar")}: ${r.short}</span></a>
         ${r.place?.href ? link(ctx, r.place.href, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.short}</span>`, { class: "drop", icon: "pin" }) : html`<span class="evcard-chip">${icon("pin")}${ctx.t("schedule.dropIn")}</span>`}
-        <span class="ended-tag">${ctx.t("schedule.ended")}</span>
+        ${eventTags(ctx)}
       </div>`}
     </div>
   </li>`;
@@ -80,8 +82,8 @@ export default {
     if (!src) throw new Error(`${b.id}: no event source "${b.source}"`);
     const show = b.show || "all";
     const skip = b.skip || 0;
-    const next = show === "recent" ? [] : nextDated(src, ctx.today, (b.count || 6) + skip, { program: b.program, series: b.series }).slice(skip);
-    const last = show === "upcoming" || b.recent === 0 ? [] : lastDated(src, ctx.today, b.recent || 4, { program: b.program, series: b.series });
+    const next = show === "recent" ? [] : nextDated(src, ctx.today, (b.count || 6) + skip, { program: b.program, series: b.series }, ctx.now).slice(skip);
+    const last = show === "upcoming" || b.recent === 0 ? [] : lastDated(src, ctx.today, b.recent || 4, { program: b.program, series: b.series }, ctx.now);
     if ((show === "recent" && !last.length) || (show === "upcoming" && !next.length && skip)) return html`<section data-block="${b.id}" hidden></section>`;
     const h = b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`;
     /* A split list is titled by its block; the whole list titles each half under the block's heading. */

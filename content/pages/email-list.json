@@ -3,7 +3,7 @@
   "id": "pg-email-list",
   "path": "/join/email-list/",
   "title": "Join Our Email List",
-  "description": "Join our email list to stay up-to-date on our latest updates, events, and more! Badger Supports sends out updates about every two weeks.",
+  "description": "Request Badger Supports news and event updates by email.",
   "analytics": "public",
   "blocks": [
     {
@@ -12,13 +12,13 @@
       "title": "Join Our Email List",
       "lead": "Join our email list to stay up-to-date on our latest updates, events, and more!",
       "body": [
-        "At Badger Supports, we create peer to peer spaces to talk about mental health, connect with others, and feel less alone. Whether you’re in a group, workshop, or craft night, you’re part of a community that gets it.",
-        "Badger Supports sends out updates about every two weeks."
+        "Students, community members and former Badger Supports, Badger Support Network and SPILL supporters, staff, volunteers and leaders are welcome to request updates.",
+        "Use an email address you plan to keep. A person who manages the Google Group handles membership; sending a request does not confirm that you are subscribed."
       ],
       "primary": {
-        "label": "Join Our Email List",
-        "href": "https://forms.gle/THmnT9QCdeeaoZx38",
-        "icon": "out"
+        "label": "Request Email Updates",
+        "href": "/forms/email-list/",
+        "icon": "mail"
       },
       "photos": [
         "m-people-visionboards",
@@ -37,7 +37,7 @@
         },
         {
           "icon": "calendar",
-          "text": "Within a minute or two, you’ll receive an email to confirm your membership."
+          "text": "Look for a confirmation email from Google Groups."
         },
         {
           "icon": "pencil",
@@ -45,13 +45,18 @@
         },
         {
           "icon": "check",
-          "text": "You will receive a confirmation email once you have replied to the email and have joined the group."
+          "text": "For help joining or leaving the list, email hello@badgersupports.org."
         }
       ],
       "links": [
         {
           "label": "Email badgersupports+subscribe@g-groups.wisc.edu",
           "href": "mailto:badgersupports+subscribe@g-groups.wisc.edu",
+          "icon": "mail"
+        },
+        {
+          "label": "Help Joining or Leaving",
+          "href": "mailto:hello@badgersupports.org",
           "icon": "mail"
         }
       ],

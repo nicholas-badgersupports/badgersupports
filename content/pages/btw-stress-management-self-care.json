@@ -44,7 +44,7 @@
       "body": "The creator’s favorite slide is “Not a Quick Fix.” This slide highlights that self care strategies can’t solve all of our problems, but they can help us manage them more effectively and prevent burnout.",
       "primary": {
         "label": "Request This Workshop",
-        "href": "/forms/workshop-request/"
+        "href": "/forms/workshop-request/?topic=stress_self_care"
       },
       "photos": [
         "m-btw-stress-slide"

@@ -13,7 +13,9 @@ import { handle } from "../netlify/lib/router.mjs";
 import * as liveEvents from "../netlify/lib/live-events.mjs";
 import { eventSections, calendarFile, forgetEvents } from "../netlify/lib/live-events.mjs";
 import { useStore, memoryStore } from "../netlify/lib/published.mjs";
+import { chicagoOffset } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
+import { handlePage, previewResponse } from "../netlify/lib/pages.mjs";
 
 const ORIGIN = "http://site.test";
 const TODAY = chicagoDate();
@@ -326,4 +328,29 @@ test("item 17: an outage uses the last successful public read even in another co
   assert.equal(after.stale, true);
   assert.match(Object.values(after.blocks).join(""), /Example night added later/);
   assert.doesNotMatch(Object.values(after.blocks).join(""), /Example night one/);
+});
+
+test("server-rendered event pages and private previews read current Connect events without JavaScript", async () => {
+  given(fakeConnect(LATER));
+  let res = await handlePage(new Request(ORIGIN + "/join/craft-nights/"), { today: TODAY });
+  assert.equal(res.status, 200);
+  let body = await res.text();
+  assert.match(body, /Example night added later/);
+  assert.doesNotMatch(body, /Example night one/);
+  res = await previewResponse("pg-craft-nights", { edits: {}, structure: null, today: TODAY });
+  assert.equal(res.headers.get("cache-control"), "no-store");
+  assert.match(await res.text(), /Example night added later/);
+  useConnect(fakeConnect(PUBLISHED, { fail: true }).cfg);forgetEvents();
+  res = await quietly(() => handlePage(new Request(ORIGIN + "/join/craft-nights/"), { today: TODAY }));
+  assert.equal(res.headers.get("cache-control"), "no-store");
+  body = await res.text();assert.match(body, /Example night added later/);
+});
+
+test("exact end moves today's event out of the live hero and calendar file", async () => {
+  given(fakeConnect(reply([craft("e1", "Example ended today", 0),craft("e2", "Example tomorrow", 1)])));
+  const now=Date.parse(`${TODAY}T19:30:00${chicagoOffset(TODAY)}`);
+  const r=await eventSections("pg-craft-nights",{today:TODAY,now});
+  const hero=Object.values(r.blocks).find(b=>b.includes('class="eventhero'));
+  assert.doesNotMatch(hero,/Example ended today/);assert.match(hero,/Example tomorrow/);
+  assert.equal(await calendarFile("connect-e1",{today:TODAY,now}),null);
 });

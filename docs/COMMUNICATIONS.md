@@ -21,7 +21,7 @@ and SPILL's forms stay with SPILL.
 | 2 | Peer group, volunteer training or collaboration request | a Google Form from `/request-a-program` and `/join/peer-support-groups` | **built closed** (23 Oct), one form as Google has it; previewed at `/forms/program-request/preview/`. Request a Program and Request a Workshop still link the Google Form |
 | 3 | Workshop request | a Google Form from `/join/request-a-workshop` | **built**: `/forms/workshop-request/` |
 | 4 | Referral card design survey | a Google Form from `/initiatives/referral-cards` | **built closed** (23 Oct); previewed at `/forms/referral-card-survey/preview/`. Referral Cards still links the Google Form |
-| 5 | Mailing list | a Google Form, and a whole-page embed at `/join/email-list` | **built closed** (23 Oct), from Google's public view; previewed at `/forms/email-list/preview/`. The Email List page still links the Google Form. See "The mailing list" |
+| 5 | Mailing list | a Google Form, and a whole-page embed at `/join/email-list` | **built closed** (23 Oct), from Google's public view; previewed at `/forms/email-list/preview/`. The Email List and Alumni pages lead to `/forms/email-list/`; its closed launch state links the existing Google Form. See "The mailing list" |
 | 6 | Staff application | a closed Google Form | **built closed**, all 11 sections (23 Oct), from the 21 Oct transcription (`Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md`): its closing message shows on Get involved, and a prototype build previews it at `/forms/staff-application/preview/` |
 | 7 | Volunteer application | a Google Form that answers 401 signed out, because Google requires sign-in on a form with uploads | **built closed**, all 9 sections (23 Oct), same handoff; previewed at `/forms/volunteer-application/preview/`. Get involved still links to the Google Form |
 | 8 | Alumni testimonial | a Google Form that answered 401 | not built: still 401 signed out on 23 Oct, so its questions cannot be read from here. To investigate (publication consent, a missing sign-up embed) |
@@ -215,14 +215,13 @@ does **not** prove anyone is on the list.
 
 A rebuilt request must keep three states apart: **request received**, **confirmation pending** and
 **subscribed**. Only the Google Group knows the last one. List membership is owned by one system, and that is
-not this site (`content/routes.json`). How the request reaches the Group is not yet verified.
+not this site (`content/routes.json`). The owner confirmed manual addition to the Group on 24 October. The current administrator and actual delivery/enrollment remain unverified.
 
 **Built closed** (23 Oct, `content/forms/email-list.json`, run log §6). The site's part is the first state only:
 
 - It asks Google's one question, the email address, and shows Google's four steps for joining by email, with
   the address as a link.
-- Its thank-you page says the request is received and that the person is **not on the list yet**; it never says
-  they are subscribed (`test/applications.test.mjs`).
+- Its thank-you page confirms receipt only and explicitly says the request does not show whether the address is already subscribed (`test/email-request.test.mjs`).
 - It sends no receipt (`workflow.receipt: "none"`), so the site never emails an address no one has confirmed.
 - The request goes to Connect as an answer like any other, queue `executive.email-list` (proposed). Recording
   *confirmation pending* and *subscribed* against it is Connect's (Exchange request
@@ -234,6 +233,12 @@ not this site (`content/routes.json`). How the request reaches the Group is not 
   inspection verified none of these (`../../FORM-AUDIT.md`).
 - Whether `directors@badgersupports.org` can send through Connect's mail path.
 - How fast any team replies to a request.
-- How the mailing-list form reaches the Google Group today.
+- Current membership administrator, actual delivery, confirmation, repeat enrollment and unsubscribe behavior.
 
 The owner's actions for this page are in `../WORK.md`.
+
+## Local continuation, 3 November 2026
+
+The shared email request is email-only, accepts personal addresses when deliberately opened, sends no receipt, and does not create an alumni segment or enroll anyone automatically. It remains closed. Signed-out public Google inspection confirmed a visible required email question; no actual submission or membership was tested. Volunteer interest and legacy alumni testimonial currently reach Google sign-in; the volunteer page says so and retains an email alternative.
+
+Workshop page actions carry only one allowlisted `topic` ID. Initial GET uses the current offered checkbox option; answers submitted by the visitor govern recovery. Closed launch fallback prefill uses the verified Google form ID and topic field only. A manual closure still removes the fallback. Neither URL context nor page links open a form or change permissions.

@@ -1,0 +1,25 @@
+{
+  "schema": "bss.alumni-history/1",
+  "approved": true,
+  "revision": "fictional-preview-1",
+  "asOf": "2026-11-03",
+  "fixture": true,
+  "groups": [
+    {
+      "id": "example-cohort-2021",
+      "heading": "Within 2021–2023",
+      "organization": "BSN",
+      "people": [
+        { "id": "example-1", "name": "River Example", "years": "Within 2021–2023", "titles": ["Peer Facilitator", "Programs Coordinator"] }
+      ]
+    },
+    {
+      "id": "example-cohort-2024",
+      "heading": "2024–2025",
+      "organization": "BSS",
+      "people": [
+        { "id": "example-2", "name": "Casey Sample", "years": "2024–2025", "titles": ["Director of Engagement"] }
+      ]
+    }
+  ]
+}

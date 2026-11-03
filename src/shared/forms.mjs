@@ -172,6 +172,7 @@ export function definitionProblems(def) {
     "resource-update": { resource: ["resource", true], field: ["select", true], words: ["long", true] },
     "resource-suggestion": { name: ["short", true], link: ["links", false], about: ["long", false] },
     "wall-note": { note: ["long", true] },
+    "email-list": { email: ["email", true] },
   }[def.key];
   if (delivery) {
     const qs = def.sections.flatMap(s => (s.questions || []).map(q => ({ q, section: s })));
@@ -183,7 +184,7 @@ export function definitionProblems(def) {
     const link = qs.find(({ q }) => q.id === "link")?.q;
     if (link && link.maxLinks !== 1) add("delivery-links", "link");
     if (qs.some(({ q }) => !Object.hasOwn(delivery, q.id))) add("delivery-fields", def.key);
-    if (def.anonymous !== true || def.workflow?.receipt !== "none") add("delivery-anonymous", def.key);
+    if (def.anonymous !== (def.key !== "email-list") || def.workflow?.receipt !== "none") add("delivery-anonymous", def.key);
     if (def.key === "wall-note" && (qs.length !== 1 || qs[0]?.q.maxLength !== 280)) add("wall-shape", def.key);
   }
 

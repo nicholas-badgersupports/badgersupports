@@ -23,3 +23,5 @@ delivery status. Preserve saved manual overrides at their existing scope. The ca
 When changing a rule, record its source and scope in DECISIONS, update this index and the relevant guard or documented
 manual check, then regenerate the editor contract if its inputs changed. A passing guard establishes only the behavior
 it measures; it does not turn a delegated implementation choice into an owner ruling.
+
+Continuation enforcement, 3 November: team recognition is absent from production artifacts and read fresh on relevant origin draws; outages return 503/no-store. Alumni preparation and runtime validation share a round-trip envelope, while production history stays disabled pending an approved subset. Email requests remain closed and receipt-free. Topic context may preselect only an offered choice on initial GET; visitor submissions control recovery. Existing manual edit paths remain stable. See `CONTENT-STEWARDSHIP.md` and `PAGE-PURPOSE.md` for proposed content owners and page tasks; these do not approve new policy or claim every page refinement complete.

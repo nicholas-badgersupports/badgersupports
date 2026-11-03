@@ -438,8 +438,8 @@ test("the four request forms ask Google's own questions, built closed: the same 
 test("a mailing-list request says it was received, never that the person is on the list: being invited, pending and subscribed are known only to the Google Group and to Connect", () => {
   const list = load("email-list");
   const said = [list.confirmation.title, ...list.confirmation.body].join(" ");
-  assert.match(said, /not on the list yet/);
-  assert.doesNotMatch(said.replace(/not on the list yet/g, ""), /\b(you are|you're|you’re|you have been) (now )?(on|added|subscribed|signed up|joined|in)\b|\bwelcome\b/i);
+  assert.match(said, /request confirmation does not show whether you are subscribed/);
+  assert.doesNotMatch(said, /(?:^|[.!?]\s+)(you are|you're|you’re|you have been) (now )?(on|added|subscribed|signed up|joined|in)\b|\bwelcome\b|not on the list yet/i);
   assert.match(list.closedMessage, /Google Forms/);
   const words = list.sections.find((s) => s.questions.length === 0);
   assert.ok(words, "the add-yourself steps are words, not a question");

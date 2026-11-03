@@ -435,14 +435,21 @@ test("with the exports on, the published site shows each person from their own p
   assert.equal(report.connect.wall, 2);
   assert.ok(said.includes("connect: left out profile p222222222222222222222222: not marked published"), "the build says who it left out, by id");
 
-  const people = report.pages.map((p) => p.path).filter((p) => p.startsWith(TEAM_PATH) && p !== TEAM_PATH).sort();
-  assert.deepEqual(people, ["/about/our-team/casey-test/", "/about/our-team/riley-example/"]);
-  const team = read("about/our-team/index.html");
-  assert.match(team, /Riley Example/);
-  assert.match(team, /Casey Test/);
-  assert.doesNotMatch(team, /class="team-none"/);
-  assert.match(read("about/our-team/riley-example/index.html"), /Riley wrote this paragraph about themself\./);
-  assert.doesNotMatch(read("about/our-team/casey-test/index.html"), /Riley/, "a page carries its own person only");
+  const people = report.pages.map((p) => p.path).filter((p) => p.startsWith(TEAM_PATH) && p !== TEAM_PATH);
+  assert.deepEqual(people, [], "production never bakes current people into immutable routes");
+  assert.doesNotMatch(read("about/our-team/index.html"), /Riley Example|Casey Test/);
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  const { useConnect } = await import("../netlify/lib/connect.mjs");
+  const { useStore, memoryStore } = await import("../netlify/lib/published.mjs");
+  const { handlePage, useDist } = await import("../netlify/lib/pages.mjs");
+  useContent(JSON.parse(read("_server/server.json")));useConnect(fakeConnect().cfg);useStore(memoryStore());useDist(out);
+  const page = async p => (await handlePage(new Request("http://site.test" + p), {today:"2026-10-20", now:Date.parse("2026-10-20T12:00:00Z")})).text();
+  try {
+    const team = await page(TEAM_PATH);
+    assert.match(team, /Riley Example/);assert.match(team, /Casey Test/);assert.doesNotMatch(team, /class="team-none"/);
+    assert.match(await page("/about/our-team/riley-example/"), /Riley wrote this paragraph about themself\./);
+    assert.doesNotMatch(await page("/about/our-team/casey-test/"), /Riley/, "a page carries its own person only");
+  } finally {useConnect(null);}
   assert.doesNotMatch(read("_redirects"), /sample-group\/riley-e/, "unexported aliases are not invented");
 
   const wall = section(read("index.html"), "b-home-wall");

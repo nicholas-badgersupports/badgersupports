@@ -22,8 +22,8 @@ export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && 
 export const sectionPrograms = (page) => (page.blocks || []).filter((b) => PROGRAMS.includes(b.program)).map((b) => [`#${b.anchor || b.id}`, b.program]);
 
 /* What a snapshot holds: the files before any saved word (floor), and everything else the pages read. */
-export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null }) {
-  return { shared, schema: "bss.render/1", floor, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
+export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null, alumniSource = null }) {
+  return { shared, alumniSource, schema: "bss.render/1", floor, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
 }
 
 /* Every page with the edits laid over the floor, as loadContent() does, then the page structure (src/shared/structure.mjs):
@@ -35,7 +35,7 @@ export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team
    With no structure the result is the build's, byte for byte. */
 export function composeSite(snap, edits = {}, structure = null, shared = null) {
   const team = shared?.team?.value || snap.team;
-  const liveData = { ...snap.data, ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}) };
+  const liveData = { ...snap.data, ...(shared?.events ? { events: shared.events.value, eventsState: shared.events } : {}), ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}), ...(shared?.alumni ? { alumni: shared.alumni.value, alumniState: shared.alumni.state } : {}) };
   const site = laySettings(structuredClone(snap.floor.site), structure?.settings);
   const made = Object.values(structure?.pages || {}).filter((r) => r.page).map((r) => structuredClone(r.page));
   const authored = [...structuredClone(snap.floor.pages), ...made];
@@ -66,12 +66,12 @@ export const formsOn = (page) => [...new Set((page.blocks || []).flatMap((b) => 
 
 /* One page as HTML. `forms`, when given, replaces those forms' definitions in the snapshot: the forms as
    they stand now, switch included (netlify/lib/pages.mjs). */
-export function renderSitePage(snap, composed, page, today, forms = null) {
+export function renderSitePage(snap, composed, page, today, forms = null, { formTopic = null, now = null } = {}) {
   const base = composed.data || snap.data;
   const data = forms ? { ...base, forms: { ...base.forms, ...forms } } : base;
   const ctx = makeContext({
     site: composed.site, media: snap.media, builtPaths: composed.builtPaths || snap.builtPaths, programs: new Map([...composed.programs, ...sectionPrograms(page)]),
-    routes: snap.routes, data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null,
+    routes: snap.routes, data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null, formTopic, now,
   });
   return String(renderPage(ctx, page));
 }

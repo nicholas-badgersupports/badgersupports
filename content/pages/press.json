@@ -16,7 +16,9 @@
           "href": "mailto:hello@badgersupports.org",
           "icon": "mail"
         }
-      ]
+      ],
+      "lead": "News coverage of Badger Supports and Badger Support Network. For media inquiries, contact us below.",
+      "firstLinkPrimary": true
     },
     {
       "id": "b-pr-herald",

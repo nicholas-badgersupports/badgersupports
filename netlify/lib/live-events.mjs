@@ -89,11 +89,11 @@ async function published(c) {
   try { return await siteNow({ catalogues: false }); } catch { return null; }
 }
 
-function context(c, page, events, today, now) {
+function context(c, page, events, today, publishedSite, now) {
   const ev = c.events;
   return makeContext({
-    site: now?.site || c.site, media: c.media, builtPaths: c.builtPaths, programs: new Map([...ev.programs, ...page.sections]),
-    routes: c.routes, data: { events: now ? withRoomPlaces(events, now.places, now.roomIds) : events, places: now?.places || ev.places }, text: now?.text || c.text, today, prototype: c.prototype, assets: c.assets,
+    site: publishedSite?.site || c.site, media: c.media, builtPaths: c.builtPaths, programs: new Map([...ev.programs, ...page.sections]),
+    routes: c.routes, data: { events: publishedSite ? withRoomPlaces(events, publishedSite.places, publishedSite.roomIds) : events, places: publishedSite?.places || ev.places }, text: publishedSite?.text || c.text, today, now, prototype: c.prototype, assets: c.assets,
     liveEvents: ev.source === "connect", path: page.path || null,
   });
 }
@@ -108,7 +108,7 @@ export async function eventSections(pageId, { today = chicagoDate(), now = Date.
   // the blocks with their saved words, so a refreshed block never puts the build's words back
   const edited = site?.pages.find((p) => p.id === pageId)?.blocks;
   const own = page.blocks.map((b) => edited?.find((x) => x.id === b.id) || b);
-  const ctx = context(c, page, events, today, site);
+  const ctx = context(c, page, events, today, site, now);
   const showing = new Set(liveBlocks({ blocks: own }, today).map((b) => b.id));
   const blocks = {};
   for (const b of own) blocks[b.id] = showing.has(b.id) ? String(renderBlock(b, ctx)) : "";
@@ -120,7 +120,7 @@ export async function calendarFile(eventId, { today = chicagoDate(), now = Date.
   const c = serverContent();
   if (!c.events) return null;
   const { events, stale } = await eventsNow(c.events, now);
-  const r = nextDated(events, today, Infinity).find((x) => x.event === eventId);
+  const r = nextDated(events, today, Infinity, null, now).find((x) => x.event === eventId);
   if (!r) return null;
   const places = (await published(c))?.places || c.events.places;
   const place = places[r.placeId] || (r.place ? { name: r.place.name } : null);

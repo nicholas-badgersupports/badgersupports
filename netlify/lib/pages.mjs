@@ -17,13 +17,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
-import { sharedNow } from "./live-content.mjs";
+import { sharedNow, combineShared } from "./live-content.mjs";
 import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
 import { currentForm } from "./intake.mjs";
 import { composeSite, renderSitePage, formsOn } from "../../src/render/site.mjs";
 import { trimSlash as dropSlash } from "../../src/shared/structure.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
+import { topicFromAddress } from "../../src/shared/workshop-topic.mjs";
+import { refreshes } from "../../src/render/registry.mjs";
+import { eventsNow } from "./live-events.mjs";
 
 const HERE = path.dirname(url.fileURLToPath(import.meta.url));
 let dist = path.resolve(HERE, "..", "..", "dist");
@@ -83,6 +86,11 @@ export async function formTags(key) {
 }
 
 const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l.indexOf(":"); return [l.slice(0, i).toLowerCase(), l.slice(i + 1).trim()]; }));
+const showsTeam = page => page?.blocks?.some(b => b.type === "team" || b.type === "person");
+const showsAlumni = page => page?.blocks?.some(b => b.type === "alumni");
+const showsEvents = page => page?.blocks?.some(refreshes);
+const teamPath = pathname => pathname === "/about/our-team" || pathname.startsWith("/about/our-team/");
+const PRIVATE_FAILURE = { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store", "retry-after": "60" };
 
 /* Matches as Netlify's own matcher does, so the answer is the same whichever of _redirects and this function
    Netlify runs first: a line takes its address with or without a final "/", and a line ending "/*" takes its
@@ -109,7 +117,7 @@ function staticFile(pathname) {
 }
 
 /* A page's answer, or null for a path this function does not draw (an asset, the API). */
-export async function handlePage(req, { today = chicagoDate() } = {}) {
+export async function handlePage(req, { today = chicagoDate(), now = Date.now() } = {}) {
   const u = new URL(req.url);
   // An address whose %-escapes do not decode is kept as it came: it names no page, so it answers the 404 page, and
   // only a redirect line can still take it, as Netlify's matcher does.
@@ -122,12 +130,32 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
   const html = (status, body, extra) => new Response(req.method === "HEAD" ? null : body, { status, headers: { "content-type": "text/html; charset=utf-8", ...base, ...extra } });
 
   const moved = redirectFor(c, pathname);
-  if (moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
+  if (moved && !(c.render?.shared?.exports?.team && teamPath(pathname))) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
 
   const snap = c.render;
   let revision = null, site = null, fault = null, shared = null;
   try { revision = await currentRevision(); } catch (e) { fault = e; }
-  try { if (!fault || snap?.shared) { shared = await sharedNow(snap); site = siteFor(snap, revision, shared); } } catch (e) { fault = e; }
+  let wantsTeam = false;
+  try {
+    if (!fault || snap?.shared) {
+      shared = await sharedNow(snap, { kinds: ["resources", "wall"] });
+      site = siteFor(snap, revision, shared);
+      if (showsAlumni(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))) {
+        shared = combineShared(shared, await sharedNow(snap, { kinds: ["alumni"] }));
+        site = siteFor(snap, revision, shared);
+      }
+      wantsTeam = !!(snap?.shared?.exports?.team && (teamPath(pathname) || showsTeam(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))));
+      if (wantsTeam) {
+        shared = combineShared(shared, await sharedNow(snap, { kinds: ["team"] }));
+        site = siteFor(snap, revision, shared);
+      }
+      if (snap.liveEvents && showsEvents(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))) {
+        const { events, stale } = await eventsNow(c.events, now);
+        shared = combineShared(shared, { events: { value: events, stale } });
+        site = siteFor(snap, revision, shared);
+      }
+    }
+  } catch (e) { fault = e; }
   // A page moved or retired on the staff page: its old address moves in one step, with or without its final "/", and
   // is tagged like a page, so the next structure change clears it. Retired with nowhere to go, it is the 404 page.
   const shifted = site && !malformed ? site.moves.get(dropSlash(pathname)) : null;
@@ -138,18 +166,23 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
 
   try {
     if (fault && !site) throw fault;
+    if (wantsTeam && shared?.team?.unavailable) {
+      const safe = site.pages.find(p => p.path === pathname) || site.pages.find(p => p.id === "pg-about-team");
+      return html(503, renderSitePage(snap, site, safe, today, null, { now }), PRIVATE_FAILURE);
+    }
     const page = shifted ? null : site.pages.find((p) => (p.file ? `/${p.file}` : p.path) === pathname);
+    if (!page && moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
     const notFound = !page;
     const shown = page || site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
     const { forms, failed } = await formsNow(shown);
-    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms), { ...(fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms, { formTopic: topicFromAddress(u.searchParams), now }), { ...(fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
-    if (snap?.shared?.exports?.team && pathname.startsWith("/about/our-team/")) {
+    if (snap?.shared?.exports?.team && (teamPath(pathname) || wantsTeam)) {
       const safe = composeSite(snap, {}, null, { team: { value: { ...snap.team, people: [] }, stale: true, unavailable: true } });
       const unavailable = safe.pages.find(p => p.id === "pg-about-team");
-      return html(503, renderSitePage(snap, safe, unavailable, today), { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store", "retry-after": "60" });
+      return html(503, renderSitePage(snap, safe, unavailable, today, null, { now }), PRIVATE_FAILURE);
     }
     const file = staticFile(pathname);
     if (file) return html(200, file, { ...FALLBACK_CACHE, "x-bss-revision": "build" });
@@ -160,16 +193,33 @@ export async function handlePage(req, { today = chicagoDate() } = {}) {
 /* A page as it will be once published, for the staff page's preview: the saved words and the structure now, drafts
    included. Never cached, never indexed, and framed only by this site's own pages. null for a page that is not there
    or is retired. */
-export async function previewResponse(pageId, { edits, structure, today = chicagoDate() }) {
+export async function previewResponse(pageId, { edits, structure, today = chicagoDate(), now = Date.now() }) {
   const c = serverContent();
   if (!c.render) return null;
-  const site = composeSite(c.render, edits, structure, await sharedNow(c.render));
-  const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId);
+  let shared = await sharedNow(c.render, { kinds: ["resources", "wall"] });
+  let site = composeSite(c.render, edits, structure, shared);
+  const candidate = [...site.pages, ...site.drafts].find(p => p.id === pageId);
+  if (showsAlumni(candidate)) {
+    shared = combineShared(shared, await sharedNow(c.render, { kinds: ["alumni"] }));
+    site = composeSite(c.render, edits, structure, shared);
+  }
+  const wantsTeam = !!(c.render.shared?.exports?.team && !c.render.prototype && (pageId.startsWith("pg-person-") || showsTeam(candidate)));
+  if (wantsTeam) {
+    shared = combineShared(shared, await sharedNow(c.render, { kinds: ["team"] }));
+    site = composeSite(c.render, edits, structure, shared);
+  }
+  if (c.render.liveEvents && showsEvents(candidate)) {
+    const { events, stale } = await eventsNow(c.events, now);
+    shared = combineShared(shared, { events: { value: events, stale } });
+    site = composeSite(c.render, edits, structure, shared);
+  }
+  const failedTeam = wantsTeam && shared?.team?.unavailable;
+  const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId) || (failedTeam ? site.pages.find(p => p.id === "pg-about-team") : null);
   if (!page) return null;
   const { forms } = await formsNow(page);
   const base = headerPairs(c.headers || []);
   const csp = String(base["content-security-policy"] || "").split(";").map((d) => d.trim()).filter((d) => d && !d.startsWith("frame-ancestors"));
-  return new Response(renderSitePage(c.render, site, page, today, forms), { status: 200, headers: {
+  return new Response(renderSitePage(c.render, site, page, today, forms, { now }), { status: failedTeam ? 503 : 200, headers: {
     "content-type": "text/html; charset=utf-8", ...base,
     "content-security-policy": [...csp, "frame-ancestors 'self'"].join("; "),
     "x-frame-options": "SAMEORIGIN", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow",

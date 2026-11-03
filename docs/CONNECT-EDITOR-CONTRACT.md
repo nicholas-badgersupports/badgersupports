@@ -160,6 +160,7 @@ Reads: `places` · analytics: `page` · photos load lazy
 | `title` | one line of text | **required** |
 | `heading` | one of `h1`, `h2` |  |
 | `roomsTitle` | one line of text |  |
+| `lead` | one line of text |  |
 
 ### Questions and answers — `questions`
 
@@ -229,6 +230,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 | `series` | a page's own events, by the id of a series in content/connect-feed.json (`dogs-on-call`, `housing-hub`): Connect's events whose titles carry that series' words; it wins over `program` |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
+| `links` | several links, in order |  |
 
 ### What to expect — `expect`
 
@@ -255,6 +257,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `whole` | on or off |  |
+| `quiet` | on or off |  |
 
 ### Team — `team`
 
@@ -291,6 +294,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
+| `firstLinkPrimary` | on or off |  |
 
 ### Photo cards — `cards`
 
@@ -358,6 +362,16 @@ Reads: nothing but its own fields · analytics: `none` · photos load lazy
 | `lead` | one line of text |  |
 | `groups` | groups in order, each with an id, a heading, an optional second line and its places: each a name, an optional address and an optional link | **required** |
 | `links` | several links, in order |  |
+
+### Alumni history — `alumni`
+
+Reads: `alumni`, `alumniState` · analytics: `none` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `contact` | a label and an address (a page on this site, Connect, or another site), and an optional icon | **required** |
 
 ## Icons
 
@@ -479,7 +493,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-575 keys. Keys are permanent. Required text cannot be published empty and must keep each
+585 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -503,7 +517,7 @@ the site adds the markup.
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
 | `media.linkAlt` | A photo from a Badger Supports event. | Read aloud for a pasted photo link that has no description of its own |  |
 
-### Homepage sections (29)
+### Homepage sections (30)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -536,6 +550,7 @@ the site adds the markup.
 | `mood.count.other` | {{n}} Badgers have checked in today: | Above the counts, when more than one has. | `{{n}}` |
 | `mood.pageTitle` | Thanks for Checking In | Heading of the page shown after a mood tap without JavaScript. |  |
 | `mood.back` | Back to the Homepage | Link on that page. |  |
+| `schedule.happening` | Happening Now | Shown on an event once it has finished. |  |
 
 ### Event cards (12)
 
@@ -613,7 +628,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (68)
+### Forms (69)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -685,6 +700,7 @@ the site adds the markup.
 | `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
 | `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
+| `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
 
 ### Team and profiles (11)
 
@@ -709,7 +725,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (349)
+### Staff page and edit button (351)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1062,6 +1078,8 @@ the site adds the markup.
 | `auth.error.rateLimited` | Too many sign-in attempts from this connection. Wait a few minutes, then try again. | Sign-in problem: too many attempts. |  |
 | `auth.error.failed` | Something went wrong signing in. Start again from the staff page. | Sign-in problem: anything else. |  |
 | `auth.error.back` | Back to the Staff Page | Link at the bottom of the sign-in problem page. |  |
+| `edit.field.quiet` | Use a quieter text layout | Name of a value: on or off. |  |
+| `edit.field.firstLinkPrimary` | Make the first link the main action | Name of a value: on or off. |  |
 
 ### Resource list (39)
 
@@ -1106,6 +1124,17 @@ the site adds the markup.
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
 | `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
 | `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
+
+### Alumni History (6)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `alumni.sample` | Fictional alumni records for layout review. | Prototype history notice. |  |
+| `alumni.bss` | Badger Supports | Historical program provenance label. |  |
+| `alumni.bsn` | Badger Support Network | Historical predecessor provenance label. |  |
+| `alumni.disabled` | For alumni history or corrections, please email us. | History source not activated; do not imply a public roster exists. |  |
+| `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
+| `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
 ## Also edited in Connect
 

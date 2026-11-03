@@ -159,7 +159,7 @@ if (process.argv.includes("--browser")) {
   process.env.LOCAL_DB = "pglite";
   const { startServer } = await import("./dev-server.mjs");
   /* One day for the whole run: the server draws its pages for the build's day, and the suites are told it as TODAY. */
-  const server = await startServer({ port, media, today: report?.today || null });
+  const server = await startServer({ port, media, today: report?.today || null, now: report?.today ? Date.parse(`${report.today}T12:00:00Z`) : null });
   const env = { ...process.env, BASE: `http://127.0.0.1:${port}`, ...(report ? { TODAY: report.today } : {}) };
   for (const suite of SUITES) {
     const { problems, note } = judgeSuite(suite, await runSuite(suite.script, { cwd: ROOT, env }));

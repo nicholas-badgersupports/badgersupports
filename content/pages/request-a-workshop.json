@@ -46,6 +46,10 @@
         {
           "label": "Behind the Workshop",
           "href": "/join/request-a-workshop/behind-the-workshop/support-networks/"
+        },
+        {
+          "label": "Request This Workshop",
+          "href": "/forms/workshop-request/?topic=support_network"
         }
       ],
       "photos": [
@@ -79,6 +83,10 @@
         {
           "label": "Behind the Workshop",
           "href": "/join/request-a-workshop/behind-the-workshop/stress-management-self-care/"
+        },
+        {
+          "label": "Request This Workshop",
+          "href": "/forms/workshop-request/?topic=stress_self_care"
         }
       ],
       "photos": [
@@ -108,6 +116,12 @@
       ],
       "photos": [
         "m-peer-talk"
+      ],
+      "links": [
+        {
+          "label": "Request This Workshop",
+          "href": "/forms/workshop-request/?topic=self_advocacy"
+        }
       ]
     },
     {
@@ -137,6 +151,10 @@
         {
           "label": "Behind the Workshop",
           "href": "/join/request-a-workshop/behind-the-workshop/navigating-housing/"
+        },
+        {
+          "label": "Request This Workshop",
+          "href": "/forms/workshop-request/?topic=housing"
         }
       ],
       "photos": [

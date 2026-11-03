@@ -307,7 +307,7 @@ test("an email address in a pill or a closed notice is kept whole, may break bef
 test("Badger SPILL shows in the hero, in its own band and in every footer, as its own logo that its own motion moves", () => {
   const home = read("index.html");
   const hero = block(home, "b-home-hero");
-  const sticker = hero.match(/<a href="https:\/\/badgerspill\.org\/#write"[^>]*class="hero-spill"[\s\S]*?<\/a>/);
+  const sticker = hero.match(/<a href="https:\/\/badgerspill\.org\/#spill-form"[^>]*class="hero-spill"[\s\S]*?<\/a>/);
   assert.ok(sticker, "the hero's sticker is one link to SPILL's writing page");
   assert.match(sticker[0], /<img class="spill-logo hero-spill-logo" src="\/assets\/brand\/spill-logo-wide-480\.webp"[^>]* alt="" [^>]*loading="eager">/, "the logo has no words of its own and loads with the hero");
   assert.match(sticker[0], /<span class="hero-spill-title">Need to vent\?<\/span>/);

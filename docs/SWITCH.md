@@ -130,3 +130,7 @@ above). No form submission is stranded either way: the production forms are clos
 - Optionally point the shortlinks at the new addresses (`mhh`, `hearts`, `res`) to save a hop, and the bare domain's
   forward at `https://` instead of `http://`.
 - Remove www from Google Sites' custom domains, when the owner closes the switch.
+
+## Continuation acceptance to carry into release review
+
+The 3 November continuation remains unpublished. Recheck URL disposition separately from content and task parity: current canonical people before legacy catch-alls; slash/encoded resource and ribbon routes; printed shortlinks; alumni history approval and source provenance; referral-card destinations without a second device; workshop choice and manual closure; shared personal-email request/actual membership states; signed-out Connect/SPILL handoffs; editor overrides, private previews and phone/no-JavaScript use. A 200 response establishes none of the content or enrollment requirements by itself. Source inventory and unresolved owners are in `CONTENT-STEWARDSHIP.md`; dated evidence and remaining acceptance are in the shared public handoff. Existing privacy/cutover prerequisites still apply. No domain or production setting was changed by this continuation.

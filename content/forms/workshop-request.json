@@ -173,9 +173,9 @@
   "confirmation": {
     "title": "Request received",
     "body": [
-      "Thank you for your interest in a Badger Supports workshop. A member of our team will reach out within one week to confirm your request."
+      "Thank you for your interest in a Badger Supports workshop. Your request will be reviewed by the Programs team. A request is not a confirmed booking."
     ],
-    "review": "The one-week promise is the Google Form's own wording, not verified with the Programs team."
+    "review": "The unverified one-week response promise was removed under WORK26. Programs confirms availability; no booking is made by submitting the request."
   },
   "workflow": {
     "connectQueue": "programs.workshop-requests",

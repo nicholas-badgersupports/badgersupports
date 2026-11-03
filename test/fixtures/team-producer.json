@@ -1,7 +1,7 @@
 {
   "ok": true,
   "schema": "bss.team/1",
-  "generatedAt": "2026-11-03T09:29:01.265Z",
+  "generatedAt": "2026-11-03T10:55:21.490Z",
   "people": [
     {
       "id": "p82ea2ab92dd6ef7d47d2cd92",
@@ -60,6 +60,46 @@
       "slug": "profile-122213592dbeca3d62c0a882"
     },
     {
+      "id": "p20eb08fd4706322ceb844bee",
+      "published": true,
+      "name": "Actual hyphen-role Fictional",
+      "title": "Co-Director",
+      "role": "Director",
+      "group": "directors",
+      "bio": [],
+      "slug": "actual-hyphen-role-fictional"
+    },
+    {
+      "id": "p108ba3bbebc9cede835df3ba",
+      "published": true,
+      "name": "Actual no-supporter-title Fictional",
+      "title": "Planning and Development Co-Director",
+      "role": "Director",
+      "group": "directors",
+      "bio": [],
+      "slug": "actual-no-supporter-title-fictional"
+    },
+    {
+      "id": "p740a3d74d8ecf5d9d2737b38",
+      "published": true,
+      "name": "Planning Fictional",
+      "title": "Planning and Development Director",
+      "role": "Director",
+      "group": "directors",
+      "bio": [],
+      "slug": "planning-fictional"
+    },
+    {
+      "id": "pdca4d69f3e18b440ee4213c0",
+      "published": true,
+      "name": "Riley Repeatedfictional",
+      "title": "Director of Outreach",
+      "role": "Director",
+      "group": "directors",
+      "bio": [],
+      "slug": "riley-repeatedfictional"
+    },
+    {
       "id": "p356d5d30dddde17b57a070e1",
       "published": true,
       "name": "Sol Teamfictional",
@@ -81,6 +121,16 @@
       "group": "staff",
       "bio": [],
       "slug": "dana-teamfictional-2"
+    },
+    {
+      "id": "p9c13c9c2ffbb8eea55af013e",
+      "published": true,
+      "name": "Actual unicode-role Fictional",
+      "title": "支持主任",
+      "role": "Director",
+      "group": "directors",
+      "bio": [],
+      "slug": "actual-unicode-role-fictional"
     },
     {
       "id": "pa36dee715369d270464fbe3e",

@@ -13,6 +13,7 @@ import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { rowsBetween, dateParts, timeRange } from "../events.mjs";
+import { eventState } from "../../shared/event-state.mjs";
 
 const mapHref = (address) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
@@ -29,7 +30,7 @@ export default {
     if (!p) throw new Error(`${b.id}: no room "${b.place}"`);
     const src = ctx.data.events;
     // The next three things held here in the coming three weeks, weekly groups included.
-    const next = src ? rowsBetween(src, ctx.today, 21).filter((r) => r.placeId === p.id).slice(0, 3) : [];
+    const next = src ? rowsBetween(src, ctx.today, 21).filter((r) => r.placeId === p.id && eventState(r, ctx.now) !== "ended").slice(0, 3) : [];
     const page = b.heading !== "h2";
     const steps = p.steps || [];
     const body = steps.length || p.note || next.length;

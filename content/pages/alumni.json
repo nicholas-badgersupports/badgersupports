@@ -15,8 +15,9 @@
         "Join our email list to receive Badger Supports updates. Stay in touch through an email address you plan to keep after graduation."
       ],
       "primary": {
-        "label": "Join Our Email List",
-        "href": "/join/email-list/"
+        "label": "Request Email Updates",
+        "href": "/forms/email-list/",
+        "icon": "mail"
       },
       "links": [
         {
@@ -32,6 +33,18 @@
       "photos": [
         "m-involved-volunteers"
       ]
+    },
+    {
+      "id": "b-alumni-history",
+      "type": "alumni",
+      "anchor": "history",
+      "title": "Alumni History",
+      "lead": "Recognizing the people who helped build Badger Supports and Badger Support Network. Service periods retain the detail supported by the historical record.",
+      "contact": {
+        "label": "History Questions or Corrections",
+        "href": "mailto:directors@badgersupports.org",
+        "icon": "mail"
+      }
     }
   ]
 }

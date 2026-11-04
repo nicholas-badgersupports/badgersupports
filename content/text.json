@@ -3024,6 +3024,16 @@
       "group": "events",
       "text": "Ask About an Event",
       "where": "Contact action when the current event schedule cannot be confirmed."
+    },
+    "team.connect": {
+      "group": "team",
+      "text": "Contact This Person",
+      "where": "Contact action for a public profile whose name is not supplied."
+    },
+    "team.tryAgain": {
+      "group": "team",
+      "text": "Try Again",
+      "where": "Reload action when current team profiles cannot be read."
     }
   }
 }

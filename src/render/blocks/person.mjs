@@ -23,7 +23,7 @@ export default {
     if (!p) throw new Error(`${b.id}: "${b.person}" has no public profile`);
     const meta = [p.pronouns, p.classYear ? ctx.t("team.classOf", { year: p.classYear }) : null, p.credentials].filter(Boolean).join(" · ");
     const name = p.name || ctx.t("team.unnamed");
-    const first = name.trim().split(/\s+/)[0];
+    const first = (p.name || "").trim().split(/\s+/)[0];
     const more = people.filter((x) => x.group === p.group && x.slug !== p.slug).slice(0, 4);
     return html`<section class="profile" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <p class="crumb"><a class="go go--back" href="${ctx.link(TEAM_PATH).href}">${icon("back", "go-ic")}<span class="go-label">${ctx.t("team.all")}</span></a></p>
@@ -34,7 +34,7 @@ export default {
       <h1 id="${b.id}-h">${name}</h1>
       ${meta ? html`<p class="profile-meta">${meta}</p>` : ""}
       ${(p.bio || []).map((x) => html`<p>${x}</p>`)}
-      ${p.contact ? html`<p class="profile-contact">${link(ctx, `mailto:${String(p.contact).replace(/^mailto:/, "")}`, ctx.t("team.connectWith", { first }), { class: "go", icon: "mail" })}</p>` : ""}
+      ${p.contact ? html`<p class="profile-contact">${link(ctx, `mailto:${String(p.contact).replace(/^mailto:/, "")}`, ctx.t(first ? "team.connectWith" : "team.connect", { first }), { class: "go", icon: "mail" })}</p>` : ""}
       ${ctx.data.teamSample ? html`<p class="sample-note">${ctx.data.teamSample}</p>` : ""}
     </div>
   </div>

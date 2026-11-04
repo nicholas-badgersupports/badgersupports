@@ -126,7 +126,7 @@ test('non-string identities are isolated before rendering or generating paths', 
 test('an unavailable editorial store never resurrects opted-out built profiles', async () => {
   reply.publicTeam.people = []; useStore({ kind: 'broken', get: async () => { throw new Error('store unavailable'); }, set: async () => { throw new Error('store unavailable'); } });
   const list = await quietly(() => get('/about/our-team/')); assert.equal(list.headers.get('cache-control'), 'no-store'); assert.doesNotMatch(await list.text(), /Avery Example/);
-  const profile = await quietly(() => get('/about/our-team/avery-example/')); assert.equal(profile.status, 404); assert.doesNotMatch(await profile.text(), /Avery Example/);
+  const profile = await quietly(() => get('/about/our-team/avery-example/')); assert.equal(profile.status, 503); assert.doesNotMatch(await profile.text(), /Avery Example/);
 });
 test('failed current eligibility cannot renew personal HTML or use old recognition', async () => {
   await get('/about/our-team/'); offline = true;

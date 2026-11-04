@@ -129,7 +129,7 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
   const base = headerPairs(c.headers || []);
   const html = (status, body, extra) => new Response(req.method === "HEAD" ? null : body, { status, headers: { "content-type": "text/html; charset=utf-8", ...base, ...extra } });
 
-  const moved = redirectFor(c, pathname);
+  let moved = redirectFor(c, pathname);
   if (moved && !(c.render?.shared?.exports?.team && teamPath(pathname))) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
 
   const snap = c.render;
@@ -144,10 +144,18 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
         shared = combineShared(shared, await sharedNow(snap, { kinds: ["alumni"] }));
         site = siteFor(snap, revision, shared);
       }
-      wantsTeam = !!(snap?.shared?.exports?.team && (teamPath(pathname) || showsTeam(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))));
+      wantsTeam ||= !!(snap?.shared?.exports?.team && (teamPath(pathname) || showsTeam(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))));
       if (wantsTeam) {
         shared = combineShared(shared, await sharedNow(snap, { kinds: ["team"] }));
         site = siteFor(snap, revision, shared);
+        if (!fault && shared?.team?.value && !shared.team.unavailable && !malformed) {
+          // Current canonical pages win; a shared alias never chooses a person.
+          const direct = site.pages.some(p => trimSlash(p.path || "") === trimSlash(pathname));
+          const aliases = shared.team.value.people.filter(p => p.aliases?.some(a => trimSlash(a) === trimSlash(pathname)));
+          const alias = aliases.length === 1 && site.pages.find(p => p.id === `pg-person-${aliases[0].slug}`);
+          if (!direct && alias) return new Response(null, { status: 301, headers: { location: alias.path + u.search, ...base, ...PAGE_CACHE, "netlify-cache-tag": "page,team" } });
+          if (direct || aliases.length > 1) moved = null;
+        }
       }
       if (snap.liveEvents && showsEvents(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))) {
         const { events, stale } = await eventsNow(c.events, now);
@@ -165,7 +173,7 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
   if (!shifted && !malformed && !pathname.endsWith("/") && !path.extname(pathname)) return new Response(null, { status: 301, headers: { location: `${u.pathname}/${u.search}`, ...base, ...PAGE_CACHE } });
 
   try {
-    if (fault && !site) throw fault;
+    if (fault && (!site || wantsTeam)) throw fault;
     if (wantsTeam && shared?.team?.unavailable) {
       const safe = site.pages.find(p => p.path === pathname) || site.pages.find(p => p.id === "pg-about-team");
       return html(503, renderSitePage(snap, site, safe, today, null, { now }), PRIVATE_FAILURE);
@@ -180,9 +188,13 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
     if (snap?.shared?.exports?.team && (teamPath(pathname) || wantsTeam)) {
-      const safe = composeSite(snap, {}, null, { team: { value: { ...snap.team, people: [] }, stale: true, unavailable: true } });
-      const unavailable = safe.pages.find(p => p.id === "pg-about-team");
-      return html(503, renderSitePage(snap, safe, unavailable, today, null, { now }), PRIVATE_FAILURE);
+      try {
+        const safe = composeSite(snap, {}, null, { team: { value: { ...snap.team, people: [] }, stale: true, unavailable: true } });
+        const unavailable = safe.pages.find(p => p.id === "pg-about-team");
+        return html(503, renderSitePage(snap, safe, unavailable, today, null, { now }), PRIVATE_FAILURE);
+      } catch {
+        return new Response(req.method === "HEAD" ? null : c.text["team.unavailable"], { status: 503, headers: { ...base, ...PRIVATE_FAILURE, "content-type": "text/plain; charset=utf-8" } });
+      }
     }
     const file = staticFile(pathname);
     if (file) return html(200, file, { ...FALLBACK_CACHE, "x-bss-revision": "build" });
@@ -196,32 +208,35 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
 export async function previewResponse(pageId, { edits, structure, today = chicagoDate(), now = Date.now() }) {
   const c = serverContent();
   if (!c.render) return null;
-  let shared = await sharedNow(c.render, { kinds: ["resources", "wall"] });
-  let site = composeSite(c.render, edits, structure, shared);
-  const candidate = [...site.pages, ...site.drafts].find(p => p.id === pageId);
-  if (showsAlumni(candidate)) {
-    shared = combineShared(shared, await sharedNow(c.render, { kinds: ["alumni"] }));
-    site = composeSite(c.render, edits, structure, shared);
-  }
-  const wantsTeam = !!(c.render.shared?.exports?.team && !c.render.prototype && (pageId.startsWith("pg-person-") || showsTeam(candidate)));
-  if (wantsTeam) {
-    shared = combineShared(shared, await sharedNow(c.render, { kinds: ["team"] }));
-    site = composeSite(c.render, edits, structure, shared);
-  }
-  if (c.render.liveEvents && showsEvents(candidate)) {
-    const { events, stale } = await eventsNow(c.events, now);
-    shared = combineShared(shared, { events: { value: events, stale } });
-    site = composeSite(c.render, edits, structure, shared);
-  }
-  const failedTeam = wantsTeam && shared?.team?.unavailable;
-  const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId) || (failedTeam ? site.pages.find(p => p.id === "pg-about-team") : null);
-  if (!page) return null;
-  const { forms } = await formsNow(page);
   const base = headerPairs(c.headers || []);
-  const csp = String(base["content-security-policy"] || "").split(";").map((d) => d.trim()).filter((d) => d && !d.startsWith("frame-ancestors"));
-  return new Response(renderSitePage(c.render, site, page, today, forms, { now }), { status: failedTeam ? 503 : 200, headers: {
-    "content-type": "text/html; charset=utf-8", ...base,
-    "content-security-policy": [...csp, "frame-ancestors 'self'"].join("; "),
-    "x-frame-options": "SAMEORIGIN", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow",
-  } });
+  const csp = String(base["content-security-policy"] || "").split(";").map(d => d.trim()).filter(d => d && !d.startsWith("frame-ancestors"));
+  const headers = { "content-type": "text/html; charset=utf-8", ...base, "content-security-policy": [...csp, "frame-ancestors 'self'"].join("; "), "x-frame-options": "SAMEORIGIN", "cache-control": "no-store", "netlify-cdn-cache-control": "no-store", "x-robots-tag": "noindex, nofollow" };
+  let wantsTeam = !!(c.render.shared?.exports?.team && !c.render.prototype && (pageId === "pg-about-team" || pageId.startsWith("pg-person-") || showsTeam(c.render.floor.pages.find(p => p.id === pageId)) || showsTeam(structure?.pages?.[pageId]?.page)));
+  try {
+    let shared = await sharedNow(c.render, { kinds: ["resources", "wall"] });
+    let site = composeSite(c.render, edits, structure, shared);
+    const candidate = [...site.pages, ...site.drafts].find(p => p.id === pageId);
+    if (showsAlumni(candidate)) {
+      shared = combineShared(shared, await sharedNow(c.render, { kinds: ["alumni"] }));
+      site = composeSite(c.render, edits, structure, shared);
+    }
+    wantsTeam ||= !!(c.render.shared?.exports?.team && !c.render.prototype && (pageId.startsWith("pg-person-") || showsTeam(candidate)));
+    if (wantsTeam) {
+      shared = combineShared(shared, await sharedNow(c.render, { kinds: ["team"] }));
+      site = composeSite(c.render, edits, structure, shared);
+    }
+    if (c.render.liveEvents && showsEvents(candidate)) {
+      const { events, stale } = await eventsNow(c.events, now);
+      shared = combineShared(shared, { events: { value: events, stale } });
+      site = composeSite(c.render, edits, structure, shared);
+    }
+    const failedTeam = wantsTeam && shared?.team?.unavailable;
+    const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId) || (failedTeam ? site.pages.find(p => p.id === "pg-about-team") : null);
+    if (!page) return null;
+    const { forms } = await formsNow(page);
+    return new Response(renderSitePage(c.render, site, page, today, forms, { now }), { status: failedTeam ? 503 : 200, headers });
+  } catch (e) {
+    if (!wantsTeam) throw e;
+    return new Response(c.text["team.unavailable"], { status: 503, headers: { ...headers, "content-type": "text/plain; charset=utf-8" } });
+  }
 }

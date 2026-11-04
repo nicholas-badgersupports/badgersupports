@@ -824,3 +824,15 @@ The Craft page retains its purple identity, source-driven hero/current room/cale
 Current public invitations support free/drop-in attendance, no registration/experience, and the access email. They do not establish that all future materials are supplied or a universal funding promise. Conflicting three-day/five-day access messages are not a verified governing deadline; contact-only wording replaces the five-day sentence at the same saved target. The shared source review records the dated evidence and draft limitations. No new program policy is created.
 
 Shared event heroes/lists use the existing stale status to withhold unconfirmed current attendance/calendar links and offer contact/updates, while preserving historical recaps. Raw last-good feed storage, retry/cache timing and direct calendar fallback retain their existing behavior. A missing room offers a location question. Common section anchors also work for copied pages and quiet CTAs. These are delegated implementation choices within the usable Craft refinement, not new owner rulings. The source-bound handoff holds the exact tests, recovery and remaining source-owner/live limits.
+
+
+## 3 November 2026 · Public consumer reconciliation (local only)
+
+The CONNECT-TEAM-CONSUMER-MERGE request authorizes reconciliation of the unpublished consumer with the Public owner's
+completed Craft candidate. Runtime-only profiles, current eligibility, the existing catalogue/event pipeline,
+4 MiB photo limits, matching photo identity, HEAD support and no-store failures remain. Optional compatibility
+aliases are validated public team addresses; current canonical pages take precedence and ambiguous aliases choose
+nobody. The current producer exports no credentials or ordering field, so those fields remain excluded. Missing
+names keep the existing Team Member heading and use Contact This Person when a public contact exists. Revision or
+team-preview rendering failure returns a private-safe unavailable response. This is local implementation, not
+live-export verification or activation; existing export settings are inherited without a flag change.

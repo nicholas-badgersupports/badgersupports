@@ -1,7 +1,7 @@
 /* The team, from Connect. Every member already has a Connect account; a member who chooses to be
  * on the public site writes their profile there (name, pronouns, class year, title, a short bio,
  * an uploaded photo, and a public contact only if they want one), and Connect exports the
- * published profiles. The build gives each one a card on /about/our-team/ and a page of its own at
+ * published profiles. The renderer gives each one a card on /about/our-team/ and a page of its own at
  * /about/our-team/<slug>/. There is no second roster here: adding, changing or removing a person
  * happens in Connect.
  *

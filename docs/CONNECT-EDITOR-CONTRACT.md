@@ -495,7 +495,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-594 keys. Keys are permanent. Required text cannot be published empty and must keep each
+596 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -713,7 +713,7 @@ the site adds the markup.
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
 | `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
 
-### Team and profiles (11)
+### Team and profiles (13)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -728,6 +728,8 @@ the site adds the markup.
 | `team.pageIncomplete` | Read {{name}}’s Badger Supports profile. | Profile description when no title is supplied. | `{{name}}` |
 | `team.unavailable` | Team profiles are temporarily unavailable. Please try again later. | Team section when the source and recent safe fallback are unavailable. |  |
 | `team.stale` | These are the most recently available profiles. Some details may have changed. | Team section when Connect could not refresh its public export. |  |
+| `team.connect` | Contact This Person | Contact action for a public profile whose name is not supplied. |  |
+| `team.tryAgain` | Try Again | Reload action when current team profiles cannot be read. |  |
 
 ### Problems (2)
 

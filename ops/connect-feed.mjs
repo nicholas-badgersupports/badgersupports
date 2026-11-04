@@ -235,7 +235,9 @@ export function mapTeam(reply) {
       if (typeof p.photo?.url === "string" && !photoProblems({ link: p.photo.url }, { production: true }).length) person.photo = { link: p.photo.url, ...(typeof p.photo.alt === "string" && p.photo.alt.trim() ? { alt: p.photo.alt.trim() } : {}) };
       else dropped.push(`profile ${at}: photo has no approved url, so none is shown`);
     }
-    const extra = Object.keys(p).filter(k => k !== "published" && k !== "photo" && !PROFILE_FIELDS.includes(k)).sort();
+    // Compatibility aliases are public addresses only, never arbitrary account fields.
+    if (Array.isArray(p.aliases)) person.aliases = [...new Set(p.aliases.filter(a => typeof a === "string" && a.length <= 400 && /^\/about\/our-team\/[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/.test(a)))];
+    const extra = Object.keys(p).filter(k => k !== "published" && k !== "photo" && k !== "aliases" && !PROFILE_FIELDS.includes(k)).sort();
     if (extra.length) dropped.push(`profile ${at}: ignored ${extra.join(", ")}`);
     people.push(person);
   }

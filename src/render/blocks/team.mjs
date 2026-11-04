@@ -54,6 +54,7 @@ export default {
       ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
       ${note ? html`<p class="sample-note">${ctx.data.teamSample}</p>` : ""}
       ${none ? html`<p class="team-none">${ctx.t(ctx.data.teamState?.unavailable ? "team.unavailable" : "team.none")}</p>` : ctx.data.teamState?.stale ? html`<p class="team-none">${ctx.t("team.stale")}</p>` : ""}
+      ${none && ctx.data.teamState?.unavailable ? html`<p><a href="${ctx.path || "/about/our-team/"}">${ctx.t("team.tryAgain")}</a></p>` : ""}
     </div>
     ${photo ? html`<div class="photo team-photo">${picture(ctx, photo, { sizes: "(max-width: 860px) calc(100vw - 2rem), 34rem", eager: b.heading === "h1" })}</div>` : ""}
   </header>

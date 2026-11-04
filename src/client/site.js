@@ -6,11 +6,36 @@
 
 const toggle = document.querySelector("[data-menu-toggle]");
 /* The initials stay visible until a portrait has loaded; a failed photo never blanks a profile. */
-for (const image of document.querySelectorAll("img[data-team-portrait]")) {
+const teamPortraits = [...document.querySelectorAll("img[data-team-portrait]")];
+let portraitObserver = null;
+function activatePortrait(image, eager = true) {
+  const source = image.getAttribute("data-src");
+  if (!source) return;
+  portraitObserver?.unobserve(image);
+  image.removeAttribute("data-src");
+  if (eager) image.loading = "eager";
+  image.src = source;
+  if (image.complete) image.closest("picture")?.classList.toggle("is-loaded", image.naturalWidth > 0);
+}
+for (const image of teamPortraits) {
   const reveal = () => image.closest("picture")?.classList.toggle("is-loaded", image.naturalWidth > 0);
   image.addEventListener("load", reveal);
   image.addEventListener("error", reveal);
   if (image.complete) reveal();
+}
+/* Later portraits start near the viewport or on keyboard focus; no observer retains native loading. */
+const deferredPortraits = teamPortraits.filter(image => image.hasAttribute("data-src"));
+if (deferredPortraits.length) {
+  if (typeof IntersectionObserver === "function") {
+    portraitObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) activatePortrait(entry.target);
+    }, { rootMargin: "200px 0px" });
+    for (const image of deferredPortraits) portraitObserver.observe(image);
+  } else for (const image of deferredPortraits) activatePortrait(image, false);
+  document.addEventListener("focusin", event => {
+    const image = event.target.closest?.(".person-link")?.querySelector("img[data-team-portrait][data-src]");
+    if (image) activatePortrait(image);
+  });
 }
 const nav = document.getElementById("site-nav");
 const phone = matchMedia("(max-width: 860px)"); // the phone layout in layout.css

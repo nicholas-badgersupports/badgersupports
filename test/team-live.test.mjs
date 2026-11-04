@@ -27,7 +27,7 @@ const RULES = readFeedRules(ROOT);
 const RESOURCES = JSON.parse(fs.readFileSync(path.join(ROOT, "content/fixtures/resources.json"), "utf8")).resources;
 const OUT = path.join(ROOT, "local/test-build-live-team");
 const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j9l8AAAAASUVORK5CYII=", "base64");
-let reply = structuredClone(BASE), down = false, photoKind = "ok", calls = [], photoCalls = [];
+let reply = structuredClone(BASE), down = false, photoKind = "ok", photoBytes = PNG, calls = [], photoCalls = [];
 const cfg = {
   url: "https://home.badgersupports.org", keyId: "fictional-team-key", secret: "fictional-public-team-secret-32-chars-long",
   fetch: async (href, init) => {
@@ -35,6 +35,7 @@ const cfg = {
     assert.equal(u.origin, cfg.url);
     if (u.pathname.startsWith("/p/")) {
       photoCalls.push({ href, init });
+      if (photoKind === "unavailable") throw new Error("fictional photo source unavailable");
       assert.equal(init.redirect, "manual");
       if (photoKind === "redirect") return new Response(null, { status: 302, headers: { location: "http://127.0.0.1/private" } });
       if (photoKind === "svg") return new Response("<svg></svg>", { headers: { "content-type": "image/svg+xml" } });
@@ -43,7 +44,7 @@ const cfg = {
       if (photoKind === "stream-large") return new Response(new Uint8Array(5 * 1024 * 1024), { headers: { "content-type": "image/png" } });
       const p = reply.people.find((p) => p.id === u.pathname.slice(3) && p.published && p.photo);
       if (!p) return new Response(null, { status: 404 });
-      return new Response(PNG, { headers: { "content-type": "image/png" } });
+      return new Response(photoBytes, { headers: { "content-type": "image/png" } });
     }
     assert.equal(u.pathname, "/api");
     assert.equal(init.method, "POST");
@@ -63,7 +64,7 @@ const db = await freshPglite();
 useAdapter(db);
 after(async () => { useConnect(null); usePurger(null); await db.end(); });
 function reset() {
-  reply = structuredClone(BASE); down = false; photoKind = "ok"; calls = []; photoCalls = [];
+  reply = structuredClone(BASE); down = false; photoKind = "ok"; photoBytes = PNG; calls = []; photoCalls = [];
   useConnect(cfg); useContent(SERVER); useDist(OUT); useStore(memoryStore());
 }
 const visit = (p) => handlePage(new Request(`http://site.test${p}`), { today: "2026-11-03" });
@@ -206,6 +207,83 @@ test("uploaded photos added or replaced after build use only the fixed same-orig
   assert.equal((await teamPhoto(new Request(`http://site.test/api/team-photo/${ID}?url=https://evil.invalid`), ID)).status, 400);
   assert.equal(photoCalls.length, fetches);
   for (const url of [`https://evil.invalid/p/${ID}`, `${cfg.url}/p/${ID}?v=bad`, `${cfg.url}/p/${ID}?v=${VERSION}&v=${VERSION}`]) assert.equal(publicUpload(url, cfg.url), null);
+});
+
+test("only the opening directory row and primary profile portrait receive high priority", async () => {
+  reset();
+  reply.people = Array.from({ length: 8 }, (_, i) => {
+    const id = "p" + String(i + 1).padStart(24, "0");
+    return { id, slug: `priority-person-${i}`, name: `Priority ${i} Fictional`, published: true,
+      group: i < 2 ? "directors" : i < 5 ? "staff" : "advisors", order: i, bio: [],
+      ...(i ? { photo: { url: `${cfg.url}/p/${id}?v=${VERSION}` } } : {}) };
+  });
+  const images = body => [...body.matchAll(/<img\b[^>]*data-team-portrait[^>]*>/g)].map(m => m[0]);
+  const team = images(await (await visit("/about/our-team/")).text());
+  assert.equal(team.length, 7);
+  for (let i = 1; i < 8; i++) {
+    const image = team.find(tag => tag.includes(reply.people[i].id));
+    assert.ok(image, `portrait ${i}`);
+    assert.match(image, i < 4 ? /fetchpriority="high"/ : /fetchpriority="low"/);
+    assert.match(image, /loading="lazy"/);
+    if (i < 4) { assert.match(image, /\ssrc=/); assert.doesNotMatch(image, /data-src=/); }
+    else { assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/); }
+  }
+  const profile = images(await (await visit("/about/our-team/priority-person-2/")).text());
+  assert.equal(profile.length, 3);
+  assert.match(profile[0], /fetchpriority="high"/);
+  assert.doesNotMatch(profile[0], /loading="lazy"/);
+  for (const image of profile.slice(1)) {
+    assert.match(image, /fetchpriority="low"/);
+    assert.match(image, /loading="lazy"/);
+    assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/);
+  }
+  const again = images(await (await visit("/about/our-team/")).text());
+  assert.equal(again.filter(tag => tag.includes('fetchpriority="high"')).length, 3, "a new page draw gets a fresh row budget, including its missing-photo card");
+});
+
+test("photo revalidation checks current bytes and eligibility before returning a bodyless match", async () => {
+  reset();
+  reply.people = [{ id: ID, slug: "conditional-fictional", name: "Conditional Fictional", group: "staff", published: true, bio: [], photo: { url: `${cfg.url}/p/${ID}?v=${VERSION}` } }];
+  const request = (tag, method = "GET") => teamPhoto(new Request(`http://site.test/api/team-photo/${ID}?v=${VERSION}`, { method, headers: tag ? { "if-none-match": tag } : {} }), ID);
+  const initial = await request();
+  assert.equal(initial.status, 200);
+  const etag = initial.headers.get("etag");
+  assert.match(etag, /^"[0-9a-f]{64}"$/);
+  assert.deepEqual(Buffer.from(await initial.arrayBuffer()), PNG);
+  for (const method of ["GET", "HEAD"]) for (const tag of [etag, `W/${etag}`, `"other,tag", W/${etag}`, "*"]) {
+    const count = photoCalls.length, response = await request(tag, method);
+    assert.equal(response.status, 304, `${method} ${tag}`);
+    assert.equal(photoCalls.length, count + 1, "matching validators still consult the current source");
+    assert.equal((await response.arrayBuffer()).byteLength, 0);
+    for (const key of ["etag", "cache-control", "netlify-cdn-cache-control", "netlify-vary", "netlify-cache-tag"]) assert.equal(response.headers.get(key), initial.headers.get(key), key);
+    assert.equal(response.headers.get("content-length"), null);
+  }
+  for (const tag of ['"different"', `*, ${etag}`, `garbage ${etag}`]) {
+    const response = await request(tag);
+    assert.equal(response.status, 200);
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), PNG);
+  }
+  photoBytes = Buffer.concat([PNG, Buffer.from([0x80])]);
+  const binary = await request(etag), firstBinaryTag = binary.headers.get("etag");
+  assert.equal(binary.status, 200);
+  photoBytes = Buffer.concat([PNG, Buffer.from([0x81])]);
+  const changed = await request(firstBinaryTag);
+  assert.equal(changed.status, 200, "changed bytes at the same source URL are sent again");
+  assert.notEqual(changed.headers.get("etag"), firstBinaryTag, "binary bytes cannot be decoded as text before hashing");
+  assert.deepEqual(Buffer.from(await changed.arrayBuffer()), photoBytes);
+  const head = await request('"different"', "HEAD");
+  assert.equal(head.status, 200); assert.equal((await head.arrayBuffer()).byteLength, 0);
+  for (const kind of ["redirect", "svg", "large", "false-raster", "stream-large", "unavailable"]) {
+    photoKind = kind;
+    const response = await request("*");
+    assert.equal(response.status, 502, kind);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(response.headers.get("etag"), null);
+  }
+  photoKind = "ok"; reply.people[0].published = false;
+  const revoked = await request(etag);
+  assert.equal(revoked.status, 404); assert.equal(revoked.headers.get("cache-control"), "no-store");
+  assert.equal(revoked.headers.get("etag"), null);
 });
 
 test("existing Refresh Now authorization clears current team pages and photos without another cache layer", async () => {
@@ -353,6 +431,24 @@ test("phone and desktop render current team, profile navigation and outage witho
       assert.equal(preview.headers()["cache-control"], "no-store");
       assert.ok(await page.locator(".person-link").count());
       await page.screenshot({ path: path.join(proof, `preview-team-${width}-${javaScriptEnabled}.png`), fullPage: true });
+      if (javaScriptEnabled && width === 390) {
+        const originalPeople = reply.people;
+        try {
+          reply.people = Array.from({ length: 12 }, (_, i) => ({ id: "p" + String(i + 100).padStart(24, "0"), slug: `deferred-${i}-fictional`, name: `Deferred ${i} Fictional`, group: "staff", published: true, order: i, bio: [] }));
+          reply.people.push({ ...face, group: "volunteers" });
+          await page.goto(`${origin}/about/our-team/`);
+          const selector = `.person-link[href="/about/our-team/${face.slug}/"] img[data-team-portrait]`;
+          const late = page.locator(selector);
+          assert.equal(await late.getAttribute("src"), null, "a distant card waits for a viewport or focus decision");
+          await late.scrollIntoViewIfNeeded();
+          await page.waitForFunction(selector => {
+            const image = document.querySelector(selector);
+            return image?.complete && image.naturalWidth > 0 && image.closest("picture").classList.contains("is-loaded");
+          }, selector);
+          assert.equal(await late.getAttribute("data-src"), null);
+          assert.match(await late.getAttribute("src"), new RegExp(`/api/team-photo/${ID}`));
+        } finally { reply.people = originalPeople; }
+      }
       await page.close();
     }
   } finally { await browser.close(); }

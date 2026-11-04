@@ -1,12 +1,21 @@
 /* Public profiles are read on a page draw, never kept in a second roster or a warm cache.
    Production HTML and media contain no built-in people to resurrect after an opt-out.
    Uploaded photos use a fixed Connect path; visitor input can never choose a fetch origin. */
-import { call, serviceConfigNow } from "./connect.mjs";
+import { call, serviceConfigNow, sha256Hex } from "./connect.mjs";
 import { mapTeam, TEAM_EXPORT } from "../../ops/connect-feed.mjs";
 
 export const PHOTO_ID = /^p[0-9a-f]{24}$/;
 const VERSION = /^[0-9a-f]{32}$/;
 const PHOTO_MAX = 4 * 1024 * 1024;
+
+/* If-None-Match uses weak comparison; commas inside another quoted tag are not separators. */
+function photoTagMatches(value, etag) {
+  const field = String(value || "").trim();
+  if (field === "*") return true;
+  const tags = field.match(/(?:W\/)?"[\x21\x23-\x7e\x80-\xff]*"/g) || [];
+  if (tags.join(",") !== field.replace(/[ \t]/g, "")) return false;
+  return tags.some(tag => tag === etag || tag === `W/${etag}`);
+}
 
 export function publicUpload(value, origin) {
   try {
@@ -65,6 +74,10 @@ export async function teamPhoto(req, id) {
       : type === "image/webp" ? body.toString("ascii", 0, 4) === "RIFF" && body.toString("ascii", 8, 12) === "WEBP"
       : body.toString("ascii", 4, 8) === "ftyp" && /avif|avis/.test(body.toString("ascii", 8, Math.min(body.length, 40)));
     if (!magic) return failure(502);
-    return new Response(req.method === "HEAD" ? null : body, { headers: { "content-type": type, "x-content-type-options": "nosniff", "cache-control": "public, max-age=0, must-revalidate", "netlify-cdn-cache-control": "public, s-maxage=300", "netlify-vary": "query=v", "netlify-cache-tag": "page,team-photo" } });
+    const etag = `"${sha256Hex(Buffer.concat([Buffer.from(type + "\n"), body]))}"`;
+    const headers = { "content-type": type, "x-content-type-options": "nosniff", "cache-control": "public, max-age=0, must-revalidate", "netlify-cdn-cache-control": "public, s-maxage=300", "netlify-vary": "query=v", "netlify-cache-tag": "page,team-photo", etag };
+    /* Current eligibility and complete raster validation precede reuse of any browser-held bytes. */
+    if ((req.method === "GET" || req.method === "HEAD") && photoTagMatches(req.headers.get("if-none-match"), etag)) return new Response(null, { status: 304, headers });
+    return new Response(req.method === "HEAD" ? null : body, { headers });
   } catch { return failure(502); }
 }

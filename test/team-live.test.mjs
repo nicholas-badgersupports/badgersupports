@@ -1,6 +1,6 @@
-/* Real-handler export -> signed public reader -> runtime pages. The optional sibling fixture is
-   produced by Connect's suite_public.mjs, not a hand-written substitute. Runtime mutations below
-   remain fictional. The isolated two-repository run supplies the fixture and must not skip it. */
+/* Standalone checks use synthetic people with identities separate from later runtime additions.
+   CONNECT_TEAM_FIXTURE explicitly selects a fictional export produced by Connect's suite_public.mjs.
+   A paired integration run supplies that export and must not skip its producer-specific case. */
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -18,11 +18,16 @@ import { freshPglite, useAdapter, q } from "../netlify/lib/db.mjs";
 import { memoryStore, useStore, usePurger } from "../netlify/lib/published.mjs";
 import { emptyStructure } from "../src/shared/structure.mjs";
 
-const FIXTURE_FILE = process.env.CONNECT_TEAM_FIXTURE || path.resolve(ROOT, "../connect-team-fixture.json");
-const REAL = fs.existsSync(FIXTURE_FILE) ? JSON.parse(fs.readFileSync(FIXTURE_FILE, "utf8")) : null;
+const FIXTURE_FILE = process.env.CONNECT_TEAM_FIXTURE;
+const REAL = FIXTURE_FILE === undefined ? null : JSON.parse(fs.readFileSync(path.resolve(FIXTURE_FILE), "utf8"));
+if (FIXTURE_FILE !== undefined) assert.ok(REAL?.ok === true && REAL.schema === "bss.team/1" && Array.isArray(REAL.people),
+  "CONNECT_TEAM_FIXTURE must contain a successful bss.team/1 export with a people array");
 const ID = "p" + "a".repeat(24), VERSION = "b".repeat(32);
-const FALLBACK = { ok: true, schema: "bss.team/1", people: [{ id: ID, slug: "fictional-person", name: "Fictional Person", group: "staff", bio: [], published: true }] };
-const BASE = REAL || FALLBACK;
+const STANDALONE = { ok: true, schema: "bss.team/1", people: [
+  { id: "p" + "1".repeat(24), slug: "fictional-person", name: "Fictional Person", title: "Fictional Coordinator", group: "staff", bio: [], published: true },
+  { id: "p" + "2".repeat(24), slug: "unfinished-fictional-person", group: "volunteers", bio: [], published: true },
+] };
+const BASE = REAL || STANDALONE;
 const RULES = readFeedRules(ROOT);
 const RESOURCES = JSON.parse(fs.readFileSync(path.join(ROOT, "content/fixtures/resources.json"), "utf8")).resources;
 const OUT = path.join(ROOT, "local/test-build-live-team");

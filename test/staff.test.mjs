@@ -2240,6 +2240,25 @@ test("Craft saved wording, archive copies and copied page anchors work through s
   assert.match(html,/Example saved craft wording 0/);assert.match(html,/Example saved craft wording 1/);
 });
 
+test("Workshop details save, preview and restore activity text without losing quotation edits", async (t) => {
+  const { as } = await pagesSite(t), editor = await as(["site.edit"]);
+  for (const [suffix, short] of [["support-networks", "sn"], ["stress-management-self-care", "sc"], ["navigating-housing", "nh"]]) {
+    const id = `pg-btw-${suffix}`, address = `/join/request-a-workshop/behind-the-workshop/${suffix}/`;
+    const source = await sourceOf(editor, id);
+    for (const path of [`b-btw-${short}-activity/disclosure`, `b-btw-${short}-activity/preview/0`, `b-btw-${short}-quote/body/0`]) {
+      const target = `page:${id}:${path}`, row = source.find(e => e.target === target), phrase = "Example saved workshop detail.";
+      assert.ok(row, target); assert.equal((await saveWord(editor, target, row.current, phrase)).changed, true);
+      assert.ok((await (await visit(address)).text()).includes(phrase));
+      const r = await preview(editor, id); assert.equal(r.status, 200); assert.equal(r.headers.get("cache-control"), "no-store"); assert.ok((await r.text()).includes(phrase));
+      const historyPath = `/api/staff/edit/history?target=${encodeURIComponent(target)}`;
+      const before = await (await handle(get(historyPath, {cookie:editor}), ip())).json();
+      assert.equal((await saveWord(editor, target, phrase, row.current)).changed, true);
+      const after = await (await handle(get(historyPath, {cookie:editor}), ip())).json();
+      assert.equal(after.versions.length, before.versions.length + 1); assert.deepEqual(after.versions.slice(1), before.versions);
+    }
+  }
+});
+
 test("Workshop comparison saves, restores and previews new and old fields through existing staff APIs", async (t) => {
   const { as } = await pagesSite(t), editor = await as(["site.edit"]);
   const id = "pg-request-a-workshop", address = "/join/request-a-workshop/";

@@ -38,6 +38,16 @@
       ]
     },
     {
+      "id": "b-btw-sn-activity",
+      "type": "expect",
+      "title": "Try a Support Map",
+      "disclosure": "Explore the Circle of Support",
+      "preview": [
+        "The Circle of Support places you at the center, surrounded by emotional, academic, practical, and professional support. Support can come from people, communities, and resources.",
+        "Think of one connection in each category. Which connection could you strengthen, and where could you turn when you need a different kind of support?"
+      ]
+    },
+    {
       "id": "b-btw-sn-slide",
       "type": "cta",
       "title": "The Circle of Support",

@@ -851,3 +851,14 @@ keep their own behavior. The current form's two-week planning request is describ
 legacy one-week response promise is not adopted. The catalogue's unverified five-day accommodation cutoff is removed
 without creating a new deadline or changing the underlying policy/contact. No new duration/capacity/response promise,
 form definition/state, permission, sending or activation change. Source evidence remains in the shared task record.
+
+
+## 3 November 2026 · Team presentation and workshop previews (38,43,44; local only)
+
+After signed-in review, Nicholas flagged low-resolution portraits, incorrect people order and poor team-page styling, and requested comparison with the current main website. That directory supplies the presentation reference: recognizable role labels and leadership order, square aligned portraits, red names and clear group headings. The public candidate uses specific exported titles when an account tier is generic, and a role-based leadership fallback instead of alphabetical directors. Explicit source order and source group membership remain controlling; no named roster, new personal disclosure, inferred reassignment or private field is introduced. Unknown roles remain deterministic. Quiet paper, a narrower directory and a smaller opening reduce the oversized presentation while preserving the existing grid and approved photos.
+
+Measured live portrait sources are 200 px; the corresponding current-site portrait has substantially more detail. The public proxy returns upstream bytes unchanged. Source upload quality, authoritative group corrections and complete owner-managed display order remain Connect dependencies. This local refinement does not claim to recover missing image detail or correct source personnel records.
+
+The three existing Behind the Workshop pages retain their original quotations, role/team credits, whole slides and topic-preselected closing actions. Small native disclosures provide specific text-equivalent activities using their approved existing slide material. They introduce no answer field, storage or transmission. Historical contributor lists do not establish sole quotation authorship or current public-credit approval, so named attribution remains incomplete pending a verified approved runtime source.
+
+Item44 decision: omit a fourth Self Advocacy detail page for now. The reviewed shared source contains draft and revision material, but no verified approved final deck, quotation or complete attribution. Its existing catalogue preview remains. No new source links containing private evidence or real creator names enter this public repository.

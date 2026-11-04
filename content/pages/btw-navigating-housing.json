@@ -44,6 +44,16 @@
       ]
     },
     {
+      "id": "b-btw-nh-activity",
+      "type": "expect",
+      "title": "Read the Floor Plan",
+      "disclosure": "Explore the Floor-Plan Activity",
+      "preview": [
+        "The sample floor plan includes an interior bedroom without a window. The workshop uses this layout to discuss what a floor plan can tell you before you choose a home.",
+        "Look at the whole floor plan below. What would you ask about the windows, room layout, and use of space before deciding whether it meets your needs?"
+      ]
+    },
+    {
       "id": "b-btw-nh-slide",
       "type": "cta",
       "title": "Can You Spot the Bedroom Window?",

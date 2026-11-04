@@ -13,10 +13,10 @@
 
 import { html } from "../html.mjs";
 import { picture } from "../media.mjs";
-import { publicPeople, personPath, initials, personPhoto } from "../team.mjs";
+import { publicPeople, personPath, initials, personPhoto, cardRole } from "../team.mjs";
 
 export function personCard(ctx, p, card = "role") {
-  const words = card === "title" ? p.title : p.role || p.title;
+  const words = card === "title" ? p.title : cardRole(p);
   return html`<li class="person is-${card}"><a class="person-link" href="${ctx.link(personPath(p.slug)).href}">
     <span class="person-photo">${p.photo ? personPhoto(ctx, p, { sizes: "(max-width: 860px) 45vw, 16rem", alt: "" }) : html`<span class="monogram" aria-hidden="true">${initials(p.name) || "?"}</span>`}</span>
     <span class="person-name">${p.name || ctx.t("team.unnamed")}</span>

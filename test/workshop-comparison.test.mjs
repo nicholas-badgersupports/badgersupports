@@ -15,6 +15,22 @@ const text=Object.fromEntries(Object.entries(read('content/text.json').text).map
 const ctx=({forms={},formTopic=null}={})=>makeContext({site:read('content/site.json'),text,media:read('media/manifest.json'),builtPaths:['/forms/workshop-request/','/join/request-a-workshop/'],formTopic,data:{forms}});
 const markup=p=>p.blocks.map(b=>String(renderBlock(b,ctx()))).join('');
 
+test('Each existing workshop detail previews a specific activity without collecting answers and retains its whole slide and chosen topic',()=>{
+ for(const [file,short,topic,meaning] of [['btw-support-networks','sn','support_network',/emotional, academic, practical, and professional/],['btw-stress-management-self-care','sc','stress_self_care',/cannot eliminate every problem/],['btw-navigating-housing','nh','housing',/bedroom without a window/]]){
+  const p=read('content/pages/'+file+'.json');assert.deepEqual(blockProblems(p),[]);
+  const activity=p.blocks.find(b=>b.id===`b-btw-${short}-activity`), closing=p.blocks.at(-1);
+  assert.ok(activity,`${file} needs its specific activity`);assert.equal(activity.type,'expect');assert.ok(activity.disclosure);assert.match(activity.preview.join(' '),meaning);
+  assert.equal(closing.whole,true);assert.equal(closing.photos.length,1);assert.equal(closing.primary.href,'/forms/workshop-request/?topic='+topic);
+  assert.ok(p.blocks.find(b=>b.id===`b-btw-${short}-quote`).body.length>2,'keep the original creator quotation');
+  const out=markup(p);assert.match(out,new RegExp(`<details class="expect-preview" id="b-btw-${short}-activity-preview"><summary>`));
+  assert.doesNotMatch(out,/<form|<input|<textarea|\bonclick=|<[^>]+\shidden(?:\s|=|>)/);
+  const target=`page:${p.id}:b-btw-${short}-activity/preview/0`, old=`page:${p.id}:b-btw-${short}-quote/body/0`;
+  const targets=new Set(pageStrings(p).map(x=>x.target));assert.ok(targets.has(target));assert.ok(targets.has(old));
+  assert.equal(applyEdits({[target]:'Saved activity sample.',[old]:'Saved original quotation.'},{pages:[p],site:{},text:{}}).problems.length,0);
+  const saved=markup(p);assert.match(saved,/Saved activity sample\./);assert.match(saved,/Saved original quotation\./);assert.equal(p.blocks.at(-1).primary.href,'/forms/workshop-request/?topic='+topic);
+ }
+});
+
 test('Workshop comparison has equal native topic jumps and preserves original targets and people photos',()=>{
  const p=catalogue();assert.deepEqual(blockProblems(p),[]);const h=p.blocks[0],hrefs=h.links?.map(l=>l.href)||[];
  assert.deepEqual(hrefs,Object.keys(TOPICS).map(id=>'#'+id));

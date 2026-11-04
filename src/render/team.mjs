@@ -48,10 +48,38 @@ export function teamProblems(team, { media = null, production = false } = {}) {
   return out;
 }
 
-/* The published people, in order: by group, then the order Connect gives, then name. */
+/* A specific public title is more useful than an account tier such as Director. */
+export function cardRole(p) {
+  const role = String(p.role || "").trim();
+  const title = String(p.title || "").trim();
+  return title && (!role || /^(?:student )?(?:executive director|managing director|director|associate director|coordinator|peer facilitator|general staff|staff|volunteer|advisor)$/i.test(role)) ? title : role || title;
+}
+
+/* Role order follows the public leadership directory; unknown titles remain alphabetical.
+   Group membership and explicit source order remain source-owned. */
+const DIRECTOR_ROLES = [
+  /^(?:student )?executive(?: director)?$/, /^(?:student )?managing(?: director)?$/,
+  /^(?:(?:financial|business) director|director of (?:business|finance|financial operations)|business|finance)$/,
+  /^(?:director of outreach|outreach(?: director)?)$/, /^(?:director of advancement|advancement(?: director)?)$/,
+  /^(?:director of education|education(?: director)?)$/, /^(?:director of development|development(?: director)?)$/,
+  /^(?:director of engagement|engagement(?: director)?)$/,
+  /^(?:director of (?:programs for )?workshops|workshops(?: director)?)$/,
+  /^(?:director of (?:programs for )?craft nights|craft nights(?: director)?)$/,
+];
+const ASSOCIATE_ROLES = [
+  /^(?:associate director of|ad) campus relations$/, /^(?:associate director of|ad) operations$/,
+  /^(?:associate director of|ad) (?:business|finance)$/, /^(?:associate director of|ad) (?:technology|tech)$/,
+];
+function roleRank(p) {
+  const rules = p.group === "directors" ? DIRECTOR_ROLES : p.group === "associate-directors" ? ASSOCIATE_ROLES : [];
+  const rank = rules.findIndex(r => r.test(String(p.title || p.role || "").replace(/\s*\([^)]*\)\s*/g, " ").trim().replace(/\s+/g, " ").toLowerCase()));
+  return rank < 0 ? rules.length : rank;
+}
+
+/* Published people sort by group, explicit source order, recognized leadership role, then name. */
 export function publicPeople(team) {
   return (team?.people || []).filter((p) => p.published)
-    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order ?? 99) - (b.order ?? 99) || String(a.name || "").localeCompare(String(b.name || "")));
+    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order ?? 99) - (b.order ?? 99) || roleRank(a) - roleRank(b) || String(a.name || "").localeCompare(String(b.name || "")));
 }
 
 /* One page per published person. t is the resolved word table, for the title and description. */

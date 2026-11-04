@@ -38,6 +38,16 @@
       ]
     },
     {
+      "id": "b-btw-sc-activity",
+      "type": "expect",
+      "title": "Make Self-Care Practical",
+      "disclosure": "Explore a Self-Care Activity",
+      "preview": [
+        "The Not a Quick Fix slide explains that self-care cannot eliminate every problem. It can offer relief and help you manage stressful times.",
+        "Think of one self-care activity that fits your schedule, energy, and preferences. What would make it practical to repeat? The workshop explores consistent, practical activities."
+      ]
+    },
+    {
       "id": "b-btw-sc-slide",
       "type": "cta",
       "title": "Not a Quick Fix",

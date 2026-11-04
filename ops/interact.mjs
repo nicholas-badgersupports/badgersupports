@@ -1828,6 +1828,50 @@ await part("Craft refinement: stale recovery preserves focus and recap photos", 
   await ctx.close();
 });
 
+
+await part("Team directory: aligned portraits and compact opening", async () => {
+  const proof = path.join(ROOT, "local/team-directory-proof"); fs.mkdirSync(proof, {recursive:true});
+  for (const width of [1280,768,390,320]) for (const javaScriptEnabled of [true,false]) {
+    const ctx = await browser.newContext({viewport:{width,height:900},javaScriptEnabled});
+    const page = await ctx.newPage(); await page.goto(BASE + "/about/our-team/", {waitUntil:"networkidle"});
+    await page.locator("#b-team .person-role").first().evaluate(n => { n.textContent = "Associate Director of Campus Relations and Community Programs"; });
+    const layout = await page.locator("#b-team .people").first().evaluate(n => {
+      const boxes = [...n.querySelectorAll(".person-photo")].map(p=>p.getBoundingClientRect());
+      const columns = innerWidth > 860 ? 4 : 2, first = boxes.slice(0,columns);
+      return { aligned:first.every(b=>Math.abs(b.top-first[0].top)<2), square:boxes.every(b=>Math.abs(b.width-b.height)<2), overflow:document.documentElement.scrollWidth>innerWidth+1, columns:getComputedStyle(n).gridTemplateColumns.split(" ").length };
+    });
+    const hero = await page.locator('[data-block="b-team-head"]').evaluate(n=>n.getBoundingClientRect().height);
+    check(layout.aligned && layout.square && !layout.overflow && layout.columns === (width>860?4:2), `Team ${width}px JS=${javaScriptEnabled}: square portraits align under long roles without overflow`);
+    check(hero < (width>860?410:660), `Team ${width}px JS=${javaScriptEnabled}: compact opening leaves room for the directory`);
+    const firstLink=page.locator("#b-team .person-link").first(); await firstLink.focus();
+    check(await firstLink.evaluate(n=>document.activeElement===n && getComputedStyle(n).outlineStyle!=="none"), `Team ${width}px JS=${javaScriptEnabled}: each profile remains keyboard reachable with visible focus`);
+    if(width===1280 || width===390) { await page.keyboard.press("Tab"); await page.screenshot({path:path.join(proof,`directory-${width}-${javaScriptEnabled}.png`),fullPage:true}); }
+    await ctx.close();
+  }
+});
+
+await part("Workshop details: specific native activities and topic requests", async () => {
+  const proof=path.join(ROOT,"local/workshop-detail-proof");fs.mkdirSync(proof,{recursive:true});
+  for(const width of [1280,390,320]) for(const javaScriptEnabled of [true,false]) {
+    const ctx=await browser.newContext({viewport:{width,height:900},javaScriptEnabled,reducedMotion:"reduce"});const page=await ctx.newPage();
+    const writes=[];page.on("request",r=>{if(!["GET","HEAD","OPTIONS"].includes(r.method()))writes.push(r.url());});
+    for(const [suffix,short,topic] of [["support-networks","sn","support_network"],["stress-management-self-care","sc","stress_self_care"],["navigating-housing","nh","housing"]]) {
+      await page.goto(BASE+"/join/request-a-workshop/behind-the-workshop/"+suffix+"/",{waitUntil:"networkidle"});
+      const details=page.locator(`#b-btw-${short}-activity-preview`),summary=details.locator("summary");await summary.focus();await page.keyboard.press("Enter");
+      const native=await details.evaluate(n=>n.open && n.querySelectorAll("p").length===2 && document.activeElement===n.querySelector("summary") && getComputedStyle(document.activeElement).outlineStyle!=="none");
+      const inputs=await page.locator("main input,main textarea,main form").count();const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
+      const image=page.locator(`#b-btw-${short}-slide .cta-photo img`);await image.scrollIntoViewIfNeeded();await image.evaluate(n=>n.decode());
+      const whole=await image.evaluate(n=>{const b=n.getBoundingClientRect();return n.naturalWidth>0 && Math.abs(b.width/b.height-n.naturalWidth/n.naturalHeight)<.025;});
+      check(native&&!inputs&&!overflow&&whole&&!writes.length,`Detail ${suffix} ${width}px JS=${javaScriptEnabled}: native text activity, whole slide, no answer inputs or writes`);
+      if(width===1280||width===390)await page.screenshot({path:path.join(proof,`${suffix}-${width}-${javaScriptEnabled}.png`),fullPage:true});
+      const action=page.locator(`#b-btw-${short}-slide a[href="/forms/workshop-request/?topic=${topic}"]`);await action.focus();await page.keyboard.press("Enter");await page.waitForURL(`**/forms/workshop-request/?topic=${topic}`);
+      const chosen=await page.locator('input[name="topics"]').evaluateAll(nodes=>nodes.filter(n=>n.checked).map(n=>n.value));
+      check(JSON.stringify(chosen)===JSON.stringify([topic])&&!writes.length,`Detail ${suffix} ${width}px JS=${javaScriptEnabled}: closing request retains its selected topic`);
+    }
+    await ctx.close();
+  }
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

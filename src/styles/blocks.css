@@ -1115,6 +1115,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .person.is-role .person-role { order: -1; }
 .person.is-title .person-name { font-weight: 800; font-size: 1.125rem; }
 .person.is-title .person-role { font-weight: 600; font-size: var(--fs-small); color: var(--accent-deep); }
+/* The directory keeps its own reading width and quieter paper behind the portrait grid. */
+[data-page="pg-about-team"] .team {
+  background: linear-gradient(color-mix(in srgb, var(--paper) 94%, transparent), color-mix(in srgb, var(--paper) 94%, transparent)), var(--tex-paper) 0 0 / var(--tex-size) var(--paper);
+}
+[data-page="pg-about-team"] .team .wrap { max-width: 68rem; }
+[data-page="pg-about-team"] .team-head { margin-bottom: var(--s5); }
+[data-page="pg-about-team"] .team-group-h { font-size: clamp(1.875rem, 1.2rem + 1.8vw, 2.5rem); margin-bottom: var(--s5); }
+[data-page="pg-about-team"] .person-role { font-size: 1rem; overflow-wrap: break-word; word-break: normal; text-wrap: balance; }
+[data-page="pg-about-team"] .person-name { font-size: 1.0625rem; font-weight: 700; }
+[data-page="pg-about-team"] .person.is-role .person-role { min-height: 2.6em; display: grid; align-items: end; }
+[data-page="pg-about-team"] [data-block="b-team-head"] { padding-block: var(--s5); }
+[data-page="pg-about-team"] [data-block="b-team-head"] h1 { font-size: clamp(2rem, 1.3rem + 2.1vw, 3rem); }
+[data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-photos { grid-template-rows: repeat(2, 8rem); }
+[data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-actions { margin-top: var(--s4); }
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */
 @supports (grid-template-rows: subgrid) {
@@ -1148,6 +1162,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .pagehead-photos { grid-row: 1; grid-template-rows: repeat(2, 7rem); }
   .pagehead.has-1 .pagehead-photos { grid-template-rows: 13rem; }
   .pagehead-actions .btn { width: 100%; justify-content: center; }
+  [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-photos { grid-template-rows: repeat(2, 7rem); }
   .team.has-photo .team-head { grid-template-columns: minmax(0, 1fr); }
   .team-group + .team-group { margin-top: var(--s6); }
   .team-group-h { margin-bottom: var(--s4); }

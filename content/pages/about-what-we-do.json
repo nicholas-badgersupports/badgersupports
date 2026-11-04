@@ -37,6 +37,10 @@
         {
           "label": "Written Support with Badger SPILL",
           "href": "https://badgerspill.org/#spill-form"
+        },
+        {
+          "label": "Our History",
+          "href": "/about/history/"
         }
       ]
     },

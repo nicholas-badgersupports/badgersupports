@@ -17,6 +17,11 @@
           "href": "/about/what-we-do/"
         },
         {
+          "id": "nav-history",
+          "label": "History",
+          "href": "/about/history/"
+        },
+        {
           "id": "nav-team",
           "label": "Our Team",
           "href": "/about/our-team/"

@@ -2299,3 +2299,30 @@ test("Workshop comparison saves, restores and previews new and old fields throug
   assert.equal((await visit("/example-workshop-comparison/")).status, 404);
   assert.match(html, /topic=support_network/);
 });
+
+
+test("History saves, previews and restores narrative and links with existing permissions", async (t) => {
+  const {as}=await pagesSite(t), editor=await as(["site.edit"]), id="pg-about-history";
+  const source=await sourceOf(editor,id);
+  const paths=["b-history-head/title","b-history-head/lead","b-history-head/links/0/label","b-history-head/links/0/href","b-history-era-1/title","b-history-era-6/body/1","b-history-era-8/links/0/label","b-history-era-8/links/0/href"];
+  for(const [i,path] of paths.entries()) {
+    const target=`page:${id}:${path}`,row=source.find(e=>e.target===target);assert.ok(row,target);
+    const value=path.endsWith("/href")?"/join/craft-nights/":`Example history wording ${i}`;
+    assert.equal((await saveWord(editor,target,row.current,value)).changed,true);
+    assert.ok((await(await visit("/about/history/")).text()).includes(value));
+    const r=await preview(editor,id);assert.equal(r.status,200);assert.equal(r.headers.get("cache-control"),"no-store");assert.ok((await r.text()).includes(value));
+    const hp=`/api/staff/edit/history?target=${encodeURIComponent(target)}`;
+    const before=await(await handle(get(hp,{cookie:editor}),ip())).json();
+    assert.equal((await saveWord(editor,target,value,row.current)).changed,true);
+    const after=await(await handle(get(hp,{cookie:editor}),ip())).json();assert.equal(after.versions.length,before.versions.length+1);assert.deepEqual(after.versions.slice(1),before.versions);
+    const stale=await handle(staffPost("/api/staff/edit/save",{target,expected:value,value:path.endsWith("/href")?"/join/peer-support-groups/":"Stale history edit"},editor),ip());assert.equal(stale.status,409);
+  }
+  const target=`page:${id}:b-history-head/title`;
+  for(const scopes of [["forms.read:workshop-request"],["site.publish"]]) {
+    const limited=await as(scopes);
+    assert.equal((await handle(get(`/api/staff/edit/source?page=${id}`,{cookie:limited}),ip())).status,403);
+    assert.equal((await handle(get(`/api/staff/edit/history?target=${encodeURIComponent(target)}`,{cookie:limited}),ip())).status,403);
+    assert.equal((await handle(staffPost("/api/staff/edit/save",{target,expected:"History of Badger Supports",value:"Unauthorized edit"},limited),ip())).status,403);
+  }
+  assert.equal((await handle(get(`/api/staff/edit/source?page=${id}`),ip())).status,401);
+});

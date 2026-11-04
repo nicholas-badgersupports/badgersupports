@@ -1375,3 +1375,12 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .event-help { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); }
 .events-block[data-program="craft"] .evshot .photo { aspect-ratio: auto; }
 .events-block[data-program="craft"] .evshot .photo img { height: auto; }
+
+
+/* A continuous history reads in one column at every width; the eras never hide behind controls. */
+[data-page="pg-about-history"] .pagehead .wrap,
+[data-page="pg-about-history"] .text-block .wrap { max-width: 52rem; }
+[data-page="pg-about-history"] .text-block.has-side .wrap { display: block; }
+[data-page="pg-about-history"] .text-block { padding-block: var(--s5); }
+[data-page="pg-about-history"] .text-block h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); line-height: 1.25; margin-bottom: var(--s3); }
+[data-page="pg-about-history"] .text-body { max-width: none; }

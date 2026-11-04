@@ -862,3 +862,10 @@ Measured live portrait sources are 200 px; the corresponding current-site portra
 The three existing Behind the Workshop pages retain their original quotations, role/team credits, whole slides and topic-preselected closing actions. Small native disclosures provide specific text-equivalent activities using their approved existing slide material. They introduce no answer field, storage or transmission. Historical contributor lists do not establish sole quotation authorship or current public-credit approval, so named attribution remains incomplete pending a verified approved runtime source.
 
 Item44 decision: omit a fourth Self Advocacy detail page for now. The reviewed shared source contains draft and revision material, but no verified approved final deck, quotation or complete attribution. Its existing catalogue preview remains. No new source links containing private evidence or real creator names enter this public repository.
+
+
+## 3 November 2026 · Public history (67; local only)
+
+Nicholas authorized implementing the approved narrative after the workshop refinement. History uses existing editable pagehead/text blocks, eight chronological era headings, the public founding article and current program/involvement/workshop actions. About navigation and What We Do link to it; the return link reaches What We Do. The approved annual student-built training paragraph is unchanged. A single reading column works without JavaScript or animation. Private research, correspondence, registration detail and evidence links remain outside the public repository and payloads. Student leadership and nonclinical boundaries remain; this is implementation, not publication or a new approval process.
+
+The current public workshop pages also explicitly identify their quotation authors, resolving the earlier contributor-list ambiguity. Verified dated credits and existing editor targets are prepared privately for runtime Edit Text overrides; no real names are committed here and no live override is activated by this local build.

@@ -1872,6 +1872,27 @@ await part("Workshop details: specific native activities and topic requests", as
   }
 });
 
+
+await part("History: complete reading and navigation without JavaScript", async () => {
+ const proof=path.join(ROOT,"local/history-proof");fs.mkdirSync(proof,{recursive:true});
+ const history=JSON.parse(fs.readFileSync(path.join(ROOT,"content/pages/about-history.json")));
+ for(const width of [1280,390,320]) for(const javaScriptEnabled of [true,false]) {
+  const ctx=await browser.newContext({viewport:{width,height:900},javaScriptEnabled,reducedMotion:"reduce"});const page=await ctx.newPage();
+  await page.goto(BASE+"/about/what-we-do/",{waitUntil:"networkidle"});const entry=page.getByRole("link",{name:"Our History",exact:true});await entry.focus();await page.keyboard.press("Enter");await page.waitForURL("**/about/history/");
+  const visible=await page.locator("main").evaluate(n=>({h1:n.querySelectorAll("h1").length,h2:n.querySelectorAll("h2").length,text:n.textContent,overflow:document.documentElement.scrollWidth>innerWidth+1,hidden:n.querySelectorAll("details,[hidden],input,textarea,form").length}));
+  const allCopy=history.blocks.slice(1).every(b=>b.body.every(p=>visible.text.includes(p)));
+  check(visible.h1===1&&visible.h2===8&&allCopy&&!visible.overflow&&!visible.hidden,`History ${width}px JS=${javaScriptEnabled}: every era and approved paragraph is readable without hidden content or overflow`);
+  const nav=page.locator('#site-nav a[href="/about/history/"]');check(await nav.count()===1,`History ${width}px JS=${javaScriptEnabled}: About navigation includes the page once`);
+  const actions=page.locator('[data-block="b-history-era-8"] a');const hrefs=await actions.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("href")));
+  let focused=true;for(const link of await actions.all()){await link.focus();if(!(await link.evaluate(n=>document.activeElement===n&&getComputedStyle(n).outlineStyle!=="none")))focused=false;}
+  check(focused&&JSON.stringify(hrefs)===JSON.stringify(["/about/what-we-do/","/join/get-involved/","/join/request-a-workshop/"]),`History ${width}px JS=${javaScriptEnabled}: program and involvement actions keep destinations and visible keyboard focus`);
+  await page.screenshot({path:path.join(proof,`history-${width}-${javaScriptEnabled}.png`),fullPage:true});
+  const back=page.locator('[data-block="b-history-head"] a[href="/about/what-we-do/"]');await back.focus();await page.keyboard.press("Enter");await page.waitForURL("**/about/what-we-do/");
+  check(await page.locator("h1").textContent()==="What We Do",`History ${width}px JS=${javaScriptEnabled}: About return link reaches What We Do`);
+  await ctx.close();
+ }
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

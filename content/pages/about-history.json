@@ -1,0 +1,116 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-about-history",
+  "path": "/about/history/",
+  "title": "History of Badger Supports",
+  "description": "Badger Supports began with students who wanted a stronger sense of community at UW–Madison.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-history-head",
+      "type": "pagehead",
+      "title": "History of Badger Supports",
+      "lead": "Badger Supports began with students who wanted a stronger sense of community at UW–Madison. Since its early years as Badger Support Network, student teams have created places to talk, make friends, learn practical skills, and connect with campus resources. The organization has grown through their ideas and through relationships with University Health Services and fellow campus organizations.",
+      "links": [
+        {
+          "label": "About Badger Supports",
+          "href": "/about/what-we-do/",
+          "icon": "back"
+        }
+      ]
+    },
+    {
+      "id": "b-history-era-1",
+      "type": "text",
+      "title": "2019–2021 — Student-led beginnings",
+      "body": [
+        "Badger Support Network brought students together to share everyday experiences and find understanding among peers. Its founders wanted students to have a community that could make a large campus feel more familiar and connected.",
+        "Peer-led groups and community events put that idea into practice. During the disruption of the COVID-19 pandemic, the organization continued inviting students to connect, recognizing how much community mattered when familiar parts of college life had changed."
+      ],
+      "links": [
+        {
+          "label": "Read an early student perspective in The Badger Herald.",
+          "href": "https://badgerherald.com/features/2021/09/20/people-of-uw-madison-badger-support-network-founder-explains-the-importance-of-mental-health-advocacy/"
+        }
+      ]
+    },
+    {
+      "id": "b-history-era-2",
+      "type": "text",
+      "title": "Early 2020s — Building a peer-support community",
+      "body": [
+        "Successive student teams carried the work forward through weekly groups, social events, and preparation for peer leaders. Students made time to listen to one another and created opportunities to connect beyond the classroom.",
+        "University Health Services was part of this early foundation. UHS staff supported student leaders through advising, training, and connections to campus professionals. Those relationships helped students develop their facilitation skills and learn about resources they could share with fellow Badgers."
+      ]
+    },
+    {
+      "id": "b-history-era-3",
+      "type": "text",
+      "title": "2025 — Becoming Badger Supports",
+      "body": [
+        "In 2025, student leaders adopted the name Badger Supports and began a new chapter as an independent organization, ending their affiliation with The Support Network. The new name reflected a growing range of student-created programs shaped around life at UW–Madison.",
+        "Free, drop-in Peer Support Groups gave students a way to connect without signing up or committing to a semester of attendance. Craft nights offered a relaxed setting to meet people and make something together. Workshops brought practical skills and peer conversation to classrooms, student organizations, and other campus groups."
+      ]
+    },
+    {
+      "id": "b-history-era-4",
+      "type": "text",
+      "title": "2025 — A closer partnership with UHS",
+      "body": [
+        "Badger Supports deepened its relationship with University Health Services, building on years of support from UHS staff. Students found more opportunities to learn from people working in campus mental health, share ideas, and bring other student organizations into their work.",
+        "These relationships gave student leaders people to turn to as their ideas grew. Students continued to create and lead their programs, while learning from the experience of campus partners who had supported generations of Badgers."
+      ]
+    },
+    {
+      "id": "b-history-era-5",
+      "type": "text",
+      "title": "2025–2026 — More ways to connect on campus",
+      "body": [
+        "Student teams developed workshops on stress management, self-advocacy, building support networks, and navigating housing in Madison. Resources such as the Navigating Housing toolkit, pocket-sized referral cards, and solidarity ribbons gave students things they could use and share beyond an event.",
+        "The Student Mental Health Hub at 333 East Campus Mall became a regular home for peer support, drop-in connection, and campus resources. Dogs on Call events with UHS–Prevention brought students together in the space. The February 2026 Hub Open House brought Badger Supports together with the American Foundation for Suicide Prevention at UW–Madison, EndOverdose, and UHS partners. A fall open house continued welcoming students and staff to meet student leaders and learn about peer support.",
+        "Working with campus departments and fellow student organizations helped these programs reach students in more settings across UW–Madison."
+      ]
+    },
+    {
+      "id": "b-history-era-6",
+      "type": "text",
+      "title": "2026 — Growing the student team",
+      "body": [
+        "Support from UW–Madison’s student government helped create paid student roles alongside volunteer opportunities. Students gained more ways to contribute their time and skills to peer support, events, and the work behind the programs.",
+        "As Badger Supports grew, students took responsibility for preparing each new team. Each year, they designed and built their own training, bringing lessons from peer groups, workshops, and craft nights into the room. Returning leaders shared what they had learned about listening, starting conversations, making new people feel welcome, and helping a fellow student find support. New students practiced together, asked questions, and contributed ideas that helped shape the next round of training. The training changed with the students who created it and the community they were working to support."
+      ]
+    },
+    {
+      "id": "b-history-era-7",
+      "type": "text",
+      "title": "Summer 2026 — Welcoming Badger SPILL",
+      "body": [
+        "Badger Supports welcomed Badger SPILL as a program, bringing an established tradition of written peer support into its wider student community. SPILL’s own story began at UW–Madison in 2009. Joining Badger Supports gave it a shared organizational home while preserving its name and student-to-student focus.",
+        "The connection created opportunities for SPILL volunteers to take part in shared training, professional development, social events, and other volunteer activities. Their experience added another chapter to Badger Supports’ growing history."
+      ]
+    },
+    {
+      "id": "b-history-era-8",
+      "type": "text",
+      "title": "Today — Supporting fellow Badgers",
+      "body": [
+        "Today, Badger Supports brings students together through conversation, creativity, and learning. Its programs continue to grow through student ideas, feedback, and relationships across campus.",
+        "Every generation of students has contributed to this work. Whether you come to a group, make something at a craft night, request a workshop, or join our team, there is a place to take part."
+      ],
+      "links": [
+        {
+          "label": "Explore our programs",
+          "href": "/about/what-we-do/"
+        },
+        {
+          "label": "Get involved",
+          "href": "/join/get-involved/"
+        },
+        {
+          "label": "Request a workshop",
+          "href": "/join/request-a-workshop/"
+        }
+      ]
+    }
+  ]
+}

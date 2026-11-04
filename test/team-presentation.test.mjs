@@ -45,3 +45,23 @@ test("unrecognized overlapping titles do not borrow another department's priorit
   const people = [person("Avery Example", "Director of Research and Development"), person("Morgan Fixture", "Director of Business Development"), person("Zoe Sample", "Financial Director")];
   assert.deepEqual(publicPeople({people}).map(p => p.name), ["Zoe Sample", "Avery Example", "Morgan Fixture"]);
 });
+
+test("bounded numeric ranks outrank legacy fallback while equal ranks use names and stable identities", () => {
+  const ranked = [person("Zoe Sample", "Executive Director", { order: 4, id: "z" }), person("Avery Example", "Director of Research", { order: 4, id: "b" }), person("Avery Example", "Managing Director", { order: 4, id: "a" }), person("Maximum Fixture", "Director of Research", { order: 99999 }), person("Zero Fixture", "Director of Research", { order: 0 }), person("Legacy Fixture", "Executive Director")];
+  assert.deepEqual(publicPeople({ people: ranked }).map(p => p.id || p.name), ["Zero Fixture", "a", "b", "z", "Maximum Fixture", "Legacy Fixture"]);
+});
+
+test("mixed explicit maximum rank and legacy titles form the same total order under every permutation", () => {
+  const a = person("M Ranked", "Director of Research", { order: 99999, id: "ranked" });
+  const b = person("Z Legacy", "Executive Director", { id: "executive" });
+  const c = person("A Legacy", "Director of Research", { id: "other" });
+  for (const people of [[a,b,c],[a,c,b],[b,a,c],[b,c,a],[c,a,b],[c,b,a]]) assert.deepEqual(publicPeople({ people }).map(p => p.id), ["ranked", "executive", "other"]);
+  for (const [left, right] of [[a,b],[a,c],[b,c]]) assert.deepEqual(publicPeople({ people: [right,left] }).map(p => p.id), publicPeople({ people: [left,right] }).map(p => p.id));
+});
+
+test("malformed optional ranks use legacy fallback without being coerced", () => {
+  for (const invalid of [-1, 100000, 1.5, NaN, Infinity, "0", false, {}, null]) {
+    const people = [person("A Unknown", "Director of Research", { order: invalid }), person("Z Executive", "Executive Director"), person("Ranked Fixture", "Director of Research", { order: 0 })];
+    assert.deepEqual(publicPeople({ people }).map(p => p.name), ["Ranked Fixture", "Z Executive", "A Unknown"]);
+  }
+});

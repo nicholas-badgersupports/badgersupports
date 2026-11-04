@@ -273,6 +273,7 @@ test("staff previews use current team and person data while keeping draft edits,
 
 test("phone and desktop render current team, profile navigation and outage without browser calls to Connect", async () => {
   reset();
+  const face = reply.people[0]; face.id = ID; face.photo = { url: `${cfg.url}/p/${ID}?v=${VERSION}` };
   const browser = await chromium.launch({ headless: true });
   try {
     for (const width of [390, 1280]) for (const javaScriptEnabled of [true, false]) {
@@ -281,10 +282,12 @@ test("phone and desktop render current team, profile navigation and outage witho
       const failures = [], external = []; page.on("pageerror", (e) => failures.push(e.message));
       page.on("request", (r) => { if (new URL(r.url()).hostname === "home.badgersupports.org") external.push(r.url()); });
       const origin = "http://site.test";
+      let siteHold = null;
       await page.route("**/*", async (route) => {
         const incoming = route.request(), u = new URL(incoming.url());
         if (u.origin !== origin) return route.abort();
         const request = new Request(incoming.url(), { method: incoming.method(), headers: incoming.headers() });
+        if (u.pathname.endsWith("/site.js") && siteHold) { siteHold.seen = true; await siteHold.promise; }
         let response;
         if (u.pathname.startsWith("/api/")) response = await handle(request, { ip: "203.0.113.78" });
         else if (u.pathname.startsWith("/assets/") || u.pathname.startsWith("/media/")) {
@@ -295,6 +298,39 @@ test("phone and desktop render current team, profile navigation and outage witho
         await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
       });
       const proof = path.join(ROOT, "local/team-live-proof"); fs.mkdirSync(proof, { recursive: true });
+      const savedPhoto = face.photo;
+      async function paintedPortrait(target, selector, cached = false) {
+        face.photo = savedPhoto; photoKind = "ok";
+        if (cached) { let release; const promise = new Promise(resolve => { release = resolve; }); siteHold = { promise, release, seen: false }; }
+        const photoReady = page.waitForResponse(r => new URL(r.url()).pathname === `/api/team-photo/${ID}` && r.status() === 200);
+        await page.goto(origin + target, { waitUntil: cached ? "commit" : "load" });
+        const frame = page.locator(selector);
+        if (cached) {
+          await page.waitForFunction(selector => { const image = document.querySelector(selector + " img"); return image?.complete && image.naturalWidth > 0; }, selector);
+          assert.ok(siteHold.seen, "the actual portrait handler's module was held until its image completed");
+          siteHold.release(); siteHold = null; await page.waitForLoadState("load");
+        }
+        await (await photoReady).finished(); await frame.scrollIntoViewIfNeeded();
+        if (javaScriptEnabled) await page.waitForFunction(selector => { const image = document.querySelector(selector + " img"); return image?.complete && image.naturalWidth > 0 && image.closest("picture").classList.contains("is-loaded"); }, selector);
+        else assert.equal(await frame.locator("noscript svg feImage").count(), 1);
+        const successImage = await frame.screenshot();
+        const suffix = target === "/about/our-team/" ? "card" : "profile";
+        fs.writeFileSync(path.join(proof, `portrait-success-${suffix}-${width}-${javaScriptEnabled}.png`), successImage);
+        const failedVersion = crypto.createHash("sha256").update(`${target}:${width}:${javaScriptEnabled}`).digest("hex").slice(0, 32);
+        face.photo = { url: `${cfg.url}/p/${ID}?v=${failedVersion}` }; photoKind = "svg";
+        await page.reload(); await frame.scrollIntoViewIfNeeded();
+        await page.waitForFunction(selector => document.querySelector(selector + " img")?.complete, selector);
+        assert.equal(await frame.locator("picture").evaluate(el => getComputedStyle(el).opacity), "0");
+        const failedImage = await frame.screenshot();
+        fs.writeFileSync(path.join(proof, `portrait-failed-${suffix}-${width}-${javaScriptEnabled}.png`), failedImage);
+        delete face.photo; await page.reload(); await frame.scrollIntoViewIfNeeded();
+        const missingImage = await frame.screenshot();
+        assert.deepEqual(failedImage, missingImage, "a failed portrait paints the same clean initials as a missing portrait, without a broken-image icon");
+        assert.notDeepEqual(successImage, missingImage, "the successful raster actually covers the initials, with scripts on or off");
+        face.photo = savedPhoto; photoKind = "ok";
+      }
+      await paintedPortrait("/about/our-team/", `.person-link[href="/about/our-team/${face.slug}/"] .person-photo`);
+      await paintedPortrait(`/about/our-team/${face.slug}/`, ".profile-photo", javaScriptEnabled);
       await page.goto(`${origin}/about/our-team/`);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width}px team`);
       await page.screenshot({ path: path.join(proof, `team-${width}-${javaScriptEnabled}.png`), fullPage: true });
@@ -323,12 +359,28 @@ test("phone and desktop render current team, profile navigation and outage witho
 });
 
 
-test("profile aliases accept only safe public team addresses and keep private fields excluded", () => {
+test("profile aliases and bounded public order pass while private fields stay excluded", () => {
   const safe = "/about/our-team/previous-fictional";
   const p = { id: ID, slug: "fictional-person", published: true, group: "staff", aliases: [safe, safe, "/staff/", "https://evil.invalid/", "/about/our-team/../escape", "/about/our-team//empty", safe + "?secret=private", safe + "/", 1], credentials: "PRIVATE-CREDENTIALS", order: 77, email: "PRIVATE-EMAIL" };
   const mapped = mapTeam({ people: [p] }).team.people[0];
   assert.deepEqual(mapped.aliases, [safe]);
-  assert.equal(mapped.credentials, undefined); assert.equal(mapped.order, undefined); assert.equal(mapped.email, undefined);
+  assert.equal(mapped.credentials, undefined); assert.equal(mapped.order, 77); assert.equal(mapped.email, undefined);
+});
+
+test("public order is a separate optional bounded integer field, never a copied private object", () => {
+  const base = { id: ID, slug: "ordered-fictional", published: true, group: "staff", publicDisplay: { title: "PRIVATE-DISPLAY-OBJECT" } };
+  for (const order of [0, 99999]) {
+    const result = mapTeam({ people: [{ ...base, order }] });
+    assert.equal(result.team.people[0].order, order);
+    assert.equal(result.team.people[0].publicDisplay, undefined);
+    assert.ok(!JSON.stringify(result).includes("PRIVATE-DISPLAY-OBJECT"));
+  }
+  for (const order of [-1, 100000, 1.2, "77", NaN, Infinity, null, false, {}]) {
+    const result = mapTeam({ people: [{ ...base, order }] });
+    assert.equal(result.team.people.length, 1);
+    assert.equal(result.team.people[0].order, undefined);
+    assert.ok(result.dropped.some(s => s.includes("invalid public order omitted")));
+  }
 });
 
 test("unnamed profiles use a neutral contact action without inventing a first name", async () => {

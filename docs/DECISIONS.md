@@ -869,3 +869,20 @@ Item44 decision: omit a fourth Self Advocacy detail page for now. The reviewed s
 Nicholas authorized implementing the approved narrative after the workshop refinement. History uses existing editable pagehead/text blocks, eight chronological era headings, the public founding article and current program/involvement/workshop actions. About navigation and What We Do link to it; the return link reaches What We Do. The approved annual student-built training paragraph is unchanged. A single reading column works without JavaScript or animation. Private research, correspondence, registration detail and evidence links remain outside the public repository and payloads. Student leadership and nonclinical boundaries remain; this is implementation, not publication or a new approval process.
 
 The current public workshop pages also explicitly identify their quotation authors, resolving the earlier contributor-list ambiguity. Verified dated credits and existing editor targets are prepared privately for runtime Edit Text overrides; no real names are committed here and no live override is activated by this local build.
+
+
+### Source-owned team order and portrait fallback — 3 November 2026
+
+Nicholas requested photo quality and exact grouping/order in Connect before publishing. The earlier no-order note
+above describes the former producer. Connect now has a local candidate exporting an optional public `order` integer
+from 0 through 99999; the reader accepts that field separately and continues to exclude credentials, account emails
+and the private presentation object. Source groups remain authoritative. Explicit ranks precede older unranked
+exports; equal ranks use name and stable ID, while only two unranked profiles use the compatible role-title fallback.
+Malformed optional ranks are omitted without hiding an eligible profile. No real roster or portrait is committed.
+
+Connect's bounded opaque photo proxy remains the public source. Its new producer can serve a separate larger
+same-crop upload or an approved normalized Drive source while retaining small internal/SPILL photos. The public
+card and profile share a portrait frame: initials remain until a lazy-loaded image succeeds, and a failed image
+leaves those initials. With scripts disabled, an SVG image filter overlays the same initials and paints nothing on error;
+those SVG image nodes load natively without a lazy-loading guarantee. No CSP permission or arbitrary photo origin
+is added. The approved History, workshop copy and Team layout are preserved.

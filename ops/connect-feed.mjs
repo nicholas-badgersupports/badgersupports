@@ -35,7 +35,7 @@ import { addDays } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
 import { validChicagoInstant } from "../src/shared/chicago-time.mjs";
 import { photoProblems } from "../src/render/media.mjs";
-import { TEAM_SCHEMA, GROUPS } from "../src/render/team.mjs";
+import { TEAM_SCHEMA, GROUPS, publicTeamOrder } from "../src/render/team.mjs";
 
 export const FEED_SCHEMA = "bss.connect-feed/1";
 const HM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -227,6 +227,9 @@ export function mapTeam(reply) {
     const person = { published: true, id: p.id, slug: p.slug, name: "", title: "", role: "", bio: [] };
     for (const k of PROFILE_FIELDS) if (typeof p[k] === "string") person[k] = p[k].trim();
     person.group = p.group;
+    const order = publicTeamOrder(p.order);
+    if (order !== null) person.order = order;
+    else if (Object.hasOwn(p, "order")) dropped.push(`profile ${at}: invalid public order omitted`);
     person.bio = Array.isArray(p.bio) ? p.bio.filter(x => typeof x === "string").map(x => x.trim()).filter(Boolean) : [];
     if (person.contact && !/@(badgersupports\.org|wisc\.edu|example\.org|example\.com)$/.test(person.contact)) {
       delete person.contact; dropped.push(`profile ${at}: invalid public contact omitted`);
@@ -237,7 +240,7 @@ export function mapTeam(reply) {
     }
     // Compatibility aliases are public addresses only, never arbitrary account fields.
     if (Array.isArray(p.aliases)) person.aliases = [...new Set(p.aliases.filter(a => typeof a === "string" && a.length <= 400 && /^\/about\/our-team\/[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/.test(a)))];
-    const extra = Object.keys(p).filter(k => k !== "published" && k !== "photo" && k !== "aliases" && !PROFILE_FIELDS.includes(k)).sort();
+    const extra = Object.keys(p).filter(k => k !== "published" && k !== "photo" && k !== "aliases" && k !== "order" && !PROFILE_FIELDS.includes(k)).sort();
     if (extra.length) dropped.push(`profile ${at}: ignored ${extra.join(", ")}`);
     people.push(person);
   }

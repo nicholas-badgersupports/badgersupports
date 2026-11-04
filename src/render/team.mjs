@@ -76,10 +76,19 @@ function roleRank(p) {
   return rank < 0 ? rules.length : rank;
 }
 
-/* Published people sort by group, explicit source order, recognized leadership role, then name. */
+export const publicTeamOrder = (value) => Number.isInteger(value) && value >= 0 && value <= 99999 ? value : null;
+
+/* Explicit source ranks form their own ordered set; older exports use role order only when both ranks are absent. */
 export function publicPeople(team) {
   return (team?.people || []).filter((p) => p.published)
-    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order ?? 99) - (b.order ?? 99) || roleRank(a) - roleRank(b) || String(a.name || "").localeCompare(String(b.name || "")));
+    .sort((a, b) => {
+      const group = GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group);
+      if (group) return group;
+      const left = publicTeamOrder(a.order), right = publicTeamOrder(b.order);
+      if ((left === null) !== (right === null)) return left === null ? 1 : -1;
+      const order = left !== null ? left - right : roleRank(a) - roleRank(b);
+      return order || String(a.name || "").localeCompare(String(b.name || "")) || String(a.id || "").localeCompare(String(b.id || "")) || String(a.slug || "").localeCompare(String(b.slug || ""));
+    });
 }
 
 /* One page per published person. t is the resolved word table, for the title and description. */
@@ -105,5 +114,7 @@ export const teamRedirects = () => OLD_GROUPS.map((g) => `${TEAM_PATH}${g}/*  ${
 /* Public profile photos stay under the bounded proxy; library fixture photos retain responsive variants. */
 export function personPhoto(ctx, p, options) {
   if (ctx.data.team?.source !== "connect") return picture(ctx, p.photo, options);
-  return html`<picture><img${attrs({ src: `/api/team-photo/${encodeURIComponent(p.photo.uploadId || p.id)}${p.photo.version ? `?v=${p.photo.version}` : ""}`, width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", decoding: "async" })}></picture>`;
+  const source = `/api/team-photo/${encodeURIComponent(p.photo.uploadId || p.id)}${p.photo.version ? `?v=${p.photo.version}` : ""}`;
+  const filterId = `portrait-${p.id}-${options.eager ? "profile" : "card"}`;
+  return html`<span class="live-portrait"><span class="monogram" aria-hidden="true">${initials(p.name) || "?"}</span><picture class="live-portrait-image"><img${attrs({ src: source, "data-team-portrait": "", width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", decoding: "async" })}></picture><noscript><svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><defs><filter id="${filterId}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="${source}" x="0" y="0" width="400" height="400" preserveAspectRatio="xMidYMid slice"></feImage></filter></defs><rect width="400" height="400" filter="${`url(#${filterId})`}"></rect></svg></noscript></span>`;
 }

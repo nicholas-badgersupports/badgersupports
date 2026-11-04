@@ -1107,6 +1107,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .person-photo, .profile-photo { display: block; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: var(--paper-deep); }
 .person-photo > picture, .profile-photo > picture, .monogram { display: grid; width: 100%; height: 100%; }
 .person-photo img, .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.live-portrait { display: grid; width: 100%; height: 100%; }
+.live-portrait > * { grid-area: 1 / 1; min-width: 0; min-height: 0; }
+.live-portrait-image { display: block; width: 100%; height: 100%; opacity: 0; }
+.live-portrait-image.is-loaded { opacity: 1; }
+.live-portrait svg { display: block; width: 100%; height: 100%; }
 .monogram { place-items: center; color: var(--accent); font: 800 clamp(2.25rem, 1.4rem + 2.6vw, 3.5rem)/1 var(--font-display); letter-spacing: .02em; }
 .person-name, .person-role { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
 .person-name { color: var(--accent); font-weight: 600; font-size: var(--fs-body); line-height: 1.3; }

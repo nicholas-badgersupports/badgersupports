@@ -5,6 +5,13 @@
    any list of links. Without this file the navigation still works (see layout.mjs). */
 
 const toggle = document.querySelector("[data-menu-toggle]");
+/* The initials stay visible until a portrait has loaded; a failed photo never blanks a profile. */
+for (const image of document.querySelectorAll("img[data-team-portrait]")) {
+  const reveal = () => image.closest("picture")?.classList.toggle("is-loaded", image.naturalWidth > 0);
+  image.addEventListener("load", reveal);
+  image.addEventListener("error", reveal);
+  if (image.complete) reveal();
+}
 const nav = document.getElementById("site-nav");
 const phone = matchMedia("(max-width: 860px)"); // the phone layout in layout.css
 const menuOpen = () => !!toggle && toggle.getAttribute("aria-expanded") === "true";

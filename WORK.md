@@ -116,7 +116,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 (P1–P5) and `../PUBLIC-EXCHANGE-AND-SECURITY-PROMPT-2026-10-24.md` (X1–X4). P2 extends 15 and 16; P3, 18; P5, 22 and 23.
 
 19. **PRIORITY ONE · Complete Connect → public website delivery** (queued 3 Nov; Connect CONNECT-PUBLIC-DELIVERY-P1; Decisions, 3 Nov).
-    Finish the existing connection, starting with team profiles. Publish eligible profiles even when incomplete; configurable required fields prompt/remind, never block publication. Preserve opt-out/supporter disclosure and public-field restrictions; invent no facts.
+    Finish the existing connection, starting with team profiles. Publish eligible profiles even when incomplete; configurable required fields prompt/remind, never block publication. Preserve opt-out/supporter disclosure and public-field restrictions; invent no facts. Local photo/order candidate: see the existing PUBLIC-SITE handoff.
     Accept: verify the live export/consumer against Connect's 2 Nov handoff; saved changes arrive automatically within 30 minutes, incomplete profiles render without stopping other content, and private data stays absent. Verify existing events/resources/Wall paths too. No switch changes in this queue update.
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.

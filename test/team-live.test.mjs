@@ -225,8 +225,7 @@ test("only the opening directory row and primary profile portrait receive high p
     assert.ok(image, `portrait ${i}`);
     assert.match(image, i < 4 ? /fetchpriority="high"/ : /fetchpriority="low"/);
     assert.match(image, /loading="lazy"/);
-    if (i < 4) { assert.match(image, /\ssrc=/); assert.doesNotMatch(image, /data-src=/); }
-    else { assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/); }
+    assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/);
   }
   const profile = images(await (await visit("/about/our-team/priority-person-2/")).text());
   assert.equal(profile.length, 3);
@@ -239,6 +238,62 @@ test("only the opening directory row and primary profile portrait receive high p
   }
   const again = images(await (await visit("/about/our-team/")).text());
   assert.equal(again.filter(tag => tag.includes('fetchpriority="high"')).length, 3, "a new page draw gets a fresh row budget, including its missing-photo card");
+});
+
+test("the actual opening row finishes before nearby portrait downloads, including a failed first photo", async () => {
+  reset();
+  reply.people = Array.from({ length: 12 }, (_, i) => {
+    const id = "p" + String(i + 300).padStart(24, "0");
+    return { id, slug: `opening-${i}-fictional`, name: `Opening ${i} Fictional`, published: true,
+      group: "staff", order: i, bio: [], photo: { url: `${cfg.url}/p/${id}?v=${VERSION}` } };
+  });
+  const browser = await chromium.launch();
+  try {
+    for (const width of [390, 1280]) {
+      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      const count = width === 390 ? 2 : 4, seen = [];
+      let release;
+      const gate = new Promise(resolve => { release = resolve; });
+      const opening = new Set(reply.people.slice(0, count).map(p => p.id));
+      await page.addInitScript(() => {
+        const NativeObserver = IntersectionObserver;
+        window.__portraitObserverRan = false;
+        window.IntersectionObserver = class extends NativeObserver {
+          constructor(callback, options) { super((entries, observer) => { callback(entries, observer); window.__portraitObserverRan = true; }, options); }
+        };
+      });
+      await page.route("**/*", async route => {
+        const incoming = route.request(), u = new URL(incoming.url());
+        if (u.origin !== "http://site.test") return route.abort();
+        const request = new Request(incoming.url(), { method: incoming.method(), headers: incoming.headers() });
+        let response;
+        if (u.pathname.startsWith("/api/team-photo/")) {
+          const id = u.pathname.split("/").at(-1); seen.push(id);
+          if (opening.has(id)) await gate;
+          response = id === reply.people[0].id ? new Response(null, { status: 404 }) : await handle(request);
+        } else if (u.pathname.startsWith("/assets/") || u.pathname.startsWith("/media/")) {
+          const file = path.join(OUT, u.pathname);
+          const types = { ".css": "text/css", ".js": "text/javascript", ".woff2": "font/woff2", ".avif": "image/avif", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml" };
+          response = fs.existsSync(file) ? new Response(fs.readFileSync(file), { headers: { "content-type": types[path.extname(file)] || "application/octet-stream" } }) : new Response(null, { status: 404 });
+        } else response = await handlePage(request);
+        await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
+      });
+      try {
+        await page.goto("http://site.test/about/our-team/", { waitUntil: "domcontentloaded" });
+        await page.waitForFunction(() => window.__portraitObserverRan);
+        assert.deepEqual(new Set(seen), opening, "only the physical first row starts while its responses are held");
+        assert.equal(await page.locator("img[data-team-portrait][src]").count(), count);
+        release();
+        const next = page.locator(`.person-link[href="/about/our-team/${reply.people[count].slug}/"] img`);
+        await next.scrollIntoViewIfNeeded();
+        await page.waitForFunction(selector => {
+          const image = document.querySelector(selector);
+          return image?.complete && image.naturalWidth > 0 && image.closest("picture").classList.contains("is-loaded");
+        }, `.person-link[href="/about/our-team/${reply.people[count].slug}/"] img`);
+        assert.equal(await page.locator(".live-portrait-image").first().evaluate(el => getComputedStyle(el).opacity), "0");
+      } finally { release(); await page.close(); }
+    }
+  } finally { await browser.close(); }
 });
 
 test("photo revalidation checks current bytes and eligibility before returning a bodyless match", async () => {

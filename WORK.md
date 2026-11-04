@@ -1,10 +1,11 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 3 Nov 2026 (isolated candidate; not published). Candidate: Craft Night visit/recap hierarchy, current-room first visits, grouped FAQ answers and runtime Connect catalogues. Evidence and remaining work: `../../Admin/Handoffs/active/PUBLIC-SITE-HANDOFF-2026-10-30.md`.
+brief is `../MASTER-PROMPT.md`. Updated 3 Nov 2026 after publication and signed-in read-only checks.
 
 ## Where it stands
 
+**3 Nov publication:** production deploy `6aea8f7fac652627ab7a59db` is ready, titled "Website (01a1222)"; GitHub and canonical main match. Signed-in Home, real team/profile and a rendered portrait checked; all 13 native form-state endpoints report closed. All four workshop topic links retain matching Google prefill. Portrait HTTP status was not read. Owner flags team styling/order and image quality: two measured public portraits are 200 px, enlarged to about 269 px; the current main site uses larger sources. Layout/source-photo follow-up remains open; no live settings or submissions changed. The older dated table below is historical.
 **Current slice: 1** (research, identity, usability). On 23 Oct the owner asked for the **live site, connected to
 Connect**, more colour, a cohesive design and **no departure from the brand** (Decisions). Silence is not approval.
 Every person named in `content/` is fictional; real team members appear only through their own Connect profile.

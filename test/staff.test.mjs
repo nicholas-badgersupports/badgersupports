@@ -2239,3 +2239,44 @@ test("Craft saved wording, archive copies and copied page anchors work through s
   for (const id of ["b-cn-expect","b-cn-past-work","b-cn-cta"])assert.ok(html.includes(`id="${id}"`),id);
   assert.match(html,/Example saved craft wording 0/);assert.match(html,/Example saved craft wording 1/);
 });
+
+test("Workshop comparison saves, restores and previews new and old fields through existing staff APIs", async (t) => {
+  const { as } = await pagesSite(t), editor = await as(["site.edit"]);
+  const id = "pg-request-a-workshop", address = "/join/request-a-workshop/";
+  const source = await sourceOf(editor, id);
+  const targets = ["b-rw-networks/body/0", "b-rw-networks/audience", "b-rw-networks/disclosure", "b-rw-networks/preview/0", "b-rw-head/links/0/label"];
+  for (const [i, path] of targets.entries()) {
+    const target = `page:${id}:${path}`, row = source.find(e => e.target === target);
+    assert.ok(row, target);
+    const phrase = `Example workshop wording ${i + 1}`;
+    const saved = await saveWord(editor, target, row.current, phrase);
+    assert.equal(saved.changed, true, JSON.stringify(saved));
+    assert.match(await (await visit(address)).text(), new RegExp(phrase));
+    const r = await preview(editor, id);
+    assert.equal(r.status, 200); assert.equal(r.headers.get("cache-control"), "no-store");
+    assert.match(await r.text(), new RegExp(phrase));
+    const historyPath = `/api/staff/edit/history?target=${encodeURIComponent(target)}`;
+    const before = await (await handle(get(historyPath, { cookie: editor }), ip())).json();
+    const restored = await saveWord(editor, target, phrase, row.current);
+    assert.equal(restored.changed, true);
+    const after = await (await handle(get(historyPath, { cookie: editor }), ip())).json();
+    assert.equal(after.versions.length, before.versions.length + 1);
+    assert.deepEqual(after.versions.slice(1), before.versions);
+  }
+  const publisher = await as(["site.edit", "site.publish"], "Avery Example");
+  let now = await pagesNow(publisher);
+  const linked = await change(publisher, { action: "sectionRetire", page: id, section: "b-rw-networks", expected: now.version });
+  assert.equal(linked.body.error, "section.linked");
+  now = await pagesNow(editor);
+  const copied = await change(editor, { action: "copy", page: id, expected: now.version, title: "Example Workshop Comparison", path: "/example-workshop-comparison/" });
+  assert.equal(copied.status, 200, JSON.stringify(copied.body));
+  const r = await preview(editor, copied.body.page), html = await r.text();
+  assert.equal(r.status, 200); assert.equal(r.headers.get("x-robots-tag"), "noindex, nofollow");
+  for (const part of ["networks", "selfcare", "advocacy", "housing"]) {
+    assert.match(html, new RegExp(`href="#b-rw-${part}"`));
+    assert.match(html, new RegExp(`id="b-rw-${part}"`));
+    assert.match(html, new RegExp(`id="b-rw-${part}-preview"`));
+  }
+  assert.equal((await visit("/example-workshop-comparison/")).status, 404);
+  assert.match(html, /topic=support_network/);
+});

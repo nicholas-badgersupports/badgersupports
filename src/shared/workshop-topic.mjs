@@ -22,11 +22,26 @@ export function workshopTopic(def, candidate) {
   return option ? { id: option.id, label: option.label } : null;
 }
 
+export function workshopGoogleFallback(def) {
+  return def?.key === "workshop-request" && def.source?.publishedId === GOOGLE_ID && def.elsewhere === googleFormUrl(def);
+}
+
 export function workshopElsewhere(def, topic) {
   const base = def.elsewhere;
-  if (!topic || def.source?.publishedId !== GOOGLE_ID || base !== googleFormUrl(def)) return base;
+  if (!topic || !workshopGoogleFallback(def)) return base;
   const url = new URL(base);
   url.searchParams.set("usp", "pp_url");
   url.searchParams.set("entry.1411124785", GOOGLE_TOPICS[topic.id]);
   return url.href;
+}
+
+/* Saved alternate destinations and explicit topic choices retain their scope. */
+export function workshopRequestLink(href, topic) {
+  if (typeof href !== "string" || !href.startsWith("/") || href.startsWith("//") || !Object.hasOwn(GOOGLE_TOPICS, topic || "")) return href;
+  try {
+    const url = new URL(href, "https://example.org");
+    if (url.origin !== "https://example.org" || !/^\/forms\/workshop-request\/?$/.test(url.pathname) || url.searchParams.has("topic")) return href;
+    url.searchParams.set("topic", topic);
+    return url.pathname + url.search + url.hash;
+  } catch { return href; }
 }

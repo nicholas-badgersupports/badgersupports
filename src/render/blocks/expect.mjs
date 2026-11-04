@@ -14,20 +14,23 @@ import { go } from "../context.mjs";
 export default {
   type: "expect",
   label: "What to expect",
-  fields: { title: "text!", body: "paragraphs", items: "points", links: "link[]", photos: "media[]", flip: "boolean" },
+  fields: { title: "text!", body: "paragraphs", items: "points", links: "link[]", photos: "media[]", flip: "boolean", audience: "text", disclosure: "text", preview: "paragraphs" },
   data: [],
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
     const body = b.body ? (Array.isArray(b.body) ? b.body : [b.body]) : [];
     const photos = (b.photos || []).slice(0, 2);
+    const preview = Array.isArray(b.preview) ? b.preview : b.preview ? [b.preview] : [];
     const sizes = ["(max-width: 860px) calc(100vw - 2rem), 30rem", "(max-width: 860px) 40vw, 13rem"];
     return html`<section id="${b.anchor || b.id}" class="${["expect band", photos.length ? "has-photos" : null, photos.length && b.flip ? "is-flip" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   ${photos.length ? html`<div class="expect-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i] })}</div>`)}</div>` : ""}
   <div class="expect-words">
     <h2 id="${b.id}-h">${b.title}</h2>
+    ${b.audience ? html`<p class="expect-audience">${b.audience}</p>` : ""}
     ${body.map((p) => html`<p>${p}</p>`)}
     ${b.items?.length ? html`<ul class="expect-points">${b.items.map((it) => html`<li>${icon(it.icon || "check", "expect-ic")}<span>${it.text}</span></li>`)}</ul>` : ""}
+    ${b.disclosure && preview.length ? html`<details class="expect-preview" id="${b.anchor || b.id}-preview"><summary><span>${b.disclosure}</span>${icon("plus")}</summary>${preview.map(p => html`<p>${p}</p>`)}</details>` : ""}
     ${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
   </div>
 </div></section>`;

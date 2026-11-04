@@ -836,3 +836,18 @@ nobody. The current producer exports no credentials or ordering field, so those 
 names keep the existing Team Member heading and use Contact This Person when a public contact exists. Revision or
 team-preview rendering failure returns a private-safe unavailable response. This is local implementation, not
 live-export verification or activation; existing export settings are inherited without a flag change.
+
+
+## 3 November 2026 · Workshop comparison refinement (42, local only)
+
+Nicholas authorized item42 in a new isolated copy from the reconciled consumer. The catalogue retains existing block
+IDs, outcome/photo fields and request targets, adding equal native jumps, audience guidance and small native activity
+disclosures from existing published material. Home preview actions also carry their own stable topic; saved alternate
+destinations, explicit topic choices and primary labels retain their scope. Native choices remain changeable.
+
+Current signed-out Google respondent views require sign-in and retain topic prefill behind that dialog. The trusted
+fallback now explains sign-in and offers request by email; native-open, manual-closed and unrecognized source cases
+keep their own behavior. The current form's two-week planning request is described without a booking guarantee. Its
+legacy one-week response promise is not adopted. The catalogue's unverified five-day accommodation cutoff is removed
+without creating a new deadline or changing the underlying policy/contact. No new duration/capacity/response promise,
+form definition/state, permission, sending or activation change. Source evidence remains in the shared task record.

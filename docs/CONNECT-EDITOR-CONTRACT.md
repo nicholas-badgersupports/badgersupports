@@ -185,7 +185,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy · br
 | `lead` | one line of text |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
-| `items` | workshops, each with an id, a tab name, a title, what the full workshop covers, an optional link, and one activity: a network map (two to four circles, each with ways and examples), bingo (nine squares and a line message), a choice (a scenario, a question, and options each with a verdict), or flip cards (terms and meanings, and a note) | **required** |
+| `items` | workshops, each with an id, a tab name, a title, what the full workshop covers, an optional link, an optional stable workshop request topic id for the shared primary action, and one activity: a network map (two to four circles, each with ways and examples), bingo (nine squares and a line message), a choice (a scenario, a question, and options each with a verdict), or flip cards (terms and meanings, and a note) | **required** |
 
 ### Instagram video — `embed`
 
@@ -246,6 +246,9 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `flip` | on or off |  |
+| `audience` | one line of text |  |
+| `disclosure` | one line of text |  |
+| `preview` | one or more paragraphs |  |
 
 ### Closing call to action — `cta`
 
@@ -495,7 +498,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-596 keys. Keys are permanent. Required text cannot be published empty and must keep each
+598 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -639,7 +642,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (69)
+### Forms (71)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -712,6 +715,8 @@ the site adds the markup.
 | `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
 | `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
+| `form.workshopGoogleSignIn` | Google sign-in is required to use this form. You can also email your workshop request. | Under the trusted Google workshop request fallback; not shown on an open native form or an intentional closure. |  |
+| `form.workshopEmail` | Request by Email | Workshop request alternative when the trusted Google Form requires sign-in. |  |
 
 ### Team and profiles (13)
 

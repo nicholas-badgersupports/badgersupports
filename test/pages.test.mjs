@@ -42,7 +42,12 @@ test("the four workshop previews each carry their own activity, and work as plai
   assert.equal([...ws.matchAll(/<input type="radio" name="w-advocacy-say"/g)].length, 3);
   assert.ok([...ws.matchAll(/<details class="flip"/g)].length >= 2, "flip cards open with no script");
   assert.equal([...ws.matchAll(/<a class="net-btn" href="#w-networks-a-[a-z]+"/g)].length, 4);
-  assert.equal([...ws.matchAll(/href="\/forms\/workshop-request\/" class="btn"/g)].length, 4, "each preview ends on the request form");
+  const topics = { "w-networks": "support_network", "w-selfcare": "stress_self_care", "w-advocacy": "self_advocacy", "w-housing": "housing" };
+  for (const [id, topic] of Object.entries(topics)) {
+    const panel = ws.match(new RegExp(`<article class="ws-panel" id="${id}"[^>]*>([\\s\\S]*?)</article>`))?.[1];
+    assert.ok(panel, id);
+    assert.ok(panel.includes(`href="/forms/workshop-request/?topic=${topic}" class="btn"`), `${id}: its own request topic arrives without a script`);
+  }
 });
 
 test("a workshop preview that is missing a part fails the build instead of showing half a card", () => {

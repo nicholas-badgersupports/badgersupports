@@ -1052,6 +1052,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .expect.is-flip .expect-photos { order: 2; }
 .expect + .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
 .expect .more-links { margin-top: var(--s5); }
+.expect-words > .expect-audience { font-size: var(--fs-body); font-weight: 600; }
+.expect-preview { border-block: var(--rule-line); margin-top: var(--s4); }
+.expect-preview summary { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 44px; padding-block: var(--s3); list-style: none; cursor: pointer; font-weight: 700; }
+.expect-preview summary::-webkit-details-marker { display: none; }
+.expect-preview summary .ic { flex: none; width: 1.5rem; height: 1.5rem; color: var(--accent); }
+.expect-preview[open] summary .ic { transform: rotate(45deg); }
+.expect-preview p { padding-bottom: var(--s3); max-width: var(--measure); }
+
 
 /* ============ heading bands ============ */
 /* An inner page's heading stands on a pale band of the page's colour, on the paper texture; a

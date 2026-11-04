@@ -110,3 +110,16 @@ the words came from.
   to new needs a reason.
 - Never add a quote, a testimonial or a number that Badger Supports has not published ("if it doesn't
   exist, the section doesn't exist").
+
+
+## Workshop comparison refinement — 3 November 2026
+
+Request a Workshop retains its original topic sections, outcome lists, photos and saved fields. New audience guidance
+summarizes the existing catalogue and current public respondent form. Native disclosures briefly preview the existing
+Home support map, self-care bingo and advocacy scenario, plus the published housing floor-plan explanation. These
+are bounded previews of existing material; no new health prescription, legal definition, capacity or duration is added.
+The current public respondent form corroborates the two-week planning request and four offered topic choices; its
+Google sign-in requirement is explained only on that trusted fallback, with an email alternative. Its legacy one-week
+response promise is not adopted. An unverified numeric accommodation cutoff is removed at the existing body target,
+while the original accommodation language/contact remains. Source readback and limits are in the shared PUBLIC-SITE
+handoff. No private contributor/source fields are imported, and detail-page/attribution refinement remains separate.

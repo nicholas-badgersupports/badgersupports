@@ -64,7 +64,7 @@ test("sample Wall notes say they are samples", () => {
 test("links to pages not built yet go to the live site, never to a dead local path", () => {
   const html = read("index.html");
   for (const m of html.matchAll(/href="(\/[^"]*)"/g)) {
-    const p = m[1].split("#")[0];
+    const p = new URL(m[1].replaceAll("&amp;", "&"), "https://example.org").pathname;
     if (p.startsWith("/assets/") || p.startsWith("/media/") || p === "/") continue;
     assert.ok(report.pages.some((x) => x.path === p), `local link to unbuilt ${p}`);
   }

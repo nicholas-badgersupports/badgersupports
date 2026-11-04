@@ -346,6 +346,7 @@ function idsIn(b) {
     ids.add(`${b.anchor || b.id}-${g.id}-h`);
   }
   if (b.type === "program" && b.disclosure) ids.add(`${b.anchor || b.id}-details`);
+  if (b.type === "expect" && b.disclosure && b.preview) ids.add(`${b.anchor || b.id}-preview`);
   const walk = (n) => {
     if (Array.isArray(n)) { n.forEach(walk); return; }
     if (!n || typeof n !== "object") return;

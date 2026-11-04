@@ -3034,6 +3034,16 @@
       "group": "team",
       "text": "Try Again",
       "where": "Reload action when current team profiles cannot be read."
+    },
+    "form.workshopGoogleSignIn": {
+      "group": "forms",
+      "text": "Google sign-in is required to use this form. You can also email your workshop request.",
+      "where": "Under the trusted Google workshop request fallback; not shown on an open native form or an intentional closure."
+    },
+    "form.workshopEmail": {
+      "group": "forms",
+      "text": "Request by Email",
+      "where": "Workshop request alternative when the trusted Google Form requires sign-in."
     }
   }
 }

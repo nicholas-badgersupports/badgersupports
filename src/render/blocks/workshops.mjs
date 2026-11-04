@@ -20,6 +20,7 @@ import { html } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
+import { topicFromAddress, workshopRequestLink } from "../../shared/workshop-topic.mjs";
 
 const KINDS = ["network", "bingo", "choose", "flip"];
 
@@ -80,6 +81,7 @@ export function workshopProblems(b) {
     if (ids.has(w.id)) out.push(`${at}: duplicate id`);
     ids.add(w.id);
     if (!w.title || !w.tab) out.push(`${at}: needs a title and a short tab name`);
+    if (w.topic != null && topicFromAddress(new URLSearchParams({ topic: w.topic })) !== w.topic) out.push(`${at}: topic must be a supported workshop request choice`);
     const a = w.activity || {};
     if (!KINDS.includes(a.kind)) { out.push(`${at}: activity kind must be one of ${KINDS.join(", ")}`); continue; }
     if (a.kind === "network" && (!(a.areas?.length >= 2 && a.areas.length <= 4) || a.areas.some((ar) => !/^a-[a-z0-9-]+$/.test(ar.id || "") || !ar.label || !(ar.text || ar.ways?.length)))) out.push(`${at}: a network needs two to four areas, each with an id like a-something, a label, and what that support is or the ways it shows up`);
@@ -114,7 +116,7 @@ export default {
       <div class="ws-about">
         <h3 id="${w.id}-h">${w.title}</h3>
         ${w.goals?.length ? html`<p class="ws-in">${ctx.t("workshops.inWorkshop")}</p><ul class="ws-goals">${w.goals.map((g) => html`<li>${icon("check")}<span>${g}</span></li>`)}</ul>` : ""}
-        <div class="ws-actions">${b.primary ? link(ctx, b.primary.href, b.primary.label, { class: "btn", icon: "arrow" }) : ""}${w.link ? go(ctx, w.link.href, w.link.label) : ""}</div>
+        <div class="ws-actions">${b.primary ? link(ctx, workshopRequestLink(b.primary.href, w.topic), b.primary.label, { class: "btn", icon: "arrow" }) : ""}${w.link ? go(ctx, w.link.href, w.link.label) : ""}</div>
       </div>
     </article>`)}
   </div>

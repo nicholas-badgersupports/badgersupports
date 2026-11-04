@@ -1669,6 +1669,97 @@ await part("first visit: current-room refresh waits for focus and exact end", as
   await ctx.close();
 });
 
+await part("Workshop comparison: native previews and changeable request choices", async () => {
+  const catalogue = "/join/request-a-workshop/";
+  const { makeContext } = await import("../src/render/context.mjs");
+  const { renderBlock } = await import("../src/render/registry.mjs");
+  const { googleFormUrl } = await import("../src/shared/forms.mjs");
+  const formDef = JSON.parse(fs.readFileSync(path.join(ROOT, "content/forms/workshop-request.json")));
+  const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json")));
+  const topics = { "b-rw-networks": "support_network", "b-rw-selfcare": "stress_self_care", "b-rw-advocacy": "self_advocacy", "b-rw-housing": "housing" };
+  const proof = path.join(ROOT, "local/workshop-comparison-proof"); fs.mkdirSync(proof, { recursive: true });
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    const page = await ctx.newPage(), errors = [], writes = [];
+    page.setDefaultTimeout(10000);
+    page.on("pageerror", e => errors.push(e.message));
+    page.on("request", r => { if (!["GET", "HEAD", "OPTIONS"].includes(r.method())) writes.push(r.url()); });
+    await page.goto(BASE + catalogue, { waitUntil: "networkidle" });
+    const photosBefore = await page.locator(".expect-photos img").evaluateAll(nodes => nodes.map(n => n.getAttribute("src")));
+    let jumps = true, previews = true;
+    for (const id of Object.keys(topics)) {
+      const jump = page.locator(`[data-block="b-rw-head"] a[href="#${id}"]`);
+      await jump.focus(); await page.keyboard.press("Enter");
+      if (!page.url().endsWith("#" + id) || !(await page.locator("#" + id).isVisible())) jumps = false;
+      const detail = page.locator(`#${id}-preview`), summary = detail.locator("summary");
+      await summary.focus(); await page.keyboard.press("Enter");
+      if (!(await detail.getAttribute("open") !== null) || !(await detail.locator("p").first().isVisible())) previews = false;
+      const hasFocus = await summary.evaluate(n => document.activeElement === n && getComputedStyle(n).outlineStyle !== "none");
+      if (!hasFocus || !(await page.locator(`#${id} .expect-audience`).isVisible())) previews = false;
+      if (width === 390 && !javaScriptEnabled || width === 1280 && javaScriptEnabled) await page.locator(`#${id} .expect-words`).screenshot({ path: path.join(proof, `${id}-${width}-${javaScriptEnabled}.png`) });
+      await page.keyboard.press("Space");
+      if (await detail.getAttribute("open") !== null) previews = false;
+    }
+    check(jumps, `Workshop ${width}px JS=${javaScriptEnabled}: equal keyboard jumps reach all four offered topics`);
+    check(previews, `Workshop ${width}px JS=${javaScriptEnabled}: native activity disclosures open and close with visible focus and audience guidance`);
+    await page.locator(".expect-preview").evaluateAll(nodes => nodes.forEach(n => { n.open = true; }));
+    let photosVisible = true;
+    for (const img of await page.locator(".expect-photos img").all()) {
+      if (!(await img.isVisible())) { photosVisible = false; continue; }
+      await img.scrollIntoViewIfNeeded(); await img.evaluate(n => n.decode());
+      if (!(await img.evaluate(n => n.naturalWidth > 0 && n.width > 0))) photosVisible = false;
+    }
+    const photosAfter = await page.locator(".expect-photos img").evaluateAll(nodes => nodes.map(n => n.getAttribute("src")));
+    const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, inputs: document.querySelectorAll("main input, main textarea, main form").length, unsupported: /Requests must be submitted 5 days/.test(document.querySelector("main").textContent) }));
+    check(!state.scrolls && !state.inputs && !state.unsupported && !errors.length && !writes.length && photosVisible && JSON.stringify(photosAfter) === JSON.stringify(photosBefore), `Workshop ${width}px JS=${javaScriptEnabled}: previews preserve photos without overflow, personal input or writes`);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: path.join(proof, `catalogue-${width}-${javaScriptEnabled}.png`), fullPage: true });
+    let choices = true;
+    for (const [id, topic] of Object.entries(topics)) {
+      await page.goto(BASE + catalogue + "#" + id);
+      const action = page.locator(`#${id} a[href="/forms/workshop-request/?topic=${topic}"]`);
+      await action.focus(); await page.keyboard.press("Enter");
+      await page.waitForURL(`**/forms/workshop-request/?topic=${topic}`);
+      const chosen = () => page.locator('input[name="topics"]').evaluateAll(nodes => nodes.filter(n => n.checked).map(n => n.value));
+      if (JSON.stringify(await chosen()) !== JSON.stringify([topic])) choices = false;
+      const other = Object.values(topics).find(x => x !== topic);
+      await page.locator(`input[name="topics"][value="${topic}"]`).uncheck();
+      await page.locator(`input[name="topics"][value="${other}"]`).check();
+      if (JSON.stringify(await chosen()) !== JSON.stringify([other])) choices = false;
+    }
+    check(choices && !writes.length, `Workshop ${width}px JS=${javaScriptEnabled}: every request action carries its topic and the visitor can change it without submitting`);
+    let honest = true;
+    for (const state of ["google", "manual"]) {
+      const def = structuredClone(formDef); def.state = "closed";
+      if (state === "google") def.elsewhere = googleFormUrl(def);
+      const renderCtx = makeContext({ site, text: Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text])), formTopic: "housing", data: { forms: { "workshop-request": def } } });
+      const html = String(renderBlock({ id: "b-form-workshop-request", type: "form", form: "workshop-request" }, renderCtx));
+      await page.locator("main").evaluate((n, html) => { n.innerHTML = html; }, html);
+      if (await page.locator("main input, main textarea, main form").count()) honest = false;
+      if (state === "google") {
+        if (!(await page.getByText(words("form.workshopGoogleSignIn"), { exact: true }).isVisible()) || await page.locator('main a[href="mailto:directors@badgersupports.org"]').count() !== 1 || !(await page.locator("[data-form-elsewhere]").getAttribute("href")).includes("entry.1411124785=Navigating+Housing")) honest = false;
+      } else if (await page.locator("[data-form-elsewhere], .form-elsewhere-note").count()) honest = false;
+      if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) honest = false;
+      await page.screenshot({ path: path.join(proof, `${state}-${width}-${javaScriptEnabled}.png`), fullPage: true });
+    }
+    check(honest && !writes.length, `Workshop ${width}px JS=${javaScriptEnabled}: Google sign-in/email guidance and intentional native closure remain truthful without inputs`);
+    let homeCarries = true;
+    const homeTopics = { "w-networks": "support_network", "w-selfcare": "stress_self_care", "w-advocacy": "self_advocacy", "w-housing": "housing" };
+    for (const [id, topic] of Object.entries(homeTopics)) {
+      await page.goto(BASE + "/#workshops");
+      await page.locator(`[data-tab="${id}"]`).focus(); await page.keyboard.press("Enter");
+      const action = page.locator(`[data-panel="${id}"] .ws-actions .btn`);
+      if ((await action.getAttribute("href")) !== "/forms/workshop-request/?topic=" + topic) homeCarries = false;
+      await action.focus(); await page.keyboard.press("Enter");
+      await page.waitForURL(`**/forms/workshop-request/?topic=${topic}`);
+      const selected = await page.locator('input[name="topics"]').evaluateAll(nodes => nodes.filter(n => n.checked).map(n => n.value));
+      if (JSON.stringify(selected) !== JSON.stringify([topic])) homeCarries = false;
+    }
+    check(homeCarries && !writes.length, `Workshop ${width}px JS=${javaScriptEnabled}: each Home preview also carries its own topic to the existing native request`);
+    await ctx.close();
+  }
+});
+
 await part("Craft refinement: hierarchy, captions and no JavaScript", async () => {
   for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
     const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });

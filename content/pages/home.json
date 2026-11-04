@@ -222,7 +222,8 @@
                 "examples": "a mentor, a career counselor"
               }
             ]
-          }
+          },
+          "topic": "support_network"
         },
         {
           "id": "w-selfcare",
@@ -252,7 +253,8 @@
               "Go for a bike ride",
               "Meditate for 20 minutes"
             ]
-          }
+          },
+          "topic": "stress_self_care"
         },
         {
           "id": "w-advocacy",
@@ -287,7 +289,8 @@
                 "verdict": "Too harsh."
               }
             ]
-          }
+          },
+          "topic": "self_advocacy"
         },
         {
           "id": "w-housing",
@@ -328,7 +331,8 @@
                 "text": "Someone lives in your place while you’re away, but you are still responsible for the rent and any damage."
               }
             ]
-          }
+          },
+          "topic": "housing"
         }
       ]
     },

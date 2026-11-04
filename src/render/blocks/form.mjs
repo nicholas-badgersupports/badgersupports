@@ -3,9 +3,10 @@
    API on every submission, so a tab opened before the form closed still cannot send. */
 
 import { html } from "../html.mjs";
+import { go } from "../context.mjs";
 import { renderForm, renderClosed, prose } from "../form.mjs";
 import { proseText } from "../../shared/forms.mjs";
-import { workshopTopic, workshopElsewhere } from "../../shared/workshop-topic.mjs";
+import { workshopTopic, workshopElsewhere, workshopGoogleFallback } from "../../shared/workshop-topic.mjs";
 
 /* Characters of intro past which the sheet stops staying beside the questions (forms.css is-long):
    a sticky sheet taller than the window would hide its own end. */
@@ -59,7 +60,8 @@ export default {
     const elsewhere = workshopElsewhere(def, topic);
     const active = def.state === "open" || preview;
     const selection = topic && (active || elsewhere !== def.elsewhere) ? html`<p class="form-topic">${ctx.t("form.workshopTopic", { topic: topic.label })}</p>` : "";
-    const inner = html`${selection}${active ? renderForm(def, { t: ctx.t, ctx, preview, values: topic ? { topics: [topic.id] } : {} }) : renderClosed(def, ctx.t, { elsewhere })}`;
+    const note = !active && workshopGoogleFallback(def) ? html`<p class="form-elsewhere-note">${ctx.t("form.workshopGoogleSignIn")}</p><p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("form.workshopEmail"), "mail")}</p>` : null;
+    const inner = html`${selection}${active ? renderForm(def, { t: ctx.t, ctx, preview, values: topic ? { topics: [topic.id] } : {} }) : renderClosed(def, ctx.t, { elsewhere, note })}`;
     return formSection(def, inner, { id: b.id, title: b.title, ctx });
   },
 };

@@ -19,6 +19,24 @@
         "m-workshop-herald-team",
         "m-workshop-room",
         "m-workshop-housing-team"
+      ],
+      "links": [
+        {
+          "label": "Support Networks",
+          "href": "#b-rw-networks"
+        },
+        {
+          "label": "Stress & Self-Care",
+          "href": "#b-rw-selfcare"
+        },
+        {
+          "label": "Self Advocacy",
+          "href": "#b-rw-advocacy"
+        },
+        {
+          "label": "Housing",
+          "href": "#b-rw-housing"
+        }
       ]
     },
     {
@@ -55,6 +73,12 @@
       "photos": [
         "m-workshop-herald-room",
         "m-workshop-supplies"
+      ],
+      "audience": "Choose this if your group wants to strengthen how members ask for and offer support.",
+      "disclosure": "Preview the Support Map",
+      "preview": [
+        "Map the people and places you turn to for emotional, academic, practical, and professional support.",
+        "Choose one area of support and consider where your network could grow."
       ]
     },
     {
@@ -91,6 +115,12 @@
       ],
       "photos": [
         "m-workshop-mindfulness"
+      ],
+      "audience": "Choose this if your group wants practical ways to manage stress, build healthy habits, and respect boundaries.",
+      "disclosure": "Preview Self-Care Bingo",
+      "preview": [
+        "Make a self-care bingo card with activities that fit your schedule and energy.",
+        "Examples include taking a walk, calling a friend, or making time to journal."
       ]
     },
     {
@@ -122,6 +152,12 @@
           "label": "Request This Workshop",
           "href": "/forms/workshop-request/?topic=self_advocacy"
         }
+      ],
+      "audience": "Choose this if your group wants to practice setting boundaries and asking for what members need.",
+      "disclosure": "Preview a Conversation",
+      "preview": [
+        "Devon finds fast-moving team meetings difficult to follow and asks for written agendas and key takeaways.",
+        "Compare ways to ask for what you need clearly and respectfully."
       ]
     },
     {
@@ -160,6 +196,12 @@
       "photos": [
         "m-workshop-housing",
         "m-workshop-panel"
+      ],
+      "audience": "Choose this if your group is exploring housing options, roommate needs, and shared decisions.",
+      "disclosure": "Preview Housing Questions",
+      "preview": [
+        "Look at a floor plan and consider how the space would work for you, including windows, storage, and moving furniture.",
+        "What would you ask a landlord or property manager before deciding?"
       ]
     },
     {
@@ -199,6 +241,21 @@
           "id": "q-rw-who",
           "q": "Who Can Request",
           "a": "Available to Registered Student Organizations, residence halls, classrooms, individual students, groups of students, and campus departments that primarily serve student audiences."
+        },
+        {
+          "id": "q-rw-planning",
+          "q": "What Should I Include in My Request?",
+          "a": [
+            "Choose one topic or request a blended session. Share your group’s goals, estimated attendance, preferred dates and location, and any access needs.",
+            "The current request form asks for at least two weeks’ notice. The Programs team confirms availability; a request is not a confirmed booking."
+          ],
+          "links": [
+            {
+              "label": "Ask About Your Workshop",
+              "href": "mailto:directors@badgersupports.org",
+              "icon": "mail"
+            }
+          ]
         }
       ],
       "ask": {
@@ -228,7 +285,7 @@
       "type": "text",
       "title": "Accommodation Requests",
       "body": [
-        "Badger Supports values inclusion and access for all participants and is pleased to provide reasonable accommodations for any Badger Supports workshop. Please contact accessibility@badgersupports.org to make a reasonable accommodation request. Requests must be submitted 5 days prior to the workshop."
+        "Badger Supports values inclusion and access for all participants and is pleased to provide reasonable accommodations for any Badger Supports workshop. Please contact accessibility@badgersupports.org to make a reasonable accommodation request."
       ],
       "links": [
         {

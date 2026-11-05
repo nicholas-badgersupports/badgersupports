@@ -1417,3 +1417,19 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* Longer initiative and statement titles retain the page hierarchy without dominating the task. */
 [data-page="pg-ribbons"] [data-block="b-rb-head"] h1,
 [data-page="pg-equity-belonging"] [data-block="b-eb-head"] h1 { font-size: clamp(2rem, 1.4rem + 1.5vw, 2.6rem); text-wrap: balance; }
+
+.staff-setup-launch { margin-bottom: var(--s4); }
+.staff-setup { margin-bottom: var(--s5); padding: var(--s4); border: var(--rule-line); border-radius: var(--r-card); background: var(--paper); min-width: 0; }
+.staff-setup h3 { margin-bottom: var(--s2); }
+.staff-setup h3:focus { outline: none; }
+.staff-setup-step { font-weight: 600; }
+.staff-setup progress { display: block; width: 100%; height: 1rem; margin-block: var(--s3) var(--s4); accent-color: var(--accent); }
+.staff-setup .field { margin-block: var(--s4); }
+.staff-setup .field input, .staff-setup .field textarea, .staff-setup .field select { max-width: 100%; min-width: 0; }
+.staff-setup .staff-actions { margin-top: var(--s4); }
+.staff-setup-review { display: grid; gap: var(--s3); margin-block: var(--s4); overflow-wrap: anywhere; }
+.staff-setup-review dt { font-weight: 700; }
+.staff-setup-review dd { margin: var(--s1) 0 0; white-space: pre-wrap; }
+.staff-setup-before { margin-top: var(--s1); color: var(--muted); white-space: pre-wrap; }
+.staff-setup [role="alert"] { margin-top: var(--s3); }
+.staff-forms[hidden] { display: none; }

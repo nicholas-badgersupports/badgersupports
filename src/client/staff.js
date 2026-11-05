@@ -30,6 +30,7 @@
  */
 
 import { t } from "./text.js";
+import { formSetupWizard } from "./form-setup.js";
 
 const app = document.querySelector("[data-staff-app]");
 const signIn = document.querySelector("[data-staff-signin]");
@@ -260,6 +261,20 @@ function formCard(f, connect) {
 
 function formsSection(me) {
   const list = el("ul", { className: "staff-forms" });
+  const setupPlace = el("div");
+  const setup = el("button", { type: "button", className: "btn", textContent: t("staff.setup.start"), hidden: true });
+  setup.addEventListener("click", async () => {
+    if (isBusy(setup)) return;
+    const done = busy(setup, t("staff.setup.loading"));
+    const r = await call("/api/staff/forms").catch(offline); done();
+    if (!setup.isConnected) return;
+    if (r.status !== 200) { const [why, words] = refused(r); setupPlace.replaceChildren(why); say(words); return; }
+    setup.hidden = true; list.hidden = true;
+    setupPlace.replaceChildren(formSetupWizard({ forms: r.body.forms, connectUrl: me.connectUrl, call, say,
+      onSaved: updated => { const old = list.querySelector(`[data-form-card="${updated.key}"]`); old?.replaceWith(formCard(updated, r.body.connect)); },
+      onClose: key => { setupPlace.replaceChildren(); list.hidden = false; setup.hidden = false; const card = key ? list.querySelector(`[data-form-card="${key}"]`) : null; const target = card?.querySelector("summary"); if (target) { target.parentElement.open = true; target.focus(); } else setup.focus(); }
+    }));
+  });
   const off = el("p", { className: "staff-note", textContent: t("staff.delivery.off"), hidden: true });
   const retry = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.retry"), hidden: true });
   const retryProblem = el("div", { hidden: true });
@@ -268,6 +283,7 @@ function formsSection(me) {
 
   function draw(r) {
     list.replaceChildren(...r.forms.map((f) => formCard(f, r.connect)));
+    setup.hidden = !r.forms.some(f => f.settings && (f.canEdit || f.canSwitch));
     if (!r.forms.length) list.replaceChildren(el("li", { textContent: t("staff.forms.empty") }));
     off.hidden = r.connect;
     retry.hidden = !r.connect || !r.forms.some((f) => f.delivery.pending || f.delivery.failed);
@@ -308,7 +324,7 @@ function formsSection(me) {
   again.addEventListener("click", () => { if (!isBusy(again)) load(); });
 
   const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }),
-    el("p", { textContent: t("staff.forms.how") }), me.readAgain ? readAgain() : null, off, list, retryProblem,
+    el("p", { textContent: t("staff.forms.how") }), me.readAgain ? readAgain() : null, off, el("div", { className: "staff-actions staff-setup-launch" }, setup), setupPlace, list, retryProblem,
     el("div", { className: "staff-actions" }, retry, ...(work ? [work] : [])));
   section.setAttribute("aria-labelledby", "staff-forms-h");
   load();

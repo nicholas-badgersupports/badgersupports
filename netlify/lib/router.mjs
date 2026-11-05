@@ -43,6 +43,7 @@ import { readRaw, allQuestions, QUESTION_TYPES } from "../../src/shared/forms.mj
 import { clientTable } from "../../src/shared/text.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 import { saveFormSettings, COPY_FIELDS } from "./form-settings.mjs";
+import { saveFormSetup } from "./form-setup.mjs";
 
 export const TIERS = new Set(["public", "director"]);
 export const FORM_PER_HOUR = 40;
@@ -318,6 +319,25 @@ async function formSettings(req, [key], _c, who) {
   return json(200, { ok: true, ...(await formsFor(who)), ...(purgeError ? { purgeError } : {}) });
 }
 
+async function formSetup(req, [key], _c, who) {
+  const f = await currentForm(key);
+  if (!f) throw new HttpError(404, "form.unknown");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  if (!body?.settings) throw new HttpError(400, "settings.shape");
+  if (body.state !== "keep" && (body.formVersion !== f.def.version || body.expectedState !== f.manualState)) throw new HttpError(409, "settings.conflict");
+  const datesChanged = ["opensAt", "closesAt", "deadline"].some(k => body.settings[k] !== f.settings[k]);
+  const wordsChanged = COPY_FIELDS.some(k => body.settings[k] !== f.settings[k]);
+  if (datesChanged || body.state !== "keep") need(who, `forms.switch:${key}`);
+  if (wordsChanged) need(who, "site.edit");
+  if (!datesChanged && !wordsChanged && body.state === "keep" && !can(who, "site.edit")) need(who, `forms.switch:${key}`);
+  if (body.state === "open" && (!allQuestions(f.def).length || allQuestions(f.def).some(({ q }) => q.type === "resource" && !q.resources?.length))) throw new HttpError(409, "switch.empty");
+  await saveFormSetup(key, body, who.sub);
+  let purgeError = null;
+  try { await purgeTags(await formTags(key)); } catch (e) { purgeError = e.code || "purge.unavailable"; }
+  return json(200, { ok: true, ...(await formsFor(who)), ...(purgeError ? { purgeError } : {}) });
+}
+
 async function editSourceRoute(req, _m, _c, who) {
   need(who, "site.edit");
   return json(200, { ok: true, entries: await editSource(new URL(req.url).searchParams.get("page")) });
@@ -516,6 +536,7 @@ export const ROUTES = [
   { name: "staffForms", method: "GET", pattern: /^\/api\/staff\/forms$/, tier: "director", run: staffForms },
   { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },
   { name: "formSwitch", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/switch$/, tier: "director", run: formSwitch },
+  { name: "formSetup", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/setup$/, tier: "director", run: formSetup },
   { name: "formSettings", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/settings$/, tier: "director", run: formSettings },
   { name: "staffRetry", method: "POST", pattern: /^\/api\/staff\/outbox\/retry$/, tier: "director", run: staffRetry },
   { name: "editSource", method: "GET", pattern: /^\/api\/staff\/edit\/source$/, tier: "director", run: editSourceRoute },

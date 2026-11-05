@@ -2082,6 +2082,87 @@ await part("room arrival", async () => {
   }
 });
 
+await part("form setup wizard", async () => {
+  const { saveFormSettings } = await import("../netlify/lib/form-settings.mjs");
+  const { currentForm } = await import("../netlify/lib/intake.mjs");
+  const proof = path.join(ROOT, "local/form-setup-proof"); fs.mkdirSync(proof, { recursive: true });
+  for (const width of [1280, 390, 320]) {
+    await freshServer(); useConnect(false);
+    const { ctx, page, errors } = await openStaff({ session: ["site.edit", "forms.switch:*"], viewport: { width, height: 900 } });
+    try {
+      await page.getByRole("button", { name: "Set Up Forms", exact: true }).click();
+      let wizard = page.locator("[data-form-setup]"); await wizard.locator("#setup-form").waitFor({ state: "visible" });
+      check(await wizard.locator("#setup-form option").count() === 14, `setup ${width}px: every one of the thirteen forms is selectable`);
+      await wizard.locator("#setup-form").selectOption("email-list"); await wizard.getByRole("button", { name: "Next", exact: true }).click();
+      await wizard.locator('input[id$="-title"]').fill("Fictional Email Setup");
+      await wizard.getByRole("button", { name: "Next", exact: true }).click();
+      await wizard.locator("#setup-state").selectOption("open"); await wizard.locator('[id$="-deadline"]').fill("2099-01-02T12:00");
+      await wizard.getByRole("button", { name: "Back", exact: true }).click();
+      check(await wizard.locator('input[id$="-title"]').inputValue() === "Fictional Email Setup", `setup ${width}px: Back retains entered wording`);
+      await wizard.getByRole("button", { name: "Next", exact: true }).click();
+      check(await wizard.locator('[id$="-deadline"]').inputValue() === "2099-01-02T12:00" && await wizard.locator("#setup-state").inputValue() === "open", `setup ${width}px: Back retains the intake choice and dates`);
+      await wizard.getByRole("button", { name: "Next", exact: true }).click();
+      check((await one("SELECT count(*)::int AS n FROM form_settings_history")).n === 0 && (await one("SELECT count(*)::int AS n FROM form_state")).n === 0, `setup ${width}px: review is reached before any write or switch`);
+      check((await wizard.textContent()).includes("Previously:") && await wizard.getByRole("button", { name: "Save and Open Form", exact: true }).count() === 1, `setup ${width}px: review shows the actual change and explicit opening action`);
+      await wizard.screenshot({ path: path.join(proof, `review-${width}.png`) });
+      await wizard.getByRole("button", { name: "Save and Open Form", exact: true }).click();
+      await wizard.getByRole("button", { name: "View Form Settings", exact: true }).waitFor();
+      const saved = await currentForm("email-list");
+      check(saved.manualState === "open" && saved.def.title === "Fictional Email Setup" && saved.settings.deadline === "2099-01-02T12:00", `setup ${width}px: one real request saves settings and opens intake`);
+      await wizard.getByRole("button", { name: "View Form Settings", exact: true }).click();
+      const card = page.locator('[data-form-card="email-list"]');
+      check(await card.locator('[id$="-title"]').inputValue() === "Fictional Email Setup" && await card.locator(".staff-form-settings").evaluate(n => n.open), `setup ${width}px: full settings immediately show the wizard's saved values`);
+      await page.getByRole("button", { name: "Set Up Forms", exact: true }).click();
+      wizard = page.locator("[data-form-setup]"); await wizard.locator("#setup-form").selectOption("workshop-request"); await wizard.getByRole("button", { name: "Next", exact: true }).click();
+      await wizard.locator('input[id$="-title"]').fill("Cancelled draft"); await wizard.getByRole("button", { name: "Cancel Setup", exact: true }).click();
+      check((await one("SELECT count(*)::int AS n FROM form_settings_history")).n === 1 && (await currentForm("workshop-request")).settings.version === 0, `setup ${width}px: Cancel makes no changes`);
+      check(errors.length === 0 && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `setup ${width}px: no browser error or horizontal overflow`);
+    } finally { await ctx.close(); }
+  }
+  await freshServer(); useConnect(false);
+  {
+    const { ctx, page } = await openStaff({ session: ["site.edit"], viewport: { width: 390, height: 900 } });
+    try {
+      await page.getByRole("button", { name: "Set Up Forms", exact: true }).click(); const w = page.locator("[data-form-setup]"); await w.locator("#setup-form").waitFor({ state: "visible" });
+      await w.locator("#setup-form").selectOption("staff-application"); await w.getByRole("button", { name: "Next", exact: true }).click();
+      await w.locator('input[id$="-title"]').fill("Editor Only Title"); await w.getByRole("button", { name: "Next", exact: true }).click();
+      check(await w.locator("input,select,textarea").count() === 0, "setup editor: hidden date and switch fields are not required or blanked");
+      await w.getByRole("button", { name: "Next", exact: true }).click(); await w.getByRole("button", { name: "Save Form Settings", exact: true }).click();
+      await w.getByRole("button", { name: "View Form Settings", exact: true }).waitFor();
+      check((await currentForm("staff-application")).def.title === "Editor Only Title" && (await one("SELECT count(*)::int AS n FROM form_state")).n === 0, "setup editor: can save wording without changing intake");
+    } finally { await ctx.close(); }
+  }
+  await freshServer(); useConnect(false);
+  {
+    const { ctx, page } = await openStaff({ session: ["forms.switch:staff-application"], viewport: { width: 320, height: 900 } });
+    try {
+      await page.getByRole("button", { name: "Set Up Forms", exact: true }).click(); const w = page.locator("[data-form-setup]"); await w.locator("#setup-form").waitFor({ state: "visible" });
+      check(await w.locator("#setup-form option").count() === 2, "setup switcher: only the permitted form is offered");
+      await w.locator("#setup-form").selectOption("staff-application"); await w.getByRole("button", { name: "Next", exact: true }).click();
+      check(await w.locator("input,textarea").count() === 0, "setup switcher: wording stays read-only");
+      await w.getByRole("button", { name: "Next", exact: true }).click(); await w.locator("#setup-state").selectOption("open"); await w.locator('[id$="-opensAt"]').fill("2099-01-01T12:00");
+      await w.getByRole("button", { name: "Next", exact: true }).click(); await w.getByRole("button", { name: "Save and Open Form", exact: true }).click(); await w.getByRole("button", { name: "View Form Settings", exact: true }).waitFor();
+      check((await currentForm("staff-application")).stateReason === "scheduled", "setup switcher: future opening is saved as scheduled, not falsely shown accepting now");
+    } finally { await ctx.close(); }
+  }
+  await freshServer(); useConnect(false);
+  {
+    const { ctx, page } = await openStaff({ session: ["site.edit", "forms.switch:*"], viewport: { width: 390, height: 900 } });
+    try {
+      await page.getByRole("button", { name: "Set Up Forms", exact: true }).click(); const w = page.locator("[data-form-setup]"); await w.locator("#setup-form").waitFor({ state: "visible" });
+      await w.locator("#setup-form").selectOption("workshop-request"); await w.getByRole("button", { name: "Next", exact: true }).click(); await w.locator('input[id$="-title"]').fill("Kept Draft Title");
+      await w.getByRole("button", { name: "Next", exact: true }).click(); await w.locator("#setup-state").selectOption("open"); await w.getByRole("button", { name: "Next", exact: true }).click();
+      const f = await currentForm("workshop-request"); await saveFormSettings("workshop-request", { ...f.settings, title: "Concurrent Title" }, "fixture");
+      await w.getByRole("button", { name: "Save and Open Form", exact: true }).click(); await w.getByRole("button", { name: "Reload Current Settings", exact: true }).waitFor();
+      check((await w.textContent()).includes("Kept Draft Title") && (await one("SELECT count(*)::int AS n FROM form_state")).n === 0, "setup conflict: entries remain and a rejected save never opens intake");
+      await w.getByRole("button", { name: "Reload Current Settings", exact: true }).click(); await w.getByText("Current settings reloaded.", { exact: false }).waitFor();
+      check((await w.textContent()).includes("Concurrent Title") && (await w.textContent()).includes("Kept Draft Title"), "setup conflict: refreshed review keeps edits and shows the newer saved value");
+      await w.getByRole("button", { name: "Save and Open Form", exact: true }).click(); await w.getByRole("button", { name: "View Form Settings", exact: true }).waitFor();
+      check((await currentForm("workshop-request")).def.title === "Kept Draft Title" && (await many("SELECT * FROM form_settings_history")).length === 2, "setup conflict: deliberate second save applies once after refreshed review");
+    } finally { await ctx.close(); }
+  }
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

@@ -517,7 +517,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-632 keys. Keys are permanent. Required text cannot be published empty and must keep each
+678 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -779,7 +779,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (368)
+### Staff page and edit button (414)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1151,6 +1151,52 @@ the site adds the markup.
 | `staff.formSettings.scheduled` | Scheduled | Editable form settings and intake window information. |  |
 | `staff.formSettings.ended` | Closed by Date | Editable form settings and intake window information. |  |
 | `staff.formSettings.enabledLater` | {{title}} is enabled and will open at its start time. | Editable form settings and intake window information. | `{{title}}` |
+| `staff.setup.start` | Set Up Forms | Guided form setup on the staff page. |  |
+| `staff.setup.loading` | Loading Forms… | Guided form setup on the staff page. |  |
+| `staff.setup.title` | Form Setup | Guided form setup on the staff page. |  |
+| `staff.setup.progress` | Form setup progress | Guided form setup on the staff page. |  |
+| `staff.setup.step` | Step {{n}} of {{total}} — {{step}} | Guided form setup on the staff page. | `{{n}}` `{{total}}` `{{step}}` |
+| `staff.setup.step0` | Choose a Form | Guided form setup on the staff page. |  |
+| `staff.setup.step1` | Wording | Guided form setup on the staff page. |  |
+| `staff.setup.step2` | Availability and Dates | Guided form setup on the staff page. |  |
+| `staff.setup.step3` | Review Changes | Guided form setup on the staff page. |  |
+| `staff.setup.complete` | Setup Complete | Guided form setup on the staff page. |  |
+| `staff.setup.intro` | Choose any form you may configure. Nothing changes until you review and save. | Guided form setup on the staff page. |  |
+| `staff.setup.choose` | Choose a form | Guided form setup on the staff page. |  |
+| `staff.setup.form` | Form | Guided form setup on the staff page. |  |
+| `staff.setup.wordsReadOnly` | Your account may change availability and dates. Wording is shown here for review. | Guided form setup on the staff page. |  |
+| `staff.setup.datesReadOnly` | Your account may change wording. Opening, closing and dates require form-switch access. | Guided form setup on the staff page. |  |
+| `staff.setup.availability` | After Saving | Guided form setup on the staff page. |  |
+| `staff.setup.state.keep` | Keep Current Availability | Guided form setup on the staff page. |  |
+| `staff.setup.state.open` | Open Within the Dates Below | Guided form setup on the staff page. |  |
+| `staff.setup.state.closed` | Close This Form | Guided form setup on the staff page. |  |
+| `staff.setup.warning.membership` | A Google Group manager still handles membership requests. Receiving a request does not add someone to the list. | Guided form setup on the staff page. |  |
+| `staff.setup.warning.recruitment` | Confirm the current recruitment dates, offered roles and authorized reviewers before opening. | Guided form setup on the staff page. |  |
+| `staff.setup.warning.materials` | Check current supplies and the fulfillment wording before opening requests. | Guided form setup on the staff page. |  |
+| `staff.setup.warning.delivery` | Check the receiving workflow in Connect before opening a form for normal intake. | Guided form setup on the staff page. |  |
+| `staff.setup.review` | Review the settings below. Back lets you change them before saving. | Guided form setup on the staff page. |  |
+| `staff.setup.reviewOpen` | Saving will enable submissions within the dates below. Review the wording and dates before opening. | Guided form setup on the staff page. |  |
+| `staff.setup.blank` | Not Set | Guided form setup on the staff page. |  |
+| `staff.setup.was` | Previously: {{value}} | Guided form setup on the staff page. | `{{value}}` |
+| `staff.setup.receiving` | Listed team: {{owner}}. Destination: {{destination}}. Confirm the receiving owner in Connect. | Guided form setup on the staff page. | `{{owner}}` `{{destination}}` |
+| `staff.setup.destination.forms` | Website Forms in Connect | Guided form setup on the staff page. |  |
+| `staff.setup.destination.resources` | Resource Suggestions in Connect | Guided form setup on the staff page. |  |
+| `staff.setup.destination.wall` | Wall of Support, Awaiting Moderation | Guided form setup on the staff page. |  |
+| `staff.setup.deliveryNote` | This setup changes wording, dates and intake availability. It does not grant access to answers or enable receipt emails and backup services. | Guided form setup on the staff page. |  |
+| `staff.setup.saved` | {{title}} has been saved. | Guided form setup on the staff page. | `{{title}}` |
+| `staff.setup.viewForm` | View This Form | Guided form setup on the staff page. |  |
+| `staff.setup.another` | Set Up Another Form | Guided form setup on the staff page. |  |
+| `staff.setup.done` | View Form Settings | Guided form setup on the staff page. |  |
+| `staff.setup.cancel` | Cancel Setup | Guided form setup on the staff page. |  |
+| `staff.setup.back` | Back | Guided form setup on the staff page. |  |
+| `staff.setup.next` | Next | Guided form setup on the staff page. |  |
+| `staff.setup.apply` | Save Form Settings | Guided form setup on the staff page. |  |
+| `staff.setup.applyOpen` | Save and Open Form | Guided form setup on the staff page. |  |
+| `staff.setup.applyClose` | Save and Close Form | Guided form setup on the staff page. |  |
+| `staff.setup.chooseRequired` | Please choose a form. | Guided form setup on the staff page. |  |
+| `staff.setup.conflict` | These settings changed while you were working. Your entries are kept. Reload the current settings, review them and save again. | Guided form setup on the staff page. |  |
+| `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
+| `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
 
 ### Resource list (39)
 

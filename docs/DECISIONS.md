@@ -886,3 +886,17 @@ card and profile share a portrait frame: initials remain until a lazy-loaded ima
 leaves those initials. With scripts disabled, an SVG image filter overlays the same initials and paints nothing on error;
 those SVG image nodes load natively without a lazy-loading guarantee. No CSP permission or arbitrary photo origin
 is added. The approved History, workshop copy and Team layout are preserved.
+
+
+## Form setup wizard — 5 November 2026
+
+Nicholas requested that all forms be openable through settings and have a setup wizard. The staff page offers all
+permitted forms, without limiting setup to Workshop Request and Programming Feedback. The wizard changes the same
+wording, Central Time dates and intake switch as the full settings, with review before an atomic save/open. It creates
+no alternate settings store and performs no write on visit, Back or Cancel. Existing permission boundaries, genuine
+resource-option readiness, manual Close precedence and informational deadlines remain. The review labels source team
+metadata as listed, not newly assigned. No receipt, backup, mailbox, account or notification setup is implied.
+
+The selected launch order is Netlify public first, www later, following the existing privacy review and signed-out
+checks. This selects launch order and does not approve the draft policy, automatically open intake or grant broader
+access. Current privacy and live delivery acceptance remain separate until actually verified.

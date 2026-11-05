@@ -141,6 +141,7 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | signinQuotes | GET | `/api/signin-quotes` | public |
 | staffMe | GET | `/api/staff/me` | director |
 | staffForms | GET | `/api/staff/forms` | director |
+| formSetup | POST | `/api/staff/forms/:key/setup` | director; existing settings/switch scopes |
 | staffSubmissions | GET | `/api/staff/forms/<key>/submissions` | director |
 | formSwitch | POST | `/api/staff/forms/<key>/switch` | director |
 | formSettings | POST | `/api/staff/forms/<key>/settings` | director |
@@ -181,6 +182,26 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
    JSON; a browser form post gets an HTML page.
 
 Every API response is `Cache-Control: no-store` with `nosniff`. API pages are `noindex` and carry no analytics.
+
+### Guided form setup
+
+`/staff/` → **Set Up Forms** offers every form the signed-in account may configure. Choose Form, Wording,
+Availability and Dates, then Review Changes. Back retains entries; Cancel writes nothing. Review shows changed
+values beside their previous values. An explicit Save and Open Form enables intake within the configured dates;
+Keep Current Availability never writes a switch or removes an original alternate form. The saved result appears
+immediately in the existing full Form Settings controls. Setting up another form starts another deliberate operation.
+
+`POST /api/staff/forms/:key/setup` validates the same settings and permissions as the full controls. Shared
+`writeFormSettings` and `writeFormSwitch` operations commit settings/history and the optional switch in one
+transaction. A stale settings version, changed switch or changed definition rejects a switch-changing setup without
+a partial save. Reload Current Settings keeps edited fields for a fresh review. Date/wording failures return to the
+relevant step. Cache clearing follows the commit; a purge failure reports saved data plus the existing delay notice.
+Actual manual state remains distinct from effective closure when resources become unavailable, so Close stays usable.
+
+The wizard reads no submission answers and grants no permissions. Its receiving-team label comes from the source
+workflow metadata and requires confirmation in Connect; it does not assign people. Receipts, backups and retry schedules
+remain separate setup, not decorative controls in this wizard. Questions, historical definitions and eligibility rules
+are unchanged. The public website uses its own small guided component, not the separate Connect app's runtime.
 
 ### Forms without JavaScript
 

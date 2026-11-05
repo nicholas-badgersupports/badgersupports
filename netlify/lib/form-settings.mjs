@@ -24,7 +24,7 @@ export function effectiveForm(def, settings, manualState, now = Date.now()) {
     state: reason ? "closed" : "open", manualState, stateReason: reason, settings,
   };
 }
-export async function saveFormSettings(key, input, by) {
+export function validateFormSettings(input) {
   const keys = ["version", "opensAt", "closesAt", "deadline", ...COPY_FIELDS];
   if (!input || Object.keys(input).some(k => !keys.includes(k)) || !Number.isInteger(input.version) || input.version < 0) throw new HttpError(400, "settings.shape");
   const value = {};
@@ -39,12 +39,20 @@ export async function saveFormSettings(key, input, by) {
     if (v !== null && (typeof v !== "string" || (k !== "introduction" && !v.trim()) || v.length > (k === "title" ? 200 : 8000))) throw new HttpError(400, "settings.words");
     value[k] = v === null ? null : v.trim();
   }
-  return tx(async t => {
-    const updated = input.version === 0
-      ? await t.one("INSERT INTO form_settings(form_key,version,settings,changed_by) VALUES($1,1,$2::jsonb,$3) ON CONFLICT(form_key) DO NOTHING RETURNING version", [key, JSON.stringify(value), by])
-      : await t.one("UPDATE form_settings SET version=version+1,settings=$2::jsonb,changed_by=$3,changed_at=now() WHERE form_key=$1 AND version=$4 RETURNING version", [key, JSON.stringify(value), by, input.version]);
-    if (!updated) throw new HttpError(409, "settings.conflict");
-    await t.query("INSERT INTO form_settings_history(form_key,version,settings,changed_by) VALUES($1,$2,$3::jsonb,$4)", [key, updated.version, JSON.stringify(value), by]);
-    return { version: updated.version, ...value };
-  });
+  return value;
+}
+
+/* Both the full controls and setup use this write inside their own transaction. */
+export async function writeFormSettings(t, key, input, by) {
+  const value = validateFormSettings(input);
+  const updated = input.version === 0
+    ? await t.one("INSERT INTO form_settings(form_key,version,settings,changed_by) VALUES($1,1,$2::jsonb,$3) ON CONFLICT(form_key) DO NOTHING RETURNING version", [key, JSON.stringify(value), by])
+    : await t.one("UPDATE form_settings SET version=version+1,settings=$2::jsonb,changed_by=$3,changed_at=now() WHERE form_key=$1 AND version=$4 RETURNING version", [key, JSON.stringify(value), by, input.version]);
+  if (!updated) throw new HttpError(409, "settings.conflict");
+  await t.query("INSERT INTO form_settings_history(form_key,version,settings,changed_by) VALUES($1,$2,$3::jsonb,$4)", [key, updated.version, JSON.stringify(value), by]);
+  return { version: updated.version, ...value };
+}
+export async function saveFormSettings(key, input, by) {
+  validateFormSettings(input);
+  return tx(t => writeFormSettings(t, key, input, by));
 }

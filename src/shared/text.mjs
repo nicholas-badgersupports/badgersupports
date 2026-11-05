@@ -74,6 +74,7 @@ export const CLIENT_TEXT = {
   "schedule.js": ["schedule.today", "schedule.happening"],
   "hero.js": ["hero.pause", "hero.play"],
   "staff.js": ["staff.*"],
+  "form-setup.js": ["staff.*"],
   "edit.js": ["edit.*"],
   "resources.js": ["resources.count.*"],
 };

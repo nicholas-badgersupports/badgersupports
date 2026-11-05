@@ -37,7 +37,7 @@ export async function formsFor(who) {
     forms.push({
       key, title: f?.def.title || key, state: f?.state || "closed", canRead, canSwitch,
       manualState: f?.manualState || "closed", stateReason: f?.stateReason || null, canEdit,
-      ...((canSwitch || canEdit) && f ? { settings: f.settings, defaults: { title: f.def.title, introduction: proseText(f.def.intro).join("\n\n"), closedMessage: f.closedMessage } } : {}),
+      ...((canSwitch || canEdit) && f ? { settings: f.settings, definitionVersion: f.def.version, workflow: { owner: f.def.workflow?.owner || "", destination: ["resource-problem", "resource-update", "resource-suggestion"].includes(key) ? "resources" : key === "wall-note" ? "wall" : "forms" }, defaults: { title: f.def.title, introduction: proseText(f.def.intro).join("\n\n"), closedMessage: f.closedMessage } } : {}),
       total: c?.n || 0, latest: c ? new Date(c.latest).toISOString() : null,
       delivery: (canRead && delivery[key]) || NONE,
     });

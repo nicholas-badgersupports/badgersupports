@@ -42,18 +42,28 @@ export async function currentForm(key, { now = Date.now() } = {}) {
   if (definitionProblems({ ...def, state: "closed" }).length) throw new HttpError(503, "form.broken");
   const sw = await one("SELECT state, closed_message FROM form_state WHERE form_key = $1", [key]);
   if (sw && def.elsewhere) { const { elsewhere, ...own } = def; def = own; }
-  let state = sw ? sw.state : def.state;
-  if (state === "open" && (allQuestions(def).length === 0 || allQuestions(def).some(({ q }) => q.type === "resource" && !q.resources?.length))) state = "closed";
+  const manualState = sw ? sw.state : def.state;
+  const unavailable = !allQuestions(def).length || allQuestions(def).some(({ q }) => q.type === "resource" && !q.resources?.length);
   const settings = await readFormSettings(key);
-  const result = effectiveForm(def, settings, state, now);
+  const result = effectiveForm(def, settings, manualState, now);
+  if (result.state === "open" && unavailable) { result.state = "closed"; result.stateReason = "unavailable"; }
   return { ...result, closedMessage: settings.closedMessage ?? (sw && sw.closed_message) ?? def.closedMessage };
 }
 
 /* A form's switch, set from the staff page (router.mjs, formSwitch). `by` is the Connect id of whoever
    set it. The row's closed message, if any, is kept. */
-export async function setSwitch(key, state, by) {
-  await q(`INSERT INTO form_state (form_key, state, changed_by) VALUES ($1, $2, $3)
+export async function writeFormSwitch(t, key, state, by, expectedState) {
+  if (expectedState === undefined) return t.query(`INSERT INTO form_state (form_key, state, changed_by) VALUES ($1, $2, $3)
            ON CONFLICT (form_key) DO UPDATE SET state = EXCLUDED.state, changed_by = EXCLUDED.changed_by, changed_at = now()`, [key, state, by]);
+  const existing = await t.one("SELECT state FROM form_state WHERE form_key=$1 FOR UPDATE", [key]);
+  if (existing && existing.state !== expectedState) throw new HttpError(409, "settings.conflict");
+  const changed = existing
+    ? await t.one("UPDATE form_state SET state=$2,changed_by=$3,changed_at=now() WHERE form_key=$1 AND state=$4 RETURNING form_key", [key, state, by, expectedState])
+    : await t.one("INSERT INTO form_state(form_key,state,changed_by) VALUES($1,$2,$3) ON CONFLICT(form_key) DO NOTHING RETURNING form_key", [key, state, by]);
+  if (!changed) throw new HttpError(409, "settings.conflict");
+}
+export async function setSwitch(key, state, by) {
+  return writeFormSwitch({ query: q, one }, key, state, by);
 }
 
 function newRef(def) {

@@ -3214,6 +3214,236 @@
       "group": "rooms",
       "text": "Contact Us About Access",
       "where": "Link to the organizational accessibility contact on room pages."
+    },
+    "staff.setup.start": {
+      "group": "staff",
+      "text": "Set Up Forms",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.loading": {
+      "group": "staff",
+      "text": "Loading Forms…",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.title": {
+      "group": "staff",
+      "text": "Form Setup",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.progress": {
+      "group": "staff",
+      "text": "Form setup progress",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.step": {
+      "group": "staff",
+      "text": "Step {{n}} of {{total}} — {{step}}",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.step0": {
+      "group": "staff",
+      "text": "Choose a Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.step1": {
+      "group": "staff",
+      "text": "Wording",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.step2": {
+      "group": "staff",
+      "text": "Availability and Dates",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.step3": {
+      "group": "staff",
+      "text": "Review Changes",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.complete": {
+      "group": "staff",
+      "text": "Setup Complete",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.intro": {
+      "group": "staff",
+      "text": "Choose any form you may configure. Nothing changes until you review and save.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.choose": {
+      "group": "staff",
+      "text": "Choose a form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.form": {
+      "group": "staff",
+      "text": "Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.wordsReadOnly": {
+      "group": "staff",
+      "text": "Your account may change availability and dates. Wording is shown here for review.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.datesReadOnly": {
+      "group": "staff",
+      "text": "Your account may change wording. Opening, closing and dates require form-switch access.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.availability": {
+      "group": "staff",
+      "text": "After Saving",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.state.keep": {
+      "group": "staff",
+      "text": "Keep Current Availability",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.state.open": {
+      "group": "staff",
+      "text": "Open Within the Dates Below",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.state.closed": {
+      "group": "staff",
+      "text": "Close This Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.warning.membership": {
+      "group": "staff",
+      "text": "A Google Group manager still handles membership requests. Receiving a request does not add someone to the list.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.warning.recruitment": {
+      "group": "staff",
+      "text": "Confirm the current recruitment dates, offered roles and authorized reviewers before opening.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.warning.materials": {
+      "group": "staff",
+      "text": "Check current supplies and the fulfillment wording before opening requests.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.warning.delivery": {
+      "group": "staff",
+      "text": "Check the receiving workflow in Connect before opening a form for normal intake.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.review": {
+      "group": "staff",
+      "text": "Review the settings below. Back lets you change them before saving.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.reviewOpen": {
+      "group": "staff",
+      "text": "Saving will enable submissions within the dates below. Review the wording and dates before opening.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.blank": {
+      "group": "staff",
+      "text": "Not Set",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.was": {
+      "group": "staff",
+      "text": "Previously: {{value}}",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.receiving": {
+      "group": "staff",
+      "text": "Listed team: {{owner}}. Destination: {{destination}}. Confirm the receiving owner in Connect.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.destination.forms": {
+      "group": "staff",
+      "text": "Website Forms in Connect",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.destination.resources": {
+      "group": "staff",
+      "text": "Resource Suggestions in Connect",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.destination.wall": {
+      "group": "staff",
+      "text": "Wall of Support, Awaiting Moderation",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.deliveryNote": {
+      "group": "staff",
+      "text": "This setup changes wording, dates and intake availability. It does not grant access to answers or enable receipt emails and backup services.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.saved": {
+      "group": "staff",
+      "text": "{{title}} has been saved.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.viewForm": {
+      "group": "staff",
+      "text": "View This Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.another": {
+      "group": "staff",
+      "text": "Set Up Another Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.done": {
+      "group": "staff",
+      "text": "View Form Settings",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.cancel": {
+      "group": "staff",
+      "text": "Cancel Setup",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.back": {
+      "group": "staff",
+      "text": "Back",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.next": {
+      "group": "staff",
+      "text": "Next",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.apply": {
+      "group": "staff",
+      "text": "Save Form Settings",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.applyOpen": {
+      "group": "staff",
+      "text": "Save and Open Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.applyClose": {
+      "group": "staff",
+      "text": "Save and Close Form",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.chooseRequired": {
+      "group": "staff",
+      "text": "Please choose a form.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.conflict": {
+      "group": "staff",
+      "text": "These settings changed while you were working. Your entries are kept. Reload the current settings, review them and save again.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.reload": {
+      "group": "staff",
+      "text": "Reload Current Settings",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.reloaded": {
+      "group": "staff",
+      "text": "Current settings reloaded. Your edited fields are kept; review the changes before saving.",
+      "where": "Guided form setup on the staff page."
     }
   }
 }

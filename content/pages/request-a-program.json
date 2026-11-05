@@ -90,8 +90,8 @@
       "links": [
         {
           "label": "Request a Peer Support Group",
-          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform?usp=pp_url&entry.70593572=Peer+Support+Group+%28for+you%2C+your+members+or+community%29",
-          "icon": "out"
+          "href": "/forms/program-request/?topic=peer_support_group",
+          "icon": "arrow"
         }
       ],
       "photos": [
@@ -112,8 +112,8 @@
       "links": [
         {
           "label": "Request a Volunteer Training",
-          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform?usp=pp_url&entry.70593572=Volunteer+Training+%28for+your+group+or+team%29",
-          "icon": "out"
+          "href": "/forms/program-request/?topic=volunteer_training",
+          "icon": "arrow"
         }
       ],
       "photos": [

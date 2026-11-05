@@ -8,10 +8,9 @@
   "state": "closed",
   "closedMessage": "Letters of referral / recommendation open with the staff application. Referrers / Recommenders may email letters and questions to hiring@badgersupports.org.",
   "intro": [
-    "Please use this section to upload or submit a letter of referral or recommendation in support of the applicant. The letter should briefly describe your relationship to the applicant and provide relevant context regarding their qualifications, character, or readiness for involvement with Badger Supports.",
-    "Letter of Referral / Recommendations are due by April 26th at 11:59pm."
+    "Please use this section to upload or submit a letter of referral or recommendation in support of the applicant. The letter should briefly describe your relationship to the applicant and provide relevant context regarding their qualifications, character, or readiness for involvement with Badger Supports."
   ],
-  "review": "Built closed (decision 12), from the PDF Nicholas supplied on 23 Oct 2026: the form recommend.badgersupports.org opens. Words are Google's with decision 10's slips corrected ('contex', 'Letter or Referral'). Google links 'Badger Supports' in the intro; left out. The closing message is ours. Decision 11: dates have no year.",
+  "review": "Built closed (decision 12), from the PDF Nicholas supplied on 23 Oct 2026: the form recommend.badgersupports.org opens. Words are Google's with decision 10's slips corrected ('contex', 'Letter or Referral'). Google links 'Badger Supports' in the intro; left out. The closing message is ours. Decision 11: dates have no year. The current deadline is managed in staff Form Settings.",
   "sections": [
     {
       "id": "about_you",

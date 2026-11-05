@@ -742,8 +742,8 @@ await part("staff page: editor only", async () => {
   await freshServer();
   const { ctx, page } = await openStaff({ session: ["site.edit"] });
   const s = await staffState(page);
-  check(s.who && !s.headings.includes(words("staff.forms.title")) && s.headings.includes(words("staff.edit.title")) && !/answers/i.test(s.text) && !s.buttons.includes(words("staff.edit.download")),
-    `staff editor only: words tools only, nothing about reading answers or publishing (headings ${JSON.stringify(s.headings)})`);
+  check(s.who && s.headings.includes(words("staff.forms.title")) && s.headings.includes(words("staff.edit.title")) && !s.buttons.includes(words("staff.answers.show")) && !s.buttons.includes(words("staff.switch.open")) && !s.buttons.includes(words("staff.edit.download")),
+    `staff editor only: form wording and page tools without answers, intake controls or publishing (headings ${JSON.stringify(s.headings)})`);
   await ctx.close();
 });
 
@@ -790,7 +790,7 @@ await part("staff page: Open and Close a form", async () => {
   const rows = async () => (await q("SELECT state FROM form_state WHERE form_key = 'resource-problem'")).rows.map((r) => r.state);
   const card = () => page.evaluate(() => {
     const li = document.querySelector(".staff-form");
-    return { chip: li?.querySelector(".staff-chip")?.textContent, buttons: [...(li?.querySelectorAll("button") || [])].map((b) => b.textContent),
+    return { chip: li?.querySelector(".staff-chip")?.textContent, buttons: [...(li?.querySelectorAll(".staff-switch button") || [])].map((b) => b.textContent),
       text: li?.textContent || "", focus: document.activeElement?.textContent || "", forms: document.querySelectorAll(".staff-form").length };
   });
   const first = await card();
@@ -1238,7 +1238,7 @@ await part("staff page: pages, preview and earlier versions", async () => {
   await page.getByLabel(words("staff.pages.field.path")).first().fill("/Spring Retreat/");
   await page.getByRole("button", { name: words("staff.pages.add.button") }).click();
   await page.waitForFunction((w) => [...document.querySelectorAll(".staff-note")].some((n) => n.textContent === w), words("staff.pages.error.path"), { timeout: 5000 }).catch(() => {});
-  const kept = await page.evaluate(() => [...document.querySelectorAll(".staff-part input")].slice(0, 2).map((i) => i.value));
+  const kept = await Promise.all(["staff.pages.field.title", "staff.pages.field.path"].map(key => page.getByLabel(words(key)).first().inputValue()));
   check(kept.join("|") === "Spring Retreat|/Spring Retreat/", `pages: a refused address says why and keeps what was typed (${JSON.stringify(kept)})`);
   await page.getByLabel(words("staff.pages.field.path")).first().fill("/programs/spring-retreat/");
   await page.getByRole("button", { name: words("staff.pages.add.button") }).click();
@@ -1891,6 +1891,90 @@ await part("History: complete reading and navigation without JavaScript", async 
   check(await page.locator("h1").textContent()==="What We Do",`History ${width}px JS=${javaScriptEnabled}: About return link reaches What We Do`);
   await ctx.close();
  }
+});
+
+await part("all native forms", async () => {
+  const { freshServer } = await import("../test/helpers.mjs");
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  const { useConnect, connectConfig, serviceConfigNow } = await import("../netlify/lib/connect.mjs");
+  const { deliveriesSettled } = await import("../netlify/lib/deliver.mjs");
+  const { many } = await import("../netlify/lib/db.mjs");
+  const { setSwitch } = await import("../netlify/lib/intake.mjs");
+  const { handle } = await import("../netlify/lib/router.mjs");
+  const { handlePage, useDist } = await import("../netlify/lib/pages.mjs");
+  const snap = JSON.parse(fs.readFileSync(path.join(ROOT, ".build/server.json")));
+  const added = ["program-request", "resource-request", "referral-card-survey", "staff-application", "volunteer-application", "recommendation-letter"];
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    await freshServer(); useContent(snap); useConnect(false); useDist(path.join(ROOT, "dist"));
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    try {
+      const page = await ctx.newPage();
+      await page.route(BASE + "/forms/**", async route => {
+        const response = await handlePage(new Request(route.request().url()), { today: "2026-11-05" });
+        await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
+      });
+      await page.route(BASE + "/api/forms/**", async route => {
+        const r = route.request(), bytes = r.postDataBuffer();
+        const response = await handle(new Request(r.url(), { method: r.method(), headers: r.headers(), ...(["GET", "HEAD"].includes(r.method()) ? {} : { body: bytes }) }), { ip: "192.0.2.140" });
+        await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
+      });
+      for (const key of added) {
+        await page.goto(BASE + `/forms/${key}/`, { waitUntil: "networkidle" });
+        check(await page.locator("main h1").count() === 1 && await page.locator("form.bss-form").count() === 0 && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `native ${key} ${width}px JS=${javaScriptEnabled}: closed production page is readable without overflow`);
+      }
+      await setSwitch("recommendation-letter", "open", "fixture");
+      await page.goto(BASE + "/forms/recommendation-letter/", { waitUntil: "networkidle" });
+      if (javaScriptEnabled) {
+        await page.locator('[name="name"]').fill("Fictional Example"); await page.locator('[name="email"]').fill("fictional@example.org"); await page.locator('[name="applicant"]').fill("Fictional Applicant");
+        await page.locator('input[type="file"]').setInputFiles({ name: "fictional.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n% fictional native browser fixture\n%%EOF\n") });
+        await page.waitForFunction(() => !!document.querySelector('[data-file-id]')?.value);
+        await page.locator('[data-submit]').click(); await page.locator('[data-form-done]').waitFor();
+        check(await page.locator('[data-form-done]').isVisible(), `native ${width}px: actual PDF upload and native recommendation submission complete locally`);
+      } else {
+        check(await page.locator('[data-upload-alternative] a[href^="mailto:"]').isVisible() && !await page.locator('form.has-uploads').isVisible(), `native ${width}px noJS: PDF submission offers a usable contact alternative instead of a nonworking Send`);
+        await setSwitch("programming-feedback", "open", "fixture");
+        await page.goto(BASE + "/forms/programming-feedback/", { waitUntil: "networkidle" });
+        await page.locator('[name="category"][value="general"]').check(); await page.locator('[name="general_comment"]').fill("Fictional general-only feedback.");
+        await page.locator('[data-submit]').click(); await page.locator('[data-form-done]').waitFor();
+        check(await page.locator('[data-form-done]').isVisible(), `native ${width}px noJS: general feedback submits without unrelated required branches`);
+      }
+      await deliveriesSettled();
+      check(connectConfig() === false && serviceConfigNow() === false && (await many("SELECT state FROM outbox")).every(r => r.state !== "sent"), `native ${width}px JS=${javaScriptEnabled}: fictional submissions cannot reach an external delivery service`);
+    } finally { await ctx.close(); }
+  }
+});
+
+await part("editable native form settings", async () => {
+  const { freshServer } = await import("../test/helpers.mjs");
+  const { deliveriesSettled } = await import("../netlify/lib/deliver.mjs");
+  for (const width of [1280, 390, 320]) {
+    await freshServer(); useConnect(false);
+    const { ctx, page, errors } = await openStaff({ session: ["site.edit", "forms.switch:staff-application"], viewport: { width, height: 900 } });
+    try {
+      let card = page.locator('[data-form-card="staff-application"]');
+      await card.locator("summary").click();
+      await card.locator('[id$="-opensAt"]').fill("2099-01-01T12:00");
+      await card.locator('[id$="-deadline"]').fill("2099-01-08T12:00");
+      await card.locator('[id$="-title"]').fill("Fictional Staff Application");
+      await card.getByRole("button", { name: "Save Form Settings", exact: true }).click();
+      await card.getByRole("heading", { name: /Fictional Staff Application/ }).waitFor();
+      await page.reload({ waitUntil: "networkidle" }); card = page.locator('[data-form-card="staff-application"]');
+      await card.locator("summary").click();
+      check(await card.locator('[id$="-opensAt"]').inputValue() === "2099-01-01T12:00" && await card.locator('[id$="-deadline"]').inputValue() === "2099-01-08T12:00", `form settings ${width}px: dates and wording persist without a website build`);
+      await card.getByRole("button", { name: /^Open/, exact: false }).click();
+      await card.getByRole("button", { name: "Yes, Open It", exact: true }).click();
+      await card.getByText("Scheduled", { exact: true }).waitFor();
+      check(await card.getByRole("button", { name: /^Close/, exact: false }).isVisible(), `form settings ${width}px: scheduled intake can still be manually closed`);
+      await card.getByRole("button", { name: /^Close/, exact: false }).click();
+      await card.getByText("Closed", { exact: true }).waitFor();
+      await card.locator('[id$="-closesAt"]').fill("2098-01-01T12:00");
+      await card.getByRole("button", { name: "Save Form Settings", exact: true }).click();
+      await card.locator('[role="alert"]:not([hidden])').waitFor();
+      check(await card.locator('[id$="-closesAt"]').inputValue() === "2098-01-01T12:00", `form settings ${width}px: refused dates keep the user's entries`);
+      check(errors.length === 0 && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `form settings ${width}px: controls fit and have no browser error`);
+      await deliveriesSettled();
+    } finally { await ctx.close(); }
+  }
 });
 
 await browser.close();

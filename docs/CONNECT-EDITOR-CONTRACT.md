@@ -130,6 +130,7 @@ Reads: `forms` · analytics: `page` · photos load eager · browser module `form
 |---|---|---|
 | `form` | form | **required** |
 | `title` | one line of text |  |
+| `closedIntro` | one line of text |  |
 
 ### Text — `text`
 
@@ -498,7 +499,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-598 keys. Keys are permanent. Required text cannot be published empty and must keep each
+624 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -642,7 +643,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (71)
+### Forms (80)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -717,6 +718,15 @@ the site adds the markup.
 | `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
 | `form.workshopGoogleSignIn` | Google sign-in is required to use this form. You can also email your workshop request. | Under the trusted Google workshop request fallback; not shown on an open native form or an intentional closure. |  |
 | `form.workshopEmail` | Request by Email | Workshop request alternative when the trusted Google Form requires sign-in. |  |
+| `form.upload.alternativeTitle` | PDF Uploads Need JavaScript | Heading for the usable contact alternative to a PDF form when scripting is disabled. |  |
+| `form.upload.alternativeBody` | For another way to submit this form and its PDFs, please contact the team. | Explains that the no-script contact asks for another submission route; it does not confirm submission. |  |
+| `form.upload.alternativeContact` | Contact the Team | Email action for an alternate PDF form submission route. |  |
+| `form.window.opensAt` | Opens: | Editable form settings and intake window information. |  |
+| `form.window.closesAt` | Closes: | Editable form settings and intake window information. |  |
+| `form.window.deadline` | Deadline: | Editable form settings and intake window information. |  |
+| `form.window.priority` | Priority Deadline: | Editable form settings and intake window information. |  |
+| `form.window.zone` | Central Time | Editable form settings and intake window information. |  |
+| `form.programType` | Request: {{topic}} | Selected program type carried from a native request link, also preserved in the original Google fallback. | `{{topic}}` |
 
 ### Team and profiles (13)
 
@@ -743,7 +753,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (351)
+### Staff page and edit button (368)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1098,6 +1108,23 @@ the site adds the markup.
 | `auth.error.back` | Back to the Staff Page | Link at the bottom of the sign-in problem page. |  |
 | `edit.field.quiet` | Use a quieter text layout | Name of a value: on or off. |  |
 | `edit.field.firstLinkPrimary` | Make the first link the main action | Name of a value: on or off. |  |
+| `staff.formSettings.title` | Form Settings | Editable form settings and intake window information. |  |
+| `staff.formSettings.opensAt` | Starts Accepting — Central Time | Editable form settings and intake window information. |  |
+| `staff.formSettings.closesAt` | Stops Accepting — Central Time | Editable form settings and intake window information. |  |
+| `staff.formSettings.deadline` | Displayed Deadline — Central Time | Editable form settings and intake window information. |  |
+| `staff.formSettings.priority` | Priority Deadline — Central Time | Editable form settings and intake window information. |  |
+| `staff.formSettings.titleLabel` | Form Title | Editable form settings and intake window information. |  |
+| `staff.formSettings.introduction` | Introduction | Editable form settings and intake window information. |  |
+| `staff.formSettings.closedMessage` | Closed Message | Editable form settings and intake window information. |  |
+| `staff.formSettings.help` | Dates apply when saved. Open enables intake within the start and stop times; Close overrides every date. Blank start or stop times leave that bound unset. The displayed deadline does not stop submissions. A repeated daylight-saving hour uses its first occurrence. | Editable form settings and intake window information. |  |
+| `staff.formSettings.save` | Save Form Settings | Editable form settings and intake window information. |  |
+| `staff.formSettings.saving` | Saving… | Editable form settings and intake window information. |  |
+| `staff.formSettings.saved` | Form settings saved. | Editable form settings and intake window information. |  |
+| `staff.formSettings.conflict` | Someone changed these settings. Your entries are still here. Reload the page to review their changes before saving. | Editable form settings and intake window information. |  |
+| `staff.formSettings.invalid` | Check the dates and wording. Stop time must follow start time; dates must exist in Central Time. Keep a title and closed message. | Editable form settings and intake window information. |  |
+| `staff.formSettings.scheduled` | Scheduled | Editable form settings and intake window information. |  |
+| `staff.formSettings.ended` | Closed by Date | Editable form settings and intake window information. |  |
+| `staff.formSettings.enabledLater` | {{title}} is enabled and will open at its start time. | Editable form settings and intake window information. | `{{title}}` |
 
 ### Resource list (39)
 

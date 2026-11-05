@@ -440,7 +440,8 @@ test("a mailing-list request says it was received, never that the person is on t
   const said = [list.confirmation.title, ...list.confirmation.body].join(" ");
   assert.match(said, /request confirmation does not show whether you are subscribed/);
   assert.doesNotMatch(said, /(?:^|[.!?]\s+)(you are|you're|you’re|you have been) (now )?(on|added|subscribed|signed up|joined|in)\b|\bwelcome\b|not on the list yet/i);
-  assert.match(list.closedMessage, /Google Forms/);
+  assert.match(list.closedMessage, /requests are closed/);
+  assert.match(list.elsewhere, /^https:\/\/docs\.google\.com\/forms\//, "the original enrollment handoff remains available until a native switch");
   const words = list.sections.find((s) => s.questions.length === 0);
   assert.ok(words, "the add-yourself steps are words, not a question");
   assert.ok(words.intro.some((p) => p.links?.some((l) => l.href === "mailto:badgersupports+subscribe@g-groups.wisc.edu")), "and the address is a link");

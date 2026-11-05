@@ -1224,6 +1224,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-drawer[hidden] { display: none; }
 .staff-drawer p, .staff-preview p { margin: 0; }
 .staff-form .field + .field { margin-top: var(--s3); }
+.staff-form-settings { margin-top: var(--s3); }
+.staff-form-settings form { display: grid; gap: var(--s3); margin-top: var(--s3); }
 .staff-settings { margin-top: var(--s4); }
 /* A refused settings save says why above the fields it kept. */
 .staff-settings .staff-note { margin-bottom: var(--s4); }

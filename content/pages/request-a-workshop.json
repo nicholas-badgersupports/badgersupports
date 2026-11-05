@@ -215,8 +215,8 @@
       "links": [
         {
           "label": "Request Volunteer Training Here!",
-          "href": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform",
-          "icon": "out"
+          "href": "/forms/program-request/?topic=volunteer_training",
+          "icon": "arrow"
         }
       ],
       "photos": [

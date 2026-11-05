@@ -3044,6 +3044,136 @@
       "group": "forms",
       "text": "Request by Email",
       "where": "Workshop request alternative when the trusted Google Form requires sign-in."
+    },
+    "form.upload.alternativeTitle": {
+      "group": "forms",
+      "text": "PDF Uploads Need JavaScript",
+      "where": "Heading for the usable contact alternative to a PDF form when scripting is disabled."
+    },
+    "form.upload.alternativeBody": {
+      "group": "forms",
+      "text": "For another way to submit this form and its PDFs, please contact the team.",
+      "where": "Explains that the no-script contact asks for another submission route; it does not confirm submission."
+    },
+    "form.upload.alternativeContact": {
+      "group": "forms",
+      "text": "Contact the Team",
+      "where": "Email action for an alternate PDF form submission route."
+    },
+    "form.window.opensAt": {
+      "group": "forms",
+      "text": "Opens:",
+      "where": "Editable form settings and intake window information."
+    },
+    "form.window.closesAt": {
+      "group": "forms",
+      "text": "Closes:",
+      "where": "Editable form settings and intake window information."
+    },
+    "form.window.deadline": {
+      "group": "forms",
+      "text": "Deadline:",
+      "where": "Editable form settings and intake window information."
+    },
+    "form.window.priority": {
+      "group": "forms",
+      "text": "Priority Deadline:",
+      "where": "Editable form settings and intake window information."
+    },
+    "form.window.zone": {
+      "group": "forms",
+      "text": "Central Time",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.title": {
+      "group": "staff",
+      "text": "Form Settings",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.opensAt": {
+      "group": "staff",
+      "text": "Starts Accepting — Central Time",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.closesAt": {
+      "group": "staff",
+      "text": "Stops Accepting — Central Time",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.deadline": {
+      "group": "staff",
+      "text": "Displayed Deadline — Central Time",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.priority": {
+      "group": "staff",
+      "text": "Priority Deadline — Central Time",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.titleLabel": {
+      "group": "staff",
+      "text": "Form Title",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.introduction": {
+      "group": "staff",
+      "text": "Introduction",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.closedMessage": {
+      "group": "staff",
+      "text": "Closed Message",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.help": {
+      "group": "staff",
+      "text": "Dates apply when saved. Open enables intake within the start and stop times; Close overrides every date. Blank start or stop times leave that bound unset. The displayed deadline does not stop submissions. A repeated daylight-saving hour uses its first occurrence.",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.save": {
+      "group": "staff",
+      "text": "Save Form Settings",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.saving": {
+      "group": "staff",
+      "text": "Saving…",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.saved": {
+      "group": "staff",
+      "text": "Form settings saved.",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.conflict": {
+      "group": "staff",
+      "text": "Someone changed these settings. Your entries are still here. Reload the page to review their changes before saving.",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.invalid": {
+      "group": "staff",
+      "text": "Check the dates and wording. Stop time must follow start time; dates must exist in Central Time. Keep a title and closed message.",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.scheduled": {
+      "group": "staff",
+      "text": "Scheduled",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.ended": {
+      "group": "staff",
+      "text": "Closed by Date",
+      "where": "Editable form settings and intake window information."
+    },
+    "staff.formSettings.enabledLater": {
+      "group": "staff",
+      "text": "{{title}} is enabled and will open at its start time.",
+      "where": "Editable form settings and intake window information."
+    },
+    "form.programType": {
+      "group": "forms",
+      "text": "Request: {{topic}}",
+      "where": "Selected program type carried from a native request link, also preserved in the original Google fallback."
     }
   }
 }

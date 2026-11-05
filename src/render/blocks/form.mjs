@@ -7,6 +7,8 @@ import { go } from "../context.mjs";
 import { renderForm, renderClosed, prose } from "../form.mjs";
 import { proseText } from "../../shared/forms.mjs";
 import { workshopTopic, workshopElsewhere, workshopGoogleFallback } from "../../shared/workshop-topic.mjs";
+import { chicagoInstant } from "../../shared/chicago-time.mjs";
+import { programTopic, programElsewhere } from "../../shared/program-topic.mjs";
 
 /* Characters of intro past which the sheet stops staying beside the questions (forms.css is-long):
    a sticky sheet taller than the window would hide its own end. */
@@ -17,8 +19,13 @@ const LONG_INTRO = 700;
    whose headings sit under the page's h1. A form shown only to say it has moved (`elsewhere`)
    keeps its intro: it says what the form is for. */
 export function formSection(def, inner, { id = `b-form-${def.key}`, title = null, ctx = null } = {}) {
+  const dates = ctx && def.intakeWindow ? Object.entries(def.intakeWindow).filter(([,v]) => v).map(([k,v]) => {
+    const instant = chicagoInstant(...v.split("T"));
+    const when = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" }).format(new Date(instant));
+    return html`<p><strong>${ctx.t(k === "deadline" && def.key === "staff-application" ? "form.window.priority" : `form.window.${k}`)}</strong> ${when} (${ctx.t("form.window.zone")})</p>`;
+  }) : [];
   return html`<section class="form-page" aria-labelledby="${id}-h" data-block="${id}"><div class="wrap">
-  <header class="${proseText(def.intro).join(" ").length > LONG_INTRO ? "form-head is-long" : "form-head"}"><h1 id="${id}-h">${title || def.title}</h1>${prose(def.intro, { level: 2, ctx })}</header>
+  <header class="${proseText(def.intro).join(" ").length > LONG_INTRO ? "form-head is-long" : "form-head"}"><h1 id="${id}-h">${def.settingsTitle ? def.title : title || def.title}</h1>${prose(def.intro, { level: 2, ctx })}${dates}</header>
   ${inner}
 </div></section>`;
 }
@@ -45,7 +52,7 @@ export function formPreviewPages(forms, t) {
 export default {
   type: "form",
   label: "Native form",
-  fields: { form: "form!", title: "text" },
+  fields: { form: "form!", title: "text", closedIntro: "text" },
   data: ["forms"],
   client: "form.js",
   analytics: "page",
@@ -56,12 +63,13 @@ export default {
     /* `preview` is set only on the review pages a prototype build makes for a closed form
        (ops/build.mjs formPreviewPages): the form as it will look when it opens, sending nothing. */
     const preview = !!(b.preview && ctx.prototype);
-    const topic = workshopTopic(def, ctx.formTopic);
-    const elsewhere = workshopElsewhere(def, topic);
+    const topic = workshopTopic(def, ctx.formTopic) || programTopic(def, ctx.formTopic);
+    const elsewhere = def.key === "program-request" ? programElsewhere(def, topic) : workshopElsewhere(def, topic);
     const active = def.state === "open" || preview;
-    const selection = topic && (active || elsewhere !== def.elsewhere) ? html`<p class="form-topic">${ctx.t("form.workshopTopic", { topic: topic.label })}</p>` : "";
+    const selection = topic && (active || elsewhere !== def.elsewhere) ? html`<p class="form-topic">${ctx.t(def.key === "program-request" ? "form.programType" : "form.workshopTopic", { topic: topic.label })}</p>` : "";
     const note = !active && workshopGoogleFallback(def) ? html`<p class="form-elsewhere-note">${ctx.t("form.workshopGoogleSignIn")}</p><p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("form.workshopEmail"), "mail")}</p>` : null;
-    const inner = html`${selection}${active ? renderForm(def, { t: ctx.t, ctx, preview, values: topic ? { topics: [topic.id] } : {} }) : renderClosed(def, ctx.t, { elsewhere, note })}`;
-    return formSection(def, inner, { id: b.id, title: b.title, ctx });
+    const inner = html`${selection}${active ? renderForm(def, { t: ctx.t, ctx, preview, values: topic ? { [def.key === "program-request" ? "request_type" : "topics"]: [topic.id] } : {} }) : renderClosed(def, ctx.t, { elsewhere, note })}`;
+    const introduction = !active && b.closedIntro && !def.settingsIntroduction ? { ...def, intro: [b.closedIntro] } : def;
+    return formSection(introduction, inner, { id: b.id, title: b.title, ctx });
   },
 };

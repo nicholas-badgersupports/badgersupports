@@ -12,7 +12,7 @@ import { currentForm } from "./intake.mjs";
 import { connectConfig } from "./connect.mjs";
 import { definitionFor, deliveryCounts, ingestPayload } from "./deliver.mjs";
 import { can } from "./staff.mjs";
-import { answerColumns } from "../../src/shared/forms.mjs";
+import { answerColumns, proseText } from "../../src/shared/forms.mjs";
 
 const LATEST = 50;
 const NONE = { pending: 0, sent: 0, failed: 0, held: 0, cancelled: 0, lastError: null };
@@ -30,11 +30,14 @@ export async function formsFor(who) {
   const forms = [];
   for (const key of [...keys].sort()) {
     const canRead = can(who, `forms.read:${key}`), canSwitch = can(who, `forms.switch:${key}`);
-    if (!canRead && !canSwitch) continue;
+    const canEdit = can(who, "site.edit");
+    if (!canRead && !canSwitch && !canEdit) continue;
     const f = await formOrNull(key);
     const c = canRead ? counts.get(key) : null;
     forms.push({
       key, title: f?.def.title || key, state: f?.state || "closed", canRead, canSwitch,
+      manualState: f?.manualState || "closed", stateReason: f?.stateReason || null, canEdit,
+      ...((canSwitch || canEdit) && f ? { settings: f.settings, defaults: { title: f.def.title, introduction: proseText(f.def.intro).join("\n\n"), closedMessage: f.closedMessage } } : {}),
       total: c?.n || 0, latest: c ? new Date(c.latest).toISOString() : null,
       delivery: (canRead && delivery[key]) || NONE,
     });

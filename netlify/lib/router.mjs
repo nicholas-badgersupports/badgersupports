@@ -41,6 +41,8 @@ import { formSection } from "../../src/render/blocks/form.mjs";
 import { html } from "../../src/render/html.mjs";
 import { readRaw, allQuestions, QUESTION_TYPES } from "../../src/shared/forms.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
+import { composeSite } from "../../src/render/site.mjs";
+import { saveFormSettings, COPY_FIELDS } from "./form-settings.mjs";
 
 export const TIERS = new Set(["public", "director"]);
 export const FORM_PER_HOUR = 40;
@@ -66,14 +68,24 @@ async function page(status, pageInfo, body, clients = []) {
   return htmlResponse(status, String(renderPage(ctx, { analytics: "none", noindex: true, ...pageInfo, title }, { body: body(ctx), clients })));
 }
 
-function formPage(def) {
-  const p = serverContent().formPages?.[def.key];
-  return { id: p?.id || `pg-form-${def.key}`, path: p?.path || `/forms/${def.key}/`, title: p?.title || def.title, blockId: p?.blockId, blockTitle: p?.blockTitle };
+async function formPage(def) {
+  const c = serverContent();
+  let p = c.formPages?.[def.key];
+  // Replies use the same published page wording as a fresh GET, including closed introductions.
+  if (c.render) try {
+    const revision = await currentRevision();
+    const site = composeSite(c.render, revision?.edits || {}, revision?.structure);
+    const page = site.pages.find(p => p.blocks?.some(b => b.type === "form" && b.form === def.key && !b.preview));
+    const block = page?.blocks.find(b => b.type === "form" && b.form === def.key && !b.preview);
+    if (block) p = { id: page.id, path: page.path, title: page.title, blockId: block.id, blockTitle: block.title, closedIntro: block.closedIntro };
+  } catch { /* The shipped metadata remains available when published wording cannot be read. */ }
+  return { id: p?.id || `pg-form-${def.key}`, path: p?.path || `/forms/${def.key}/`, title: p?.title || def.title, blockId: p?.blockId, blockTitle: p?.blockTitle, closedIntro: p?.closedIntro };
 }
 
-const formReply = async (status, def, inner) => {
-  const p = formPage(def);
-  return page(status, p, (ctx) => formSection(def, inner(ctx), { id: p.blockId, title: p.blockTitle, ctx }), ["form.js"]);
+const formReply = async (status, def, inner, { closed = false } = {}) => {
+  const p = await formPage(def);
+  const introduction = closed && p.closedIntro && !def.settingsIntroduction ? { ...def, intro: [p.closedIntro] } : def;
+  return page(status, def.settingsTitle ? { ...p, title: def.title } : p, (ctx) => formSection(introduction, inner(ctx), { id: p.blockId, title: p.blockTitle, ctx }), ["form.js"]);
 };
 
 /* The signed-in person, or 401. configured tells the staff page whether signing in can work on
@@ -123,7 +135,7 @@ async function formState(req, [key]) {
   noQuery(req);
   const f = await currentForm(key);
   if (!f) throw new HttpError(404, "form.unknown");
-  return json(200, { ok: true, key, state: f.state, version: f.def.version, closedMessage: f.state === "closed" ? f.closedMessage : null }, stateCache(key));
+  return json(200, { ok: true, key, state: f.state, version: f.def.version, closedMessage: f.state === "closed" ? f.closedMessage : null }, f.settings.opensAt || f.settings.closesAt ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : stateCache(key));
 }
 
 async function formSubmit(req, [key], context) {
@@ -157,7 +169,7 @@ async function formSubmit(req, [key], context) {
     return json(422, { ok: false, error: r.error, errors: r.errors, version: r.version, ...(changed ? { form: String(corrected(renderContext())) } : {}) });
   }
   if (r.ok) return formReply(200, r.def, (ctx) => renderDone(r.def, r.ref, ctx.t));
-  if (r.error === "form.closed") return formReply(409, r.def, (ctx) => renderClosed(r.def, ctx.t, { title: ctx.t("form.closedNow.title"), answers: answersForPerson(r.def, r.raw) }));
+  if (r.error === "form.closed") return formReply(409, r.def, (ctx) => renderClosed(r.def, ctx.t, { title: ctx.t("form.closedNow.title"), answers: answersForPerson(r.def, r.raw) }), { closed: true });
   return formReply(422, r.def, corrected);
 }
 
@@ -286,7 +298,24 @@ async function formSwitch(req, [key], _c, who) {
   await setSwitch(key, state, who.sub);
   let purgeError = null;
   try { await purgeTags(await formTags(key)); } catch (e) { purgeError = e.code || "purge.unavailable"; console.error("purge:", e.code || e.message); }
-  return json(200, { ok: true, key, state, ...(purgeError ? { purgeError } : {}) });
+  const updated = await currentForm(key);
+  return json(200, { ok: true, key, state: updated.state, ...(["scheduled", "ended"].includes(updated.stateReason) ? { manualState: updated.manualState, stateReason: updated.stateReason } : {}), ...(purgeError ? { purgeError } : {}) });
+}
+
+async function formSettings(req, [key], _c, who) {
+  const f = await currentForm(key);
+  if (!f) throw new HttpError(404, "form.unknown");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  const datesChanged = ["opensAt", "closesAt", "deadline"].some(k => body[k] !== f.settings[k]);
+  const wordsChanged = COPY_FIELDS.some(k => body[k] !== f.settings[k]);
+  if (datesChanged) need(who, `forms.switch:${key}`);
+  if (wordsChanged) need(who, "site.edit");
+  if (!datesChanged && !wordsChanged && !can(who, "site.edit")) need(who, `forms.switch:${key}`);
+  await saveFormSettings(key, body, who.sub);
+  let purgeError = null;
+  try { await purgeTags(await formTags(key)); } catch (e) { purgeError = e.code || "purge.unavailable"; }
+  return json(200, { ok: true, ...(await formsFor(who)), ...(purgeError ? { purgeError } : {}) });
 }
 
 async function editSourceRoute(req, _m, _c, who) {
@@ -487,6 +516,7 @@ export const ROUTES = [
   { name: "staffForms", method: "GET", pattern: /^\/api\/staff\/forms$/, tier: "director", run: staffForms },
   { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },
   { name: "formSwitch", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/switch$/, tier: "director", run: formSwitch },
+  { name: "formSettings", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/settings$/, tier: "director", run: formSettings },
   { name: "staffRetry", method: "POST", pattern: /^\/api\/staff\/outbox\/retry$/, tier: "director", run: staffRetry },
   { name: "editSource", method: "GET", pattern: /^\/api\/staff\/edit\/source$/, tier: "director", run: editSourceRoute },
   { name: "editHistory", method: "GET", pattern: /^\/api\/staff\/edit\/history$/, tier: "director", run: editHistoryRoute },

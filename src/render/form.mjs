@@ -153,9 +153,15 @@ function section(def, s, values, errors, t, ctx) {
 export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false }) {
   const anyErrors = Object.keys(errors).length > 0;
   const anyRequired = allQuestions(def).some(({ q }) => q.required);
+  const needsUpload = !preview && allQuestions(def).some(({ q }) => q.type === "file");
   const ordered = allQuestions(def).filter(({ q }) => errors[q.id]);
   const shown = notice || (preview ? { title: t("form.preview.title"), text: t("form.preview.body") } : null);
-  return html`<form${attrs({ class: "bss-form", method: "post", action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-preview": preview ? "" : null })}>
+  const alternate = needsUpload ? html`<noscript><div class="closed-panel upload-alternative" data-upload-alternative>
+    <h2>${t("form.upload.alternativeTitle")}</h2><p>${t("form.upload.alternativeBody")}</p>
+    ${ctx ? go(ctx, def.workflow?.connectQueue?.startsWith("hiring.") ? "mailto:hiring@badgersupports.org" : "mailto:directors@badgersupports.org", t("form.upload.alternativeContact"), "mail") : html`<a href="mailto:directors@badgersupports.org">${t("form.upload.alternativeContact")}</a>`}
+  </div></noscript>` : "";
+  // Server validation chooses applicable conditional questions with and without client scripting.
+  return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-preview": preview ? "" : null })}>
   <input type="hidden" name="_form" value="${def.key}"><input type="hidden" name="_version" value="${def.version}"><input type="hidden" name="_key" value="${idemKey}" data-idem>
   <div class="hp" aria-hidden="true"><label>${t("form.trap")} <input type="text" name="_website" tabindex="-1" autocomplete="off" value=""></label></div>
   <div${attrs({ class: "error-summary", tabindex: "-1", "data-error-summary": "", hidden: !anyErrors, role: anyErrors ? "alert" : null })}>

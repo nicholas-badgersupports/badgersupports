@@ -16,6 +16,7 @@ import { definitionFor } from "./deliver.mjs";
 import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources } from "../../src/shared/forms.mjs";
 import { sharedNow } from "./live-content.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
+import { readFormSettings, effectiveForm } from "./form-settings.mjs";
 
 const REF_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const IDEM_RE = /^[A-Za-z0-9-]{8,64}$/;
@@ -27,7 +28,7 @@ const sha256 = (s) => crypto.createHash("sha256").update(s).digest("hex");
    an application cannot open by accident before it has been written. Once a switch row exists the
    launch build's link to the Google Form (`elsewhere`) is dropped: a form a director closed is
    closed, with its own message. The pages draw forms from this too (pages.mjs). */
-export async function currentForm(key) {
+export async function currentForm(key, { now = Date.now() } = {}) {
   if (!KEY_RE.test(String(key))) return null;
   const shipped = serverContent().forms[key] || null;
   const published = await one("SELECT definition FROM form_versions WHERE form_key = $1 ORDER BY version DESC LIMIT 1", [key]);
@@ -43,7 +44,9 @@ export async function currentForm(key) {
   if (sw && def.elsewhere) { const { elsewhere, ...own } = def; def = own; }
   let state = sw ? sw.state : def.state;
   if (state === "open" && (allQuestions(def).length === 0 || allQuestions(def).some(({ q }) => q.type === "resource" && !q.resources?.length))) state = "closed";
-  return { def, state, closedMessage: (sw && sw.closed_message) || def.closedMessage };
+  const settings = await readFormSettings(key);
+  const result = effectiveForm(def, settings, state, now);
+  return { ...result, closedMessage: settings.closedMessage ?? (sw && sw.closed_message) ?? def.closedMessage };
 }
 
 /* A form's switch, set from the staff page (router.mjs, formSwitch). `by` is the Connect id of whoever
@@ -99,7 +102,7 @@ async function leftBehind(def, versionSeen, input) {
                                                      to questions dropped since the page loaded
    Throws HttpError for an unknown form. */
 export async function submit(key, input, { now = new Date() } = {}) {
-  const form = await currentForm(key);
+  const form = await currentForm(key, { now });
   if (!form) throw new HttpError(404, "form.unknown");
   const { def } = form;
   const raw = readRaw(def, input);

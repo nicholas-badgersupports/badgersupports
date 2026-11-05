@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-volunteer-application",
+  "path": "/forms/volunteer-application/",
+  "title": "Volunteer Application",
+  "description": "Current volunteer application availability and contact information.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-form-volunteer-application",
+      "type": "form",
+      "form": "volunteer-application",
+      "title": "Volunteer Application",
+      "closedIntro": "Volunteers support Badger Supports programs and events."
+    }
+  ]
+}

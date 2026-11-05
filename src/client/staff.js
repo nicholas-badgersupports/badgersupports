@@ -135,9 +135,10 @@ function switchControl(f, chip) {
   const shown = () => box.querySelector("button");
   function draw() {
     chip.className = `staff-chip is-${f.state}`;
-    chip.textContent = t(`staff.forms.state.${f.state}`);
-    const button = el("button", { type: "button", className: "btn btn--quiet", textContent: t(f.state === "open" ? "staff.switch.close" : "staff.switch.open") });
-    button.addEventListener("click", () => (f.state === "open" ? send(button, "closed") : ask()));
+    chip.textContent = t(f.stateReason === "scheduled" ? "staff.formSettings.scheduled" : f.stateReason === "ended" ? "staff.formSettings.ended" : `staff.forms.state.${f.state}`);
+    const enabled = (f.manualState || f.state) === "open";
+    const button = el("button", { type: "button", className: "btn btn--quiet", textContent: t(enabled ? "staff.switch.close" : "staff.switch.open") });
+    button.addEventListener("click", () => (enabled ? send(button, "closed") : ask()));
     box.replaceChildren(el("div", { className: "staff-actions" }, button));
   }
   function ask() {
@@ -163,14 +164,52 @@ function switchControl(f, chip) {
       return;
     }
     f.state = r.body.state;
+    f.manualState = r.body.manualState || r.body.state;
+    f.stateReason = r.body.stateReason;
     draw();
-    const words = [t(f.state === "open" ? "staff.switch.opened" : "staff.switch.closed", { title: f.title }), r.body.purgeError ? t("staff.switch.slow") : ""].filter(Boolean).join(" ");
+    const words = [t(f.stateReason === "scheduled" ? "staff.formSettings.enabledLater" : f.stateReason === "ended" ? "staff.formSettings.ended" : f.state === "open" ? "staff.switch.opened" : "staff.switch.closed", { title: f.title }), r.body.purgeError ? t("staff.switch.slow") : ""].filter(Boolean).join(" ");
     box.append(el("p", { textContent: words }));
     shown().focus();
     say(words);
   }
   draw();
   return box;
+}
+
+function formSettingsControl(f, saved) {
+  if (!f.settings || (!f.canSwitch && !f.canEdit)) return null;
+  const summary = el("summary", { textContent: t("staff.formSettings.title") });
+  const box = el("details", { className: "staff-form-settings" }, summary);
+  const inputs = {}, initial = {}, fields = [];
+  for (const k of ["opensAt", "deadline", "closesAt", "title", "introduction", "closedMessage"]) {
+    const date = ["opensAt", "closesAt", "deadline"].includes(k);
+    if (date ? !f.canSwitch : !f.canEdit) continue;
+    const value = date ? f.settings[k] : f.settings[k] ?? f.defaults[k];
+    const input = el(date || k === "title" ? "input" : "textarea", { ...(date ? { type: "datetime-local" } : k === "title" ? { type: "text", maxLength: 200 } : { rows: 4, maxLength: 8000 }), value: value || "" });
+    input.id = `settings-${f.key}-${k}`; inputs[k] = input; initial[k] = input.value;
+    const label = k === "deadline" && f.key === "staff-application" ? "priority" : k === "title" ? "titleLabel" : k;
+    fields.push(el("div", { className: "field" }, el("label", { htmlFor: input.id, textContent: t(`staff.formSettings.${label}`) }), input));
+  }
+  const note = el("p", { textContent: t("staff.formSettings.help") });
+  const error = el("p", { role: "alert", hidden: true });
+  const button = el("button", { type: "submit", className: "btn", textContent: t("staff.formSettings.save") });
+  const form = el("form", { noValidate: true }, note, ...fields, error, button);
+  form.addEventListener("submit", async e => {
+    e.preventDefault(); if (isBusy(button)) return;
+    const body = { ...f.settings };
+    for (const [k,input] of Object.entries(inputs)) if (input.value !== initial[k]) body[k] = input.value;
+    const done = busy(button, t("staff.formSettings.saving"));
+    const r = await call(`/api/staff/forms/${encodeURIComponent(f.key)}/settings`, { method: "POST", body }).catch(offline); done();
+    if (!form.isConnected) return;
+    if (r.status !== 200) {
+      error.hidden = false;
+      error.textContent = t(r.body.error === "settings.conflict" ? "staff.formSettings.conflict" : r.body.error?.startsWith("settings.") ? "staff.formSettings.invalid" : r.status === 403 ? "staff.forbidden" : "staff.loadError");
+      say(error.textContent); return;
+    }
+    saved(r.body.forms.find(x => x.key === f.key));
+    say(t("staff.formSettings.saved") + (r.body.purgeError ? " " + t("staff.switch.slow") : ""));
+  });
+  box.append(form); return box;
 }
 
 function formCard(f, connect) {
@@ -207,13 +246,16 @@ function formCard(f, connect) {
   const state = el("span", { className: `staff-chip is-${f.state}`, textContent: t(`staff.forms.state.${f.state}`) });
   // A form someone may switch but not read shows its title and switch only: no counts, no answers.
   const read = f.canRead !== false;
-  return el("li", { className: "staff-form" },
+  const card = el("li", { className: "staff-form" },
     el("h3", {}, el("span", { textContent: f.title }), " ", state),
     read ? el("p", { textContent: f.total ? `${t(f.total === 1 ? "staff.forms.count.one" : "staff.forms.count.other", { n: f.total })} · ${t("staff.forms.latest", { when: when(f.latest) })}` : t("staff.forms.none") }) : null,
     read ? deliveryLine(f, connect) : null,
     read && f.total ? toggle : null,
     read ? panel : null,
-    f.canSwitch ? switchControl(f, state) : null);
+    f.canSwitch ? switchControl(f, state) : null,
+    formSettingsControl(f, updated => { const next = formCard(updated, connect); card.replaceWith(next); next.querySelector("summary")?.focus(); }));
+  card.dataset.formCard = f.key;
+  return card;
 }
 
 function formsSection(me) {
@@ -1012,7 +1054,7 @@ function showTools(me) {
   note("");
   intro.hidden = true;
   if (quote) quote.hidden = true;
-  const forms = me.canRead || me.canSwitch ? formsSection(me) : me.readAgain && readAgainSection();
+  const forms = me.canRead || me.canSwitch || me.canEdit ? formsSection(me) : me.readAgain && readAgainSection();
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
   const pages = me.canEdit || me.canPublish;
   app.replaceChildren(...[onward, whoBar(me), forms, pages && editSection(me), pages && pagesSection(me), me.canPublish && roomsSection(), pages && versionsSection(me)].filter(Boolean));

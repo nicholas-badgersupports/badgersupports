@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-staff-application",
+  "path": "/forms/staff-application/",
+  "title": "Staff Application",
+  "description": "Current staff application availability and contact information.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-form-staff-application",
+      "type": "form",
+      "form": "staff-application",
+      "title": "Staff Application",
+      "closedIntro": "Badger Supports staff contribute to peer support, education, and community programs."
+    }
+  ]
+}

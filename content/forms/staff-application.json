@@ -6,13 +6,13 @@
   "audience": "public",
   "anonymous": false,
   "state": "closed",
-  "closedMessage": "Applications for Fall 2026 are closed. Questions about hiring: hello@badgersupports.org.",
+  "closedMessage": "Staff applications are closed. For current hiring information, email hiring@badgersupports.org.",
   "intro": [
     "Please read all information carefully.",
-    "To ensure consideration for appointments in 2026-2027 please submit by April 3rd at 11:59pm. Applications will still be accepted on a rolling basis afterwards.",
+    "Applications will still be accepted on a rolling basis after the priority deadline.",
     "Badger Supports values diversity and is an Equal Opportunity Employer. Please direct questions and inquiries to hiring@badgersupports.org"
   ],
-  "review": "Kept closed with its closing message (decision 12). Decision 11: the dates have no year, and the next cycle's are needed when it reopens. Words are Google's (handoff of 21 Oct), with decision 10's copy slips corrected and retired directorate names replaced by Connect's.",
+  "review": "Kept closed with its closing message (decision 12). Decision 11: the dates have no year, and the next cycle's are needed when it reopens. Words are Google's (handoff of 21 Oct), with decision 10's copy slips corrected and retired directorate names replaced by Connect's. Intake dates are managed in staff Form Settings; priority deadline does not end rolling intake.",
   "sections": [
     {
       "id": "about",
@@ -133,12 +133,12 @@
             "Your recommender should be able to address your relational skills, responsibility, and alignment with a peer-to-peer support model."
           ]
         },
-        "Your letter of recommendation is required before April 26th for your application to be considered complete. You may therefore submit this application before your letter of recommendation is submitted.",
+        "Your letter of recommendation is required by the deadline shown on the recommendation form for your application to be considered complete. You may therefore submit this application before your letter of recommendation is submitted.",
         "You may submit any number of letters of recommendation; only one is required. Please have your recommender submit at:",
         {
           "links": [
             {
-              "href": "https://recommend.badgersupports.org/",
+              "href": "/forms/recommendation-letter/",
               "label": "recommend.badgersupports.org"
             }
           ]
@@ -932,11 +932,11 @@
           "label": "Letter of Referral / Recommendation",
           "required": true,
           "help": [
-            "I understand that my application is only complete when a letter of referral / recommendation has been uploaded to recommend.badgersupports.org/ by April 26th at 11:59pm.",
+            "I understand that my application is only complete when a letter of referral / recommendation has been uploaded to recommend.badgersupports.org/ by the deadline shown on that form.",
             {
               "links": [
                 {
-                  "href": "https://recommend.badgersupports.org/",
+                  "href": "/forms/recommendation-letter/",
                   "label": "recommend.badgersupports.org"
                 }
               ]

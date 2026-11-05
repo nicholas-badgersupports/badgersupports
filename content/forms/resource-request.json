@@ -6,7 +6,7 @@
   "audience": "public",
   "anonymous": false,
   "state": "closed",
-  "closedMessage": "Resource requests are on Google Forms for now. Questions: hello@badgersupports.org.",
+  "closedMessage": "Resource requests are paused. For help with materials or ribbon distribution, email hello@badgersupports.org.",
   "intro": [
     "Badger Supports is a General Student Services Fund (GSSF) organization, dual-registered with UHS Prevention.",
     "As a peer-led mental health organization, we work to make wellness accessible, reduce stigma, and foster community across campus.",
@@ -148,5 +148,6 @@
       "https://forms.gle/GgfggAR7nRVSXrZPA"
     ],
     "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Google's title for the file begins 'LIVE COMM:'; Communications is a retired name, and its work sits with Engagement in Connect (docs/directorates/engagement.md)."
-  }
+  },
+  "elsewhere": "https://docs.google.com/forms/d/e/1FAIpQLSenmQrIikZ5v2_tqdcGT1bTeKSNTPdaQAstCEkntuARHbrd8g/viewform"
 }

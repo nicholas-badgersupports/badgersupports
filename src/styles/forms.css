@@ -1,4 +1,5 @@
 /* Native forms. Labels above controls, errors written as what to do next, one Send button. */
+html:not(.js) .bss-form.has-uploads { display: none; }
 
 /* The form's title and instructions on the style guide's white card, topped with the page's colour,
    that stays beside the questions; the questions fill the rest of the width. One column on a phone.

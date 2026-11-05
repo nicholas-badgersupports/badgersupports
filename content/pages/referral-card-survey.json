@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-referral-card-survey",
+  "path": "/forms/referral-card-survey/",
+  "title": "Suggest a Referral Card",
+  "description": "Share feedback and ideas for Badger Supports referral cards.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-form-referral-card-survey",
+      "type": "form",
+      "form": "referral-card-survey",
+      "title": "Suggest a Referral Card",
+      "closedIntro": "Share your feedback and ideas for referral cards."
+    }
+  ]
+}

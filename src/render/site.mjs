@@ -73,5 +73,6 @@ export function renderSitePage(snap, composed, page, today, forms = null, { form
     site: composed.site, media: snap.media, builtPaths: composed.builtPaths || snap.builtPaths, programs: new Map([...composed.programs, ...sectionPrograms(page)]),
     routes: snap.routes, data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null, formTopic, now,
   });
-  return String(renderPage(ctx, page));
+  const ownForm = (page.blocks || []).find(b => b.type === "form" && forms?.[b.form]?.settingsTitle);
+  return String(renderPage(ctx, ownForm ? { ...page, title: forms[ownForm.form].title } : page));
 }

@@ -24,7 +24,7 @@ import { currentForm } from "./intake.mjs";
 import { composeSite, renderSitePage, formsOn } from "../../src/render/site.mjs";
 import { trimSlash as dropSlash } from "../../src/shared/structure.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
-import { topicFromAddress } from "../../src/shared/workshop-topic.mjs";
+import { formTopicFromAddress as topicFromAddress } from "../../src/shared/program-topic.mjs";
 import { refreshes } from "../../src/render/registry.mjs";
 import { eventsNow } from "./live-events.mjs";
 
@@ -58,20 +58,20 @@ export async function siteNow({ catalogues = true } = {}) {
 
 /* The forms this page shows, as they stand now: { forms } (null when it shows none), or { failed: true } when
    they cannot be read, and the page draws them as built. */
-async function formsNow(page) {
+async function formsNow(page, now) {
   const keys = formsOn(page);
   if (!keys.length) return { forms: null };
   const forms = {};
   try {
     for (const key of keys) {
-      const f = await currentForm(key);
+      const f = await currentForm(key, { now });
       if (f) forms[key] = { ...f.def, state: f.state, closedMessage: f.closedMessage };
     }
   } catch (e) {
     console.error(`pages: forms drawn as built (${e.code || e.message})`);
     return { forms: null, failed: true };
   }
-  return { forms };
+  return { forms, scheduled: Object.values(forms).some(f => f.intakeWindow?.opensAt || f.intakeWindow?.closesAt) };
 }
 
 /* The cache tags a form's switch touches: its state answer (router.mjs) and every page that shows it. When the
@@ -183,8 +183,8 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
     const notFound = !page;
     const shown = page || site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
-    const { forms, failed } = await formsNow(shown);
-    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms, { formTopic: topicFromAddress(u.searchParams), now }), { ...(fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+    const { forms, failed, scheduled } = await formsNow(shown, now);
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms, { formTopic: topicFromAddress(u.searchParams), now }), { ...(scheduled || fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
     if (snap?.shared?.exports?.team && (teamPath(pathname) || wantsTeam)) {
@@ -233,7 +233,7 @@ export async function previewResponse(pageId, { edits, structure, today = chicag
     const failedTeam = wantsTeam && shared?.team?.unavailable;
     const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId) || (failedTeam ? site.pages.find(p => p.id === "pg-about-team") : null);
     if (!page) return null;
-    const { forms } = await formsNow(page);
+    const { forms } = await formsNow(page, now);
     return new Response(renderSitePage(c.render, site, page, today, forms, { now }), { status: failedTeam ? 503 : 200, headers });
   } catch (e) {
     if (!wantsTeam) throw e;

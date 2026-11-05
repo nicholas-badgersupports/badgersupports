@@ -6,7 +6,7 @@
   "audience": "public",
   "anonymous": false,
   "state": "closed",
-  "closedMessage": "The card design survey is on Google Forms for now. Questions: hello@badgersupports.org.",
+  "closedMessage": "The referral-card survey is closed. Please email suggestions or questions to hello@badgersupports.org.",
   "intro": [
     "Badger Supports is expanding our Resource Referral Card series — quick, pocket-sized guides that connect students to support and services across campus. We want your input on what kinds of resources we should feature next, how you’d describe them, and what information you’d want most clearly highlighted.",
     "Please fill out this survey for each unique Resource Referral Card you would like to see!"
@@ -283,5 +283,6 @@
       "https://forms.gle/eYdEzbosWkjfUQyN8"
     ],
     "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Connect files the Referral Cards initiative under Programs (docs/directorates/programs.md)."
-  }
+  },
+  "elsewhere": "https://docs.google.com/forms/d/e/1FAIpQLSfPOLa-4IjlmB74axm7Xk1vRBxN4GbMnmNAx0cAKC7BG20VDw/viewform"
 }

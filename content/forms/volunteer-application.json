@@ -6,7 +6,7 @@
   "audience": "public",
   "anonymous": false,
   "state": "closed",
-  "closedMessage": "The volunteer application is on Google Forms for now. Questions about volunteering: hiring@badgersupports.org.",
+  "closedMessage": "Volunteer applications are closed. For current opportunities, email hiring@badgersupports.org.",
   "intro": [
     "Please read all information carefully.",
     "Applications are accepted on a rolling basis.",
@@ -710,5 +710,6 @@
       "https://forms.gle/2pXzV917oPX4VodY7"
     ],
     "read": "PDF of the form, transcribed in Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md. The live form needs a wisc.edu sign-in, so its link targets were not read."
-  }
+  },
+  "elsewhere": "https://forms.gle/2pXzV917oPX4VodY7"
 }

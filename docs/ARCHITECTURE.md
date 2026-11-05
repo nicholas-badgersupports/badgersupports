@@ -143,6 +143,7 @@ private read in public, because there are no wrappers (the `netlify-backend-loca
 | staffForms | GET | `/api/staff/forms` | director |
 | staffSubmissions | GET | `/api/staff/forms/<key>/submissions` | director |
 | formSwitch | POST | `/api/staff/forms/<key>/switch` | director |
+| formSettings | POST | `/api/staff/forms/<key>/settings` | director |
 | staffRetry | POST | `/api/staff/outbox/retry` | director |
 | editSource | GET | `/api/staff/edit/source` | director |
 | editHistory | GET | `/api/staff/edit/history?target=<target>` | director |
@@ -213,6 +214,24 @@ Alumni history is disabled in `content/alumni-history.json` until an approved di
 ## Intake
 
 `netlify/lib/intake.mjs`.
+
+**Form Settings.** Each form card on `/staff/` offers start time, displayed deadline and stop time to its existing
+`forms.switch:<key>` holder, and title, introduction and closed message to `site.edit`. Mixed saves require both;
+an editor gains no submission counts, answers, retry or intake control. Settings save immediately without a rebuild,
+with an expected version and append-only `form_settings_history` in the same transaction. A conflicting save returns
+409 and keeps the browser's entries. Question IDs, requiredness and policy sections are not changed by these controls.
+An explicitly saved title/introduction overrides the page's title/closed introduction; untouched fields retain their
+existing page overrides. Presentation settings do not renumber question definitions or replace historical answers.
+
+Times are entered in America/Chicago and resolved with `chicagoInstant`: impossible wall times are rejected and a
+repeated hour uses its earlier occurrence. Start is inclusive, stop exclusive. Manual Close always wins; manual Open
+enables only the configured window. Blank bounds leave intake manual. The displayed deadline is informational:
+the staff application labels it Priority Deadline and preserves rolling intake afterwards. The recommendation form
+has its own displayed deadline, referenced by the staff instructions and required acknowledgment. A hard cutoff is
+set independently with Stops Accepting. No current cycle dates are invented or opened by shipping this feature.
+`currentForm()` applies settings to GET, submit, file upload, state and staff summaries. Dated pages (including form
+badges) and state replies are no-store so an automatic transition cannot outlive a cached state. Saves/switches also
+purge the existing form/page tags; a failed purge retains the existing visible lag warning.
 
 **Which definition.** The shipped definition in `content/forms/`, unless a newer version is published in
 `form_versions`. A definition that fails `definitionProblems()` answers 503 `form.broken` rather than guess.
@@ -764,6 +783,7 @@ comment in one describes the day it was written: `001_intake`'s worker "not buil
 |---|---|
 | `form_state` | the on/off switch per form, its closed message, and who changed it |
 | `form_versions` | published definitions, by form and version |
+| `form_settings` / `form_settings_history` | current per-form presentation/window and append-only successful changes |
 | `submissions` | reference, form, version shown and version submitted, answers, anonymous flag, status (`new`, `in_review`, `done`, `spam`, `withdrawn`). Nothing that identifies the sender's connection |
 | `submission_events` | what happened to a submission, by whom (an opaque Connect id) |
 | `outbox` | work that leaves the site: kind, a unique dedupe key, state (`pending`, `held`, `sent`, `failed`, `cancelled`), attempts, next try, last error |

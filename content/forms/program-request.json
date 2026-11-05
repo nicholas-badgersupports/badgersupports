@@ -6,7 +6,7 @@
   "audience": "public",
   "anonymous": false,
   "state": "closed",
-  "closedMessage": "Requests for a peer support group, a volunteer training or a collaboration are on Google Forms for now. Questions: hello@badgersupports.org.",
+  "closedMessage": "Program requests are paused. Questions about a peer support group, volunteer training or collaboration: hello@badgersupports.org.",
   "intro": [
     "Badger Supports offers peer-led trainings and support spaces that can be requested by student organizations, campus units, or individual students.",
     "Use this form to request a Volunteer Training, a Peer Support Group, or to explore a collaboration with our team.",
@@ -171,5 +171,6 @@
     "publishedId": "1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w",
     "aliases": [],
     "read": "Public respondent view, 23 Oct 2026, read for its questions only. Settings, destination sheet, scripts and responses not opened. Google's title for the file begins 'LIVE PROG:'."
-  }
+  },
+  "elsewhere": "https://docs.google.com/forms/d/e/1FAIpQLSdu0_H2uGutYJwoEJDECXTI1zEP-8fShhwlABZIoy7LDDTP6w/viewform"
 }

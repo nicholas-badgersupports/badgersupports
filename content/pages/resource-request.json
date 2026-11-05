@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-resource-request",
+  "path": "/forms/resource-request/",
+  "title": "Request Resources",
+  "description": "Ask about Badger Supports materials and ribbon distribution.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-form-resource-request",
+      "type": "form",
+      "form": "resource-request",
+      "title": "Request Resources",
+      "closedIntro": "Ask about materials for your group or a ribbon distribution station."
+    }
+  ]
+}

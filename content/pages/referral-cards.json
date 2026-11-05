@@ -73,8 +73,8 @@
       "body": "Share a topic you would like a future referral card to cover.",
       "primary": {
         "label": "Complete Our Survey",
-        "href": "https://forms.gle/eYdEzbosWkjfUQyN8",
-        "icon": "out"
+        "href": "/forms/referral-card-survey/",
+        "icon": "arrow"
       },
       "quiet": true
     }

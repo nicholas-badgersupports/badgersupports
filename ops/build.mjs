@@ -594,7 +594,7 @@ export async function build({ production = false, launch = production, today = n
       forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths,
       shared: feed ? { source: "connect", exports: { team: !!feed.team, wall: !!feed.wall }, builtAt: new Date().toISOString() } : null,
     }),
-    formPages: Object.fromEntries(content.pages.flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null }]))),
+    formPages: Object.fromEntries(content.pages.filter(p => p.generated !== "form-preview").flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null, closedIntro: b.closedIntro || null }]))),
   };
   fs.mkdirSync(serverDir, { recursive: true });
   fs.writeFileSync(path.join(serverDir, "server.json"), JSON.stringify(server));

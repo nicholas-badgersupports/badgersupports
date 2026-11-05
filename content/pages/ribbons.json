@@ -111,8 +111,8 @@
       "body": "Fill out the form to request a ribbon station near you. Student orgs, departments, and campus units are welcome to host.",
       "primary": {
         "label": "Request a Ribbon Station",
-        "href": "https://forms.gle/GgfggAR7nRVSXrZPA",
-        "icon": "out"
+        "href": "/forms/resource-request/",
+        "icon": "arrow"
       },
       "photos": [
         "m-ribbons-table"

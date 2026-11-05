@@ -372,7 +372,8 @@ test("a director reads only the forms Connect lets them read, edits only with si
   useConnect(editor.cfg);
   const e = await signIn(editor);
   const list = await (await handle(get("/api/staff/forms", { cookie: e.cookie }), ip())).json();
-  assert.deepEqual(list.forms, []);
+  assert.equal(list.forms.length, 13);
+  assert.ok(list.forms.every(f => f.canEdit && !f.canRead && !f.canSwitch && f.total === 0 && f.latest === null), "a wording editor gets form settings without answers or intake controls");
   assert.equal((await handle(staffPost("/api/staff/outbox/retry", {}, e.cookie), ip())).status, 403);
   const em = await (await handle(get("/api/staff/me", { cookie: e.cookie }), ip())).json();
   assert.deepEqual([em.canEdit, em.canPublish, em.waiting], [true, false, 0], "an editor still sees how many changes wait");
@@ -427,7 +428,8 @@ test("with no status check from Connect, reading answers needs a sign-in within 
   assert.deepEqual([later.canRead, later.readAgain, later.canEdit, later.canPublish], [false, true, true, true], "an hour on, reading stops and the page says to sign in again");
   assert.deepEqual(await refusal(await answersFor(cookie)), [403, "auth.again"], "a direct request for answers is refused");
   assert.deepEqual(await refusal(await handle(staffPost("/api/staff/outbox/retry", {}, cookie), ip())), [403, "auth.again"]);
-  assert.deepEqual((await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms, [], "no form is listed");
+  const wordingOnly = (await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms;
+  assert.ok(wordingOnly.length === 13 && wordingOnly.every(f => !f.canRead && f.canEdit && f.total === 0 && f.latest === null), "wording settings remain available without answer access");
   assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 200, "changing words still works");
   assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200, "and so does the publish file");
   assert.equal(fake.statusCalls, 0, "nothing asked Connect");
@@ -484,7 +486,9 @@ test("with Connect's status check on, a session is checked again after ten minut
   ({ cookie } = await signIn(fake));
   fake.scopes = ["forms.read:workshop-request", "site.edit", "site.publish"];
   await age(11);
-  assert.deepEqual((await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms.map((f) => f.key), ["workshop-request"]);
+  const narrowedForms = (await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms;
+  assert.deepEqual(narrowedForms.filter(f => f.canRead).map(f => f.key), ["workshop-request"]);
+  assert.ok(narrowedForms.filter(f => !f.canRead).every(f => f.canEdit && f.total === 0 && f.latest === null), "wording access cannot restore answer access");
   assert.deepEqual(await refusal(await answersFor(cookie, "programming-feedback")), [403, "staff.forbidden"]);
 
   // Switched off in Connect: the next check ends the session here.
@@ -1197,7 +1201,7 @@ test("item 17: the switch opens and closes a form with no deploy, Open needs a s
     const shut = await doors();
     assert.ok(shut.every((n) => n > 0), "the staff application's door says Applications Closed");
     assert.equal((await flip(switcher.cookie, "staff-application", { state: "open", confirm: "staff-application" })).status, 200);
-    assert.deepEqual(cleared.sort(), ["form:staff-application", "page:pg-get-involved", "page:pg-home"]);
+    assert.deepEqual(cleared.sort(), ["form:staff-application", "page:pg-form-staff-application", "page:pg-get-involved", "page:pg-home"]);
     assert.deepEqual(await doors(), shut.map((n) => n - 1), "open: the doors drop the tag");
     await flip(switcher.cookie, "staff-application", { state: "closed" });
     assert.deepEqual(await doors(), shut);

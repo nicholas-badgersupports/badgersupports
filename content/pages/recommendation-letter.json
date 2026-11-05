@@ -1,0 +1,17 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-form-recommendation-letter",
+  "path": "/forms/recommendation-letter/",
+  "title": "Submit a Recommendation Letter",
+  "description": "Current recommendation-letter availability and contact information.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-form-recommendation-letter",
+      "type": "form",
+      "form": "recommendation-letter",
+      "title": "Submit a Recommendation Letter",
+      "closedIntro": "Letters of referral or recommendation support an applicant’s involvement with Badger Supports."
+    }
+  ]
+}

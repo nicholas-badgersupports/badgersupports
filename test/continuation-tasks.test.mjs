@@ -39,9 +39,10 @@ test("program requests preserve Housing context and separate booking from writte
   assert.match(head.body.join(" "), /not a confirmed booking/);
   assert.equal(page.blocks.find(b => b.id === "b-rp-housing").links[0].href, "/forms/workshop-request/?topic=housing");
   for (const id of ["b-rp-groups", "b-rp-training"]) assert.ok(head.links.some(l => l.href === `#${id}-h`));
-  for (const [id, choice] of [["b-rp-training", "Volunteer Training (for your group or team)"], ["b-rp-groups", "Peer Support Group (for you, your members or community)"]]) {
-    const url = new URL(page.blocks.find(b => b.id === id).links[0].href);
-    assert.equal(url.searchParams.get("entry.70593572"), choice);
+  for (const [id, choice] of [["b-rp-training", "volunteer_training"], ["b-rp-groups", "peer_support_group"]]) {
+    const url = new URL(page.blocks.find(b => b.id === id).links[0].href, "https://example.org");
+    assert.equal(url.pathname, "/forms/program-request/");
+    assert.equal(url.searchParams.get("topic"), choice);
   }
   const spill = page.blocks.find(b => b.id === "b-rp-spill");
   assert.equal(spill.primary.href, "https://badgerspill.org/#spill-form");

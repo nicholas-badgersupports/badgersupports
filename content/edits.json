@@ -1,0 +1,12 @@
+{
+  "schema": "bss.edits/1",
+  "edits": {
+    "page:pg-home:b-home-hero/spill/text": "Spill it to a fellow Badger",
+    "page:pg-home:b-home-involved/items/1/link/label": "Apply Now",
+    "page:pg-home:b-home-spill/body/0": "Badger SPILL is our written peer support program. Write what’s on your mind, and a trained UW–Madison Student Supporter writes back. It’s confidential.",
+    "page:pg-home:b-home-spill/title": "SPILL IT!",
+    "page:pg-peer-groups:b-pg-note/title": "Information",
+    "site:footer/spill/label": "Ready to SPILL?",
+    "text:schedule.placeLink": "Find Us"
+  }
+}

@@ -336,7 +336,7 @@ Reads: nothing but its own fields · analytics: `none` · photos load lazy · br
 |---|---|---|
 | `title` | one line of text | **required** |
 | `items` | words, in order: each its text, or its `text` and a `size` (1 small, 2 medium, 3 large) | **required** |
-| `meanings` | reference groups keyed by ribbon color or pattern; each has a title, a list of associated causes, optional note, and source links. A card’s explicit color chooses its group; plain saved text never inherits a group from its position | **required** |
+| `meanings` | reference groups keyed by ribbon color or pattern; each has a title, a list of associated causes, optional note, and source references retained as metadata rather than public links. A card’s explicit color chooses its group; plain saved text never inherits a group from its position | **required** |
 | `note` | one line of text |  |
 | `openLabel` | one line of text | **required** |
 | `closeLabel` | one line of text | **required** |

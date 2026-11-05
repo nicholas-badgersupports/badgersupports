@@ -2010,7 +2010,7 @@ await part("Ribbons: cards, cause dialogs and whole photos", async () => {
       if(javaScriptEnabled) {
         const dialog=page.getByRole("dialog",{name:"Red",exact:true});await dialog.waitFor({state:"visible"});
         const text=await dialog.textContent();
-        check(text.includes("In Colors of Support")&&text.includes("Substance Abuse & Addiction")&&text.includes("Associated Causes")&&text.includes("HIV/AIDS")&&await dialog.locator(".ribbon-references a").count()>0,`Ribbons ${width}px: popup separates BSS meaning from sourced broader causes`);
+        check(text.includes("In Colors of Support")&&text.includes("Substance Abuse & Addiction")&&text.includes("Associated Causes")&&text.includes("HIV/AIDS")&&await dialog.locator(".ribbon-references a").count()===0,`Ribbons ${width}px: popup keeps both meanings without public reference links`);
         const unique=await page.locator("svg [id]").evaluateAll(nodes=>new Set(nodes.map(n=>n.id)).size===nodes.length);
         const fit=await dialog.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight&&n.scrollWidth<=n.clientWidth+1;});
         check(unique&&fit&&await page.locator("html").evaluate(n=>getComputedStyle(n).overflow==="hidden"),`Ribbons ${width}px: popup fits, vector paint IDs stay unique and background scrolling is pinned`);

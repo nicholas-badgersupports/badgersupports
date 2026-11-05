@@ -22,6 +22,7 @@ test("27 native ribbons retain BSS meanings and exclude all requested patterns",
   assert.doesNotMatch(html,/Zebra|Houndstooth|Explore the Full Reference/);assert.match(html,/Blue Denim/);
   assert.doesNotMatch(html,/Red, white and blue|Orange and black|<input|<form|data-track/i);
   assert.match(html,/In Colors of Support/);assert.match(html,/Associated Causes/);
+  assert.doesNotMatch(html,/ribbon-references|Wikipedia ribbon reference|Disabled World ribbon chart|wikipedia\.org|disabled-world\.com/);
   assert.equal(b.analytics,undefined);assert.equal(BLOCKS.ribbons.analytics,"none");
   const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
   assert.deepEqual(blockProblems(p),[]);assert.deepEqual(ribbonProblems(b),[]);

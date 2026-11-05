@@ -2,7 +2,6 @@
    inherits an association from a former list position. All illustrations are original vectors. */
 import { html } from "../html.mjs";
 import { icon } from "../icons.mjs";
-import { link } from "../context.mjs";
 import { linkProblem } from "../../shared/links.mjs";
 
 const ORDER = ["red","maroon","orange","gold","yellow","bright-green","lime","green","jade","teal","teal-purple","turquoise","light-blue","blue","dark-blue","two-tone-blue","denim","periwinkle","lavender","purple","pink","pink-blue","silver","gray","white","black","parkinsons"];
@@ -35,12 +34,11 @@ export function ribbonArt(tone, id) {
   </svg>`;
 }
 
-function details(item,b,ctx) {
+function details(item,b) {
   return html`<div class="ribbon-details"><div class="ribbon-popup-art">${ribbonArt(item.tone,item.id+"-detail")}</div><div class="ribbon-popup-copy">
     ${item.local ? html`<section class="ribbon-local"><h3>${b.localLabel}</h3><p>${item.local}</p></section>` : ""}
     <h3>${b.otherLabel}</h3><ul class="ribbon-causes">${item.entry.causes.map(c=>html`<li>${c}</li>`)}</ul>
     ${item.entry.note ? html`<p class="ribbon-context">${item.entry.note}</p>` : ""}
-    <ul class="ribbon-references">${item.entry.references.map(r=>html`<li>${link(ctx,r.href,r.label,{class:"ribbon-source",icon:"out"})}</li>`)}</ul>
   </div></div>`;
 }
 
@@ -51,7 +49,7 @@ export default {
     const items=b.items.map((w,i)=>({...ribbonItem(w,b.meanings),id:`${b.id}-r${i}`})).sort((a,z)=>(a.entry?ORDER.indexOf(a.tone):999)-(z.entry?ORDER.indexOf(z.tone):999));
     return html`<section id="${b.anchor||b.id}" class="ribbon-gallery band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-ribbon-gallery><div class="wrap">
       <header class="ribbon-gallery-head"><h2 id="${b.id}-h">${b.title}</h2>${b.note?html`<p>${b.note}</p>`:""}</header>
-      <ul class="ribbon-grid">${items.map(item=>item.entry?html`<li><details class="ribbon-card"><summary><span class="ribbon-card-art">${ribbonArt(item.tone,item.id)}</span><span class="ribbon-caption"><span class="ribbon-name">${item.entry.title}</span><span class="ribbon-open"><span class="sr-only">${b.openLabel}</span>${icon("plus")}</span></span></summary>${details(item,b,ctx)}</details></li>`:html`<li class="ribbon-card ribbon-plain"><p>${item.text}</p></li>`)}</ul>
+      <ul class="ribbon-grid">${items.map(item=>item.entry?html`<li><details class="ribbon-card"><summary><span class="ribbon-card-art">${ribbonArt(item.tone,item.id)}</span><span class="ribbon-caption"><span class="ribbon-name">${item.entry.title}</span><span class="ribbon-open"><span class="sr-only">${b.openLabel}</span>${icon("plus")}</span></span></summary>${details(item,b)}</details></li>`:html`<li class="ribbon-card ribbon-plain"><p>${item.text}</p></li>`)}</ul>
       <dialog class="ribbon-dialog" aria-labelledby="${b.id}-dialog-title" data-ribbon-dialog><div class="ribbon-dialog-head"><div><p>${b.dialogLabel}</p><h2 id="${b.id}-dialog-title" data-ribbon-title></h2></div><button type="button" class="go ribbon-close" data-ribbon-close>${b.closeLabel}${icon("plus")}</button></div><div data-ribbon-body></div></dialog>
     </div></section>`;
   },

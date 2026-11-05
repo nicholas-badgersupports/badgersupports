@@ -900,3 +900,12 @@ metadata as listed, not newly assigned. No receipt, backup, mailbox, account or 
 The selected launch order is Netlify public first, www later, following the existing privacy review and signed-out
 checks. This selects launch order and does not approve the draft policy, automatically open intake or grant broader
 access. Current privacy and live delivery acceptance remain separate until actually verified.
+
+## Resource selections in browser validation — 5 November 2026
+
+Live verification selected an offered resource in Report a Problem, but enhanced validation rejected it before
+submission. The rendered dropdown held the catalog; the public browser definition omitted it. Both resource-choice
+forms now project the same public resource ID and name pairs into that definition. Internal resource properties stay
+out, and unknown selections remain invalid. Regression checks compare the rendered choice with the parsed browser
+definition and send each resource form through the real local intake from desktop and phone browsers. Live acceptance
+of the repair remains a separate deployment check; the failed test produced no accepted submission.

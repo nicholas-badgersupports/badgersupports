@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { definitionProblems, visibility, validateAnswers, readRaw, cellText, errorText, OTHER, proseProblem, proseText, withResources, answerWords } from "../src/shared/forms.mjs";
 import { ingestPayload } from "../netlify/lib/deliver.mjs";
-import { prose } from "../src/render/form.mjs";
+import { prose, publicDefinition, renderForm } from "../src/render/form.mjs";
 import { html } from "../src/render/html.mjs";
 import { makeT, resolveText } from "../src/shared/text.mjs";
 
@@ -38,6 +38,25 @@ test("a resource question offers the resource list, is answered by a resource's 
   assert.equal(payload.answers.resource, one.name);
   assert.equal(payload.answers.field, "Hours");
   assert.equal(payload.answers.words, "Open until 6.");
+});
+
+test("resource choices survive the rendered browser definition without internal resource fields", () => {
+  for (const key of ["resource-problem", "resource-update"]) {
+    const def = withResources(load(key), [{ id: "test-resource", name: "Fictional Resource" }]);
+    const question = def.sections.flatMap(s => s.questions).find(q => q.type === "resource");
+    question.resources[0].internalNote = "not public";
+    const markup = String(renderForm(def, { t }));
+    const browser = JSON.parse(markup.match(/id="form-def-[^"]+">([\s\S]*?)<\/script>/)[1]);
+    assert.deepEqual(browser, JSON.parse(JSON.stringify(publicDefinition(def))));
+    const projected = browser.sections.flatMap(s => s.questions).find(q => q.type === "resource");
+    assert.deepEqual(projected.resources, [{ id: "test-resource", name: "Fictional Resource" }]);
+    assert.doesNotMatch(markup, /internalNote|not public/);
+    const selected = markup.match(/<select[^>]*id="f-resource"[^>]*>[\s\S]*?<option value="([^\"]+)"/)[1];
+    assert.equal(selected, projected.resources[0].id);
+    const answers = key === "resource-problem" ? { resource: selected, problem: "Fictional problem" } : { resource: selected, field: "other", words: "Fictional update" };
+    assert.equal(validateAnswers(browser, readRaw(browser, answers)).ok, true, key);
+    assert.equal(validateAnswers(browser, readRaw(browser, { ...answers, resource: "not-listed" })).errors.resource, "option-unknown", key);
+  }
 });
 
 test("the three resource forms ask nothing about who sends them and are built closed", () => {

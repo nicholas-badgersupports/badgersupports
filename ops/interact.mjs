@@ -2163,6 +2163,44 @@ await part("form setup wizard", async () => {
   }
 });
 
+await part("resource form validation", async () => {
+  for (const key of ["resource-problem", "resource-update"]) for (const width of [1280, 390, 320]) {
+    await freshServer(); useConnect(false);
+    await q("INSERT INTO form_state(form_key,state,changed_by) VALUES($1,'open','harness')", [key]);
+    const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    try {
+      const page = await ctx.newPage(); const errors = []; let sends = 0;
+      page.on("pageerror", e => errors.push(e.message));
+      const preview = `/forms/${key}/preview/`;
+      await page.route(u => u.pathname === preview, async route => {
+        const response = await route.fetch();
+        await route.fulfill({ response, body: (await response.text()).replace(' data-preview=""', "") });
+      });
+      await page.route(`**/api/forms/${key}/**`, async route => {
+        const request = route.request(); const address = new URL(request.url());
+        const headers = { origin: ORIGIN, "sec-fetch-site": "same-origin" };
+        for (const name of ["content-type", "accept"]) if (request.headers()[name]) headers[name] = request.headers()[name];
+        if (address.pathname.endsWith("/submit")) sends++;
+        const response = await handle(new Request(ORIGIN + address.pathname + address.search, { method: request.method(), headers, body: request.method() === "POST" ? request.postData() : undefined }), { ip: `192.0.2.${ipN++}` });
+        await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: await response.text() });
+      });
+      await page.goto(BASE + preview, { waitUntil: "networkidle" });
+      const catalog = await page.evaluate(key => {
+        const def = JSON.parse(document.getElementById(`form-def-${key}`).textContent);
+        return { offered: [...document.querySelectorAll("#f-resource option")].filter(o => o.value).map(o => o.value), checked: def.sections.flatMap(s => s.questions).find(q => q.type === "resource").resources?.map(r => r.id) };
+      }, key);
+      check(catalog.offered.length > 0 && JSON.stringify(catalog.offered) === JSON.stringify(catalog.checked), `${key} ${width}px: browser validation has exactly the choices shown in the dropdown`);
+      await page.locator("#f-resource").selectOption(catalog.offered[0]);
+      if (key === "resource-problem") await page.locator("#f-problem").fill("Fictional resource problem for browser verification");
+      else { await page.locator("#f-field").selectOption("other"); await page.locator("#f-words").fill("Fictional resource update for browser verification"); }
+      await page.locator("[data-submit]").click(); await page.locator("[data-form-done]").waitFor();
+      const rows = await many("SELECT answers FROM submissions WHERE form_key=$1", [key]);
+      check(sends === 1 && rows.length === 1 && rows[0].answers.resource === catalog.offered[0], `${key} ${width}px: selecting a displayed resource reaches the actual intake once and saves its ID`);
+      check(errors.length === 0 && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${key} ${width}px: successful enhanced submission has no browser error or horizontal overflow`);
+    } finally { await ctx.close(); }
+  }
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

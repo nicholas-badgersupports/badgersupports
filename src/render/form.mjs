@@ -202,13 +202,13 @@ export function renderDone(def, ref, t) {
 /* What the browser is given: enough to show and hide branches and to check answers before
    sending. Words already on the page (help, intros) and internal notes (review, proposed,
    workflow, source) stay out. */
-const Q_KEYS = ["id", "type", "label", "required", "options", "allowOther", "showIf", "maxLength", "min", "max", "maxSelected", "maxLinks"];
+const Q_KEYS = ["id", "type", "label", "required", "options", "resources", "allowOther", "showIf", "maxLength", "min", "max", "maxSelected", "maxLinks"];
 export function publicDefinition(def) {
   return {
     schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state,
     sections: def.sections.map((s) => ({
       id: s.id, title: s.title, showIf: s.showIf,
-      questions: (s.questions || []).map((q) => Object.fromEntries(Q_KEYS.filter((k) => q[k] !== undefined).map((k) => [k, k === "options" ? q.options.map((o) => ({ id: o.id, label: o.label })) : q[k]]))),
+      questions: (s.questions || []).map((q) => Object.fromEntries(Q_KEYS.filter((k) => q[k] !== undefined).map((k) => [k, k === "options" ? q.options.map((o) => ({ id: o.id, label: o.label })) : k === "resources" ? q.resources.map((r) => ({ id: r.id, name: r.name })) : q[k]]))),
     })),
     confirmation: { title: def.confirmation?.title, body: def.confirmation?.body || [] },
   };

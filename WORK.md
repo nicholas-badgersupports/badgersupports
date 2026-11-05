@@ -148,7 +148,7 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
 26. **The one-week promise** on the workshop confirmation → confirmed by Programs, or removed.
 30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, now in its production `202b88f`); the site reads it
     (`ops/connect-feed.mjs`). `endDate` **shipped** in `9bf0ed5` (cloud run §2): an event over several days shows on each day, names its dates, leaves after its last.
-31. **Form setup**: all permitted forms are configurable and openable through /staff/ → Set Up Forms; local build pending release. No form opens automatically. The prior Workshop/Feedback receiving check and live acceptance remain open.
+31. **Form setup**: all permitted forms are configurable and openable through /staff/ → Set Up Forms (published Nov 5). No form opens automatically. This candidate also repairs the resource catalog omitted from browser validation; final live acceptance is tracked in the shared public handoff.
 33. **Functionality and UI pass** (24 Oct brief; `docs/OVERNIGHT-RUN-2026-10-24.md`) → (a) form failures **built**; (b) the
     sign-in states and a shorter staff page **built**; (c) access freshness **built**; (d) width and helper text **built** (§5, §8);
     (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All **shipped** in `9bf0ed5`, each on a regression shown failing first.

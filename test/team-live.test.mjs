@@ -214,7 +214,7 @@ test("uploaded photos added or replaced after build use only the fixed same-orig
   for (const url of [`https://evil.invalid/p/${ID}`, `${cfg.url}/p/${ID}?v=bad`, `${cfg.url}/p/${ID}?v=${VERSION}&v=${VERSION}`]) assert.equal(publicUpload(url, cfg.url), null);
 });
 
-test("only the opening directory row and primary profile portrait receive high priority", async () => {
+test("directory cards use normal priority and only the primary profile portrait is high priority", async () => {
   reset();
   reply.people = Array.from({ length: 8 }, (_, i) => {
     const id = "p" + String(i + 1).padStart(24, "0");
@@ -228,7 +228,7 @@ test("only the opening directory row and primary profile portrait receive high p
   for (let i = 1; i < 8; i++) {
     const image = team.find(tag => tag.includes(reply.people[i].id));
     assert.ok(image, `portrait ${i}`);
-    assert.match(image, i < 4 ? /fetchpriority="high"/ : /fetchpriority="low"/);
+    assert.doesNotMatch(image, /fetchpriority=/);
     assert.match(image, /loading="lazy"/);
     assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/);
   }
@@ -237,15 +237,15 @@ test("only the opening directory row and primary profile portrait receive high p
   assert.match(profile[0], /fetchpriority="high"/);
   assert.doesNotMatch(profile[0], /loading="lazy"/);
   for (const image of profile.slice(1)) {
-    assert.match(image, /fetchpriority="low"/);
+    assert.doesNotMatch(image, /fetchpriority=/);
     assert.match(image, /loading="lazy"/);
     assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/);
   }
   const again = images(await (await visit("/about/our-team/")).text());
-  assert.equal(again.filter(tag => tag.includes('fetchpriority="high"')).length, 3, "a new page draw gets a fresh row budget, including its missing-photo card");
+  assert.equal(again.filter(tag => tag.includes('fetchpriority="high"')).length, 0, "groups and missing-photo positions do not force card priorities");
 });
 
-test("the actual opening row finishes before nearby portrait downloads, including a failed first photo", async () => {
+test("a slow opening portrait never blocks another visible row", async () => {
   reset();
   reply.people = Array.from({ length: 12 }, (_, i) => {
     const id = "p" + String(i + 300).padStart(24, "0");
@@ -259,7 +259,7 @@ test("the actual opening row finishes before nearby portrait downloads, includin
       const count = width === 390 ? 2 : 4, seen = [];
       let release;
       const gate = new Promise(resolve => { release = resolve; });
-      const opening = new Set(reply.people.slice(0, count).map(p => p.id));
+      const opening = new Set([reply.people[0].id]);
       await page.addInitScript(() => {
         const NativeObserver = IntersectionObserver;
         window.__portraitObserverRan = false;
@@ -286,15 +286,23 @@ test("the actual opening row finishes before nearby portrait downloads, includin
       try {
         await page.goto("http://site.test/about/our-team/", { waitUntil: "domcontentloaded" });
         await page.waitForFunction(() => window.__portraitObserverRan);
-        assert.deepEqual(new Set(seen), opening, "only the physical first row starts while its responses are held");
-        assert.equal(await page.locator("img[data-team-portrait][src]").count(), count);
-        release();
-        const next = page.locator(`.person-link[href="/about/our-team/${reply.people[count].slug}/"] img`);
-        await next.scrollIntoViewIfNeeded();
+        await page.evaluate(() => {
+          const image = document.querySelector("img[data-team-portrait]");
+          scrollTo(0, scrollY + image.getBoundingClientRect().top - 100);
+        });
+        const nextSelector = `.person-link[href="/about/our-team/${reply.people[count].slug}/"] img`;
         await page.waitForFunction(selector => {
           const image = document.querySelector(selector);
           return image?.complete && image.naturalWidth > 0 && image.closest("picture").classList.contains("is-loaded");
-        }, `.person-link[href="/about/our-team/${reply.people[count].slug}/"] img`);
+        }, nextSelector, { timeout: 2000 });
+        assert.ok(seen.includes(reply.people[count].id), "another visible row downloads while the opening photo is still held");
+        assert.equal(await page.locator("img[data-team-portrait]").first().evaluate(image => image.complete), false);
+        assert.equal(await page.locator("img[data-team-portrait]").evaluateAll(images => images.filter(image => {
+          const rect = image.getBoundingClientRect();
+          return rect.top < innerHeight && rect.bottom > 0 && !image.hasAttribute("src");
+        }).length), 0, "every visible portrait has been activated without another portrait's completion");
+        release();
+        await page.waitForFunction(() => document.querySelector("img[data-team-portrait]").complete);
         assert.equal(await page.locator(".live-portrait-image").first().evaluate(el => getComputedStyle(el).opacity), "0");
       } finally { release(); await page.close(); }
     }

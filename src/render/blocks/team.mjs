@@ -28,8 +28,6 @@ export function personCard(ctx, p, card = "role", photoOptions = {}) {
    in the first. With nobody published yet, the first says so in a line and the rest are left out. */
 const noted = new WeakSet();
 const emptied = new WeakSet();
-/* Only the opening directory row gets high priority, shared across its groups and later blocks. */
-const prioritySlots = new WeakMap();
 
 export default {
   type: "team",
@@ -39,7 +37,6 @@ export default {
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
-    if (!prioritySlots.has(ctx)) prioritySlots.set(ctx, 4);
     const people = publicPeople(ctx.data.team);
     const groups = (b.groups || []).map((g) => ({ ...g, people: people.filter((p) => p.group === g.group) })).filter((g) => g.people.length);
     const none = !groups.length;
@@ -63,11 +60,7 @@ export default {
   </header>
   ${groups.map((g) => html`<div class="${g.title ? "team-group has-h" : "team-group"}">
     ${g.title ? sub(g.title, `${b.id}-${g.group}`) : ""}
-    <ul class="people" aria-labelledby="${g.title ? `${b.id}-${g.group}` : `${b.id}-h`}">${g.people.map((p) => {
-      const remaining = prioritySlots.get(ctx) || 0;
-      if (remaining) prioritySlots.set(ctx, remaining - 1);
-      return personCard(ctx, p, b.card || "role", { priority: remaining > 0 ? "high" : "low" });
-    })}</ul>
+    <ul class="people" aria-labelledby="${g.title ? `${b.id}-${g.group}` : `${b.id}-h`}">${g.people.map((p) => personCard(ctx, p, b.card || "role"))}</ul>
   </div>`)}
 </div></section>`;
   },

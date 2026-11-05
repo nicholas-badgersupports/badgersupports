@@ -111,8 +111,9 @@ export function photoSlots(obj, at = "") {
 /* <picture> for one photo slot's value (a library id, a link, or { link, alt, focal }).
    sizes:  the CSS width the image is drawn at, for each layout (required — a wrong guess
            downloads the 1600 for a 300-pixel slot, which is the live site's whole problem).
-   eager:  the one image above the fold gets fetchpriority=high and no lazy loading. */
-export function picture(ctx, ref, { sizes, eager = false, className = null, alt = null } = {}) {
+   eager:  opening photos load without lazy deferral.
+   priority: defaults to high for an eager image; a collage gives its other photos normal priority. */
+export function picture(ctx, ref, { sizes, eager = false, priority = eager ? "high" : null, className = null, alt = null } = {}) {
   const r = photoRef(ref);
   const item = r && ctx.media.get(r.id);
   if (!item) throw new Error(r?.link ? `linked photo ${r.link} was not fetched` : `media ${r?.id ?? ref} is not in media/manifest.json`);
@@ -128,7 +129,7 @@ export function picture(ctx, ref, { sizes, eager = false, className = null, alt 
     alt: alt ?? r.alt ?? item.alt ?? ctx.t("media.linkAlt"),
     loading: eager ? null : "lazy",
     decoding: eager ? null : "async",
-    fetchpriority: eager ? "high" : null,
+    fetchpriority: priority,
   })}></picture>`;
 }
 

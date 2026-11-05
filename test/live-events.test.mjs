@@ -96,10 +96,11 @@ test("pages built from Connect's list ask for it again, and their calendar butto
 });
 
 test("with nothing changed in Connect, each block is what the publish wrote, byte for byte", async () => {
+  // A static build has no live clock; refresh parity must use the same clock state.
   const connect = fakeConnect(PUBLISHED);
   given(connect);
   for (const [pageId, file] of [["pg-home", "index.html"], ["pg-craft-nights", "join/craft-nights/index.html"]]) {
-    const r = await eventSections(pageId, { today: TODAY });
+    const r = await eventSections(pageId, { today: TODAY, now: null });
     const page = read(OUT, file);
     assert.ok(Object.keys(r.blocks).length, pageId);
     for (const [id, markup] of Object.entries(r.blocks)) {
@@ -107,7 +108,7 @@ test("with nothing changed in Connect, each block is what the publish wrote, byt
       else assert.doesNotMatch(page, new RegExp(`data-block="${id}"`), `${pageId} ${id} was not published either`);
     }
   }
-  const home = await eventSections("pg-home", { today: TODAY });
+  const home = await eventSections("pg-home", { today: TODAY, now: null });
   assert.ok("b-home-week" in home.blocks && "b-home-craft" in home.blocks);
   assert.ok(!("b-home-wall" in home.blocks), "only the blocks that show events");
   assert.deepEqual(connect.calls, ["publicEvents"], "asked once for both pages");

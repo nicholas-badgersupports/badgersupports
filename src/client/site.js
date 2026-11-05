@@ -8,64 +8,31 @@ const toggle = document.querySelector("[data-menu-toggle]");
 /* The initials stay visible until a portrait has loaded; a failed photo never blanks a profile. */
 const teamPortraits = [...document.querySelectorAll("img[data-team-portrait]")];
 let portraitObserver = null;
-const nearbyPortraits = new Set();
-const openingPortraits = new Set();
-let portraitDeadline = null;
 function activatePortrait(image, eager = true) {
   const source = image.getAttribute("data-src");
   if (!source) return;
-  nearbyPortraits.delete(image);
   portraitObserver?.unobserve(image);
   image.removeAttribute("data-src");
   if (eager) image.loading = "eager";
   image.src = source;
-  if (image.complete) portraitSettled(image);
+  if (image.complete) revealPortrait(image);
 }
-function releaseNearbyPortraits() {
-  openingPortraits.clear();
-  clearTimeout(portraitDeadline);
-  for (const image of nearbyPortraits) activatePortrait(image);
-}
-function portraitSettled(image) {
+function revealPortrait(image) {
   image.closest("picture")?.classList.toggle("is-loaded", image.naturalWidth > 0);
-  if (openingPortraits.delete(image) && !openingPortraits.size) releaseNearbyPortraits();
 }
 for (const image of teamPortraits) {
-  image.addEventListener("load", () => portraitSettled(image));
-  image.addEventListener("error", () => portraitSettled(image));
-  if (image.complete) portraitSettled(image);
+  image.addEventListener("load", () => revealPortrait(image));
+  image.addEventListener("error", () => revealPortrait(image));
+  if (image.complete) revealPortrait(image);
 }
-/* After layout, the actual opening row downloads first; later nearby rows have a bounded wait.
-   Scrolling past that row or focusing another card gives the reader's destination precedence. */
+/* All nearby portraits may load together; none waits for another photo's success or failure. */
 const deferredPortraits = teamPortraits.filter(image => image.hasAttribute("data-src"));
 if (deferredPortraits.length) {
   if (typeof IntersectionObserver === "function") {
-    const grid = document.querySelector(".people");
-    const first = grid?.querySelector(".person-photo")?.getBoundingClientRect();
-    if (first?.width && first.top < innerHeight + 200 && first.bottom > -200) {
-      for (const image of grid.querySelectorAll("img[data-team-portrait][data-src]")) {
-        if (Math.abs(image.getBoundingClientRect().top - first.top) < 2) openingPortraits.add(image);
-      }
-    }
-    if (openingPortraits.size) {
-      portraitDeadline = setTimeout(releaseNearbyPortraits, 4000);
-      for (const image of openingPortraits) activatePortrait(image);
-      window.addEventListener("scroll", () => {
-        if (openingPortraits.size && [...openingPortraits].every(image => {
-          const rect = image.getBoundingClientRect();
-          return rect.bottom <= 0 || rect.top >= innerHeight;
-        })) releaseNearbyPortraits();
-      }, { passive: true });
-    }
     portraitObserver = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (!entry.target.hasAttribute("data-src")) continue;
-        if (!entry.isIntersecting) nearbyPortraits.delete(entry.target);
-        else if (openingPortraits.size) nearbyPortraits.add(entry.target);
-        else activatePortrait(entry.target);
-      }
+      for (const entry of entries) if (entry.isIntersecting) activatePortrait(entry.target);
     }, { rootMargin: "200px 0px" });
-    for (const image of deferredPortraits) if (image.hasAttribute("data-src")) portraitObserver.observe(image);
+    for (const image of deferredPortraits) portraitObserver.observe(image);
   } else for (const image of deferredPortraits) activatePortrait(image, false);
   document.addEventListener("focusin", event => {
     const image = event.target.closest?.(".person-link")?.querySelector("img[data-team-portrait][data-src]");

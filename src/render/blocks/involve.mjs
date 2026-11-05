@@ -28,7 +28,7 @@ export default {
     return html`<section class="${cls}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="involve-head">
     ${page ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`}
-    ${photos.length ? html`<div class="involve-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: "(max-width: 960px) calc(33vw - 1.5rem), 11rem", eager: page && i === 0 })}</div>`)}</div>` : ""}
+    ${photos.length ? html`<div class="involve-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: "(max-width: 960px) calc(33vw - 1.5rem), 11rem", eager: page, priority: page && i === 0 ? "high" : null })}</div>`)}</div>` : ""}
   </div>
   <ul class="doors">${b.items.map((it) => {
     const form = it.form ? ctx.data.forms?.[it.form] : null;

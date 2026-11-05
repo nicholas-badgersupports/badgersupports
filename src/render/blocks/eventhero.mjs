@@ -64,7 +64,7 @@ export default {
     ${ctx.data.eventsState?.stale ? html`<div data-live="next">${unavailableEvents(ctx)}</div>` : next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t("events.none")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p></div>`}
     ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
   </div>
-  ${photos.length ? html`<div class="eventhero-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: i === 0 })}</div>`)}</div>` : ""}
+  ${photos.length ? html`<div class="eventhero-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: true, priority: i === 0 ? "high" : null })}</div>`)}</div>` : ""}
 </div></section>`;
   },
 };

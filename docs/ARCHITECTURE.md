@@ -978,3 +978,12 @@ What keeps this site's usage bounded, and what would cut it further:
 each database used; the functions' memory; what a draft deploy costs (the billing pages do not name drafts);
 database storage, which the billing page (14 Aug 2026) says is billed no earlier than 1 July 2026, with no rate
 given. `../../MASTER-PROMPT.md` §11 holds any claim about those until it is read from Netlify.
+
+
+## Recommendation cycle context
+
+A Connect hiring cycle can give a referrer a link to `/forms/recommendation-letter/?cycle=hc-0123456789ab`. This identifier is filing context, not a credential or applicant identity. The letter client carries it as reserved `_cycle`; intake normalizes it and saves it in `submissions.context`, separately from answer columns. The accepted row and its signed outbox payload retain `context.hiringCycleId` on retries. A repeat with the same idempotency key cannot change it. Existing bare-link idempotency remains unchanged.
+
+Only recommendation letters accept the context. Explicit empty, repeated or malformed context is retained as an empty identifier, so Connect can put it in Unassigned rather than falling back to a different period. A well-formed unknown identifier is likewise for Connect to classify as Unassigned. Bare links omit context and retain the receiver's documented period-based fallback. Corrected/stale-form markup preserves the accepted request context. Context is absent from question definitions, answer columns and analytics events.
+
+Deploy the Connect receiver that understands this context before this sender. Migration 010 adds an object column with an empty default for old rows; it does not backfill cycle membership. Connect owns cycle configuration/filing and manual applicant associations. Public Form Settings still controls availability and dates; a cycle link never opens a form, grants access or matches an applicant by name.

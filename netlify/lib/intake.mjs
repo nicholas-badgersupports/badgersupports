@@ -13,7 +13,7 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { fileRecords, claimFiles } from "./files.mjs";
 import { definitionFor } from "./deliver.mjs";
-import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources } from "../../src/shared/forms.mjs";
+import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources, hiringContext } from "../../src/shared/forms.mjs";
 import { sharedNow } from "./live-content.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 import { readFormSettings, effectiveForm } from "./form-settings.mjs";
@@ -116,20 +116,22 @@ export async function submit(key, input, { now = new Date() } = {}) {
   if (!form) throw new HttpError(404, "form.unknown");
   const { def } = form;
   const raw = readRaw(def, input);
-  if (form.state !== "open") return { ok: false, error: "form.closed", closedMessage: form.closedMessage, def, raw };
+  const context = hiringContext(key, input);
+  if (form.state !== "open") return { ok: false, error: "form.closed", closedMessage: form.closedMessage, def, raw, context };
 
   // The trap field: only automated spam fills it. It is told it succeeded and nothing is kept.
   if (String(field(input, "_website") || "").trim()) return { ok: true, ref: newRef(def), def, trapped: true };
 
   const versionSeen = Number(field(input, "_version")) || null;
   const check = validateAnswers(def, raw);
-  if (!check.ok) return { ok: false, error: "answers.invalid", errors: check.errors, version: def.version, versionSeen, def, raw, gone: await leftBehind(def, versionSeen, input) };
+  if (!check.ok) return { ok: false, error: "answers.invalid", errors: check.errors, version: def.version, versionSeen, def, raw, context, gone: await leftBehind(def, versionSeen, input) };
 
   // The browser sends one key per filled-in form. Without JavaScript there is none, so the key
   // is the answers themselves for the day: pressing Send twice, or reloading the reply, is one
   // submission either way.
   let idem = String(field(input, "_key") || "").trim();
-  if (!IDEM_RE.test(idem)) idem = `d-${sha256(`${def.key}|${def.version}|${canonicalJSON(check.answers)}|${chicagoDate(now)}`).slice(0, 40)}`;
+  const contextKey = Object.keys(context).length ? `|${canonicalJSON(context)}` : "";
+  if (!IDEM_RE.test(idem)) idem = `d-${sha256(`${def.key}|${def.version}|${canonicalJSON(check.answers)}${contextKey}|${chicagoDate(now)}`).slice(0, 40)}`;
 
   const out = await tx(async (t) => {
     const existing = await t.one("SELECT ref FROM submissions WHERE form_key = $1 AND idem_key = $2", [def.key, idem]);
@@ -140,15 +142,15 @@ export async function submit(key, input, { now = new Date() } = {}) {
     if (files.errors) {
       const back = { ...raw };
       for (const id of Object.keys(files.errors)) back[id] = [];
-      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back };
+      return { ok: false, error: "answers.invalid", errors: files.errors, version: def.version, versionSeen, def, raw: back, context };
     }
     let row = null;
     for (let attempt = 0; !row && attempt < 5; attempt++) {
       row = await t.one(
-        `INSERT INTO submissions (ref, form_key, form_version, version_seen, idem_key, answers, anonymous)
-         VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7)
+        `INSERT INTO submissions (ref, form_key, form_version, version_seen, idem_key, answers, anonymous, context)
+         VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8::jsonb)
          ON CONFLICT (ref) DO NOTHING RETURNING id, ref`,
-        [newRef(def), def.key, def.version, versionSeen, idem, JSON.stringify(files.answers), !!def.anonymous]);
+        [newRef(def), def.key, def.version, versionSeen, idem, JSON.stringify(files.answers), !!def.anonymous, JSON.stringify(context)]);
     }
     if (!row) throw new Error("could not mint a unique reference");
     await claimFiles(t, row.id, files.ids);

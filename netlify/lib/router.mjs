@@ -39,7 +39,7 @@ import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
 import { formSection } from "../../src/render/blocks/form.mjs";
 import { html } from "../../src/render/html.mjs";
-import { readRaw, allQuestions, QUESTION_TYPES } from "../../src/shared/forms.mjs";
+import { readRaw, allQuestions, QUESTION_TYPES, hiringContext } from "../../src/shared/forms.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 import { saveFormSettings, COPY_FIELDS } from "./form-settings.mjs";
@@ -149,7 +149,7 @@ async function formSubmit(req, [key], context) {
     if (e.code !== "rate.limited" || asJson) throw e;
     const f = await currentForm(key);
     if (!f) throw new HttpError(404, "form.unknown");
-    const reply = await formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "" }));
+    const reply = await formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "", submissionContext: hiringContext(key, body) }));
     for (const [k, v] of Object.entries(e.headers || {})) reply.headers.set(k, v);
     return reply;
   }
@@ -157,7 +157,7 @@ async function formSubmit(req, [key], context) {
   if (r.ok && !r.duplicate && !r.trapped) afterReply(context, () => deliverDue({ limit: 5 }));
   const changed = r.versionSeen && r.versionSeen !== r.version;
   const corrected = (ctx) => renderForm(r.def, {
-    t: ctx.t, ctx, values: r.raw, errors: r.errors,
+    t: ctx.t, ctx, values: r.raw, errors: r.errors, submissionContext: r.context,
     notice: changed ? { title: ctx.t("form.updated.title"), text: ctx.t("form.updated.body"), kept: r.gone, keptText: ctx.t("form.updated.gone") } : null,
     idemKey: typeof body.get === "function" ? body.get("_key") || "" : body._key || "",
   });

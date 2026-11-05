@@ -909,3 +909,10 @@ forms now project the same public resource ID and name pairs into that definitio
 out, and unknown selections remain invalid. Regression checks compare the rendered choice with the parsed browser
 definition and send each resource form through the real local intake from desktop and phone browsers. Live acceptance
 of the repair remains a separate deployment check; the failed test produced no accepted submission.
+
+
+## Cycle-specific recommendation links — 5 November 2026
+
+Nicholas requested separate hiring workflows and automatic association with an application cycle. A period-only rule cannot distinguish a letter intended for an older cycle after a new cycle begins. Connect therefore supplies cycle-specific public recommendation links. This sender persists normalized cycle metadata beside answers and carries it through signed delivery; the receiver uses an existing explicit cycle even after its intake window closes. Invalid/unknown explicit context stays Unassigned, while legacy bare links retain period-based filing.
+
+This is cycle membership, not automatic applicant identification. The existing form collects an applicant name; ambiguous person associations remain an explicit review decision. No personal information or authentication token is added to the address. Existing form questions, protected application wording, availability settings and permissions are unchanged. This is a coordinated staged sender/receiver change; publication and live acceptance are recorded separately in the shared handoff.

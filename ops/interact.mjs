@@ -2201,6 +2201,43 @@ await part("resource form validation", async () => {
   }
 });
 
+await part("recommendation cycle context", async () => {
+  const key = "recommendation-letter"; const cycle = "hc-0123456789ab";
+  const cases = [{ query: `?cycle=${cycle}`, context: { hiringCycleId: cycle } }, { query: `?cycle=${cycle}&cycle=hc-abcdef012345`, context: { hiringCycleId: "" } }, { query: "", context: {} }];
+  for (const [index, scenario] of cases.entries()) {
+    await freshServer(); useConnect(false);
+    await q("INSERT INTO form_state(form_key,state,changed_by) VALUES($1,'open','harness')", [key]);
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 900 } });
+    try {
+      const page = await ctx.newPage(); const errors = []; let submits = 0; let posted = null;
+      page.on("pageerror", e => errors.push(e.message));
+      const preview = `/forms/${key}/preview/`;
+      await page.route(u => u.pathname === preview, async route => {
+        const response = await route.fetch(); await route.fulfill({ response, body: (await response.text()).replace(' data-preview=""', "") });
+      });
+      await page.route(`**/api/forms/${key}/**`, async route => {
+        const request = route.request(); const address = new URL(request.url());
+        const headers = { origin: ORIGIN, "sec-fetch-site": "same-origin" };
+        for (const name of ["content-type", "accept", "x-file-name"]) if (request.headers()[name]) headers[name] = request.headers()[name];
+        if (address.pathname.endsWith("/submit")) { submits++; posted = request.postDataJSON(); }
+        const response = await handle(new Request(ORIGIN + address.pathname + address.search, { method: request.method(), headers, body: request.method() === "POST" ? request.postDataBuffer() : undefined }), { ip: `192.0.2.${230 + index}` });
+        await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: await response.text() });
+      });
+      await page.goto(BASE + preview + scenario.query, { waitUntil: "networkidle" });
+      await page.evaluate(() => { window.testAnalytics = []; document.addEventListener("bss:analytics", e => window.testAnalytics.push(e.detail)); });
+      await page.locator("#f-name").fill("Fictional Referrer"); await page.locator("#f-email").fill("fictional@example.org"); await page.locator("#f-applicant").fill("Fictional Applicant");
+      await page.locator("#f-letter").setInputFiles({ name: "fictional-cycle-letter.pdf", mimeType: "application/pdf", buffer: PDF });
+      await page.waitForFunction(() => !!document.querySelector('[data-upload="letter"] [data-file-id]')?.value);
+      await page.locator("[data-submit]").click(); await page.locator("[data-form-done]").waitFor();
+      const row = await one("SELECT answers,context FROM submissions WHERE form_key=$1", [key]);
+      check(submits === 1 && JSON.stringify(row.context) === JSON.stringify(scenario.context), `letter context ${index}: address context survives native upload and actual intake exactly once`);
+      check(!Object.hasOwn(row.answers, "_cycle") && (Object.hasOwn(scenario.context, "hiringCycleId") ? posted._cycle === scenario.context.hiringCycleId : !Object.hasOwn(posted, "_cycle")), `letter context ${index}: explicit invalid remains distinct from bare and context is never an answer`);
+      const analytics = await page.evaluate(() => window.testAnalytics);
+      check(errors.length === 0 && analytics.length > 0 && analytics.every(e => Object.keys(e).sort().join(",") === "form,name"), `letter context ${index}: no browser errors or cycle/answer information in analytics`);
+    } finally { await ctx.close(); }
+  }
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

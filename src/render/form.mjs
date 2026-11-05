@@ -12,7 +12,7 @@
  */
 
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
-import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions } from "../shared/forms.mjs";
+import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext } from "../shared/forms.mjs";
 import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
 
@@ -150,7 +150,7 @@ function section(def, s, values, errors, t, ctx) {
    given back rather than sent. idemKey: carried through a no-JS correction so a resend is the
    same submission. ctx: the render context, for links inside the form's words. preview: the form
    shown for review while it is closed (prototype builds only); the browser sends nothing. */
-export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false }) {
+export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false, submissionContext = {} }) {
   const anyErrors = Object.keys(errors).length > 0;
   const anyRequired = allQuestions(def).some(({ q }) => q.required);
   const needsUpload = !preview && allQuestions(def).some(({ q }) => q.type === "file");
@@ -163,6 +163,7 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
   // Server validation chooses applicable conditional questions with and without client scripting.
   return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-preview": preview ? "" : null })}>
   <input type="hidden" name="_form" value="${def.key}"><input type="hidden" name="_version" value="${def.version}"><input type="hidden" name="_key" value="${idemKey}" data-idem>
+  ${def.key === "recommendation-letter" && Object.hasOwn(submissionContext, "hiringCycleId") ? html`<input type="hidden" name="_cycle" value="${hiringContext(def.key, { _cycle: submissionContext.hiringCycleId }).hiringCycleId}">` : ""}
   <div class="hp" aria-hidden="true"><label>${t("form.trap")} <input type="text" name="_website" tabindex="-1" autocomplete="off" value=""></label></div>
   <div${attrs({ class: "error-summary", tabindex: "-1", "data-error-summary": "", hidden: !anyErrors, role: anyErrors ? "alert" : null })}>
     <h2>${t("form.errors.title")}</h2>

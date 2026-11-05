@@ -14,6 +14,18 @@ export const FORM_SCHEMA = "bss.form/1";
 export const KEY_RE = /^[a-z][a-z0-9-]{1,39}$/;
 export const ID_RE = /^[a-z][a-z0-9_]{0,39}$/;
 export const OTHER = "__other";
+export const HIRING_CYCLE_ID_RE = /^hc-[0-9a-f]{12}$/;
+
+/* Cycle context is filing metadata, never an answer or permission. Explicit invalid context
+   remains present but empty so the receiver cannot silently file it by another intake period. */
+export function hiringContext(key, input) {
+  if (key !== "recommendation-letter") return {};
+  const multi = typeof input?.getAll === "function";
+  if (!(multi ? input.has("_cycle") : Object.hasOwn(input || {}, "_cycle"))) return {};
+  const values = multi ? input.getAll("_cycle") : Array.isArray(input._cycle) ? input._cycle : [input._cycle];
+  const value = values.length === 1 && typeof values[0] === "string" ? values[0] : "";
+  return { hiringCycleId: HIRING_CYCLE_ID_RE.test(value) ? value : "" };
+}
 
 export const QUESTION_TYPES = {
   short:      { input: "text",           max: 200 },

@@ -26,7 +26,7 @@ import { serverContent } from "./content.mjs";
 import { connectConfig, deliverForm, call, DELIVERY_BUDGET_MS } from "./connect.mjs";
 import { noteGet, noteSet } from "./published.mjs";
 import { backupConfig, writeBackup } from "./backup.mjs";
-import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES } from "../../src/shared/forms.mjs";
+import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES, hiringContext } from "../../src/shared/forms.mjs";
 
 export const MAX_WAIT_MINUTES = 15;
 export const CLAIM_SECONDS = 120;
@@ -72,6 +72,7 @@ export function ingestPayload(sub, def) {
     anonymous: !!sub.anonymous,
     columns,
     answers,
+    ...(sub.form_key === "recommendation-letter" && sub.context && Object.hasOwn(sub.context, "hiringCycleId") ? { context: hiringContext(sub.form_key, { _cycle: sub.context.hiringCycleId }) } : {}),
     ...(Object.keys(optionIds).length ? { optionIds } : {}),
     ...(files.length ? { files } : {}),
   };
@@ -93,7 +94,7 @@ async function claim(kind, { limit, force = false, forms = null }) {
       RETURNING id`, [kind, !!force, forms ? JSON.stringify(forms) : null, token, CLAIM_SECONDS, limit]);
   if (!ids.length) return { token, rows: [] };
   const rows = await many(
-    `SELECT o.id AS outbox_id, o.attempts, o.dedupe_key, s.id, s.ref, s.form_key, s.form_version, s.answers, s.anonymous, s.received_at
+    `SELECT o.id AS outbox_id, o.attempts, o.dedupe_key, s.id, s.ref, s.form_key, s.form_version, s.answers, s.anonymous, s.received_at, s.context
        FROM outbox o JOIN submissions s ON s.id = o.submission_id WHERE o.id = ANY($1::bigint[]) ORDER BY o.next_at, o.id`,
     [ids.map((r) => r.id)]);
   return { token, rows };

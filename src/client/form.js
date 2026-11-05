@@ -15,7 +15,7 @@
  * form key only. It never reads answers into them.
  */
 
-import { visibility, validateAnswers, readRaw, errorText, allQuestions, QUESTION_TYPES } from "./forms.mjs";
+import { visibility, validateAnswers, readRaw, errorText, allQuestions, QUESTION_TYPES, hiringContext } from "./forms.mjs";
 import { t } from "./text.js";
 
 const STALE_MS = 10 * 60 * 1000;
@@ -230,6 +230,16 @@ function enhance(form, { started = false } = {}) {
   const status = form.querySelector("[data-form-status]");
   const idem = form.querySelector("[data-idem]");
   const preview = "preview" in form.dataset;
+  if (key === "recommendation-letter" && !form.querySelector('input[name="_cycle"]')) {
+    const params = new URLSearchParams(location.search);
+    if (params.has("cycle")) {
+      const values = params.getAll("cycle");
+      const context = hiringContext(key, { _cycle: values.length === 1 ? values[0] : values });
+      const field = document.createElement("input");
+      field.type = "hidden"; field.name = "_cycle"; field.value = context.hiringCycleId;
+      form.append(field);
+    }
+  }
   if (!idem.value) idem.value = newKey();
   form.noValidate = true;
   /* A resource named by the address (?resource=<id>) is chosen on the page as it first loads, when

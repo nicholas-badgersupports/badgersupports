@@ -38,6 +38,7 @@ const FIELD_TYPES = {
   cards: "cards, each with an id, a title, short lines shown in bold (a time, a slogan), one quieter line of text, an optional photo (a library photo or a pasted link), an optional icon shown when there is no photo, and an optional link",
   directory: "groups in order, each with an id, a heading, an optional second line and its places: each a name, an optional address and an optional link",
   words: "words, in order: each its text, or its `text` and a `size` (1 small, 2 medium, 3 large)",
+  ribbonmeanings: "reference groups keyed by ribbon color or pattern; each has a title, a list of associated causes, optional note, and source links. A card’s explicit color chooses its group; plain saved text never inherits a group from its position",
   qa: "questions with an id, the question, one or more answer paragraphs and optional answer links (label, href, icon)",
   qagroups: "optional display groups (id, title, questionIds); each existing question appears exactly once without moving its source or edit paths",
   visitlist: "a label and items of term/text with optional href; ordered chooses a native numbered list without moving item paths",

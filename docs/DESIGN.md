@@ -364,3 +364,12 @@ Each kind of page has its own shape, so that pages are not all alike (owner, Rou
 | Forms | two columns: the form head, a white card beside the questions, without a decorative coloured edge |
 
 Every page is checked at 1280, 390 and 320 px by `npm run shots`. Nothing may scroll sideways at 320.
+
+
+### Ribbon meanings and quiet policy contact
+
+The Ribbons page uses a compact gallery with prominent original open-loop vector artwork and a written color name on every card. An illustrated ribbon opens a native dialog with the editable Colors of Support meaning, broader associated causes and reference links. Without scripts it opens as a native disclosure. Escape and Close return focus and the original scroll position; the dialog does not store or transmit a choice. Denim and two-color ribbons have their own artwork. Red/white/blue, orange/black, Zebra and Houndstooth are excluded. The loop has a true transparent opening; ribbons sit directly on the page paper with close-set captions and a small plus cue. Source links are quiet text, with no reference heading or repeated action row.
+
+The existing editable item paths retain explicit color-and-cause pairs; a saved plain-text item receives no positional reference association. Reference groups use the existing editor path grammar and save/history/restore contract. Meanings vary by campaign, so the local meaning and wider reference are labelled separately. Whole-photo options preserve the existing artwork and scenes. Pickup remains an availability inquiry until current distribution is confirmed; station hosting is a quieter separate task.
+
+The Equity and Belonging statement keeps its wording and photos. Its inquiry action uses the existing quiet text composition, with the existing accessibility address available separately. This is a presentation change, not a statement or privacy-policy revision.

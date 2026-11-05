@@ -45,6 +45,7 @@ import { workshopProblems } from "../src/render/blocks/workshops.mjs";
 import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
 import { wordProblems } from "../src/render/blocks/words.mjs";
+import { ribbonProblems } from "../src/render/blocks/ribbons.mjs";
 import { resourceProblems } from "../src/render/blocks/resources.mjs";
 import { directoryProblems } from "../src/render/blocks/directory.mjs";
 import { questionProblems } from "../src/render/blocks/questions.mjs";
@@ -248,6 +249,7 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "workshops") for (const p of workshopProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "cards") for (const p of cardProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "words") for (const p of wordProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
+    if (b.type === "ribbons") for (const p of ribbonProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "directory") for (const p of directoryProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "resources") for (const p of resourceProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "embed") for (const p of embedProblems(b)) problems.push(`content/pages: ${page.id}.${b.id}: ${p}`);

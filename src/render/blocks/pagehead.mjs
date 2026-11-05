@@ -15,18 +15,18 @@ import { picture } from "../media.mjs";
 export default {
   type: "pagehead",
   label: "Page opening",
-  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean" },
+  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean" },
   data: [],
   analytics: "page",
   loading: "eager",
   render(b, ctx) {
     const photos = (b.photos || []).slice(0, 3);
     const body = Array.isArray(b.body) ? b.body : b.body ? [b.body] : [];
-    const sizes = ["(max-width: 860px) 58vw, 26rem", "(max-width: 860px) 38vw, 15rem", "(max-width: 860px) 38vw, 15rem"];
+    const sizes = b.whole ? Array(3).fill("(max-width: 860px) calc(100vw - 2rem), 46vw") : ["(max-width: 860px) 58vw, 26rem", "(max-width: 860px) 38vw, 15rem", "(max-width: 860px) 38vw, 15rem"];
     const primary = b.primary || (b.firstLinkPrimary ? b.links?.[0] : null);
     const links = b.firstLinkPrimary && !b.primary ? b.links?.slice(1) : b.links;
     const actions = primary || links?.length;
-    return html`<section class="${["pagehead band", photos.length ? `has-photos has-${photos.length}` : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section class="${["pagehead band", photos.length ? `has-photos has-${photos.length}` : null, b.whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="pagehead-words">
     <h1 id="${b.id}-h">${b.title}</h1>
     ${b.label ? html`<p class="pagehead-label">${b.label}</p>` : ""}

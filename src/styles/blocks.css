@@ -488,9 +488,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* ============ a room: a red card for where, then the way in as a route ============ */
 .directions .wrap { display: grid; grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: var(--s6); align-items: start; }
 .dir-side { position: sticky; top: calc(var(--header-h) + var(--s4)); }
-/* the room's photo sits on the red card, one object with it */
-.dir-photo { aspect-ratio: 4 / 3; border-radius: var(--r-panel) var(--r-panel) 0 0; }
-.dir-side.has-photo .dir-head { border-top-left-radius: 0; border-top-right-radius: 0; }
+/* Keep the address and map ahead of photography in reading and visual order. */
+.dir-photo { aspect-ratio: 4 / 3; border-radius: 0 0 var(--r-panel) var(--r-panel); }
+.dir-side.has-photo .dir-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .crumb { margin-bottom: var(--s3); }
 .dir-head {
   padding: var(--s5) var(--s4) var(--s4); border-radius: var(--r-panel); color: var(--cream);
@@ -499,6 +499,12 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .dir-head :focus-visible { outline-color: var(--focus-on-red); }
 .directions h1, .directions h2:not(.dir-title) { font-size: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem); color: var(--cream); margin-bottom: var(--s2); overflow-wrap: anywhere; }
 .dir-name { font-weight: 700; font-size: 1.25rem; margin-bottom: .2rem; }
+.dir-kind { font-size: var(--fs-small); font-weight: 700; margin-bottom: var(--s3); }
+.dir-jumps { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-top: var(--s3); }
+.dir-jumps a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: .2em; font-weight: 700; }
+.places-jumps { margin-block: var(--s3) var(--s4); }
+.dir-access { margin-top: var(--s6); padding-top: var(--s4); border-top: var(--rule-line); }
+.dir-title[id], .dir-next[id], .hubcard h2[id], .hubcard h3[id], .places h2[id], .places h3[id] { scroll-margin-top: calc(var(--header-h) + var(--s4)); }
 .dir-where { font-weight: 700; font-size: var(--fs-lead); margin-bottom: var(--s1); }
 .directions address { font-style: normal; opacity: .92; }
 .dir-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); margin-top: var(--s4); padding-top: var(--s4); border-top: var(--hairline-on-red); }
@@ -1391,3 +1397,23 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 [data-page="pg-about-history"] .text-block { padding-block: var(--s5); }
 [data-page="pg-about-history"] .text-block h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); line-height: 1.25; margin-bottom: var(--s3); }
 [data-page="pg-about-history"] .text-body { max-width: none; }
+
+/* Whole photos keep printed content and the full scene visible in the existing slots. */
+.pagehead.is-whole .pagehead-photos { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; gap: var(--s3); grid-row: auto; }
+.pagehead.is-whole .pagehead-photos .photo { grid-row: auto; }
+.pagehead.is-whole .photo img, .expect.is-whole .photo img { height: auto; object-fit: contain; }
+.expect.is-whole .expect-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: var(--s3); align-items: start; }
+.expect.is-whole .expect-photos .photo { grid-column: auto; grid-row: auto; aspect-ratio: auto; border: 0; }
+.cta.is-quiet { background: transparent; color: var(--ink); }
+.cta.is-quiet h2 { color: var(--accent); }
+.cta.is-quiet .lead { font-size: var(--fs-body); }
+.cta.is-quiet.has-photo.is-whole .wrap { grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); }
+.cta.is-quiet :focus-visible { outline-color: var(--focus-ring); }
+@media (max-width: 860px) {
+  .pagehead.is-whole .pagehead-photos { grid-row: auto; }
+  .cta.is-quiet.has-photo.is-whole .wrap { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Longer initiative and statement titles retain the page hierarchy without dominating the task. */
+[data-page="pg-ribbons"] [data-block="b-rb-head"] h1,
+[data-page="pg-equity-belonging"] [data-block="b-eb-head"] h1 { font-size: clamp(2rem, 1.4rem + 1.5vw, 2.6rem); text-wrap: balance; }

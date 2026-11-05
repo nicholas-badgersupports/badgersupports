@@ -28,6 +28,7 @@ export default {
     return html`<section class="places band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="places-head">${h}<span class="places-route" aria-hidden="true">${icon("pin")}</span></div>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+  ${hubs.length && others.length ? html`<nav class="dir-jumps places-jumps" aria-label="${ctx.t("directions.onPage")}">${hubs.map((p) => html`<a href="#${b.id}-${p.id}">${p.name}</a>`)}<a href="#${b.id}-rooms">${b.roomsTitle || ctx.t("directions.eventRooms")}</a></nav>` : ""}
   ${hubs.map((p) => html`<article class="${p.photo ? "hubcard has-photo" : "hubcard"}" aria-labelledby="${b.id}-${p.id}">
     <div class="hubcard-text">
       ${where(p) ? html`<p class="hubcard-where">${where(p)}</p>` : ""}

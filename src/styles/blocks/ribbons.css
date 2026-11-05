@@ -1,0 +1,85 @@
+/* The illustration leads; its caption and opening cue stay together without a second tile. */
+.ribbon-gallery { background: var(--tex-deep); background-blend-mode: normal, multiply; padding-block: var(--s5); }
+.ribbon-gallery-head { max-width: 52rem; margin: 0 0 var(--s4); }
+.ribbon-gallery-head h2 { color: var(--accent); margin-bottom: var(--s2); font-size: clamp(1.5rem, 1.1rem + 1vw, 2rem); }
+.ribbon-gallery-head p { color: var(--muted); }
+.ribbon-grid { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: var(--s3); row-gap: var(--s4); padding: 0; }
+.ribbon-grid > li { min-width: 0; }
+.ribbon-card { border: 0; border-radius: var(--r-input); background: transparent; box-shadow: none; }
+.ribbon-card > summary { list-style: none; cursor: pointer; padding: var(--s2); display: grid; grid-template-rows: auto auto; gap: var(--s1); border-radius: inherit; transition: background .18s ease; }
+.ribbon-card > summary::-webkit-details-marker { display: none; }
+.ribbon-card > summary:hover, .ribbon-card > summary:focus-visible { background: var(--paper); }
+.ribbon-card-art { display: grid; place-items: center; }
+.ribbon-caption { display: flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 2.3em; }
+.ribbon-name { min-width: 0; font: 800 1rem/1.35 var(--font-body); color: var(--ink); text-align: center; }
+.ribbon-open { display: inline-flex; flex-shrink: 0; color: var(--accent); }
+.ribbon-open .ic { width: 1rem; height: 1rem; }
+.ribbon-art { --ribbon-fill: var(--ribbon-red); --ribbon-second: var(--ribbon-fill); width: 9rem; height: auto; overflow: visible; filter: drop-shadow(0 .25rem .2rem var(--ribbon-shadow)); transition: transform .18s ease; }
+.ribbon-card > summary:hover .ribbon-art { transform: rotate(-2deg) translateY(-2px); }
+.ribbon-tail { stroke: color-mix(in srgb, var(--ribbon-fill) 75%, var(--ink)); stroke-width: .55; stroke-linejoin: round; }
+.ribbon-satin { stop-color: var(--ribbon-fill); }
+.ribbon-shine { stop-color: color-mix(in srgb, var(--ribbon-fill) 62%, var(--paper)); }
+.ribbon-shade { stop-color: color-mix(in srgb, var(--ribbon-fill) 73%, var(--ink)); }
+.ribbon-front-base { stop-color: var(--ribbon-second); }
+.ribbon-front-shine { stop-color: color-mix(in srgb, var(--ribbon-second) 60%, var(--paper)); }
+.ribbon-front-shade { stop-color: color-mix(in srgb, var(--ribbon-second) 73%, var(--ink)); }
+.ribbon-fold { fill: var(--ink); opacity: .13; }
+.ribbon-edge-light { fill: none; stroke: var(--paper); stroke-width: 1; opacity: .45; }
+.ribbon-red { --ribbon-fill: var(--ribbon-red); }
+.ribbon-maroon { --ribbon-fill: var(--ribbon-maroon); }
+.ribbon-orange { --ribbon-fill: var(--ribbon-orange); }
+.ribbon-gold { --ribbon-fill: var(--ribbon-gold); }
+.ribbon-yellow { --ribbon-fill: var(--ribbon-yellow); }
+.ribbon-bright-green { --ribbon-fill: var(--ribbon-bright-green); }
+.ribbon-lime { --ribbon-fill: var(--ribbon-lime); }
+.ribbon-green { --ribbon-fill: var(--ribbon-green); }
+.ribbon-jade { --ribbon-fill: var(--ribbon-jade); }
+.ribbon-teal { --ribbon-fill: var(--ribbon-teal); }
+.ribbon-teal-purple { --ribbon-fill: var(--ribbon-prevention); --ribbon-second: var(--ribbon-purple); }
+.ribbon-turquoise { --ribbon-fill: var(--ribbon-turquoise); }
+.ribbon-light-blue { --ribbon-fill: var(--ribbon-light-blue); }
+.ribbon-blue { --ribbon-fill: var(--ribbon-blue); }
+.ribbon-dark-blue { --ribbon-fill: var(--workshops); }
+.ribbon-two-tone-blue { --ribbon-fill: var(--ribbon-blue); --ribbon-second: var(--ribbon-light-blue); }
+.ribbon-denim { --ribbon-fill: var(--ribbon-blue); }
+.ribbon-periwinkle { --ribbon-fill: var(--ribbon-periwinkle); }
+.ribbon-lavender { --ribbon-fill: var(--ribbon-lavender); }
+.ribbon-purple { --ribbon-fill: var(--ribbon-purple); }
+.ribbon-pink { --ribbon-fill: var(--ribbon-pink); }
+.ribbon-pink-blue { --ribbon-fill: var(--ribbon-pink); --ribbon-second: var(--ribbon-light-blue); }
+.ribbon-silver { --ribbon-fill: var(--ribbon-silver); }
+.ribbon-gray { --ribbon-fill: var(--ribbon-gray); }
+.ribbon-white { --ribbon-fill: var(--paper); }
+.ribbon-black { --ribbon-fill: var(--ribbon-black-solid); }
+.ribbon-parkinsons { --ribbon-fill: var(--ribbon-blue); --ribbon-second: var(--paper); }
+.ribbon-pattern-ground { fill: var(--paper); }
+.ribbon-denim .ribbon-pattern-ground { fill: var(--workshops); }
+.ribbon-pattern-thread { fill: none; stroke: var(--ribbon-light-blue); stroke-width: 2; opacity: .5; }
+.ribbon-details { padding: var(--s4); border-top: var(--hairline); }
+.ribbon-popup-art { display: grid; place-items: center; margin-bottom: var(--s4); }
+.ribbon-popup-art .ribbon-art { width: 9rem; height: auto; }
+.ribbon-popup-copy h3 { font: 800 1rem/1.4 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
+.ribbon-local { padding: var(--s3); background: var(--tex-ground); background-blend-mode: normal, multiply; border-radius: var(--r-input); margin-bottom: var(--s4); }
+.ribbon-local h3 { color: var(--accent); }
+.ribbon-causes { padding-left: 1.2rem; display: grid; gap: var(--s2); }
+.ribbon-context { margin-top: var(--s3); color: var(--muted); font-size: var(--fs-small); }
+.ribbon-references { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s4); }
+.ribbon-source { color: var(--muted); font-size: var(--fs-small); text-decoration: underline; text-underline-offset: .2em; overflow-wrap: anywhere; }
+.ribbon-source .ic { width: 1em; height: 1em; margin-left: var(--s1); }
+.ribbon-plain { padding: var(--s4); display: grid; place-items: center; }
+.ribbon-dialog { width: min(46rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--note-shadow); margin: auto; overscroll-behavior: contain; }
+.ribbon-dialog::backdrop { background: var(--ribbon-shadow); backdrop-filter: blur(4px); }
+.ribbon-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); padding: var(--s4); background: var(--tex-ground); background-blend-mode: normal, multiply; border-bottom: var(--hairline); }
+.ribbon-dialog-head p { font-size: var(--fs-small); font-weight: 700; color: var(--muted); }
+.ribbon-dialog-head h2 { font: 800 var(--fs-h2)/1.2 var(--font-body); color: var(--accent); margin-top: var(--s1); }
+.ribbon-close { flex-shrink: 0; min-height: 44px; }
+.ribbon-close .ic { width: 1rem; height: 1rem; transform: rotate(45deg); }
+.ribbon-dialog .ribbon-details { border: 0; display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--s4); align-items: start; padding: var(--s4); }
+.ribbon-dialog .ribbon-popup-art { position: sticky; top: 0; }
+@media (max-width: 1100px) { .ribbon-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .ribbon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s2); row-gap: var(--s3); } .ribbon-art { width: 7rem; max-width: 100%; } .ribbon-caption { gap: var(--s1); } }
+@media (max-width: 480px) { .ribbon-dialog .ribbon-details { grid-template-columns: minmax(0, 1fr); padding: var(--s4); } .ribbon-dialog .ribbon-popup-art { position: static; margin: 0; } .ribbon-dialog .ribbon-popup-art .ribbon-art { width: 6.5rem; height: auto; } .ribbon-dialog-head { gap: var(--s2); padding: var(--s3); } .ribbon-close .ic { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ribbon-card > summary, .ribbon-art { transition: none; } .ribbon-card > summary:hover .ribbon-art { transform: none; } }
+@media (forced-colors: active) { .ribbon-local { background: Canvas; } .ribbon-art { filter: none; } .ribbon-tail { stroke: CanvasText; } }
+
+html.ribbon-pinned { overflow: hidden; }

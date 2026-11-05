@@ -137,7 +137,7 @@ export function kindAt(blockType, path, value) {
   if (typeof value === "boolean") return { kind: "boolean" };
   // inside a list: the colour a link or a row wears, a word's size in the cloud, a workshop answer's tone
   if (last === "program") return { kind: "choice", options: ["peer", "craft", "workshops", "other"] };
-  if (blockType === "words" && last === "size") return { kind: "choice", options: ["1", "2", "3"] };
+  if (["words", "ribbons"].includes(blockType) && last === "size") return { kind: "choice", options: ["1", "2", "3"] };
   if (blockType === "workshops" && last === "tone") return { kind: "choice", options: ["soft", "clear", "harsh"] };
   if (last === "count" && typeof value === "number") return { kind: "number" };
   // a video: an Instagram post or reel, the one frame the page's security policy lets in

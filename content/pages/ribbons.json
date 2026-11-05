@@ -10,89 +10,652 @@
       "id": "b-rb-head",
       "type": "pagehead",
       "title": "Colors of Support Solidarity Ribbons",
-      "lead": "Colors of Support is a campus-wide ribbon initiative by Badger Supports that brings visibility, connection, and care to UW–Madison. Each ribbon represents a different cause or experience—from mental health and recovery to pride, advocacy, and awareness.",
+      "lead": "Explore the colors and causes behind solidarity ribbons. Choose a ribbon below to learn about its meanings, including how we use it in Colors of Support.",
       "body": [
-        "By picking up and wearing a ribbon, you show solidarity and remind others they are not alone. Display it on your backpack or jacket!",
-        "Free ribbons are available at the Student Mental Health Hub, the Student Activity Center, and at some Badger Supports events. More pickup locations coming soon!"
+        "Choose a cause you want to support and wear a ribbon on your backpack or jacket. A ribbon can show solidarity without sharing a personal story.",
+        "Email our team to check current pickup locations and available colors."
       ],
       "links": [
         {
           "label": "Directions to the Student Mental Health Hub",
           "href": "/directions/sac-mhh/",
           "icon": "pin"
+        },
+        {
+          "label": "Ribbon Colors and Causes",
+          "href": "#b-rb-causes",
+          "icon": "down"
         }
       ],
       "photos": [
         "m-peer-ribbon"
-      ]
+      ],
+      "primary": {
+        "label": "Ask About Ribbon Pickup",
+        "href": "mailto:hello@badgersupports.org",
+        "icon": "mail"
+      },
+      "whole": true
     },
     {
       "id": "b-rb-causes",
-      "type": "words",
-      "title": "Some of Our Causes",
+      "type": "ribbons",
+      "title": "Explore Ribbon Meanings",
       "items": [
         {
-          "text": "Substance Abuse & Addiction",
+          "text": "Red — Substance Abuse & Addiction",
           "size": 2
         },
         {
-          "text": "ADHD",
+          "text": "Orange — ADHD",
           "size": 2
         },
         {
-          "text": "Childhood Cancer",
+          "text": "Gold — Childhood Cancer",
           "size": 2
         },
         {
-          "text": "Suicide",
+          "text": "Yellow — Suicide",
           "size": 2
         },
         {
-          "text": "Mental Health",
+          "text": "Lime Green — Mental Health",
           "size": 2
         },
         {
-          "text": "Bipolar Disorder",
+          "text": "Dark Green — Bipolar Disorder",
           "size": 2
         },
         {
-          "text": "Depression",
+          "text": "Dark Blue — Depression",
           "size": 2
         },
         {
-          "text": "Suicide Prevention",
+          "text": "Teal & Purple — Suicide Prevention",
           "size": 2
         },
         {
-          "text": "OCD & Anxiety",
+          "text": "Teal — OCD & Anxiety",
           "size": 2
         },
         {
-          "text": "Addiction Recovery",
+          "text": "Light Blue — Addiction Recovery",
           "size": 2
         },
         {
-          "text": "Eating Disorder",
+          "text": "Purple — Eating Disorder",
           "size": 2
         },
         {
-          "text": "Breast Cancer",
+          "text": "Pink — Breast Cancer",
           "size": 2
         },
         {
-          "text": "Sleep Disorders",
+          "text": "Black / Gray — Sleep Disorders",
           "size": 2
         },
         {
-          "text": "LGBTQIA+ Suicide",
+          "text": "White — LGBTQIA+ Suicide",
+          "size": 2
+        },
+        {
+          "text": "Bright Green",
+          "size": 2
+        },
+        {
+          "text": "Jade",
+          "size": 2
+        },
+        {
+          "text": "Turquoise",
+          "size": 2
+        },
+        {
+          "text": "Blue",
+          "size": 2
+        },
+        {
+          "text": "Periwinkle",
+          "size": 2
+        },
+        {
+          "text": "Lavender",
+          "size": 2
+        },
+        {
+          "text": "Silver",
+          "size": 2
+        },
+        {
+          "text": "Gray",
+          "size": 2
+        },
+        {
+          "text": "Pink & Blue",
+          "size": 2
+        },
+        {
+          "text": "Two-Tone Blue",
+          "size": 2
+        },
+        {
+          "text": "Blue Denim",
+          "size": 2
+        },
+        {
+          "text": "Maroon",
+          "size": 2
+        },
+        {
+          "text": "Parkinson’s UK",
           "size": 2
         }
-      ]
+      ],
+      "note": "Choose a ribbon to explore its causes and our Colors of Support meaning. Associations vary by community; wearing a color does not tell someone’s story.",
+      "openLabel": "View Causes",
+      "closeLabel": "Close",
+      "dialogLabel": "Ribbon Meanings",
+      "localLabel": "In Colors of Support",
+      "otherLabel": "Associated Causes",
+      "meanings": {
+        "red": {
+          "title": "Red",
+          "causes": [
+            "Heart disease and stroke",
+            "Substance-use awareness",
+            "HIV/AIDS"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "orange": {
+          "title": "Orange",
+          "causes": [
+            "COPD",
+            "Chronic pain, including AMPS and CRPS",
+            "Cultural diversity",
+            "Kidney cancer and leukemia",
+            "Gun-violence prevention",
+            "Hunger and malnutrition",
+            "Multiple sclerosis",
+            "Self-injury awareness",
+            "Road-work safety",
+            "Ukraine’s Orange Revolution"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "gold": {
+          "title": "Gold",
+          "causes": [
+            "Childhood cancer"
+          ],
+          "references": [
+            {
+              "label": "American Childhood Cancer Organization",
+              "href": "https://www.acco.org/gold-ribbon-awareness/"
+            }
+          ]
+        },
+        "yellow": {
+          "title": "Yellow",
+          "causes": [
+            "Military service and POW/MIA support",
+            "Suicide prevention",
+            "Endometriosis",
+            "Fire-service support in Queensland",
+            "Remembrance of the Sewol ferry disaster",
+            "Political solidarity and resistance campaigns",
+            "Return of hostages"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "bright_green": {
+          "title": "Bright Green",
+          "causes": [
+            "Climate awareness"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            }
+          ]
+        },
+        "lime": {
+          "title": "Lime Green",
+          "causes": [
+            "Lyme disease",
+            "Non-Hodgkin lymphoma"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "green": {
+          "title": "Green",
+          "causes": [
+            "Bipolar disorder and depression",
+            "Cerebral palsy",
+            "Kidney cancer and kidney disease",
+            "Mitochondrial disease",
+            "Mental-health awareness",
+            "Anti-war solidarity"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "jade": {
+          "title": "Jade",
+          "causes": [
+            "Hepatitis B",
+            "Liver cancer"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ],
+          "note": "This is a campaign-specific design; the illustration here is representative. Follow the reference for its context."
+        },
+        "teal": {
+          "title": "Teal",
+          "causes": [
+            "Cervical, ovarian and uterine cancers",
+            "Sexual-assault awareness and survivor support",
+            "Food allergies",
+            "PCOS",
+            "PTSD",
+            "Trigeminal neuralgia",
+            "OCD",
+            "Tsunami remembrance"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "teal_purple": {
+          "title": "Teal & Purple",
+          "causes": [
+            "Suicide awareness and prevention"
+          ],
+          "references": [
+            {
+              "label": "988 Lifeline ribbon resource",
+              "href": "https://988lifeline.org/media-resources/"
+            }
+          ]
+        },
+        "turquoise": {
+          "title": "Turquoise",
+          "causes": [
+            "Addiction recovery",
+            "Congenital diaphragmatic hernia",
+            "Dysautonomia",
+            "Native American advocacy"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "light_blue": {
+          "title": "Light Blue",
+          "causes": [
+            "Childhood cancer",
+            "Men’s health and prostate cancer"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "blue": {
+          "title": "Blue",
+          "causes": [
+            "ARDS",
+            "Autism awareness",
+            "Hydrocephalus",
+            "Remembrance of fallen police officers",
+            "ME/CFS",
+            "Online civil liberties",
+            "Parkinson’s awareness",
+            "Tobacco prevention",
+            "Civil-rights campaigns",
+            "Campaign-specific political solidarity"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "dark_blue": {
+          "title": "Dark Blue",
+          "causes": [
+            "Arthritis",
+            "Child-abuse prevention",
+            "Colorectal cancer"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "purple": {
+          "title": "Purple",
+          "causes": [
+            "Alzheimer’s disease",
+            "Domestic-violence awareness",
+            "Fibromyalgia",
+            "Opioid-crisis awareness",
+            "Military children",
+            "LGBTQ+ solidarity and Spirit Day",
+            "Epilepsy",
+            "Lupus",
+            "Pancreatic and thyroid cancers",
+            "Leiomyosarcoma",
+            "Inflammatory bowel conditions"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "periwinkle": {
+          "title": "Periwinkle",
+          "causes": [
+            "Eating disorders",
+            "Esophageal cancer",
+            "Pulmonary hypertension"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "lavender": {
+          "title": "Lavender",
+          "causes": [
+            "Craniosynostosis",
+            "Epilepsy",
+            "Cancer awareness",
+            "Rett syndrome"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "silver": {
+          "title": "Silver",
+          "causes": [
+            "Parkinson’s disease",
+            "Schizophrenia and brain conditions"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "gray": {
+          "title": "Gray",
+          "causes": [
+            "Asthma",
+            "Brain tumors and brain cancer",
+            "Borderline personality disorder",
+            "Diabetes"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "white": {
+          "title": "White",
+          "causes": [
+            "Bone cancer",
+            "Lung conditions, including cancer",
+            "Peace",
+            "Ending violence against women"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "black": {
+          "title": "Black",
+          "causes": [
+            "Mourning and remembrance",
+            "Melanoma",
+            "POW/MIA awareness",
+            "Violence and gang prevention",
+            "Computer-security awareness in a named Indian campaign",
+            "Myanmar’s Black Ribbon Movement"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "pink": {
+          "title": "Pink",
+          "causes": [
+            "Breast-cancer awareness"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "pink_blue": {
+          "title": "Pink & Blue",
+          "causes": [
+            "Pregnancy and infant loss",
+            "Premature birth"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "two_tone_blue": {
+          "title": "Two-Tone Blue",
+          "causes": [
+            "Hydrocephalus"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "denim": {
+          "title": "Blue Denim",
+          "causes": [
+            "Genetic-condition awareness"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "maroon": {
+          "title": "Maroon",
+          "causes": [
+            "Multiple myeloma"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            },
+            {
+              "label": "Disabled World ribbon chart",
+              "href": "https://www.disabled-world.com/disability/awareness/ribbons.php"
+            }
+          ]
+        },
+        "parkinsons": {
+          "title": "Parkinson’s UK",
+          "causes": [
+            "Parkinson’s awareness"
+          ],
+          "references": [
+            {
+              "label": "Wikipedia ribbon reference",
+              "href": "https://en.wikipedia.org/wiki/List_of_awareness_ribbons"
+            }
+          ],
+          "note": "This is a campaign-specific design; the illustration here is representative. Follow the reference for its context."
+        }
+      }
     },
     {
       "id": "b-rb-making",
       "type": "expect",
-      "title": "Ribbon Making at Peer Support Groups!",
+      "title": "Making Ribbons Together",
       "links": [
         {
           "label": "Peer Support Groups",
@@ -102,13 +665,17 @@
       "photos": [
         "m-openhouse-ribbon-bowls",
         "m-ribbons-bowls"
-      ]
+      ],
+      "body": [
+        "Ribbon making is one of the activities our peer-support groups have shared. Visit the group page for the current schedule and what to expect."
+      ],
+      "whole": true
     },
     {
       "id": "b-rb-pickup",
       "type": "cta",
-      "title": "Ribbon Pickup",
-      "body": "Fill out the form to request a ribbon station near you. Student orgs, departments, and campus units are welcome to host.",
+      "title": "Host a Ribbon Station",
+      "body": "UW–Madison student organizations, departments and campus units can request a ribbon station through our resource request form. Use your UW–Madison email and choose Colors of Support: Ribbon Distribution.",
       "primary": {
         "label": "Request a Ribbon Station",
         "href": "/forms/resource-request/",
@@ -116,7 +683,16 @@
       },
       "photos": [
         "m-ribbons-table"
-      ]
+      ],
+      "links": [
+        {
+          "label": "Ask About Station Availability",
+          "href": "mailto:hello@badgersupports.org",
+          "icon": "mail"
+        }
+      ],
+      "whole": true,
+      "quiet": true
     }
   ]
 }

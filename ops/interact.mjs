@@ -1977,6 +1977,111 @@ await part("editable native form settings", async () => {
   }
 });
 
+await part("Ribbons: cards, cause dialogs and whole photos", async () => {
+  const proof = path.join(ROOT, "local/ribbons-proof"); fs.mkdirSync(proof, { recursive: true });
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    try {
+      const page = await ctx.newPage(), writes = [];
+      page.on("request", r => { if (!["GET", "HEAD"].includes(r.method())) writes.push(r.url()); });
+      await page.goto(BASE + "/initiatives/ribbons/", { waitUntil: "networkidle" });
+      const labels = await page.locator(".ribbon-name").allTextContents();
+      check(labels.length === 27 && labels.includes("Teal & Purple") && !labels.some(t=>/Zebra|Houndstooth/i.test(t)) && !labels.some(t => /red.*white.*blue|orange.*black/i.test(t)), `Ribbons ${width}px JS=${javaScriptEnabled}: 27 text-labelled ribbons omit all requested patterns`);
+      const gallery=page.locator(".ribbon-grid");
+      const layout=await gallery.evaluate(n=>({cols:getComputedStyle(n).gridTemplateColumns.split(" ").length,art:[...n.querySelectorAll("summary")].every(s=>s.querySelector('svg[aria-hidden="true"]')&&getComputedStyle(s).transitionDuration==="0s")}));
+      check(layout.cols===(width>1100?5:width>600?3:2)&&layout.art,`Ribbons ${width}px JS=${javaScriptEnabled}: intentional responsive cards retain decorative art and respect reduced motion`);
+      const artFocus=await page.locator(".ribbon-card summary").evaluateAll(nodes=>nodes.every(n=>{const a=n.querySelector(".ribbon-art").getBoundingClientRect(),s=n.getBoundingClientRect(),c=getComputedStyle(n.parentElement);return a.height/s.height>.65&&s.height<(innerWidth>700?285:240)&&c.boxShadow==="none"&&c.borderTopWidth==="0px";}));
+      check(artFocus&&await page.locator(".ribbon-reference-heading").count()===0,`Ribbons ${width}px JS=${javaScriptEnabled}: tighter spacing makes the artwork dominant without boxed display cells or a reference heading`);
+      const primary = page.getByRole("link", { name: "Ask About Ribbon Pickup", exact: true });
+      check(await primary.getAttribute("href") === "mailto:hello@badgersupports.org" && await page.locator('[data-block="b-rb-head"] a[href="/directions/sac-mhh/"]').count() === 1, `Ribbons ${width}px JS=${javaScriptEnabled}: pickup inquiry and Hub directions have distinct destinations`);
+      const images = await page.locator("main .photo img").all(); let whole = images.length === 4;
+      for (const image of images) { await image.scrollIntoViewIfNeeded(); await image.evaluate(n => n.decode()); whole &&= await image.evaluate(n => { const r = n.getBoundingClientRect(); return n.naturalWidth > 0 && Math.abs(r.width / r.height - n.naturalWidth / n.naturalHeight) < .02; }); }
+      check(whole, `Ribbons ${width}px JS=${javaScriptEnabled}: approved card and all three photos remain whole`);
+      const station = page.locator('[data-block="b-rb-pickup"]');
+      check(await station.locator('a[href="/forms/resource-request/"]').count() === 1 && await station.locator(".btn").count() === 0 && await station.locator('a[href="mailto:hello@badgersupports.org"]').count() === 1, `Ribbons ${width}px JS=${javaScriptEnabled}: station form stays secondary with an email fallback`);
+      const jump = page.getByRole("link", { name: "Ribbon Colors and Causes", exact: true });
+      await jump.focus(); await page.keyboard.press("Enter"); await page.waitForURL("**/initiatives/ribbons/#b-rb-causes");
+      const summary=page.locator(".ribbon-card").filter({has:page.locator(".ribbon-name",{hasText:/^Red$/})}).locator("summary");
+      await summary.focus();
+      const before=await page.evaluate(()=>({url:location.href,scroll:scrollY,local:JSON.stringify(localStorage),session:JSON.stringify(sessionStorage)}));
+      check(await summary.evaluate(n=>document.activeElement===n&&getComputedStyle(n).outlineStyle!=="none"),`Ribbons ${width}px JS=${javaScriptEnabled}: cards have visible keyboard focus`);
+      if(width===1280||width===390)await page.screenshot({path:path.join(proof,`cards-${width}-${javaScriptEnabled}.png`)});
+      await page.keyboard.press("Enter");
+      if(javaScriptEnabled) {
+        const dialog=page.getByRole("dialog",{name:"Red",exact:true});await dialog.waitFor({state:"visible"});
+        const text=await dialog.textContent();
+        check(text.includes("In Colors of Support")&&text.includes("Substance Abuse & Addiction")&&text.includes("Associated Causes")&&text.includes("HIV/AIDS")&&await dialog.locator(".ribbon-references a").count()>0,`Ribbons ${width}px: popup separates BSS meaning from sourced broader causes`);
+        const unique=await page.locator("svg [id]").evaluateAll(nodes=>new Set(nodes.map(n=>n.id)).size===nodes.length);
+        const fit=await dialog.evaluate(n=>{const r=n.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight&&n.scrollWidth<=n.clientWidth+1;});
+        check(unique&&fit&&await page.locator("html").evaluate(n=>getComputedStyle(n).overflow==="hidden"),`Ribbons ${width}px: popup fits, vector paint IDs stay unique and background scrolling is pinned`);
+        const close=dialog.getByRole("button",{name:"Close",exact:true});
+        await close.focus();await page.keyboard.press("Shift+Tab");
+        const contained=await dialog.evaluate(n=>n.contains(document.activeElement));
+        await page.keyboard.press("Tab");
+        check(contained&&await close.evaluate(n=>document.activeElement===n),`Ribbons ${width}px: keyboard focus remains inside the open dialog`);
+        if(width===1280||width===390)await page.screenshot({path:path.join(proof,`popup-${width}.png`)});
+        await page.keyboard.press("Escape");await dialog.waitFor({state:"hidden"});
+        const restored=await page.evaluate(()=>({url:location.href,scroll:scrollY,local:JSON.stringify(localStorage),session:JSON.stringify(sessionStorage),pinned:document.documentElement.classList.contains("ribbon-pinned")}));
+        check(await summary.evaluate(n=>document.activeElement===n)&&Math.abs(restored.scroll-before.scroll)<2&&!restored.pinned&&restored.url===before.url&&restored.local===before.local&&restored.session===before.session,`Ribbons ${width}px: Escape restores focus and scroll without storing or sharing a choice`);
+        await summary.click();await dialog.waitFor({state:"visible"});await close.click();await dialog.waitFor({state:"hidden"});
+        check(await summary.evaluate(n=>document.activeElement===n),`Ribbons ${width}px: Close also returns to the chosen card`);
+      } else {
+        const card=summary.locator("..");
+        check(await card.evaluate(n=>n.open)&&await card.locator(".ribbon-details").isVisible()&&(await card.textContent()).includes("HIV/AIDS"),`Ribbons ${width}px: native disclosure exposes the same causes without JavaScript`);
+        const contained=await card.evaluate(n=>{const b=n.getBoundingClientRect(),body=n.querySelector(".ribbon-details").getBoundingClientRect();const row=n.parentElement.parentElement.children[innerWidth>1100?5:innerWidth>600?3:2].getBoundingClientRect();return body.bottom<=b.bottom+2&&body.bottom<=row.top;});
+        check(contained,`Ribbons ${width}px: expanded native content stays in its card and clears the next row`);
+        await page.keyboard.press("Enter");check(!(await card.evaluate(n=>n.open)),`Ribbons ${width}px: native disclosure closes by keyboard`);
+      }
+      check(!writes.length&&await page.locator("main input,main textarea,main form").count()===0&&await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Ribbons ${width}px JS=${javaScriptEnabled}: no personal inputs, writes or horizontal overflow`);
+      await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(proof,`ribbons-${width}-${javaScriptEnabled}.png`),fullPage:true});
+    } finally { await ctx.close(); }
+  }
+});
+
+await part("Equity: unchanged statement and quiet contacts", async () => {
+  const statement = JSON.parse(fs.readFileSync(path.join(ROOT, "content/pages/equity-belonging.json")));
+  const paragraphs = statement.blocks.slice(0, 2).flatMap(b => b.body || []);
+  const proof = path.join(ROOT, "local/ribbons-proof"); fs.mkdirSync(proof, { recursive: true });
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    try {
+      const page = await ctx.newPage(); await page.goto(BASE + "/about/equity-belonging/", { waitUntil: "networkidle" });
+      const text = await page.locator("main").textContent();
+      check(paragraphs.length === 10 && paragraphs.every(p => text.includes(p)), `Equity ${width}px JS=${javaScriptEnabled}: all protected statement paragraphs remain readable`);
+      const contact = page.locator('[data-block="b-eb-cta"]');
+      const mail = contact.locator('a[href="mailto:directors@badgersupports.org"]');
+      await mail.focus();
+      check(await contact.locator(".btn").count() === 0 && await contact.locator('a[href="mailto:accessibility@badgersupports.org"]').count() === 1 && await mail.evaluate(n => document.activeElement === n && getComputedStyle(n).outlineStyle !== "none"), `Equity ${width}px JS=${javaScriptEnabled}: director and accessibility contacts are quiet and keyboard reachable`);
+      check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Equity ${width}px JS=${javaScriptEnabled}: statement has no horizontal overflow`);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.screenshot({ path: path.join(proof, `equity-${width}-${javaScriptEnabled}.png`), fullPage: true });
+    } finally { await ctx.close(); }
+  }
+});
+
+await part("room arrival", async () => {
+  for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
+    try {
+      const page = await ctx.newPage();
+      await page.goto(BASE + "/directions/", { waitUntil: "networkidle" });
+      check(await page.locator(".hubcard").count() === 1 && await page.locator(".tickets .ticket").count() === 6, `arrival ${width}px JS=${javaScriptEnabled}: Hub and six event rooms remain distinct`);
+      await page.locator('.places-jumps a[href$="-rooms"]').click();
+      check(await page.evaluate(() => { const h = document.querySelector(location.hash); const y = h.getBoundingClientRect().top; return y >= document.querySelector(".site-header").getBoundingClientRect().bottom - 1 && y < innerHeight; }), `arrival ${width}px JS=${javaScriptEnabled}: Event Rooms jump clears the sticky header`);
+      for (const id of ["sac-mhh", "sac-caucus", "sac-hearing", "sac-multipurpose", "lcm", "union-south-marquee", "memorial-union-tripp"]) {
+        await page.goto(BASE + `/directions/${id}/`, { waitUntil: "networkidle" });
+        const addressOnly = ["union-south-marquee", "memorial-union-tripp"].includes(id);
+        check(await page.locator("main h1").count() === 1 && await page.locator(".dir-steps").count() === (addressOnly ? 0 : 1) && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `arrival ${id} ${width}px JS=${javaScriptEnabled}: readable room, appropriate route and no overflow`);
+        check(await page.locator(".dir-side").evaluate(n => { const photo = n.querySelector(".dir-photo"); return !photo || n.querySelector("address").getBoundingClientRect().bottom < photo.getBoundingClientRect().top; }), `arrival ${id} ${width}px JS=${javaScriptEnabled}: address and map precede photography`);
+        await page.locator('.dir-jumps a[href$="-access"]').click();
+        check(await page.locator('.dir-access a[href="mailto:accessibility@badgersupports.org"]').isVisible(), `arrival ${id} ${width}px JS=${javaScriptEnabled}: access contact reached by native jump`);
+        await page.locator('.dir-jumps a[href$="-next"]').click();
+        check(await page.locator(".dir-next").isVisible() && await page.locator(".dir-next").textContent() !== "", `arrival ${id} ${width}px JS=${javaScriptEnabled}: room remains useful with or without events`);
+      }
+    } finally { await ctx.close(); }
+  }
+});
+
 await browser.close();
 for (const r of results) console.log(`${r.ok ? "  ok  " : "  FAIL"} ${r.what}`);
 const failed = results.filter((r) => !r.ok).length;

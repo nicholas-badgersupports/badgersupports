@@ -20,14 +20,14 @@ export default {
     if (b.quiet && !b.photos?.length) return text.render({ ...b, anchor: b.anchor || b.id, body: b.body ? [b.body] : [], links: [b.primary, ...(b.links || [])] }, ctx);
     const [photo] = b.photos || [];
     const whole = Boolean(photo && b.whole);
-    return html`<section id="${b.anchor || b.id}" class="${["cta", photo ? "has-photo" : null, whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section id="${b.anchor || b.id}" class="${["cta", photo ? "has-photo" : null, whole ? "is-whole" : null, b.quiet ? "is-quiet" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   ${photo ? html`<div class="photo cta-photo">${picture(ctx, photo, { sizes: whole ? "(max-width: 860px) calc(100vw - 2rem), 34rem" : "(max-width: 860px) 9rem, 15rem" })}</div>` : ""}
   <div class="cta-words">
     <h2 id="${b.id}-h">${b.title}</h2>
     ${b.body ? html`<p class="lead">${b.body}</p>` : ""}
     <div class="cta-actions">
-      ${link(ctx, b.primary.href, b.primary.label, { class: "btn btn--big", icon: b.primary.icon || "arrow" })}
-      ${(b.links || []).map((l) => link(ctx, l.href, l.label, { class: "go go--light", icon: l.icon || "arrow" }))}
+      ${link(ctx, b.primary.href, b.primary.label, { class: b.quiet ? "go" : "btn btn--big", icon: b.primary.icon || "arrow" })}
+      ${(b.links || []).map((l) => link(ctx, l.href, l.label, { class: b.quiet ? "go" : "go go--light", icon: l.icon || "arrow" }))}
     </div>
   </div>
 </div></section>`;

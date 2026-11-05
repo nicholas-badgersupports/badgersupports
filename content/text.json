@@ -3174,6 +3174,46 @@
       "group": "forms",
       "text": "Request: {{topic}}",
       "where": "Selected program type carried from a native request link, also preserved in the original Google fallback."
+    },
+    "directions.hub": {
+      "group": "rooms",
+      "text": "Our Hub",
+      "where": "Label identifying the ongoing organizational location on its directions page."
+    },
+    "directions.eventRoom": {
+      "group": "rooms",
+      "text": "Event Location",
+      "where": "Label distinguishing an event room from the ongoing Hub."
+    },
+    "directions.onPage": {
+      "group": "rooms",
+      "text": "On This Page",
+      "where": "Accessible label for local navigation on directions pages."
+    },
+    "directions.noEvents": {
+      "group": "rooms",
+      "text": "No upcoming events are listed here in the next three weeks.",
+      "where": "Room page when a current event feed has no upcoming event at this room."
+    },
+    "directions.programs": {
+      "group": "rooms",
+      "text": "Browse Programs",
+      "where": "Useful next action from a room without listed events."
+    },
+    "directions.accessTitle": {
+      "group": "rooms",
+      "text": "Access Questions",
+      "where": "Heading for the room access contact."
+    },
+    "directions.accessBody": {
+      "group": "rooms",
+      "text": "For disability-related accommodations or questions about getting to the room, please contact us.",
+      "where": "Room access guidance without promising a verified accessible route."
+    },
+    "directions.accessContact": {
+      "group": "rooms",
+      "text": "Contact Us About Access",
+      "where": "Link to the organizational accessibility contact on room pages."
     }
   }
 }

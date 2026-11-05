@@ -3,7 +3,7 @@
   "id": "pg-directions",
   "path": "/directions/",
   "title": "Rooms and Directions",
-  "description": "Where Badger Supports meets, with step-by-step directions to each room.",
+  "description": "Find the Student Mental Health Hub and Badger Supports event rooms, with addresses, maps and available arrival directions.",
   "analytics": "public",
   "blocks": [
     {

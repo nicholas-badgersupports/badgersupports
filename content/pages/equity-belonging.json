@@ -44,7 +44,15 @@
         "label": "Email Us",
         "href": "mailto:directors@badgersupports.org",
         "icon": "mail"
-      }
+      },
+      "quiet": true,
+      "links": [
+        {
+          "label": "Accessibility Questions",
+          "href": "mailto:accessibility@badgersupports.org",
+          "icon": "mail"
+        }
+      ]
     }
   ]
 }

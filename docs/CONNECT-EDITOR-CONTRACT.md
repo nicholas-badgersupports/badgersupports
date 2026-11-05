@@ -145,7 +145,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 
 ### Directions to a room — `directions`
 
-Reads: `places`, `events` · analytics: `page` · photos load eager
+Reads: `places`, `events`, `eventsState` · analytics: `page` · photos load eager
 
 | Field | Type | |
 |---|---|---|
@@ -250,6 +250,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `audience` | one line of text |  |
 | `disclosure` | one line of text |  |
 | `preview` | one or more paragraphs |  |
+| `whole` | on or off |  |
 
 ### Closing call to action — `cta`
 
@@ -301,6 +302,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `firstLinkPrimary` | on or off |  |
+| `whole` | on or off |  |
 
 ### Photo cards — `cards`
 
@@ -325,6 +327,22 @@ Reads: nothing but its own fields · analytics: `none` · photos load lazy
 | `title` | one line of text | **required** |
 | `items` | words, in order: each its text, or its `text` and a `size` (1 small, 2 medium, 3 large) | **required** |
 | `note` | one line of text |  |
+
+### Ribbon cards — `ribbons`
+
+Reads: nothing but its own fields · analytics: `none` · photos load lazy · browser module `ribbons.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `items` | words, in order: each its text, or its `text` and a `size` (1 small, 2 medium, 3 large) | **required** |
+| `meanings` | reference groups keyed by ribbon color or pattern; each has a title, a list of associated causes, optional note, and source links. A card’s explicit color chooses its group; plain saved text never inherits a group from its position | **required** |
+| `note` | one line of text |  |
+| `openLabel` | one line of text | **required** |
+| `closeLabel` | one line of text | **required** |
+| `dialogLabel` | one line of text | **required** |
+| `localLabel` | one line of text | **required** |
+| `otherLabel` | one line of text | **required** |
 
 ### Badger SPILL — `spill`
 
@@ -499,7 +517,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-624 keys. Keys are permanent. Required text cannot be published empty and must keep each
+632 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (16)
@@ -584,7 +602,7 @@ the site adds the markup.
 | `events.unavailable` | We couldn’t confirm the current event schedule. Please check with us before you visit. | Event hero and upcoming event list when their source is unavailable. |  |
 | `events.askSchedule` | Ask About an Event | Contact action when the current event schedule cannot be confirmed. |  |
 
-### Rooms and directions (9)
+### Rooms and directions (17)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -597,6 +615,14 @@ the site adds the markup.
 | `directions.pageTitle` | Directions to {{place}} | A room page’s title in the browser tab and in search results; the site’s name is added after it. | `{{place}}` |
 | `directions.pageDescription` | How to find {{place}}: {{address}}. | A room page’s summary in search results and link previews. | `{{place}}` `{{address}}` |
 | `directions.eventRooms` | Event Rooms | Heading over the rooms events are held in, under the Hub on the list of rooms. |  |
+| `directions.hub` | Our Hub | Label identifying the ongoing organizational location on its directions page. |  |
+| `directions.eventRoom` | Event Location | Label distinguishing an event room from the ongoing Hub. |  |
+| `directions.onPage` | On This Page | Accessible label for local navigation on directions pages. |  |
+| `directions.noEvents` | No upcoming events are listed here in the next three weeks. | Room page when a current event feed has no upcoming event at this room. |  |
+| `directions.programs` | Browse Programs | Useful next action from a room without listed events. |  |
+| `directions.accessTitle` | Access Questions | Heading for the room access contact. |  |
+| `directions.accessBody` | For disability-related accommodations or questions about getting to the room, please contact us. | Room access guidance without promising a verified accessible route. |  |
+| `directions.accessContact` | Contact Us About Access | Link to the organizational accessibility contact on room pages. |  |
 
 ### Dates and times (40)
 

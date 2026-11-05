@@ -6,6 +6,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { build, ROOT } from "../ops/build.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
+import { makeContext } from "../src/render/context.mjs";
+import { BLOCKS } from "../src/render/registry.mjs";
 import { esc } from "../src/render/html.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build-places");
@@ -82,4 +84,33 @@ test("a room cannot be published without an address, may be published with no st
   assert.ok(placeProblems({ ...base, address: "1 Example St", steps: [{ id: "bad", text: "Go in." }] }).some((p) => /s-something/.test(p)));
   assert.ok(placeProblems({ ...base, address: "1 Example St", steps: [{ id: "s-a", text: "Go in.", photo: "m-none" }] }, { media: new Set() }).some((p) => /not in media/.test(p)));
   assert.deepEqual(eventPlaceProblems({ dated: [{ id: "e1", place: "nowhere" }] }, {}), ['e1 is held at "nowhere", which is not a room in content/places/']);
+});
+
+
+test("room events distinguish an empty current feed from unavailable data and exclude ended or other-room events", () => {
+  const text = Object.fromEntries(Object.entries(JSON.parse(fs.readFileSync(path.join(ROOT, "content/text.json"))).text).map(([k,v]) => [k,v.text]));
+  const room = { id: "room", published: true, name: "Example Room", address: "1 Example St", steps: [], links: [] };
+  const dated = [
+    { id: "past", title: "Ended Example", program: "craft", date: "2026-11-04", start: "15:00", end: "16:00", place: "room" },
+    { id: "next", title: "Upcoming Example", program: "craft", date: "2026-11-05", start: "17:00", end: "18:00", place: "room" },
+    { id: "other", title: "Other Room Example", program: "craft", date: "2026-11-05", start: "17:00", end: "18:00", place: "other" },
+  ];
+  const draw = (events, stale = false) => String(BLOCKS.directions.render({ id: "b-example", type: "directions", place: "room" }, makeContext({ site: {}, text, today: "2026-11-04", now: Date.parse("2026-11-04T17:00:00-06:00"), builtPaths: ["/directions/", "/about/what-we-do/", "/join/email-list/"], data: { places: { room }, events, eventsState: { stale } } })));
+  const events = { dated, recurring: [], places: { room: { name: "Example Room" }, other: { name: "Other Room" } } };
+  const current = draw(events);
+  assert.match(current, /Upcoming Example/);
+  assert.doesNotMatch(current, /Ended Example|Other Room Example/);
+  const empty = draw({ ...events, dated: [] });
+  assert.ok(empty.includes(text["directions.noEvents"]));
+  assert.match(empty, /href="\/about\/what-we-do\/"/);
+  for (const out of [draw(events, true), draw(null)]) {
+    assert.ok(out.includes(text["events.unavailable"]));
+    assert.ok(!out.includes(text["directions.noEvents"]));
+    assert.doesNotMatch(out, /Upcoming Example/);
+  }
+  for (const out of [current, empty, draw(null)]) {
+    assert.match(out, /id="b-example-next" data-live="next"/);
+    assert.match(out, /href="mailto:accessibility@badgersupports.org"/);
+    assert.doesNotMatch(out, /dir-steps|dir-arrive|href="#b-example-route"/);
+  }
 });

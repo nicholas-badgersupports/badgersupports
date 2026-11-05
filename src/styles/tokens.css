@@ -85,6 +85,32 @@
   --accent-tint: var(--red-tint);
   --accent-wash: var(--red-wash);
 
+  /* Content colors sampled from the approved ribbon card; text uses the normal ink tokens. */
+  --ribbon-red: #D31820;
+  --ribbon-orange: #FF924D;
+  --ribbon-gold: #FFBD59;
+  --ribbon-yellow: #FFDE5A;
+  --ribbon-lime: #7ED957;
+  --ribbon-green: #03BF64;
+  --ribbon-blue: #004AAD;
+  --ribbon-prevention: #86E7E8;
+  --ribbon-teal: #0497B2;
+  --ribbon-light-blue: #39B7FF;
+  --ribbon-purple: #CC6CE7;
+  --ribbon-pink: #FF66C5;
+  --ribbon-black: #737373;
+  --ribbon-maroon: #781D3B;
+  --ribbon-bright-green: #5CBF37;
+  --ribbon-jade: #079679;
+  --ribbon-turquoise: #35BDB7;
+  --ribbon-periwinkle: #999EDD;
+  --ribbon-lavender: #BEA1DD;
+  --ribbon-silver: #BCBEC5;
+  --ribbon-gray: #8A8D96;
+  --ribbon-black-solid: #28292D;
+  --ribbon-shadow: #3937372B;
+
+
   /* a link: the brand's links are blue. The workshops blue holds 4.5 on every ground here (7.05 on the
      textured cream); the brand blue only on white */
   --link: #304674;

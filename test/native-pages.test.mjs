@@ -33,8 +33,9 @@ test('every definition has a production form page and reply metadata, with no pr
   assert.equal(fs.existsSync(path.join(OUT,'forms',key,'preview','index.html')),false,key);
  }
 });
-test('all six added pages open and close from the existing switch; closed replies keep neutral current introductions',async()=>{
- await fresh();
+test('without a revision, all six added pages open and close from the switch and closed replies retain current introductions',async()=>{
+ const store=await fresh();assert.equal(await store.get('current'),null);
+ assert.deepEqual(SERVER.render.builtEdits,JSON.parse(fs.readFileSync(path.join(ROOT,'content/edits.json'))).edits);
  for(const key of missing){
   const p=SERVER.formPages[key],version=SERVER.forms[key].version;
   const closed=await(await get(p.path)).text();assert.ok(closed.includes(p.closedIntro),key);assert.doesNotMatch(closed,/<form[\s>]/,key);
@@ -45,6 +46,7 @@ test('all six added pages open and close from the existing switch; closed replie
   const posted=await handle(post(`/api/forms/${key}/submit`,{_form:key,_version:String(version),name:'Fictional Example'},{json:false}),{ip:'192.0.2.40'});
   assert.equal(posted.status,409,key);const text=await posted.text();assert.ok(text.includes(p.closedIntro),key);assert.doesNotMatch(text,/April 26|April 3/,key);
  }
+ assert.equal(await store.get('current'),null,'form switches work independently of a published wording revision');
  assert.equal((await many('SELECT count(*)::int AS n FROM submissions'))[0].n,0);
 });
 test('published closed introduction changes apply to both GET and stale closed POST',async()=>{

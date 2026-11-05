@@ -12,7 +12,8 @@ export async function freshServer({ textEdits = {} } = {}) {
   useAdapter(db);
   // a published revision is kept outside the database, so each case starts with none
   useStore(memoryStore());
-  const c = loadContent({ textEdits });
+  // Isolated editor fixtures start from source; shipped saved words have separate build/runtime coverage.
+  const c = loadContent({ textEdits, edits: {} });
   useContent({
     schema: "bss.server/1", prototype: true, site: c.site, routes: c.routes, builtPaths: c.pages.map((p) => p.path),
     forms: c.forms, mood: c.mood, media: c.media, text: c.text, editable: c.editable, assets: { css: "/assets/css/test.css", js: { "site.js": "/s.js", "form.js": "/f.js", "mood.js": "/m.js" } },

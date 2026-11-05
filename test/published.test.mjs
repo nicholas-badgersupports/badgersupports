@@ -9,23 +9,33 @@ import fs from "node:fs";
 import path from "node:path";
 import { build, ROOT } from "../ops/build.mjs";
 import { useContent } from "../netlify/lib/content.mjs";
-import { handlePage, useDist, PAGE_CACHE } from "../netlify/lib/pages.mjs";
-import { useStore, memoryStore } from "../netlify/lib/published.mjs";
+import { handlePage, siteNow, useDist, PAGE_CACHE } from "../netlify/lib/pages.mjs";
+import { useStore, memoryStore, currentRevision, publishRevision } from "../netlify/lib/published.mjs";
 import { eventSections, forgetEvents } from "../netlify/lib/live-events.mjs";
-import { freshPglite, useAdapter } from "../netlify/lib/db.mjs";
+import { freshPglite, useAdapter, many } from "../netlify/lib/db.mjs";
+import { editEntry, editSource, editsFile, saveEdit, waitingCount } from "../netlify/lib/edits.mjs";
+import { pageStrings, siteStrings, textStrings } from "../src/shared/edits.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build-published");
 const TODAY = "2026-10-20";
-await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: TODAY });
+await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: TODAY, edits: {} });
 const SERVER = JSON.parse(fs.readFileSync(path.join(OUT, "_server", "server.json"), "utf8"));
+const SAVED_OUT = path.join(ROOT, "local", "test-build-preserved-words");
+// This build deliberately reads the real shipped edits file, rather than an isolated empty fixture.
+await build({ out: SAVED_OUT, serverDir: path.join(SAVED_OUT, "_server"), media: false, today: TODAY });
+const SAVED_SERVER = JSON.parse(fs.readFileSync(path.join(SAVED_OUT, "_server", "server.json"), "utf8"));
+const SAVED_EDITS = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "edits.json"), "utf8")).edits;
 const read = (p) => fs.readFileSync(path.join(OUT, p), "utf8");
 const HERO = "page:pg-home:b-home-hero/title";
+const words = (site) => new Map([
+  ...site.pages.flatMap(pageStrings), ...siteStrings(site.site), ...textStrings(site.text),
+].map(s => [s.target, s.value]));
 
 /* Each case: the build's content, its files, and a store holding `revision` (or nothing). */
-async function given(revision = null) {
+async function given(revision = null, { server = SERVER, out = OUT } = {}) {
   useAdapter(await freshPglite()); // the pages that show a form read its switch
-  useContent(SERVER);
-  useDist(OUT);
+  useContent(server);
+  useDist(out);
   const store = memoryStore();
   if (revision) await store.set("current", { schema: "bss.revision/1", at: "2026-10-20T15:00:00.000Z", by: "Robin", stamp: revision.n, ...revision });
   useStore(store);
@@ -33,6 +43,56 @@ async function given(revision = null) {
   return store;
 }
 const get = (p, init = {}) => handlePage(new Request(`http://site.test${p}`, init), { today: TODAY, now: Date.parse(`${TODAY}T12:00:00Z`) });
+
+test("shipped saved words survive no revision and agree with the editor and its export", async () => {
+  await given(null, { server: SAVED_SERVER, out: SAVED_OUT });
+  assert.ok(Object.keys(SAVED_EDITS).length, "the release carries saved wording");
+  assert.deepEqual(SAVED_SERVER.render.builtEdits, SAVED_EDITS);
+  const shown = words(await siteNow({ catalogues: false }));
+  for (const [target, value] of Object.entries(SAVED_EDITS)) {
+    assert.equal(shown.get(target), value, target);
+    const entry = await editEntry(target);
+    assert.equal(entry.shown, value, target);
+    assert.equal(entry.current, value, target);
+    assert.equal(entry.original, SAVED_SERVER.editable[target].floor, "source remains available for Restore");
+    assert.equal(entry.waiting, false, target);
+    const pageId = target.startsWith("page:") ? target.split(":")[1] : "pg-home";
+    assert.equal((await editSource(pageId)).find(e => e.target === target).current, value, target);
+  }
+  for (const p of ["/", "/join/peer-support-groups/"]) {
+    const response = await get(p);
+    assert.equal(response.headers.get("x-bss-revision"), "0", "dynamic rendering, not a static-file failure fallback");
+    assert.equal(await response.text(), fs.readFileSync(path.join(SAVED_OUT, p, "index.html"), "utf8"), p);
+  }
+  assert.deepEqual((await editsFile()).edits, SAVED_EDITS);
+  assert.equal(await waitingCount(), 0);
+});
+
+test("restoring shipped saved words publishes an authoritative empty revision and keeps the source wording", async () => {
+  await given(null, { server: SAVED_SERVER, out: SAVED_OUT });
+  const who = { sub: "fictional-editor", name: "Fictional Editor" };
+  for (const [target, value] of Object.entries(SAVED_EDITS)) {
+    const entry = await editEntry(target);
+    await saveEdit(who, { target, expected: value, value: entry.original });
+  }
+  await publishRevision(who, { now: new Date("2026-10-20T12:01:00Z") });
+  assert.deepEqual((await currentRevision()).edits, {}, "a present empty revision must not reapply shipped edits");
+  const rows = await many("SELECT target, value FROM content_edits");
+  assert.equal(rows.length, Object.keys(SAVED_EDITS).length);
+  const shown = words(await siteNow({ catalogues: false }));
+  for (const { target, value } of rows) {
+    assert.equal(value, SAVED_SERVER.editable[target].floor, target);
+    assert.equal(shown.get(target), value, target);
+    assert.equal((await editEntry(target)).current, value, target);
+  }
+  assert.deepEqual((await editsFile()).edits, {});
+  assert.equal(await waitingCount(), 0);
+  for (const p of ["/", "/join/peer-support-groups/"]) {
+    const response = await get(p);
+    assert.equal(response.headers.get("x-bss-revision"), "1");
+    assert.equal(await response.text(), read(path.join(p, "index.html")), p);
+  }
+});
 
 test("with nothing published, every page is the build's file, byte for byte", async () => {
   await given();

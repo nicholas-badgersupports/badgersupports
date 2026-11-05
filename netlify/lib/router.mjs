@@ -75,7 +75,7 @@ async function formPage(def) {
   // Replies use the same published page wording as a fresh GET, including closed introductions.
   if (c.render) try {
     const revision = await currentRevision();
-    const site = composeSite(c.render, revision?.edits || {}, revision?.structure);
+    const site = composeSite(c.render, revision?.edits, revision?.structure);
     const page = site.pages.find(p => p.blocks?.some(b => b.type === "form" && b.form === def.key && !b.preview));
     const block = page?.blocks.find(b => b.type === "form" && b.form === def.key && !b.preview);
     if (block) p = { id: page.id, path: page.path, title: page.title, blockId: block.id, blockTitle: block.title, closedIntro: block.closedIntro };

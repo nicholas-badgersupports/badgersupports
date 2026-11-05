@@ -22,8 +22,8 @@ export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && 
 export const sectionPrograms = (page) => (page.blocks || []).filter((b) => PROGRAMS.includes(b.program)).map((b) => [`#${b.anchor || b.id}`, b.program]);
 
 /* What a snapshot holds: the files before any saved word (floor), and everything else the pages read. */
-export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null, alumniSource = null }) {
-  return { shared, alumniSource, schema: "bss.render/1", floor, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
+export function siteSnapshot({ floor, builtEdits = {}, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null, alumniSource = null }) {
+  return { shared, alumniSource, schema: "bss.render/1", floor, builtEdits, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
 }
 
 /* Every page with the edits laid over the floor, as loadContent() does, then the page structure (src/shared/structure.mjs):
@@ -32,8 +32,9 @@ export function siteSnapshot({ floor, textRegistry, textEdits = {}, places, team
    settings (name, search description, accessibility email) are laid over its own, the build's kept as site.built.
    Rooms' saved words and photos are laid over the room records before anything draws a room: the room pages, the
    blocks that read `places`, and the room names the event lists carry (`places`, `data`, `roomIds`).
-   With no structure the result is the build's, byte for byte. */
-export function composeSite(snap, edits = {}, structure = null, shared = null) {
+   Without a revision, use the words the build applied. A supplied map is authoritative, including an empty
+   map after Restore, so the source floor remains available. */
+export function composeSite(snap, edits = snap.builtEdits || {}, structure = null, shared = null) {
   const team = shared?.team?.value || snap.team;
   const liveData = { ...snap.data, ...(shared?.events ? { events: shared.events.value, eventsState: shared.events } : {}), ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}), ...(shared?.alumni ? { alumni: shared.alumni.value, alumniState: shared.alumni.state } : {}) };
   const site = laySettings(structuredClone(snap.floor.site), structure?.settings);

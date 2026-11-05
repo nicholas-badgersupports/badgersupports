@@ -1112,7 +1112,7 @@ test("§12 analytics leakage: a page the API draws is not counted and not for se
 test("§12 editor to public page: a save is on the page the next visitor gets, and Restore puts it back", async () => {
   await freshServer();
   const out = path.join(ROOT, "local/test-build-editor-to-page");
-  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", edits: {} });
   const content = JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8"));
   useContent(content);
   useDist(out);
@@ -1138,7 +1138,7 @@ test("§12 editor to public page: a save is on the page the next visitor gets, a
 test("item 17: the switch opens and closes a form with no deploy, Open needs a second yes, and only forms.switch may use it", async () => {
   await freshServer();
   const out = path.join(ROOT, "local/test-build-form-switch");
-  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", edits: {} });
   useContent(JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8")));
   useDist(out);
   const cleared = [];
@@ -1243,7 +1243,7 @@ async function pagesSite(t) {
   await freshServer();
   if (!pagesBuild) {
     const out = path.join(ROOT, "local/test-build-pages");
-    await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+    await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", edits: {} });
     pagesBuild = { out, content: JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8")) };
   }
   useContent(pagesBuild.content);

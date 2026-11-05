@@ -313,6 +313,7 @@ export function loadContent({ production = false, launch = production, textEdits
     site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, alumni, alumniState, alumniSource, resources, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
+    builtEdits: Object.fromEntries(overlay.applied.map(target => [target, edits[target].trim()])),
     // the files before any saved word, for the page function to lay a published revision over (src/render/site.mjs)
     floor: { ...floor, text: floorText }, givenTextEdits,
   };
@@ -592,7 +593,7 @@ export async function build({ production = false, launch = production, today = n
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({
       alumniSource: content.alumniSource,
-      floor: content.floor, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team, teamState: null, resourcesState: null,
+      floor: content.floor, builtEdits: content.builtEdits, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team, teamState: null, resourcesState: null,
       forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths,
       shared: feed ? { source: "connect", exports: { team: !!feed.team, wall: !!feed.wall }, builtAt: new Date().toISOString() } : null,
     }),

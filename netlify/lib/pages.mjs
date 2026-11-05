@@ -44,7 +44,7 @@ let composed = null; // { key, site }
 
 function siteFor(snap, revision, shared = null) {
   const key = (revision ? `${revision.n}:${revision.stamp}:${revision.sstamp || 0}` : "none") + (shared?.key || "");
-  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits || {}, revision?.structure || null, shared) };
+  if (composed?.key !== key || composed.snap !== snap) composed = { key, snap, site: composeSite(snap, revision?.edits, revision?.structure || null, shared) };
   return composed.site;
 }
 
@@ -189,7 +189,7 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
     if (snap?.shared?.exports?.team && (teamPath(pathname) || wantsTeam)) {
       try {
-        const safe = composeSite(snap, {}, null, { team: { value: { ...snap.team, people: [] }, stale: true, unavailable: true } });
+        const safe = composeSite(snap, undefined, null, { team: { value: { ...snap.team, people: [] }, stale: true, unavailable: true } });
         const unavailable = safe.pages.find(p => p.id === "pg-about-team");
         return html(503, renderSitePage(snap, safe, unavailable, today, null, { now }), PRIVATE_FAILURE);
       } catch {

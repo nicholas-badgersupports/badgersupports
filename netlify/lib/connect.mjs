@@ -7,6 +7,7 @@
  *                     within minutes (staff.mjs). Made only with CONNECT_SESSION_STATUS=on;
  *                     docs/ARCHITECTURE.md, "Staying signed in".
  *   publicFormIngest  hand one submission to Connect's Website Forms queue (deliver.mjs).
+ *   publicFormFilePiece  transfer the PDFs accepted with that submission, with verified completion.
  *   publicEvents      the public event list, which the build reads (ops/connect-feed.mjs) and the
  *                     events refresh reads again between publishes (live-events.mjs).
  *
@@ -169,9 +170,67 @@ export async function signinQuotes(cfg, now = Date.now()) {
 
 /* ------------------------------------------------------------------ form delivery */
 
-/* One submission into Connect's Website Forms. Connect keeps one copy per ref, so sending the
-   same ref twice is harmless: it answers stored "already". */
-export async function deliverForm(cfg, payload) {
-  const r = await call(cfg, { action: "publicFormIngest", ...payload });
-  return { ref: r.ref, stored: r.stored };
+export const FILE_PIECE_BYTES = 512 * 1024;
+export const DELIVERY_BUDGET_MS = 40_000;
+const deliveryError = (code) => Object.assign(new Error("Connect delivery is incomplete."), { code });
+
+/* Each attempt resumes against the receiver's kept pieces. No file is complete until the
+   receiver has checked its full size, digest and PDF signature. A lost completion reply is safe
+   to retry with the same submission/file ids and a fresh request signature. */
+export async function deliverForm(cfg, payload, { readFile, deadline = Date.now() + DELIVERY_BUDGET_MS } = {}) {
+  const files = payload.files || [];
+  const binaries = new Map();
+  for (const file of files) {
+    const data = await readFile?.(file.fileId);
+    if (!(data instanceof Uint8Array)) throw deliveryError("file.missing");
+    const bytes = Buffer.from(data);
+    if (binaries.has(file.fileId) || !bytes.length || bytes.length > 3 * 1024 * 1024 ||
+        bytes.length !== file.bytes || sha256Hex(bytes) !== file.sha256 ||
+        file.type !== "application/pdf" || bytes.subarray(0, 5).toString("latin1") !== "%PDF-") {
+      throw deliveryError("file.changed");
+    }
+    binaries.set(file.fileId, bytes);
+  }
+  const send = (body) => {
+    const left = deadline - Date.now();
+    if (left <= 0) throw deliveryError("connect.delivery-pending");
+    return call(cfg, body, { timeout: Math.min(TIMEOUT_MS, left) });
+  };
+  const r = await send({ ...payload, action: "publicFormIngest" });
+  if (r.ref !== payload.ref || !["new", "already"].includes(r.stored)) throw deliveryError("connect.bad-reply");
+  const accepted = r.files;
+  if (files.length ? (!Array.isArray(accepted) || accepted.length !== files.length ||
+      new Set(accepted).size !== accepted.length || accepted.some(id => !binaries.has(id))) :
+      accepted !== undefined && (!Array.isArray(accepted) || accepted.length !== 0)) {
+    throw deliveryError("connect.files-refused");
+  }
+  const complete = [];
+  for (const file of files) {
+    const bytes = binaries.get(file.fileId);
+    const pieces = Math.ceil(bytes.length / FILE_PIECE_BYTES);
+    const sent = new Set();
+    let piece = 0;
+    for (;;) {
+      sent.add(piece);
+      let reply;
+      try {
+        reply = await send({ action: "publicFormFilePiece", ref: payload.ref, fileId: file.fileId,
+          piece, pieces, data: bytes.subarray(piece * FILE_PIECE_BYTES, (piece + 1) * FILE_PIECE_BYTES).toString("base64") });
+      } catch (e) {
+        if (e.reply?.restart === true && e.reply.ref === payload.ref && e.reply.fileId === file.fileId) {
+          throw deliveryError("connect.file-restart");
+        }
+        throw e;
+      }
+      if (reply.ref !== payload.ref || reply.fileId !== file.fileId) throw deliveryError("connect.bad-reply");
+      if (reply.complete === true) { complete.push(file.fileId); break; }
+      const wanted = reply.wanted;
+      if (reply.complete !== false || !Array.isArray(wanted) || !wanted.length || wanted.length >= pieces ||
+          new Set(wanted).size !== wanted.length || wanted.some(i => !Number.isInteger(i) || i < 0 || i >= pieces || sent.has(i))) {
+        throw deliveryError("connect.bad-reply");
+      }
+      piece = wanted[0];
+    }
+  }
+  return { ref: r.ref, stored: r.stored, files: complete };
 }

@@ -55,8 +55,9 @@ The two applications ask for a resume (and the staff one a cover letter) as one 
 this site until Connect takes it (`docs/ARCHITECTURE.md`, "Files"). Answers about work study and commitments are
 marked `confidential`: they go to Connect only, never to the staff page here or the backup. The letter form takes a
 recommender's letter the same way, as one PDF; nothing on it is marked confidential, and who reads letters is a
-Connect permission. Connect accepts only a resume and a cover letter today (Exchange request
-`RECOMMENDATION-LETTERS-INTO-CONNECT-2026-10-23`).
+Connect permission. Connect accepts the staff résumé/cover letter, volunteer résumé and recommendation letter under their
+existing form-specific file contract. Acceptance of the answer alone does not establish file completion; the
+outbox now requires every accepted PDF to finish before counting the submission sent.
 
 **At launch** (owner, 20 Oct 2026): `--production` and `--launch` builds serve every open form closed, its page
 showing one button, "Fill Out Our Form", to the Google Form it replaces (`launchForms()` and `googleFormUrl()` in

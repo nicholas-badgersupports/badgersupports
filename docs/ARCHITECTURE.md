@@ -256,6 +256,20 @@ question (404), not a PDF by type or by its first bytes (415), too big (413). Al
 before a byte is read. The reply is an id; Send carries only that. Nothing serves a file back: there is no route out.
 An upload nobody claimed is deleted after a day. Twenty uploads an hour per form per connection.
 
+Delivery first requires Connect to acknowledge every saved file descriptor. The outbox then sends the claimed
+upload bytes through signed `publicFormFilePiece` calls, at most 512 KiB per piece. A retry uses the same answer
+and file ids, probes piece zero, and sends only the receiver's still-wanted pieces. No inner restart loop runs;
+a refused/reset or interrupted file remains failed for the existing bounded retry. The receiver verifies the
+assembled size, SHA-256 and PDF signature before confirming completion. Only after every attachment completes
+does a claim-guarded transaction mark `connect.ingest` sent, stamp `uploads.delivered_at`, and record delivery.
+Local bytes stay in their existing upload rows; this change adds no deletion or retention policy.
+
+A delivery invocation shares a forty-second sending budget and caps each signed call to the remaining time.
+Unstarted claimed rows are released for a later run. Historical answer-only sent rows with unstamped uploads
+count as pending; an explicit Try again requeues only incomplete PDFs on forms that reader may retry. A form
+read alone never retries them. Missing historical definitions fail rather than substituting another version's
+questions. Receipts, backup, schedules, form switches and recruitment decisions remain separate activation steps.
+
 **Rate limits.** Forms: 40 an hour per form per connection (`FORM_PER_HOUR`, `netlify/lib/router.mjs`). Mood: 30 an hour. Files: 20 an hour. The connection is an HMAC of the
 address with `RATE_SALT`, cut to 32 characters. It is kept only in `rate_limits`, and windows older than a day are cleared at the next write. **No address is stored
 with a submission.**

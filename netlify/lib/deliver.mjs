@@ -21,9 +21,9 @@
  */
 
 import crypto from "node:crypto";
-import { q, many, one } from "./db.mjs";
+import { q, many, one, tx } from "./db.mjs";
 import { serverContent } from "./content.mjs";
-import { connectConfig, deliverForm, call } from "./connect.mjs";
+import { connectConfig, deliverForm, call, DELIVERY_BUDGET_MS } from "./connect.mjs";
 import { noteGet, noteSet } from "./published.mjs";
 import { backupConfig, writeBackup } from "./backup.mjs";
 import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES } from "../../src/shared/forms.mjs";
@@ -38,7 +38,7 @@ export async function definitionFor(key, version) {
   const row = (await many("SELECT definition FROM form_versions WHERE form_key = $1 AND version = $2", [key, version]))[0];
   if (row) return row.definition;
   const shipped = serverContent().forms[key];
-  return shipped || null;
+  return shipped?.version === Number(version) ? shipped : null;
 }
 
 /* What Connect stores: every column the form can have, and each answer as the words the person
@@ -100,9 +100,14 @@ async function claim(kind, { limit, force = false, forms = null }) {
 }
 
 /* A row done, or failed and waiting longer; only while this worker still holds it. */
-async function sent(row, token, detail) {
-  await q("UPDATE outbox SET state = 'sent', sent_at = now(), last_error = NULL, claim_until = NULL, claim_token = NULL WHERE id = $1 AND claim_token = $2", [row.outbox_id, token]);
-  await q("INSERT INTO submission_events (submission_id, actor, kind, detail) VALUES ($1, 'system', 'delivered', $2::jsonb)", [row.id, JSON.stringify(detail)]);
+async function sent(row, token, detail, files = []) {
+  return tx(async t => {
+    const held = await t.one("UPDATE outbox SET state = 'sent', sent_at = now(), last_error = NULL, claim_until = NULL, claim_token = NULL WHERE id = $1 AND claim_token = $2 RETURNING id", [row.outbox_id, token]);
+    if (!held) return false;
+    if (files.length) await t.query("UPDATE uploads SET delivered_at = coalesce(delivered_at, now()) WHERE submission_id = $1 AND file_id = ANY($2::text[])", [row.id, files]);
+    await t.query("INSERT INTO submission_events (submission_id, actor, kind, detail) VALUES ($1, 'system', 'delivered', $2::jsonb)", [row.id, JSON.stringify(detail)]);
+    return true;
+  });
 }
 async function failed(row, token, e) {
   const wait = Math.min(2 ** (row.attempts + 1), MAX_WAIT_MINUTES);
@@ -112,17 +117,29 @@ async function failed(row, token, e) {
 }
 
 async function ingest(cfg, opts) {
+  const deadline = Date.now() + DELIVERY_BUDGET_MS;
   const { token, rows } = await claim("connect.ingest", opts);
   let n = 0, bad = 0;
   for (const row of rows) {
+    if (Date.now() >= deadline) break;
     try {
       const def = await definitionFor(row.form_key, row.form_version);
       if (!def) throw Object.assign(new Error("no definition"), { code: "form.unknown" });
-      await deliverForm(cfg, ingestPayload(row, def));
-      await sent(row, token, { to: "connect" });
-      n++;
+      const payload = ingestPayload(row, def);
+      const uploads = await many("SELECT file_id, question, name, type, bytes, sha256, data FROM uploads WHERE submission_id = $1", [row.id]);
+      const files = payload.files || [];
+      if (uploads.length !== files.length || uploads.some(u => !files.some(f =>
+        f.fileId === u.file_id && f.question === u.question && f.name === u.name &&
+        f.type === u.type && f.bytes === u.bytes && f.sha256 === u.sha256))) {
+        throw Object.assign(new Error("Attached files do not match the saved form."), { code: "file.changed" });
+      }
+      const data = new Map(uploads.map(u => [u.file_id, u.data]));
+      const result = await deliverForm(cfg, payload, { readFile: id => data.get(id), deadline });
+      if (await sent(row, token, { to: "connect", files: result.files.length }, result.files)) n++;
     } catch (e) { await failed(row, token, e); bad++; }
   }
+  // Work not started within this invocation's budget remains due for the next run.
+  await q("UPDATE outbox SET claim_until = NULL, claim_token = NULL WHERE claim_token = $1", [token]);
   return { sent: n, failed: bad };
 }
 
@@ -184,6 +201,13 @@ async function run({ limit, force, forms }) {
   const cfg = connectConfig();
   if (!cfg) return { sent: 0, failed: 0, configured: false };
   if (forms && !forms.length) return { sent: 0, failed: 0, configured: true };
+  // An explicit permitted retry also repairs legacy rows marked sent before their PDFs arrived.
+  if (force) await q(`UPDATE outbox o SET state = 'pending', sent_at = NULL, next_at = now()
+    WHERE o.kind = 'connect.ingest' AND o.state = 'sent'
+      AND (o.claim_until IS NULL OR o.claim_until < now())
+      AND EXISTS (SELECT 1 FROM uploads u WHERE u.submission_id = o.submission_id AND u.delivered_at IS NULL)
+      AND ($1::jsonb IS NULL OR o.submission_id IN (SELECT id FROM submissions WHERE form_key IN (SELECT jsonb_array_elements_text($1::jsonb))))`,
+    [forms ? JSON.stringify(forms) : null]);
   const r = await ingest(cfg, { limit, force, forms });
   await noteNextDue();
   return { ...r, configured: true };
@@ -221,9 +245,11 @@ export const deliveriesSettled = () => inflight;
 /* Per form: how many rows are waiting, sent and failing. */
 export async function deliveryCounts() {
   const rows = await many(
-    `SELECT s.form_key, o.state, count(*)::int AS n, max(o.last_error) AS last_error
+    `SELECT s.form_key, CASE WHEN o.state = 'sent' AND EXISTS
+       (SELECT 1 FROM uploads u WHERE u.submission_id = s.id AND u.delivered_at IS NULL)
+       THEN 'pending' ELSE o.state END AS state, count(*)::int AS n, max(o.last_error) AS last_error
        FROM outbox o JOIN submissions s ON s.id = o.submission_id
-      WHERE o.kind = 'connect.ingest' GROUP BY s.form_key, o.state`);
+      WHERE o.kind = 'connect.ingest' GROUP BY s.form_key, 2`);
   const out = {};
   for (const r of rows) {
     const f = (out[r.form_key] ||= { pending: 0, sent: 0, failed: 0, held: 0, cancelled: 0, lastError: null });

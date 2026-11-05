@@ -118,9 +118,9 @@ test("a cards or words block that is missing a part fails the build instead of s
 
 test("a directory keeps every office's own link and address, and refuses a group with no places", () => {
   const sac = block(read("initiatives/student-activity-center/index.html"), "b-sac-floors");
-  assert.equal(sac.match(/class="dy-group"/g).length, 9, "floors 3 to 11");
+  assert.equal(sac.match(/class="dy-group"/g).length, 9, "the original floor anchors 3 to 11 remain");
   assert.match(sac, /href="\/directions\/sac-mhh\/"/, "the Hub opens its room page");
-  assert.match(sac, /href="https:\/\/asm\.wisc\.edu\/sac\/"/);
+  assert.match(sac, /href="https:\/\/soli\.wisc\.edu\/student-activity-center-sac\/"/);
   const us = block(read("initiatives/university-square/index.html"), "b-us-sides");
   assert.match(us, /href="\/initiatives\/student-activity-center\/"[^]*?333 East Campus Mall/, "the square links the tower");
   assert.ok(!/data-pending/.test(sac + us));

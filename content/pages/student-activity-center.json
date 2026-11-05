@@ -3,7 +3,7 @@
   "id": "pg-student-activity-center",
   "path": "/initiatives/student-activity-center/",
   "title": "Student Activity Center",
-  "description": "Student Services Tower Directory: 333 East Campus Mall, University Square, floor by floor.",
+  "description": "Find the Student Activity Center on floors 3–4 and student services at 333 East Campus Mall, with office locations and directions.",
   "analytics": "public",
   "blocks": [
     {
@@ -13,8 +13,58 @@
       "label": "University Square",
       "links": [
         {
+          "label": "Hub Directions and Map",
+          "href": "/directions/sac-mhh/"
+        },
+        {
           "label": "University Square Directory",
           "href": "/initiatives/university-square/"
+        },
+        {
+          "label": "Rooms and Directions",
+          "href": "/directions/"
+        }
+      ]
+    },
+    {
+      "id": "b-sac-find",
+      "type": "text",
+      "title": "Find a Service",
+      "body": [
+        "The Student Activity Center occupies floors 3–4 of 333 East Campus Mall. Other student services are on the upper floors. Choose a service below, then open its website for current hours, appointments and arrival information."
+      ],
+      "links": [
+        {
+          "label": "The Hub, Food Pantry and Printing",
+          "href": "#floor-3"
+        },
+        {
+          "label": "Student Organizations and Radio",
+          "href": "#floor-4"
+        },
+        {
+          "label": "Medical Services",
+          "href": "#floor-5"
+        },
+        {
+          "label": "Mental Health Services",
+          "href": "#floor-7"
+        },
+        {
+          "label": "Health Records, Billing and Insurance",
+          "href": "#floor-8"
+        },
+        {
+          "label": "Financial Aid",
+          "href": "#floor-9"
+        },
+        {
+          "label": "Tuition and Payments",
+          "href": "#floor-10"
+        },
+        {
+          "label": "Enrollment and Student Records",
+          "href": "#floor-11"
         }
       ]
     },
@@ -30,19 +80,23 @@
           "items": [
             {
               "name": "Student Mental Health Hub",
-              "href": "/directions/sac-mhh/"
+              "href": "/directions/sac-mhh/",
+              "address": "Third floor; see the Hub directions for arrival information"
             },
             {
-              "name": "Open Seat Food Pantry",
-              "href": "https://basicneeds.students.wisc.edu/the-open-seat/"
+              "name": "The Open Seat Food Pantry",
+              "href": "https://basicneeds.students.wisc.edu/the-open-seat/",
+              "address": "Room 3136; appointments through The Open Seat"
             },
             {
-              "name": "SOLI RSO Advising",
-              "href": "https://soli.wisc.edu"
+              "name": "SOLI Student Organization Support",
+              "href": "https://soli.wisc.edu/about-us/",
+              "address": "Third floor"
             },
             {
               "name": "Print & Resource Center",
-              "href": "https://soli.wisc.edu/about-print-resource-center/"
+              "href": "https://soli.wisc.edu/about-print-resource-center/",
+              "address": "Room 3303"
             }
           ]
         },
@@ -53,97 +107,79 @@
           "items": [
             {
               "name": "Associated Students of Madison",
-              "href": "https://asm.wisc.edu"
+              "href": "https://asm.wisc.edu/",
+              "address": "Fourth floor"
             },
             {
               "name": "WSUM 91.7 FM",
-              "href": "https://wsum.org"
+              "href": "https://wsum.org/contact/",
+              "address": "Suite 4100"
             },
             {
-              "name": "RSO Offices",
-              "href": "https://asm.wisc.edu/sac/"
+              "name": "SAC Rooms and Student Organization Spaces",
+              "address": "See the SAC page for room and office information",
+              "href": "https://soli.wisc.edu/student-activity-center-sac/"
             }
           ]
         },
         {
           "id": "floor-5",
-          "title": "Floor 5",
-          "label": "UHS Medical Services (Primary Care)",
+          "title": "Floors 5–6",
+          "label": "UHS Medical Services",
           "items": [
             {
-              "name": "Primary Care"
-            },
-            {
-              "name": "Athletic Training & Physical Therapy"
-            },
-            {
-              "name": "Lab & Radiology"
+              "name": "UHS Medical Care",
+              "address": "333 East Campus Mall, floors 5–6; check your appointment for the clinic and room",
+              "href": "https://www.uhs.wisc.edu/medical/"
             }
           ]
         },
         {
           "id": "floor-6",
-          "title": "Floor 6",
-          "label": "UHS Medical Services (Primary Care)",
+          "title": "UHS Visit Information",
+          "label": "For appointments on floors 5–6",
           "items": [
             {
-              "name": "Allergy Immunotherapy & Immunizations"
+              "name": "UHS Appointments",
+              "href": "https://www.uhs.wisc.edu/make-an-appointment/"
             },
             {
-              "name": "Gynecology"
-            },
-            {
-              "name": "Nutrition"
-            },
-            {
-              "name": "Occupational Medicine & Safety Glasses"
-            },
-            {
-              "name": "Psychiatry"
-            },
-            {
-              "name": "Sexual Health"
-            },
-            {
-              "name": "Travel"
+              "name": "UHS Hours and Locations",
+              "href": "https://www.uhs.wisc.edu/about/hours-locations/"
             }
           ]
         },
         {
           "id": "floor-7",
           "title": "Floor 7",
-          "label": "Mental Health Services",
+          "label": "UHS Mental Health Services",
           "items": [
             {
-              "name": "UHS Crisis Services"
-            },
-            {
-              "name": "UHS Individual, Couples, & Group Counseling"
-            },
-            {
-              "name": "UHS Survivor Services"
-            },
-            {
-              "name": "Rape Crisis Center Campus Office"
+              "name": "UHS Mental Health and Counseling",
+              "address": "Seventh floor; check your appointment for the room",
+              "href": "https://www.uhs.wisc.edu/mental-health/"
             }
           ]
         },
         {
           "id": "floor-8",
           "title": "Floor 8",
-          "label": "UHS Prevention / Administration / General",
+          "label": "UHS Billing, Health Records and Insurance",
           "items": [
             {
-              "name": "UHS Prevention"
+              "name": "UHS Costs and Billing",
+              "address": "Room 8801",
+              "href": "https://www.uhs.wisc.edu/about/costs/"
             },
             {
-              "name": "UHS Billing"
+              "name": "Health Information Management",
+              "address": "Eighth floor",
+              "href": "https://www.uhs.wisc.edu/health-information-management/"
             },
             {
-              "name": "Health Information Management"
-            },
-            {
-              "name": "Student Health Insurance Program (SHIP)"
+              "name": "Student Health Insurance Plan (SHIP)",
+              "address": "Eighth floor",
+              "href": "https://www.uhs.wisc.edu/ship/"
             }
           ]
         },
@@ -153,26 +189,26 @@
           "label": "Office of Student Financial Aid",
           "items": [
             {
-              "name": "Office of Student Financial Aid"
-            },
-            {
-              "name": "Student Success Through Applied Research (SSTAR)"
+              "name": "Office of Student Financial Aid",
+              "address": "Suite 9701",
+              "href": "https://financialaid.wisc.edu/"
             }
           ]
         },
         {
           "id": "floor-10",
           "title": "Floor 10",
-          "label": "Office of the Registrar",
+          "label": "Bursar's Office",
           "items": [
             {
-              "name": "Bursar's Office"
+              "name": "Bursar's Office",
+              "address": "Suite 10501; see the office website for service options",
+              "href": "https://bursar.wisc.edu/about"
             },
             {
-              "name": "Bursar's Tuition Payments & Accounts"
-            },
-            {
-              "name": "SOLI Leadership Advising"
+              "name": "Tuition Payment Options",
+              "address": "Online and drop-box instructions",
+              "href": "https://bursar.wisc.edu/student-tuition-account/payment-methods"
             }
           ]
         },
@@ -182,12 +218,34 @@
           "label": "Office of the Registrar",
           "items": [
             {
-              "name": "Residence For Tuition"
+              "name": "Office of the Registrar",
+              "address": "Suite 11101; see contact information before visiting",
+              "href": "https://registrar.wisc.edu/contact/"
             },
             {
-              "name": "Student Services"
+              "name": "Enrollment, Transcripts and Student Records",
+              "href": "https://registrar.wisc.edu/"
             }
           ]
+        }
+      ],
+      "lead": "Office and service locations are listed below. Follow your appointment instructions for the room you should visit.",
+      "links": [
+        {
+          "label": "UHS Survivor Services",
+          "href": "https://www.uhs.wisc.edu/survivor-services/"
+        },
+        {
+          "label": "UHS Prevention and Campus Health",
+          "href": "https://www.uhs.wisc.edu/prevention/"
+        },
+        {
+          "label": "SOLI Leadership and Programming — 353 East Campus Mall",
+          "href": "https://soli.wisc.edu/about-us/"
+        },
+        {
+          "label": "Back to Find a Service",
+          "href": "#b-sac-find-h"
         }
       ]
     }

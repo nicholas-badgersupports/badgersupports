@@ -3,13 +3,57 @@
   "id": "pg-university-square",
   "path": "/initiatives/university-square/",
   "title": "University Square",
-  "description": "University Square: W Johnson Street, E Campus Mall and University Ave.",
+  "description": "Find campus offices, food, shops and services around University Square on West Johnson Street, East Campus Mall and University Avenue.",
   "analytics": "public",
   "blocks": [
     {
       "id": "b-us-head",
       "type": "pagehead",
-      "title": "University Square"
+      "title": "University Square",
+      "links": [
+        {
+          "label": "Student Activity Center and Tower Services",
+          "href": "/initiatives/student-activity-center/"
+        },
+        {
+          "label": "Hub Directions and Map",
+          "href": "/directions/sac-mhh/"
+        },
+        {
+          "label": "Rooms and Directions",
+          "href": "/directions/"
+        }
+      ]
+    },
+    {
+      "id": "b-us-find",
+      "type": "text",
+      "title": "Find a Place",
+      "body": [
+        "Find selected campus offices, shops and places to eat around University Square. Choose a street below. Each place’s website has current hours and visiting information."
+      ],
+      "links": [
+        {
+          "label": "Campus Offices — West Johnson Street",
+          "href": "#south"
+        },
+        {
+          "label": "Student Services and Shops — East Campus Mall",
+          "href": "#west"
+        },
+        {
+          "label": "Food, Coffee and Shops — University Avenue",
+          "href": "#north"
+        },
+        {
+          "label": "University Square Visitor Information",
+          "href": "https://usqmadison.com/visit-1"
+        },
+        {
+          "label": "University Square Parking Information",
+          "href": "https://usqmadison.com/parking"
+        }
+      ]
     },
     {
       "id": "b-us-sides",
@@ -18,89 +62,98 @@
       "groups": [
         {
           "id": "south",
-          "title": "South",
-          "label": "W Johnson Street",
+          "title": "West Johnson Street",
+          "label": "South Side",
           "items": [
             {
-              "name": "Office of Student Conduct & Community Standards",
-              "address": "724 W Johnson St, Madison, WI",
-              "href": "https://conduct.students.wisc.edu"
+              "name": "Office of Student Conduct and Community Standards",
+              "address": "724 West Johnson Street",
+              "href": "https://conduct.students.wisc.edu/about-osccs/"
             },
             {
-              "name": "Office of Admissions & Recruitment",
-              "address": "702 W Johnson St",
-              "href": "https://admissions.wisc.edu"
+              "name": "Office of Admissions and Recruitment",
+              "address": "702 West Johnson Street, Suite 1101",
+              "href": "https://admissions.wisc.edu/contact-us/"
             },
             {
-              "name": "McBurney & Disability Resource Center",
-              "address": "702 W Johnson St #2104",
-              "href": "https://mcburney.wisc.edu"
+              "name": "McBurney Disability Resource Center",
+              "address": "702 West Johnson Street, Suite 2104",
+              "href": "https://mcburney.wisc.edu/"
             }
           ]
         },
         {
           "id": "west",
-          "title": "West",
-          "label": "E Campus Mall",
+          "title": "East Campus Mall",
+          "label": "West Side",
           "items": [
             {
-              "name": "Student Activity Center",
-              "address": "333 East Campus Mall",
+              "name": "Student Activity Center and Tower Services",
+              "address": "333 East Campus Mall; SAC on floors 3–4",
               "href": "/initiatives/student-activity-center/"
             },
             {
               "name": "Walgreens",
-              "address": "311 E Campus Mall",
-              "href": "https://www.walgreens.com"
+              "address": "311 East Campus Mall",
+              "href": "https://usqmadison.com/shops"
             },
             {
               "name": "Anytime Fitness",
-              "address": "301 E Campus Mall",
-              "href": "https://www.anytimefitness.com"
+              "address": "301 East Campus Mall, Suite 203",
+              "href": "https://www.anytimefitness.com/locations/madison-wisconsin-2104/"
             },
             {
-              "name": "Milio's Sandwiches",
-              "address": "377 E Campus Mall",
-              "href": "https://milios.com"
-            },
-            {
-              "name": "US Bank",
-              "address": "389 E Campus Mall",
-              "href": "https://www.usbank.com/index.html"
+              "name": "U.S. Bank",
+              "address": "389 East Campus Mall",
+              "href": "https://www.usbank.com/locations/wisconsin/madison/389-east-campus-mall-bank-atm/"
             },
             {
               "name": "Pitaya",
-              "address": "341 E Campus Mall",
-              "href": "https://pitaya.com"
+              "address": "341 East Campus Mall",
+              "href": "https://pitaya.com/pages/locations-w-map"
             }
           ]
         },
         {
           "id": "north",
-          "title": "North",
-          "label": "University Ave",
+          "title": "University Avenue",
+          "label": "North Side",
           "items": [
             {
-              "name": "Madison Fresh",
-              "address": "703 University Ave",
-              "href": "https://freshmadisonmarket.com"
+              "name": "Fresh Madison Market",
+              "address": "703 University Avenue",
+              "href": "https://freshmadisonmarket.com/contact"
             },
             {
-              "name": "Senjoy",
-              "address": "785 University Ave",
-              "href": "https://order.online/business/senjoy-chinese-cuisine-12821207"
+              "name": "Senjoy Chinese Cuisine",
+              "address": "785 University Avenue",
+              "href": "https://www.senjoychinese.com/"
             },
             {
               "name": "Madison Nail Lounge",
-              "address": "795 University Ave",
+              "address": "795 University Avenue",
               "href": "https://madisonnaillounge.com"
             },
             {
               "name": "Valentia Coffee",
-              "address": "799 University Ave",
+              "address": "799 University Avenue; confirm visiting details with the cafe",
               "href": "https://www.valentiacoffee.com"
             }
           ]
+        }
+      ],
+      "links": [
+        {
+          "label": "University Square Shops",
+          "href": "https://usqmadison.com/shops"
+        },
+        {
+          "label": "University Square Dining",
+          "href": "https://usqmadison.com/dining"
+        },
+        {
+          "label": "Back to Find a Place",
+          "href": "#b-us-find-h"
         }
       ]
     }

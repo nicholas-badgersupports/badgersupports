@@ -13,7 +13,7 @@
 
 import { html } from "../html.mjs";
 import { picture } from "../media.mjs";
-import { publicPeople, personPath, initials, personPhoto, cardRole } from "../team.mjs";
+import { teamGroups, personPath, initials, personPhoto, cardRole } from "../team.mjs";
 
 export function personCard(ctx, p, card = "role", photoOptions = {}) {
   const words = card === "title" ? p.title : cardRole(p);
@@ -37,8 +37,7 @@ export default {
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {
-    const people = publicPeople(ctx.data.team);
-    const groups = (b.groups || []).map((g) => ({ ...g, people: people.filter((p) => p.group === g.group) })).filter((g) => g.people.length);
+    const groups = teamGroups(ctx.data.team, b.groups);
     const none = !groups.length;
     if (none && emptied.has(ctx)) return "";
     if (none) emptied.add(ctx);

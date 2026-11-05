@@ -25,13 +25,13 @@ for (const image of teamPortraits) {
   image.addEventListener("error", () => revealPortrait(image));
   if (image.complete) revealPortrait(image);
 }
-/* All nearby portraits may load together; none waits for another photo's success or failure. */
+/* Visible portraits load together without speculative rows competing for their bandwidth. */
 const deferredPortraits = teamPortraits.filter(image => image.hasAttribute("data-src"));
 if (deferredPortraits.length) {
   if (typeof IntersectionObserver === "function") {
     portraitObserver = new IntersectionObserver(entries => {
       for (const entry of entries) if (entry.isIntersecting) activatePortrait(entry.target);
-    }, { rootMargin: "200px 0px" });
+    }, { rootMargin: "0px" });
     for (const image of deferredPortraits) portraitObserver.observe(image);
   } else for (const image of deferredPortraits) activatePortrait(image, false);
   document.addEventListener("focusin", event => {

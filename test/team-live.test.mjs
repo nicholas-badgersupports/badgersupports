@@ -245,6 +245,60 @@ test("directory cards use normal priority and only the primary profile portrait 
   assert.equal(again.filter(tag => tag.includes('fetchpriority="high"')).length, 0, "groups and missing-photo positions do not force card priorities");
 });
 
+test("opening portrait hints follow current rendered card positions without persisting a roster", async () => {
+  reset();
+  reply.people = Array.from({ length: 8 }, (_, i) => {
+    const id = "p" + String(i + 600).padStart(24, "0");
+    return { id, slug: `hint-${i}-fictional`, name: `Hint ${i} Fictional`, published: true,
+      group: i < 2 ? "directors" : "staff", order: i, bio: [],
+      ...([0, 3].includes(i) ? {} : { photo: { url: `${cfg.url}/p/${id}?v=${VERSION}` } }) };
+  });
+  const hints = body => [...body.split("</head>")[0].matchAll(/<link\b[^>]*href="\/api\/team-photo\/[^>]*>/g)].map(match => match[0]);
+  let body = await (await visit("/about/our-team/")).text();
+  assert.equal(hints(body).length, 1, "the short opening group does not borrow later cards");
+  assert.ok(hints(body)[0].includes(reply.people[1].id));
+  assert.doesNotMatch(hints(body)[0], /media=|fetchpriority=/);
+  const edited = structuredClone(SERVER);
+  const page = edited.render.floor.pages.find(page => page.id === "pg-about-team");
+  const block = page.blocks.find(block => block.type === "team");
+  block.groups = [{ group: "staff", title: "Fictional Staff" }, { group: "directors", title: "Fictional Directors" }];
+  const original = JSON.stringify(edited);
+  useContent(edited);
+  body = await (await visit("/about/our-team/")).text();
+  const selected = hints(body);
+  assert.equal(selected.length, 3);
+  for (const [index, person] of [reply.people[2], reply.people[4], reply.people[5]].entries()) {
+    assert.ok(selected[index].includes(person.id), "hints follow the same group and card order as the rendered links");
+    assert.ok(body.includes(`data-src="/api/team-photo/${person.id}?v=${VERSION}"`));
+    assert.match(selected[index], /rel="preload" as="image"/);
+    assert.doesNotMatch(selected[index], /fetchpriority=/);
+    if (index) assert.match(selected[index], /media="not all and \(max-width: 860px\)"/);
+    else assert.doesNotMatch(selected[index], /media=/);
+  }
+  const nextVersion = "c".repeat(32);
+  reply.people[2].photo.url = `${cfg.url}/p/${reply.people[2].id}?v=${nextVersion}`;
+  body = await (await visit("/about/our-team/")).text();
+  assert.ok(hints(body)[0].includes(`?v=${nextVersion}`), "each draw uses the current mapped URL");
+  reply.people[2].published = false;
+  body = await (await visit("/about/our-team/")).text();
+  assert.ok(hints(body).every(tag => !tag.includes(reply.people[2].id)), "opt-outs leave no hint");
+  assert.equal(JSON.stringify(edited), original, "rendering never writes request hints into the stored snapshot");
+  block.enabled = false;
+  body = await (await visit("/about/our-team/")).text();
+  assert.equal(hints(body).length, 0, "disabled directory blocks are not hinted");
+  block.enabled = true; down = true;
+  const unavailable = await visit("/about/our-team/");
+  assert.equal(unavailable.status, 503);
+  assert.equal(hints(await unavailable.text()).length, 0);
+  down = false;
+  const profile = await visit("/about/our-team/hint-4-fictional/");
+  assert.equal(profile.status, 200);
+  assert.equal(hints(await profile.text()).length, 0, "primary-profile loading remains separate");
+  for (const file of fs.readdirSync(path.join(OUT, "about/our-team"))) {
+    if (file === "index.html") assert.doesNotMatch(fs.readFileSync(path.join(OUT, "about/our-team", file), "utf8"), /hint-\d-fictional|href="\/api\/team-photo\//);
+  }
+});
+
 test("a slow opening portrait never blocks another visible row", async () => {
   reset();
   reply.people = Array.from({ length: 12 }, (_, i) => {

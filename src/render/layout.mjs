@@ -10,6 +10,7 @@
 import { html, raw, attrs, jsonIsland } from "./html.mjs";
 import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
+import { openingPortraits } from "./team.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
 import { bareTitle, TITLE_JOIN } from "../shared/structure.mjs";
@@ -134,6 +135,7 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   const title = pageTitle(page, ctx.site);
   const description = pageDescription(page, ctx.site);
   const preload = page.preloadImage ? html`<link rel="preload" as="image" href="${page.preloadImage.href}" imagesrcset="${page.preloadImage.srcset}" imagesizes="${page.preloadImage.sizes}" type="${page.preloadImage.type}" fetchpriority="high">` : "";
+  const portraits = page.id === "pg-about-team" ? openingPortraits(ctx, [...top, ...main]) : [];
   return html`<!doctype html>
 <html lang="${ctx.site.lang}">
 <head>
@@ -152,6 +154,7 @@ ${description ? html`<meta property="og:description" content="${description}">` 
 <link rel="preload" href="/assets/fonts/montserrat-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
 ${preload}
+${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: photo.href, media: photo.media })}>`)}
 <link rel="stylesheet" href="${a.css}">
 <script>${raw(INLINE_JS)}</script>
 <script type="module" src="${a.js["site.js"]}"></script>

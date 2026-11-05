@@ -111,10 +111,33 @@ export function personPages(team, t) {
 const OLD_GROUPS = ["advisors", "directors", "general-staff", "volunteers"];
 export const teamRedirects = () => OLD_GROUPS.map((g) => `${TEAM_PATH}${g}/*  ${TEAM_PATH}  301`);
 
+const publicPhotoSource = p => `/api/team-photo/${encodeURIComponent(p.photo.uploadId || p.id)}${p.photo.version ? `?v=${p.photo.version}` : ""}`;
+
+/* Selection and order are shared by directory cards and their request-local hints. */
+export const teamGroups = (team, groups) => {
+  const people = publicPeople(team);
+  return (groups || []).map(group => ({ ...group, people: people.filter(person => person.group === group.group) })).filter(group => group.people.length);
+};
+
+/* Missing photos occupy opening-row card positions; later groups cannot fill their vacancies. */
+export function openingPortraits(ctx, blocks) {
+  if (ctx.prototype || ctx.data.team?.source !== "connect" || !ctx.data.teamState
+      || ctx.data.teamState.stale || ctx.data.teamState.unavailable) return [];
+  for (const block of blocks.filter(block => block.type === "team")) {
+    for (const group of teamGroups(ctx.data.team, block.groups)) {
+      const members = group.people;
+      return members.slice(0, 4).flatMap((person, index) => person.photo ? [{
+        href: publicPhotoSource(person), media: index < 2 ? null : "not all and (max-width: 860px)",
+      }] : []);
+    }
+  }
+  return [];
+}
+
 /* Public profile photos stay under the bounded proxy; library fixture photos retain responsive variants. */
 export function personPhoto(ctx, p, options) {
   if (ctx.data.team?.source !== "connect") return picture(ctx, p.photo, options);
-  const source = `/api/team-photo/${encodeURIComponent(p.photo.uploadId || p.id)}${p.photo.version ? `?v=${p.photo.version}` : ""}`;
+  const source = publicPhotoSource(p);
   const filterId = `portrait-${p.id}-${options.eager ? "profile" : "card"}`;
   const priority = options.eager ? "high" : null;
   return html`<span class="live-portrait"><span class="monogram" aria-hidden="true">${initials(p.name) || "?"}</span><picture class="live-portrait-image"><img${attrs({ src: options.eager ? source : null, "data-src": options.eager ? null : source, "data-team-portrait": "", width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", fetchpriority: priority, decoding: "async" })}></picture><noscript><svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><defs><filter id="${filterId}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="${source}" x="0" y="0" width="400" height="400" preserveAspectRatio="xMidYMid slice"></feImage></filter></defs><rect width="400" height="400" filter="${`url(#${filterId})`}"></rect></svg></noscript></span>`;

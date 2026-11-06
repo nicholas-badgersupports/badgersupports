@@ -1,24 +1,22 @@
-# www.badgersupports.org — the rebuild
+# Badger Supports website — development
 
-A static website built from versioned content, with native forms and one small API. It is meant to
-replace the Google Sites site at https://www.badgersupports.org. **It is a prototype.** Nothing here is
-deployed: the Netlify configuration (`netlify.toml`) is not connected to any Netlify project, and no
-DNS points at it.
+A static website built from versioned content, with native forms and an API. This guide describes
+local development commands and the repository layout. A checkout or local build does not establish
+the current deployment, domain configuration or release status.
 
-The owner's brief is `../../MASTER-PROMPT.md`, beside this repository and not in it, as are `FORM-AUDIT.md` and
-`INVESTIGATION.md`. The decisions it rests on are in `DECISIONS.md`, and the
-work still open is in `../WORK.md`.
+See [Architecture](ARCHITECTURE.md) for the build and runtime, and [Extending the site](EXTENDING.md)
+for adding pages and block types.
 
 ## Commands
 
-Run from `site/`. Node 22 or later.
+Run from the repository root. Node 22 or later; install dependencies with `npm ci`.
 
 | Command | What it does |
 |---|---|
 | `npm run build` | `node ops/build.mjs`: the prototype build into `dist/`. Fixtures allowed, every page `noindex`. Writes `.build/report.json` |
-| `node ops/build.mjs --production` | refuses to build while any fixture is in use (events, wall notes, team), or while any live address or link still depends on the live site (`docs/research/ROUTES.md`). Nothing runs it yet |
+| `node ops/build.mjs --production` | reads the configured public feeds and refuses sample event/resource data or unresolved cutover links. Requires production configuration; see [The build](ARCHITECTURE.md#the-build) |
 | `node ops/build.mjs --no-media` | skips the image variants |
-| `npm run dev` | `node ops/dev-server.mjs`: builds, then serves `dist/` and the `/api` function (default port 8899; `PORT=` to change, `--no-build` to serve the last build, `--today=YYYY-MM-DD` to pin the date) |
+| `npm run dev` | `node ops/dev-server.mjs`: builds, then serves the built assets, rendered pages and `/api` routes (default port 8899; `PORT=` to change, `--no-build` to serve the last build, `--today=YYYY-MM-DD` to pin the date) |
 | `npm test` | every suite in `test/` (`node --test`, one at a time) |
 | `npm run check` | the gates in order, ending in a one-line verdict. `--browser` adds screenshots and the accessibility scan |
 | `npm run shots` | screenshots of every built page at 1280, 390 and 320 px into `local/shots/`, from a running server (`BASE=http://127.0.0.1:<port>`) |
@@ -29,7 +27,7 @@ Run from `site/`. Node 22 or later.
 | `npm run capture-live` | `<outDir> <path> …`: screenshots and image measurements of live pages, read only |
 
 `node ops/provenance.mjs <corpus-folder>` compares every visible string with Badger Supports' own
-material (see `research/COPY-SOURCES.md`). The corpus is not in this repository.
+material (see [Copy sources](research/COPY-SOURCES.md)). The corpus is not in this repository.
 
 ## What `npm run check` runs
 
@@ -41,8 +39,9 @@ material (see `research/COPY-SOURCES.md`). The corpus is not in this repository.
    numbers, anything shaped like a credential, and any individual staff profile address.
 5. **WORK.md**: exists and is under 180 lines.
 6. **build**: the prototype build.
-7. **tests**: `npm test`.
-8. **browser** (`--browser` only): screenshots and the axe scan against a server the check starts itself.
+7. **delivered files**: built output contains only the allowed files, without source notes or maps.
+8. **tests**: `npm test`.
+9. **browser** (`--browser` only): screenshots and the axe scan against a server the check starts itself.
 
 A gate's result is its printed line, not the exit code. Read the output.
 
@@ -79,16 +78,13 @@ site/
 
 ## Prototype and production
 
-The prototype build reads three fixtures. Every person, wall note and event in them is fictional:
+The local prototype uses fictional events, wall notes and team profiles from `content/fixtures/`.
+Its pages carry `noindex`.
 
-- `content/fixtures/events.json`: craft nights and peer support groups. Connect's public events
-  export will replace it (Exchange request `PUBLIC-EVENTS-EXPORT`).
-- `content/fixtures/wall-notes.json`: Wall of Support notes.
-- `content/fixtures/team.json`: the team page. Connect's public profiles will replace it
-  (Exchange request `PUBLIC-TEAM-PROFILES-2026-10-20`).
-
-Every page the prototype builds carries `noindex`. `--production` refuses to build until each fixture
-has a real source and nothing still depends on the live site.
+The production build reads configured public feeds for events and resources and refuses their
+hand-typed fixtures. It does not use sample team profiles or wall notes in production; enabled
+exports supply those records. It also refuses unresolved cutover links. These are build rules,
+not evidence that a particular source version has been deployed. See [The build](ARCHITECTURE.md#the-build).
 
 ## The repository is public
 
@@ -97,7 +93,7 @@ The GitHub repository is public, so:
 - Photo originals stay in `local/media-originals/`, which is gitignored. `media/manifest.json` holds
   metadata only, and the shared Drive folder is named without its address.
 - Real names never go into `content/`, the fixtures, the tests or the docs. The team comes from
-  Connect at build time.
+  Connect at runtime; production builds do not serialize people.
 - No form responses, credentials or keys belong in any file here. The privacy gate enforces the
   patterns it can recognise. The rest is a rule.
 
@@ -105,12 +101,10 @@ The GitHub repository is public, so:
 
 | File | About |
 |---|---|
-| `DECISIONS.md` | the owner's rulings, dated, and the choices this rebuild made in their absence |
-| `DESIGN.md` | tokens, type, colour, photos, motion |
-| `ARCHITECTURE.md` | static build, the API, the database, the outbox, cost |
-| `ANALYTICS.md` | what the live site measures, what this one emits, and what it never collects |
-| `COMMUNICATIONS.md` | each form: who receives it, what is sent and from where, and the Sheets backup |
-| `EXTENDING.md` | adding a page, and adding a block |
-| `CONNECT-EDITOR-CONTRACT.md` | generated: every block's fields, for the editor in Connect |
-| `research/ROUTES.md` | every live address and its disposition |
-| `research/COPY-SOURCES.md` | where the words come from |
+| [DESIGN.md](DESIGN.md) | tokens, type, colour, photos, motion |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | static build, the API, the database, the outbox, cost |
+| [ANALYTICS.md](ANALYTICS.md) | what the live site measures, what this one emits, and what it never collects |
+| [COMMUNICATIONS.md](COMMUNICATIONS.md) | each form: who receives it, what is sent and from where, and the Sheets backup |
+| [EXTENDING.md](EXTENDING.md) | adding a page, and adding a block |
+| [research/ROUTES.md](research/ROUTES.md) | every live address and its disposition |
+| [research/COPY-SOURCES.md](research/COPY-SOURCES.md) | where the words come from |

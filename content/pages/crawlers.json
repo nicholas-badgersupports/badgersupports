@@ -3,6 +3,7 @@
   "id": "pg-crawlers",
   "path": "/crawlers/",
   "title": "Crawlers",
+  "description": "Guidance for crawlers and automated tools reading Badger Supports public pages.",
   "analytics": "none",
   "blocks": [
     {

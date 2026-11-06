@@ -1186,6 +1186,46 @@ const resState = (page) => page.evaluate(() => ({
   y: Math.round(scrollY),
 }));
 
+await part("resources: startup space and no-JavaScript recovery", async () => {
+  for (const width of [320, 390, 768]) {
+    for (const query of ["", "?topic=housing&q=housing"]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 844 } });
+      const page = await ctx.newPage();
+      let release;
+      const ready = new Promise((ok) => { release = ok; });
+      await ctx.route(/\/resources\.js$/, async (route) => { await ready; await route.continue(); });
+      try {
+        await page.goto(BASE + "/resources/" + query, { waitUntil: "commit" });
+        await page.waitForFunction(() => { const list = document.querySelector(".res-list"); return list && getComputedStyle(list).display === "grid"; });
+        const measure = () => page.evaluate(async () => {
+          await document.fonts.ready;
+          const tools = document.querySelector("[data-res-tools]");
+          return { hidden: tools.hidden, visibility: getComputedStyle(tools).visibility, height: tools.getBoundingClientRect().height,
+            list: document.querySelector(".res-list").getBoundingClientRect().top + scrollY,
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+        });
+        const before = await measure();
+        release();
+        await page.waitForFunction(() => !document.querySelector("[data-res-tools]").hidden);
+        const after = await measure();
+        check(before.hidden && before.visibility === "hidden" && before.height > 0 && Math.abs(before.list - after.list) < 1 && after.overflow === 0,
+          `resources: ${width}px ${query || "unfiltered"} delayed controls reserve space without moving the list (${JSON.stringify({ before, after })})`);
+      } finally { release(); await ctx.close(); }
+    }
+    const plain = await browser.newContext({ viewport: { width, height: 844 }, javaScriptEnabled: false });
+    try {
+      const page = await plain.newPage();
+      await page.goto(BASE + "/resources/", { waitUntil: "networkidle" });
+      const result = await page.evaluate(() => ({ tools: document.querySelector("[data-res-tools]").getBoundingClientRect().height,
+        cards: document.querySelectorAll("[data-res]").length, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth }));
+      const details = page.locator(".res-more").first();
+      await details.locator("summary").click();
+      check(result.tools === 0 && result.cards > 0 && result.overflow === 0 && await details.evaluate(el => el.open),
+        `resources: ${width}px without JavaScript keeps cards and native details without an empty control gap (${JSON.stringify(result)})`);
+    } finally { await plain.close(); }
+  }
+});
+
 await part("resources: a card's details and the filter", async () => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();

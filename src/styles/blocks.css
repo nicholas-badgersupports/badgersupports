@@ -1319,6 +1319,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .resources h2 { color: var(--accent); margin-bottom: var(--s3); }
 .resources .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
 .res-tools { display: grid; gap: var(--s4); margin-bottom: var(--s4); }
+/* Reserve the controls' responsive space while their module loads; without JavaScript they stay hidden. */
+.js .res-tools[hidden] { display: grid !important; visibility: hidden; }
 .res-topics { display: flex; flex-wrap: wrap; gap: var(--s2); }
 .res-topic-btn { min-height: 44px; padding: .35rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out); }
 .res-topic-btn:hover { border-color: var(--accent); }
@@ -1333,7 +1335,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-search label { display: block; font-weight: 700; }
 .res-hint { margin: var(--s1) 0 var(--s2); color: var(--muted); font-size: var(--fs-small); }
 .res-search-row { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
-.res-search-row input { flex: 1 1 16rem; min-height: 44px; padding: .5rem .75rem; border: 1px solid var(--field-border); border-radius: var(--r-input); background: var(--field); color: var(--ink); font: inherit; }
+/* Search and Clear share a row and height, including when a shared address restores a query. */
+.res-search-row input { flex: 1 1 0; min-width: 0; min-height: calc(2.7rem + 4px); padding: .5rem .75rem; border: 1px solid var(--field-border); border-radius: var(--r-input); background: var(--field); color: var(--ink); font: inherit; }
 .res-status { margin-bottom: var(--s3); }
 .res-count { margin: 0; font-weight: 700; }
 .res-relaxed { margin: var(--s1) 0 0; color: var(--muted); font-size: var(--fs-small); }

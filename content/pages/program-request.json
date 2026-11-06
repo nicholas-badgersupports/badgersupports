@@ -2,7 +2,7 @@
   "schema": "bss.page/1",
   "id": "pg-form-program-request",
   "path": "/forms/program-request/",
-  "title": "Request a Program",
+  "title": "Program Request Form",
   "description": "Request a peer support group or volunteer training for your group.",
   "analytics": "none",
   "blocks": [

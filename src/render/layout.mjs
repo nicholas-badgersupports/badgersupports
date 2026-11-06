@@ -134,6 +134,7 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   const canonical = ctx.site.origin + page.path;
   const title = pageTitle(page, ctx.site);
   const description = pageDescription(page, ctx.site);
+  const shareImage = page.noindex ? null : ctx.site.origin + "/assets/brand/bss-lockup-red.png";
   const preload = page.preloadImage ? html`<link rel="preload" as="image" href="${page.preloadImage.href}" imagesrcset="${page.preloadImage.srcset}" imagesizes="${page.preloadImage.sizes}" type="${page.preloadImage.type}" fetchpriority="high">` : "";
   const portraits = page.id === "pg-about-team" ? openingPortraits(ctx, [...top, ...main]) : [];
   return html`<!doctype html>
@@ -149,9 +150,20 @@ ${page.noindex || ctx.prototype ? html`<meta name="robots" content="noindex">` :
 ${description ? html`<meta property="og:description" content="${description}">` : ""}
 <meta property="og:url" content="${canonical}">
 <meta property="og:type" content="website">
+${shareImage ? html`<meta property="og:image" content="${shareImage}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="700">
+<meta property="og:image:height" content="414">
+<meta property="og:image:alt" content="${ctx.site.name}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${title}">
+${description ? html`<meta name="twitter:description" content="${description}">` : ""}
+<meta name="twitter:image" content="${shareImage}">
+<meta name="twitter:image:alt" content="${ctx.site.name}">` : ""}
 <meta name="theme-color" content="#B60000">
 <link rel="icon" href="/assets/brand/bss-hand-red.png" type="image/png">
 <link rel="preload" href="/assets/fonts/montserrat-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
 ${preload}
 ${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: photo.href, media: photo.media })}>`)}

@@ -384,6 +384,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .door-closed { color: var(--muted); font-size: var(--fs-small); }
 .door-go { margin-top: auto; }
 .door-body > :nth-last-child(2) { margin-bottom: var(--s2); }
+/* on a narrow phone the icon sits above the words, so the words and the button get the full card */
+@media (max-width: 379px) { .door-link { grid-template-columns: minmax(0, 1fr); } }
 /* the red door */
 .door.is-primary .door-link { background: var(--tex-block); background-blend-mode: normal, multiply; color: var(--cream); border-color: var(--accent); }
 .door.is-primary a.door-link:hover { color: var(--cream); border-color: var(--accent-deep); }
@@ -497,7 +499,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   background: var(--tex-block); background-blend-mode: normal, multiply;
 }
 .dir-head :focus-visible { outline-color: var(--focus-on-red); }
-.directions h1, .directions h2:not(.dir-title) { font-size: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem); color: var(--cream); margin-bottom: var(--s2); overflow-wrap: anywhere; }
+/* the panel is a side column on wide screens and a card on a phone: either way a word like
+   MULTIPURPOSE fits whole at this size */
+.directions h1, .directions h2:not(.dir-title) { font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.375rem); color: var(--cream); margin-bottom: var(--s2); }
 .dir-name { font-weight: 700; font-size: 1.25rem; margin-bottom: .2rem; }
 .dir-kind { font-size: var(--fs-small); font-weight: 700; margin-bottom: var(--s3); }
 .dir-jumps { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-top: var(--s3); }
@@ -598,7 +602,19 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 }
 .ticket-stub .ic { width: 2.2rem; height: 2.2rem; }
 .ticket-link:hover .ticket-stub { background-color: var(--accent-deep); }
-@media (max-width: 480px) { .ticket-link { grid-template-columns: minmax(0, 1fr) 6rem; } .ticket-name { font-size: 1.5rem; } }
+/* on a phone the stub is as wide as its word, so "Directions" never runs past the card's edge */
+@media (max-width: 480px) { .ticket-link { grid-template-columns: minmax(0, 1fr) max-content; } .ticket-stub { padding-inline: var(--s2); } .ticket-name { font-size: 1.5rem; } }
+/* too narrow for a side stub beside a long room name: the stub tears off along the bottom instead */
+@media (max-width: 379px) {
+  .ticket-link { grid-template-columns: minmax(0, 1fr); }
+  .ticket-main { border-radius: var(--r-card) var(--r-card) 0 0; }
+  .ticket-stub { grid-auto-flow: column; justify-content: center; gap: .5rem; padding: var(--s3); border-radius: 0 0 var(--r-card) var(--r-card); }
+  .ticket-stub::before {
+    left: 0; right: 0; top: -8px; bottom: auto; width: auto; height: 16px;
+    background: radial-gradient(circle at 9px 50%, var(--ground) 5px, transparent 5.5px) 0 0 / 18px 16px repeat-x;
+  }
+  .ticket-stub .ic { width: 1.5rem; height: 1.5rem; }
+}
 
 /* ============ questions: the heading beside them, folded answers filling the width ============ */
 /* wide enough that a three-word heading and its pill each keep to one line */
@@ -838,6 +854,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .text-block h2 { margin-bottom: var(--s3); }
 .text-block.has-side .wrap { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: var(--s3) var(--s6); align-items: start; }
 .text-block.has-side .text-body { padding-top: var(--s2); border-top: var(--rule-line); }
+/* the side column is 20rem at most: its heading is sized so the longest word fits whole */
+.text-block.has-side .wrap > h2 { font-size: min(var(--fs-h2), 1.875rem); }
 .text-block.has-side .text-body p { padding-top: var(--s2); }
 @media (max-width: 860px) {
   .text-block.has-side .wrap { grid-template-columns: minmax(0, 1fr); }
@@ -935,6 +953,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .evcard-date .dom { font-size: 1.85rem; }
   .evcard-body { padding: var(--s3); }
   .evcards--recent { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* two columns fit photo tiles, not a date-and-words card: a night with no photo takes the row */
+  .evcards--recent .evcard { grid-column: 1 / -1; }
 }
 @media (max-width: 860px) {
   .events-block.has-mosaic .evlist-head { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }

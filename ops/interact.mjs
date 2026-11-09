@@ -1869,6 +1869,95 @@ await part("Craft refinement: stale recovery preserves focus and recap photos", 
 });
 
 
+/* A recent night with no photo shares the recap grid with photo tiles. Its words must wrap
+   between words, never inside one: a word split across lines means its column is too narrow. */
+await part("Craft: a recap card without a photo keeps whole words", async () => {
+  for (const width of [1280, 390, 320]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    const page = await ctx.newPage();
+    await page.goto(BASE + "/join/craft-nights/", { waitUntil: "networkidle" });
+    const split = await page.evaluate(() => {
+      const out = [];
+      for (const el of document.querySelectorAll("#b-cn-recent .evcard h3, #b-cn-recent .evcard .evcard-tag")) {
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+          if (n.parentElement.closest(".sr-only")) continue;
+          for (const m of n.textContent.matchAll(/\S+/g)) {
+            const r = document.createRange(); r.setStart(n, m.index); r.setEnd(n, m.index + m[0].length);
+            const tops = new Set([...r.getClientRects()].map((b) => Math.round(b.top)));
+            if (tops.size > 1) out.push(m[0]);
+          }
+        }
+      }
+      return { cards: document.querySelectorAll("#b-cn-recent .evcard").length, out };
+    });
+    check(split.cards > 0 && split.out.length === 0, `Craft: a recap card without a photo keeps whole words at ${width}px${split.out.length ? ` (split: ${split.out.join(", ")})` : ""}${split.cards ? "" : " (no photo-less card in the fixture)"}`);
+    await ctx.close();
+  }
+});
+
+/* A room ticket's stub word sits inside the stub at every width; past its edge it runs off the card. */
+await part("Rooms: each ticket's Directions word stays inside its stub", async () => {
+  for (const width of [1280, 390, 320]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    const page = await ctx.newPage();
+    await page.goto(BASE + "/directions/", { waitUntil: "networkidle" });
+    const out = await page.evaluate(() => [...document.querySelectorAll(".ticket-stub")].map((stub) => {
+      const s = stub.getBoundingClientRect(), w = stub.querySelector("span").getBoundingClientRect();
+      return w.left >= s.left - 0.5 && w.right <= s.right + 0.5 ? null : `${Math.round(w.right - s.right)}px`;
+    }));
+    const bad = out.filter(Boolean);
+    check(out.length > 0 && bad.length === 0, `Rooms: each ticket's Directions word stays inside its stub at ${width}px${bad.length ? ` (${bad.length} of ${out.length} past the edge by ${bad[0]})` : ""}`);
+    /* the room's name and address end before the stub starts, or the stub paints over them */
+    const hidden = await page.evaluate(() => [...document.querySelectorAll(".ticket")].flatMap((t) => {
+      const edge = t.querySelector(".ticket-stub").getBoundingClientRect();
+      return [...t.querySelectorAll(".ticket-name, .ticket-where, .ticket-addr")].filter((el) => {
+        const r = document.createRange(); r.selectNodeContents(el);
+        const rects = [...r.getClientRects()];
+        return edge.top < Math.max(...rects.map((b) => b.bottom)) && Math.max(...rects.map((b) => b.right)) > edge.left + 0.5;
+      }).map((el) => el.textContent.trim());
+    }));
+    check(hidden.length === 0, `Rooms: no room's name or address runs under its stub at ${width}px${hidden.length ? ` (${hidden.join("; ")})` : ""}`);
+    await ctx.close();
+  }
+});
+
+/* A heading or button that splits a word ("VOLUNTEERIN / G") has a column too narrow for its type.
+   Letters only: a break after a hyphen ("Student- / led") is ordinary wrapping. Hidden text
+   (a closed disclosure, sr-only) is not drawn, so it is not judged; nor is an address. */
+await part("Words: no heading or button splits a word, on any page", async () => {
+  const pages = JSON.parse(fs.readFileSync(path.join(ROOT, ".build/report.json"), "utf8")).pages.map((p) => p.path)
+    .filter((p) => p !== "/staff/" && !/\/preview\/$/.test(p) && !/^\/about\/our-team\/./.test(p));
+  for (const width of [1280, 1024, 390, 320]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    const page = await ctx.newPage();
+    const found = [];
+    for (const p of pages) {
+      await page.goto(BASE + p, { waitUntil: "load" });
+      const split = await page.evaluate(() => {
+        const out = new Set();
+        for (const el of document.querySelectorAll("main h1, main h2, main .door-title, main .go-label, main .btn")) {
+          if (!el.checkVisibility({ contentVisibilityAuto: true, visibilityProperty: true })) continue;
+          /* an address (an email, a web page) is allowed to break where it must */
+          if (/@|\/|\w\.[a-z]{2,}/i.test(el.textContent)) continue;
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+            if (n.parentElement.closest(".sr-only")) continue;
+            for (const m of n.textContent.matchAll(/\p{L}{2,}/gu)) {
+              const r = document.createRange(); r.setStart(n, m.index); r.setEnd(n, m.index + m[0].length);
+              if (new Set([...r.getClientRects()].filter((b) => b.width).map((b) => Math.round(b.top))).size > 1) out.add(m[0]);
+            }
+          }
+        }
+        return [...out];
+      });
+      if (split.length) found.push(`${p} ${split.join(", ")}`);
+    }
+    check(found.length === 0, `Words: no heading or button splits a word at ${width}px${found.length ? ` (${found.join("; ")})` : ""}`);
+    await ctx.close();
+  }
+});
+
 await part("Team directory: aligned portraits and compact opening", async () => {
   const proof = path.join(ROOT, "local/team-directory-proof"); fs.mkdirSync(proof, {recursive:true});
   for (const width of [1280,768,390,320]) for (const javaScriptEnabled of [true,false]) {

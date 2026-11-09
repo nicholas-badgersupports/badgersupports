@@ -916,3 +916,23 @@ of the repair remains a separate deployment check; the failed test produced no a
 Nicholas requested separate hiring workflows and automatic association with an application cycle. A period-only rule cannot distinguish a letter intended for an older cycle after a new cycle begins. Connect therefore supplies cycle-specific public recommendation links. This sender persists normalized cycle metadata beside answers and carries it through signed delivery; the receiver uses an existing explicit cycle even after its intake window closes. Invalid/unknown explicit context stays Unassigned, while legacy bare links retain period-based filing.
 
 This is cycle membership, not automatic applicant identification. The existing form collects an applicant name; ambiguous person associations remain an explicit review decision. No personal information or authentication token is added to the address. Existing form questions, protected application wording, availability settings and permissions are unchanged. This is a coordinated staged sender/receiver change; publication and live acceptance are recorded separately in the shared handoff.
+
+## 9 November 2026 · The peer page's reel always shows (Owner; queue 70)
+
+Nicholas asked that the Instagram reel on Peer Support Groups always show, with no click first. Offered three
+choices (our own silent looping video file, Instagram's player loaded, or keep the Play button), he chose
+Instagram's player, loaded. The reel's frame is now in the page itself, loaded lazily, with the caption and the
+Watch on Instagram link under it; the Play button, its notice and `src/client/embed.js` are gone. A visitor's
+browser now talks to Instagram when the frame nears the screen, and Instagram may set its own cookies; the
+video still starts on a tap inside Instagram's player. The page itself sends nothing to Instagram; only the
+frame does. The privacy draft (queue 4) must name the Instagram embed before the policy is published. The
+`embed.play` and `embed.notice` text keys stay in `content/text.json`, unused, so no saved edit is orphaned.
+
+## 9 November 2026 · Headings and cards keep whole words (queue 69; routine calls made in the session)
+
+A signed-out read found words split mid-letter in side-column headings, the directions panel heading, a door
+card's button at 320 px and a photo-less recap card, and room tickets' stubs clipping "Directions" and covering
+long room names. Calls made: side-column headings are capped at 1.875rem; the directions panel heading runs
+1.75–2.375rem; below 380 px a door card's icon sits above its words and a room ticket's stub tears off along the
+bottom; on a phone a recap card with no photo takes the whole row. A site-wide interaction check now fails on any
+heading, door title or button that splits a word (hyphen breaks and addresses excepted).

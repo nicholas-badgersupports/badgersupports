@@ -107,7 +107,7 @@ export default {
   label: "Program section",
   fields: { variant: "choice:feature|gallery|topics!", program: "choice:peer|craft|workshops!", heading: "choice:h1|h2", title: "text!", lead: "text", body: "paragraphs", list: "visitlist", facts: "termlist", note: "text", photos: "media[]", embed: "embed", links: "link[]", upcoming: "eventquery", topics: "termlist", disclosure: "text", primary: "link" },
   data: ["events", "eventsState"],
-  client: ["strip.js", "embed.js"],
+  client: ["strip.js"],
   refresh: (b) => !!b.upcoming,
   analytics: "page",
   loading: "lazy",

@@ -67,7 +67,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 
 ### Program section — `program`
 
-Reads: `events`, `eventsState` · analytics: `page` · photos load lazy · browser modules `strip.js`, `embed.js`
+Reads: `events`, `eventsState` · analytics: `page` · photos load lazy · browser module `strip.js`
 
 | Field | Type | |
 |---|---|---|
@@ -190,7 +190,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy · br
 
 ### Instagram video — `embed`
 
-Reads: nothing but its own fields · analytics: `page` · photos load lazy · browser module `embed.js`
+Reads: nothing but its own fields · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|

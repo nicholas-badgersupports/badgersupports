@@ -132,13 +132,17 @@ test("a directory keeps every office's own link and address, and refuses a group
   assert.ok(directoryProblems({ id: "b", groups: [] }).some((x) => /at least one group/.test(x)));
 });
 
-test("the reel loads nothing from Instagram until it is pressed, and the policy allows only its frame", () => {
+test("the peer page shows Instagram's reel player without a press, and no other page frames anything", () => {
   const page = read("join/peer-support-groups/index.html");
-  assert.match(page, /<figure class="reel" data-embed data-src="https:\/\/www\.instagram\.com\/reel\/[A-Za-z0-9_-]+\/embed\/"/);
-  assert.match(page, /<button type="button" class="reel-play" data-embed-play>/);
+  const frames = [...page.matchAll(/<iframe[^>]*>/g)].map((m) => m[0]);
+  assert.equal(frames.length, 1, "one frame: the reel");
+  assert.match(frames[0], /src="https:\/\/www\.instagram\.com\/reel\/[A-Za-z0-9_-]+\/embed\/"/);
+  assert.match(frames[0], /title="[^"]+"/, "a frame names what it holds");
+  assert.match(frames[0], /loading="lazy"/);
+  assert.doesNotMatch(page, /data-embed-play/, "no Play button stands in front of it");
   for (const f of fs.readdirSync(OUT, { recursive: true }).filter((f) => f.endsWith(".html"))) {
     const h = read(f);
-    assert.doesNotMatch(h, /<iframe/, f);
+    if (f !== path.join("join", "peer-support-groups", "index.html")) assert.doesNotMatch(h, /<iframe/, f);
     assert.doesNotMatch(h, /<script[^>]+src="https?:\/\//, f);
   }
   const csp = read("_headers").match(/Content-Security-Policy: (.*)/)[1];

@@ -1631,7 +1631,8 @@ await part("FAQ and first visit: keyboard, links and no JavaScript", async () =>
     const ctx = await browser.newContext({ viewport: { width, height: 844 }, javaScriptEnabled, reducedMotion: "reduce" });
     const page = await ctx.newPage(), errors = [], remote = [];
     page.on("pageerror", e => errors.push(e.message));
-    page.on("request", r => { if (/instagram\.com/.test(r.url())) remote.push(r.url()); });
+    /* the reel's own frame talks to Instagram; the page itself never does */
+    page.on("request", r => { if (/instagram\.com/.test(r.url()) && r.frame() === page.mainFrame()) remote.push(r.url()); });
     await page.goto(BASE + "/about/faq/#q-group-therapy", { waitUntil: "networkidle" });
     const answer = page.locator("#q-group-therapy"), summary = answer.locator("summary");
     if (javaScriptEnabled) check(await answer.getAttribute("open") !== null, `FAQ ${width}px: deep-linked answer opens`);
@@ -1657,7 +1658,7 @@ await part("FAQ and first visit: keyboard, links and no JavaScript", async () =>
     check(await disclosure.getAttribute("open") !== null && await disclosure.locator("ol").isVisible(), `first visit ${width}px JS=${javaScriptEnabled}: expectations open by keyboard`);
     const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, reflection: document.querySelectorAll("main input, main textarea").length, steps: document.querySelectorAll(".talk ol li").length, room: document.querySelector(".visit-action")?.getAttribute("href") }));
     check(!state.scrolls && !state.reflection && state.steps === 3 && /^\/directions\//.test(state.room || ""), `first visit ${width}px JS=${javaScriptEnabled}: room action, arrival steps and no personal input or overflow`);
-    check(!errors.length && !remote.length, `FAQ/first visit ${width}px JS=${javaScriptEnabled}: no script error or unsolicited reel request`);
+    check(!errors.length && !remote.length, `FAQ/first visit ${width}px JS=${javaScriptEnabled}: no script error, and Instagram reached only from the reel's frame`);
     await ctx.close();
   }
 });

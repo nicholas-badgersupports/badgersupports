@@ -369,7 +369,7 @@ export function cspHeader() {
     "img-src 'self' data:",
     "font-src 'self'",
     "connect-src 'self'",
-    // An Instagram reel plays in a frame only after someone presses Play (blocks/embed.mjs); the staff page's preview
+    // An Instagram reel shows in Instagram's own frame (blocks/embed.mjs); the staff page's preview
     // frames this site's own /api/staff/preview/ (staff.js).
     "frame-src 'self' https://www.instagram.com",
     "form-action 'self'",

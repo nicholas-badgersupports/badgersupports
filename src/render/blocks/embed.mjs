@@ -1,14 +1,13 @@
-/* A video from the organisation's Instagram, without Instagram on the page until someone asks for
- * it. The page shows the post's own caption and a Play button; pressing Play puts Instagram's
- * player in a frame (src/client/embed.js), and only then does the visitor's browser talk to
- * Instagram. Without JavaScript there is no Play button, only the link to watch it there.
+/* A video from the organisation's Instagram, shown in Instagram's own player as the page opens,
+ * with no Play button in front of it. The frame loads lazily, so a page
+ * whose reel is far below the fold asks Instagram only when it nears the screen; once it loads,
+ * Instagram may set its own cookies. Without JavaScript the frame still shows.
  *
  * Used as a block of its own, and inside a program section in place of its photo (program.mjs).
  */
 
 import { html } from "../html.mjs";
 import { go } from "../context.mjs";
-import { icon } from "../icons.mjs";
 
 const URL_RE = /^https:\/\/www\.instagram\.com\/(reel|p)\/([A-Za-z0-9_-]+)\/?$/;
 
@@ -16,15 +15,9 @@ export const embedProblems = (e) => (URL_RE.test(e?.url || "") ? [] : [`"${e?.ur
 
 export function reel(ctx, e) {
   const [, kind, id] = e.url.match(URL_RE);
-  return html`<figure class="reel" data-embed data-src="https://www.instagram.com/${kind}/${id}/embed/" data-title="${e.title}">
-  <div class="reel-frame" data-embed-frame>
-    <div class="reel-face">
-      ${e.caption ? html`<p class="reel-caption">${e.caption}</p>` : ""}
-      <button type="button" class="reel-play" data-embed-play>${icon("play")}<span>${ctx.t("embed.play")}</span></button>
-      <p class="reel-notice">${ctx.t("embed.notice")}</p>
-    </div>
-  </div>
-  <figcaption>${go(ctx, e.url, ctx.t("embed.open"), "out")}</figcaption>
+  return html`<figure class="reel is-playing">
+  <div class="reel-frame"><iframe src="https://www.instagram.com/${kind}/${id}/embed/" title="${e.title}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+  <figcaption>${e.caption ? html`<p class="reel-caption">${e.caption}</p>` : ""}${go(ctx, e.url, ctx.t("embed.open"), "out")}</figcaption>
 </figure>`;
 }
 
@@ -33,7 +26,6 @@ export default {
   label: "Instagram video",
   fields: { title: "text!", url: "text!", caption: "text" },
   data: [],
-  client: "embed.js",
   analytics: "page",
   loading: "lazy",
   render(b, ctx) {

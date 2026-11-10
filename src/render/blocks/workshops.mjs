@@ -7,12 +7,14 @@
  *   bingo   — a self-care bingo card: nine squares to tick, and a line says so
  *   choose  — a scenario and three things to say; each choice shows how it lands
  *   flip    — terms to know, as cards that turn over
+ *   scenarios — a few short situations in a row, each with a choice that shows how it lands and why;
+ *             the reason teaches the term the situation turns on (the housing workshop's own terms)
  *
  * Every word is the block's content. Without JavaScript the tabs are links to each workshop, all
  * four show one under another, and every activity still works: the map's circles jump to their
  * lists, the bingo squares are checkboxes, the choices reveal their verdicts in CSS, and the cards
- * are <details>. src/client/workshops.js adds the tabs, one-at-a-time circles, the bingo line and
- * announcements. Nothing anyone ticks or chooses is kept or sent. Photos from past workshops, when
+ * are <details>, and every situation shows one under another. src/client/workshops.js adds the tabs,
+ * one-at-a-time circles, the bingo line, one situation at a time with Next, and announcements. Nothing anyone ticks or chooses is kept or sent. Photos from past workshops, when
  * the block has them, sit beside its heading: one wide, one narrow.
  */
 
@@ -22,7 +24,7 @@ import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { topicFromAddress, workshopRequestLink } from "../../shared/workshop-topic.mjs";
 
-const KINDS = ["network", "bingo", "choose", "flip"];
+const KINDS = ["network", "bingo", "choose", "flip", "scenarios"];
 
 function network(w, a, ctx) {
   return html`<div class="act act-network" data-act="network">
@@ -69,7 +71,27 @@ function flip(w, a) {
 </div>`;
 }
 
-const ACTIVITIES = { network, bingo, choose, flip };
+/* One situation per card, numbered; each answer's reason shows once it is picked (CSS :checked, as in
+   choose). The Next button and "1 of 3" exist only once the script runs. */
+function scenarios(w, a, ctx) {
+  const n = a.steps.length;
+  return html`<div class="act act-scenarios" data-act="scenarios">
+  <p class="act-prompt">${a.prompt}</p>
+  <ol class="scenes">${a.steps.map((st, i) => html`<li class="scene" id="${w.id}-${st.id}" data-scene>
+    <p class="scene-count">${ctx.t("workshops.sceneCount", { n: i + 1, of: n })}</p>
+    <p class="act-scenario">${st.scenario}</p>
+    <fieldset>
+      <legend class="scene-q">${st.question}</legend>
+      <div class="says">${st.options.map((o) => html`<label class="say say--${o.tone || "soft"}"><input type="radio" name="${w.id}-${st.id}" value="${o.id}"><span class="say-text">${o.text}</span><span class="say-verdict"><strong>${o.verdict}</strong>${o.why ? html` ${o.why}` : ""}</span></label>`)}</div>
+    </fieldset>
+  </li>`)}</ol>
+  <div class="scene-nav" data-scene-nav hidden><button type="button" class="btn btn--quiet" data-scene-next>${ctx.t("workshops.sceneNext")}</button><button type="button" class="btn btn--quiet" data-scene-again hidden>${ctx.t("workshops.sceneAgain")}</button></div>
+  <p class="sr-only" role="status" data-say-status></p>
+  ${a.note ? html`<p class="act-note">${a.note}</p>` : ""}
+</div>`;
+}
+
+const ACTIVITIES = { network, bingo, choose, flip, scenarios };
 
 /* Problems with one workshops block's items; the build refuses the page with any. */
 export function workshopProblems(b) {
@@ -87,6 +109,7 @@ export function workshopProblems(b) {
     if (a.kind === "network" && (!(a.areas?.length >= 2 && a.areas.length <= 4) || a.areas.some((ar) => !/^a-[a-z0-9-]+$/.test(ar.id || "") || !ar.label || !(ar.text || ar.ways?.length)))) out.push(`${at}: a network needs two to four areas, each with an id like a-something, a label, and what that support is or the ways it shows up`);
     if (a.kind === "bingo" && (a.cells?.length !== 9 || !a.win)) out.push(`${at}: a bingo card needs exactly nine squares and a line message`);
     if (a.kind === "choose" && (!a.question || !(a.options?.length >= 2) || a.options.some((o) => !/^o-[a-z0-9-]+$/.test(o.id || "") || !o.text || !o.verdict))) out.push(`${at}: a choice needs a question and at least two options, each with an id like o-something, its words and a verdict`);
+    if (a.kind === "scenarios" && (!a.prompt || !(a.steps?.length >= 2 && a.steps.length <= 5) || a.steps.some((st) => !/^s-[a-z0-9-]+$/.test(st.id || "") || !st.scenario || !st.question || !(st.options?.length >= 2) || st.options.some((o) => !/^o-[a-z0-9-]+$/.test(o.id || "") || !o.text || !o.verdict) || st.options.filter((o) => o.tone === "clear").length !== 1))) out.push(`${at}: scenarios need a prompt and two to five situations, each with an id like s-something, its words, a question and at least two options (ids like o-something, words, a verdict), exactly one of them tone "clear"`);
     if (a.kind === "flip" && (!a.cards?.length || a.cards.some((c) => !/^t-[a-z0-9-]+$/.test(c.id || "") || !c.term || !c.text))) out.push(`${at}: flip cards each need an id like t-something, a term and its meaning`);
   }
   return out;

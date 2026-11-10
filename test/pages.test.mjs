@@ -37,10 +37,14 @@ test("the four workshop previews each carry their own activity, and work as plai
   assert.deepEqual(panels, ["w-networks", "w-selfcare", "w-advocacy", "w-housing"]);
   for (const id of panels) assert.match(ws, new RegExp(`<a class="ws-tab" href="#${id}" data-tab="${id}">`), id);
   assert.doesNotMatch(ws, /<article class="ws-panel"[^>]*\shidden/, "every panel shows until the script makes them tabs");
-  assert.deepEqual([...ws.matchAll(/data-act="([a-z]+)"/g)].map((m) => m[1]), ["network", "bingo", "choose", "flip"]);
+  assert.deepEqual([...ws.matchAll(/data-act="([a-z]+)"/g)].map((m) => m[1]), ["network", "bingo", "choose", "scenarios"]);
   assert.equal([...ws.matchAll(/<input type="checkbox" name="w-selfcare-bingo"/g)].length, 9);
   assert.equal([...ws.matchAll(/<input type="radio" name="w-advocacy-say"/g)].length, 3);
-  assert.ok([...ws.matchAll(/<details class="flip"/g)].length >= 2, "flip cards open with no script");
+  const scenes = [...ws.matchAll(/<li class="scene" id="w-housing-(s-[a-z-]+)" data-scene>/g)].map((m) => m[1]);
+  assert.equal(scenes.length, 4, "four housing situations, all shown with no script");
+  for (const s of scenes) assert.equal([...ws.matchAll(new RegExp(`<input type="radio" name="w-housing-${s}"`, "g"))].length, 3, s);
+  assert.match(ws, /data-scene-nav hidden/, "Next exists only once the script runs");
+  assert.match(ws, /For education only, not legal advice/, "the housing note stays");
   assert.equal([...ws.matchAll(/<a class="net-btn" href="#w-networks-a-[a-z]+"/g)].length, 4);
   const topics = { "w-networks": "support_network", "w-selfcare": "stress_self_care", "w-advocacy": "self_advocacy", "w-housing": "housing" };
   for (const [id, topic] of Object.entries(topics)) {
@@ -56,6 +60,11 @@ test("a workshop preview that is missing a part fails the build instead of showi
   assert.ok(workshopProblems({ id: "b", items: [{ ...ok, activity: { kind: "bingo", cells: ["x"], win: "line" } }] }).some((x) => /nine squares/.test(x)));
   assert.ok(workshopProblems({ id: "b", items: [ok, ok] }).some((x) => /duplicate id/.test(x)));
   assert.ok(workshopProblems({ id: "b", items: [{ ...ok, activity: { kind: "quiz" } }] }).some((x) => /activity kind/.test(x)));
+  const step = (tones) => ({ id: "s-a", scenario: "S", question: "Q", options: tones.map((tone, i) => ({ id: `o-${i}`, text: "x", verdict: "v", tone })) });
+  const scenes = (steps) => ({ ...ok, activity: { kind: "scenarios", prompt: "P", steps } });
+  assert.deepEqual(workshopProblems({ id: "b", items: [scenes([step(["clear", "soft"]), { ...step(["soft", "clear"]), id: "s-b" }])] }), []);
+  assert.ok(workshopProblems({ id: "b", items: [scenes([step(["clear", "soft"])])] }).some((x) => /two to five situations/.test(x)), "one situation is not a run");
+  assert.ok(workshopProblems({ id: "b", items: [scenes([step(["soft", "soft"]), { ...step(["clear", "soft"]), id: "s-b" }])] }).some((x) => /exactly one/.test(x)), "each situation has one best answer");
 });
 
 test("Drop in sends a peer support group to its page and anything else to its room", () => {

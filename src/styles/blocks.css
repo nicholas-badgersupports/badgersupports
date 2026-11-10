@@ -806,6 +806,15 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 
 /* choose: three things to say; the chosen one shows how it lands */
 .act-choose fieldset { border: 0; margin: var(--s4) 0 0; padding: 0; min-width: 0; }
+/* situations in a row: stacked without the script, one at a time with it */
+.scenes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s5); }
+.scene fieldset { border: 0; margin: var(--s3) 0 0; padding: 0; min-width: 0; }
+.scene-count { margin: 0 0 var(--s2); font-size: var(--fs-small); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ws); }
+.scene-q { padding: 0; margin-bottom: var(--s2); font-weight: 700; font-size: var(--fs-lead); }
+.scene-q:focus { outline: none; }
+.scene-q:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+.act-scenarios.is-live .scene { animation: panel-in .3s var(--ease-out); }
+.scene-nav { margin-top: var(--s4); }
 .says { display: grid; gap: var(--s2); }
 .say {
   display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: var(--s1) var(--s3); padding: var(--s3); cursor: pointer;

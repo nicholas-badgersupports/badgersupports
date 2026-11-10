@@ -239,6 +239,21 @@
       "text": "In the Full Workshop",
       "where": "Above the list of what each workshop covers, beside its preview."
     },
+    "workshops.sceneCount": {
+      "group": "home",
+      "text": "Situation {{n}} of {{of}}",
+      "where": "Above each situation in a workshop preview that runs through a few, such as Navigating Housing."
+    },
+    "workshops.sceneNext": {
+      "group": "home",
+      "text": "Next Situation",
+      "where": "Button under a situation once it is answered; shows the next one."
+    },
+    "workshops.sceneAgain": {
+      "group": "home",
+      "text": "Start Again",
+      "where": "Button after the last situation is answered; clears the answers and goes back to the first."
+    },
     "workshops.examples": {
       "group": "home",
       "text": "For example: {{who}}",

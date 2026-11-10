@@ -527,7 +527,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-682 keys. Keys are permanent. Required text cannot be published empty and must keep each
+685 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -553,7 +553,7 @@ the site adds the markup.
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
-### Homepage sections (30)
+### Homepage sections (33)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -580,6 +580,9 @@ the site adds the markup.
 | `wall.more` | Show Other Notes | Button on the Wall of Support, when the block gives none. |  |
 | `involve.closed` | Applications Closed | Tag on a way to get involved whose application form is switched off. |  |
 | `workshops.inWorkshop` | In the Full Workshop | Above the list of what each workshop covers, beside its preview. |  |
+| `workshops.sceneCount` | Situation {{n}} of {{of}} | Above each situation in a workshop preview that runs through a few, such as Navigating Housing. | `{{n}}` `{{of}}` |
+| `workshops.sceneNext` | Next Situation | Button under a situation once it is answered; shows the next one. |  |
+| `workshops.sceneAgain` | Start Again | Button after the last situation is answered; clears the answers and goes back to the first. |  |
 | `workshops.examples` | For example: {{who}} | Under the ways a kind of support shows up, in the support-network preview. | `{{who}}` |
 | `mood.error` | Unable to record that just now. Try again in a minute — nothing was saved. | When a mood tap could not be saved. |  |
 | `mood.count.one` | {{n}} Badger has checked in today: | Above the counts, when one person has checked in. | `{{n}}` |

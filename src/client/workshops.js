@@ -3,7 +3,9 @@
      - the workshop names become tabs (arrow keys move between them), one workshop at a time;
      - the network map shows one circle's list at a time, beside the map;
      - a full bingo line lights up and is announced;
-     - a choice's verdict is announced as well as shown.
+     - a choice's verdict is announced as well as shown;
+     - a run of situations shows one at a time: Next appears once one is answered, and Start Again at
+       the end clears the answers and goes back to the first.
    Nothing is stored or sent. */
 
 for (const ws of document.querySelectorAll("[data-ws]")) {
@@ -76,10 +78,32 @@ for (const act of document.querySelectorAll('[data-act="bingo"]')) {
 }
 
 /* a choice: its verdict is shown by the stylesheet and read out here */
-for (const act of document.querySelectorAll('[data-act="choose"]')) {
+for (const act of document.querySelectorAll('[data-act="choose"], [data-act="scenarios"]')) {
   const status = act.querySelector("[data-say-status]");
   act.addEventListener("change", (e) => {
     const v = e.target.closest("label")?.querySelector(".say-verdict");
     if (v) status.textContent = v.textContent;
   });
+}
+
+/* situations, one at a time */
+for (const act of document.querySelectorAll('[data-act="scenarios"]')) {
+  const scenes = [...act.querySelectorAll("[data-scene]")];
+  const nav = act.querySelector("[data-scene-nav]"), next = act.querySelector("[data-scene-next]"), again = act.querySelector("[data-scene-again]");
+  let at = 0;
+  const show = (i, focus) => {
+    at = i;
+    scenes.forEach((s, j) => { s.hidden = j !== i; });
+    const answered = !!scenes[i].querySelector("input:checked"), last = i === scenes.length - 1;
+    next.hidden = last || !answered;
+    again.hidden = !(last && answered);
+    nav.hidden = next.hidden && again.hidden;
+    if (focus) scenes[i].querySelector("legend").focus();
+  };
+  for (const s of scenes) s.querySelector("legend").tabIndex = -1;
+  act.addEventListener("change", () => show(at, false));
+  next.addEventListener("click", () => show(at + 1, true));
+  again.addEventListener("click", () => { for (const i of act.querySelectorAll("input:checked")) i.checked = false; show(0, true); });
+  act.classList.add("is-live");
+  show(0, false);
 }

@@ -955,3 +955,14 @@ application was rebuilt from the live Google Form (editor `1Apxe3V9HT0X-iFppbX36
 difference the native form cannot express is a `review` note on the question. The volunteer form's old Google
 fallback link was removed, so after 18 Dec it shows its closed message, not a retired Google Form.
 Agreements stay off on every live form.
+
+## 10 November 2026 · The housing preview becomes "Before You Sign" (session 10, brief item 14; routine call)
+
+Three concepts were compared for usefulness, accessibility, phones and fit: a run of short lease situations with a
+choice and a reason (chosen); a housing-year timeline that reveals steps (informative, but nothing to decide); and a
+rent budget calculator (engaging, but it needs figures no Badger Supports source gives, and many inputs on a phone).
+The chosen one, the `scenarios` activity kind, shows four situations one at a time with Next and Start Again; every
+reason is the workshop's own definition of the term the situation turns on (shared private, joint and several
+liability, rent concession, sublease), so no new housing or legal guidance was written. "For education only, not
+legal advice" and the Tenant Resource Center line stay. Nothing chosen is kept or sent; without JavaScript all four
+show, each reason revealed by CSS.

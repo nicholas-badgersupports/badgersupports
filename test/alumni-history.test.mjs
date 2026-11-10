@@ -45,16 +45,17 @@ test('local preparation writes no names to its report and refuses output in sour
  const alias=path.join(dir,'source-alias');fs.symlinkSync(path.join(ROOT,'local'),alias,'dir');r=run(['--out='+path.join(alias,'forbidden-alumni-display.json')]);assert.equal(r.status,1);assert.ok(!fs.existsSync(blocked));
 });
 
-test('approved history is runtime-only and stays independent of the email request and private preview',async()=>{
+test('approved history is read from Connect on each draw, stays runtime-only and independent of the email request and private preview',async()=>{
  const resources=JSON.parse(fs.readFileSync(path.join(ROOT,'content/fixtures/resources.json'))).resources;
- const cfg={url:'https://home.badgersupports.org',keyId:'fixture',secret:'x'.repeat(40),fetch:async(url,init)=>({json:async()=>({publicEvents:{ok:true,schema:1,events:[],weekly:[]},publicResourceExport:{ok:true,schema:1,resources},publicTeam:{ok:true,schema:'bss.team/1',people:[]},publicWallNotes:{ok:true,schema:'bss.wall/1',notes:[]}}[JSON.parse(init.body).action])})};
+ let alumniReply={ok:true,schema:'bss.alumni-history/1',groups:[]},down=false;
+ const cfg={url:'https://home.badgersupports.org',keyId:'fixture',secret:'x'.repeat(40),fetch:async(url,init)=>{if(down)throw TypeError('fictional outage');return {json:async()=>({publicAlumniHistory:alumniReply,publicEvents:{ok:true,schema:1,events:[],weekly:[]},publicResourceExport:{ok:true,schema:1,resources},publicTeam:{ok:true,schema:'bss.team/1',people:[]},publicWallNotes:{ok:true,schema:'bss.wall/1',notes:[]}}[JSON.parse(init.body).action])}}};
  const out=path.join(ROOT,'local/test-alumni-runtime');await build({production:true,connectConfig:cfg,out,serverDir:path.join(out,'_server'),media:false,today:'2026-11-03'});
  const server=JSON.parse(fs.readFileSync(path.join(out,'_server/server.json')));assert.equal(server.render.alumniSource.enabled,false);assert.doesNotMatch(fs.readFileSync(path.join(out,'join/alumni/index.html'),'utf8'),/River Example|Casey Sample/);
  server.render.alumniSource.enabled=true;useContent(server);useConnect(cfg);useDist(out);useStore(memoryStore());
- await noteSet('public-alumni-history',prepareHistory(review()).result);
+ alumniReply={ok:true,...prepareHistory(review()).result};
  const get=()=>handlePage(new Request('https://site.test/join/alumni/'),{today:'2026-11-03'});
  let r=await get();assert.equal(r.status,200);let body=await r.text();assert.match(body,/<details open>/);assert.match(body,/Within 2021–2023/);assert.match(body,/Badger Support Network/);assert.match(body,/River Example/);assert.doesNotMatch(body,/PRIVATE-RESEARCH|example@example/);assert.match(body,/href="\/forms\/email-list\/"/);
  r=await previewResponse('pg-alumni',{edits:{},structure:null,today:'2026-11-03'});assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store');assert.match(await r.text(),/River Example/);
- await noteSet('public-alumni-history',{...fixture(),groups:[]});body=await(await get()).text();assert.match(body,/No alumni history is published here yet/);assert.doesNotMatch(body,/River Example/);
- useStore({get:async()=>{throw Error('fictional outage')}});const old=console.error;console.error=()=>{};try{r=await get();body=await r.text();assert.match(body,/Alumni history could not be loaded/);assert.doesNotMatch(body,/River Example/);assert.equal(r.headers.get('cache-control'),'no-store');}finally{console.error=old;useConnect(null);}
+ alumniReply={ok:true,...fixture(),groups:[]};body=await(await get()).text();assert.match(body,/No alumni history is published here yet/);assert.doesNotMatch(body,/River Example/);
+ down=true;const old=console.error;console.error=()=>{};try{r=await get();body=await r.text();assert.match(body,/Alumni history could not be loaded/);assert.doesNotMatch(body,/River Example/);assert.equal(r.headers.get('cache-control'),'no-store');}finally{console.error=old;useConnect(null);}
 });

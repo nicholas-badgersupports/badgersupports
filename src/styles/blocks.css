@@ -1380,8 +1380,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    Filters, which counts what is pressed; what is in use shows as removable chips beside Clear All. */
 .res-filters { display: grid; gap: var(--s2); }
 .res-filter-toggle { display: none; align-items: center; gap: .5rem; justify-self: start; min-height: 44px; padding: .35rem 1rem; border: 2px solid var(--accent); border-radius: var(--r-chip); background: var(--paper); color: var(--accent); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; }
-.res-filter-toggle::after { content: ""; width: .5rem; height: .5rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; rotate: 45deg; translate: 0 -2px; transition: rotate var(--t) var(--ease-out); }
-.res-filter-toggle[aria-expanded="true"]::after { rotate: 225deg; translate: 0 2px; }
+.res-ftoggle-ic { width: 1.1rem; height: 1.1rem; transition: rotate var(--t) var(--ease-out); }
+.res-filter-toggle[aria-expanded="true"] .res-ftoggle-ic { rotate: 180deg; }
 .res-fcount { display: inline-grid; place-items: center; min-width: 1.5rem; height: 1.5rem; padding: 0 .35rem; border-radius: var(--r-chip); background: var(--accent); color: var(--cream); font-size: var(--fs-small); }
 .res-fcount[hidden] { display: none; }
 .res-filter-panel { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); }

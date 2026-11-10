@@ -10,9 +10,8 @@
  *    phone layout closes it; without JavaScript the links simply show.
  * 2. A file question while its upload is still going: a cleared, wrong or oversized replacement,
  *    or a second PDF, never leaves Send stuck on "wait for your file", and an older reply never
- *    puts back a file that was replaced. The applications are closed as shipped, so the page is a
- *    preview; the harness serves it as an open form and answers its uploads itself, slowly, with
- *    made-up ids. The real upload route is tested in test/applications.test.mjs. On the same
+ *    puts back a file that was replaced. The application is open as shipped; the harness answers
+ *    its uploads itself, slowly, with made-up ids. The real upload route is tested in test/applications.test.mjs. On the same
  *    page: every question takes the form's column at 1280, 390 and 320 while a short value's
  *    control stays compact, and folded help opens from its label by keyboard and without JavaScript.
  * 3. The workshop form, with its API answered by the real router against a fresh database in this
@@ -172,11 +171,11 @@ await part("menu without JavaScript", async () => {
 
 /* ------------------------------------------------------------------ 2. an upload still going */
 
-const PAGE = "/forms/staff-application/preview/";
+const PAGE = "/forms/staff-application/";
 const PDF = Buffer.from("%PDF-1.4\n% a made-up file for the harness\n%%EOF\n");
 const fakeId = (n) => `${"F".repeat(31)}${n}`;
 
-/* The preview served as the open form it will be, and uploads answered after `delays[n]` ms. */
+/* The open form, its uploads answered after `delays[n]` ms (a preview attribute, were one served, is taken off). */
 async function openForm(delays) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
@@ -195,7 +194,7 @@ async function openForm(delays) {
   });
   await page.goto(BASE + PAGE, { waitUntil: "networkidle" });
   const live = await page.evaluate(() => !document.querySelector("form[data-form]").hasAttribute("data-preview"));
-  if (!live) throw new Error("the harness could not serve the preview as an open form");
+  if (!live) throw new Error("the staff application page did not serve an open form");
   return { ctx, page, errors };
 }
 
@@ -296,7 +295,7 @@ await part("a form's width", async () => {
 });
 
 await part("Other answer fields at phone and desktop widths", async () => {
-  const paths = ["/forms/staff-application/preview/", "/forms/volunteer-application/preview/", "/forms/program-request/preview/", "/forms/programming-feedback/"];
+  const paths = ["/forms/staff-application/", "/forms/volunteer-application/", "/forms/program-request/", "/forms/programming-feedback/"];
   for (const js of [true, false]) for (const width of [1280, 768, 390, 320]) for (const path of paths) {
     const branches = js && path.includes("programming-feedback") ? ["workshop", "craft", "peer"] : [null];
     for (const branch of branches) {
@@ -1614,7 +1613,7 @@ await part("resources: Suggest an Update opens with its resource chosen", async 
   const href = await page.locator('.res-card .res-report a[href^="/forms/resource-update/?resource="]').nth(4).getAttribute("href");
   const id = decodeURIComponent(href.split("?resource=")[1]);
   const chosen = async (query) => {
-    await page.goto(`${BASE}/forms/resource-update/preview/${query}`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE}/forms/resource-update/${query}`, { waitUntil: "networkidle" });
     return page.evaluate(() => { const s = document.querySelector('select[name="resource"]'); return s ? s.value : null; });
   };
   const got = await chosen(`?resource=${encodeURIComponent(id)}`);
@@ -2298,7 +2297,7 @@ await part("resource form validation", async () => {
     try {
       const page = await ctx.newPage(); const errors = []; let sends = 0;
       page.on("pageerror", e => errors.push(e.message));
-      const preview = `/forms/${key}/preview/`;
+      const preview = `/forms/${key}/`;
       await page.route(u => u.pathname === preview, async route => {
         const response = await route.fetch();
         await route.fulfill({ response, body: (await response.text()).replace(' data-preview=""', "") });
@@ -2338,7 +2337,7 @@ await part("recommendation cycle context", async () => {
     try {
       const page = await ctx.newPage(); const errors = []; let submits = 0; let posted = null;
       page.on("pageerror", e => errors.push(e.message));
-      const preview = `/forms/${key}/preview/`;
+      const preview = `/forms/${key}/`;
       await page.route(u => u.pathname === preview, async route => {
         const response = await route.fetch(); await route.fulfill({ response, body: (await response.text()).replace(' data-preview=""', "") });
       });

@@ -312,7 +312,7 @@ test("Get involved opens on people: up to three photos beside its heading", () =
 test("Get involved keeps what the live page said: the hiring steps as a list, what volunteers do, and the Equal Opportunity line", () => {
   const page = read("join/get-involved/index.html");
   const ways = block(page, "b-gi-ways");
-  assert.match(ways, /<li class="door[^"]*"><a href="#hiring" class="door-link">/, "the staff door opens the hiring steps");
+  assert.match(ways, /<li class="door[^"]*"><a href="\/forms\/staff-application\/" class="door-link">/, "while applications are open, the staff door opens the application");
   const hiring = ways.match(/<section class="more[^"]*" id="hiring"[\s\S]*?<\/section>/)?.[0];
   assert.ok(hiring, "a hiring panel");
   assert.equal([...hiring.match(/<ol class="more-steps">([\s\S]*?)<\/ol>/)[1].matchAll(/<li>/g)].length, 3, "three steps, numbered");

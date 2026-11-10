@@ -21,7 +21,7 @@
           "id": "inv-volunteer",
           "title": "Volunteer",
           "primary": true,
-          "text": "A new program starting 2026–2027. Gain hands-on experience hosting workshops, staffing events, and supporting peer programs.",
+          "text": "A new program starting 2026–2027. Gain hands-on experience hosting workshops, staffing events, and supporting peer programs. Apply by December 18 for Spring 2027.",
           "link": {
             "label": "View Volunteer Application",
             "href": "/forms/volunteer-application/"
@@ -54,11 +54,11 @@
           "id": "inv-staff",
           "title": "Staff Positions",
           "form": "staff-application",
-          "text": "Employment at Badger Supports is eligible to all UW–Madison students. Most staff work 5–12 hours a week.",
+          "text": "Employment at Badger Supports is eligible to all UW–Madison students. Most staff work 5–12 hours a week. Apply by December 18 for Spring 2027.",
           "icon": "badge",
           "link": {
-            "label": "How Hiring Works",
-            "href": "#hiring"
+            "label": "View Staff Application",
+            "href": "/forms/staff-application/"
           },
           "more": {
             "anchor": "hiring",

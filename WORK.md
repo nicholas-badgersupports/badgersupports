@@ -114,6 +114,7 @@ source), 5 (entrance photos), 8 (rooms), 11 (live pages; two 301s). **Done** 23 
 at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `open`), 27, 28, 32 (colour; SPILL's lessons,
 §10), 29 (events between publishes, §7). **Added 24 Oct, queued only:** 33–39, from the brief, `../PUBLIC-PLATFORM-PROMPT-2026-10-24.md`
 (P1–P5) and `../PUBLIC-EXCHANGE-AND-SECURITY-PROMPT-2026-10-24.md` (X1–X4). P2 extends 15 and 16; P3, 18; P5, 22 and 23.
+**Added 10 Nov, queued only:** 40–47 (Explore Campus, the change history and its check); full entries in `docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md`. No relative priority assigned; item 19 stays first.
 
 19. **PRIORITY ONE · Complete Connect → public website delivery** (queued 3 Nov; Connect CONNECT-PUBLIC-DELIVERY-P1; Decisions, 3 Nov).
     Finish the existing connection, starting with team profiles. Publish eligible profiles even when incomplete; configurable required fields prompt/remind, never block publication. Preserve opt-out/supporter disclosure and public-field restrictions; invent no facts. Local photo/order candidate: see the existing PUBLIC-SITE handoff.
@@ -166,6 +167,27 @@ at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `o
     an hour per form per address; 429 with Retry-After; form state cached a minute; `/crawlers/` and robots ask for `From`, not collected.
 39. **Netlify features already included** (P5; X4) → map **done** 25 Oct (cloud run §8; `docs/ARCHITECTURE.md`): used, available,
     unknown; Lighthouse run locally; Netlify Forms pilot not recommended. Waits for the owner to approve a first slice.
+40. **Explore Campus hub** (`EXPLORE-HUB`; queued 10 Nov) → one page gathering 41–45, each also linked from Resources, Navigating Housing,
+    Housing Hub, Get Involved, Home and Support Networks; approved Drive photographs only (`ops/media.mjs`); live tools only. Proposed / Not Implemented.
+41. **Campus Events Explorer** (`EXPLORE-A-EVENTS`) → UW Events API + all Wisconsin Union events, deduplicated; interests, categories, dates;
+    calendar and list; Find Your People; auto-refresh ≤30 min; organizer and source link; external vs Badger Supports distinct; cost/cancellation
+    only when the source states it; loading/empty/error states. Verify API terms first. Proposed / Not Implemented.
+42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → Connect's approved resources and approved UW
+    KnowledgeBase articles in one search, labelled by source and publisher with official link and review date; Connect owns the library and
+    approval (its `QUEUE.md`, same ID; EXPLORE-D, EXPLORE-X). Proposed / Not Implemented.
+43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → published sections from UW Course Search (undocumented API: verify terms first);
+    past-year and current/upcoming offerings, term-specific courses handled, most recent verified term, recently offered vs available, no
+    helper text on uncertainty, official link; no schedules, grades or enrollment data. Proposed / Not Implemented.
+44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → a few choice questions to approved resources and official contacts from the
+    shared library, a path to the full finder at every step; no free-text personal data, not advising or clinical support. Proposed / Not Implemented.
+45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → several addresses × several buildings side by side; Metro GTFS +
+    OpenStreetMap; direct / transfer / no connection, walking distances only; **no times, schedules or predictions**; addresses not kept;
+    any Metro key server-side; unverified route never shown available. Verify licences and topology first. Proposed / Not Implemented.
+46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → the prepared history exists: local branch `bss/local-version-history`
+    (`b4658bd`, imported 10 Nov from the 7 Nov package in `Admin/Handoffs/active/VERSION-HISTORY/`; 42 entries through
+    `8e7e220`). Extend it over the commits on `main` after `8e7e220`, rebase onto `main`, then commit. Proposed / Not Implemented.
+47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → install the package's release check; show Nicholas the
+    exact instruction diff first (his ruling, 10 Nov). Depends on 46. Proposed / Not Implemented.
 
 ## Git and publishing
 

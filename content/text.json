@@ -2824,8 +2824,8 @@
     },
     "resources.filters.toggle": {
       "group": "resources",
-      "text": "More Filters",
-      "where": "On a phone, the button that opens the Cost, Location and Access filters under the resource topics."
+      "text": "Filters",
+      "where": "The button beside the resource search that opens the Cost, Location and Access filters; they stay closed until it is pressed."
     },
     "resources.filters.cost": {
       "group": "resources",

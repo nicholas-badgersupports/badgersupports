@@ -104,9 +104,10 @@ test("a resource list with a topic it cannot draw fails the build", () => {
   assert.match(bad([{ id: "a1", label: "A", category: "housing", aliases: ["b1"] }, { id: "b1", label: "B", category: "legal_rights" }]).join(), /"b1" names two topics/);
 });
 
-test("the list offers Cost, Location and Access filters for what its cards carry, with a phone fold and a clear-all", () => {
+test("the list offers Cost, Location and Access filters for what its cards carry, behind a Filters button, and a clear-all", () => {
+  assert.doesNotMatch(page, /Cost Not Specified/i, "a card with no known cost carries no cost tag");
   for (const g of ["cost", "where", "how"]) assert.match(page, new RegExp(`data-fgroup="${g}"`), g);
-  assert.match(page, /<button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="[^"]+-filters" data-res-ftoggle>More Filters/);
+  assert.match(page, /<button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="[^"]+-filters" data-res-ftoggle><svg[^>]*data-i="sliders"[\s\S]*?<span>Filters<\/span>/);
   assert.match(page, /data-res-clearall>Clear All</);
   assert.doesNotMatch(page, /data-fopt="paid"/, "an option no card carries is not offered");
   const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "content/fixtures/resources.json"), "utf8")).resources;

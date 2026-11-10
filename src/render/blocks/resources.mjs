@@ -109,7 +109,7 @@ function card(r, ctx, topicOf) {
     <h3>${r.name}</h3>
     ${r.summary ? html`<p class="res-what">${r.summary}</p>` : ""}
     ${r.bestFor ? html`<p class="res-fit"><span class="res-lead">${ctx.t("resources.fit")}</span> ${r.bestFor}</p>` : ""}
-    <p class="res-tags">${topic ? html`<span class="res-tag res-topic">${topic}</span>` : ""}<span class="res-tag">${ctx.t(`resources.cost.${COST[r.cost?.code] || "unknown"}`)}</span>${where ? html`<span class="res-tag">${ctx.t(`resources.where.${where}`)}</span>` : ""}</p>
+    <p class="res-tags">${topic ? html`<span class="res-tag res-topic">${topic}</span>` : ""}${COST[r.cost?.code] && COST[r.cost.code] !== "unknown" ? html`<span class="res-tag">${ctx.t(`resources.cost.${COST[r.cost.code]}`)}</span>` : ""}${where ? html`<span class="res-tag">${ctx.t(`resources.where.${where}`)}</span>` : ""}</p>
     <div class="res-foot">
       ${href ? link(ctx, href, button(r, ctx), { class: "btn res-go", icon: "out" }) : ""}
       ${phone ? html`<p class="res-tel"><a href="${tel(phone)}">${phone}</a></p>` : ""}
@@ -150,14 +150,16 @@ export default {
     <div class="res-search">
       <label for="${b.id}-q">${ctx.t("resources.search.label")}</label>
       <p class="res-hint" id="${b.id}-qh">${ctx.t("resources.search.hint")}</p>
-      <div class="res-search-row"><input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" aria-describedby="${b.id}-qh" data-res-q><button type="button" class="btn btn--quiet" data-res-clear hidden>${ctx.t("resources.search.clear")}</button></div>
+      <div class="res-search-row">
+        <div class="res-field">${icon("search", "res-field-ic")}<input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" aria-describedby="${b.id}-qh" data-res-q><button type="button" class="res-qclear" aria-label="${ctx.t("resources.search.clear")}" title="${ctx.t("resources.search.clear")}" data-res-clear hidden>${icon("close")}</button></div>
+        ${groups.length ? html`<button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="${b.id}-filters" data-res-ftoggle>${icon("sliders", "res-ftoggle-ic")}<span>${ctx.t("resources.filters.toggle")}</span><span class="res-fcount" data-res-fcount hidden></span></button>` : ""}
+      </div>
     </div>
     <div class="res-topics" role="group" aria-labelledby="${b.id}-h">
       <button type="button" class="res-topic-btn" aria-pressed="true" data-topic="">${ctx.t("resources.topics.all")}</button>
       ${topics.map((tp) => html`<button${attrs({ type: "button", class: "res-topic-btn", "aria-pressed": "false", "data-topic": tp.id, "data-category": tp.category, "data-aliases": (tp.aliases || []).join(" ") || null })}>${tp.label}</button>`)}
     </div>
     ${groups.length ? html`<div class="res-filters">
-      <button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="${b.id}-filters" data-res-ftoggle>${ctx.t("resources.filters.toggle")}<span class="res-fcount" data-res-fcount hidden></span>${icon("down", "res-ftoggle-ic")}</button>
       <div class="res-filter-panel" id="${b.id}-filters" data-res-fpanel>${groups.map((g) => html`<div class="res-fgroup" role="group" aria-labelledby="${b.id}-f-${g.id}"><p class="res-flabel" id="${b.id}-f-${g.id}">${ctx.t(g.label)}</p><div class="res-fopts">${g.options.map((o) => html`<button type="button" class="res-topic-btn res-fopt" aria-pressed="false" data-fgroup="${g.id}" data-fopt="${o}">${ctx.t(g.key(o))}</button>`)}</div></div>`)}</div>
     </div>` : ""}
     <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips><li aria-hidden="true"><span class="res-chip res-chip-ph">&nbsp;</span></li></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>

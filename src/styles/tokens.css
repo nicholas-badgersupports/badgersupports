@@ -125,11 +125,12 @@
   --note-6: #E8E8F5;
 
   /* Badger SPILL's own colours (badger-spill site/assets/css/base.css): its milk blue, its ink, its
-     panel and a pale wash of the blue. Only where SPILL shows: its band, the hero's sticker, the footer. */
+     panel and a pale wash of the blue. Only where SPILL shows: its band, the hero's sticker, the footer, a card that links to it. */
   --spill: #7AAAC6;
   --spill-ink: #2A374B;
   --spill-panel: #FFFAF3;
   --spill-tint: #E4EEF4;
+  --spill-deep: #336A8C;       /* the milk blue deepened until words on cream pass AA */
   --spill-drop: #71B0CF;      /* a drop of milk in a splash */
   --spill-hover: #8DB8D0;     /* the SPILL button under a pointer */
   --spill-ripple: #FFFFFFE6;  /* the ring across the puddle */
@@ -224,6 +225,8 @@
 [data-program="craft"] { --accent: var(--craft); --accent-deep: var(--craft-deep); --accent-light: var(--craft-light); --accent-tint: var(--craft-tint); --accent-wash: var(--craft-wash); }
 [data-program="workshops"] { --accent: var(--workshops); --accent-deep: var(--workshops-deep); --accent-light: var(--workshops-light); --accent-tint: var(--workshops-tint); --accent-wash: var(--workshops-wash); }
 [data-program="other"] { --accent: var(--red); --accent-deep: var(--red-deep); --accent-light: var(--red-light); --accent-tint: var(--red-tint); --accent-wash: var(--red-wash); }
+/* A card that sends people to Badger SPILL wears SPILL's milk blue, not a Badger Supports program colour. */
+[data-brand="spill"] { --accent: var(--spill-deep); --accent-deep: var(--spill-ink); --accent-light: var(--spill); --accent-tint: var(--spill-tint); --accent-wash: var(--spill-tint); }
 
 /* The paper in a section's own colour. A var() inside a custom property is resolved where the property
    is declared, so these are declared again wherever data-program sets the accent: a coloured block is

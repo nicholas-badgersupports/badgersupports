@@ -55,7 +55,7 @@ export default {
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${steps(b)}
-  <ul class="card-list">${b.items.map((it) => html`<li${attrs({ class: it.photo ? "card has-photo" : "card", id: it.id, "data-program": it.program || null })}>
+  <ul class="card-list">${b.items.map((it) => html`<li${attrs({ class: it.photo ? "card has-photo" : "card", id: it.id, "data-program": it.program || null, "data-brand": /^https:\/\/(?:www\.)?badgerspill\.org(?:\/|$)/.test(it.link?.href || "") ? "spill" : null })}>
     ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
     <div class="card-words">
       <h3>${it.title}</h3>

@@ -5,7 +5,7 @@
    ?how=), so a link opens the same list; an old address word for a topic (?topic=health) opens that
    topic, and an unknown one shows everything. Within a filter group any pressed option matches; across
    groups every group must. What is in use shows as chips that each remove themselves, beside Clear All.
-   On a phone the filters fold behind More Filters, which counts the ones pressed, and stay folded when an address
+   The filters fold behind Filters at every width; it counts the ones pressed, and they stay folded when an address
    presses some: the chips already show them. The chips are one row that slides, so the row is one height however many
    are in use; the page's inline script reserves it for an address that carries a filter, so the list does not move. */
 

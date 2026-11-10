@@ -36,6 +36,9 @@ const PARTS = {
   jar: `<path d="M8 3.5h8v3H8z"/><path d="M8.5 6.5c-2 1.2-3 3-3 5.5v6a2.5 2.5 0 0 0 2.5 2.5h8a2.5 2.5 0 0 0 2.5-2.5v-6c0-2.5-1-4.3-3-5.5"/><path d="M10.5 12.3a1.5 1.5 0 1 1 2 1.4c-.5.2-.5.6-.5 1.1"/><path d="M12 17.3v.1"/>`,
   pencil: `<path d="M15.5 4.5l4 4L9 19l-5 1 1-5z"/><path d="M13.5 6.5l4 4"/>`,
   ribbon: `<path d="M9.5 21 15 10.5c.9-1.8 1-3 .5-4.2a3.6 3.6 0 0 0-7 0c-.5 1.2-.4 2.4.5 4.2L14.5 21"/>`,
+  search: `<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/>`,
+  sliders: `<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>`,
+  close: `<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>`,
 };
 
 /* the two brand files that carry the heart, by the ground they sit on (Connect's brand rule) */

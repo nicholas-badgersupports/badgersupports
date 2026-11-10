@@ -966,3 +966,21 @@ reason is the workshop's own definition of the term the situation turns on (shar
 liability, rent concession, sublease), so no new housing or legal guidance was written. "For education only, not
 legal advice" and the Tenant Resource Center line stay. Nothing chosen is kept or sent; without JavaScript all four
 show, each reason revealed by CSS.
+
+## 10 November 2026 · Owner review of session 10: hero line, SPILL card, resource search, next group (Nicholas)
+
+From Nicholas's review of the session-10 screenshots, the same day:
+
+- The home hero drops its supporting paragraph ("A student-led community at UW–Madison…"); the title, the three
+  tagline words and Get Involved stay. The hero block's `body` stays an optional field.
+- Badger SPILL keeps its own design and colours wherever it shows: a card that links to badgerspill.org is marked
+  `data-brand="spill"` and takes SPILL's milk blue (its icon disc `--spill` with `--spill-ink`; its words and button
+  `--spill-deep`, the blue deepened to pass AA on cream). The program list (peer, craft, workshops, other) is
+  unchanged, so Connect's editor contract is untouched.
+- Resource search is one card, after Connect's Find a Resource: the search field (search icon, an inline clear) and
+  a Filters button on one row; the topics under them; Cost, Location and Access only once Filters is pressed, closed
+  by default at every width; what is in use as chips with Clear All. Filters counts what is pressed, so a closed
+  panel still says filters are on. Below 380px Filters shows its icon and count, and its word stays its name.
+  A card whose cost is not known carries no cost tag ("Cost Not Specified" is no longer shown).
+- The Next Peer Support Group box is a card on paper outlined in the program's deep colour, as Craft Nights shows
+  its next night.

@@ -411,7 +411,7 @@ Reads: `legal` · analytics: `none` · photos load lazy
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 
@@ -1241,7 +1241,7 @@ the site adds the markup.
 | `resources.where.onCampus` | On Campus | On the resource list: the place chip on a card. |  |
 | `resources.where.madison` | In Madison | On the resource list: the place chip on a card. |  |
 | `resources.where.national` | National | On the resource list: the place chip on a card. |  |
-| `resources.filters.toggle` | More Filters | On a phone, the button that opens the Cost, Location and Access filters under the resource topics. |  |
+| `resources.filters.toggle` | Filters | The button beside the resource search that opens the Cost, Location and Access filters; they stay closed until it is pressed. |  |
 | `resources.filters.cost` | Cost | Heading over the Cost filter on the resource list. |  |
 | `resources.filters.where` | Location | Heading over the Location filter on the resource list. |  |
 | `resources.filters.how` | Access | Heading over the Access filter (how to reach a resource) on the resource list. |  |

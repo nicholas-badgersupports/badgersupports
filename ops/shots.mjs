@@ -33,7 +33,8 @@ for (const p of PAGES) {
     const page = await ctx.newPage();
     const errors = [];
     let bytes = 0, images = 0;
-    page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+    /* only this site's own console counts: the peer page's Instagram frame logs Instagram's own warnings */
+    page.on("console", (m) => { if (m.type() === "error" && (!m.location()?.url || m.location().url.startsWith(BASE))) errors.push(m.text()); });
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("response", async (r) => {
       try { const b = await r.body(); bytes += b.length; if (r.request().resourceType() === "image") images += b.length; } catch { /* redirects have no body */ }

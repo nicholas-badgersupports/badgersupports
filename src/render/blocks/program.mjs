@@ -59,6 +59,7 @@ function feature(b, ctx) {
     ${b.facts?.length ? html`<dl class="facts">${b.facts.map((f) => html`<dt>${f.term}</dt><dd>${f.text}</dd>`)}</dl>` : ""}
     ${featureList(b, ctx)}
     ${b.note ? html`<p class="not-therapy">${b.note}</p>` : ""}
+    ${b.primary ? html`<p class="feature-primary">${link(ctx, b.primary.href, b.primary.label, { class: "btn btn--big", icon: b.primary.icon || "arrow" })}</p>` : ""}
     ${links(ctx, b.links)}
   </div>
   ${b.embed ? media : ""}
@@ -87,7 +88,8 @@ function gallery(b, ctx) {
 }
 
 function topics(b, ctx) {
-  const list = html`<ol class="topics">${b.topics.map((t) => html`<li><div><strong>${t.href ? link(ctx, t.href, t.term) : t.term}</strong>${t.text ? html`<p>${t.text}</p>` : ""}</div></li>`)}</ol>`;
+  // Shown open, the list keeps the id its fold had, so links to "<anchor>-details" still land on it.
+  const list = html`<ol${attrs({ class: "topics", id: b.disclosure ? null : `${b.anchor || b.id}-details` })}>${b.topics.map((t) => html`<li><div><strong>${t.href ? link(ctx, t.href, t.term) : t.term}</strong>${t.text ? html`<p>${t.text}</p>` : ""}</div></li>`)}</ol>`;
   return html`<div class="wrap">
   <header>
     ${heading(b)}

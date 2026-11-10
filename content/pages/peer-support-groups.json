@@ -14,33 +14,20 @@
       "program": "peer",
       "heading": "h1",
       "title": "Drop In to a Peer Support Group",
-      "lead": "College can be stressful — come find support and yap it out!",
+      "lead": "A free, student-led hour to talk, listen and connect with other UW–Madison students.",
       "body": [
-        "Peer Support Groups are entirely drop-in.",
-        "No sign-ups, no commitment, & no stigma here!",
-        "Come alone or bring friends — all are welcome :D",
-        "Check the group’s listed date, time and room before heading over."
+        "No sign-ups, no commitment, and no stigma. Come alone or bring friends — all are welcome :D"
       ],
       "links": [
         {
-          "label": "Hub Directions",
-          "href": "#get-directions",
-          "icon": "pin"
+          "label": "What a Group Is Like",
+          "href": "#b-pg-how",
+          "icon": "down"
         },
         {
           "label": "Join Our Email List",
           "href": "/join/email-list/",
           "icon": "mail"
-        },
-        {
-          "label": "Choose a Group",
-          "href": "#b-pg-days",
-          "icon": "calendar"
-        },
-        {
-          "label": "What to Expect",
-          "href": "#b-pg-how-details",
-          "icon": "down"
         }
       ],
       "embed": {
@@ -51,32 +38,17 @@
         "source": "events",
         "program": "peer"
       },
-      "list": {
-        "label": "Your First Visit",
-        "ordered": true,
-        "items": [
-          {
-            "term": "Choose a Group",
-            "text": "Pick a dated group from the current schedule.",
-            "href": "#b-pg-days"
-          },
-          {
-            "term": "Find the Room",
-            "text": "Open the directions attached to that group; its location can change."
-          },
-          {
-            "term": "Know What to Expect",
-            "text": "Read about the check-in, activity and conversation.",
-            "href": "#b-pg-how-details"
-          }
-        ]
+      "primary": {
+        "label": "Find a Group This Week",
+        "href": "#b-pg-days",
+        "icon": "calendar"
       }
     },
     {
       "id": "b-pg-days",
       "type": "cards",
       "variant": "days",
-      "title": "Join Us for a Group!",
+      "title": "Join Us for a Group",
       "items": [
         {
           "id": "monday",
@@ -100,15 +72,46 @@
         }
       ],
       "source": "events",
-      "program": "peer"
+      "program": "peer",
+      "steps": [
+        {
+          "term": "Pick a Day",
+          "text": "Groups meet every week. Each card shows its time and room."
+        },
+        {
+          "term": "Find the Room",
+          "text": "Use Get Directions on your group. Rooms can change, so check before you head over."
+        },
+        {
+          "term": "Walk In",
+          "text": "No sign-up needed. A short check-in, an activity, then conversation. Share as much or as little as you like."
+        }
+      ]
     },
     {
-      "id": "b-pg-hub",
-      "type": "directions",
-      "anchor": "get-directions",
-      "heading": "h2",
-      "title": "Get Directions",
-      "place": "sac-mhh"
+      "id": "b-pg-how",
+      "type": "program",
+      "variant": "topics",
+      "program": "peer",
+      "title": "What a Group Is Like",
+      "lead": "Free, student-led peer support for enrolled UW–Madison students.",
+      "topics": [
+        {
+          "term": "Why",
+          "text": "Peer Support Groups give you a steady space to be heard, to listen, and to connect with fellow students who understand what it means to thrive at UW."
+        },
+        {
+          "term": "What",
+          "text": "Groups include a short check-in and an activity, with room for conversation. You choose what to share."
+        },
+        {
+          "term": "How",
+          "text": "Come as you are. Check the current schedule for a group that works for you."
+        }
+      ],
+      "photos": [
+        "m-peer-group-circle"
+      ]
     },
     {
       "id": "b-pg-talk",
@@ -187,30 +190,12 @@
       ]
     },
     {
-      "id": "b-pg-how",
-      "type": "program",
-      "variant": "topics",
-      "program": "peer",
-      "title": "What a Group Is Like",
-      "lead": "Free, student-led peer support for enrolled UW–Madison students.",
-      "topics": [
-        {
-          "term": "Why",
-          "text": "Peer Support Groups give you a steady space to be heard, to listen, and to connect with fellow students who understand what it means to thrive at UW."
-        },
-        {
-          "term": "What",
-          "text": "Groups include a short check-in and an activity, with room for conversation. You choose what to share."
-        },
-        {
-          "term": "How",
-          "text": "Come as you are. Check the current schedule for a group that works for you."
-        }
-      ],
-      "photos": [
-        "m-peer-group-circle"
-      ],
-      "disclosure": "Read What to Expect"
+      "id": "b-pg-hub",
+      "type": "directions",
+      "anchor": "get-directions",
+      "heading": "h2",
+      "title": "Get Directions",
+      "place": "sac-mhh"
     },
     {
       "id": "b-pg-spill",

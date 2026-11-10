@@ -1651,12 +1651,9 @@ await part("FAQ and first visit: keyboard, links and no JavaScript", async () =>
     check(lands, `FAQ ${width}px JS=${javaScriptEnabled}: answer actions land at existing pages and anchors`);
     if (javaScriptEnabled) { await page.goto(BASE + "/about/faq/#%bad"); await sleep(100); }
     await page.goto(BASE + "/join/peer-support-groups/#b-pg-how-details", { waitUntil: "networkidle" });
-    const disclosure = page.locator("#b-pg-how-details");
-    await disclosure.locator("summary").focus();
-    if (await disclosure.getAttribute("open") !== null) await page.keyboard.press("Enter");
-    await page.keyboard.press("Enter");
-    check(await disclosure.getAttribute("open") !== null && await disclosure.locator("ol").isVisible(), `first visit ${width}px JS=${javaScriptEnabled}: expectations open by keyboard`);
-    const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, reflection: document.querySelectorAll("main input, main textarea").length, steps: document.querySelectorAll(".talk ol li").length, room: document.querySelector(".visit-action")?.getAttribute("href") }));
+    const expectations = page.locator("#b-pg-how-details");
+    check(await expectations.evaluate((n) => n.tagName === "OL" && !n.closest("details")) && await expectations.isVisible(), `first visit ${width}px JS=${javaScriptEnabled}: expectations show with no fold to open`);
+    const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, reflection: document.querySelectorAll("main input, main textarea").length, steps: document.querySelectorAll("#b-pg-days .card-steps li").length, room: document.querySelector(".visit-action")?.getAttribute("href") }));
     check(!state.scrolls && !state.reflection && state.steps === 3 && /^\/directions\//.test(state.room || ""), `first visit ${width}px JS=${javaScriptEnabled}: room action, arrival steps and no personal input or overflow`);
     check(!errors.length && !remote.length, `FAQ/first visit ${width}px JS=${javaScriptEnabled}: no script error, and Instagram reached only from the reel's frame`);
     await ctx.close();
@@ -1685,12 +1682,12 @@ await part("first visit: current-room refresh waits for focus and exact end", as
   await page.locator(".visit-action").focus();
   release(); await sleep(200);
   check(await page.locator(".visit-action").getAttribute("href") === "/directions/sac-mhh/", "first visit: a changed-room reply waits while its Directions action has focus");
-  await page.locator("#b-pg-how-details > summary").focus(); await sleep(200);
+  await page.locator("#b-pg-days a.go").first().focus(); await sleep(200);
   check(await page.locator(".visit-action").getAttribute("href") === "/directions/sac-caucus/", "first visit: current-room directions replace the old room once focus leaves");
   await page.locator(".visit-action").focus();
   await page.clock.fastForward(60_000);
   check(await page.locator(".visit-action").isVisible(), "first visit: exact end preserves the focused action until focus leaves");
-  await page.locator("#b-pg-how-details > summary").focus(); await sleep(100);
+  await page.locator("#b-pg-days a.go").first().focus(); await sleep(100);
   check(!await page.locator(".visit-action").isVisible(), "first visit: ended directions disappear after focus leaves");
   await page.locator(".visit-event .ended-tag").evaluate((n, words) => n.before(document.createTextNode(words)), words("schedule.signup.none"));
   const endedRows = [];

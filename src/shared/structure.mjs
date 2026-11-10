@@ -345,7 +345,7 @@ function idsIn(b) {
     ids.add(`${b.anchor || b.id}-${g.id}`);
     ids.add(`${b.anchor || b.id}-${g.id}-h`);
   }
-  if (b.type === "program" && b.disclosure) ids.add(`${b.anchor || b.id}-details`);
+  if (b.type === "program" && (b.disclosure || b.variant === "topics")) ids.add(`${b.anchor || b.id}-details`); // the topics list keeps the id open or folded (program.mjs)
   if (b.type === "expect" && b.disclosure && b.preview) ids.add(`${b.anchor || b.id}-preview`);
   const walk = (n) => {
     if (Array.isArray(n)) { n.forEach(walk); return; }

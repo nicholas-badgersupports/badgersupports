@@ -313,6 +313,7 @@ Reads: `events` · analytics: `page` · photos load lazy
 | `variant` | one of `days`, `activities`, `whole` | **required** |
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
+| `steps` | rows of a term and its text (and, for topics, an optional link) |  |
 | `items` | cards, each with an id, a title, short lines shown in bold (a time, a slogan), one quieter line of text, an optional photo (a library photo or a pasted link), an optional icon shown when there is no photo, and an optional link | **required** |
 | `links` | several links, in order |  |
 | `source` | a named data source (events, wall notes, team, resources) |  |

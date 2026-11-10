@@ -16,10 +16,13 @@ import { rowsBetween, groupByDate, dateParts, timeRange, weekday } from "../even
 import { picture } from "../media.mjs";
 import { eventClass, eventTags } from "../event-status.mjs";
 
+/* How to take part, in order, above a days row: a numbered strip, each step a short title and a line. */
+const steps = (b) => (b.steps?.length ? html`<ol class="card-steps">${b.steps.map((st) => html`<li><strong>${st.term}</strong>${st.text ? html`<span>${st.text}</span>` : ""}</li>`)}</ol>` : "");
+
 export default {
   type: "cards",
   label: "Photo cards",
-  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other" },
+  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", steps: "termlist", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other" },
   data: ["events"],
   refresh: b => b.variant === "days" && b.source === "events",
   analytics: "page",
@@ -29,6 +32,7 @@ export default {
       const groups = groupByDate(rowsBetween(ctx.data.events, ctx.today, 7).filter(r => r.program === (b.program || "peer")));
       return html`<section class="cards cards--days band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
         <h2 id="${b.id}-h">${b.title}</h2>${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+        ${steps(b)}
         ${groups.length ? html`<ul class="card-list">${groups.map(({ date, items }) => {
           const day = dateParts(date, ctx.t);
           const template = (b.items || []).find(it => it.id === ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][weekday(date)]);

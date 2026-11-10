@@ -338,6 +338,10 @@
 .strip-controls svg { width: 18px; height: 18px; }
 .strip-count { font-size: var(--fs-small); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
 
+/* A program feature's one main button, above its quieter go pills. */
+.feature-primary { margin: var(--s4) 0 var(--s3); }
+@media (max-width: 560px) { .feature-primary .btn { width: 100%; justify-content: center; } }
+
 /* topics: a numbered list with a request button, the photo kept small */
 .program--topics .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); grid-template-rows: auto auto 1fr; gap: var(--s4) var(--s6); }
 .program--topics header { grid-column: 1; }
@@ -459,6 +463,13 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* ============ photo cards: the week as four posters, a group's activities as three ============ */
 .cards h2 { color: var(--accent); margin-bottom: var(--s4); }
 .cards .lead { margin: calc(-1 * var(--s2)) 0 var(--s4); font-size: var(--fs-lead); }
+/* How to take part, above the week: three numbered steps on one rule, each a bold title and a line. */
+.card-steps { list-style: none; counter-reset: step; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); margin: 0 0 var(--s5); padding: var(--s4) 0 0; border-top: var(--rule-line); }
+.card-steps li { counter-increment: step; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: var(--s2); align-items: start; }
+.card-steps li::before { content: counter(step); grid-row: span 2; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--accent); color: var(--cream); font: 800 1.15rem/1 var(--font-display); }
+.card-steps strong { font-size: var(--fs-lead); line-height: 1.25; color: var(--accent); }
+.card-steps span { margin-top: .2rem; line-height: 1.5; }
+@media (max-width: 760px) { .card-steps { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } }
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
 .cards--days .card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }

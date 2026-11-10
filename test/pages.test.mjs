@@ -69,16 +69,20 @@ test("Drop in sends a peer support group to its page and anything else to its ro
   assert.ok(drops.some(([, t]) => t !== "Peer support group"), "a non-group event is in the fixture week");
 });
 
-test("the peer support groups page keeps the live page's order: drop in, the week, the Hub, the talk, the activities, why/what/how, Badger SPILL, a request", () => {
+test("the peer support groups page leads with how to join: drop in, the week with its steps, what a group is like (open), the talk, the activities, the Hub, Badger SPILL, a request", () => {
   const page = read("join/peer-support-groups/index.html");
   const ids = [...page.matchAll(/data-block="(b-pg-[a-z]+)"/g)].map((m) => m[1]);
-  // Badger SPILL is the one addition to the live page's order (owner, 20 Oct 2026)
-  assert.deepEqual(ids, ["b-pg-intro", "b-pg-days", "b-pg-hub", "b-pg-talk", "b-pg-activities", "b-pg-how", "b-pg-spill", "b-pg-request", "b-pg-note"]);
+  // what to expect comes before the extras; the Hub directions sit after them, each group card links its own room
+  assert.deepEqual(ids, ["b-pg-intro", "b-pg-days", "b-pg-how", "b-pg-talk", "b-pg-activities", "b-pg-hub", "b-pg-spill", "b-pg-request", "b-pg-note"]);
+  assert.match(block(page, "b-pg-intro"), /<p class="feature-primary"><a href="#b-pg-days" class="btn btn--big">/, "one main action near the top");
+  assert.doesNotMatch(block(page, "b-pg-intro"), /Your First Visit/, "the visit steps live with the week, not in the header");
   assert.match(page, /<section class="directions band is-section" id="get-directions"[^>]*data-block="b-pg-hub">/);
   assert.equal([...page.matchAll(/<h1[ >]/g)].length, 1);
   assert.match(block(page, "b-pg-intro"), /href="[^"]*\/join\/email-list\/?"[^>]*><span class="go-label">Join Our Email List</, "the email list, as the live hero has it (the live page until ours is built)");
 
   const days = block(page, "b-pg-days");
+  assert.equal([...days.matchAll(/<ol class="card-steps">[\s\S]*?<\/ol>/g)].length, 1, "how to join, as numbered steps above the week");
+  assert.equal([...days.match(/<ol class="card-steps">([\s\S]*?)<\/ol>/)[1].matchAll(/<li>/g)].length, 3);
   const cards = [...days.matchAll(/<li class="card has-photo" id="(day-[0-9-]+)">([\s\S]*?)<\/li>/g)];
   assert.deepEqual(cards.map((m) => m[1]), ["day-2026-10-20", "day-2026-10-21", "day-2026-10-22", "day-2026-10-26"]);
   for (const [, id, card] of cards) {
@@ -98,6 +102,8 @@ test("the peer support groups page keeps the live page's order: drop in, the wee
 
   const how = block(page, "b-pg-how");
   for (const w of ["Why", "What", "How"]) assert.match(how, new RegExp(`<strong>${w}</strong>`), w);
+  assert.doesNotMatch(how, /<details/, "what a group is like shows without a fold");
+  assert.match(how, /<ol class="topics" id="b-pg-how-details">/, "and keeps the anchor the FAQ links to");
   assert.match(block(page, "b-pg-request"), /<a href="[^"]*\/request-a-program\/?" class="btn btn--big"/);
   assert.match(block(page, "b-pg-note"), /accessibility@badgersupports\.org/);
   assert.doesNotMatch(block(page, "b-pg-note"), /Requests should be made \d+ days before/);

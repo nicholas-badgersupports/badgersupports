@@ -687,6 +687,25 @@
       "localFile": "workshop-housing-team.jpg"
     },
     {
+      "id": "m-housing-audience",
+      "program": "workshops",
+      "alt": "Students filling the seats of a lecture hall before the Navigating Housing workshop and panel, its welcome slide on the big screen.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 558661,
+      "sha256": "bf5b79afd8bcd5cb9c45c26d7e78cd2376112a6cc65b4316ceeaa0d1b456bf97",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7526.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Navigating Housing workshop, 2026-09-28). Read from the local synced copy, converted from HEIC, rotated, resized to 2400 px and stripped of metadata 2026-11-10; nothing was downloaded.",
+      "compliance": "People pictured from behind and at a distance; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "housing-audience.jpg"
+    },
+    {
       "id": "m-workshop-herald-room",
       "program": "workshops",
       "alt": "Students writing at long tables during a Badger Supports workshop at The Badger Herald.",

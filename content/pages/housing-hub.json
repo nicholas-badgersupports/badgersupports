@@ -21,25 +21,45 @@
       ]
     },
     {
-      "id": "b-hh-intro",
-      "type": "expect",
-      "title": "Thinking about off-campus housing next year?",
-      "body": [
-        "Get a head start on Madison’s early & fast-paced leasing season at a Navigating Housing workshop & panel!"
-      ],
-      "items": [
+      "id": "b-hh-how",
+      "type": "program",
+      "variant": "topics",
+      "program": "workshops",
+      "title": "How It Works",
+      "lead": "Madison’s leasing season starts early and moves fast. Get a head start at a free workshop and panel, led by students.",
+      "topics": [
         {
-          "icon": "pencil",
-          "text": "Free & Drop-in Workshops: No registration necessary!"
+          "term": "Drop In",
+          "text": "Free workshops, no registration needed."
         },
         {
-          "icon": "chat",
-          "text": "Workshop | Q&A Panel w/ Students & Local Housing Professionals"
+          "term": "Learn the Basics",
+          "text": "Budgeting, leases, Madison-specific timelines, common pitfalls, roommates and campus resources."
+        },
+        {
+          "term": "Ask Anything",
+          "text": "A Q&A panel with UW–Madison students and local housing professionals. You can submit questions anonymously."
+        },
+        {
+          "term": "Take the Toolkit",
+          "text": "Clarify your needs and wants, make a plan, and find housing with confidence.",
+          "href": "https://toolkit.badgersupports.org"
         }
       ],
       "photos": [
-        "m-workshop-housing",
         "m-housing-handouts"
+      ],
+      "links": [
+        {
+          "label": "View the Presentation",
+          "href": "https://canva.link/navigatinghousingweb",
+          "icon": "out"
+        },
+        {
+          "label": "Try Before You Sign",
+          "href": "/#w-housing",
+          "icon": "arrow"
+        }
       ]
     },
     {
@@ -54,46 +74,9 @@
       "count": 6
     },
     {
-      "id": "b-hh-cover",
-      "type": "program",
-      "variant": "topics",
-      "program": "workshops",
-      "title": "We’ll Cover",
-      "topics": [
-        {
-          "term": "Budgeting"
-        },
-        {
-          "term": "Leases"
-        },
-        {
-          "term": "Madison-Specific Timelines"
-        },
-        {
-          "term": "Common Pitfalls"
-        },
-        {
-          "term": "Roommates"
-        },
-        {
-          "term": "Campus Resource(s)"
-        },
-        {
-          "term": "& Much More!"
-        }
-      ],
-      "photos": [
-        "m-workshop-herald-room"
-      ],
-      "primary": {
-        "label": "View the Presentation!",
-        "href": "https://canva.link/navigatinghousingweb"
-      }
-    },
-    {
       "id": "b-hh-panel",
       "type": "expect",
-      "title": "Panels Feature",
+      "title": "Who’s on the Panel",
       "flip": true,
       "items": [
         {
@@ -124,6 +107,9 @@
       "photos": [
         "m-workshop-herald-team",
         "m-housing-panel"
+      ],
+      "body": [
+        "Every panel brings together people who know Madison housing from different sides."
       ]
     },
     {
@@ -181,8 +167,9 @@
         }
       ],
       "photos": [
-        "m-housing-tenant-center"
-      ]
+        "m-housing-audience"
+      ],
+      "lead": "Tools to plan, budget and get help, from Badger Supports and our partners."
     },
     {
       "id": "b-hh-more",

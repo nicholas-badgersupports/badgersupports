@@ -36,8 +36,10 @@ export const pageDescription = (page, site) => (page.id === HOME ? site.descript
    instead of a Sign in button that would vanish a moment later; staff.js takes it off, and the
    timer does if staff.js never runs (src/render/blocks/staff.mjs). In that browser it also takes
    code and state off the address and leaves the rest: Netlify puts the sign-in callback's query on
-   the redirect that follows it (netlify/lib/staff.mjs), and a redirect cannot take it off again. */
-export const INLINE_JS = "var d=document.documentElement;d.classList.add('js');if(/(?:^|; )bss_staff_hint=1(?:;|$)/.test(document.cookie)){d.classList.add('staff-hint');setTimeout(function(){d.classList.remove('staff-hint')},8000);var u=new URL(location.href),p=u.searchParams;if(p.has('code')&&p.has('state')){p.delete('code');p.delete('state');history.replaceState(history.state,'',u.href)}}";
+   the redirect that follows it (netlify/lib/staff.mjs), and a redirect cannot take it off again. On the
+   resources page an address that carries a topic, search or filter adds res-pre, which reserves the chip
+   row while resources.js loads (src/styles/blocks.css). */
+export const INLINE_JS = "var d=document.documentElement;d.classList.add('js');if(/(?:^|; )bss_staff_hint=1(?:;|$)/.test(document.cookie)){d.classList.add('staff-hint');setTimeout(function(){d.classList.remove('staff-hint')},8000);var u=new URL(location.href),p=u.searchParams;if(p.has('code')&&p.has('state')){p.delete('code');p.delete('state');history.replaceState(history.state,'',u.href)}}var r=location.pathname;if((r==='/resources/'||r==='/resources')&&/[?&](?:topic|q|cost|where|how)=[^&]/.test(location.search))d.classList.add('res-pre');";
 
 function navItem(ctx, item, currentPath) {
   if (item.children) {

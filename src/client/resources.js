@@ -5,7 +5,9 @@
    ?how=), so a link opens the same list; an old address word for a topic (?topic=health) opens that
    topic, and an unknown one shows everything. Within a filter group any pressed option matches; across
    groups every group must. What is in use shows as chips that each remove themselves, beside Clear All.
-   On a phone the filters fold behind More Filters, which counts the ones pressed. */
+   On a phone the filters fold behind More Filters, which counts the ones pressed, and stay folded when an address
+   presses some: the chips already show them. The chips are one row that slides, so the row is one height however many
+   are in use; the page's inline script reserves it for an address that carries a filter, so the list does not move. */
 
 import { t } from "./text.js";
 
@@ -104,7 +106,6 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   topic = (want && buttons.find((b) => b.dataset.topic === want || (b.dataset.aliases || "").split(" ").includes(want))?.dataset.topic) || "";
   input.value = params.get("q") || "";
   for (const g of GROUPS) for (const v of (params.get(g) || "").split(",")) if (fbuttons.some((b) => b.dataset.fgroup === g && b.dataset.fopt === v)) pressed[g].add(v);
-  if (ftoggle && GROUPS.some((g) => pressed[g].size)) { ftoggle.setAttribute("aria-expanded", "true"); fpanel?.classList.add("is-open"); }
   tools.hidden = false;
   apply();
   /* On a phone the topics are one sliding row: bring a topic the address chose into sight. */

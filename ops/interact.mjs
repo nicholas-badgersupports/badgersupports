@@ -305,6 +305,11 @@ await part("Other answer fields at phone and desktop widths", async () => {
       if (branch) await page.locator(`input[name="category"][value="${branch}"]`).check();
       if (js) for (const control of await page.locator('input[value="__other"]').all()) if (await control.isVisible()) await control.check();
       const inputs = await page.locator("input.other-text:visible").all();
+      // Without JavaScript a form that uploads a PDF gives its other way in instead of its questions.
+      if (!js && !inputs.length && await page.locator("form.has-uploads").count()) {
+        check(await page.getByRole("heading", { name: words("form.upload.alternativeTitle") }).isVisible(), `Other input no JS @${width} ${path}: the upload form gives its other way in`);
+        await ctx.close(); continue;
+      }
       let fits = inputs.length > 0;
       for (const input of inputs) {
         await input.fill("An example Other answer");
@@ -324,9 +329,16 @@ await part("folded help", async () => {
   for (const js of [true, false]) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: js });
     const page = await ctx.newPage();
-    await page.goto(BASE + PAGE, { waitUntil: "networkidle" });
+    // The volunteer form keeps folded help in its intro; the staff form shows its text open, as the live form does.
+    await page.goto(BASE + "/forms/volunteer-application/", { waitUntil: "networkidle" });
     const folds = await page.evaluate(() => [...document.querySelectorAll("details.prose-more")].map((d) => d.open));
     check(folds.length > 0 && folds.every((o) => !o), `${js ? "" : "no JavaScript: "}${folds.length} folds, all closed until asked for`);
+    // Without JavaScript this form uploads PDFs, so its questions (and their folds) give way to the contact alternative.
+    if (!js) {
+      check(await page.getByRole("heading", { name: words("form.upload.alternativeTitle") }).isVisible() && !(await page.locator("form.bss-form").isVisible()),
+        "no JavaScript: the upload form shows its contact alternative instead of folds it could not send");
+      await ctx.close(); continue;
+    }
     const first = page.locator("details.prose-more > summary").first();
     if (js) {
       await first.focus();
@@ -785,8 +797,11 @@ await part("staff page: answers the account may no longer read", async () => {
 
 await part("staff page: Open and Close a form", async () => {
   await freshServer();
+  // Forms ship open; a director closed this one earlier, so the run starts from a closed switch row.
+  await q("INSERT INTO form_state (form_key, state, changed_by) VALUES ('resource-problem', 'closed', 'fixture')");
   const { ctx, page, errors } = await openStaff({ session: ["forms.switch:resource-problem"] });
   const rows = async () => (await q("SELECT state FROM form_state WHERE form_key = 'resource-problem'")).rows.map((r) => r.state);
+  const untouched = async () => (await rows()).join() === "closed";
   const card = () => page.evaluate(() => {
     const li = document.querySelector(".staff-form");
     return { chip: li?.querySelector(".staff-chip")?.textContent, buttons: [...(li?.querySelectorAll(".staff-switch button") || [])].map((b) => b.textContent),
@@ -797,11 +812,11 @@ await part("staff page: Open and Close a form", async () => {
     `staff switch: someone who may only switch a form sees it closed, with Open and no answers (${JSON.stringify(first)})`);
   await page.getByRole("button", { name: words("staff.switch.open") }).click();
   const asked = await card();
-  check(asked.buttons.join("|") === `${words("staff.switch.yes")}|${words("staff.switch.cancel")}` && asked.focus === words("staff.switch.yes") && !(await rows()).length,
+  check(asked.buttons.join("|") === `${words("staff.switch.yes")}|${words("staff.switch.cancel")}` && asked.focus === words("staff.switch.yes") && await untouched(),
     `staff switch: Open asks again first, with the yes focused, and sends nothing (${JSON.stringify(asked)})`);
   await page.getByRole("button", { name: words("staff.switch.cancel") }).click();
   const kept = await card();
-  check(kept.buttons.join("|") === words("staff.switch.open") && kept.focus === words("staff.switch.open") && !(await rows()).length, `staff switch: Keep It Closed puts Open back, focused (${JSON.stringify(kept)})`);
+  check(kept.buttons.join("|") === words("staff.switch.open") && kept.focus === words("staff.switch.open") && await untouched(), `staff switch: Keep It Closed puts Open back, focused (${JSON.stringify(kept)})`);
   await page.getByRole("button", { name: words("staff.switch.open") }).click();
   await page.getByRole("button", { name: words("staff.switch.yes") }).click();
   await page.waitForFunction((w) => document.querySelector(".staff-form .staff-chip")?.textContent === w, words("staff.forms.state.open"));
@@ -1187,7 +1202,8 @@ const resState = (page) => page.evaluate(() => ({
 
 await part("resources: startup space and no-JavaScript recovery", async () => {
   for (const width of [320, 390, 768]) {
-    for (const query of ["", "?topic=housing&q=housing"]) {
+    // An address with filters shows its chips at once; their row is reserved before resources.js runs, so the list stays put.
+    for (const query of ["", "?topic=housing&q=housing", "?where=onCampus&how=online&topic=mental-health&q=counseling"]) {
       const ctx = await browser.newContext({ viewport: { width, height: 844 } });
       const page = await ctx.newPage();
       let release;
@@ -2044,6 +2060,8 @@ await part("all native forms", async () => {
         const response = await handle(new Request(r.url(), { method: r.method(), headers: r.headers(), ...(["GET", "HEAD"].includes(r.method()) ? {} : { body: bytes }) }), { ip: "192.0.2.140" });
         await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
       });
+      // Forms ship open; each is closed by its switch here, so its closed page is the one checked.
+      for (const key of added) await setSwitch(key, "closed", "fixture");
       for (const key of added) {
         await page.goto(BASE + `/forms/${key}/`, { waitUntil: "networkidle" });
         check(await page.locator("main h1").count() === 1 && await page.locator("form.bss-form").count() === 0 && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `native ${key} ${width}px JS=${javaScriptEnabled}: closed production page is readable without overflow`);
@@ -2081,12 +2099,18 @@ await part("editable native form settings", async () => {
       await card.locator("summary").click();
       await card.locator('[id$="-opensAt"]').fill("2099-01-01T12:00");
       await card.locator('[id$="-deadline"]').fill("2099-01-08T12:00");
+      // The hiring forms ship with a stop time (18 Dec); a later start needs a later stop or the save is refused.
+      await card.locator('[id$="-closesAt"]').fill("2099-02-01T12:00");
       await card.locator('[id$="-title"]').fill("Fictional Staff Application");
       await card.getByRole("button", { name: "Save Form Settings", exact: true }).click();
       await card.getByRole("heading", { name: /Fictional Staff Application/ }).waitFor();
       await page.reload({ waitUntil: "networkidle" }); card = page.locator('[data-form-card="staff-application"]');
       await card.locator("summary").click();
       check(await card.locator('[id$="-opensAt"]').inputValue() === "2099-01-01T12:00" && await card.locator('[id$="-deadline"]').inputValue() === "2099-01-08T12:00", `form settings ${width}px: dates and wording persist without a website build`);
+      // Forms ship open, so a saved future start shows Scheduled straight away; close, then open again through the confirm.
+      await card.getByText("Scheduled", { exact: true }).waitFor();
+      await card.getByRole("button", { name: /^Close/, exact: false }).click();
+      await card.getByText("Closed", { exact: true }).waitFor();
       await card.getByRole("button", { name: /^Open/, exact: false }).click();
       await card.getByRole("button", { name: "Yes, Open It", exact: true }).click();
       await card.getByText("Scheduled", { exact: true }).waitFor();
@@ -2267,6 +2291,11 @@ await part("form setup wizard", async () => {
       await w.locator("#setup-form").selectOption("staff-application"); await w.getByRole("button", { name: "Next", exact: true }).click();
       check(await w.locator("input,textarea").count() === 0, "setup switcher: wording stays read-only");
       await w.getByRole("button", { name: "Next", exact: true }).click(); await w.locator("#setup-state").selectOption("open"); await w.locator('[id$="-opensAt"]').fill("2099-01-01T12:00");
+      // The shipped stop time comes before that start: the save is refused, the dates step returns with the entries, and nothing opens.
+      await w.getByRole("button", { name: "Next", exact: true }).click(); await w.getByRole("button", { name: "Save and Open Form", exact: true }).click();
+      await w.locator('[role="alert"]:not([hidden])').waitFor();
+      check(await w.locator('[id$="-opensAt"]').inputValue() === "2099-01-01T12:00" && (await one("SELECT count(*)::int AS n FROM form_state")).n === 0 && (await one("SELECT count(*)::int AS n FROM form_settings_history")).n === 0, "setup switcher: a start after the shipped stop time is refused, keeps the entry and opens nothing");
+      await w.locator('[id$="-closesAt"]').fill("2099-02-01T12:00");
       await w.getByRole("button", { name: "Next", exact: true }).click(); await w.getByRole("button", { name: "Save and Open Form", exact: true }).click(); await w.getByRole("button", { name: "View Form Settings", exact: true }).waitFor();
       check((await currentForm("staff-application")).stateReason === "scheduled", "setup switcher: future opening is saved as scheduled, not falsely shown accepting now");
     } finally { await ctx.close(); }

@@ -160,7 +160,7 @@ export default {
       <button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="${b.id}-filters" data-res-ftoggle>${ctx.t("resources.filters.toggle")}<span class="res-fcount" data-res-fcount hidden></span>${icon("down", "res-ftoggle-ic")}</button>
       <div class="res-filter-panel" id="${b.id}-filters" data-res-fpanel>${groups.map((g) => html`<div class="res-fgroup" role="group" aria-labelledby="${b.id}-f-${g.id}"><p class="res-flabel" id="${b.id}-f-${g.id}">${ctx.t(g.label)}</p><div class="res-fopts">${g.options.map((o) => html`<button type="button" class="res-topic-btn res-fopt" aria-pressed="false" data-fgroup="${g.id}" data-fopt="${o}">${ctx.t(g.key(o))}</button>`)}</div></div>`)}</div>
     </div>` : ""}
-    <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>
+    <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips><li aria-hidden="true"><span class="res-chip res-chip-ph">&nbsp;</span></li></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>
   </div>
   <div class="res-status" aria-live="polite"><p class="res-count" data-res-count>${n === 1 ? ctx.t("resources.count.one") : ctx.t("resources.count.all", { n })}</p><p class="res-relaxed" data-res-relaxed hidden>${ctx.t("resources.relaxed")}</p></div>
   <ul class="res-list">${list.map((r) => card(r, ctx, topicOf))}</ul>

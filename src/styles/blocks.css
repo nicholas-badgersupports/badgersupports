@@ -1388,18 +1388,23 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-fgroup { display: grid; gap: var(--s1); }
 .res-flabel { margin: 0; font-size: var(--fs-small); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .res-fopts { display: flex; flex-wrap: wrap; gap: var(--s1); }
-.res-active { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3); background: var(--accent-tint); border-radius: var(--r-card); }
+.res-active { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "label chips clear"; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3); background: var(--accent-tint); border-radius: var(--r-card); }
 .res-active[hidden] { display: none; }
-.res-active-label { margin: 0; font-weight: 700; }
-.res-chips { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s1); margin: 0; padding: 0; }
-.res-chip { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; padding: .3rem .85rem; border: 2px solid var(--accent); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; }
+/* An address with a filter: the row's space is held, unseen, until resources.js fills it. */
+.res-pre .res-tools[hidden] .res-active[hidden] { display: grid !important; }
+.res-active-label { grid-area: label; margin: 0; font-weight: 700; }
+/* One sliding row, so the bar keeps one height however many chips are in use; positioned, so the chips' screen-reader words stay inside it and the page never scrolls sideways. */
+.res-chips { grid-area: chips; position: relative; list-style: none; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: var(--s1); margin: 0; padding: 2px; scrollbar-width: thin; }
+.res-chips > li { flex: none; }
+.res-chip-ph { visibility: hidden; }
+.res-chip { display: inline-flex; align-items: center; white-space: nowrap; gap: .4rem; min-height: 44px; padding: .3rem .85rem; border: 2px solid var(--accent); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; }
 .res-chip::after { content: "×"; font-size: 1.2em; line-height: 1; color: var(--accent); }
 .res-chip:hover { background: var(--cream); }
-.res-clearall { margin-left: auto; }
+.res-clearall { grid-area: clear; justify-self: end; }
 @media (max-width: 760px) {
   .res-filter-toggle { display: inline-flex; }
   .res-filter-panel:not(.is-open) { display: none; }
-  .res-clearall { margin-left: 0; }
+  .res-active { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "label clear" "chips chips"; }
 }
 .res-search { max-width: var(--measure); }
 .res-search label { display: block; font-weight: 700; }

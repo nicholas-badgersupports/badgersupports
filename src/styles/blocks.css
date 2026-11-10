@@ -841,6 +841,10 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* ============ text: a titled section puts its heading beside the words, as questions do ============ */
 .text-block h1 { font-size: var(--fs-page); color: var(--accent); margin-bottom: var(--s4); }
 .text-block h2 { margin-bottom: var(--s3); }
+/* a legal document from Connect: many headings in one column, each with room above it */
+.legal-doc .text-body h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); line-height: 1.25; margin: var(--s5) 0 var(--s3); }
+.legal-doc .text-body h2:first-child { margin-top: 0; }
+.legal-doc .legal-version { margin-top: var(--s5); }
 .text-block.has-side .wrap { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: var(--s3) var(--s6); align-items: start; }
 .text-block.has-side .text-body { padding-top: var(--s2); border-top: var(--rule-line); }
 /* the side column is 20rem at most: its heading is sized so the longest word fits whole */

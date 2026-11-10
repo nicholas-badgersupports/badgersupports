@@ -73,6 +73,7 @@ export function ingestPayload(sub, def) {
     columns,
     answers,
     ...(sub.form_key === "recommendation-letter" && sub.context && Object.hasOwn(sub.context, "hiringCycleId") ? { context: hiringContext(sub.form_key, { _cycle: sub.context.hiringCycleId }) } : {}),
+    ...(Array.isArray(sub.context?.agreements) && sub.context.agreements.length ? { agreements: sub.context.agreements } : {}),
     ...(Object.keys(optionIds).length ? { optionIds } : {}),
     ...(files.length ? { files } : {}),
   };
@@ -137,7 +138,11 @@ async function ingest(cfg, opts) {
       const data = new Map(uploads.map(u => [u.file_id, u.data]));
       const result = await deliverForm(cfg, payload, { readFile: id => data.get(id), deadline });
       if (await sent(row, token, { to: "connect", files: result.files.length }, result.files)) n++;
-    } catch (e) { await failed(row, token, e); bad++; }
+    } catch (e) {
+      // Connect refuses an agreement to a document published again after Send. The row waits, named, for a director:
+      // it is never resent as agreeing to words the person did not see.
+      await failed(row, token, e?.reply?.outOfDate === true ? { code: "agreement.out-of-date" } : e); bad++;
+    }
   }
   // Work not started within this invocation's budget remains due for the next run.
   await q("UPDATE outbox SET claim_until = NULL, claim_token = NULL WHERE claim_token = $1", [token]);

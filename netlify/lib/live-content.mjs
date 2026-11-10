@@ -8,6 +8,7 @@ import { mapResources, mapWall, WALL_EXPORT } from '../../ops/connect-feed.mjs';
 import { serverContent } from './content.mjs';
 import { teamNow, teamPhoto } from "./live-team.mjs";
 import { alumniNow } from "./alumni-history.mjs";
+import { legalNow } from "./legal.mjs";
 
 export const SHARED_FRESH_MS = 60_000;
 export const WALL_FALLBACK_MS = 30 * 60_000;
@@ -78,10 +79,11 @@ export function combineShared(...parts) {
 
 export async function sharedNow(snap, { now = Date.now(), kinds = ['team', 'resources', 'wall'] } = {}) {
   if (snap?.prototype || snap?.shared?.source !== 'connect') return null;
-  const wanted = kinds.filter(k => (k === 'alumni' || k === 'team' || SPECS[k]) && (k === 'alumni' || k === 'resources' || snap.shared.exports?.[k] === true));
+  const wanted = kinds.filter(k => (k === 'alumni' || k === 'legal' || k === 'team' || SPECS[k]) && (k === 'alumni' || k === 'legal' || k === 'resources' || snap.shared.exports?.[k] === true));
   const token = wanted.some(k => SPECS[k]) ? await tokenNow() : undefined;
   const entries = await Promise.all(wanted.map(async kind => {
     if (kind === 'alumni') return [kind, await alumniNow(snap.alumniSource)];
+    if (kind === 'legal') return [kind, { value: await legalNow({ now }), stale: false, unavailable: false }];
     if (kind !== 'team') return [kind, await oneCatalogue(snap, kind, now, token)];
     try { return [kind, { value: await teamNow(), stale: false, unavailable: false }]; }
     catch (e) {

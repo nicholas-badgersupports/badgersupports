@@ -17,6 +17,11 @@
       ]
     },
     {
+      "id": "b-pp-legal",
+      "type": "legal",
+      "doc": "privacy-policy"
+    },
+    {
       "id": "b-pp-consent",
       "type": "text",
       "title": "1. Consent",

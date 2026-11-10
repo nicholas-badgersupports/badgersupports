@@ -34,9 +34,22 @@ export function siteSnapshot({ floor, builtEdits = {}, textRegistry, textEdits =
    blocks that read `places`, and the room names the event lists carry (`places`, `data`, `roomIds`).
    Without a revision, use the words the build applied. A supplied map is authoritative, including an empty
    map after Restore, so the source floor remains available. */
+/* A page holding a legal block whose document Connect has published shows its head's title and that document only:
+   the page's own words are the fallback for while nothing is published, never a second version beside it. */
+function withLegal(pages, legal) {
+  if (!legal || !Object.keys(legal).length) return pages;
+  return pages.map((p) => {
+    const blocks = p.blocks || [];
+    if (!blocks.some((b) => b.type === "legal" && legal[b.doc])) return p;
+    // The head keeps its title only: its lead and words belong to the site's own version (an effective date, say).
+    const head = (b) => { const { lead, body, ...rest } = b; return rest; };
+    return { ...p, blocks: blocks.filter((b) => b.type === "pagehead" || (b.type === "legal" && legal[b.doc])).map((b) => (b.type === "pagehead" ? head(b) : b)) };
+  });
+}
+
 export function composeSite(snap, edits = snap.builtEdits || {}, structure = null, shared = null) {
   const team = shared?.team?.value || snap.team;
-  const liveData = { ...snap.data, ...(shared?.events ? { events: shared.events.value, eventsState: shared.events } : {}), ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}), ...(shared?.alumni ? { alumni: shared.alumni.value, alumniState: shared.alumni.state } : {}) };
+  const liveData = { ...snap.data, ...(shared?.events ? { events: shared.events.value, eventsState: shared.events } : {}), ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}), ...(shared?.alumni ? { alumni: shared.alumni.value, alumniState: shared.alumni.state } : {}), ...(shared?.legal ? { legal: shared.legal.value || {} } : {}) };
   const site = laySettings(structuredClone(snap.floor.site), structure?.settings);
   const made = Object.values(structure?.pages || {}).filter((r) => r.page).map((r) => structuredClone(r.page));
   const authored = [...structuredClone(snap.floor.pages), ...made];
@@ -49,7 +62,7 @@ export function composeSite(snap, edits = snap.builtEdits || {}, structure = nul
   const data = places === snap.places ? liveData : { ...liveData, places, events: withRoomPlaces(liveData.events, places, roomIds) };
   const every = [...authored, ...placePages(places, t), ...personPages(team, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
   const laid = layStructure(structure, { site, pages: every });
-  const pages = laid.pages;
+  const pages = withLegal(laid.pages, liveData.legal);
   const builtPaths = structure || shared?.team ? [...new Set([...(snap.builtPaths || []).filter(p => !shared?.team || !p.startsWith("/about/our-team/") || p === "/about/our-team/"), ...pages.map((p) => p.path).filter(Boolean)])] : snap.builtPaths;
   return {
     site, pages, drafts: laid.drafts, retired: laid.retired, moves: laid.moves, offMenu: laid.offMenu, all: [...pages, ...laid.drafts, ...laid.retired],

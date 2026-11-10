@@ -677,6 +677,16 @@
       "text": "Tick the box to continue.",
       "where": "A box that must be ticked."
     },
+    "form.error.agreementOutOfDate": {
+      "group": "forms",
+      "text": "These words changed after you opened the page. Read the current version, then tick the box again.",
+      "where": "Beside an agreement box when the document was published again before Send."
+    },
+    "form.agree.read": {
+      "group": "forms",
+      "text": "Read the {{title}}",
+      "where": "The fold-out holding a legal document's words above its agreement box on a form."
+    },
     "form.error.other": {
       "group": "forms",
       "text": "Check this answer.",
@@ -2964,6 +2974,16 @@
       "group": "alumni",
       "text": "Alumni history could not be loaded. Please try again later or email us.",
       "where": "History source is temporarily unavailable; never a claim that no alumni exist."
+    },
+    "legal.version": {
+      "group": "page",
+      "text": "Version {{n}}.",
+      "where": "Under a legal document published in Connect, when its publish date is unknown."
+    },
+    "legal.versionDated": {
+      "group": "page",
+      "text": "Version {{n}}, published {{date}}.",
+      "where": "Under a legal document published in Connect (the privacy policy)."
     },
     "schedule.happening": {
       "group": "home",

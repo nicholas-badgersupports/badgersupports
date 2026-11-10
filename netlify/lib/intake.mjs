@@ -13,10 +13,12 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { fileRecords, claimFiles } from "./files.mjs";
 import { definitionFor } from "./deliver.mjs";
-import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources, hiringContext } from "../../src/shared/forms.mjs";
+import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources, hiringContext, AGREE_VALUE_RE } from "../../src/shared/forms.mjs";
 import { sharedNow } from "./live-content.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 import { readFormSettings, effectiveForm } from "./form-settings.mjs";
+import { wordedForm } from "./form-wording.mjs";
+import { legalNow } from "./legal.mjs";
 
 const REF_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const IDEM_RE = /^[A-Za-z0-9-]{8,64}$/;
@@ -24,7 +26,7 @@ const IDEM_RE = /^[A-Za-z0-9-]{8,64}$/;
 const sha256 = (s) => crypto.createHash("sha256").update(s).digest("hex");
 
 /* The form as it stands: the newest definition (published from Connect, or the shipped file if
-   that is newer), then its switch. A form switched open that has no questions stays closed —
+   that is newer), its words as changed in Connect (form-wording.mjs), then its switch. A form switched open that has no questions stays closed —
    an application cannot open by accident before it has been written. Once a switch row exists the
    launch build's link to the Google Form (`elsewhere`) is dropped: a form a director closed is
    closed, with its own message. The pages draw forms from this too (pages.mjs). */
@@ -35,6 +37,9 @@ export async function currentForm(key, { now = Date.now() } = {}) {
   let def = shipped;
   if (published && (!shipped || published.definition.version > shipped.version)) def = published.definition;
   if (!def) return null;
+  // Connect's changed words, before the site's own form settings, which still win for title, introduction and closing.
+  def = await wordedForm(def, { now });
+  if (allQuestions(def).some(({ q }) => q.type === "agree")) def = withAgreements(def, await legalNow({ now: Number(now) }));
   if (Array.isArray(def.sections) && def.sections.some(s => Array.isArray(s.questions) && s.questions.some(q => q.type === "resource"))) {
     const live = await sharedNow(serverContent().render, { kinds: ["resources"] });
     if (live?.resources) def = withResources(def, live.resources.value.resources);
@@ -43,11 +48,38 @@ export async function currentForm(key, { now = Date.now() } = {}) {
   const sw = await one("SELECT state, closed_message FROM form_state WHERE form_key = $1", [key]);
   if (sw && def.elsewhere) { const { elsewhere, ...own } = def; def = own; }
   const manualState = sw ? sw.state : def.state;
-  const unavailable = !allQuestions(def).length || allQuestions(def).some(({ q }) => q.type === "resource" && !q.resources?.length);
+  // A form asking for agreement to a document Connect has not published (or cannot be read) does not open.
+  const unavailable = !allQuestions(def).length || allQuestions(def).some(({ q }) => (q.type === "resource" && !q.resources?.length) || (q.type === "agree" && !q.current));
   const settings = await readFormSettings(key);
   const result = effectiveForm(def, settings, manualState, now);
   if (result.state === "open" && unavailable) { result.state = "closed"; result.stateReason = "unavailable"; }
   return { ...result, closedMessage: settings.closedMessage ?? (sw && sw.closed_message) ?? def.closedMessage };
+}
+
+/* Each agreement question with its document's current version laid on, as `current`, on a copy. */
+function withAgreements(def, legal) {
+  const out = structuredClone(def);
+  for (const { q } of allQuestions(out)) if (q.type === "agree") {
+    const d = legal?.[q.doc];
+    if (d) q.current = { title: d.title, version: d.version, sha256: d.sha256, words: d.words };
+    else delete q.current;
+  }
+  return out;
+}
+
+/* What the person agreed to, checked against the versions on the form now. Returns { errors, agreements } and takes
+   the agreement values out of answers: they travel as the submission's agreements, not as answers. */
+function agreementsOf(def, answers) {
+  const errors = {}, agreements = [];
+  for (const { q } of allQuestions(def)) {
+    if (q.type !== "agree" || !Object.hasOwn(answers, q.id)) continue;
+    const m = AGREE_VALUE_RE.exec(answers[q.id]);
+    delete answers[q.id];
+    if (!m) continue;
+    if (!q.current || Number(m[1]) !== q.current.version || m[2] !== q.current.sha256) errors[q.id] = "agreement-out-of-date";
+    else agreements.push({ doc: q.doc, version: q.current.version, sha256: q.current.sha256 });
+  }
+  return { errors, agreements };
 }
 
 /* A form's switch, set from the staff page (router.mjs, formSwitch). `by` is the Connect id of whoever
@@ -80,7 +112,7 @@ const field = (input, k) => (typeof input?.get === "function" ? input.get(k) : i
 export function answersForPerson(def, raw) {
   const rows = [];
   for (const { q } of allQuestions(def)) {
-    if (q.type === "file") continue;
+    if (q.type === "file" || q.type === "agree") continue;
     let v = raw[q.id];
     if (q.type === "rank" || q.type === "links") v = v == null ? [] : answerWords(q, v).filter(Boolean);
     if (v == null || v === "" || (Array.isArray(v) && !v.length)) continue;
@@ -124,6 +156,9 @@ export async function submit(key, input, { now = new Date() } = {}) {
 
   const versionSeen = Number(field(input, "_version")) || null;
   const check = validateAnswers(def, raw);
+  const agreed = agreementsOf(def, check.answers);
+  if (Object.keys(agreed.errors).length) Object.assign(check, { ok: false, errors: { ...check.errors, ...agreed.errors } });
+  if (agreed.agreements.length) context.agreements = agreed.agreements;
   if (!check.ok) return { ok: false, error: "answers.invalid", errors: check.errors, version: def.version, versionSeen, def, raw, context, gone: await leftBehind(def, versionSeen, input) };
 
   // The browser sends one key per filled-in form. Without JavaScript there is none, so the key

@@ -530,7 +530,7 @@ export async function build({ production = false, launch = production, today = n
   const assets = { css: `/assets/css/${cssName}`, js };
 
   const data = {
-    alumni: content.alumni, alumniState: content.alumniState,
+    alumni: content.alumni, alumniState: content.alumniState, legal: {},
     events: content.events, eventsState: null,
     wallNotes: content.wall.notes,
     wallSample: content.wall.fixture ? content.wall.label : null,

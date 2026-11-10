@@ -88,6 +88,7 @@ export async function formTags(key) {
 const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l.indexOf(":"); return [l.slice(0, i).toLowerCase(), l.slice(i + 1).trim()]; }));
 const showsTeam = page => page?.blocks?.some(b => b.type === "team" || b.type === "person");
 const showsAlumni = page => page?.blocks?.some(b => b.type === "alumni");
+const showsLegal = page => page?.blocks?.some(b => b.type === "legal");
 const showsEvents = page => page?.blocks?.some(refreshes);
 const teamPath = pathname => pathname === "/about/our-team" || pathname.startsWith("/about/our-team/");
 const PRIVATE_FAILURE = { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store", "retry-after": "60" };
@@ -142,6 +143,10 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
       site = siteFor(snap, revision, shared);
       if (showsAlumni(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))) {
         shared = combineShared(shared, await sharedNow(snap, { kinds: ["alumni"] }));
+        site = siteFor(snap, revision, shared);
+      }
+      if (showsLegal(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))) {
+        shared = combineShared(shared, await sharedNow(snap, { kinds: ["legal"], now }));
         site = siteFor(snap, revision, shared);
       }
       wantsTeam ||= !!(snap?.shared?.exports?.team && (teamPath(pathname) || showsTeam(site.pages.find(p => (p.file ? `/${p.file}` : p.path) === pathname))));
@@ -218,6 +223,10 @@ export async function previewResponse(pageId, { edits, structure, today = chicag
     const candidate = [...site.pages, ...site.drafts].find(p => p.id === pageId);
     if (showsAlumni(candidate)) {
       shared = combineShared(shared, await sharedNow(c.render, { kinds: ["alumni"] }));
+      site = composeSite(c.render, edits, structure, shared);
+    }
+    if (showsLegal(candidate)) {
+      shared = combineShared(shared, await sharedNow(c.render, { kinds: ["legal"], now }));
       site = composeSite(c.render, edits, structure, shared);
     }
     wantsTeam ||= !!(c.render.shared?.exports?.team && !c.render.prototype && (pageId.startsWith("pg-person-") || showsTeam(candidate)));

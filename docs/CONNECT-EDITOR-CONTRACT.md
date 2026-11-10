@@ -397,6 +397,14 @@ Reads: `alumni`, `alumniState` · analytics: `none` · photos load lazy
 | `lead` | one line of text |  |
 | `contact` | a label and an address (a page on this site, Connect, or another site), and an optional icon | **required** |
 
+### Legal document from Connect — `legal`
+
+Reads: `legal` · analytics: `none` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `doc` | one line of text | **required** |
+
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
@@ -490,6 +498,7 @@ may show only when an earlier answer holds, and a workflow (Connect queue, owner
 | `rank` | select | yes |  |
 | `file` | file |  | one PDF, 3 MB |
 | `resource` | select | the site's resource list |  |
+| `agree` | checkbox |  |  |
 
 A question has an `id`, a `type`, a `label` and may have:
 
@@ -517,10 +526,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-678 keys. Keys are permanent. Required text cannot be published empty and must keep each
+682 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (16)
+### Every page (18)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -540,6 +549,8 @@ the site adds the markup.
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
 | `media.linkAlt` | A photo from a Badger Supports event. | Read aloud for a pasted photo link that has no description of its own |  |
+| `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
+| `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
 ### Homepage sections (30)
 
@@ -669,7 +680,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (80)
+### Forms (82)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -714,6 +725,8 @@ the site adds the markup.
 | `form.error.dateShape` | Enter a date. | A date question with no real date. |  |
 | `form.error.datetimeShape` | Enter a date and a time. | A date-and-time question missing one. |  |
 | `form.error.confirmNeeded` | Tick the box to continue. | A box that must be ticked. |  |
+| `form.error.agreementOutOfDate` | These words changed after you opened the page. Read the current version, then tick the box again. | Beside an agreement box when the document was published again before Send. |  |
+| `form.agree.read` | Read the {{title}} | The fold-out holding a legal document's words above its agreement box on a form. | `{{title}}` |
 | `form.error.other` | Check this answer. | Any other problem with an answer. |  |
 | `form.rankLabel` | {{option}}: rank | The name of each drop-down in a ranking question, read by screen readers. {{option}} is the row it ranks. | `{{option}}` |
 | `form.error.requiredFile` | Upload a PDF for “{{label}}”. | A required file left empty. | `{{label}}` |

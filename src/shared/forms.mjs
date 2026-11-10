@@ -50,7 +50,14 @@ export const QUESTION_TYPES = {
      the build from the list the resource viewer shows (withResources), never typed into the file,
      so the form and the viewer always offer the same resources. The answer is the resource's id. */
   resource:   { input: "select",         list: true },
+  /* Agreement to one legal document published in Connect (netlify/lib/legal.mjs). `doc` names it; the server lays
+     its current { title, version, sha256, words } on the question as `current` before drawing or checking. The box's
+     value is "<version>:<sha256>", so a Send names the exact words shown. It is carried with the submission as an
+     agreement, never kept as an answer. */
+  agree:      { input: "checkbox" },
 };
+export const LEGAL_DOC_RE = /^[a-z0-9][a-z0-9-]{0,59}$/;
+export const AGREE_VALUE_RE = /^([1-9][0-9]{0,8}):([0-9a-f]{64})$/;
 
 /* What Connect keeps as a suggestion's resource id (its suggestionFields()), so no id Connect
    exports is refused here and none it would cut short is sent. */
@@ -59,7 +66,7 @@ export const RESOURCE_ID_RE = /^[A-Za-z0-9_-]{1,120}$/;
 export const LINK_MAX = 2000;
 export const FILE_ID_RE = /^[A-Za-z0-9_-]{32}$/;
 /* Types whose answer is not one value a condition could test. */
-const UNCONDITIONAL = new Set(["links", "rank", "file", "resource"]);
+const UNCONDITIONAL = new Set(["links", "rank", "file", "resource", "agree"]);
 
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]{1,64}@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -171,6 +178,12 @@ export function definitionProblems(def) {
       if (q.type === "rank" && (q.options || []).length < 2) add("rank-needs-two-options", qat);
       // An anonymous form keeps no name with its answers; a resume would carry one.
       if (q.type === "file" && def.anonymous) add("file-on-anonymous-form", qat);
+      // An agreement names one document, once per form, and is always asked: Connect checks each one it is sent.
+      if (q.type === "agree") {
+        if (!LEGAL_DOC_RE.test(String(q.doc || ""))) add("agree-doc-shape", qat);
+        else if (allQuestions(def).some(({ q: o }) => o !== q && o.type === "agree" && o.doc === q.doc)) add("agree-doc-duplicate", qat);
+        if (q.required !== true || q.showIf || section.showIf) add("agree-required", qat);
+      }
       if (q.showIf) conditionProblems(q.showIf, seen, qat, add);
       seen.set(q.id, q);
       answerable++;
@@ -422,6 +435,8 @@ function typeProblem(q, v) {
       return DATETIME_RE.test(v) && realDate(v.slice(0, 10)) ? null : "datetime-shape";
     case "confirm":
       return v === "yes" ? null : "confirm-needed";
+    case "agree":
+      return AGREE_VALUE_RE.test(v) ? null : "confirm-needed";
     case "links":
       if (v.length > (q.maxLinks || t.maxItems)) return "links-too-many";
       if (v.some((s) => s.length > LINK_MAX)) return "link-too-long";
@@ -453,6 +468,7 @@ export function errorText(code, q, t) {
   const label = (q && q.label) || t("form.error.thisQuestion");
   switch (code) {
     case "required":
+      if (q?.type === "agree") return t("form.error.confirmNeeded");
       if (q?.type === "file") return t("form.error.requiredFile", { label });
       if (q?.type === "rank") return t("form.error.requiredRank", { label });
       return q && (QUESTION_TYPES[q.type]?.options || QUESTION_TYPES[q.type]?.list) ? t("form.error.requiredChoice", { label }) : t("form.error.required", { label });
@@ -477,6 +493,7 @@ export function errorText(code, q, t) {
     case "date-shape": return t("form.error.dateShape");
     case "datetime-shape": return t("form.error.datetimeShape");
     case "confirm-needed": return t("form.error.confirmNeeded");
+    case "agreement-out-of-date": return t("form.error.agreementOutOfDate");
     default: return t("form.error.other");
   }
 }
@@ -490,6 +507,7 @@ export function errorText(code, q, t) {
 export function answerColumns(def) {
   const cols = [];
   for (const { q } of allQuestions(def)) {
+    if (q.type === "agree") continue;
     cols.push({ id: q.id, label: q.label, type: q.type, ...(q.confidential ? { confidential: true } : {}) });
     if (q.allowOther) cols.push({ id: `${q.id}${OTHER}`, label: `${q.label} (other)`, type: "short", ...(q.confidential ? { confidential: true } : {}) });
   }
@@ -555,4 +573,69 @@ export function canonicalJSON(v) {
     return `{${Object.keys(v).sort().filter((k) => v[k] !== undefined).map((k) => `${JSON.stringify(k)}:${canonicalJSON(v[k])}`).join(",")}}`;
   }
   return JSON.stringify(v);
+}
+
+/* ------------------------------------------------------------------ wording slots */
+
+/* Every piece of words on a form, each under a stable slot id built only from the form's own ids and positions, so
+   Connect can change words (its publicFormDefinitions / publicFormWording) and never a question, an option or an id.
+     title · closedMessage · intro.<i> · confirmation.title · confirmation.body.<i>
+     section:<id>.title · section:<id>.intro.<i>
+     question:<id>.label · question:<id>.help.<i> · question:<id>.confirmText · question:<id>.option:<id>.label
+   Prose parts nest under their position: .heading, .item.<j>, .link.<j> (its label), .more, .body.<j>.
+   visit(slot, words, set) is called for each; set(words) replaces those words in the object being walked. */
+const SLOT_MAX = 4000;
+function walkProse(prefix, holder, key, visit) {
+  const v = holder[key];
+  if (typeof v === "string") return visit(`${prefix}.0`, v, (w) => { holder[key] = w; });
+  if (!Array.isArray(v)) return;
+  v.forEach((p, i) => {
+    const at = `${prefix}.${i}`;
+    if (typeof p === "string") return visit(at, p, (w) => { v[i] = w; });
+    if (!p || typeof p !== "object") return;
+    if (typeof p.heading === "string") visit(`${at}.heading`, p.heading, (w) => { p.heading = w; });
+    if (Array.isArray(p.list)) p.list.forEach((x, j) => typeof x === "string" && visit(`${at}.item.${j}`, x, (w) => { p.list[j] = w; }));
+    if (Array.isArray(p.links)) p.links.forEach((l, j) => l && typeof l.label === "string" && visit(`${at}.link.${j}`, l.label, (w) => { l.label = w; }));
+    if (typeof p.more === "string") visit(`${at}.more`, p.more, (w) => { p.more = w; });
+    if (Array.isArray(p.body)) p.body.forEach((x, j) => typeof x === "string" && visit(`${at}.body.${j}`, x, (w) => { p.body[j] = w; }));
+  });
+}
+export function walkWording(def, visit) {
+  const one = (slot, holder, key) => typeof holder?.[key] === "string" && visit(slot, holder[key], (w) => { holder[key] = w; });
+  one("title", def, "title");
+  one("closedMessage", def, "closedMessage");
+  walkProse("intro", def, "intro", visit);
+  if (def.confirmation && typeof def.confirmation === "object") {
+    one("confirmation.title", def.confirmation, "title");
+    if (Array.isArray(def.confirmation.body)) def.confirmation.body.forEach((x, i) => typeof x === "string" && visit(`confirmation.body.${i}`, x, (w) => { def.confirmation.body[i] = w; }));
+  }
+  for (const s of def.sections || []) {
+    one(`section:${s.id}.title`, s, "title");
+    walkProse(`section:${s.id}.intro`, s, "intro", visit);
+    for (const q of s.questions || []) {
+      one(`question:${q.id}.label`, q, "label");
+      walkProse(`question:${q.id}.help`, q, "help", visit);
+      one(`question:${q.id}.confirmText`, q, "confirmText");
+      for (const o of q.options || []) one(`question:${q.id}.option:${o.id}.label`, o, "label");
+    }
+  }
+}
+
+/* The form's words as Connect keeps them: { slot: words }, blank and over-long words left out. */
+export function wordingSlots(def) {
+  const slots = {};
+  walkWording(def, (slot, words) => { if (words.trim() && words.length <= SLOT_MAX) slots[slot] = words; });
+  return slots;
+}
+
+/* The form with Connect's changed words laid on a copy. Only slots this form has are used, only as one line of plain
+   text (the renderer escapes it); an unknown slot or anything else is ignored. */
+export function withWording(def, overrides) {
+  if (!overrides || typeof overrides !== "object" || !Object.keys(overrides).length) return def;
+  const out = structuredClone(def);
+  walkWording(out, (slot, _words, set) => {
+    const w = Object.hasOwn(overrides, slot) ? overrides[slot] : null;
+    if (typeof w === "string" && w.trim() && w.length <= SLOT_MAX && !/[\u0000-\u001f\u007f]/.test(w)) set(w);
+  });
+  return out;
 }

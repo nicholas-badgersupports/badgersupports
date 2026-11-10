@@ -15,6 +15,7 @@ import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
 import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext } from "../shared/forms.mjs";
 import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
+import { legalParagraphs } from "./blocks/legal.mjs";
 
 const fid = (q) => `f-${q.id}`;
 const eid = (q) => `e-${q.id}`;
@@ -94,6 +95,11 @@ function control(q, value, otherValue, aria, t) {
     }
     case "confirm":
       return html`<label class="choice"><input${attrs({ ...common, type: "checkbox", value: "yes", checked: value === "yes" })}><span>${q.confirmText || q.label}</span></label>`;
+    case "agree": {
+      const doc = q.current;
+      const token = doc ? `${doc.version}:${doc.sha256}` : "";
+      return html`${doc ? html`<details class="prose-more agree-doc"><summary>${t("form.agree.read", { title: doc.title })}</summary><div class="prose-more-body">${legalParagraphs(doc.words)}</div></details>` : ""}<label class="choice"><input${attrs({ ...common, type: "checkbox", value: token, checked: !!doc && value === token })}><span>${q.label}</span></label>`;
+    }
     case "file": {
       /* The chosen file goes up on its own (src/client/form.js) and this form sends only the id the
          server gave it, in the hidden input. The file input has no name, so a file is never posted
@@ -128,6 +134,7 @@ function field(def, q, values, errors, t, ctx) {
   const input = control(q, values[q.id], values[`${q.id}${OTHER}`], aria, t);
   if (group) return html`<fieldset${attrs(common)}><legend class="q-label">${label}</legend>${help}${err}${input}</fieldset>`;
   // A confirmation's label is its checkbox's words; a heading-like label above it says what it is about.
+  if (q.type === "agree") return html`<div${attrs(common)}>${help}${err}${input}</div>`;
   if (q.type === "confirm") return html`<div${attrs(common)}>${q.confirmText ? html`<p class="q-label">${label}</p>` : ""}${help}${err}${input}</div>`;
   return html`<div${attrs(common)}><label for="${fid(q)}">${label}</label>${help}${err}${input}</div>`;
 }

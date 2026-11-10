@@ -210,6 +210,10 @@
           {
             "label": "Email List",
             "href": "/join/email-list"
+          },
+          {
+            "label": "Report a Website Problem",
+            "href": "/about/faq/#b-faq-website-problem"
           }
         ]
       }

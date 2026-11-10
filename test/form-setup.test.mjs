@@ -54,7 +54,7 @@ test('setup permissions match full settings and switches; no denied operation pa
  assert.equal((await send(key,open,other)).status,403);
  assert.equal((await send(key,{...base,settings:{...base.settings,title:'Changed'}},switcher)).status,403);
  assert.equal((await one('SELECT count(*)::int AS n FROM form_settings_history')).n,0);
- assert.equal((await send(key,{...open,settings:{...base.settings,opensAt:'2099-01-01T12:00'}},switcher)).status,200);
+ assert.equal((await send(key,{...open,settings:{...base.settings,opensAt:'2099-01-01T12:00',closesAt:''}},switcher)).status,200,'a later opening clears the shipped close date with it');
  assert.equal((await currentForm(key)).stateReason,'scheduled');
  const now=await bodyFor(key);assert.equal((await send(key,{...now,settings:{...now.settings,title:'Edited words'}},editor)).status,200);
  assert.equal((await currentForm(key)).manualState,'open');

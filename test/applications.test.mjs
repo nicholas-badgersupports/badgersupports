@@ -27,20 +27,21 @@ const SOME_ID = "A".repeat(32);
 function staffAnswers(over = {}) {
   return {
     _form: STAFF, _version: String(SHIPPED),
-    eligibility: "yes", ai_use: "yes",
+    eligibility: "yes", ai_use: "yes", ready: "yes",
     email: "river@example.org", name: "River Example", semesters: "s3", phone: "555-0199",
     about: "A made-up applicant.", campus_resource: "A made-up answer.",
     workflow: ["long_term"], facilitating: "unsure", skills_programs: ["plan_events", "deliver_workshops"],
     "directorate_rank.programs": "1", "directorate_rank.engagement": "2", "directorate_rank.wellness_support": "3", "directorate_rank.business_development": "4",
     experience: "Made-up experience.", interest: "Made-up interest.",
-    meeting_hours: "yes", total_hours: "8", work_study: "no", commitments: "Made-up commitments.",
+    meeting_hours: "yes", total_hours: "8", commitments: "Made-up commitments.",
     portfolio: "https://example.org/work\nhttps://example.org/more",
-    referral_ack: "yes", ai_use_final: "yes",
+    ai_use_final: "yes",
     ...over,
   };
 }
 
-const openStaff = () => q("INSERT INTO form_state (form_key, state, changed_by) VALUES ($1, 'open', 'test')", [STAFF]);
+const setState = (key, state) => q("INSERT INTO form_state (form_key, state, changed_by) VALUES ($1, $2, 'test') ON CONFLICT (form_key) DO UPDATE SET state = EXCLUDED.state", [key, state]);
+const openStaff = () => setState(STAFF, "open");
 
 const upload = (question, bytes, { key = STAFF, type = "application/pdf", name = "resume.pdf", n = 1 } = {}) => handle(new Request(`${ORIGIN}/api/forms/${key}/files?q=${question}`, {
   method: "POST",
@@ -56,12 +57,12 @@ const fileIdFor = async (question = "resume", name = "resume.pdf") => {
 
 /* ------------------------------------------------------------------ the definitions */
 
-test("both applications pass the form rules, closed as shipped and open", () => {
+test("both applications pass the form rules, open as shipped and closed", () => {
   for (const key of [STAFF, "volunteer-application"]) {
     const def = load(key);
-    assert.equal(def.state, "closed", key);
+    assert.equal(def.state, "open", key);
     assert.deepEqual(definitionProblems(def), [], key);
-    assert.deepEqual(definitionProblems({ ...def, state: "open" }), [], `${key} open`);
+    assert.deepEqual(definitionProblems({ ...def, state: "closed" }), [], `${key} closed`);
   }
 });
 
@@ -78,9 +79,10 @@ test("the applications ask what was ruled: uploads only for a resume and cover l
   assert.equal(questionById(staff, "portfolio").maxLinks, 5);
   assert.equal(questionById(staff, "phone").required, true, "staff asks for a phone number");
   assert.notEqual(questionById(vol, "phone").required, true, "volunteers may leave it out");
-  for (const def of [staff, vol]) assert.notEqual(questionById(def, "skills_initiatives").required, true, def.key);
-  assert.deepEqual(questionById(staff, "directorate_rank").options.map((o) => o.id), ["engagement", "programs", "wellness_support", "business_development"]);
-  for (const id of ["work_study", "commitments"]) assert.equal(questionById(staff, id).confidential, true, id);
+  assert.notEqual(questionById(vol, "skills_initiatives").required, true, vol.key);
+  assert.deepEqual(questionById(staff, "directorate_rank").options.map((o) => o.id), ["wellness_support", "programs", "engagement", "business_development"], "the live form’s order");
+  assert.equal(questionById(staff, "commitments").confidential, true);
+  assert.equal(questionById(staff, "work_study"), null, "the live form no longer asks about work study");
 });
 
 test("what the browser is given leaves out every review note, proposal, source and workflow", () => {
@@ -195,6 +197,7 @@ test("a file that is not a PDF, or is over 3 MB, is refused as soon as it is cho
 
 test("a closed form takes no file, nor does a question that is not a file, and nothing serves one back", async () => {
   await freshServer();
+  await setState(STAFF, "closed");
   const closed = await upload("resume", PDF);
   assert.equal(closed.status, 409);
   const cb = await closed.json();
@@ -341,7 +344,7 @@ test("Connect is told which files to collect and which answers are confidential;
   assert.deepEqual(payload.answers.portfolio, ["https://example.org/work", "https://example.org/more"]);
   assert.equal(payload.answers.facilitating, questionById(def, "facilitating").options.find((o) => o.id === "unsure").label);
   const conf = payload.columns.filter((c) => c.confidential).map((c) => c.id);
-  assert.deepEqual(conf, ["work_study", "commitments"]);
+  assert.deepEqual(conf, ["commitments"]);
   assert.equal(payload.answers.commitments, "Made-up commitments.", "Connect gets them; it decides who reads them");
 
   const page = await latestAnswers(STAFF);
@@ -363,11 +366,11 @@ const letterAnswers = (over = {}) => ({
   ...over,
 });
 
-test("the letter form is the one recommend.badgersupports.org opens, built closed: a name, an email, the applicant, one PDF", () => {
+test("the letter form is the one recommend.badgersupports.org opens, shipped open: a name, an email, the applicant, one PDF", () => {
   const def = load(LETTER);
-  assert.equal(def.state, "closed");
+  assert.equal(def.state, "open");
   assert.deepEqual(definitionProblems(def), []);
-  assert.deepEqual(definitionProblems({ ...def, state: "open" }), [], "open");
+  assert.deepEqual(definitionProblems({ ...def, state: "closed" }), [], "closed");
   assert.ok(def.source.aliases.includes("https://recommend.badgersupports.org/"));
   assert.deepEqual(allQuestions(def).filter(({ q }) => q.type === "file").map(({ q }) => q.id), ["letter"]);
   for (const id of ["name", "email", "applicant", "letter"]) assert.equal(questionById(def, id).required, true, id);
@@ -400,7 +403,7 @@ test("a letter goes up as a PDF and Send claims it; Connect is told to collect i
   assert.deepEqual((await many("SELECT kind FROM outbox ORDER BY id")).map((r) => r.kind), ["connect.ingest", "sheets.backup"]);
 });
 
-test("the four request forms ask Google's own questions, built closed: the same answers required, Connect's directorates as owners", () => {
+test("the four request forms ask Google's own questions, shipped open: the same answers required, Connect's directorates as owners", () => {
   const want = {
     "resource-request": { owner: "Engagement", required: ["email", "requesting"], alias: "https://forms.gle/GgfggAR7nRVSXrZPA" },
     "program-request": { owner: "Programs", required: ["name", "email", "on_behalf", "organization", "request_type", "group_size", "dates", "location", "access_needs", "notes"] },
@@ -409,9 +412,9 @@ test("the four request forms ask Google's own questions, built closed: the same 
   };
   for (const [key, w] of Object.entries(want)) {
     const def = load(key);
-    assert.equal(def.state, "closed", key);
+    assert.equal(def.state, "open", key);
     assert.deepEqual(definitionProblems(def), [], key);
-    assert.deepEqual(definitionProblems({ ...def, state: "open" }), [], `${key} open`);
+    assert.deepEqual(definitionProblems({ ...def, state: "closed" }), [], `${key} closed`);
     assert.deepEqual(allQuestions(def).filter(({ q }) => q.required).map(({ q }) => q.id), w.required, key);
     assert.equal(allQuestions(def).some(({ q }) => q.type === "file" || q.confidential), false, `${key} takes no file and keeps nothing confidential`);
     assert.equal(def.workflow.owner, w.owner, key);

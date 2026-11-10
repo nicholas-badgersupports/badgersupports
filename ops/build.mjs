@@ -7,8 +7,8 @@ import { isDirect } from "./direct.mjs";
  *                                            # Connect (no build without it), no sample notes or
  *                                            # people, and nothing still left on the live site
  *                                            # (cutoverProblems)
- *   node ops/build.mjs --launch              # the prototype with the forms as they launch: closed,
- *                                            # each page linking its Google Form (--production does this too)
+ *   node ops/build.mjs --launch              # the prototype with each form checked as a published
+ *                                            # build checks it (--production does this too)
  *   node ops/build.mjs --text-edits=FILE     # apply published text edits ({ key: text }) over
  *                                            # content/text.json, as Connect's publish will
  *   node ops/build.mjs --edits=FILE          # lay words changed with the edit button over the
@@ -53,7 +53,8 @@ import { ICONS } from "../src/render/icons.mjs";
 import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
 import { renderPage, INLINE_JS } from "../src/render/layout.mjs";
 import { mediaCss, photoRef, photoProblems, photoSlots } from "../src/render/media.mjs";
-import { definitionProblems, launchForms, withResources } from "../src/shared/forms.mjs";
+import { definitionProblems, withResources } from "../src/shared/forms.mjs";
+import { servedForms, windowProblems } from "../src/shared/form-window.mjs";
 import { publicHistory, emptyHistory } from "../src/shared/alumni-history.mjs";
 import { finish } from "./finish.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
@@ -165,7 +166,7 @@ export function shippedEdits() {
 /* Everything the build and the API read, loaded and checked. Throws with the full list.
    `feed` is Connect's public lists as ops/connect-feed.mjs maps them ({ events, resources }); without
    it the events and resources are the hand-typed fixtures, which a production build refuses. */
-export function loadContent({ production = false, launch = production, textEdits = {}, edits = shippedEdits(), feed = null } = {}) {
+export function loadContent({ production = false, launch = production, textEdits = {}, edits = shippedEdits(), feed = null, now = Date.now() } = {}) {
   const site = readJson("content/site.json");
   const textRegistry = readJson("content/text.json");
   const routes = readJson("content/routes.json").routes;
@@ -297,8 +298,9 @@ export function loadContent({ production = false, launch = production, textEdits
     if (events.fixture) problems.push("production: the event timetable would come from a hand-typed fixture; it needs Connect's public event export");
     if (resources.fixture) problems.push("production: the resource list would come from a sample; it needs Connect's approved public resource export");
   }
-  // At launch every open form is served closed, linking its Google Form (src/shared/forms.mjs).
-  const served = launch ? launchForms(forms) : forms;
+  // Each form is served in its own state; an open one outside its shipped intake window is served closed (src/shared/form-window.mjs).
+  for (const def of Object.values(forms)) for (const p of windowProblems(def)) problems.push(`content/forms/${def.key}.json: ${p.code} at ${p.at}`);
+  const served = servedForms(forms, now);
   if (launch) for (const def of Object.values(served)) for (const p of definitionProblems(def)) problems.push(`launch: content/forms/${def.key}.json: ${p.code} at ${p.at || "(form)"}`);
   if (problems.length) throw Object.assign(new Error(`The content has ${problems.length} problem(s):\n  ${problems.join("\n  ")}`), { problems });
   const text = resolveText(textRegistry, textEdits);
@@ -486,8 +488,8 @@ export async function build({ production = false, launch = production, today = n
     for (const d of feed.dropped) log(`connect: left out ${d}`);
     for (const line of unnamedLines(feed.unnamed)) log(`connect: ${line}`);
   }
-  const content = loadContent({ production, launch, textEdits, edits, feed });
   const day = today || chicagoDate();
+  const content = loadContent({ production, launch, textEdits, edits, feed, now: today ? Date.parse(`${today}T12:00:00-06:00`) : Date.now() });
 
   if (!out.startsWith(ROOT + path.sep)) throw new Error(`refusing to write outside the project: ${out}`);
   fs.rmSync(out, { recursive: true, force: true });
@@ -641,7 +643,7 @@ if (isDirect(import.meta.url)) {
       edits: arg("edits") ? readEditsFile(JSON.parse(fs.readFileSync(path.resolve(arg("edits")), "utf8"))) : undefined,
       log: process.argv.includes("--verbose") ? console.log : () => {},
     });
-    console.log(`built ${r.pages.length} pages for ${r.today}${r.prototype ? " (prototype)" : ""}${r.launch ? ", forms as at launch" : ""}`);
+    console.log(`built ${r.pages.length} pages for ${r.today}${r.prototype ? " (prototype)" : ""}${r.launch ? ", forms checked as published" : ""}`);
     console.log(r.connect ? `  from Connect: ${r.connect.events} events, ${r.connect.weekly} weekly groups, ${r.connect.resources} resources${r.connect.team != null ? `, ${r.connect.team} team profiles` : ""}${r.connect.wall != null ? `, ${r.connect.wall} Wall notes` : ""}${r.connect.dropped.length ? `; left out ${r.connect.dropped.length} (--verbose names them)` : ""}` : "  events and resources from the hand-typed fixtures");
     console.log(`  css ${r.css.bytes} B · js ${Object.values(r.js).reduce((a, b) => a + b, 0)} B · ${r.media.variants} image variants (${r.media.encoded} newly encoded)`);
     console.log(`  ${r.pendingLinks.length} internal links still point at the live site · ${r.redirectsWaiting.length} redirects wait for their page`);

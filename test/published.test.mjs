@@ -309,7 +309,7 @@ test("a form's switch that cannot be read: the page keeps its published words, d
   assert.equal(res.status, 200);
   const home = await res.text();
   assert.match(home, /badger supports, still here/, "the published words stay");
-  assert.match(home, /chip--closed/, "the staff application's door as built");
+  assert.doesNotMatch(home, /chip--closed/, "the staff application's door as built: open, no Closed tag");
   assert.equal(res.headers.get("netlify-cdn-cache-control"), "public, s-maxage=60");
   assert.equal(res.headers.get("x-bss-revision"), "4");
   const faq = await get("/about/faq/");

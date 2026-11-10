@@ -5,14 +5,37 @@
   "title": "Badger Supports Volunteer Application",
   "audience": "public",
   "anonymous": false,
-  "state": "closed",
+  "state": "open",
   "closedMessage": "Volunteer applications are closed. For current opportunities, email hiring@badgersupports.org.",
+  "intakeWindow": {
+    "closesAt": "2026-12-18T23:59"
+  },
   "intro": [
     "Please read all information carefully.",
-    "Applications are accepted on a rolling basis.",
-    "Badger Supports values diversity. Please direct questions and inquiries to hiring@badgersupports.org"
+    "To ensure consideration for appointments in Spring 2027 please submit by December 18th at 11:59pm.",
+    "Important: If you are selected for a staff or volunteer position, attendance at both spring training dates will be required. Training will take place on:",
+    {
+      "list": [
+        "Tuesday, January 19th, 5:00 PM - 8:00 PM",
+        "Thursday, January 21st, 5:00 PM - 8:00 PM"
+      ]
+    },
+    "By submitting this application, you commit to attending required training if selected for a position. If selected, additional details will be communicated via your Wisc email.",
+    {
+      "heading": "Timeline"
+    },
+    {
+      "list": [
+        "December 18th at 11:59 PM: Application closes",
+        "By January 6th: All applicants notified of next steps (including interview consideration)",
+        "January 11th-12th: Virtual Interviews (for select candidates only)",
+        "By January 15th: Final notification of appointment status",
+        "January 19th and January 21st: Required training for new appointees (5:00-8:00 PM each day)"
+      ]
+    },
+    "Badger Supports values diversity and is an Equal Opportunity Employer. Please direct questions and inquiries to hiring@badgersupports.org"
   ],
-  "review": "Built closed (decision 12): Get involved keeps linking the Google Form until a super admin opens this one. The closing message is ours. Words are Google's (handoff of 21 Oct), with decision 10's copy slips corrected and retired directorate names replaced by Connect's.",
+  "review": "Opened 10 Nov 2026 (session 10, D2): page-one intro is the live staff form’s, which addresses staff or volunteer positions; closes 18 Dec 2026 11:59 PM Chicago. The closing message is ours. Words are Google's (handoff of 21 Oct), with decision 10's copy slips corrected and retired directorate names replaced by Connect's.",
   "sections": [
     {
       "id": "about",
@@ -710,6 +733,5 @@
       "https://forms.gle/2pXzV917oPX4VodY7"
     ],
     "read": "PDF of the form, transcribed in Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md. The live form needs a wisc.edu sign-in, so its link targets were not read."
-  },
-  "elsewhere": "https://forms.gle/2pXzV917oPX4VodY7"
+  }
 }

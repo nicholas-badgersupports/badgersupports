@@ -11,9 +11,12 @@ export function formInstant(value) {
   if (!instant) throw new HttpError(400, "settings.date");
   return Date.parse(instant);
 }
-export async function readFormSettings(key) {
+/* A form with no saved settings takes its definition's shipped intake window (`intakeWindow`) as its
+   dates, so a shipped closing date closes it on time; the first save replaces them, version 0 to 1. */
+export async function readFormSettings(key, def = null) {
   const row = await one("SELECT version, settings FROM form_settings WHERE form_key=$1", [key]);
-  return { version: row?.version || 0, ...emptyFormSettings(), ...row?.settings };
+  const shipped = !row && def?.intakeWindow ? Object.fromEntries(["opensAt", "closesAt", "deadline"].filter(k => typeof def.intakeWindow[k] === "string").map(k => [k, def.intakeWindow[k]])) : {};
+  return { version: row?.version || 0, ...emptyFormSettings(), ...shipped, ...row?.settings };
 }
 export function effectiveForm(def, settings, manualState, now = Date.now()) {
   const opens = formInstant(settings.opensAt), closes = formInstant(settings.closesAt), at = Number(now);

@@ -80,14 +80,6 @@ export function googleFormUrl(def) {
   return /^[A-Za-z0-9_-]{20,}$/.test(id) ? `https://docs.google.com/forms/d/e/${id}/viewform` : null;
 }
 
-/* The forms as a launch build serves them (owner, 20 Oct 2026): every open form closed, its page
-   linking the Google Form it replaces (`elsewhere`), until Connect shows submissions to the team
-   that answers them. A form already closed keeps its own message. A switch row wins over this,
-   at Send (netlify/lib/intake.mjs) and on the pages that show the form (netlify/lib/pages.mjs). */
-export function launchForms(forms) {
-  return Object.fromEntries(Object.entries(forms).map(([key, def]) => [key, def.state === "open" ? { ...def, state: "closed", elsewhere: googleFormUrl(def) } : def]));
-}
-
 /* The definition with every `resource` question given the site's resource list, by name. The
    list is the build's: the resource viewer's own records. A definition with no such question comes
    back unchanged. */

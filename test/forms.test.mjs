@@ -59,11 +59,11 @@ test("resource choices survive the rendered browser definition without internal 
   }
 });
 
-test("the three resource forms ask nothing about who sends them and are built closed", () => {
+test("the three resource forms ask nothing about who sends them and are shipped open", () => {
   for (const key of ["resource-problem", "resource-update", "resource-suggestion"]) {
     const def = load(key);
     assert.equal(def.anonymous, true, key);
-    assert.equal(def.state, "closed", key);
+    assert.equal(def.state, "open", key);
     assert.equal(def.workflow.connectQueue, "resources.suggestions", key);
     assert.match(def.closedMessage, /directors@badgersupports\.org/, key);
     const types = def.sections.flatMap((s) => s.questions.map((q) => q.type));

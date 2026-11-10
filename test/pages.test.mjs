@@ -306,10 +306,10 @@ test("Get involved keeps what the live page said: the hiring steps as a list, wh
   assert.doesNotMatch(block(read("index.html"), "b-home-involved"), /class="more"/, "the homepage's compact doors carry no panels");
 });
 
-test("an email address in a pill or a closed notice is kept whole, may break before its @, and is still escaped", () => {
+test("an email address in a pill or a closing notice is kept whole, may break before its @, and is still escaped", () => {
   const page = read("join/get-involved/index.html");
   assert.match(page, /<span class="go-label">Email Us at <span class="addr">hello<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
-  assert.match(page, /<span class="door-text door-closed">[^<]*<span class="addr">hiring<wbr>@badgersupports\.org<\/span>\.<\/span>/, "the closed staff door");
+  assert.doesNotMatch(page, /door-closed/, "the staff door is open, so it shows no closing notice");
   assert.equal(String(html`${breakAtSign("a<b@c")}`), '<span class="addr">a&lt;b<wbr>@c</span>');
   assert.equal(breakAtSign("no address"), "no address");
 });
@@ -338,10 +338,10 @@ test("Badger SPILL shows in the hero, in its own band and in every footer, as it
   for (const sel of [".logo-bottle", ".logo-milk"]) assert.match(css, new RegExp(`^\\${sel} \\{ transform-origin: [0-9.]+% [0-9.]+%;\\n  clip-path: polygon\\(`, "m"), sel);
 });
 
-test("each application, the letter form and the four request forms has a preview page to review it by: every section, its new controls, and none of the notes kept for reviewers", () => {
+test("each application, the letter form and the four request forms is open on its own page: every section, its new controls, and none of the notes kept for reviewers", () => {
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const expect = {
-    "staff-application": { sections: 11, files: ["resume", "cover_letter"], rank: 4, phone: true },
+    "staff-application": { sections: 13, files: ["resume", "cover_letter"], rank: 4, phone: true },
     "volunteer-application": { sections: 9, files: ["resume"], rank: 0, phone: true },
     "recommendation-letter": { sections: 2, files: ["letter"], rank: 0, phone: true },
     "resource-request": { sections: 2, files: [], rank: 0 },
@@ -351,9 +351,10 @@ test("each application, the letter form and the four request forms has a preview
   };
   for (const [key, want] of Object.entries(expect)) {
     const def = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "forms", `${key}.json`), "utf8"));
-    const page = read(`forms/${key}/preview/index.html`);
-    assert.match(page, /<meta name="robots" content="noindex">/, key);
-    assert.match(page, new RegExp(`<form class="bss-form"[^>]* data-form="${key}"[^>]* data-preview=""`), key);
+    const page = read(`forms/${key}/index.html`);
+    assert.ok(!fs.existsSync(path.join(OUT, "forms", key, "preview")), `${key}: an open form needs no preview page`);
+    assert.match(page, new RegExp(`<form class="bss-form[^"]*"[^>]* data-form="${key}"`), key);
+    assert.doesNotMatch(page, /data-preview=""/, key);
     assert.equal([...page.matchAll(/data-section="/g)].length, want.sections, `${key}: sections`);
     assert.deepEqual([...page.matchAll(/<input id="f-([a-z_]+)"[^>]* type="file" accept="application\/pdf"/g)].map((m) => m[1]), want.files, `${key}: files`);
     assert.equal([...page.matchAll(/<select id="f-directorate_rank[^"]*" name="directorate_rank\.[a-z_]+"/g)].length, want.rank, `${key}: one place per directorate`);

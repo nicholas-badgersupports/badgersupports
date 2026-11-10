@@ -936,3 +936,22 @@ long room names. Calls made: side-column headings are capped at 1.875rem; the di
 1.75–2.375rem; below 380 px a door card's icon sits above its words and a room ticket's stub tears off along the
 bottom; on a phone a recap card with no photo takes the whole row. A site-wide interaction check now fails on any
 heading, door title or button that splits a word (hyphen breaks and addresses excepted).
+
+## 10 November 2026 · Forms open by default; hiring forms open with the live text (Owner; session 10, D1–D2)
+
+Nicholas, interviewed on 10 Nov: "forms open by default" means forms accept submissions. This supersedes the
+20 Oct launch ruling that a published build closes every form and links its Google Form. Every definition in
+`content/forms/` now ships `"state": "open"`, and `launchForms()` is retired: a build serves each form in its own
+state (`servedForms()`, `src/shared/form-window.mjs`). A director's switch row still wins at Send and on the page.
+"If there are necessary fields just set them to a default and move on": no definition needed a new field to open
+(the resource forms close themselves while the resource list is empty, as before).
+
+A definition may carry a shipped intake window, `intakeWindow: { opensAt, closesAt, deadline }`, in Chicago wall
+time. The build serves a form closed outside it, the form page names its closing time, and the server uses it as
+the form's dates until a director saves dates in Form Settings (the first save replaces it). The staff and
+volunteer applications and the recommendation letter close at 11:59 PM Chicago on 18 Dec 2026. The staff
+application was rebuilt from the live Google Form (editor `1Apxe3V9HT0X-iFppbX36q8E_9Iem5OcScThyN5lh0YI`, PDF read
+10 Nov); its page-one intro is word for word and also opens the volunteer application (routine call). Each
+difference the native form cannot express is a `review` note on the question. The volunteer form's old Google
+fallback link was removed, so after 18 Dec it shows its closed message, not a retired Google Form.
+Agreements stay off on every live form.

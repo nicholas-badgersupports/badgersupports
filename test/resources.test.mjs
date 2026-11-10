@@ -79,8 +79,7 @@ test("each resource's Additional Details reports a problem with it or suggests a
   for (const key of ["resource-problem", "resource-update", "resource-suggestion"]) {
     const form = read(`forms/${key}/index.html`);
     assert.match(form, /<meta name="robots" content="noindex">/, key);
-    assert.match(form, /directors<wbr>@badgersupports\.org|directors@badgersupports\.org/, `${key}: closed, it gives the address the list gives`);
-    assert.doesNotMatch(form, /<form[\s>]/, `${key}: closed, no inputs`);
+    assert.match(form, new RegExp(`<form class="bss-form"[^>]* data-form="${key}"`), `${key}: open, its questions on the page`);
   }
 });
 

@@ -1,60 +1,90 @@
 {
   "schema": "bss.form/1",
   "key": "staff-application",
-  "version": 3,
+  "version": 4,
   "title": "Badger Supports Staff Application",
   "audience": "public",
   "anonymous": false,
-  "state": "closed",
+  "state": "open",
   "closedMessage": "Staff applications are closed. For current hiring information, email hiring@badgersupports.org.",
+  "intakeWindow": {
+    "closesAt": "2026-12-18T23:59"
+  },
   "intro": [
     "Please read all information carefully.",
-    "Applications will still be accepted on a rolling basis after the priority deadline.",
+    "To ensure consideration for appointments in Spring 2027 please submit by December 18th at 11:59pm.",
+    "Important: If you are selected for a staff or volunteer position, attendance at both spring training dates will be required. Training will take place on:",
+    {
+      "list": [
+        "Tuesday, January 19th, 5:00 PM - 8:00 PM",
+        "Thursday, January 21st, 5:00 PM - 8:00 PM"
+      ]
+    },
+    "By submitting this application, you commit to attending required training if selected for a position. If selected, additional details will be communicated via your Wisc email.",
+    {
+      "heading": "Timeline"
+    },
+    {
+      "list": [
+        "December 18th at 11:59 PM: Application closes",
+        "By January 6th: All applicants notified of next steps (including interview consideration)",
+        "January 11th-12th: Virtual Interviews (for select candidates only)",
+        "By January 15th: Final notification of appointment status",
+        "January 19th and January 21st: Required training for new appointees (5:00-8:00 PM each day)"
+      ]
+    },
     "Badger Supports values diversity and is an Equal Opportunity Employer. Please direct questions and inquiries to hiring@badgersupports.org"
   ],
-  "review": "Kept closed with its closing message (decision 12). Decision 11: the dates have no year, and the next cycle's are needed when it reopens. Words are Google's (handoff of 21 Oct), with decision 10's copy slips corrected and retired directorate names replaced by Connect's. Intake dates are managed in staff Form Settings; priority deadline does not end rolling intake.",
+  "review": "Rebuilt 10 Nov 2026 from the live Google Form (editor 1Apxe3V9HT0X-iFppbX36q8E_9Iem5OcScThyN5lh0YI), printed by Nicholas the same day. Page-one intro word for word. Differences the native form cannot express are listed in the session 10 handoff.",
   "sections": [
+    {
+      "id": "contact",
+      "title": "Your Email",
+      "review": "Google asks for the email first, above About Badger Supports, under the form title. The section title is ours.",
+      "questions": [
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email",
+          "required": true,
+          "autocomplete": "email"
+        }
+      ]
+    },
     {
       "id": "about",
       "title": "About Badger Supports",
       "intro": [
         "Badger Supports is a student-led community built around peer connection. Badgers come together to talk about mental health, share experiences, and support one another in everyday moments. Our peer support groups, workshops, and craft nights offer space to be heard, understood, and connected.",
         {
-          "more": "Our programs and teams",
-          "body": [
-            {
-              "heading": "Our Core Programs"
-            },
-            {
-              "ordered": true,
-              "list": [
-                "Weekly Peer Support Groups",
-                "Conversation-Focused Craft Nights",
-                "Requestable Educational Workshops",
-                "Navigating Housing Workshop & Toolkit",
-                "Badger Break Day / Stress Awareness",
-                "Peer Support Training (for staff & volunteers)",
-                "Resource Referral Cards"
-              ]
-            },
-            {
-              "heading": "Our Key Teams / Directorates"
-            },
-            {
-              "ordered": true,
-              "list": [
-                "Engagement - Outreach, Marketing, Apparel, Video",
-                "Programs - Workshops, Events, Craft Nights, Collaborations, Initiatives",
-                "Wellness & Support - Training, Professional Development, Peer Support Groups",
-                "Business Development - Compliance, Grants, Payroll, Fundraising, Logistics, Office Management, Technical, Data",
-                "Badger SPILL",
-                "Executive - Campus Relations & Advocacy"
-              ]
-            }
+          "heading": "Our Core Programs"
+        },
+        {
+          "ordered": true,
+          "list": [
+            "Weekly Peer Support Groups",
+            "Conversation-Focused Craft Nights",
+            "Requestable Educational Workshops",
+            "Navigating Housing Workshop & Toolkit",
+            "Stress Awareness Month",
+            "Peer Support Training (for staff & volunteers)",
+            "Resource Referral Cards"
+          ]
+        },
+        {
+          "heading": "Our Key Teams / Directorates"
+        },
+        {
+          "ordered": true,
+          "list": [
+            "Executive",
+            "Engagement - Outreach, Marketing, Data, Apparel, Fundraising, Video",
+            "Wellness & Support - Training, Professional Development, Peer Support Groups",
+            "Programs - Workshops, Events, Craft Nights, Collaborations",
+            "Business Development - Compliance, Grants, Payroll"
           ]
         }
       ],
-      "review": "Directorates are Connect's six in its order (owner, 21 Oct). Google's sub-areas are placed as the skill groups are (handoff table, from the 12 Mar 2026 org design, 'not yet confirmed'). Trust & Safety is left out until Nicholas places it.",
       "questions": []
     },
     {
@@ -62,7 +92,7 @@
       "title": "Application Overview",
       "intro": [
         "Badger Supports is funded through the General Student Services Fund administered by the Associated Students of Madison. The General Student Services Fund exists to support programs and services that directly serve the UW–Madison student community. Staffing hours are allocated based on service needs and project demands that advance student support, access, and engagement.",
-        "Badger Supports hiring process uses a generalist model, with applicants considered holistically based on interests, skills/experience, and availability. Our year-long renewable appointments typically range from five to twelve hours per week, with additional hours assigned for time-limited or project-based work aligned with our student-focused programming.",
+        "Badger Supports hiring process uses a generalist model, with applicants considered holistically based on interests, skills/experience, and availability. Appointments typically range from five to twelve hours per week, with additional hours assigned for time-limited or project-based work aligned with our student-focused programming.",
         {
           "heading": "Compensation"
         },
@@ -76,20 +106,20 @@
           "required": true,
           "help": "To be eligible for a Badger Supports Student Staff Position, you must be currently enrolled at the University of Wisconsin-Madison. If school is in a break period (summer, spring, winter), applicants must intend to enroll in courses the following semester. Review UW Policy 5003- Student Hourly Employment for more information.",
           "confirmText": "I confirm that I meet the enrollment eligibility requirements",
-          "review": "Google links 'UW Policy 5003- Student Hourly Employment'. Its target needs a wisc.edu sign-in to read; add it as a links part once known."
+          "review": "Google links 'UW Policy 5003- Student Hourly Employment'; its target needs a wisc.edu sign-in to read, so no link yet."
         }
       ]
     },
     {
       "id": "application",
       "title": "About This Application",
+      "review": "The live form no longer lists a letter of recommendation; the letter form stays open (session 10, D2). Google's heading 'Interested in our Volunteer Program More? Apply here!' is corrected and links the native volunteer application.",
       "intro": [
         "The following are required for this application:",
         {
           "ordered": true,
           "list": [
             "This Written Application",
-            "A Letter of Recommendation / Referral",
             "Resume",
             "Up to Two Interviews"
           ]
@@ -109,63 +139,30 @@
         {
           "links": [
             {
-              "href": "/join/get-involved/#volunteering",
-              "label": "Apply here"
+              "href": "/forms/volunteer-application/",
+              "label": "Apply Here"
             }
           ]
         },
         {
-          "heading": "Letter of Recommendation / Referral"
+          "heading": "Supplemental Materials"
         },
+        "Badger Supports values strong creative writers, artists, and storytellers. A written application offers limited space to demonstrate these skills. Later in this application, you will be encouraged to submit materials that support our holistic understanding of your qualifications.",
         {
-          "more": "Who can write your letter",
-          "body": [
-            "A letter of recommendation should be submitted by someone who can speak to your readiness for peer-centered leadership and collaborative student support. Appropriate recommenders include the following:",
-            {
-              "ordered": true,
-              "list": [
-                "A peer who has worked with you in a leadership, facilitation, or organizing role",
-                "A mentor or supervisor from a student-facing program who has observed your peer-to-peer engagement",
-                "A faculty or instructional staff member familiar with your experience in group facilitation, mentoring, or community building",
-                "A coordinator, advisor, or professional staff member who can speak to your leadership development and service orientation"
-              ]
-            },
-            "Your recommender should be able to address your relational skills, responsibility, and alignment with a peer-to-peer support model."
-          ]
-        },
-        "Your letter of recommendation is required by the deadline shown on the recommendation form for your application to be considered complete. You may therefore submit this application before your letter of recommendation is submitted.",
-        "You may submit any number of letters of recommendation; only one is required. Please have your recommender submit at:",
-        {
-          "links": [
-            {
-              "href": "/forms/recommendation-letter/",
-              "label": "recommend.badgersupports.org"
-            }
-          ]
-        },
-        "Referrers / Recommenders may also email letters to hiring@badgersupports.org.",
-        {
-          "more": "Supplemental Materials",
-          "body": [
-            "Badger Supports values strong creative writers, artists, and storytellers. A written application offers limited space to demonstrate these skills. Later in this application, you will be encouraged to submit materials that support our holistic understanding of your qualifications.",
-            {
-              "list": [
-                "Resume - Required for all applicants",
-                "Cover Letter - Encouraged for all applicants",
-                "Personal Portfolio - Encouraged for applicants interested in an Engagement role"
-              ]
-            }
+          "list": [
+            "Resume - Required for all applicants",
+            "Cover Letter - Encouraged for all applicants",
+            "Personal Portfolio - Encouraged for applicants interested in an Engagement role"
           ]
         }
       ],
-      "review": "Decision 7: Google's two forms.gle recommendation links are left out; only recommend.badgersupports.org is shown. On 23 Oct that address redirected to a third Google Form (forms.gle/WC3ihM2Ahqz8jC6T7), from Squarespace, the current host. Nicholas supplied that form on 23 Oct ('Letter of Referral / Recommendation Submission'); it is built natively as recommendation-letter, closed. Until it opens, the address keeps opening the Google Form; the redirect has to survive the move off Squarespace, and then point at /forms/recommendation-letter/. Decision 11: dates have no year.",
       "questions": [
         {
           "id": "ai_use",
           "type": "confirm",
           "label": "Use of Generative AI / Large Language Models / Machine Learning",
           "required": true,
-          "help": "Badger Supports centers authentic peer-to-peer connection and student voice. Use of generative AI, large language models or machine learning tools to complete any part of this application, including letters of recommendation, is not permitted and may affect consideration for a position.",
+          "help": "Badger Supports centers authentic peer-to-peer connection and student voice. Use of generative AI, large language models or machine learning tools to complete any part of this application is not permitted and may affect consideration for a position.",
           "confirmText": "I confirm that this application will reflect my own voice and work."
         }
       ]
@@ -173,6 +170,7 @@
     {
       "id": "support",
       "title": "Support in This Application",
+      "review": "Google's line 'Please sign in to your @wisc.edu account to save your progress.' is left out: the native form keeps nothing until Send. '*Or by appointment -- email us' is set as a sentence.",
       "intro": [
         "Applicants are encouraged to explore the Badger Supports website at badgersupports.org and the Badger Supports Instagram to learn more about programs and community.",
         {
@@ -190,27 +188,26 @@
         },
         {
           "list": [
-            "Tuesday: 10:00am - 11:30am",
-            "Friday: 1:00pm - 4:00pm"
+            "Monday & Wednesday: 10:30am - 11:45am (during weeks when classes are in session; except Thanksgiving week, 11/23 and 11/25)"
           ]
-        }
+        },
+        "Or by appointment: email us at hiring@badgersupports.org!"
       ],
-      "review": "Google's 'Please sign in to your @wisc.edu account to save your progress.' is left out: the native form keeps nothing until Send. The Instagram link is the one in content/site.json.",
-      "questions": []
+      "questions": [
+        {
+          "id": "ready",
+          "type": "confirm",
+          "label": "Ready?!",
+          "required": true,
+          "confirmText": "Yes!",
+          "review": "Google's help 'Please click Yes, and click Next' is left out: the native form is one page."
+        }
+      ]
     },
     {
       "id": "personal",
       "title": "Personal Information",
       "questions": [
-        {
-          "id": "email",
-          "type": "email",
-          "label": "Email",
-          "required": true,
-          "autocomplete": "email",
-          "help": "Please use your wisc.edu address.",
-          "proposed": "Decision 6: the address becomes the Connect sign-in, so the help asks for the wisc.edu one without refusing any other. Google asks for it first, before About Badger Supports."
-        },
         {
           "id": "name",
           "type": "short",
@@ -308,8 +305,9 @@
         {
           "id": "attended",
           "type": "checkboxes",
-          "label": "I have attended...",
+          "label": "I have attended / utilized...",
           "required": false,
+          "allowOther": true,
           "help": "Previous Participation at a Badger Supports Program is not required for consideration for a position.",
           "options": [
             {
@@ -317,12 +315,16 @@
               "label": "Craft Night"
             },
             {
-              "id": "workshop",
-              "label": "Workshop (via a class/dept, a showcase workshop like Navigating Housing, etc)"
-            },
-            {
               "id": "peer_support_group",
               "label": "Peer Support Group"
+            },
+            {
+              "id": "workshop",
+              "label": "Workshop (via a class/department)"
+            },
+            {
+              "id": "housing_workshop",
+              "label": "Navigating Housing Workshop"
             },
             {
               "id": "collaboration",
@@ -334,7 +336,15 @@
             },
             {
               "id": "office_hours",
-              "label": "Peer Support Office Hours @ The Student Mental Health Hub"
+              "label": "Peer Support Drop-In Hours @ The Student Mental Health Hub"
+            },
+            {
+              "id": "spill",
+              "label": "Badger SPILL"
+            },
+            {
+              "id": "tabling",
+              "label": "Org Fair / Tabling Event with Badger Supports (Mental Wellbeing Resource Fair, tabling at Gordons/Library Mall, etc)"
             }
           ]
         }
@@ -401,10 +411,9 @@
       "id": "skills",
       "title": "I have skills and/or interests in pursuing the following",
       "intro": [
-        "Pick skills that most resonate with you, whether that be from passion or from prior experience. Your desire to learn any of the given skills is what is sought at Badger Supports. We seek motivated, curious leaders who want to grow with the organization.",
+        "Pick skills that most resonate with you, whether that be from passion or from prior experience. We are looking for your desire to learn any of the given skills. We seek motivated, curious leaders who want to grow with the organization.",
         "You should not limit your selections to one category, nor are you required to select all tasks within a category. If there are multiple parts to a skill and you only connect with a part of it, please still select it."
       ],
-      "review": "Skill groups are headed and ordered by Connect's directorates (owner, 21 Oct); placements follow the 12 Mar 2026 org design, which Connect marks 'not yet confirmed'. The Engagement description drops Communications' 'the second largest directorate' until Nicholas confirms it of Engagement. Initiatives is optional on both forms (decision 9).",
       "questions": [
         {
           "id": "skills_wellness",
@@ -412,12 +421,7 @@
           "label": "Wellness & Support",
           "required": false,
           "help": [
-            {
-              "more": "What this directorate does",
-              "body": [
-                "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed."
-              ]
-            },
+            "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed.",
             "Check all that apply."
           ],
           "options": [
@@ -445,12 +449,7 @@
           "label": "Programs",
           "required": false,
           "help": [
-            {
-              "more": "What this directorate does",
-              "body": [
-                "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another."
-              ]
-            },
+            "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another.",
             "Check all that apply."
           ],
           "options": [
@@ -468,32 +467,11 @@
             },
             {
               "id": "plan_events",
-              "label": "PLAN Events (Craft Nights, Open Houses, Dogs On Call, Collaborative Art, etc)"
+              "label": "PLAN Events (Craft Nights, Open Houses, Dogs On Call, Community Art Project, etc)"
             },
             {
               "id": "deliver_workshops",
-              "label": "CONTRIBUTE to and support the delivery of existing workshops"
-            }
-          ]
-        },
-        {
-          "id": "skills_initiatives",
-          "type": "checkboxes",
-          "label": "Programs - Initiatives",
-          "required": false,
-          "help": "Check all that apply.",
-          "options": [
-            {
-              "id": "launch_programs",
-              "label": "DESIGN and launch new programs or pilot projects that address emerging student needs"
-            },
-            {
-              "id": "cross_team",
-              "label": "COORDINATE cross team efforts to implement initiatives from concept through execution"
-            },
-            {
-              "id": "evaluate_outcomes",
-              "label": "EVALUATE initiative outcomes and document lessons learned to support future growth and improvement"
+              "label": "CONTRIBUTE to and support the delivery of *existing* workshops"
             }
           ]
         },
@@ -503,12 +481,7 @@
           "label": "Engagement - Outreach",
           "required": false,
           "help": [
-            {
-              "more": "What this directorate does",
-              "body": [
-                "The Directorate of Engagement advances the organization's mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care."
-              ]
-            },
+            "The Directorate of Engagement, the second largest directorate at Badger Supports, advances the organization’s mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care.",
             "Check all that apply."
           ],
           "options": [
@@ -534,10 +507,6 @@
           "help": "Check all that apply.",
           "options": [
             {
-              "id": "edit_video",
-              "label": "CREATE and edit video content for social media, campaigns, and digital promotion"
-            },
-            {
               "id": "design_apparel",
               "label": "DESIGN apparel that supports visibility"
             },
@@ -551,7 +520,7 @@
             },
             {
               "id": "write_copy",
-              "label": "WRITE and refine marketing copy, captions, and messaging"
+              "label": "WRITE and refine captions, newsletters, and messaging to students"
             },
             {
               "id": "social_media",
@@ -564,38 +533,51 @@
           ]
         },
         {
-          "id": "skills_business",
+          "id": "skills_campus",
           "type": "checkboxes",
-          "label": "Business Development",
+          "label": "Engagement - Campus Relations",
           "required": false,
-          "help": [
-            {
-              "more": "What this directorate does",
-              "body": [
-                "The Directorate of Business Development advances Badger Supports' long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources."
-              ]
-            },
-            "Check all that apply."
-          ],
+          "help": "Check all that apply.",
           "options": [
             {
-              "id": "fundraising",
-              "label": "DEVELOP fundraising skills through planning concession campaigns, engaging alumni donors, and supporting development strategies for long-term sustainability."
+              "id": "partnerships",
+              "label": "BUILD relationships with campus partners and student organizations to support collaboration and shared initiatives"
             },
             {
-              "id": "grant_writing",
-              "label": "DRAFT and edit grant proposals, budgets, and justifications to build experience in grant writing"
+              "id": "asm_advocacy",
+              "label": "ENGAGE in advocacy and coordination with the Associated Students of Madison to advance student focused priorities"
             },
             {
-              "id": "payroll",
-              "label": "COORDINATE payroll administration by tracking hours, maintaining documentation, and supporting related financial records."
+              "id": "uhs_collaboration",
+              "label": "COLLABORATE with University Health Services and other campus offices to promote resources, programs, and support services"
+            }
+          ]
+        },
+        {
+          "id": "skills_data",
+          "type": "checkboxes",
+          "label": "Engagement - Data",
+          "required": false,
+          "help": "Check all that apply.",
+          "options": [
+            {
+              "id": "analyze_performance",
+              "label": "ANALYZE web and search performance using tools such as Google Analytics, Google Search Console, and Instagram Insights"
+            },
+            {
+              "id": "interpret_data",
+              "label": "INTERPRET traffic, reach, and behavior data to understand how audiences engage with digital content"
+            },
+            {
+              "id": "apply_analysis",
+              "label": "APPLY data analysis skills to support evidence based communication and strategic planning"
             }
           ]
         },
         {
           "id": "skills_operations",
           "type": "checkboxes",
-          "label": "Business Development - Operations",
+          "label": "Operations",
           "required": false,
           "help": "Check all that apply.",
           "options": [
@@ -620,7 +602,7 @@
         {
           "id": "skills_technical",
           "type": "checkboxes",
-          "label": "Business Development - Technical",
+          "label": "Operations - Technical",
           "required": false,
           "help": "Check all that apply.",
           "options": [
@@ -639,44 +621,34 @@
           ]
         },
         {
-          "id": "skills_data",
+          "id": "skills_business",
           "type": "checkboxes",
-          "label": "Business Development - Data",
+          "label": "Business Development",
           "required": false,
-          "help": "Check all that apply.",
+          "help": [
+            "The mission of the Directorate of Business Development advances Badger Supports’ long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources.",
+            "Check all that apply."
+          ],
           "options": [
             {
-              "id": "analyze_performance",
-              "label": "ANALYZE web and search performance using tools such as Google Analytics, Google Search Console, and Instagram Insights"
+              "id": "grant_writing",
+              "label": "DRAFT and edit grant proposals, budgets, and justifications to build experience in grant writing"
             },
             {
-              "id": "interpret_data",
-              "label": "INTERPRET traffic, reach, and behavior data to understand how audiences engage with digital content"
+              "id": "payroll",
+              "label": "COORDINATE payroll administration by tracking hours, maintaining documentation, and supporting related financial records."
             },
             {
-              "id": "apply_analysis",
-              "label": "APPLY data analysis skills to support evidence based communication and strategic planning"
-            }
-          ]
-        },
-        {
-          "id": "skills_campus",
-          "type": "checkboxes",
-          "label": "Executive - Campus Relations",
-          "required": false,
-          "help": "Check all that apply.",
-          "options": [
-            {
-              "id": "partnerships",
-              "label": "BUILD relationships with campus partners and student organizations to support collaboration and shared initiatives"
+              "id": "purchasing",
+              "label": "MANAGE purchasing processes to support events and programs"
             },
             {
-              "id": "asm_advocacy",
-              "label": "ENGAGE in advocacy and coordination with the Associated Students of Madison to advance student focused priorities"
+              "id": "bd_compliance",
+              "label": "SUPPORT compliance, documentation, and internal processes required for student organization operations"
             },
             {
-              "id": "uhs_collaboration",
-              "label": "COLLABORATE with University Health Services and other campus offices to promote resources, programs, and support services"
+              "id": "budgets",
+              "label": "ANALYZE budgetary needs and support responsible budget use"
             }
           ]
         },
@@ -688,23 +660,23 @@
           "help": "Please rank preferences for placement in a Directorate using the options listed above, with 1 as highest preference and 4 as lowest. Review the general Directorate descriptions before ranking to support alignment between interests and responsibilities.",
           "options": [
             {
-              "id": "engagement",
-              "label": "Engagement"
+              "id": "wellness_support",
+              "label": "Wellness & Support"
             },
             {
               "id": "programs",
               "label": "Programs"
             },
             {
-              "id": "wellness_support",
-              "label": "Wellness & Support"
+              "id": "engagement",
+              "label": "Engagement"
             },
             {
               "id": "business_development",
               "label": "Business Development"
             }
           ],
-          "proposed": "Connect's directorates (owner, 21 Oct); no Badger SPILL row (owner, 23 Oct). Approve shows the first choice as a hint."
+          "review": "Google's one-per-row grid (1 to 4) is a rank question here: each row a different place, in the live form's order."
         },
         {
           "id": "experience",
@@ -747,13 +719,8 @@
           "label": "How many Peer Support Groups per week would you feel comfortable actively facilitating?",
           "required": false,
           "help": [
-            {
-              "more": "What a Peer Support Group is",
-              "body": [
-                "Peer Support Groups are weekly, one-hour, student led spaces where participants gather for shared conversation, active listening, and mutual support. Groups focus on connection rather than advice or solutions, with facilitators helping guide discussion and maintain a supportive environment alongside trained Badger Supports volunteers."
-              ]
-            },
-            "Please answer honestly based on time availability and comfort level. If \"No\" or \"Unsure\" was selected for facilitating groups in the previous section, selecting \"zero\" is appropriate. Comfort with group facilitation does not affect an application, as Badger Supports values many forms of involvement and commitment."
+            "Peer Support Groups are weekly, one-hour, student led spaces where participants gather for shared conversation, active listening, and mutual support. Groups focus on connection rather than advice or solutions, with facilitators helping guide discussion and maintain a supportive environment alongside trained Badger Supports volunteers.",
+            "Please answer honestly based on time availability and comfort level. If “No” or “Unsure” was selected for facilitating groups in the previous section, selecting “zero” is appropriate. Comfort with group facilitation does not affect an application, as Badger Supports values many forms of involvement and commitment."
           ],
           "options": [
             {
@@ -780,7 +747,8 @@
               "id": "n5",
               "label": "5"
             }
-          ]
+          ],
+          "review": "Google shows a linear scale from 0 to 5; here a choice of the same six numbers. Not required, as on the live form."
         },
         {
           "id": "meeting_hours",
@@ -796,7 +764,7 @@
           "label": "In addition to Peer Support Group hours and regular meetings, how many additional weekly hours would you feel comfortable taking on?",
           "required": false,
           "maxLength": 200,
-          "help": "Additional hours are primarily student facing. Examples include: preparing and delivering peer support sessions, planning and running craft nights, developing and delivering workshops, and working on short- and long-term projects."
+          "help": "Additional hours are primarily student facing. Examples include: preparing and delivering peer support sessions, craft nights, workshops, training, tabling, outreach, etc."
         },
         {
           "id": "total_hours",
@@ -808,27 +776,7 @@
           "help": [
             "What is the maximum number of hours per week you are available to work, calculated as the total of the three components listed above?",
             "Badger Supports appointments typically consist of 5-12 total hours per week."
-          ],
-          "proposed": "Google's question had no range; 1 to 40 is ours. Approve fills Max hours from it when approving as Staff."
-        },
-        {
-          "id": "work_study",
-          "type": "choice",
-          "label": "Are you currently eligible for Federal Work Study for the upcoming academic year?",
-          "required": true,
-          "confidential": true,
-          "help": "Work study is not a requirement or major consideration for any Badger Supports position.",
-          "options": [
-            {
-              "id": "yes",
-              "label": "Yes"
-            },
-            {
-              "id": "no",
-              "label": "No"
-            }
-          ],
-          "review": "Google links 'What is work study?' above this line. Its target needs a wisc.edu sign-in to read; add it as a links part once known."
+          ]
         },
         {
           "id": "commitments",
@@ -844,6 +792,24 @@
             "Only include active/upcoming commitments, not past commitments.",
             "For Greek Life involvement, please only indicate the level of current or planned involvement. Information regarding Greek Life and study abroad is collected for appointment purposes and generally will not affect final hiring decisions."
           ]
+        },
+        {
+          "id": "training_ack",
+          "type": "confirm",
+          "label": "Reminder: Training Commitment",
+          "required": false,
+          "review": "Not marked required on the live form, so not required here.",
+          "help": [
+            "By submitting this application, you confirm that, if selected, you will attend required staff/volunteer training sessions on both dates:",
+            {
+              "list": [
+                "Tuesday, January 19th, 5:00 PM - 8:00 PM",
+                "Thursday, January 21st, 5:00 PM - 8:00 PM"
+              ]
+            },
+            "If selected, additional details will be communicated via your Wisc email."
+          ],
+          "confirmText": "I understand."
         }
       ]
     },
@@ -860,8 +826,7 @@
             "PDF only. Required for all applicants. Please upload a one page, up-to-date resume. How To's and Resume examples are available through SuccessWorks.",
             "Name the file using the following format: FIRSTLAST_Resume.pdf",
             "Badger Supports encourages applicants to list relevant coursework."
-          ],
-          "review": "Google links 'SuccessWorks'. Its target needs a wisc.edu sign-in to read; add it as a links part once known."
+          ]
         },
         {
           "id": "cover_letter",
@@ -879,37 +844,39 @@
               ]
             }
           ],
-          "review": "Google's label 'Cover Letter (Optional)' loses '(Optional)': the form marks every optional question itself. Google's 'View SucessWorks Cover Letter Basics' link is left out until its target is known (it needs a wisc.edu sign-in to read)."
+          "review": "Google's '(Optional)' is dropped: the form marks optional questions itself. Its 'View SucessWorks Cover Letter Basics' link is left out until its target is known."
+        }
+      ]
+    },
+    {
+      "id": "portfolio_section",
+      "title": "Personal Portfolio",
+      "intro": [
+        "A personal portfolio is encouraged for applicants seeking consideration for the Directorate of Engagement. The portfolio should clearly demonstrate experience in communications work, particularly content designed for students in a peer to peer setting. Portfolios should include at least two to five samples, including (but not limited to):",
+        {
+          "ordered": true,
+          "list": [
+            "Video content that was filmed, produced, or edited",
+            "Digital media work such as graphics, social media posts, or web content*",
+            "Press releases or public facing announcements",
+            "Marketing or outreach campaigns for student organizations",
+            "Written communications such as newsletters, email campaigns, or blog posts",
+            "Branding or visual identity work, including style guides or asset systems"
+          ]
         },
+        "*A public, well developed personal/business LinkedIn and Instagram are acceptable forms of submission.",
+        "One file with multiple elements is preferred.",
+        "Applicants interested in other Directorates may still choose to upload a personal portfolio if they wish."
+      ],
+      "questions": [
         {
           "id": "portfolio",
           "type": "links",
           "label": "Personal Portfolio Submission",
           "required": false,
           "maxLinks": 5,
-          "help": [
-            "A personal portfolio is encouraged for applicants seeking consideration for the Directorate of Engagement. The portfolio should clearly demonstrate experience in communications work, particularly content designed for students in a peer to peer setting. Portfolios should include at least two to five samples, including (but not limited to):",
-            {
-              "more": "Kinds of samples",
-              "body": [
-                {
-                  "ordered": true,
-                  "list": [
-                    "Video content that was filmed, produced, or edited",
-                    "Digital media work such as graphics, social media posts, or web content*",
-                    "Press releases or public facing announcements",
-                    "Marketing or outreach campaigns for student organizations",
-                    "Written communications such as newsletters, email campaigns, or blog posts",
-                    "Branding or visual identity work, including style guides or asset systems"
-                  ]
-                },
-                "*A public, well developed personal/business LinkedIn and Instagram are acceptable forms of submission. One link with multiple elements is preferred."
-              ]
-            },
-            "Applicants interested in other Directorates may still choose to share a personal portfolio if they wish.",
-            "Up to five links, one per line, each starting with https://. Set each to \"Anyone with the link can view\", or share it with hiring@badgersupports.org. Please label your files as FIRSTLAST_Portfolio"
-          ],
-          "proposed": "Decision 3 (owner, 21 Oct): links, never uploads. The last paragraph is the handoff's proposed help, for Nicholas to edit."
+          "help": "Share up to 5 links to your portfolio files. Please label your files as FIRSTLAST_Portfolio",
+          "review": "Google takes up to 5 file uploads, 1 GB in all. The native form takes portfolios as links (owner, 21 Oct); the help line is ours, the naming rule is Google's."
         },
         {
           "id": "alt_links",
@@ -917,7 +884,7 @@
           "label": "Alternative Submission(s)",
           "required": false,
           "rows": 3,
-          "help": "If you run into any technical difficulties please feel free to submit Shared Google Drive links here. Send inquiries to hiring@badgersupports.org"
+          "help": "If you run into any technical difficulties please feel free to submit Shared Google Drive links here. Send inquires to hiring@badgersupports.org"
         }
       ]
     },
@@ -927,32 +894,21 @@
       "intro": "Thank you for taking the time to complete this Staff Application for Badger Supports.",
       "questions": [
         {
-          "id": "referral_ack",
-          "type": "confirm",
-          "label": "Letter of Referral / Recommendation",
-          "required": true,
-          "help": [
-            "I understand that my application is only complete when a letter of referral / recommendation has been uploaded to recommend.badgersupports.org/ by the deadline shown on that form.",
-            {
-              "links": [
-                {
-                  "href": "/forms/recommendation-letter/",
-                  "label": "recommend.badgersupports.org"
-                }
-              ]
-            },
-            "Referrers / Recommenders may also email them to hiring@badgersupports.org.",
-            "Please send any questions to hiring@badgersupports.org"
-          ],
-          "confirmText": "I understand"
-        },
-        {
           "id": "ai_use_final",
           "type": "confirm",
           "label": "Use of Generative AI / Large Language Models / Machine Learning",
           "required": true,
-          "help": "Badger Supports centers authentic peer-to-peer connection and student voice. Use of generative AI, large language models or machine learning tools to complete any part of this application, including letters of recommendation, is not permitted and may affect consideration for a position.",
+          "help": "Badger Supports centers authentic peer-to-peer connection and student voice. Use of generative AI, large language models or machine learning tools to complete any part of this application is not permitted and may affect consideration for a position.",
           "confirmText": "I confirm that this application reflects my own voice and work."
+        },
+        {
+          "id": "interview_ack",
+          "type": "confirm",
+          "label": "If I am selected to move forward in the review process, I will be contacted to schedule an interview by January 6th.",
+          "required": false,
+          "help": "Interviews will take place virtually on January 11th and January 12th.",
+          "confirmText": "I understand.",
+          "review": "Google's 'to more forward' is corrected to 'move forward'. Not marked required on the live form."
         },
         {
           "id": "comments",
@@ -960,7 +916,7 @@
           "label": "Comments & Questions",
           "required": false,
           "rows": 4,
-          "help": "Please use this space for questions and comments you may have, separate from information provided in your application. Any information relevant to your application should be provided under \"Please share any information you feel is relevant to your interest in Badger Supports.\""
+          "help": "Please use this space for questions and comments you may have, separate from information provided in your application. Any information relevant to your application should be provided in section 4 under \"Please share any information you feel is relevant to your interest in Badger Supports.\""
         }
       ]
     }
@@ -969,6 +925,13 @@
     "title": "Application received",
     "body": [
       "After submitting an application, applicants selected to move forward will be contacted to schedule an interview as the next step in the review process.",
+      "Timeline:",
+      "December 18th at 11:59 PM: Application closes",
+      "By January 6th: All applicants notified of next steps (including interview consideration)",
+      "January 11th-12th: Virtual Interviews (for select candidates only)",
+      "By January 15th: Final notification of appointment status",
+      "January 19th and January 21st: Required training for new appointees (5:00-8:00 PM each day)",
+      "Important: If you are selected for a staff or volunteer position, attendance at both spring training dates will be required. Training will take place on Tuesday, January 19th, 5:00 PM - 8:00 PM and Thursday, January 21st, 5:00 PM - 8:00 PM. If selected, additional details will be communicated via your Wisc email.",
       "Please email your questions to hiring@badgersupports.org"
     ]
   },
@@ -980,10 +943,7 @@
   },
   "source": {
     "system": "google-forms",
-    "publishedId": "1FAIpQLSd2uvC8Jx-m2na3onw660uYJvaJBMU9XfwbteZRsuA4OauZJg",
-    "aliases": [
-      "https://forms.gle/QM12SgfBVx6euUCD6"
-    ],
-    "read": "Public closed view, 2026-10-19. Same published ID as the Forms directory 'GSSF Staff Application' entry. Questions from the PDF, transcribed in Admin/Handoffs/HANDOFF-APPLICATIONS-AND-INVITES-2026-10-21.md."
+    "editorId": "1Apxe3V9HT0X-iFppbX36q8E_9Iem5OcScThyN5lh0YI",
+    "read": "Editor 1Apxe3V9HT0X-iFppbX36q8E_9Iem5OcScThyN5lh0YI, \"LIVE 🦡 Badger Supports GSSF Staff Application\", owned by directors@badgersupports.org, last edited 9 Nov 2026; read from the PDF Nicholas printed on 10 Nov 2026 (Admin/Handoffs/active/PUBLIC-SITE/session10-source/STAFF-APPLICATION-LIVE-2026-11-10.pdf). Its published ID was not read, so no Google fallback link is built from it."
   }
 }

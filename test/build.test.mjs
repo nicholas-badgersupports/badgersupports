@@ -53,8 +53,8 @@ test("the mood check-in is excluded from analytics and works without JavaScript"
   assert.match(html, /<form method="post" action="\/api\/mood"/);
 });
 
-test("a closed application shows its state, from the same switch the API reads", () => {
-  assert.match(read("index.html"), /Applications Closed/);
+test("an open application carries no Closed tag on the home page (its state comes from the same switch the API reads)", () => {
+  assert.doesNotMatch(read("index.html"), /Applications Closed/);
 });
 
 test("sample Wall notes say they are samples", () => {

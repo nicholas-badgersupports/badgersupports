@@ -50,7 +50,7 @@ export async function currentForm(key, { now = Date.now() } = {}) {
   const manualState = sw ? sw.state : def.state;
   // A form asking for agreement to a document Connect has not published (or cannot be read) does not open.
   const unavailable = !allQuestions(def).length || allQuestions(def).some(({ q }) => (q.type === "resource" && !q.resources?.length) || (q.type === "agree" && !q.current));
-  const settings = await readFormSettings(key);
+  const settings = await readFormSettings(key, def);
   const result = effectiveForm(def, settings, manualState, now);
   if (result.state === "open" && unavailable) { result.state = "closed"; result.stateReason = "unavailable"; }
   return { ...result, closedMessage: settings.closedMessage ?? (sw && sw.closed_message) ?? def.closedMessage };

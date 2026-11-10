@@ -44,11 +44,12 @@ test('missing resource-report answers are rejected before any submission or outb
  assert.equal((await one('SELECT count(*)::int AS n FROM submissions')).n,0);
  assert.equal((await one('SELECT count(*)::int AS n FROM outbox')).n,0);
 });
-test('the Wall stays closed, then accepts one anonymous moderated note once when opened locally',async()=>{
+test('the Wall refuses a note while switched off, then accepts one anonymous moderated note once when open',async()=>{
  await freshServer();
  const send=(note,key='wall-example-key')=>handle(post('/api/forms/wall-note/submit',{_form:'wall-note',_version:'1',_key:key,note,email:'discard@example.org',name:'Not a stored sender'}),{ip:'198.51.100.11'});
+ await q("INSERT INTO form_state(form_key,state,changed_by) VALUES('wall-note','closed','test')");
  assert.equal((await send('A note')).status,409);
- await q("INSERT INTO form_state(form_key,state,changed_by) VALUES('wall-note','open','test')");
+ await q("UPDATE form_state SET state='open' WHERE form_key='wall-note'");
  for(const note of ['', '   ','x'.repeat(281)])assert.equal((await send(note)).status,422);
  assert.equal((await one('SELECT count(*)::int AS n FROM submissions')).n,0);
  const a=await(await send('x'.repeat(280))).json(),b=await(await send('x'.repeat(280))).json();assert.equal(a.ref,b.ref);assert.match(a.ref,/^WN-/);

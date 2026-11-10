@@ -185,8 +185,7 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
 </form>`;
 }
 
-/* A form that is switched off. One served elsewhere for now (`elsewhere`, set at launch by
-   launchForms) shows only the way to its Google Form, as the page's one big button under its own
+/* A form that is switched off. One whose definition names an `elsewhere` address shows only the way to its Google Form, as the page's one big button under its own
    title and intro; the closing message is for a form that is off, not one that has moved. */
 export function renderClosed(def, t, { title = null, answers = null, elsewhere = def.elsewhere, note = null } = {}) {
   const away = elsewhere ? html`<p><a class="btn btn--big" href="${elsewhere}" data-form-elsewhere><span class="go-label">${t("form.elsewhere.go")}</span>${icon("out", "go-ic")}</a></p>` : "";

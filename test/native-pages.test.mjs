@@ -33,11 +33,13 @@ test('every definition has a production form page and reply metadata, with no pr
   assert.equal(fs.existsSync(path.join(OUT,'forms',key,'preview','index.html')),false,key);
  }
 });
-test('without a revision, all six added pages open and close from the switch and closed replies retain current introductions',async()=>{
+test('without a revision, all six added pages are served open, close and open again from the switch, and closed replies retain current introductions',async()=>{
  const store=await fresh();assert.equal(await store.get('current'),null);
  assert.deepEqual(SERVER.render.builtEdits,JSON.parse(fs.readFileSync(path.join(ROOT,'content/edits.json'))).edits);
  for(const key of missing){
   const p=SERVER.formPages[key],version=SERVER.forms[key].version;
+  const shipped=await(await get(p.path)).text();assert.match(shipped,new RegExp(`data-form="${key}"`),key);assert.match(shipped,/<form[^>]*novalidate/,key);
+  await setSwitch(key,'closed','fictional');
   const closed=await(await get(p.path)).text();assert.ok(closed.includes(p.closedIntro),key);assert.doesNotMatch(closed,/<form[\s>]/,key);
   await setSwitch(key,'open','fictional');
   const open=await(await get(p.path)).text();assert.match(open,new RegExp(`data-form="${key}"`),key);assert.match(open,/<form[^>]*novalidate/,key);
@@ -57,17 +59,18 @@ test('published closed introduction changes apply to both GET and stale closed P
  const res=await handle(post(`/api/forms/${key}/submit`,{_form:key,_version:String(SERVER.forms[key].version)},{json:false}),{ip:'192.0.2.41'});
  assert.equal(res.status,409);assert.match(await res.text(),/Fictional published closed introduction/);
 });
-test('native closed recruitment pages retain protected source questions and policy words',()=>{
+test('native recruitment pages retain protected source questions and policy words, and ship open',()=>{
  const staff=JSON.parse(fs.readFileSync(path.join(ROOT,'content/forms/staff-application.json')));
  assert.equal(staff.sections.flatMap(s=>s.questions||[]).find(q=>q.id==='resume').required,true);
- assert.ok(JSON.stringify(staff.sections).includes('/forms/recommendation-letter/'));
- for(const key of missing)assert.equal(SERVER.forms[key].state,'closed');
+ assert.ok(JSON.stringify(staff.sections).includes('/forms/volunteer-application/'));
+ assert.match(JSON.stringify(staff.intro),/Equal Opportunity Employer/);
+ for(const key of missing)assert.equal(SERVER.forms[key].state,'open');
 });
 
 test('native program links preserve the offered request type and its original Google fallback without broadening overrides',async()=>{
  await fresh();const key='program-request';
  for(const type of ['peer_support_group','volunteer_training']){
-  await fresh();
+  await fresh();useContent({...SERVER,forms:{...SERVER.forms,[key]:{...SERVER.forms[key],state:'closed'}}}); // shipped closed, no switch row: its Google fallback shows
   const closed=await(await get(`/forms/program-request/?topic=${type}`)).text();
   const topic=programTopic(SERVER.forms[key],type),alternate=new URL(programElsewhere(SERVER.forms[key],topic));
   assert.equal(alternate.searchParams.get('entry.70593572'),topic.label);assert.ok(closed.includes(alternate.href.replaceAll('&','&amp;')));
@@ -108,17 +111,18 @@ test('dated GETs and state replies cannot cache across opening, and scheduled up
 
 async function session(scopes){const id=crypto.randomBytes(32).toString('base64url');await q("INSERT INTO staff_sessions(id_hash,sub,name,scopes,expires_at) VALUES($1,'fictional-editor','Fictional Example',$2::jsonb,now()+interval '1 hour')",[crypto.createHash('sha256').update(id).digest('hex'),JSON.stringify(scopes)]);return `bss_staff=${id}`;}
 test('settings save preserves grants, detects stale versions, and records only successful changes',async()=>{
- await fresh();const key='staff-application',base={...emptyFormSettings(),version:0};
+ await fresh();const key='staff-application',base={...emptyFormSettings(),version:0,closesAt:'2026-12-18T23:59'}; // the shipped window is the unsaved starting point
+ await setSwitch(key,'closed','fixture');
  const reader=await session(['forms.read:*']),editor=await session(['site.edit']),switcher=await session([`forms.switch:${key}`]),both=await session(['site.edit',`forms.switch:${key}`]);
  const save=(body,cookie)=>handle(post(`/api/staff/forms/${key}/settings`,body,{headers:{cookie}}),{ip:'192.0.2.45'});
- assert.equal((await save({...base,opensAt:'2027-01-01T12:00'},reader)).status,403);
- assert.equal((await save({...base,opensAt:'2027-01-01T12:00'},editor)).status,403);
+ assert.equal((await save({...base,opensAt:'2026-12-01T12:00'},reader)).status,403);
+ assert.equal((await save({...base,opensAt:'2026-12-01T12:00'},editor)).status,403);
  assert.equal((await save({...base,title:'Fictional Title'},switcher)).status,403);
  assert.equal((await readFormSettings(key)).version,0);
  assert.equal((await save({...base,title:'Fictional Title',introduction:'Fictional introduction.',closedMessage:'Fictional closed message.'},editor)).status,200);
- assert.equal((await save({...base,opensAt:'2027-01-01T12:00'},both)).status,409);
+ assert.equal((await save({...base,opensAt:'2026-12-01T12:00'},both)).status,409);
  const current=await readFormSettings(key);assert.equal(current.version,1);
- assert.equal((await save({...current,opensAt:'2027-01-01T12:00',deadline:'2027-01-08T12:00'},switcher)).status,200);
+ assert.equal((await save({...current,opensAt:'2026-12-01T12:00',deadline:'2026-12-08T12:00'},switcher)).status,200);
  assert.equal((await save({...await readFormSettings(key),unexpected:true},both)).status,400);
  assert.equal((await many('SELECT * FROM form_settings_history')).length,2);
  assert.equal((await currentForm(key)).manualState,'closed');

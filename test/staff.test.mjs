@@ -25,7 +25,7 @@ import { build, loadContent } from "../ops/build.mjs";
 import { currentRevision, useStore, memoryStore, usePurger, noteGet } from "../netlify/lib/published.mjs";
 import { handlePage, useDist } from "../netlify/lib/pages.mjs";
 import { currentForm, setSwitch } from "../netlify/lib/intake.mjs";
-import { launchForms } from "../src/shared/forms.mjs";
+import { servedForms } from "../src/shared/form-window.mjs";
 import { layStructure, emptyStructure } from "../src/shared/structure.mjs";
 import * as structureModule from "../src/shared/structure.mjs";
 
@@ -1151,9 +1151,11 @@ test("item 17: the switch opens and closes a form with no deploy, Open needs a s
     const flip = (cookie, key, body, opts) => handle(staffPost(`/api/staff/forms/${key}/switch`, body, cookie, opts), ip());
     const visitor = async (p) => (await handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") })).text();
     const FORM = "resource-problem", PAGE = "/forms/resource-problem/";
-    const before = await visitor(PAGE);
-    assert.equal(before, fs.readFileSync(path.join(out, "forms/resource-problem/index.html"), "utf8"), "no switch row: the build's page byte for byte");
-    assert.match(before, /data-form-closed="resource-problem"/);
+    const built = await visitor(PAGE);
+    assert.equal(built, fs.readFileSync(path.join(out, "forms/resource-problem/index.html"), "utf8"), "no switch row: the build's page byte for byte");
+    assert.doesNotMatch(built, /data-form-closed/, "shipped open");
+    await setSwitch(FORM, "closed", "fixture");
+    assert.match(await visitor(PAGE), /data-form-closed="resource-problem"/, "a director closed it");
 
     assert.equal((await handle(post(`/api/staff/forms/${FORM}/switch`, { state: "open", confirm: FORM }), ip())).status, 401, "signed out");
     assert.deepEqual(await refusal(await flip(reader.cookie, FORM, { state: "open", confirm: FORM })), [403, "staff.forbidden"], "reading answers is not switching");
@@ -1164,7 +1166,7 @@ test("item 17: the switch opens and closes a form with no deploy, Open needs a s
     assert.deepEqual(await refusal(await flip(switcher.cookie, FORM, { state: "open", confirm: "workshop-request" })), [409, "switch.confirm"], "a yes for another form");
     assert.deepEqual(await refusal(await flip(switcher.cookie, FORM, { state: "on" })), [400, "switch.state"]);
     assert.deepEqual(await refusal(await flip(switcher.cookie, "no-such-form", { state: "closed" })), [404, "form.unknown"]);
-    assert.equal((await many("SELECT * FROM form_state")).length, 0, "nothing refused was written");
+    assert.deepEqual((await many("SELECT form_key, state FROM form_state")).map((r) => [r.form_key, r.state]), [[FORM, "closed"]], "nothing refused was written");
     assert.deepEqual(cleared, [], "and nothing was cleared");
 
     const opened = await flip(switcher.cookie, FORM, { state: "open", confirm: FORM });
@@ -1196,6 +1198,7 @@ test("item 17: the switch opens and closes a form with no deploy, Open needs a s
     assert.match(await visitor(PAGE), /data-form-closed="resource-problem"/);
 
     // A door to a form shows its state on the pages that carry the door: the home page and Get Involved.
+    await flip(switcher.cookie, "staff-application", { state: "closed" });
     cleared.length = 0;
     const doors = async () => [await visitor("/"), await visitor("/join/get-involved/")].map((h) => (h.match(/chip--closed/g) || []).length);
     const shut = await doors();
@@ -1221,18 +1224,25 @@ test("item 17: a switch the CDN could not clear still holds, and the reply says 
   } finally { usePurger(null); }
 });
 
-test("item 17: at launch a form points to its Google Form until the switch decides; then the switch alone says open or closed", async () => {
+test("item 17: a form serves its shipped state until the switch decides; then the switch alone says open or closed", async () => {
   await freshServer();
-  useContent({ ...serverContent(), forms: launchForms(serverContent().forms) });
+  useContent({ ...serverContent(), forms: servedForms(serverContent().forms) });
   const at = await currentForm("workshop-request");
-  assert.equal(at.state, "closed");
-  assert.match(at.def.elsewhere, /^https:\/\/docs\.google\.com\/forms\//, "no switch row: the launch build's link stands");
-  await setSwitch("workshop-request", "open", "test");
-  const open = await currentForm("workshop-request");
-  assert.deepEqual([open.state, open.def.elsewhere], ["open", undefined]);
+  assert.deepEqual([at.state, at.def.elsewhere ? "elsewhere" : null], ["open", null], "no switch row: the shipped open state stands");
   await setSwitch("workshop-request", "closed", "test");
   const shut = await currentForm("workshop-request");
-  assert.deepEqual([shut.state, shut.def.elsewhere], ["closed", undefined], "closed by a director: its own message, not the Google Form");
+  assert.deepEqual([shut.state, shut.def.elsewhere], ["closed", undefined], "closed by a director: its own message, not a Google Form");
+  await setSwitch("workshop-request", "open", "test");
+  assert.equal((await currentForm("workshop-request")).state, "open");
+});
+
+test("a shipped intake window closes a form with no saved dates on its own date; saved dates replace it", async () => {
+  await freshServer();
+  const before = Date.parse("2026-12-19T05:58:00Z"), after = Date.parse("2026-12-19T05:59:00Z");
+  const open = await currentForm("staff-application", { now: before });
+  assert.deepEqual([open.state, open.settings.closesAt, open.settings.version], ["open", "2026-12-18T23:59", 0]);
+  const ended = await currentForm("staff-application", { now: after });
+  assert.deepEqual([ended.state, ended.stateReason], ["closed", "ended"]);
 });
 
 /* ------------------------------------------------------------------ pages: drafts, preview, restore (item 16) */
@@ -1780,7 +1790,7 @@ test("item 15, settings (a): a publisher's new site name is in every page's titl
     "/about/our-team/": `Our Team — ${SITE_NAME}`,
     "/directions/sac-mhh/": `Directions to Student Mental Health Hub — ${SITE_NAME}`,
     "/about/our-team/avery-example/": `Avery Example, Executive Director — ${SITE_NAME}`,
-    "/forms/email-list/preview/": `Preview: Join Our Email List — ${SITE_NAME}`,
+    "/forms/email-list/": `Request Email Updates — ${SITE_NAME}`,
     "/programs/spring-retreat/": `Spring Retreat — ${SITE_NAME}`,
     "/staff/": `Staff Sign-In — ${SITE_NAME}`,
     "/no-such-page-here/": `Page Not Found — ${SITE_NAME}`,

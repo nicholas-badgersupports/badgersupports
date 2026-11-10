@@ -5,7 +5,7 @@
   "title": "Leave a Note",
   "audience": "public",
   "anonymous": true,
-  "state": "closed",
+  "state": "open",
   "closedMessage": "The Wall of Support form is closed.",
   "review": "Anonymous notes are reviewed in Connect before they appear on the Wall of Support. Opening the form requires its existing switch permission and confirmation.",
   "sections": [

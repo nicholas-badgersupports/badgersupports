@@ -30,6 +30,17 @@ export const CATEGORIES = [
 const CAMPUS = ["on_campus", "madison_community", "national"];
 const COST = { free: "free", free_or_covered: "covered", reduced_cost: "reduced", paid: "paid", varies: "varies", unknown: "unknown" };
 const WHERE = { on_campus: "onCampus", madison_community: "madison", national: "national" };
+/* Connect's ways to reach a resource (its modality), as the Access filter's options. */
+const HOW = { in_person: "person", virtual: "online", phone: "phone", text: "text", chat: "text", email: "email" };
+/* The filters under the topics, after Badger SPILL's and Connect's Resources page: within a group any pressed
+   option matches; across groups every group must. An option no card carries is not offered. */
+const FILTERS = [
+  { id: "cost", label: "resources.filters.cost", options: ["free"], key: (o) => `resources.cost.${o}` },
+  { id: "where", label: "resources.filters.where", options: ["onCampus", "madison", "national"], key: (o) => `resources.where.${o}` },
+  { id: "how", label: "resources.filters.how", options: ["person", "online", "phone", "text", "email"], key: (o) => `resources.how.${o}` },
+];
+const valuesOf = (r) => ({ cost: [COST[r.cost?.code]].filter(Boolean), where: [WHERE[r.location?.campus]].filter(Boolean), how: [...new Set([].concat(r.modality || []).map((m) => HOW[m]).filter(Boolean))] });
+
 const KEYPAD = { A: 2, B: 2, C: 2, D: 3, E: 3, F: 3, G: 4, H: 4, I: 4, J: 5, K: 5, L: 5, M: 6, N: 6, O: 6, P: 7, Q: 7, R: 7, S: 7, T: 8, U: 8, V: 8, W: 9, X: 9, Y: 9, Z: 9 };
 
 /* A number spelt in letters ("414-939-HOPE") dials each letter as its key; Connect's digits-only
@@ -92,7 +103,8 @@ function card(r, ctx, topicOf) {
   const topic = topicOf.get(r.primaryCategory);
   const where = WHERE[r.location?.campus];
   const more = [...details(r, ctx), html`<p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"))}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"))}</p>`];
-  return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null })}>
+  const v = valuesOf(r);
+  return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null, "data-cost": v.cost.join(" ") || null, "data-where": v.where.join(" ") || null, "data-how": v.how.join(" ") || null })}>
     <h3>${r.name}</h3>
     ${r.summary ? html`<p class="res-what">${r.summary}</p>` : ""}
     ${r.bestFor ? html`<p class="res-fit"><span class="res-lead">${ctx.t("resources.fit")}</span> ${r.bestFor}</p>` : ""}
@@ -126,6 +138,8 @@ export default {
     const list = all.slice().sort((a, z) => rank(a) - rank(z) || a.name.localeCompare(z.name, "en"));
     const n = list.length;
     const updated = ctx.data.resourcesUpdated;
+    const carried = Object.fromEntries(FILTERS.map((g) => [g.id, new Set(list.flatMap((r) => valuesOf(r)[g.id]))]));
+    const groups = FILTERS.map((g) => ({ ...g, options: g.options.filter((o) => carried[g.id].has(o)) })).filter((g) => g.options.length);
     return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
@@ -141,6 +155,11 @@ export default {
       <button type="button" class="res-topic-btn" aria-pressed="true" data-topic="">${ctx.t("resources.topics.all")}</button>
       ${topics.map((tp) => html`<button${attrs({ type: "button", class: "res-topic-btn", "aria-pressed": "false", "data-topic": tp.id, "data-category": tp.category, "data-aliases": (tp.aliases || []).join(" ") || null })}>${tp.label}</button>`)}
     </div>
+    ${groups.length ? html`<div class="res-filters">
+      <button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="${b.id}-filters" data-res-ftoggle>${ctx.t("resources.filters.toggle")}<span class="res-fcount" data-res-fcount hidden></span></button>
+      <div class="res-filter-panel" id="${b.id}-filters" data-res-fpanel>${groups.map((g) => html`<div class="res-fgroup" role="group" aria-labelledby="${b.id}-f-${g.id}"><p class="res-flabel" id="${b.id}-f-${g.id}">${ctx.t(g.label)}</p><div class="res-fopts">${g.options.map((o) => html`<button type="button" class="res-topic-btn res-fopt" aria-pressed="false" data-fgroup="${g.id}" data-fopt="${o}">${ctx.t(g.key(o))}</button>`)}</div></div>`)}</div>
+    </div>` : ""}
+    <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>
   </div>
   <div class="res-status" aria-live="polite"><p class="res-count" data-res-count>${n === 1 ? ctx.t("resources.count.one") : ctx.t("resources.count.all", { n })}</p><p class="res-relaxed" data-res-relaxed hidden>${ctx.t("resources.relaxed")}</p></div>
   <ul class="res-list">${list.map((r) => card(r, ctx, topicOf))}</ul>

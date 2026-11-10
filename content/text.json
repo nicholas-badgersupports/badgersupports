@@ -2822,6 +2822,66 @@
       "text": "National",
       "where": "On the resource list: the place chip on a card."
     },
+    "resources.filters.toggle": {
+      "group": "resources",
+      "text": "More Filters",
+      "where": "On a phone, the button that opens the Cost, Location and Access filters under the resource topics."
+    },
+    "resources.filters.cost": {
+      "group": "resources",
+      "text": "Cost",
+      "where": "Heading over the Cost filter on the resource list."
+    },
+    "resources.filters.where": {
+      "group": "resources",
+      "text": "Location",
+      "where": "Heading over the Location filter on the resource list."
+    },
+    "resources.filters.how": {
+      "group": "resources",
+      "text": "Access",
+      "where": "Heading over the Access filter (how to reach a resource) on the resource list."
+    },
+    "resources.how.person": {
+      "group": "resources",
+      "text": "In Person",
+      "where": "Access filter option: resources met in person."
+    },
+    "resources.how.online": {
+      "group": "resources",
+      "text": "Online",
+      "where": "Access filter option: resources reached online."
+    },
+    "resources.how.phone": {
+      "group": "resources",
+      "text": "Phone",
+      "where": "Access filter option: resources reached by phone."
+    },
+    "resources.how.text": {
+      "group": "resources",
+      "text": "Text or Chat",
+      "where": "Access filter option: resources reached by text or chat."
+    },
+    "resources.how.email": {
+      "group": "resources",
+      "text": "Email",
+      "where": "Access filter option: resources reached by email."
+    },
+    "resources.active": {
+      "group": "resources",
+      "text": "Showing:",
+      "where": "Before the chips of the topic, search and filters in use on the resource list."
+    },
+    "resources.chip.remove": {
+      "group": "resources",
+      "text": "Remove",
+      "where": "Read by screen readers on each chip of a filter in use; pressing the chip removes that filter."
+    },
+    "resources.clearAll": {
+      "group": "resources",
+      "text": "Clear All",
+      "where": "Button beside the filters in use: clears the search, topic and every filter."
+    },
     "resources.fit": {
       "group": "resources",
       "text": "Recommended For",

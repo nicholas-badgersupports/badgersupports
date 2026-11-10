@@ -103,3 +103,14 @@ test("a resource list with a topic it cannot draw fails the build", () => {
   assert.match(bad([{ id: "a1", label: "A", category: "housing" }, { id: "b1", label: "B", category: "housing" }]).join(), /two topics name housing/);
   assert.match(bad([{ id: "a1", label: "A", category: "housing", aliases: ["b1"] }, { id: "b1", label: "B", category: "legal_rights" }]).join(), /"b1" names two topics/);
 });
+
+test("the list offers Cost, Location and Access filters for what its cards carry, with a phone fold and a clear-all", () => {
+  for (const g of ["cost", "where", "how"]) assert.match(page, new RegExp(`data-fgroup="${g}"`), g);
+  assert.match(page, /<button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="[^"]+-filters" data-res-ftoggle>More Filters/);
+  assert.match(page, /data-res-clearall>Clear All</);
+  assert.doesNotMatch(page, /data-fopt="paid"/, "an option no card carries is not offered");
+  const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "content/fixtures/resources.json"), "utf8")).resources;
+  const r = fixture.find((x) => (x.modality || []).includes("virtual") && x.location?.campus === "on_campus");
+  assert.match(card(r.id), /data-where="onCampus"/);
+  assert.match(card(r.id), /data-how="[^"]*\bonline\b/);
+});

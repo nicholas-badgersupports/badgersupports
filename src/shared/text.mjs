@@ -76,7 +76,7 @@ export const CLIENT_TEXT = {
   "staff.js": ["staff.*"],
   "form-setup.js": ["staff.*"],
   "edit.js": ["edit.*"],
-  "resources.js": ["resources.count.*"],
+  "resources.js": ["resources.count.*", "resources.chip.remove"],
 };
 
 export function clientTable(table, modules) {

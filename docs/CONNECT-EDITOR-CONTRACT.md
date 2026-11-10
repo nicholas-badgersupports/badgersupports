@@ -529,7 +529,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-685 keys. Keys are permanent. Required text cannot be published empty and must keep each
+697 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -1217,7 +1217,7 @@ the site adds the markup.
 | `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
 | `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
 
-### Resource list (39)
+### Resource list (51)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1241,6 +1241,18 @@ the site adds the markup.
 | `resources.where.onCampus` | On Campus | On the resource list: the place chip on a card. |  |
 | `resources.where.madison` | In Madison | On the resource list: the place chip on a card. |  |
 | `resources.where.national` | National | On the resource list: the place chip on a card. |  |
+| `resources.filters.toggle` | More Filters | On a phone, the button that opens the Cost, Location and Access filters under the resource topics. |  |
+| `resources.filters.cost` | Cost | Heading over the Cost filter on the resource list. |  |
+| `resources.filters.where` | Location | Heading over the Location filter on the resource list. |  |
+| `resources.filters.how` | Access | Heading over the Access filter (how to reach a resource) on the resource list. |  |
+| `resources.how.person` | In Person | Access filter option: resources met in person. |  |
+| `resources.how.online` | Online | Access filter option: resources reached online. |  |
+| `resources.how.phone` | Phone | Access filter option: resources reached by phone. |  |
+| `resources.how.text` | Text or Chat | Access filter option: resources reached by text or chat. |  |
+| `resources.how.email` | Email | Access filter option: resources reached by email. |  |
+| `resources.active` | Showing: | Before the chips of the topic, search and filters in use on the resource list. |  |
+| `resources.chip.remove` | Remove | Read by screen readers on each chip of a filter in use; pressing the chip removes that filter. |  |
+| `resources.clearAll` | Clear All | Button beside the filters in use: clears the search, topic and every filter. |  |
 | `resources.fit` | Recommended For | On the resource list: the words before who a resource suits, on each card. |  |
 | `resources.more` | Additional Details | On the resource list: the button on a card that opens the rest of its record. |  |
 | `resources.view` | View Details | On the resource list: a card's button when its record's own button label is a phone number, starts with Call, is long or is missing. |  |

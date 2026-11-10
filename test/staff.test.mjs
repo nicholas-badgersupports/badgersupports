@@ -1584,8 +1584,8 @@ test("item 15: a retired section leaves the page and comes back where it was; th
   const publisher = await as(["site.edit", "site.publish"]);
   const P = "pg-about-what-we-do", URL_ = "/about/what-we-do/";
   const s = await sectionsOf(publisher, P);
-  assert.deepEqual(s.body.sections.map((x) => x.id), ["b-wwd-head", "b-wwd-groups", "b-wwd-craft", "b-wwd-workshops", "b-wwd-more", "b-wwd-uhs"]);
-  const first = await change(editor, { action: "sectionOrder", expected: s.body.version, page: P, order: ["b-wwd-head", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-more", "b-wwd-uhs"] });
+  assert.deepEqual(s.body.sections.map((x) => x.id), ["b-wwd-head", "b-wwd-glance", "b-wwd-groups", "b-wwd-craft", "b-wwd-workshops", "b-wwd-more", "b-wwd-uhs"]);
+  const first = await change(editor, { action: "sectionOrder", expected: s.body.version, page: P, order: ["b-wwd-head", "b-wwd-glance", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-more", "b-wwd-uhs"] });
   assert.equal(first.status, 200, JSON.stringify(first.body));
   const no = await change(editor, { action: "sectionRetire", expected: first.body.version, page: P, section: "b-wwd-craft" });
   assert.equal(no.status, 403, "retiring from a live page is a publisher's");
@@ -1600,12 +1600,12 @@ test("item 15: a retired section leaves the page and comes back where it was; th
   assert.equal((await saveWord(editor, open.target, open.current, "Made-up Words Kept")).changed, true, "a save already open on its words is still taken");
   const listed = await sectionsOf(editor, P);
   assert.deepEqual(listed.body.retired.map((x) => x.id), ["b-wwd-craft"]);
-  const o = await change(editor, { action: "sectionOrder", expected: listed.body.version, page: P, order: ["b-wwd-head", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-uhs"] });
+  const o = await change(editor, { action: "sectionOrder", expected: listed.body.version, page: P, order: ["b-wwd-head", "b-wwd-glance", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-uhs"] });
   assert.equal(o.status, 200, JSON.stringify(o.body));
   const back = await change(editor, { action: "sectionBack", expected: o.body.version, page: P, section: "b-wwd-craft" });
   assert.equal(back.status, 200, JSON.stringify(back.body));
   assert.deepEqual(blockOrder(await (await visit(URL_)).text()).filter((x) => x.startsWith("b-wwd-")),
-    ["b-wwd-head", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-uhs"], "back after the section it followed when it went");
+    ["b-wwd-head", "b-wwd-glance", "b-wwd-more", "b-wwd-groups", "b-wwd-workshops", "b-wwd-craft", "b-wwd-uhs"], "back after the section it followed when it went");
   assert.equal(await craftWords(), offered, "Put Back returns its words to the edit list");
   assert.match(await (await visit(URL_)).text(), /Made-up Words Kept/, "the words saved while it was retired show when it is back");
   const twiceBack = await change(editor, { action: "sectionBack", expected: back.body.version, page: P, section: "b-wwd-craft" });

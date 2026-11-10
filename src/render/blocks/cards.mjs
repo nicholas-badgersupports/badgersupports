@@ -9,7 +9,7 @@
    A card without a photo shows its icon, when it names one, large on the red tint; no other photo
    stands in for a missing one. */
 
-import { html } from "../html.mjs";
+import { html, attrs } from "../html.mjs";
 import { go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { rowsBetween, groupByDate, dateParts, timeRange, weekday } from "../events.mjs";
@@ -55,7 +55,7 @@ export default {
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${steps(b)}
-  <ul class="card-list">${b.items.map((it) => html`<li class="${it.photo ? "card has-photo" : "card"}" id="${it.id}">
+  <ul class="card-list">${b.items.map((it) => html`<li${attrs({ class: it.photo ? "card has-photo" : "card", id: it.id, "data-program": it.program || null })}>
     ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
     <div class="card-words">
       <h3>${it.title}</h3>
@@ -82,6 +82,7 @@ export function cardProblems(b) {
     if (typeof it.title !== "string" || !it.title.trim()) out.push(`${at}: a card needs a title`);
     if (it.lines != null && !(Array.isArray(it.lines) && it.lines.every((l) => typeof l === "string"))) out.push(`${at}: lines are a list of text`);
     if (it.link != null && !(typeof it.link.href === "string" && typeof it.link.label === "string")) out.push(`${at}: a link has a label and an address`);
+    if (it.program != null && !["peer", "craft", "workshops", "other"].includes(it.program)) out.push(`${at}: program is peer, craft, workshops or other`);
   }
   if (!(b.items || []).length) out.push(`${b.id}: a cards block needs at least one card`);
   return out;

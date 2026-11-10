@@ -30,7 +30,9 @@ test("Home program facts point to its current schedule without a second timetabl
 test("program comparison exposes attend request and written-support destinations", () => {
   const page = read("pages/about-what-we-do"), head = page.blocks[0];
   assert.equal(head.primary.href, "/join/peer-support-groups/");
-  for (const href of ["/join/craft-nights/", "/forms/workshop-request/", "https://badgerspill.org/#spill-form"]) assert.ok(head.links.some(l => l.href === href));
+  const glance = page.blocks.find(b => b.id === "b-wwd-glance");
+  assert.equal(page.blocks[1], glance, "the ways in come right after the mission");
+  for (const href of ["/join/craft-nights/", "/forms/workshop-request/", "https://badgerspill.org/#spill-form"]) assert.ok(glance.items.some(c => c.link.href === href), href);
   assert.doesNotMatch(page.blocks.find(b => b.id === "b-wwd-craft").body.join(" "), /Every other week/);
 });
 

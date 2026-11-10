@@ -26,21 +26,74 @@
       ],
       "links": [
         {
-          "label": "Craft Night Schedule",
-          "href": "/join/craft-nights/",
-          "icon": "calendar"
-        },
-        {
-          "label": "Request a Workshop",
-          "href": "/forms/workshop-request/"
-        },
-        {
-          "label": "Written Support with Badger SPILL",
-          "href": "https://badgerspill.org/#spill-form"
-        },
-        {
           "label": "Our History",
           "href": "/about/history/"
+        }
+      ]
+    },
+    {
+      "id": "b-wwd-glance",
+      "type": "cards",
+      "variant": "activities",
+      "title": "Find Your Way In",
+      "lead": "Four ways to take part, all free for UW–Madison students.",
+      "items": [
+        {
+          "id": "groups",
+          "title": "Peer Support Groups",
+          "icon": "chat",
+          "lines": [
+            "Drop in, every week."
+          ],
+          "text": "An hour to talk, listen and connect with other students. No sign-up.",
+          "link": {
+            "label": "This Week’s Groups",
+            "href": "/join/peer-support-groups/#b-pg-days",
+            "icon": "calendar"
+          },
+          "program": "peer"
+        },
+        {
+          "id": "craft",
+          "title": "Craft Nights",
+          "icon": "scissors",
+          "lines": [
+            "Relax and make something."
+          ],
+          "text": "Meet people over bracelets, vision boards and more. No experience needed.",
+          "link": {
+            "label": "Craft Night Schedule",
+            "href": "/join/craft-nights/",
+            "icon": "calendar"
+          },
+          "program": "craft"
+        },
+        {
+          "id": "workshops",
+          "title": "Wellness Workshops",
+          "icon": "bulb",
+          "lines": [
+            "Bring one to your group."
+          ],
+          "text": "Peer-led and tailored to student organizations, classes, halls and departments.",
+          "link": {
+            "label": "Request a Workshop",
+            "href": "/forms/workshop-request/"
+          },
+          "program": "workshops"
+        },
+        {
+          "id": "spill",
+          "title": "Badger SPILL",
+          "icon": "pencil",
+          "lines": [
+            "Rather write it down?"
+          ],
+          "text": "Written peer support: a trained UW–Madison Student Supporter writes back.",
+          "link": {
+            "label": "Write Your SPILL",
+            "href": "https://badgerspill.org/#spill-form"
+          }
         }
       ]
     },
@@ -134,9 +187,9 @@
     {
       "id": "b-wwd-more",
       "type": "text",
-      "title": "And More!",
+      "title": "More Ways We Show Up",
       "body": [
-        "Check out some of our initiatives!"
+        "Initiatives that take peer support to more places on campus."
       ],
       "links": [
         {

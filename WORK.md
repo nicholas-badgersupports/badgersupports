@@ -87,8 +87,8 @@ between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard br
 ## Owner actions
 
 1. **Review the design**: `local/shots/`, or `npm run dev` and open the site. Say what to change.
-2. **Photos**: confirm the release (that the people pictured agreed to their photos being used), and say yes or no
-   to the 10 live images left to you and the SAC ribbon heap (`docs/research/LIVE-IMAGES-2026-10-20.md`).
+2. ~~Photos: confirm the release~~ **closed** 10 Nov 2026: every Badger Supports Drive photo is approved, faces
+   included (Nicholas; `docs/DESIGN.md`, Photos). Still yours: the 10 live images and the SAC ribbon heap (`docs/research/LIVE-IMAGES-2026-10-20.md`).
 3. **Q1, GA4** (Q2–Q4 answered 20 Oct). Recommended: keep the tag off until the property is verified with enhanced
    measurement off, then **load it only after a visitor agrees** (`docs/ANALYTICS.md`). 24 Oct: Netlify Web Analytics
    is on (verify, item 22); that does not approve GA4.

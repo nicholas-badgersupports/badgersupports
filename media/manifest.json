@@ -535,6 +535,82 @@
       "localFile": "hub-corner.jpg"
     },
     {
+      "id": "m-peer-group-circle",
+      "program": "peer",
+      "alt": "Eight students sitting in a circle of couches and chairs at the Student Mental Health Hub, laughing together during a peer support group.",
+      "focal": [
+        50,
+        48
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 857039,
+      "sha256": "733aea77ee605ec97f9fd44eccee46f70369483ca823fc7e95999e27b3493b72",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2025-26/2025-10-10 Peer Group Promo/2025-10-10_Peer-Group-Promo_017.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support group promo, 2025-10-10). Read from the local synced copy, rotated, resized to 2400 px and stripped of metadata 2026-11-10; nothing was downloaded.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-group-circle.jpg"
+    },
+    {
+      "id": "m-peer-group-smiles",
+      "program": "peer",
+      "alt": "Three smiling students at a table in the Student Mental Health Hub, giving thumbs up and a W over a small balancing game.",
+      "focal": [
+        55,
+        42
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 652579,
+      "sha256": "ea44daa1416fc81ed0b2614f6e5f8ee379f0fab41578c2df32e90ade49be9381",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2025-26/2025-10-10 Peer Group Promo/2025-10-10_Peer-Group-Promo_008.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support group promo, 2025-10-10). Read from the local synced copy, rotated, resized to 2400 px and stripped of metadata 2026-11-10; nothing was downloaded.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-group-smiles.jpg"
+    },
+    {
+      "id": "m-hub-lounge",
+      "program": "peer",
+      "alt": "The Student Mental Health Hub lounge: a student in a Wisconsin sweatshirt on a couch with a laptop, a Badger Supports member standing by a table of flowers, and a small red-and-white tent.",
+      "focal": [
+        45,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 633645,
+      "sha256": "4f05f8475797527bcc20ad6225a2bcd871f0821f3ae5cee5ecca5a268ff8da2e",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2025-26/2026-02-03 MHH Ops Set/2026-02-03_MHH-Ops-Set_010.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub, 2026-02-03). Read from the local synced copy, rotated, resized to 2400 px and stripped of metadata 2026-11-10; nothing was downloaded.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "hub-lounge.jpg"
+    },
+    {
+      "id": "m-hub-entrance",
+      "program": "peer",
+      "alt": "The open glass door of the Student Mental Health Hub, its sign above, with drop-in peer support and office hours posters on the windows.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 542766,
+      "sha256": "8d97e74ffe5bb211364f93effa32b63112b35a2f736c96fe0aa71f161ebd2cd4",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2025-26/2025-11-17 MHH Photo Set/2025-11-17_MHH-Photo-Set_067.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub, 2025-11-17). Read from the local synced copy, rotated, resized to 2400 px and stripped of metadata 2026-11-10; nothing was downloaded.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "hub-entrance.jpg"
+    },
+    {
       "id": "m-hub-sea",
       "program": "peer",
       "alt": "Two students and a Badger Supports staff member talking in front of the Sea of Support mural at the Student Mental Health Hub.",

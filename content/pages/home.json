@@ -36,7 +36,7 @@
       "centre": "you",
       "circles": [
         {
-          "media": "m-hub-sea",
+          "media": "m-peer-group-smiles",
           "label": "Peer Support Groups",
           "href": "#groups",
           "icon": "chat",
@@ -103,7 +103,7 @@
         }
       ],
       "photos": [
-        "m-hub-peer-poster"
+        "m-peer-group-circle"
       ],
       "links": [
         {

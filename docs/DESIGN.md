@@ -236,7 +236,9 @@ Photos lead every kind of page (owner, 20 Oct 2026). **Faces are wanted**: peopl
 event. Name tags, QR codes, phone screens and UW marks are allowed. The rebuild adds no photo rule of its own and
 picks on quality only. The owner removes what they object to.
 
-**Owner action:** confirm that the people pictured agreed to their photos being used (`../WORK.md`).
+**Release (Nicholas, 10 Nov 2026):** every photograph in the Badger Supports Google Drive is approved for use on
+the website, faces included. Photos still come only from that Drive (or the live pages already saved); a slot with
+no suitable Drive photo is named as a gap, never filled from stock, a web search or a generator.
 
 ### A photo slot
 

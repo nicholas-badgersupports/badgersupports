@@ -136,13 +136,13 @@
     },
     "hero.pause": {
       "group": "home",
-      "text": "Pause",
-      "where": "Button in the corner of the hero's photo circles that stops them drifting."
+      "text": "Pause the Moving Photos",
+      "where": "Name and tooltip of the round button among the white dots of the hero's photo circles; it stops them drifting. Screen readers read it; it is not shown as text."
     },
     "hero.play": {
       "group": "home",
-      "text": "Play",
-      "where": "The same button once the circles are paused; it starts them drifting again."
+      "text": "Play the Moving Photos",
+      "where": "The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text."
     },
     "schedule.today": {
       "group": "home",

@@ -152,20 +152,24 @@ test("the peer page shows Instagram's reel player without a press, and no other 
   assert.equal(embedProblems({ url: "https://example.com/video", title: "x" }).length, 1);
 });
 
-test("the hero's circles drift only once its script runs, and that script brings a Pause button", () => {
+test("the hero's circles drift only once its script runs, and that script brings a round pause control among the dots", () => {
   const home = read("index.html");
   const hero = block(home, "b-home-hero");
-  assert.match(hero, /<button type="button" class="still" data-still hidden>[\s\S]*?<span>Pause<\/span><\/button>/, "hidden until hero.js shows it");
+  assert.match(hero, /<button type="button" class="still" data-still hidden>(?:<svg[\s\S]*?<\/svg>){2}<span class="sr-only">Pause the Moving Photos<\/span><\/button>/, "hidden until hero.js shows it; icons only, its name for screen readers");
   assert.match(home, /<script type="module" src="\/assets\/js\/[a-z0-9]+\/hero\.js">/);
   const words = JSON.parse(home.match(/<script type="application\/json" id="bss-text">([^<]*)<\/script>/)[1]);
-  assert.equal(words["hero.pause"], "Pause");
-  assert.equal(words["hero.play"], "Play");
+  assert.equal(words["hero.pause"], "Pause the Moving Photos");
+  assert.equal(words["hero.play"], "Play the Moving Photos");
+  assert.match(fs.readFileSync(path.join(ROOT, "src/client/hero.js"), "utf8"), /button\.title = label\.textContent/, "its name is also its tooltip");
   const css = fs.readFileSync(path.join(ROOT, "src/styles/blocks.css"), "utf8");
   for (const sel of [".hub", ".bubble"]) {
     const rule = css.match(new RegExp(`^\\${sel} \\{[^}]*\\}`, "m"))[0];
     assert.match(rule, /infinite[^;]*;\s*animation-play-state: running, paused;/, `${sel}: the loop waits, paused, without the script`);
   }
   assert.match(css, /\.network\.is-moving \.hub, \.network\.is-moving \.bubble \{ animation-play-state: running; \}/);
+  const z = (n) => Number(css.match(new RegExp(`^\\.hub-${n} \\{[^}]*z-index: (\\d+)`, "m"))[1]);
+  assert.ok(z(1) > z(3), "peer support groups sit in front of craft nights, so its label's icon is not covered");
+  assert.match(css, /^\.still \{[^}]*width: 48px; height: 48px;[^}]*border-radius: 50%;/m, "the control is a round dot at least 44 px");
 });
 
 test("the Hub's old address goes to its directions page", () => {

@@ -558,8 +558,8 @@ the site adds the markup.
 |---|---|---|---|
 | `hero.taglineLabel` | What we do | The hero's three-word list, read by screen readers. |  |
 | `hero.photosLabel` | Photos from Badger Supports programs | The hero photos' name, read by screen readers. |  |
-| `hero.pause` | Pause | Button in the corner of the hero's photo circles that stops them drifting. |  |
-| `hero.play` | Play | The same button once the circles are paused; it starts them drifting again. |  |
+| `hero.pause` | Pause the Moving Photos | Name and tooltip of the round button among the white dots of the hero's photo circles; it stops them drifting. Screen readers read it; it is not shown as text. |  |
+| `hero.play` | Play the Moving Photos | The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text. |  |
 | `schedule.today` | Today | Tag on today's date in the timetable. |  |
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
 | `schedule.placeLink` | How to Find It | Link under the usual place in the timetable. |  |

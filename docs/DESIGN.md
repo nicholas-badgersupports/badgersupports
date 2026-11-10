@@ -34,7 +34,7 @@ the ledge, the wave and the display face (marked below).
 | **One button set.** The filled main button, the outlined go pill and the Drop In pill, all on the section's colour. One main button per screen; a second action sits beside it as a pill, not a second filled button | [Buttons and links](#buttons-and-links) |
 | **Banded sections.** An inner page's heading stands on a pale band of its colour, on paper; a program's own page takes the full colour; the homepage has none. *In the brand's terms:* the band ends square; SPILL's two waves at its foot are SPILL's mark and were taken off | [Surfaces](#surfaces) |
 | **Styled empty states.** Nothing coming up, no resources, no team yet: each is said in words on a pale panel of the section's colour, never left as a blank or a grey line | `.week-empty`, `.evlist-none`, `.res-none`, `.team-none` |
-| **Motion under a second.** Every one-off move ends within a second; the hero's slow drift is the one loop, and it has a Pause button | [Motion](#motion) |
+| **Motion under a second.** Every one-off move ends within a second; the hero's slow drift is the one loop, and it has a pause control | [Motion](#motion) |
 | **A loud voice for titles only.** *In the brand's terms:* not a second face but Montserrat at 800 in capitals for headings, the hero and numbers; everything a person reads at length is Montserrat at 400 to 700 | [Type](#type) |
 
 ## Colour
@@ -340,11 +340,14 @@ Every move that happens once ends within a second (SPILL's lesson); the hero's d
   `src/client/site.js` adds `.i-press` and removes it when the move ends. The moves are in `src/styles/motion.css`.
 - **Hello once**: the hero's circles arrive with a small bounce, the "you" fades in, and the big button's hand waves
   once, a beat after the page opens.
-- **The one loop**: after arriving, the hero circles drift and the bubbles float, slowly and out of step, at 6 to 13
-  seconds a cycle (`src/styles/blocks.css`). The owner asked for this on 20 Oct 2026. It breaks Connect's rule that
-  nothing loops on resting content (`DECISIONS.md` §3). The same day the owner chose a **Pause** button for it,
-  which meets WCAG 2.2.2. The button sits in the corner under the first circle. `src/client/hero.js` starts the
-  drift and shows the button, so without JavaScript the circles arrive once and rest.
+- **The one loop**: after arriving, each hero circle follows its own slow loop of a few pixels (10 to 14 seconds)
+  and the white dots float on theirs (8 to 12.5 seconds), out of step, so the picture breathes rather than bobs
+  (`src/styles/blocks.css`). The owner asked for this on 20 Oct 2026; it breaks Connect's rule that nothing loops on
+  resting content (`DECISIONS.md` §3). It meets WCAG 2.2.2 with a pause control: since 10 Nov 2026 a round 48 px
+  icon button that is one of the white dots, under the first circle. It holds still while the dots float. Its
+  name, read by screen readers and shown as its tooltip, is "Pause the Moving Photos" or "Play the Moving Photos".
+  `src/client/hero.js` starts the drift and shows the button, so without JavaScript the circles arrive once and rest.
+  Peer support groups sit in front of craft nights and workshops in front of both, so every label stays whole.
 - **Less motion**: the last rule in `src/styles/base.css` turns every animation and transition off for anyone whose
   system asks for reduced motion.
 

@@ -14,7 +14,8 @@
 .hero h1 { font-size: var(--fs-h1); color: var(--cream); margin-bottom: var(--s3); }
 .hero-tagline { display: flex; flex-wrap: wrap; gap: .1rem .9rem; list-style: none; font-weight: 700; font-size: var(--fs-lead); }
 .hero-tagline li + li::before { content: "•"; margin-right: .9rem; opacity: .75; }
-.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s5); margin-top: var(--s6); }
+.hero-body { max-width: 34ch; margin-top: var(--s4); font-size: var(--fs-lead); font-weight: 600; line-height: 1.45; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s5); margin-top: var(--s5); }
 .hero .btn { background: var(--cream); color: var(--accent-deep); border-color: var(--cream); }
 .hero .btn:hover { background: var(--paper); border-color: var(--paper); color: var(--accent-deep); }
 .hero :focus-visible { outline-color: var(--focus-on-red); }
@@ -27,15 +28,18 @@
 /* The circles arrive with a small bounce, then drift a few pixels, slowly and out of step, so the
    picture feels alive without pulling the eye from the words (owner, 20 Oct 2026: "floating or some
    sort of movement, but don't make it too distracting"). The drift and the bubbles' float wait,
-   paused, until src/client/hero.js adds .is-moving, so nothing loops without the script; its Pause
-   button takes the class off and they stop where they are (owner, 20 Oct 2026; WCAG 2.2.2). Off for
-   anyone who asks for less motion. */
-.hub { position: absolute; aspect-ratio: 1; animation: hub-in .7s cubic-bezier(.3, 1.45, .5, 1) both, drift 11s ease-in-out 1s infinite alternate; animation-play-state: running, paused; }
-.hub-2 { animation-duration: .7s, 13s; }
-.hub-3 { animation-duration: .7s, 9.5s; animation-direction: normal, alternate-reverse; }
-.hub-1 { left: 0; top: 4.2%; width: 54%; z-index: 1; animation-delay: .1s, 1s; }
-.hub-2 { left: 50%; top: 0; width: 44%; z-index: 2; animation-delay: .1s, 1s; }
-.hub-3 { left: 35%; top: 47.4%; width: 47%; z-index: 3; animation-delay: .1s, 1s; }
+   paused, until src/client/hero.js adds .is-moving, so nothing loops without the script; its pause
+   control takes the class off and they stop where they are (WCAG 2.2.2). Off for anyone who asks
+   for less motion. Each circle follows its own slow loop, a few pixels each way, so they breathe
+   apart and together rather than bob in step; the drifts stay under the 7 px ring, so no gap opens.
+   Each label must stay whole: peer support groups sit in front of craft nights (its label's icon falls
+   over the craft circle), and workshops in front of both (its label falls over the peer circle on a phone). */
+.hub { position: absolute; aspect-ratio: 1; animation: hub-in .7s cubic-bezier(.3, 1.45, .5, 1) both, drift-a 12s ease-in-out 1s infinite; animation-play-state: running, paused; }
+.hub-2 { animation-name: hub-in, drift-b; animation-duration: .7s, 14s; }
+.hub-3 { animation-name: hub-in, drift-c; animation-duration: .7s, 10.5s; }
+.hub-1 { left: 0; top: 4.2%; width: 54%; z-index: 2; animation-delay: 0s, 1s; }
+.hub-2 { left: 50%; top: 0; width: 44%; z-index: 3; animation-delay: .12s, 1.4s; }
+.hub-3 { left: 35%; top: 47.4%; width: 47%; z-index: 1; animation-delay: .24s, 1.8s; }
 .hub-link { position: absolute; inset: 0; display: block; color: var(--ink); text-decoration: none; border-radius: 50%; }
 .hub-photo { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: var(--accent-deep); box-shadow: 0 0 0 7px var(--red); transition: scale var(--t-slow) var(--ease-out); }
 .hub-photo picture, .hub-photo img { width: 100%; height: 100%; }
@@ -66,30 +70,36 @@
   font: 800 clamp(1.15rem, .8rem + 1.3vw, 1.9rem)/1 var(--font-display); text-transform: uppercase; letter-spacing: -.01em; pointer-events: none;
   animation: you-in .9s ease .55s both;
 }
-.bubble { position: absolute; aspect-ratio: 1; border-radius: 50%; animation: hub-in .6s cubic-bezier(.3, 1.45, .5, 1) .6s both, float 7s ease-in-out 1.2s infinite alternate; animation-play-state: running, paused; }
+.bubble { position: absolute; aspect-ratio: 1; border-radius: 50%; animation: hub-in .6s cubic-bezier(.3, 1.45, .5, 1) .6s both, float-a 9s ease-in-out 1.2s infinite; animation-play-state: running, paused; }
 .network.is-moving .hub, .network.is-moving .bubble { animation-play-state: running; }
-.bubble-2 { animation-duration: .6s, 8.5s; animation-direction: normal, alternate-reverse; }
-.bubble-3 { animation-duration: .6s, 6.2s; }
-.bubble-4 { animation-duration: .6s, 9.4s; animation-direction: normal, alternate-reverse; }
+.bubble-3 { animation-name: hub-in, float-b; animation-duration: .6s, 11s; animation-delay: .7s, 1.6s; }
+.bubble-4 { animation-name: hub-in, float-c; animation-duration: .6s, 8s; animation-delay: .8s, 2s; }
+.bubble-5 { animation-name: hub-in, float-b; animation-duration: .6s, 12.5s; animation-delay: .9s, 1.3s; animation-direction: normal, reverse; }
 .bubble-1 { left: 93%; top: 47%; width: 7%; background: var(--cream-soft); }
-.bubble-2 { left: 2%; top: 66%; width: 5.5%; background: var(--paper-deep); }
 .bubble-3 { left: 86%; top: 83%; width: 9%; background: var(--cream); }
 .bubble-4 { left: 34%; top: 0; width: 4.5%; background: var(--cream); }
-/* The Pause button: quiet, in the empty corner under the first circle, its icon following the
-   circles (pause while they move, play while they rest). */
+.bubble-5 { left: 17%; top: 88%; width: 3.5%; background: var(--paper-deep); }
+/* The pause control is one of the white dots, a little larger, in the open space under the first
+   circle. It holds still while the dots around it float, so it is easy to press. Its icon follows
+   the circles: pause while they move, play while they rest. Its name is in the sr-only span. */
 .still {
-  position: absolute; left: 0; bottom: 0; z-index: 7;
-  display: inline-flex; align-items: center; gap: .45rem; min-height: 44px;
-  padding: .3rem 1rem .3rem .75rem; border: 2px solid var(--cream); border-radius: var(--r-chip);
-  background: var(--accent); color: var(--cream); font: inherit; font-size: var(--fs-small); font-weight: 700; line-height: 1.2;
-  cursor: pointer; transition: background-color var(--t-fast) var(--ease-out);
+  position: absolute; left: 2.5%; top: 70%; z-index: 7;
+  display: grid; place-items: center; width: 48px; height: 48px; padding: 0;
+  border: 0; border-radius: 50%;
+  background: var(--cream); color: var(--accent);
+  cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), scale var(--t) var(--ease-out);
 }
-.still:hover { background: var(--accent-deep); }
-.still .ic { width: 1rem; height: 1rem; stroke-width: 2.4; }
+.still:hover { background: var(--paper); scale: 1.08; }
+.still:focus-visible { outline: 3px solid var(--focus-on-red); outline-offset: 4px; }
+.still .ic { width: 1.15rem; height: 1.15rem; stroke-width: 2.6; }
 .network:not(.is-moving) .still-pause, .network.is-moving .still-play { display: none; }
 @keyframes hub-in { from { scale: .82; } }
-@keyframes drift { from { translate: 0 0; } to { translate: 0 -5px; } }
-@keyframes float { 0% { translate: 0 0; } 50% { translate: 5px -12px; } 100% { translate: -3px -20px; } }
+@keyframes drift-a { 0%, 100% { translate: 0 0; } 33% { translate: 3px -5px; } 66% { translate: -2px -3px; } }
+@keyframes drift-b { 0%, 100% { translate: 0 0; } 40% { translate: -4px 3px; } 75% { translate: 2px 5px; } }
+@keyframes drift-c { 0%, 100% { translate: 0 0; } 30% { translate: 4px 3px; } 70% { translate: -3px -4px; } }
+@keyframes float-a { 0%, 100% { translate: 0 0; } 25% { translate: 6px -10px; } 50% { translate: -2px -18px; } 75% { translate: -7px -8px; } }
+@keyframes float-b { 0%, 100% { translate: 0 0; } 30% { translate: -8px -6px; } 60% { translate: -3px -16px; } 85% { translate: 5px -7px; } }
+@keyframes float-c { 0%, 100% { translate: 0 0; } 50% { translate: 4px 12px; } }
 @keyframes you-in { 0% { scale: .5; } 45% { scale: 1.08; } 70% { scale: .97; } }
 
 @media (max-width: 860px) {
@@ -108,7 +118,7 @@
      clear of "you" in the middle */
   .hub-tag { white-space: normal; max-width: 8.6rem; font-size: .875rem; line-height: 1.15; }
   .hub-1 .hub-tag { left: 3%; --tx: 0; bottom: 8%; }
-  .hub-2 .hub-tag { left: auto; right: 0; --tx: 0; }
+  .hub-2 .hub-tag { left: auto; right: -4%; bottom: auto; top: 6%; --tx: 0; }
   .hub-3 .hub-tag { left: auto; right: -4%; --tx: 0; bottom: 6%; }
 }
 

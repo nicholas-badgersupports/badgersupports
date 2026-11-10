@@ -44,7 +44,7 @@ export default {
       ${page ? html`<h1 id="${b.id}-h">${p.name}</h1>` : html`<h2 id="${b.id}-h">${b.title || p.name}</h2>${b.title ? html`<p class="dir-name">${p.name}</p>` : ""}`}
       ${p.building || p.where ? html`<p class="dir-where">${[p.building, p.where].filter(Boolean).join(" · ")}</p>` : ""}
       <address>${p.address}</address>
-      <div class="dir-actions">${link(ctx, mapHref(p.address), ctx.t("directions.map"), { class: "btn", icon: "pin" })}${(p.links || []).map((l) => go(ctx, l.href, l.label, "out", "go--light"))}</div>
+      <div class="dir-actions">${link(ctx, mapHref(p.address), ctx.t("directions.map"), { class: "btn", icon: "pin" })}${(p.links || []).map((l) => go(ctx, l.href, l.label, /^https?:/.test(l.href) ? "out" : "arrow", "go--light"))}</div>
     </header>
     ${p.photo ? html`<div class="dir-photo photo">${picture(ctx, p.photo, { sizes: "(max-width: 860px) calc(100vw - 2rem), 23rem", eager: page })}</div>` : ""}
     ${page ? html`<nav class="dir-jumps" aria-label="${ctx.t("directions.onPage")}">

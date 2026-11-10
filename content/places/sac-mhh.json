@@ -13,6 +13,10 @@
     {
       "label": "SAC hours",
       "href": "https://soli.wisc.edu/student-activity-center-sac/"
+    },
+    {
+      "label": "Other Rooms We Use",
+      "href": "/directions/"
     }
   ],
   "steps": [

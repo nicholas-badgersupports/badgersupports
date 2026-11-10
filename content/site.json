@@ -28,13 +28,8 @@
         },
         {
           "id": "nav-hub",
-          "label": "Student Mental Health Hub",
+          "label": "Mental Health Hub",
           "href": "/directions/sac-mhh/"
-        },
-        {
-          "id": "nav-directions",
-          "label": "Rooms and Directions",
-          "href": "/directions/"
         },
         {
           "id": "nav-faq",

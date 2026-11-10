@@ -1,0 +1,28 @@
+/* The text block's era variant (src/render/blocks/text.mjs): consecutive era sections join into one
+   timeline. Wide: the when on the left of the line, the card on the right. Phone: the line down the
+   left edge, the when above the card. The line and dots are decoration; the heading holds the words. */
+.text-block.is-era { padding-block: var(--s3); }
+.text-block:not(.is-era) + .is-era { padding-top: var(--s6); }
+.is-era:not(:has(+ .is-era)) { padding-bottom: var(--s7); }
+.is-era .wrap { position: relative; display: grid; grid-template-columns: 11rem minmax(0, 1fr); column-gap: var(--s6); row-gap: var(--s2); }
+.is-era .wrap::before { content: ""; position: absolute; left: calc(var(--gutter) + 11rem + var(--s6) / 2 - 1px); top: calc(-1 * var(--s3)); bottom: calc(-1 * var(--s3)); width: 2px; background: var(--rule-strong); }
+.text-block:not(.is-era) + .is-era .wrap::before { top: .7rem; }
+.is-era:not(:has(+ .is-era)) .wrap::before { bottom: auto; height: .7rem; }
+.era-head { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; margin: 0; position: relative; }
+.era-head::before { content: ""; position: absolute; left: calc(11rem + var(--s6) / 2 - .6rem); top: .35rem; width: 1.2rem; height: 1.2rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--cream); }
+.era-when { grid-column: 1; text-align: right; font: 800 1.1rem/1.25 var(--font-display); letter-spacing: .02em; color: var(--accent); }
+.era-title { grid-column: 2; font: 800 min(var(--fs-h3), 1.6rem)/1.15 var(--font-display); color: var(--ink); }
+.era-card { grid-column: 2; display: grid; gap: var(--s4); padding: var(--s4) var(--s5); background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-panel); max-width: 48rem; }
+.is-era.has-photo .era-card .photo { border-radius: var(--r-card); aspect-ratio: 16 / 9; }
+.era-card .text-body p { margin: 0 0 var(--s2); }
+.era-card .more-links { margin-top: var(--s3); }
+@media (max-width: 760px) {
+  .is-era .wrap { grid-template-columns: minmax(0, 1fr); padding-left: calc(var(--gutter) + 1.9rem); }
+  .is-era .wrap::before { left: calc(var(--gutter) + .6rem - 1px); }
+  .era-head { grid-template-columns: minmax(0, 1fr); row-gap: .15rem; }
+  .era-head::before { left: -1.9rem; top: .1rem; }
+  .era-when, .era-title, .era-card { grid-column: 1; text-align: left; }
+  .era-card { padding: var(--s3) var(--s4); }
+  .is-era.has-photo .era-card .photo { aspect-ratio: 3 / 2; }
+}
+@media (max-width: 420px) { .era-card { padding: var(--s3); } }

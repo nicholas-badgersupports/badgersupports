@@ -140,8 +140,10 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 |---|---|---|
 | `title` | one line of text |  |
 | `heading` | one of `h1`, `h2` |  |
+| `variant` | one of `plain`, `era` |  |
 | `body` | one or more paragraphs | **required** |
 | `links` | several links, in order |  |
+| `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 
 ### Directions to a room — `directions`
 
@@ -186,7 +188,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy · br
 | `lead` | one line of text |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
-| `items` | workshops, each with an id, a tab name, a title, what the full workshop covers, an optional link, an optional stable workshop request topic id for the shared primary action, and one activity: a network map (two to four circles, each with ways and examples), bingo (nine squares and a line message), a choice (a scenario, a question, and options each with a verdict), or flip cards (terms and meanings, and a note) | **required** |
+| `items` | workshops, each with an id, a tab name, a title, what the full workshop covers, an optional link, an optional stable workshop request topic id for the shared primary action, and one activity: a network map (two to four circles, each with ways and examples), bingo (nine squares and a line message), a choice (a scenario, a question, and options each with a verdict), flip cards (terms and meanings, and a note), or situations (a prompt, two to five situations each with a question and options with a verdict and reason, exactly one marked clear, and a note) | **required** |
 
 ### Instagram video — `embed`
 

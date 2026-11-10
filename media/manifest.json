@@ -668,6 +668,25 @@
       "localFile": "team-openhouse.jpg"
     },
     {
+      "id": "m-training-team-2026",
+      "program": "peer",
+      "alt": "About forty Badger Supports students posing together in rows at the September 2026 peer support training.",
+      "focal": [
+        50,
+        62
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 362627,
+      "sha256": "ebcb3f258109b467716733175143d4652dcff67a18efcba61ea4e3fc1bda0e68",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_056.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support training, 2026-09-02). Read from the local synced copy, rotated, resized to 2400 px and stripped of metadata 2026-11-10; nothing was downloaded.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "training-team-2026.jpg"
+    },
+    {
       "id": "m-workshop-housing-team",
       "program": "workshops",
       "alt": "Four presenters standing arm in arm in front of a screen that reads Navigating Housing, a Badger Supports Workshop.",

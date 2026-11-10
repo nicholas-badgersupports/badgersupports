@@ -7,12 +7,13 @@ import { makeContext } from "../src/render/context.mjs";
 import { pageStrings, pageValues, applyEdits } from "../src/shared/edits.mjs";
 const read = name => JSON.parse(fs.readFileSync(new URL("../"+name,import.meta.url)));
 const page = () => read("content/pages/about-history.json");
-const context = () => makeContext({site:read("content/site.json"),text:Object.fromEntries(Object.entries(read("content/text.json").text).map(([k,v])=>[k,v.text])),builtPaths:["/about/history/","/about/what-we-do/","/join/get-involved/","/join/request-a-workshop/"]});
+const context = () => makeContext({site:read("content/site.json"),media:read("media/manifest.json"),text:Object.fromEntries(Object.entries(read("content/text.json").text).map(([k,v])=>[k,v.text])),builtPaths:["/about/history/","/about/what-we-do/","/join/get-involved/","/join/request-a-workshop/"]});
 const markup = p => p.blocks.map(b=>String(renderBlock(b,context()))).join("");
 
-test("History preserves the approved training passage and tells all eras as ordinary readable sections",()=>{
+test("History preserves the approved training passage and tells all eras as ordinary readable sections, drawn as one timeline",()=>{
  const p=page();assert.deepEqual(blockProblems(p),[]);assert.equal(p.blocks.length,9);assert.equal(p.blocks[0].type,"pagehead");
- assert.ok(p.blocks.slice(1).every(b=>b.type==="text"&&b.title&&b.body.length));
+ assert.ok(p.blocks.slice(1).every(b=>b.type==="text"&&b.variant==="era"&&b.title&&b.body.length));
+ assert.equal((markup(p).match(/<span class="era-when">/g)||[]).length,8,"each era shows its when on the line");
  const training=p.blocks.flatMap(b=>b.body||[]).find(s=>s.startsWith("As Badger Supports grew"));
  assert.ok(training);assert.equal(createHash("sha256").update(training).digest("hex"),"891ae5839df43c9053ec8e437c97999021b66989ce064193a9d89181eea596ee");
  const html=markup(p);assert.equal((html.match(/<h1\b/g)||[]).length,1);assert.equal((html.match(/<h2\b/g)||[]).length,8);

@@ -10,7 +10,7 @@
       "id": "b-history-head",
       "type": "pagehead",
       "title": "History of Badger Supports",
-      "lead": "Badger Supports began with students who wanted a stronger sense of community at UW–Madison. Since its early years as Badger Support Network, student teams have created places to talk, make friends, learn practical skills, and connect with campus resources. The organization has grown through their ideas and through relationships with University Health Services and fellow campus organizations.",
+      "lead": "Badger Supports began with students who wanted a stronger sense of community at UW–Madison. Student teams have built it ever since, with University Health Services and fellow campus organizations alongside.",
       "links": [
         {
           "label": "About Badger Supports",
@@ -32,7 +32,8 @@
           "label": "Read an early student perspective in The Badger Herald.",
           "href": "https://badgerherald.com/features/2021/09/20/people-of-uw-madison-badger-support-network-founder-explains-the-importance-of-mental-health-advocacy/"
         }
-      ]
+      ],
+      "variant": "era"
     },
     {
       "id": "b-history-era-2",
@@ -41,7 +42,8 @@
       "body": [
         "Successive student teams carried the work forward through weekly groups, social events, and preparation for peer leaders. Students made time to listen to one another and created opportunities to connect beyond the classroom.",
         "University Health Services was part of this early foundation. UHS staff supported student leaders through advising, training, and connections to campus professionals. Those relationships helped students develop their facilitation skills and learn about resources they could share with fellow Badgers."
-      ]
+      ],
+      "variant": "era"
     },
     {
       "id": "b-history-era-3",
@@ -50,7 +52,8 @@
       "body": [
         "In 2025, student leaders adopted the name Badger Supports and began a new chapter as an independent organization, ending their affiliation with The Support Network. The new name reflected a growing range of student-created programs shaped around life at UW–Madison.",
         "Free, drop-in Peer Support Groups gave students a way to connect without signing up or committing to a semester of attendance. Craft nights offered a relaxed setting to meet people and make something together. Workshops brought practical skills and peer conversation to classrooms, student organizations, and other campus groups."
-      ]
+      ],
+      "variant": "era"
     },
     {
       "id": "b-history-era-4",
@@ -59,7 +62,8 @@
       "body": [
         "Badger Supports deepened its relationship with University Health Services, building on years of support from UHS staff. Students found more opportunities to learn from people working in campus mental health, share ideas, and bring other student organizations into their work.",
         "These relationships gave student leaders people to turn to as their ideas grew. Students continued to create and lead their programs, while learning from the experience of campus partners who had supported generations of Badgers."
-      ]
+      ],
+      "variant": "era"
     },
     {
       "id": "b-history-era-5",
@@ -69,6 +73,10 @@
         "Student teams developed workshops on stress management, self-advocacy, building support networks, and navigating housing in Madison. Resources such as the Navigating Housing toolkit, pocket-sized referral cards, and solidarity ribbons gave students things they could use and share beyond an event.",
         "The Student Mental Health Hub at 333 East Campus Mall became a regular home for peer support, drop-in connection, and campus resources. Dogs on Call events with UHS–Prevention brought students together in the space. The February 2026 Hub Open House brought Badger Supports together with the American Foundation for Suicide Prevention at UW–Madison, EndOverdose, and UHS partners. A fall open house continued welcoming students and staff to meet student leaders and learn about peer support.",
         "Working with campus departments and fellow student organizations helped these programs reach students in more settings across UW–Madison."
+      ],
+      "variant": "era",
+      "photos": [
+        "m-openhouse-hub-table"
       ]
     },
     {
@@ -78,6 +86,10 @@
       "body": [
         "Support from UW–Madison’s student government helped create paid student roles alongside volunteer opportunities. Students gained more ways to contribute their time and skills to peer support, events, and the work behind the programs.",
         "As Badger Supports grew, students took responsibility for preparing each new team. Each year, they designed and built their own training, bringing lessons from peer groups, workshops, and craft nights into the room. Returning leaders shared what they had learned about listening, starting conversations, making new people feel welcome, and helping a fellow student find support. New students practiced together, asked questions, and contributed ideas that helped shape the next round of training. The training changed with the students who created it and the community they were working to support."
+      ],
+      "variant": "era",
+      "photos": [
+        "m-training-team-2026"
       ]
     },
     {
@@ -87,7 +99,8 @@
       "body": [
         "Badger Supports welcomed Badger SPILL as a program, bringing an established tradition of written peer support into its wider student community. SPILL’s own story began at UW–Madison in 2009. Joining Badger Supports gave it a shared organizational home while preserving its name and student-to-student focus.",
         "The connection created opportunities for SPILL volunteers to take part in shared training, professional development, social events, and other volunteer activities. Their experience added another chapter to Badger Supports’ growing history."
-      ]
+      ],
+      "variant": "era"
     },
     {
       "id": "b-history-era-8",
@@ -99,17 +112,21 @@
       ],
       "links": [
         {
-          "label": "Explore our programs",
+          "label": "Explore Our Programs",
           "href": "/about/what-we-do/"
         },
         {
-          "label": "Get involved",
+          "label": "Get Involved",
           "href": "/join/get-involved/"
         },
         {
-          "label": "Request a workshop",
+          "label": "Request a Workshop",
           "href": "/join/request-a-workshop/"
         }
+      ],
+      "variant": "era",
+      "photos": [
+        "m-people-visionboards"
       ]
     }
   ]

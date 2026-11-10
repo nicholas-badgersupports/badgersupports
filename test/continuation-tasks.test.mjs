@@ -36,9 +36,11 @@ test("program comparison exposes attend request and written-support destinations
 
 test("program requests preserve Housing context and separate booking from written support", () => {
   const page = read("pages/request-a-program"), head = page.blocks[0];
-  assert.match(head.body.join(" "), /not a confirmed booking/);
+  const choose = page.blocks.find(b => b.id === "b-rp-choose");
+  assert.match(choose.steps.map(s => s.text).join(" "), /not a confirmed booking/, "the request steps say a request is not a booking");
+  assert.equal(head.primary.href, "#b-rp-choose", "one main action near the top");
   assert.equal(page.blocks.find(b => b.id === "b-rp-housing").links[0].href, "/forms/workshop-request/?topic=housing");
-  for (const id of ["b-rp-groups", "b-rp-training"]) assert.ok(head.links.some(l => l.href === `#${id}-h`));
+  for (const id of ["b-rp-workshops", "b-rp-groups", "b-rp-training", "b-rp-housing"]) assert.ok(choose.items.some(c => c.link.href === `#${id}`), id);
   for (const [id, choice] of [["b-rp-training", "volunteer_training"], ["b-rp-groups", "peer_support_group"]]) {
     const url = new URL(page.blocks.find(b => b.id === id).links[0].href, "https://example.org");
     assert.equal(url.pathname, "/forms/program-request/");

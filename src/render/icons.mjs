@@ -25,6 +25,7 @@ const PARTS = {
   chat: `<path d="M3.5 4.5h11v8.5H9l-3.2 3v-3H3.5z"/><path d="M14.5 8.5h6v8.5h-2.3v3l-3.2-3H11v-2"/>`,
   scissors: `<g><circle cx="6.5" cy="18" r="2.6"/><path d="M8.4 16.2 19.5 4"/></g><g><circle cx="17.5" cy="18" r="2.6"/><path d="M15.6 16.2 4.5 4"/></g>`,
   bulb: `<path d="M9.2 17.5h5.6M10.2 20.5h3.6"/><path d="M12 4a5.5 5.5 0 0 0-3.3 9.9c.5.4.8 1 .8 1.7v.4h5v-.4c0-.7.3-1.3.8-1.7A5.5 5.5 0 0 0 12 4Z"/><path d="M12 1v0.6M3.4 9.5h.8M19.8 9.5h.8M5.5 3.5l.6.6M18.5 3.5l-.6.6"/>`,
+  house: `<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5v10h13v-10"/><path d="M10 19.5v-5h4v5"/>`,
   badge: `<path d="M8 2.5l4 6 4-6"/><rect x="5.5" y="8.5" width="13" height="13" rx="1.5"/><circle cx="12" cy="13.5" r="2"/><path d="M9.3 18h5.4"/>`,
   question: `<circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.3-.9.8-.9 1.4v.5"/><path d="M12 16.9v.1"/>`,
   plus: `<path d="M12 5v14"/><path d="M5 12h14"/>`,

@@ -16,7 +16,7 @@ import { rowsBetween, groupByDate, dateParts, timeRange, weekday } from "../even
 import { picture } from "../media.mjs";
 import { eventClass, eventTags } from "../event-status.mjs";
 
-/* How to take part, in order, above a days row: a numbered strip, each step a short title and a line. */
+/* How to take part, in order, above the cards: a numbered strip, each step a short title and a line. */
 const steps = (b) => (b.steps?.length ? html`<ol class="card-steps">${b.steps.map((st) => html`<li><strong>${st.term}</strong>${st.text ? html`<span>${st.text}</span>` : ""}</li>`)}</ol>` : "");
 
 export default {
@@ -54,6 +54,7 @@ export default {
     return html`<section id="${b.anchor || b.id}" class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+  ${steps(b)}
   <ul class="card-list">${b.items.map((it) => html`<li class="${it.photo ? "card has-photo" : "card"}" id="${it.id}">
     ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
     <div class="card-words">

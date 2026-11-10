@@ -473,6 +473,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
 .cards--days .card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* four cards make a square, not a row of three and one left over */
+@media (min-width: 961px) { .cards--activities .card-list:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .cards--whole .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6) var(--s5); }
 .card { display: flex; flex-direction: column; gap: var(--s3); }
 .card .photo { border-radius: var(--r-card); }

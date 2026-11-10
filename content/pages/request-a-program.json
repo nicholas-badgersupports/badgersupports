@@ -10,31 +10,97 @@
       "id": "b-rp-head",
       "type": "pagehead",
       "title": "Request a Program",
-      "lead": "Programs are available for free to any UW–Madison student or student group.",
+      "lead": "Free for any UW–Madison student or student group.",
       "photos": [
         "m-workshop-herald-team",
         "m-peer-circle",
         "m-workshop-room"
       ],
       "body": [
-        "Choose a workshop, a peer support group or volunteer training for your group. A request is not a confirmed booking."
+        "Bring a workshop, a peer support group or a volunteer training to your organization, class, residence hall or team. Choose a program, tell us about your group, and we will follow up to plan it."
       ],
       "primary": {
-        "label": "Request a Workshop",
-        "href": "/forms/workshop-request/"
+        "label": "Choose a Program",
+        "href": "#b-rp-choose",
+        "icon": "down"
       },
-      "links": [
+      "links": []
+    },
+    {
+      "id": "b-rp-choose",
+      "type": "cards",
+      "variant": "activities",
+      "title": "How to Request a Program",
+      "steps": [
         {
-          "label": "Request a Peer Support Group",
-          "href": "#b-rp-groups-h"
+          "term": "Choose a Program",
+          "text": "Pick one of the four below. Each section says who it suits and what it covers."
         },
         {
-          "label": "Request Volunteer Training",
-          "href": "#b-rp-training-h"
+          "term": "Tell Us About Your Group",
+          "text": "One short form: workshops use the workshop request; groups and trainings use the program request."
         },
         {
-          "label": "Written Support with Badger SPILL",
-          "href": "https://badgerspill.org/#spill-form"
+          "term": "We Follow Up",
+          "text": "The team contacts you to plan the details. A request is not a confirmed booking."
+        }
+      ],
+      "items": [
+        {
+          "id": "workshops",
+          "title": "Wellness Workshops",
+          "icon": "bulb",
+          "lines": [
+            "Interactive sessions, tailored to your group."
+          ],
+          "text": "Stress management and self-care, building support networks, self-advocacy and more.",
+          "link": {
+            "label": "About Workshops",
+            "href": "#b-rp-workshops",
+            "icon": "down"
+          }
+        },
+        {
+          "id": "groups",
+          "title": "Peer Support Groups",
+          "icon": "chat",
+          "lines": [
+            "A confidential, judgement-free space to talk."
+          ],
+          "text": "Topics, activities and length can be tailored by request.",
+          "link": {
+            "label": "About Groups",
+            "href": "#b-rp-groups",
+            "icon": "down"
+          }
+        },
+        {
+          "id": "training",
+          "title": "Volunteer Training",
+          "icon": "badge",
+          "lines": [
+            "Learn to support friends and classmates."
+          ],
+          "text": "Active listening, confidentiality, inclusive practices and campus resources.",
+          "link": {
+            "label": "About Training",
+            "href": "#b-rp-training",
+            "icon": "down"
+          }
+        },
+        {
+          "id": "housing",
+          "title": "Navigating Housing",
+          "icon": "house",
+          "lines": [
+            "A head start on Madison’s leasing season."
+          ],
+          "text": "A housing workshop tailored to your group’s needs.",
+          "link": {
+            "label": "About Housing",
+            "href": "#b-rp-housing",
+            "icon": "down"
+          }
         }
       ]
     },
@@ -84,8 +150,7 @@
       "title": "Peer Support Groups",
       "body": [
         "Confidential, judgement-free space to talk about whatever’s on your mind.",
-        "Topics, activities, & length can be tailored by request!",
-        "Describe the program you would like in the shared program request form."
+        "Topics, activities, & length can be tailored by request!"
       ],
       "links": [
         {
@@ -106,8 +171,7 @@
       "flip": true,
       "body": [
         "Learn how to support your friends & classmates! This training adapts Badger Supports’ peer support framework for any student or student group.",
-        "Get familiar with campus resources & gain hands-on practice in active listening, confidentiality, inclusive practices, & more.",
-        "Describe the program you would like in the shared program request form."
+        "Get familiar with campus resources & gain hands-on practice in active listening, confidentiality, inclusive practices, & more."
       ],
       "links": [
         {
@@ -148,7 +212,6 @@
       "type": "spill",
       "title": "Badger SPILL",
       "body": [
-        "Need to vent to a fellow Badger? Spill it!",
         "Badger SPILL is written peer support from Badger Supports. Write what’s on your mind, whenever it’s on your mind, and a trained UW–Madison Student Supporter writes back. It’s confidential.",
         "Badger SPILL does not provide crisis support. If you or a friend are in a crisis, please call 911 or the UHS 24/7 Mental Health Crisis Line: 608-265-5600, option 9.",
         "For written peer support, go directly to Badger SPILL. You do not need to request a program for a group."

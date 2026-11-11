@@ -69,6 +69,10 @@
   .js .nav.is-open { display: block; max-height: calc(100dvh - var(--header-h)); overflow-y: auto; border-top: var(--hairline); }
   .js .nav.is-open > ul { flex-direction: column; align-items: stretch; padding-block: var(--s2) var(--s4); }
   .js .nav.is-open a, .js .nav.is-open summary { width: 100%; font-size: 1.0625rem; }
+  /* without JavaScript the open menu makes the header too tall to stick: it would cover the
+     heading a jump link leads to (the arrival checks in ops/interact.mjs measure the clearance),
+     so there the header scrolls away with the page and only the script's compact header sticks */
+  html:not(.js) .site-header { position: static; }
 }
 
 /* ---------- support line ---------- */

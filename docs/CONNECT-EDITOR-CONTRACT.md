@@ -379,6 +379,16 @@ Reads: `resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState` · a
 | `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `topics` | topics, in order: each an `id` (the address word, `?topic=`), a `label`, one of Connect's sixteen resource categories (`category`), and optional old address words (`aliases`) that open it; a topic no resource carries is not shown | **required** |
 
+### Academic Support Navigator — `navigator`
+
+Reads: `resources` · analytics: `none` · photos load lazy · browser module `navigator.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `steps` | the navigator's steps, in order; the first is where the walk starts. Each step has an `id`, its question (`prompt`) and its choices (`options`); each choice has an `id`, its words (`label`), and goes to one place: a next step (`next`, another step's id) or a set of resources (`results`, ids from the resource library). Every step must be reachable from the first and able to reach a set of resources | **required** |
+
 ### Site search — `sitesearch`
 
 Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module `search.js`
@@ -538,7 +548,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-713 keys. Keys are permanent. Required text cannot be published empty and must keep each
+735 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -1226,7 +1236,7 @@ the site adds the markup.
 | `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
 | `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
 
-### Resource list (51)
+### Resource list (55)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1274,6 +1284,10 @@ the site adds the markup.
 | `resources.detail.cost` | Cost: | On the resource list: a line in Additional Details. |  |
 | `resources.scope` | Details change. Check the official page before relying on hours, availability or eligibility. | On the resource list: the note under the list. |  |
 | `resources.updated` | Last Updated {{monLong}} {{dom}}, {{year}} | On the resource list: the date the list was last checked, after the note under the list. | `{{monLong}}` `{{dom}}` `{{year}}` |
+| `resources.source` | Source: | On the resource list: the label before the source a card's record names, on a card whose record carries one. |  |
+| `resources.source.kb` | UW–Madison KnowledgeBase | On the resource list: the source named on a card whose record comes from the UW–Madison KnowledgeBase. |  |
+| `resources.source.badger` | Badger Supports | On the resource list: the source named on a card whose record is one of Badger Supports' own resources. |  |
+| `resources.reviewed` | Last Reviewed {{monLong}} {{dom}}, {{year}} | On the resource list: the date a card's record was last reviewed, after its source. | `{{monLong}}` `{{dom}}` `{{year}}` |
 | `resources.report.problem` | Report a Problem | On the resource list: in each resource's Additional Details, the link to report a problem with it. |  |
 | `resources.report.update` | Suggest an Update | On the resource list: in each resource's Additional Details, the link to suggest a change to it. |  |
 | `resources.report.suggest` | Suggest a Resource | On the resource list: the link under the list to suggest a resource it does not have. |  |
@@ -1313,6 +1327,34 @@ the site adds the markup.
 | `alumni.disabled` | For alumni history or corrections, please email us. | History source not activated; do not imply a public roster exists. |  |
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
+
+### Discover Classes by Interest (14)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `classes.open` | Open for {{term}} | On the classes page: the label on a course with published sections in a current or upcoming term; {{term}} is that term, such as Fall 2026. | `{{term}}` |
+| `classes.offered` | Offered {{term}} | On the classes page: the label on a course last offered in a past term; {{term}} is the most recent verified term, such as Summer 2026. | `{{term}}` |
+| `classes.group.available` | Available | On the classes page: the heading over the courses with published sections in a current or upcoming term. |  |
+| `classes.group.recent` | Recently Offered | On the classes page: the heading over the courses whose most recent verified offering is in a past term. |  |
+| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen. | `{{n}}` |
+| `classes.count.one` | 1 Course | On the classes page: the count when the list holds one course. |  |
+| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest narrows the list. | `{{shown}}` `{{total}}` |
+| `classes.interests.all` | All Interests | On the classes page: the first interest button, which shows every course. |  |
+| `classes.credit.one` | 1 Credit | On the classes page: the credits on a course worth one credit. |  |
+| `classes.credits` | {{n}} Credits | On the classes page: the credits on a course card; {{n}} is the credit value or range the course carries. | `{{n}}` |
+| `classes.view` | View in UW Course Search | On the classes page: the link on a course card to the course in UW Course Search, the official listings. |  |
+| `classes.source` | Courses and terms are from UW Course Search, University of Wisconsin–Madison. | On the classes page: the line under the list naming where the course data comes from. |  |
+| `classes.updated` | Last Updated {{monLong}} {{dom}}, {{year}} | On the classes page: the date the course data was last refreshed, after the source line. | `{{monLong}}` `{{dom}}` `{{year}}` |
+| `classes.empty` | No courses are listed right now. Please check UW Course Search for the current listings. | On the classes page: shown when the course data holds no courses. |  |
+
+### Academic Support Navigator (4)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `navigator.back` | Back | On the Academic Support Navigator: the button that returns to the question before. |  |
+| `navigator.startOver` | Start Over | On the Academic Support Navigator: the button that returns to the first question. |  |
+| `navigator.all` | See All Resources | On the Academic Support Navigator: the link to the full Resource Finder, present at every step. |  |
+| `navigator.results` | Resources That Fit | On the Academic Support Navigator: the heading over the resources a finished path leads to. |  |
 
 ## Also edited in Connect
 

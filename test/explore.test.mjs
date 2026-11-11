@@ -11,6 +11,12 @@ import { build, loadContent, ROOT } from "../ops/build.mjs";
 import { makeContext } from "../src/render/context.mjs";
 import { renderBlock } from "../src/render/registry.mjs";
 import { resourceVisible } from "../src/render/blocks/resources.mjs";
+import { navigatorProblems, navigatorResourceProblems } from "../src/render/blocks/navigator.mjs";
+
+const OUT = path.join(ROOT, "local", "test-build-explore");
+let built = null;
+test.before(async () => { await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: "2026-11-11" }); built = true; });
+const builtPage = (p) => fs.readFileSync(path.join(OUT, p, "index.html"), "utf8");
 
 const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 const fixtureResources = read("content/fixtures/resources.json").resources;
@@ -56,4 +62,43 @@ test("EXPLORE-C: a fixture export shows the own record and the approved KB artic
   assert.equal(card("kb-unapproved"), "", "the unapproved KB record is not rendered");
   assert.match(card("own-marked"), /Source:<\/span> Badger Supports/, "the list's own records are labelled too when the export marks them");
   assert.match(page, /3 Resources/, "the count announced is the count shown");
+});
+
+/* ---------- EXPLORE-G: the Academic Support Navigator ---------- */
+
+const navBlock = read("content/pages/explore-academic-support.json").blocks.find((b) => b.type === "navigator");
+const clone = (x) => structuredClone(x);
+
+test("EXPLORE-G: the shipped tree joins up, and every leaf names a resource the library holds", () => {
+  assert.deepEqual(navigatorProblems(navBlock), []);
+  assert.deepEqual(navigatorResourceProblems(navBlock, fixtureResources), []);
+  const leaves = navBlock.steps.flatMap((s) => s.options.filter((o) => o.results));
+  assert.ok(leaves.length >= 5, "the tree has real leaves");
+  for (const leaf of leaves) assert.ok(leaf.results.length >= 1, "every leaf resolves to at least one approved resource");
+});
+
+test("EXPLORE-G: a tree that does not join up, or names an unknown resource, is refused", () => {
+  const both = clone(navBlock); both.steps[0].options[0].next = "course";
+  assert.match(navigatorProblems(both).join(), /goes to one place/, "a choice cannot go to a step and a set of resources");
+  const missing = clone(navBlock); missing.steps[0].options[2].next = "nowhere";
+  assert.match(navigatorProblems(missing).join(), /which is not a step/);
+  const orphan = clone(navBlock); orphan.steps.push({ id: "lost", prompt: "Lost?", options: [{ id: "xx", label: "X", results: ["greater-university-tutoring-service"] }] });
+  assert.match(navigatorProblems(orphan).join(), /not reachable from the first step/);
+  const dead = clone(navBlock); dead.steps[1].options = [{ id: "loop", label: "Loop", next: "course" }];
+  assert.match(navigatorProblems(dead).join(), /can never reach a set of resources/);
+  const unknown = clone(navBlock); unknown.steps[0].options[0].results = ["no-such-resource"];
+  assert.match(navigatorResourceProblems(unknown, fixtureResources).join(), /which the resource library does not hold/, "a test fails on an unknown id");
+});
+
+test("EXPLORE-G: the built page walks to real cards, and the full finder is linked at every step", () => {
+  assert.ok(built);
+  const page = builtPage("explore/academic-support");
+  const section = page.slice(page.indexOf("data-navigator"), page.indexOf("</section>", page.indexOf("data-navigator")));
+  const panels = [...section.matchAll(/data-nav-panel/g)].length;
+  assert.equal(panels, 10, "two questions and eight sets of results");
+  assert.equal([...section.matchAll(/href="\/resources\/"/g)].length, panels, "See All Resources is present at every step");
+  assert.equal([...section.matchAll(/data-res="greater-university-tutoring-service"/g)].length, 3, "tutoring ends on the tutoring service from three paths");
+  assert.match(section, /data-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
+  assert.match(section, /data-nav-go="b-nav-step-course"/, "the course choice goes to the second question");
+  assert.doesNotMatch(section, /<input|<textarea|<select/, "no free-text personal data is asked for");
 });

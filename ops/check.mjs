@@ -2,6 +2,7 @@
  *
  *   node ops/check.mjs              # source gates, build, tests (no network)
  *   node ops/check.mjs --browser    # …and screenshots, axe, the real forms, menus and uploads in Chromium
+ *   node ops/check.mjs --version-history # include the local history review for a release candidate
  *   node ops/check.mjs --no-media   # away from the laptop: placeholders for the photos. Not a publish's gate
  *
  * Nothing here deploys, pushes or contacts anyone. The verdict says whether the work is ready to
@@ -41,6 +42,14 @@ function walk(dir, skip = []) {
 const REPO_SKIP = ["node_modules", "dist", "local"];
 const repoFiles = walk(ROOT, REPO_SKIP).filter((f) => /\.(mjs|js|json|css|md|sql|toml|html|txt)$/.test(f));
 const rel = (f) => path.relative(ROOT, f);
+
+if (process.argv.includes("--version-history")) {
+  const review = spawnSync("python3", [".version-history/version_history.py", "check", "--committed"], {
+    cwd: ROOT, encoding: "utf8"
+  });
+  const issue = review.error?.message || review.stderr?.trim() || review.stdout?.trim() || "History check failed";
+  gate("version history review", review.status === 0 ? [] : [issue]);
+}
 
 /* 1. The words: every one editable. */
 {

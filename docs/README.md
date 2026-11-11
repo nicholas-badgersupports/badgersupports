@@ -7,6 +7,12 @@ the current deployment, domain configuration or release status.
 See [Architecture](ARCHITECTURE.md) for the build and runtime, and [Extending the site](EXTENDING.md)
 for adding pages and block types.
 
+## Software version history
+
+The [software changelog](VERSION-HISTORY.md) covers the Public rebuild from the October 19, 2026 brief onward. Use its dated publication evidence for release status.
+
+At release-candidate handoff, start with the [history runbook](../.version-history/RUNBOOK.md) and [Public source guide](../.version-history/PROJECT.md). Use `npm run history:start -- --base <revision>` for changes since a previously reviewed revision, or `npm run history:start -- --full` for a retrospective. Review each substantive change, update the software changelog and complete the local review record. Run `npm run history:check` and include `--version-history` with the normal candidate checks, for example `npm run check -- --browser --version-history` on the maintainer's machine. The ordinary development build does not read the private review record.
+
 ## Commands
 
 Run from the repository root. Node 22 or later; install dependencies with `npm ci`.

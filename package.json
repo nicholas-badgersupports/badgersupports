@@ -10,6 +10,8 @@
     "build": "node ops/build.mjs",
     "dev": "node ops/dev-server.mjs",
     "check": "node ops/check.mjs",
+    "history:start": "python3 .version-history/version_history.py start",
+    "history:check": "python3 .version-history/version_history.py check",
     "test": "node --test --test-concurrency=1 \"test/*.test.mjs\"",
     "shots": "node ops/shots.mjs",
     "a11y": "node ops/a11y.mjs",

@@ -3,6 +3,9 @@
  *   connect.ingest  the submission into Connect's Website Forms
  *   mail.receipt    a receipt to the person who wrote, through Connect's mail path (PROPOSED: Connect's
  *                   publicReceipt action is an Exchange request), only once the owner sets a verified sender
+ *   mail.notify     a notice to the team that owns the form, through the same mail path (PROPOSED:
+ *                   Connect's publicNotify action; Connect addresses it — this site holds no team
+ *                   address), only once the owner sets a verified sender
  *   sheets.backup   a row in the directors' backup workbook (backup.mjs), only once it is set up
  *
  * A submission is saved here first, in one transaction with its outbox rows (intake.mjs); only then does
@@ -174,6 +177,25 @@ async function receipts(cfg, opts) {
   return { sent: n, failed: bad, configured: true };
 }
 
+/* Notices to the owning team, once a sender is verified: the held rows are released, then each is
+   handed to Connect's mail path with its dedupe key (PROPOSED: Connect's publicNotify). The site
+   names no recipient: Connect addresses the notice to the team that owns the form's queue. */
+async function notifies(cfg, opts) {
+  const sender = receiptSender();
+  if (!sender) return { sent: 0, failed: 0, configured: false };
+  await q("UPDATE outbox SET state = 'pending', hold_reason = NULL WHERE kind = 'mail.notify' AND state = 'held' AND hold_reason = 'sender-unverified'");
+  const { token, rows } = await claim("mail.notify", opts);
+  let n = 0, bad = 0;
+  for (const row of rows) {
+    try {
+      await call(cfg, { action: "publicNotify", dedupeKey: row.dedupe_key, ref: row.ref, form: row.form_key, template: `public.${row.form_key}.notify`, sender });
+      await sent(row, token, { to: "notify" });
+      n++;
+    } catch (e) { await failed(row, token, e); bad++; }
+  }
+  return { sent: n, failed: bad, configured: true };
+}
+
 /* Backup rows, once the workbook is set up (backup.mjs): written together, each kept once by its reference. */
 async function backups(opts) {
   const b = backupConfig();
@@ -194,7 +216,7 @@ async function backups(opts) {
 /* When the outbox next has work it can do, written where a scheduled run reads it without the database
    (published.mjs, noteSet). Kinds not set up here are left out, so a row that cannot be sent never keeps
    the database awake. */
-const activeKinds = () => [connectConfig() && "connect.ingest", connectConfig() && receiptSender() && "mail.receipt", backupConfig() && "sheets.backup"].filter(Boolean);
+const activeKinds = () => [connectConfig() && "connect.ingest", connectConfig() && receiptSender() && "mail.receipt", connectConfig() && receiptSender() && "mail.notify", backupConfig() && "sheets.backup"].filter(Boolean);
 async function noteNextDue() {
   const kinds = activeKinds();
   const r = kinds.length ? await one("SELECT min(greatest(next_at, coalesce(claim_until, next_at))) AS at FROM outbox WHERE state IN ('pending', 'failed', 'held') AND kind = ANY($1::text[])", [kinds]) : null;
@@ -240,7 +262,7 @@ export async function runOutbox({ now = Date.now(), limit = 20 } = {}) {
   const same = note && JSON.stringify(note.kinds || []) === JSON.stringify(activeKinds());
   if (same && (note.at === null || Date.parse(note.at) > now)) return { woke: false };
   const cfg = connectConfig();
-  const out = { woke: true, ingest: cfg ? await ingest(cfg, { limit }) : { configured: false }, receipts: cfg ? await receipts(cfg, { limit }) : { configured: false }, backup: await backups({ limit: 200 }) };
+  const out = { woke: true, ingest: cfg ? await ingest(cfg, { limit }) : { configured: false }, receipts: cfg ? await receipts(cfg, { limit }) : { configured: false }, notifies: cfg ? await notifies(cfg, { limit }) : { configured: false }, backup: await backups({ limit: 200 }) };
   await noteNextDue();
   return out;
 }

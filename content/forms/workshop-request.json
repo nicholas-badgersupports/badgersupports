@@ -181,6 +181,7 @@
     "connectQueue": "programs.workshop-requests",
     "owner": "Programs",
     "receipt": "proposed",
+    "notify": "on",
     "backup": "proposed"
   },
   "source": {

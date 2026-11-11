@@ -19,7 +19,9 @@ test("a valid request is stored once, with its onward work in the outbox", async
   assert.equal(sub.answers.affiliation, "Example Hall Council");
   assert.equal(sub.anonymous, false);
   const out = await many("SELECT kind, state FROM outbox ORDER BY id");
-  assert.deepEqual(out.map((o) => `${o.kind}:${o.state}`), ["connect.ingest:pending", "sheets.backup:pending"]);
+  // The workshop request also queues its notice to Programs (workflow.notify, 11 Nov 2026), held
+  // until the sender is verified, as a receipt would be.
+  assert.deepEqual(out.map((o) => `${o.kind}:${o.state}`), ["connect.ingest:pending", "sheets.backup:pending", "mail.notify:held"]);
 });
 
 test("a receipt is queued only where it is switched on, and held until the sender is verified", async () => {

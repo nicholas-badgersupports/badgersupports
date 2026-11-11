@@ -21,7 +21,7 @@ test('Craft hierarchy keeps original edit paths, people photos and useful anchor
  const currentTargets=new Set([...pageStrings(current),...pageValues(current)].map(r=>r.target));
  const stable=['b-cn-hero/title','b-cn-hero/lead','b-cn-expect/title','b-cn-expect/body/0','b-cn-expect/items/0/text','b-cn-expect/items/1/text','b-cn-expect/items/2/text','b-cn-next/title','b-cn-recent/title','b-cn-cta/title','b-cn-cta/primary/label','b-cn-cta/primary/href','b-cn-access/body/0'];
  for(const path of stable)assert.ok(currentTargets.has(`page:pg-craft-nights:${path}`),path);
- const photos={'b-cn-hero':['m-craft-table','m-people-nostalgic','m-people-planter-solo'],'b-cn-expect':['m-craft-friends','m-craft-pair'],'b-cn-cta':['m-craft-stickers']};
+ const photos={'b-cn-hero':['m-craft-pots-room','m-craft-painted-pumpkin','m-craft-bead-crafts'],'b-cn-expect':['m-craft-planting-station','m-craft-succulent-table'],'b-cn-cta':['m-craft-stickers']};
  for(const [id,items] of Object.entries(photos))assert.deepEqual(current.blocks.find(b=>b.id===id).photos,items,id);
  const out=current.blocks.map(b=>String(renderBlock(b,ctx(source())))).join('');
  assert.ok(out.includes('id="b-cn-hero"'));

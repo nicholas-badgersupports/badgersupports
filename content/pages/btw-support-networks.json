@@ -60,6 +60,24 @@
         "m-btw-support-networks-slide"
       ],
       "whole": true
+    },
+    {
+      "id": "b-btw-sn-explore",
+      "type": "text",
+      "title": "More places to find your people",
+      "body": [
+        "The Campus Events Explorer gathers clubs, communities and social gatherings from UW-Madison Events and the Wisconsin Union, alongside Badger Supports programs."
+      ],
+      "links": [
+        {
+          "label": "Campus Events Explorer",
+          "href": "/explore/events/"
+        },
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
     }
   ]
 }

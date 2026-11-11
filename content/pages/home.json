@@ -481,6 +481,24 @@
       "id": "b-home-mood",
       "type": "mood",
       "title": "How are you feeling today?"
+    },
+    {
+      "id": "b-home-explore",
+      "type": "text",
+      "title": "Find your people",
+      "body": [
+        "Campus events from UW-Madison Events and the Wisconsin Union, gathered with Badger Supports programs in one explorer — including Find Your People, a collection of clubs, communities and social gatherings."
+      ],
+      "links": [
+        {
+          "label": "Campus Events Explorer",
+          "href": "/explore/events/"
+        },
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
     }
   ]
 }

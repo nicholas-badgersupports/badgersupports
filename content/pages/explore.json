@@ -1,0 +1,78 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-explore",
+  "path": "/explore/",
+  "title": "Explore Campus",
+  "description": "Tools for finding your way around campus: campus events from UW-Madison and the Wisconsin Union, and Madison Metro bus connections from a housing address to campus buildings.",
+  "analytics": "public",
+  "blocks": [
+    {
+      "id": "b-explore-head",
+      "type": "pagehead",
+      "title": "Explore Campus",
+      "lead": "What is on, and how to get there.",
+      "body": [
+        "Two tools, each reading a public source and naming it. Badger Supports programs are labelled as ours; everything else keeps its own organizer and a link to its official listing."
+      ]
+    },
+    {
+      "id": "b-explore-tools",
+      "type": "cards",
+      "variant": "activities",
+      "title": "The tools",
+      "items": [
+        {
+          "id": "events",
+          "title": "Campus Events",
+          "icon": "calendar",
+          "lines": [
+            "UW-Madison Events · Wisconsin Union · Badger Supports"
+          ],
+          "text": "Campus events in one explorer: search, filter by interest, and switch between a calendar and a list. Find Your People gathers clubs, communities and social gatherings.",
+          "link": {
+            "label": "Open the Campus Events Explorer",
+            "href": "/explore/events/"
+          }
+        },
+        {
+          "id": "bus-routes",
+          "title": "Bus Routes from Home",
+          "icon": "pin",
+          "lines": [
+            "Madison Metro · Walking distances only"
+          ],
+          "text": "Compare several housing addresses against the campus buildings you pick: a direct bus, one transfer, or no suitable connection. No times, schedules or predictions.",
+          "link": {
+            "label": "Compare bus routes",
+            "href": "/explore/bus-routes/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b-explore-sources",
+      "type": "text",
+      "title": "Where the listings come from",
+      "body": [
+        "Event listings come from UW-Madison Events and the Wisconsin Union event calendar; Badger Supports programs come from Badger Supports Connect. Bus routes come from Madison Metro's published route data, and addresses are placed with OpenStreetMap. Nothing you type into a tool here is kept."
+      ],
+      "links": [
+        {
+          "label": "UW-Madison Events",
+          "href": "https://today.wisc.edu/",
+          "icon": "out"
+        },
+        {
+          "label": "Wisconsin Union event calendar",
+          "href": "https://union.wisc.edu/events-and-activities/event-calendar/",
+          "icon": "out"
+        },
+        {
+          "label": "Madison Metro",
+          "href": "https://www.cityofmadison.com/metro",
+          "icon": "out"
+        }
+      ]
+    }
+  ]
+}

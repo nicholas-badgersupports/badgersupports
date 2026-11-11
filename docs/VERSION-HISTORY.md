@@ -1,12 +1,32 @@
 # Badger Supports Public version history
 
-Software changes through November 7, 2026, for visitors, staff and maintainers. Dates use America/Chicago. Development periods describe work on the rebuild. Individual publication dates appear only where a deployment record supports them.
+Software changes through November 11, 2026, for visitors, staff and maintainers. Dates use America/Chicago. Development periods describe work on the rebuild. Individual publication dates appear only where a deployment record supports them.
 
 ## Unreleased
 
+Development from November 5 to November 11, 2026, checked into the repository and not yet published. A publication date will be recorded here when a deployment record supports one.
+
 ### Added
 
-- Maintainers can prepare and check a version-history review against a chosen Git range. The review records what was combined or excluded and checks the candidate against the software changelog.
+- A site-wide search page at `/search/` searches the public pages in the visitor's own browser against an index the build writes; staff pages, form previews and form answers are never indexed (Slice 39-A). By the owner's ruling of November 11, 2026 the menu carries no Search entry; the page answers at its address.
+
+- A Google Analytics forwarder is built into the pages but ships unconfigured: it sends nothing until a publish build is given a verified property id, and it loads with no consent step, matching the existing Google site (item 22).
+
+- Forms gained setup guides, and hiring forms can retain a recommendation across the hiring cycle; that retention depends on the paired Connect receiver. The resource directory gained Cost, Location and Access filters, presented as chips.
+
+### Changed
+
+- The Peer Support Groups page: its Instagram reel now loads without a click and without the midterms caption; the header, join steps and expectations were reworked, and the peer and Hub photos come from the organisation's Drive library. The home hero leads with the peer circle, its pause control is a dot icon, and headings and cards keep whole words.
+
+- What We Do presents four ways in, each in its programme colour; History draws its eras as one timeline; Navigating Housing opens with Before You Sign situations and a How It Works panel; Request a Program shows the programs at a glance with the request steps.
+
+- The menu no longer lists Rooms, and the hub entry reads Mental Health Hub. A website problem reported from the FAQ now goes to the directors. Forms open by default, and hiring forms close on December 18, 2026. Form wording, legal documents and agreements read from Connect, and the alumni history reads Connect each time it is drawn.
+
+- The privacy draft was updated to describe the site as it now ships: the Instagram embed as it loads, and the forms as they now work. It remains a draft, frozen for the owner's and legal review, and is not published.
+
+### Fixed
+
+- The screenshot checks count only the site's own console messages, so an embedded service's noise no longer fails a page.
 
 ## 2026-11-04 to 2026-11-05 — Development period — Form setup, file delivery and visitor pages
 
@@ -166,7 +186,7 @@ Sources · [DECISIONS.md](DECISIONS.md) · [README.md](README.md) · [ROUTES.md]
 
 ## Sources and coverage
 
-The review covered the 70 commits reachable from the default branch through `8e7e220`, the October 19 brief and route audit, both October run records, later decisions and the available production records. GitHub had no tags or releases. Repeated portrait-loading refinements are grouped, while repeated verification, test-only corrections and regenerated contracts are folded into the change they support. One unmerged November 5 candidate preserves the hiring cycle on a late recommendation. It requires the paired Connect receiver and has no verified Public release. [Candidate](https://github.com/nicholas-badgersupports/badgersupports/commit/9cede55)
+The review covered the 70 commits reachable from the default branch through `8e7e220`, the October 19 brief and route audit, both October run records, later decisions and the available production records. The November 11, 2026 extension covers the 44 commits that followed on the same branch through `ed48843`; none of it carries a publication date, because no deployment record for it was checked. GitHub had no tags or releases. Repeated portrait-loading refinements are grouped, while repeated verification, test-only corrections and regenerated contracts are folded into the change they support. The November 5 hiring-cycle candidate (`9cede55`) has since joined this branch and stands in Unreleased; it still requires the paired Connect receiver and has no verified Public release. [Candidate](https://github.com/nicholas-badgersupports/badgersupports/commit/9cede55)
 
 The complete revision history of the Google Sites predecessor and the maintainer’s laptop-only handoffs were unavailable. The November 7 project settings showed team sign-in for the Netlify site. Domain cutover, present form switches, live receipt and backup delivery, and acceptance of the final resource fix were not independently verified. Historical blockers in WORK.md describe the date of their checks. [Switch record](SWITCH.md) · [Latest production record](https://app.netlify.com/projects/badgersupports-public/deploys/6aecc774ba180a14b92fcb9b)
 

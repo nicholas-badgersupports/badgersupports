@@ -6,6 +6,9 @@
 > does not settle.
 > Updated 10 Nov 2026: the Instagram passages now describe the player as it has loaded since 9 Nov 2026 — in the
 > page, with no Play button first (the owner's decision, `docs/DECISIONS.md`). Nothing else was re-checked.
+> Updated 10 Nov 2026 (Session 12): the forms passages now describe forms as they have shipped since the
+> owner's 10 Nov 2026 decision — open by default, closable by a director's switch or a form's own dates.
+> Nothing else was re-checked.
 
 # Privacy Policy
 
@@ -24,8 +27,9 @@ In this policy, "we" means Badger Supports.
 - The site loads no analytics tag.
 - If you only read pages, the site sets no cookies and stores nothing in your browser.
 - Our host, Netlify, receives every request your browser makes, including your IP address.
-- Every form on this site is closed right now. Two form pages send you to a Google Form instead.
-- When a form opens here, your answers are stored in the site's own database and passed to Badger Supports
+- The site's forms are open unless a director has closed one, or a form's own dates have passed. A closed
+  form shows a message instead, and the site's server refuses its answers.
+- When you send a form here, your answers are stored in the site's own database and passed to Badger Supports
   Connect, our internal system. Your IP address is not stored with them.
 - Nothing on our pages comes from another company, except an Instagram video on the Peer Support Groups page.
   It loads as you reach it, before you press anything, and Instagram may set its own cookies.
@@ -112,12 +116,15 @@ are kept apart from form answers. Counts more than a day old are deleted the nex
 
 ## Forms
 
-**Right now every form on this site is closed.** The site's server refuses answers for every form.
+**Forms on this site are open by default.** A director can close a form at any time; the three hiring
+forms (the staff and volunteer applications and the recommendation letter) also close on their own at the
+end of 18 December 2026. A form's page says whether it is open.
 
-- **Request a Workshop** and **Programming Feedback** show a "Fill Out Our Form" button. It takes you to the
-  Google Form that the page replaces. What you enter there is handled by Google Forms, not by this site.
+- A closed form shows its own short message instead, usually with one of our email addresses, and the
+  server refuses its answers.
+- A few pages still link a Google Form for a specific purpose (choosing a workshop topic is one). What
+  you enter there is handled by Google Forms, not by this site.
   [What happens to Google Form answers is a gap.]
-- The other forms show a short message instead, usually with one of our email addresses.
 
 **When a form on this site is open**, this is what happens to what you send:
 
@@ -160,12 +167,11 @@ An anonymous form never sends a receipt. Connect receives only what the form ask
 every form, your IP address is not stored with your answers. The only trace of your connection is the scrambled
 count under "Limits on repeated use", removed once it is more than a day old.
 
-**What each form asks.** All of them are closed right now.
+**What each form asks.**
 
 - **Request a Workshop:** your name, email, other contact details, organization or group, number of attendees,
-  which workshop, and two choices of date and time. Now: a button to its Google Form.
+  which workshop, and two choices of date and time.
 - **Programming Feedback** (anonymous): your name if you want to give it, which program, and your feedback.
-  Now: a button to its Google Form.
 - **Staff Application:** eligibility and AI-use confirmations, email, preferred name, pronouns, phone, semesters at
   UW–Madison, about you, skills and preferences, hours, Federal Work Study eligibility and other commitments
   (both confidential), a resume and a cover letter (PDF), portfolio links, and comments.
@@ -276,8 +282,8 @@ The policy above describes the production build. The prototype build, which ever
 
 | | Prototype | Production (what a publish serves) |
 |---|---|---|
-| Request a Workshop, Programming Feedback | open on this site | closed; a button to each one's Google Form |
-| Closed forms | a preview page each, which checks answers and sends nothing | no preview pages |
+| Request a Workshop, Programming Feedback | open on this site | open on this site, in their shipped state |
+| Closed forms | a preview page each, which checks answers and sends nothing | no preview pages; the page shows the form's closed message |
 | Team and Wall of Support | fictional sample people and notes | none, until Connect exports them |
 | Events and resources | hand-typed fixtures | read from Connect when the site is built |
 | Search engines | every page `noindex`; robots disallow all | robots disallow `/staff/` and `/api/` only |
@@ -337,9 +343,9 @@ Paths are relative to the repository root, shortened as follows. `lib/` means `n
 | Keyed hash of the address, not the address | `lib/http.mjs:75-84` |
 | Kept apart from submissions; older than a day deleted at the next write | `lib/http.mjs:91`; `mig/001:85-92` |
 | **Forms** | |
-| Production: every form closed; open ones link a Google Form | `src/shared/forms.mjs:59-70`; `ops/build.mjs:288-289` |
-| The same, as a test of the production pages | `test/launch.test.mjs:22-30` |
-| The server holds the same forms closed | `test/launch.test.mjs:32-37`; `lib/intake.mjs:91`; `ops/build.mjs:562` |
+| Every form ships open; a form's own dates can close it | `content/forms/*.json` ("state", "intakeWindow"); `src/shared/form-window.mjs` (the forms as a build serves them) |
+| The same, as tests of the shipped state and the hiring dates | `test/launch.test.mjs` |
+| A director's switch row wins over the shipped state, at Send and on the page | `docs/ACTIVE-RULES.md` (Forms); `src/shared/form-window.mjs` |
 | Only the test harness writes a switch row | `ARCHITECTURE.md:583`; search (`ops/interact.mjs:479`) |
 | "Fill Out Our Form" wording | `content/text.json:534-536` |
 | Each closed form's message | `content/forms/*.json:9` |

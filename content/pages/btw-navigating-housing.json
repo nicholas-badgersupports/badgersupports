@@ -54,26 +54,18 @@
       ]
     },
     {
-      "id": "b-btw-nh-slide",
-      "type": "cta",
-      "title": "Can You Spot the Bedroom Window?",
-      "body": "The creator’s favorite slide is titled “Can you spot the bedroom window.” The floor plan featured is from their sophomore year room in an LZ Management property. Studying a floor plan matters because it helps renters understand how a space actually functions. A layout can reveal things that photos and staged tours do not capture, such as natural light, airflow, closet access, shared walls, and the practicality of moving furniture. Floor plans also help students identify red flags like interior bedrooms, unclear fire exits, oddly placed utilities, or misleading room dimensions. Reviewing the layout early supports better decision making, clearer expectations, and fewer surprises after signing the lease.",
-      "primary": {
-        "label": "Request This Workshop",
-        "href": "/forms/workshop-request/?topic=housing"
-      },
-      "photos": [
-        "m-btw-housing-slide"
-      ],
-      "whole": true
-    },
-    {
       "id": "b-btw-nh-bus",
-      "type": "busroutes",
-      "title": "Bus routes from a housing address",
-      "lead": "The same comparison as on its own page: several addresses against the campus buildings you pick, from Madison Metro's route data, with walking distances only.",
-      "privacy": "Your addresses are looked up with OpenStreetMap to place them on the map. They are not kept — not by this site, and not in its records — and only their positions are used for the comparison.",
-      "credit": "Bus routes: Data provided under license granted by City of Madison, WI, Metro Transit. Addresses and building places: © OpenStreetMap contributors. Route data read 11 November 2026 (feed S072_202608240858, 16 August to 5 December 2026); a stop counts as serving a place when it is within about 500 metres of it, measured in a straight line."
+      "type": "text",
+      "title": "Can you get to campus from there?",
+      "body": [
+        "A home is also a commute. The Bus Route Explorer compares the housing addresses you are considering against the campus buildings you pick, from Madison Metro's route data: a direct bus, one transfer, or no suitable connection, with walking distances only. Your addresses are looked up to place them and are not kept."
+      ],
+      "links": [
+        {
+          "label": "Bus Routes from Home",
+          "href": "/explore/bus-routes/"
+        }
+      ]
     },
     {
       "id": "b-btw-nh-explore",
@@ -92,6 +84,20 @@
           "href": "/explore/"
         }
       ]
+    },
+    {
+      "id": "b-btw-nh-slide",
+      "type": "cta",
+      "title": "Can You Spot the Bedroom Window?",
+      "body": "The creator’s favorite slide is titled “Can you spot the bedroom window.” The floor plan featured is from their sophomore year room in an LZ Management property. Studying a floor plan matters because it helps renters understand how a space actually functions. A layout can reveal things that photos and staged tours do not capture, such as natural light, airflow, closet access, shared walls, and the practicality of moving furniture. Floor plans also help students identify red flags like interior bedrooms, unclear fire exits, oddly placed utilities, or misleading room dimensions. Reviewing the layout early supports better decision making, clearer expectations, and fewer surprises after signing the lease.",
+      "primary": {
+        "label": "Request This Workshop",
+        "href": "/forms/workshop-request/?topic=housing"
+      },
+      "photos": [
+        "m-btw-housing-slide"
+      ],
+      "whole": true
     }
   ]
 }

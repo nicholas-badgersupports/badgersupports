@@ -48,20 +48,6 @@
       ]
     },
     {
-      "id": "b-btw-sn-slide",
-      "type": "cta",
-      "title": "The Circle of Support",
-      "body": "The creator’s favorite slide is “The Circle of Support.” It visually represents how different types of support connect to form your overall network, placing you at the center and showing the many people, communities, and resources that surround and strengthen you. It’s a powerful reminder that support is all around, even when it’s easy to overlook.",
-      "primary": {
-        "label": "Request This Workshop",
-        "href": "/forms/workshop-request/?topic=support_network"
-      },
-      "photos": [
-        "m-btw-support-networks-slide"
-      ],
-      "whole": true
-    },
-    {
       "id": "b-btw-sn-explore",
       "type": "text",
       "title": "More places to find your people",
@@ -78,6 +64,20 @@
           "href": "/explore/"
         }
       ]
+    },
+    {
+      "id": "b-btw-sn-slide",
+      "type": "cta",
+      "title": "The Circle of Support",
+      "body": "The creator’s favorite slide is “The Circle of Support.” It visually represents how different types of support connect to form your overall network, placing you at the center and showing the many people, communities, and resources that surround and strengthen you. It’s a powerful reminder that support is all around, even when it’s easy to overlook.",
+      "primary": {
+        "label": "Request This Workshop",
+        "href": "/forms/workshop-request/?topic=support_network"
+      },
+      "photos": [
+        "m-btw-support-networks-slide"
+      ],
+      "whole": true
     }
   ]
 }

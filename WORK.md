@@ -137,10 +137,20 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     navigation** (Session 16): the owner ruled on 11 Nov 2026 that Search does not appear in the menu; the page works at its address,
     unlinked from the navigation. The rest of the map waits.
 40. **Explore Campus hub** (`EXPLORE-HUB`; queued 10 Nov) → one page gathering 41–45, each also linked from Resources, Navigating Housing,
-    Housing Hub, Get Involved, Home and Support Networks; approved Drive photographs only (`ops/media.mjs`); live tools only. Proposed / Not Implemented.
+    Housing Hub, Get Involved, Home and Support Networks; approved Drive photographs only (`ops/media.mjs`); live tools only.
+    **Approved by Nicholas 11 Nov 2026 and built the same day** in the `explore-a-wt` worktree on branch `explore-a-2026-11`
+    (commits `1bf0049`, `54d9f50`): `/explore/` gathers the built explorers (41 and 45) as cards in `content/pages/explore.json`;
+    42–44 slot in at merge by appending cards. Linked from Home, Resources, Get Involved, Support Networks, Navigating Housing
+    and the Housing Hub. Not merged or published; the merge and the publish stay Nicholas's.
 41. **Campus Events Explorer** (`EXPLORE-A-EVENTS`) → UW Events API + all Wisconsin Union events, deduplicated; interests, categories, dates;
     calendar and list; Find Your People; auto-refresh ≤30 min; organizer and source link; external vs Badger Supports distinct; cost/cancellation
-    only when the source states it; loading/empty/error states. Verify API terms first. Proposed / Not Implemented.
+    only when the source states it; loading/empty/error states. Verify API terms first.
+    **Approved by Nicholas 11 Nov 2026 and built the same day** on branch `explore-a-2026-11` (commits `05b1367`, `9352a96`,
+    `4310c9a`): UW Events API plus the Union's full feed — the queue-named `feed_1` carries titles only, recorded in
+    `docs/research/EXPLORE-FEEDS-VERIFICATION-2026-11-11.md` — deduplicated, Badger Supports programs from Connect's list,
+    refreshed by `/api/campus-events` with the last good list kept. The Find Your People mapping
+    (`content/explore/interests.json`) awaits Engagement staff review. The full browser gate is owed (Mac load). Not merged
+    or published.
 42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → Connect's approved resources and approved UW
     KnowledgeBase articles in one search, labelled by source and publisher with official link and review date; Connect owns the library and
     approval (its `QUEUE.md`, same ID; EXPLORE-D, EXPLORE-X). Proposed / Not Implemented.
@@ -151,7 +161,14 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     shared library, a path to the full finder at every step; no free-text personal data, not advising or clinical support. Proposed / Not Implemented.
 45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → several addresses × several buildings side by side; Metro GTFS +
     OpenStreetMap; direct / transfer / no connection, walking distances only; **no times, schedules or predictions**; addresses not kept;
-    any Metro key server-side; unverified route never shown available. Verify licences and topology first. Proposed / Not Implemented.
+    any Metro key server-side; unverified route never shown available. Verify licences and topology first.
+    **Approved by Nicholas 11 Nov 2026 and built the same day** on branch `explore-a-2026-11` (commits `2a757a1`, `aaa3397`,
+    `54d9f50`): topology from the Metro GTFS (feed S072_202608240858) in `content/transit/topology.json`, 20 campus buildings
+    from OpenStreetMap, `/api/geocode` and `/api/bus-routes`; verification in
+    `docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md`. On Navigating Housing the tool is signposted rather than
+    hosted: the workshop detail pages carry a tested rule that they collect nothing, so the interactive tool itself sits on
+    its own page and the hub — Nicholas's ruling is needed if it must sit on that page. Production waits on Nicholas
+    approving the verification note, per this entry's Review line. Not merged or published.
 46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → the prepared history exists: local branch `bss/local-version-history`
     (`b4658bd`, imported 10 Nov from the 7 Nov package in `Admin/Handoffs/active/VERSION-HISTORY/`; 42 entries through
     `8e7e220`). Extend it over the commits on `main` after `8e7e220`, rebase onto `main`, then commit. Proposed / Not Implemented.

@@ -132,8 +132,10 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 38. ~~Crawlers and abuse~~ **shipped** in `9bf0ed5`: 40 sends an hour per form per address, 429 with Retry-After (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
 39. **Netlify features already included** (P5; X4) → map **done** 25 Oct (cloud run §8; `docs/ARCHITECTURE.md`): used, available,
     unknown; Lighthouse run locally; Netlify Forms pilot not recommended. First slice **approved by the owner 11 Nov 2026 and built**
-    (Session 15): Slice 39-A, site-wide search — a Search entry in the menu and a `/search/` page that searches the public pages in the
-    visitor's browser against the build's index (`search-index.json`); `/staff/`, `/api/` and form answers stay out. The rest of the map waits.
+    (Session 15): Slice 39-A, site-wide search — a `/search/` page that searches the public pages in the
+    visitor's browser against the build's index (`search-index.json`); `/staff/`, `/api/` and form answers stay out. **Hidden from the
+    navigation** (Session 16): the owner ruled on 11 Nov 2026 that Search does not appear in the menu; the page works at its address,
+    unlinked from the navigation. The rest of the map waits.
 40. **Explore Campus hub** (`EXPLORE-HUB`; queued 10 Nov) → one page gathering 41–45, each also linked from Resources, Navigating Housing,
     Housing Hub, Get Involved, Home and Support Networks; approved Drive photographs only (`ops/media.mjs`); live tools only. Proposed / Not Implemented.
 41. **Campus Events Explorer** (`EXPLORE-A-EVENTS`) → UW Events API + all Wisconsin Union events, deduplicated; interests, categories, dates;

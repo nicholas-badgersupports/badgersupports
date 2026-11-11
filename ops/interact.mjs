@@ -1838,6 +1838,7 @@ await part("Workshop comparison: native previews and changeable request choices"
       const chosen = () => page.locator('input[name="topics"]').evaluateAll(nodes => nodes.filter(n => n.checked).map(n => n.value));
       if (JSON.stringify(await chosen()) !== JSON.stringify([topic])) choices = false;
       const other = Object.values(topics).find(x => x !== topic);
+      await showField(page, 'input[name="topics"]');
       await page.locator(`input[name="topics"][value="${topic}"]`).uncheck();
       await page.locator(`input[name="topics"][value="${other}"]`).check();
       if (JSON.stringify(await chosen()) !== JSON.stringify([other])) choices = false;

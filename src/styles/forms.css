@@ -105,8 +105,9 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 
 /* Each question its own card on the cream, so a long form reads as a series of single decisions.
    A control for a short value (a number, a phone number, a date, an Other) keeps its compact
-   width; paragraphs keep the measure. */
-.field { display: grid; gap: .45rem; margin-bottom: var(--s3); padding: var(--s4); min-width: 0; background: var(--cream-soft); border: 2px solid var(--line); border-radius: var(--r-card); }
+   width; paragraphs keep the measure. The card is scoped to the form: the staff pages use
+   .field for their own plainer fields, and this stylesheet is sent with every page. */
+.bss-form .field { display: grid; gap: .45rem; margin-bottom: var(--s3); padding: var(--s4); min-width: 0; background: var(--cream-soft); border: 2px solid var(--line); border-radius: var(--r-card); }
 .field[hidden] { display: none; }
 .field > label, .field > .q-label, .field legend.q-label { font-weight: 700; font-size: 1.0625rem; line-height: 1.4; }
 .optional { font-weight: 400; color: var(--muted); }
@@ -126,7 +127,7 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .field textarea { resize: vertical; }
 .field-left { color: var(--muted); font-size: var(--fs-small); margin: 0; }
 .field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
-fieldset.field { margin-inline: 0; min-width: 0; }
+.bss-form fieldset.field { margin-inline: 0; min-width: 0; }
 .choices { display: grid; gap: var(--s1); }
 /* A choice is a bordered row of its own: the whole row is the target, and the chosen one fills
    with the form's tint. */
@@ -137,7 +138,7 @@ fieldset.field { margin-inline: 0; min-width: 0; }
 .choice input { width: 1.25rem; height: 1.25rem; margin: 0; accent-color: var(--accent); }
 /* A confirmation or an agreement is one consequential tick: a full colour border and bold words,
    so it never reads as one preference among many. */
-.field > .choice { border-color: var(--accent); font-weight: 700; }
+.bss-form .field > .choice { border-color: var(--accent); font-weight: 700; }
 .field input.other-text { margin-left: 2.1rem; width: calc(100% - 2.1rem); max-width: 24rem; min-width: 0; }
 
 /* A ranking: each option's name beside its place. */
@@ -161,7 +162,7 @@ fieldset.field { margin-inline: 0; min-width: 0; }
 .upload-note { margin: 0; color: var(--danger); font-weight: 700; }
 
 /* An error marks the card and the control itself; no bar beside the field. */
-.field.has-error { border-color: var(--danger); }
+.bss-form .field.has-error { border-color: var(--danger); }
 .field.has-error input, .field.has-error textarea, .field.has-error select { border-color: var(--danger); background: var(--danger-tint); }
 .field-error { color: var(--danger); font-weight: 700; font-size: 1rem; display: flex; gap: .4rem; align-items: baseline; margin: 0; }
 .field-error::before { content: "!"; display: inline-grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--danger); color: var(--paper); font-size: .875rem; }

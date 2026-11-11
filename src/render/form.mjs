@@ -12,7 +12,7 @@
  */
 
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
-import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext } from "../shared/forms.mjs";
+import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm } from "../shared/forms.mjs";
 import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
 import { legalParagraphs } from "./blocks/legal.mjs";
@@ -158,6 +158,7 @@ function section(def, s, values, errors, t, ctx) {
    same submission. ctx: the render context, for links inside the form's words. preview: the form
    shown for review while it is closed (prototype builds only); the browser sends nothing. */
 export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false, submissionContext = {} }) {
+  const stepped = steppedForm(def);
   const anyErrors = Object.keys(errors).length > 0;
   const anyRequired = allQuestions(def).some(({ q }) => q.required);
   const needsUpload = !preview && allQuestions(def).some(({ q }) => q.type === "file");
@@ -167,8 +168,13 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
     <h2>${t("form.upload.alternativeTitle")}</h2><p>${t("form.upload.alternativeBody")}</p>
     ${ctx ? go(ctx, def.workflow?.connectQueue?.startsWith("hiring.") ? "mailto:hiring@badgersupports.org" : "mailto:directors@badgersupports.org", t("form.upload.alternativeContact"), "mail") : html`<a href="mailto:directors@badgersupports.org">${t("form.upload.alternativeContact")}</a>`}
   </div></noscript>` : "";
+  /* A long form's steps, named across the top, and its last step, which lists the answers before
+     they are sent. Both are hidden until the browser walks them (src/client/form.js); without
+     JavaScript the form is the one scroll it has always been, and neither is shown. */
+  const stepNav = stepped ? html`<nav class="form-steps" data-step-nav hidden aria-label="${t("form.steps.label")}"><ol>${def.sections.map((s, i) => html`<li data-step-item="${s.id}"><button type="button" class="step-link" data-step-link="${s.id}"><span class="step-dot" aria-hidden="true">${i + 1}</span><span class="step-name">${s.title}</span></button></li>`)}<li data-step-item="__review"><button type="button" class="step-link" data-step-link="__review"><span class="step-dot" aria-hidden="true">${def.sections.length + 1}</span><span class="step-name">${t("form.review.title")}</span></button></li></ol></nav>` : "";
+  const review = stepped ? html`<div class="form-review" data-review hidden><h2>${t("form.review.title")}</h2><p>${t("form.review.intro")}</p><div data-review-list></div></div>` : "";
   // Server validation chooses applicable conditional questions with and without client scripting.
-  return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-preview": preview ? "" : null })}>
+  return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-preview": preview ? "" : null, "data-stepped": stepped ? "" : null })}>
   <input type="hidden" name="_form" value="${def.key}"><input type="hidden" name="_version" value="${def.version}"><input type="hidden" name="_key" value="${idemKey}" data-idem>
   ${def.key === "recommendation-letter" && Object.hasOwn(submissionContext, "hiringCycleId") ? html`<input type="hidden" name="_cycle" value="${hiringContext(def.key, { _cycle: submissionContext.hiringCycleId }).hiringCycleId}">` : ""}
   <div class="hp" aria-hidden="true"><label>${t("form.trap")} <input type="text" name="_website" tabindex="-1" autocomplete="off" value=""></label></div>
@@ -179,8 +185,10 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
   </div>
   <div${attrs({ class: "form-notice", "data-form-notice": "", hidden: !shown })}>${shown ? html`<h2>${shown.title}</h2><p>${shown.text}</p>${shown.kept?.length ? html`<p>${shown.keptText}</p><dl class="kept-answers">${shown.kept.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}` : ""}</div>
   ${anyRequired && t("form.rule") ? html`<p class="form-rule">${t("form.rule")}</p>` : ""}
+  ${stepNav}
   ${def.sections.map((s) => section(def, s, values, errors, t, ctx))}
-  <div class="form-actions"><button type="submit" class="btn" data-submit>${def.submitLabel || t("form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
+  ${review}
+  <div class="form-actions">${stepped ? html`<button type="button" class="btn btn--quiet" data-step-back hidden>${t("form.step.back")}</button><button type="button" class="btn" data-step-next hidden>${t("form.step.continue")}</button>` : ""}<button type="submit" class="btn" data-submit>${def.submitLabel || t("form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
   ${jsonIsland(`form-def-${def.key}`, publicDefinition(def))}
 </form>`;
 }
@@ -212,7 +220,7 @@ export function renderDone(def, ref, t) {
 const Q_KEYS = ["id", "type", "label", "required", "options", "resources", "allowOther", "showIf", "maxLength", "min", "max", "maxSelected", "maxLinks"];
 export function publicDefinition(def) {
   return {
-    schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state,
+    schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state, stepped: steppedForm(def),
     sections: def.sections.map((s) => ({
       id: s.id, title: s.title, showIf: s.showIf,
       questions: (s.questions || []).map((q) => Object.fromEntries(Q_KEYS.filter((k) => q[k] !== undefined).map((k) => [k, k === "options" ? q.options.map((o) => ({ id: o.id, label: o.label })) : k === "resources" ? q.resources.map((r) => ({ id: r.id, name: r.name })) : q[k]]))),

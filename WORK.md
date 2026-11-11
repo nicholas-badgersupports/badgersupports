@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 10 Nov 2026 (Session 12 queue cleanup; shipped detail moved to `docs/QUEUE-HISTORY-2026-11-10.md`).
+brief is `../MASTER-PROMPT.md`. Updated 11 Nov 2026 (Session 13: item 15 closed, item 22 built, item 18 confirmations recorded; Session 12 cleanup detail in `docs/QUEUE-HISTORY-2026-11-10.md`).
 
 ## Where it stands
 
@@ -79,21 +79,20 @@ full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
 5. **Connect** reports exports/resource ingestion published in its 2 Nov handoff; website verification/consumer completion is still owed (priority item 19; item 21). Exports remain off and forms closed in this tree.
 6. **Cost**: prices read 23 Oct (`docs/ARCHITECTURE.md`, "Cost"); what each database used is in Billing → Usage only.
 7. **The privacy policy** page still names Google Sites, Analytics and Forms. The draft of what the site does now, `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (`2bab970`), waits for the owner's and a legal review.
-8. **Analytics is off.** The GA4 property is unverified; the connector asked to reauthenticate.
+8. **Analytics measures nothing yet.** The forwarder is built and ships unconfigured; the GA4 property is unverified and the connector asked to reauthenticate.
 
 ## Owner actions
 
 1. **Review the design**: `local/shots/`, or `npm run dev` and open the site. Say what to change.
 2. ~~Photos: confirm the release~~ **closed** 10 Nov 2026: every Badger Supports Drive photo is approved, faces
    included (Nicholas; `docs/DESIGN.md`, Photos). Still yours: the 10 live images and the SAC ribbon heap (`docs/research/LIVE-IMAGES-2026-10-20.md`).
-3. **Q1, GA4** (Q2–Q4 answered 20 Oct). Recommended: keep the tag off until the property is verified with enhanced
-   measurement off, then **load it only after a visitor agrees** (`docs/ANALYTICS.md`). 24 Oct: Netlify Web Analytics
-   is on (verify, item 22); that does not approve GA4.
-4. Confirm `directors@badgersupports.org` as the sender of receipts (you approved it as the resources' "email us").
-5. **Backup spreadsheet** (item 18): named 24 Oct as the directors' account. Confirm it is `directors@badgersupports.org`.
+3. ~~Q1, GA4~~ **answered** 11 Nov 2026: Google Analytics, with **no consent step** — it loads on public pages as
+   the page loads (`docs/ANALYTICS.md`). What remains is the property verification in action 8.
+4. ~~Confirm the receipt sender~~ **confirmed** 11 Nov 2026: `directors@badgersupports.org`.
+5. ~~Backup spreadsheet account~~ **confirmed** 11 Nov 2026: the workbook lives in `directors@badgersupports.org`.
 6. Ask Programs whether they want an email for each submission, and whether "within one week" holds.
 7. Say how a mailing-list request reaches the Google Group today.
-8. Reauthenticate the Analytics connector so the GA4 property can be checked, and answer Q1.
+8. Reauthenticate the Analytics connector so the GA4 property can be verified, and confirm enhanced measurement is off in its data stream.
 9. **Publish**: open `../PUBLISH-WEBSITE-2026-10-23.command`, type `publish`. Who may see it is yours: team-only now.
    It builds the live site. First: in Connect, Admin › Resources › Public Website List, tick the event types and
    weekly groups to show. The file gives the build Connect's key itself. Its log names events left out (run log 13.9).
@@ -111,14 +110,14 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     Website consumer verified locally 10 Nov (Session 12): Connect's `publicTeam`, `publicWallNotes` and `publicEvents` actions exist, this site's consumer reads them, team and wall exports are on in `content/connect-feed.json`, incomplete profiles render, private fields stay out, and Connect's team order and photos are honoured (`389fc77`). Remaining: live verification after a publish that carries Connect's keys. No switch changes in this queue update.
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
-15. **Editor and publishing** → mostly **shipped** (words, sections, menu, settings, rooms, the gaps item 8 left; prerequisites 34 and 16 shipped). Full entry in `docs/QUEUE-HISTORY-2026-11-10.md`. Any P2 remainder is unverified — proposed archive (Session 12 handoff).
+15. ~~Editor and publishing~~ **closed** 11 Nov 2026 (Session 13): the P2 remainder was verified part by part against the editor's tests — every field kind, grants, conflicts, kept history and Restore, a refused save keeping the edit — and all of it is shipped. The mapping is in the Session 13 handoff; the full entry stays in `docs/QUEUE-HISTORY-2026-11-10.md`.
 16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`). **Shipped** in `1aaf44a`; **Put Back for a retired page** `0e6f374`, published in deploy `6ae91d6b` (2 Nov). Connect side: card words only (Exchange `PUBLIC-SITE-PAGES`).
 17. **Connect: forms** (`PUBLIC-SITE-FORMS`; answers reach Website Forms, **done** 20 Oct). The switch **built** 30 Oct: Open (asked
     twice) and Close on `/staff/` for `forms.switch:<key>`, on the page with no deploy; a stale tab refused (`test/intake.test.mjs`). Waits for Connect's grant (Exchange `PUBLIC-FORM-SWITCH-GRANT`). "34 passing tests" was Connect's count.
-18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **built, shipped switched off** in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Activation waits on: Connect's `publicReceipt`, a verified sender, the backup workbook and its account, and the schedule (owner, `docs/COMMUNICATIONS.md`).
+18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **built, shipped switched off** in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Sender and workbook account **confirmed** 11 Nov 2026: `directors@badgersupports.org` for both. Activation waits on: Connect's `publicReceipt`, `RECEIPT_SENDER` set to the confirmed sender, the workbook created in that account and shared, and the schedule (owner, `docs/COMMUNICATIONS.md`).
 20. **Director sign-in** (`PUBLIC-SITE-SSO`) → **built** 20 Oct; Google sign-in consumer live 30 Oct (`a78d13e`); the address-after-sign-in fix was committed and pushed 2 Nov and deploys with the next publish (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Not tried live end-to-end (Blocker 1).
 21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated. **Built** 30 Oct; the three forms ship open (10 Nov). Connect reports ingestion published 2 Nov: delivery still to verify live before activation is claimed. Report alerts are configured in Connect Settings (ADMIN-A6), not a public mail engine.
-22. **Analytics** → Netlify Web Analytics is the collector (owner, 24 Oct); the GA4 part is **superseded** by that decision. Open: verify Web Analytics per project and in billing (needs a Netlify sign-in). Exclusions before any tag loads; no Connect identity.
+22. **Analytics** → Google Analytics (owner, 11 Nov 2026; supersedes the 24 Oct Web-Analytics-only position). The forwarder is **built**: exclusions first, the dictionary only, no Connect identity, **no consent step**; it ships unconfigured, so nothing is measured. Activation: reauthenticate the Analytics connector, verify the property, confirm enhanced measurement is off, then give the publish build `GA_MEASUREMENT_ID` (`docs/ANALYTICS.md`). Still open: verify Netlify Web Analytics per project and in billing (needs a Netlify sign-in).
 23. **Cost plan** → **done** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Open tail: check form state at first keystroke — waits for the owner's yes. No new subscriptions (24 Oct).
 24. ~~The §12 server tests~~ **shipped** in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Revocation stays Connect's (`publicSsoStatus`, item 20).
 25. **Before the switch** → **checked** 30 Oct (`23afc2e`); plan and undo in `docs/SWITCH.md`. Mendota Lodge and a final `/` **fixed**,

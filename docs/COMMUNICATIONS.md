@@ -125,8 +125,9 @@ The communications matrix asked for by §7. Template names follow Exchange reque
 
 The rules this keeps:
 
-- **The sender.** `directors@badgersupports.org` is proposed. Nicholas's own account is never the fallback
-  (§7). Until the owner confirms the sender and Connect's send action exists, receipts are written `held`.
+- **The sender.** `directors@badgersupports.org`, confirmed by the owner 11 Nov 2026. Nicholas's own account
+  is never the fallback (§7). Until `RECEIPT_SENDER` is set to it and Connect's send action exists, receipts
+  are written `held`.
 - **Mail goes through Connect's mail path**, not from this site. Connect answers each send with its message
   id, and the outbox row records it. "Sent" means accepted by the mail service, not read.
 - **No promise about how fast anyone replies.** The rebuild adds none. The workshop request's confirmation
@@ -162,12 +163,18 @@ fake Sheets API only. **Nothing is switched on**: no schedule is registered, no 
   export const config = { schedule: "*/15 * * * *" };
   ```
 
+  **Confirmed 11 Nov 2026 (owner):** the sender is `directors@badgersupports.org` and the workbook is
+  created in that account. What remains is the doing: Connect ships `publicReceipt`; `RECEIPT_SENDER` is
+  set to the confirmed sender; the workbook is created in the directors' account and shared with the
+  service account; `BACKUP_SPREADSHEET_ID` and `GOOGLE_SERVICE_ACCOUNT` are set; the scheduled function
+  above is added.
+
 ## Proposal: the backup spreadsheet
 
 From Exchange request `PUBLIC-SITE-EMAIL-AND-BACKUP`. **Owner, 24 Oct 2026:** "a backup styled spreadsheet in the
 directors account that has all of the forms answers, one tab for each form, as well as a dashboard and a landing
-page". Read as one Google Sheets workbook owned by `directors@badgersupports.org` (to confirm: `WORK.md` owner
-action 5), queued under `WORK.md` item 18. **Nothing of it is built.**
+page". Read as one Google Sheets workbook owned by `directors@badgersupports.org` (confirmed 11 Nov 2026:
+`WORK.md` owner action 5), queued under `WORK.md` item 18. **Nothing of it is built.**
 
 **The pattern already exists in Connect**, and this follows it rather than inventing another: Connect's volunteer
 backup workbook (`BSS Intranet Transfer v23/tools/apps-script/volunteer-backup.gs`, read 24 Oct as reference only)

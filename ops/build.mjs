@@ -551,7 +551,7 @@ export async function build({ production = false, launch = production, today = n
   let campusData;
   if (production) {
     try {
-      const got = await fetchCampusEvents({ today: day });
+      const got = await fetchCampusEvents({ today: day, fetchImpl: connectConfig?.fetch || fetch });
       campusData = { events: [...got.events, ...mergeCampusEvents({ badger: badgerCampus }, campusWindow).events].sort(byStart), updated: got.updated, stale: false, report: got.report };
     } catch (e) {
       campusData = { events: mergeCampusEvents({ badger: badgerCampus }, campusWindow).events, updated: null, stale: true, report: { read: { uw: 0, union: 0, unionTitles: 0 }, shown: badgerCampus.length, dropped: [`the campus feeds could not be read at build (${e.message})`] } };

@@ -1,0 +1,36 @@
+/* Site search (src/render/blocks/sitesearch.mjs): one search card, then the matching pages as
+   cards. Before the script runs the card is hidden and every page is a plain list of links. */
+.sitesearch h2 { color: var(--accent); margin-bottom: var(--s3); }
+.sitesearch .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
+.srch-tools { display: grid; gap: var(--s2); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+.srch-tools label { display: block; font-weight: 700; }
+.srch-hint { margin: var(--s1) 0 var(--s2); color: var(--muted); font-size: var(--fs-small); }
+.srch-field { position: relative; display: flex; align-items: center; }
+.srch-field-ic { position: absolute; left: .9rem; width: 1.25rem; height: 1.25rem; color: var(--muted); pointer-events: none; }
+.srch-field input { width: 100%; min-height: 48px; padding: .5rem 2.9rem .5rem 2.75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; appearance: none; }
+.srch-field input::-webkit-search-cancel-button { display: none; }
+.srch-field input:hover { border-color: var(--accent); }
+.srch-qclear { position: absolute; right: .35rem; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.srch-qclear .ic { width: 1.2rem; height: 1.2rem; }
+.srch-qclear:hover { background: var(--cream); color: var(--ink); }
+.srch-status { margin-bottom: var(--s3); }
+.srch-count { margin: 0; font-weight: 700; }
+.srch-relaxed { margin: var(--s1) 0 0; color: var(--muted); font-size: var(--fs-small); }
+.srch-again { margin: 0 0 var(--s3); }
+.srch-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: var(--s4); }
+.srch-card { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }
+.srch-card h3 { font-size: var(--fs-h3); line-height: 1.2; margin: 0; }
+.srch-card h3 a { color: var(--accent); }
+.srch-excerpt { margin: 0; color: var(--muted); }
+.srch-none { padding: var(--s4); background: var(--accent-tint); border-radius: var(--r-card); max-width: var(--measure); }
+.srch-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
+.srch-none p { margin: 0 0 var(--s2); }
+.srch-all h3 { font-size: var(--fs-h3); margin: 0 0 var(--s2); }
+.srch-all ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: var(--s5); max-width: var(--measure); }
+.srch-all li { break-inside: avoid; padding: var(--s1) 0; }
+.srch-all a { font-weight: 600; }
+.srch-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
+@media (max-width: 640px) {
+  .srch-tools { padding: var(--s3); }
+  .srch-all ul { columns: 1; }
+}

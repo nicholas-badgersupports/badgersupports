@@ -43,6 +43,10 @@
       "label": "Resource list"
     },
     {
+      "id": "search",
+      "label": "Site search"
+    },
+    {
       "id": "alumni",
       "label": "Alumni History"
     }
@@ -2996,6 +3000,86 @@
       "group": "resources",
       "text": "Email Us",
       "where": "Resource catalogue state or recovery action."
+    },
+    "search.label": {
+      "group": "search",
+      "text": "Site Search",
+      "where": "On the search page: the label over the search box."
+    },
+    "search.hint": {
+      "group": "search",
+      "text": "Search by a word on the page, such as craft, housing, or a room's name.",
+      "where": "On the search page: the line under the search label."
+    },
+    "search.clear": {
+      "group": "search",
+      "text": "Clear Search",
+      "where": "On the search page: the button beside the search box once something is typed."
+    },
+    "search.loading": {
+      "group": "search",
+      "text": "Loading the list of pages…",
+      "where": "On the search page: the count line while the list of pages is on its way."
+    },
+    "search.nojs": {
+      "group": "search",
+      "text": "Search runs in your browser and needs JavaScript. Every page is listed below.",
+      "where": "On the search page: the count line before the script runs, and for a browser without JavaScript."
+    },
+    "search.failed": {
+      "group": "search",
+      "text": "The list of pages could not be loaded. Every page is listed below.",
+      "where": "On the search page: the count line when the list of pages does not arrive."
+    },
+    "search.retry": {
+      "group": "search",
+      "text": "Try Again",
+      "where": "On the search page: the button under the count line when the list of pages does not arrive."
+    },
+    "search.count.all": {
+      "group": "search",
+      "text": "{{n}} Pages",
+      "where": "On the search page: how many pages the search covers, when nothing is typed."
+    },
+    "search.count.one": {
+      "group": "search",
+      "text": "1 Page",
+      "where": "On the search page: the count when the search covers one page."
+    },
+    "search.count.some": {
+      "group": "search",
+      "text": "Showing {{shown}} of {{total}} Pages",
+      "where": "On the search page: the count after words narrow the list."
+    },
+    "search.relaxed": {
+      "group": "search",
+      "text": "No exact match. Showing pages that begin with your search words.",
+      "where": "On the search page: the line under the count when no page carries every word typed."
+    },
+    "search.none.title": {
+      "group": "search",
+      "text": "No Pages Match Your Search.",
+      "where": "On the search page: the heading when no page matches."
+    },
+    "search.none.body": {
+      "group": "search",
+      "text": "Try another word, or start over and browse the list.",
+      "where": "On the search page: the line under the no-matches heading."
+    },
+    "search.none.reset": {
+      "group": "search",
+      "text": "Start Over",
+      "where": "On the search page: the button when no page matches, which clears the search box."
+    },
+    "search.browse": {
+      "group": "search",
+      "text": "Every Page",
+      "where": "On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive."
+    },
+    "search.scope": {
+      "group": "search",
+      "text": "This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page.",
+      "where": "On the search page: the note under the results."
     },
     "schedule.directions": {
       "group": "events",

@@ -1,0 +1,21 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-search",
+  "path": "/search/",
+  "title": "Search",
+  "description": "Search the words on the public pages of the Badger Supports website.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-search-head",
+      "type": "pagehead",
+      "title": "Search",
+      "lead": "Find a page by the words on it: a program, a room, or a question you remember."
+    },
+    {
+      "id": "b-search",
+      "type": "sitesearch",
+      "title": "Site Search"
+    }
+  ]
+}

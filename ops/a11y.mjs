@@ -169,6 +169,17 @@ for (const p of withEvents) {
   await ctx.close();
 }
 
+/* A long form is walked a section at a time with JavaScript on: bring a question's step up
+   before filling it. A no-op when the question is already on screen, as on a short form. */
+const show = async (page, selector) => {
+  await page.evaluate((sel) => {
+    const el = document.querySelector(sel);
+    const sec = el?.closest("[data-section]");
+    if (!sec || sec.getClientRects().length) return;
+    document.querySelector(`[data-step-link="${sec.dataset.section}"]`)?.click();
+  }, selector).catch(() => {});
+};
+
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
@@ -184,10 +195,13 @@ for (const p of withEvents) {
   await page.fill("#f-email", "avery@example.org");
   await page.fill("#f-affiliation", "Example Hall Council");
   await page.fill("#f-attendees", "25");
+  await show(page, "#f-topics");
   await page.check("#f-topics");
+  await show(page, "#f-option_1");
   for (const [i, d] of [[1, "2026-11-02T18:00"], [2, "2026-11-03T18:00"], [3, "2026-11-04T18:00"]]) await page.fill(`#f-option_${i}`, d);
   await page.fill("#f-location", "Example Hall lounge");
   await page.check("#f-projection");
+  await show(page, "#f-group_notes");
   await page.fill("#f-group_notes", "First workshop for the group.");
   await page.fill("#f-access_needs", "None known.");
   await page.click("[data-submit]");

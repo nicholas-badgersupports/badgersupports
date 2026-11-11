@@ -49,6 +49,14 @@
     {
       "id": "alumni",
       "label": "Alumni History"
+    },
+    {
+      "id": "classes",
+      "label": "Discover Classes by Interest"
+    },
+    {
+      "id": "navigator",
+      "label": "Academic Support Navigator"
     }
   ],
   "text": {
@@ -2946,6 +2954,26 @@
       "text": "Last Updated {{monLong}} {{dom}}, {{year}}",
       "where": "On the resource list: the date the list was last checked, after the note under the list."
     },
+    "resources.source": {
+      "group": "resources",
+      "text": "Source:",
+      "where": "On the resource list: the label before the source a card's record names, on a card whose record carries one."
+    },
+    "resources.source.kb": {
+      "group": "resources",
+      "text": "UW–Madison KnowledgeBase",
+      "where": "On the resource list: the source named on a card whose record comes from the UW–Madison KnowledgeBase."
+    },
+    "resources.source.badger": {
+      "group": "resources",
+      "text": "Badger Supports",
+      "where": "On the resource list: the source named on a card whose record is one of Badger Supports' own resources."
+    },
+    "resources.reviewed": {
+      "group": "resources",
+      "text": "Last Reviewed {{monLong}} {{dom}}, {{year}}",
+      "where": "On the resource list: the date a card's record was last reviewed, after its source."
+    },
     "resources.report.problem": {
       "group": "resources",
       "text": "Report a Problem",
@@ -2960,6 +2988,96 @@
       "group": "resources",
       "text": "Suggest a Resource",
       "where": "On the resource list: the link under the list to suggest a resource it does not have."
+    },
+    "classes.open": {
+      "group": "classes",
+      "text": "Open for {{term}}",
+      "where": "On the classes page: the label on a course with published sections in a current or upcoming term; {{term}} is that term, such as Fall 2026."
+    },
+    "classes.offered": {
+      "group": "classes",
+      "text": "Offered {{term}}",
+      "where": "On the classes page: the label on a course last offered in a past term; {{term}} is the most recent verified term, such as Summer 2026."
+    },
+    "classes.group.available": {
+      "group": "classes",
+      "text": "Available",
+      "where": "On the classes page: the heading over the courses with published sections in a current or upcoming term."
+    },
+    "classes.group.recent": {
+      "group": "classes",
+      "text": "Recently Offered",
+      "where": "On the classes page: the heading over the courses whose most recent verified offering is in a past term."
+    },
+    "classes.count.all": {
+      "group": "classes",
+      "text": "{{n}} Courses",
+      "where": "On the classes page: how many courses there are, when no interest is chosen."
+    },
+    "classes.count.one": {
+      "group": "classes",
+      "text": "1 Course",
+      "where": "On the classes page: the count when the list holds one course."
+    },
+    "classes.count.some": {
+      "group": "classes",
+      "text": "Showing {{shown}} of {{total}} Courses",
+      "where": "On the classes page: the count after an interest narrows the list."
+    },
+    "classes.interests.all": {
+      "group": "classes",
+      "text": "All Interests",
+      "where": "On the classes page: the first interest button, which shows every course."
+    },
+    "classes.credit.one": {
+      "group": "classes",
+      "text": "1 Credit",
+      "where": "On the classes page: the credits on a course worth one credit."
+    },
+    "classes.credits": {
+      "group": "classes",
+      "text": "{{n}} Credits",
+      "where": "On the classes page: the credits on a course card; {{n}} is the credit value or range the course carries."
+    },
+    "classes.view": {
+      "group": "classes",
+      "text": "View in UW Course Search",
+      "where": "On the classes page: the link on a course card to the course in UW Course Search, the official listings."
+    },
+    "classes.source": {
+      "group": "classes",
+      "text": "Courses and terms are from UW Course Search, University of Wisconsin–Madison.",
+      "where": "On the classes page: the line under the list naming where the course data comes from."
+    },
+    "classes.updated": {
+      "group": "classes",
+      "text": "Last Updated {{monLong}} {{dom}}, {{year}}",
+      "where": "On the classes page: the date the course data was last refreshed, after the source line."
+    },
+    "classes.empty": {
+      "group": "classes",
+      "text": "No courses are listed right now. Please check UW Course Search for the current listings.",
+      "where": "On the classes page: shown when the course data holds no courses."
+    },
+    "navigator.back": {
+      "group": "navigator",
+      "text": "Back",
+      "where": "On the Academic Support Navigator: the button that returns to the question before."
+    },
+    "navigator.startOver": {
+      "group": "navigator",
+      "text": "Start Over",
+      "where": "On the Academic Support Navigator: the button that returns to the first question."
+    },
+    "navigator.all": {
+      "group": "navigator",
+      "text": "See All Resources",
+      "where": "On the Academic Support Navigator: the link to the full Resource Finder, present at every step."
+    },
+    "navigator.results": {
+      "group": "navigator",
+      "text": "Resources That Fit",
+      "where": "On the Academic Support Navigator: the heading over the resources a finished path leads to."
     },
     "team.unnamed": {
       "group": "team",

@@ -1436,6 +1436,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-card h3 { font-size: var(--fs-h3); line-height: 1.2; color: var(--accent); margin: 0; }
 .res-what, .res-fit { margin: 0; }
 .res-fit { color: var(--muted); font-size: var(--fs-small); }
+.res-source { margin: 0; color: var(--muted); font-size: var(--fs-small); }
 .res-lead { font-weight: 700; color: var(--ink); }
 .res-tags { display: flex; flex-wrap: wrap; gap: var(--s1); margin: 0; }
 .res-tag { display: inline-flex; align-items: center; padding: .1rem .6rem; border-radius: var(--r-chip); background: var(--paper-deep); color: var(--muted); font-size: var(--fs-small); font-weight: 700; line-height: 1.6; }

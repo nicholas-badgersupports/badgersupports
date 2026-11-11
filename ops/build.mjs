@@ -40,7 +40,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import url from "node:url";
-import { blockProblems, BLOCKS, refreshes } from "../src/render/registry.mjs";
+import { blockProblems, BLOCKS, refreshes, liveBlocks } from "../src/render/registry.mjs";
 import { workshopProblems } from "../src/render/blocks/workshops.mjs";
 import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
@@ -58,6 +58,7 @@ import { servedForms, windowProblems } from "../src/shared/form-window.mjs";
 import { publicHistory, emptyHistory } from "../src/shared/alumni-history.mjs";
 import { finish } from "./finish.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
+import { bareTitle } from "../src/shared/structure.mjs";
 import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings, pageValues, siteValues } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
 import { formPreviewPages } from "../src/render/blocks/form.mjs";
@@ -115,7 +116,7 @@ async function minifiers() {
 
 /* What may ship in dist/, and nothing else (X2). A file outside this list stops the build. */
 export const SHIPS = [
-  /^(?:[a-z0-9-]+\/)*index\.html$/, /^404\.html$/, /^_headers$/, /^_redirects$/, /^robots\.txt$/, /^sitemap\.xml$/,
+  /^(?:[a-z0-9-]+\/)*index\.html$/, /^404\.html$/, /^_headers$/, /^_redirects$/, /^robots\.txt$/, /^sitemap\.xml$/, /^search-index\.json$/,
   /^assets\/css\/site\.[0-9a-f]{10}\.css$/, /^assets\/js\/[0-9a-f]{10}\/[a-z0-9-]+\.(?:js|mjs)$/,
   /^assets\/fonts\/[A-Za-z0-9-]+\.woff2$/, /^assets\/fonts\/[A-Za-z0-9-]+\.txt$/,
   /^assets\/brand\/[a-z0-9-]+\.(?:png|jpg|webp|svg)$/, /^assets\/brand\/[A-Z-]+\.txt$/, /^assets\/icons\/[a-z0-9-]+\.svg$/,
@@ -422,6 +423,8 @@ function headersFile({ prototype, ga = false }) {
     "/assets/brand/*", "  Cache-Control: public, max-age=604800", "",
     // An event can move, so a calendar file is checked again after an hour.
     "/calendar/*", "  Content-Type: text/calendar; charset=utf-8", "  Cache-Control: public, max-age=3600", "",
+    // The search index is rebuilt at every publish, like the sitemap; an hour's grace, as a calendar file.
+    "/search-index.json", "  Cache-Control: public, max-age=3600", "",
   ].join("\n");
 }
 
@@ -459,6 +462,37 @@ export function cutoverProblems({ routes, pages, builtPaths, pendingLinks }) {
   ];
 }
 
+
+/* The site-wide search index (queue item 39, slice 39-A): every public, indexable page with the
+   words on it, written to dist/search-index.json and read in the visitor's browser by
+   src/client/search.js, so nothing typed leaves the visitor's machine. A page stays out when it
+   is noindex (the staff page, the 404 page), when it is the search page itself, and when it is a
+   form preview; form answers are never page content, so they are never here. A room's page
+   carries its room record's words and a person's page their public profile's, because those
+   pages are made from the records, not from blocks of their own. Only the blocks a visitor
+   would see today are read, so a hidden or out-of-season section is not found before its page
+   shows it. Rebuilt at every build, so a new page is findable from the next publish. */
+export function searchIndex(content, { today } = {}) {
+  const words = (page) => pageStrings({ ...page, blocks: liveBlocks(page, today) }).map((s) => s.value);
+  const out = [];
+  for (const page of content.pages) {
+    if (page.noindex || page.file || page.id === "pg-search" || page.generated === "form-preview") continue;
+    const parts = [page.description || "", ...words(page)];
+    for (const b of liveBlocks(page, today)) {
+      if (b.type === "directions") {
+        const p = content.places?.[b.place];
+        if (p) parts.push(p.name || "", p.building || "", p.where || "", p.address || "", p.note || "", ...(p.steps || []).map((s) => s.text || ""));
+      }
+      if (b.type === "person") {
+        const p = publicPeople(content.team).find((x) => x.slug === b.person);
+        if (p) parts.push(p.name || "", p.title || "", p.role || "", ...(p.bio || []));
+      }
+    }
+    const text = parts.join(" ").replace(/\s+/g, " ").trim().slice(0, 6000);
+    out.push({ path: page.path, title: bareTitle(page.title, [content.site.name], { first: page.id === "pg-home" }), text });
+  }
+  return out.sort((a, z) => a.title.localeCompare(z.title, "en") || a.path.localeCompare(z.path, "en"));
+}
 
 /* What the events refresh (netlify/lib/live-events.mjs) needs to render a page's event blocks again
    from Connect's current list: those blocks as the build had them, the rules that map Connect's list,
@@ -560,6 +594,7 @@ export async function build({ production = false, launch = production, today = n
     resources: content.resources.resources,
     resourcesSample: content.resources.fixture ? content.resources.label : null,
     resourcesUpdated: content.resources.sourceUpdatedAt,
+    searchIndex: searchIndex(content, { today: day }),
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
   const programs = pagePrograms(content.pages);
@@ -583,6 +618,9 @@ export async function build({ production = false, launch = production, today = n
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, eventIcs(r, { place: content.places[r.placeId] || (r.place ? { name: r.place.name } : null), origin: content.site.origin, stamp }));
   }
+
+  // The search page's index: the public pages and their words, for the visitor's browser.
+  fs.writeFileSync(path.join(out, "search-index.json"), JSON.stringify({ schema: "bss.search-index/1", pages: data.searchIndex }) + "\n");
 
   if (production) {
     const left = cutoverProblems({ routes: content.routes, pages: content.pages, builtPaths, pendingLinks: [...pending.keys()] });
@@ -625,6 +663,7 @@ export async function build({ production = false, launch = production, today = n
     connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, unnamed: feed.unnamed || [], ...(feed.team ? { team: publicPeople(feed.team).length } : {}), ...(feed.wall ? { wall: feed.wall.notes.length } : {}), dropped: feed.dropped, version: feed.version } : null,
     edits: content.edits,
     pages: pageReport,
+    search: data.searchIndex.length,
     calendar: calendar.map((r) => icsPath(r.event)),
     css: { name: cssName, bytes: Buffer.byteLength(css) },
     js: Object.fromEntries(jsFiles.map((f) => [f.name, Buffer.byteLength(f.text)])),

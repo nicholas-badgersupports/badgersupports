@@ -30,10 +30,6 @@
           "icon": "mail"
         }
       ],
-      "embed": {
-        "title": "Badger Supports on Instagram: peer support groups",
-        "url": "https://www.instagram.com/reel/DecSxrys1OY/"
-      },
       "upcoming": {
         "source": "events",
         "program": "peer"
@@ -42,7 +38,10 @@
         "label": "Find a Group This Week",
         "href": "#b-pg-days",
         "icon": "calendar"
-      }
+      },
+      "photos": [
+        "m-peer-group-circle"
+      ]
     },
     {
       "id": "b-pg-days",
@@ -89,6 +88,12 @@
       ]
     },
     {
+      "id": "b-pg-reel",
+      "type": "embed",
+      "title": "Badger Supports on Instagram: peer support groups",
+      "url": "https://www.instagram.com/reel/DecSxrys1OY/"
+    },
+    {
       "id": "b-pg-how",
       "type": "program",
       "variant": "topics",
@@ -110,7 +115,7 @@
         }
       ],
       "photos": [
-        "m-peer-group-circle"
+        "m-peer-group-smiles"
       ]
     },
     {

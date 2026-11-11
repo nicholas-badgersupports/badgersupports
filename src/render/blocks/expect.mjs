@@ -6,7 +6,7 @@
    `links` ends it with the ways on, as pills. `flip` puts the photos on the right, so a page that
    sets several of these one after another reads as a zigzag rather than a column of twins. */
 
-import { html } from "../html.mjs";
+import { html, attrs } from "../html.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { go } from "../context.mjs";
@@ -14,7 +14,7 @@ import { go } from "../context.mjs";
 export default {
   type: "expect",
   label: "What to expect",
-  fields: { title: "text!", body: "paragraphs", items: "points", links: "link[]", photos: "media[]", flip: "boolean", audience: "text", disclosure: "text", preview: "paragraphs", whole: "boolean" },
+  fields: { title: "text!", body: "paragraphs", items: "points", links: "link[]", photos: "media[]", flip: "boolean", audience: "text", disclosure: "text", preview: "paragraphs", whole: "boolean", icon: "text", program: "choice:peer|craft|workshops|other" },
   data: [],
   analytics: "page",
   loading: "lazy",
@@ -23,9 +23,10 @@ export default {
     const photos = (b.photos || []).slice(0, 2);
     const preview = Array.isArray(b.preview) ? b.preview : b.preview ? [b.preview] : [];
     const sizes = ["(max-width: 860px) calc(100vw - 2rem), 30rem", "(max-width: 860px) 40vw, 13rem"];
-    return html`<section id="${b.anchor || b.id}" class="${["expect band", photos.length ? "has-photos" : null, photos.length && b.flip ? "is-flip" : null, b.whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section id="${b.anchor || b.id}"${attrs({ class: ["expect band", photos.length ? "has-photos" : null, photos.length && b.flip ? "is-flip" : null, b.whole ? "is-whole" : null].filter(Boolean).join(" "), "data-program": b.program || null })} aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   ${photos.length ? html`<div class="expect-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i] })}</div>`)}</div>` : ""}
   <div class="expect-words">
+    ${b.icon ? html`<p class="expect-mark">${icon(b.icon)}</p>` : ""}
     <h2 id="${b.id}-h">${b.title}</h2>
     ${b.audience ? html`<p class="expect-audience">${b.audience}</p>` : ""}
     ${body.map((p) => html`<p>${p}</p>`)}

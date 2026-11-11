@@ -15,9 +15,50 @@
       "program": "workshops",
       "series": "housing-hub",
       "photos": [
-        "m-workshop-housing-team",
-        "m-hub-peer-poster",
-        "m-workshop-room"
+        "m-housing-toolkit",
+        "m-housing-flyer",
+        "m-oh-sea-guest"
+      ]
+    },
+    {
+      "id": "b-hh-path",
+      "type": "cards",
+      "variant": "activities",
+      "title": "Three Ways In",
+      "items": [
+        {
+          "id": "learn",
+          "title": "Learn the Basics",
+          "icon": "bulb",
+          "text": "Budgeting, leases, Madison-specific timelines, common pitfalls, roommates and campus resources.",
+          "link": {
+            "label": "How It Works",
+            "href": "#b-hh-how",
+            "icon": "arrow"
+          }
+        },
+        {
+          "id": "resources",
+          "title": "Use the Resources",
+          "icon": "search",
+          "text": "Tools to plan, budget and get help, from Badger Supports and our partners.",
+          "link": {
+            "label": "See the Resources",
+            "href": "#resources",
+            "icon": "arrow"
+          }
+        },
+        {
+          "id": "next-step",
+          "title": "Take the Next Step",
+          "icon": "arrow",
+          "text": "Request a tailored Navigating Housing workshop for your RSO, department, or yourself.",
+          "link": {
+            "label": "Request a Workshop",
+            "href": "#next-step",
+            "icon": "arrow"
+          }
+        }
       ]
     },
     {
@@ -80,15 +121,19 @@
       "flip": true,
       "items": [
         {
+          "icon": "chat",
           "text": "UW-Madison Students"
         },
         {
+          "icon": "house",
           "text": "UW Off-Campus Housing Services"
         },
         {
+          "icon": "badge",
           "text": "Tenant Resource Center"
         },
         {
+          "icon": "pin",
           "text": "Property Management Professionals"
         }
       ],
@@ -188,7 +233,8 @@
       ],
       "photos": [
         "m-peer-circle"
-      ]
+      ],
+      "anchor": "next-step"
     },
     {
       "id": "b-hh-apply",

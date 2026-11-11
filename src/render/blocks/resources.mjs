@@ -21,6 +21,7 @@ import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
 import { dateParts } from "../events.mjs";
 import { icon } from "../icons.mjs";
+import { picture } from "../media.mjs";
 
 /* Connect's sixteen resource categories (netlify/lib/builtin-resources.mjs). A topic names one. */
 export const CATEGORIES = [
@@ -106,6 +107,7 @@ function card(r, ctx, topicOf) {
   const more = [...details(r, ctx), html`<p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"))}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"))}</p>`];
   const v = valuesOf(r);
   return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null, "data-cost": v.cost.join(" ") || null, "data-where": v.where.join(" ") || null, "data-how": v.how.join(" ") || null })}>
+    ${r.photo && ctx.media.has(r.photo) ? html`<div class="photo res-photo">${picture(ctx, r.photo, { sizes: "(max-width: 560px) calc(100vw - 2rem), 23rem" })}</div>` : ""}
     <h3>${r.name}</h3>
     ${r.summary ? html`<p class="res-what">${r.summary}</p>` : ""}
     ${r.bestFor ? html`<p class="res-fit"><span class="res-lead">${ctx.t("resources.fit")}</span> ${r.bestFor}</p>` : ""}
@@ -164,8 +166,9 @@ export default {
     </div>` : ""}
     <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips><li aria-hidden="true"><span class="res-chip res-chip-ph">&nbsp;</span></li></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>
   </div>
-  <div class="res-status" aria-live="polite"><p class="res-count" data-res-count>${n === 1 ? ctx.t("resources.count.one") : ctx.t("resources.count.all", { n })}</p><p class="res-relaxed" data-res-relaxed hidden>${ctx.t("resources.relaxed")}</p></div>
+  <div class="res-status" aria-live="polite"><p class="res-count" data-res-count tabindex="-1">${n === 1 ? ctx.t("resources.count.one") : ctx.t("resources.count.all", { n })}</p><p class="res-relaxed" data-res-relaxed hidden>${ctx.t("resources.relaxed")}</p></div>
   <ul class="res-list">${list.map((r) => card(r, ctx, topicOf))}</ul>
+  <p class="res-more-row" data-res-more-row hidden><button type="button" class="btn res-more-btn" data-res-more>${ctx.t("resources.showMore")}</button></p>
   <div class="res-none" data-res-none hidden>
     <h3>${ctx.t("resources.none.title")}</h3>
     <p>${ctx.t("resources.none.body")}</p>

@@ -230,6 +230,16 @@
 .dateblock .mon { font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
 .day.is-today .dateblock .dow, .day.is-today .dateblock .dom { color: var(--accent); }
 .today-tag { margin-top: .4rem; font-size: .875rem; font-weight: 700; color: var(--cream); background: var(--accent); border-radius: var(--r-chip); padding: .05rem .55rem; }
+.next-tag { margin-top: .4rem; font-size: .875rem; font-weight: 700; color: var(--accent-deep); background: transparent; border: 2px solid var(--accent); border-radius: var(--r-chip); padding: 0 .55rem; }
+/* The day cards name today in a tag sized to read across a room, and tint today's card. */
+.day-tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0; }
+.day-tags:empty { display: none; }
+.day-tags .today-tag, .day-tags .next-tag { margin-top: var(--s2); font-size: 1.0625rem; padding: .3rem .85rem; }
+.cards--days .card.is-today { background: var(--accent-tint); border-radius: var(--r-card); padding: var(--s3); }
+.cards--days .card.is-today .card-words { padding-bottom: var(--s1); }
+.visit-tags { display: inline-flex; margin-left: var(--s2); vertical-align: middle; }
+.visit-tags:empty { display: none; }
+.visit-tags .today-tag { margin-top: 0; font-size: 1rem; padding: .25rem .8rem; }
 .events { list-style: none; display: grid; gap: var(--s2); }
 .ev { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) auto; gap: var(--s1) var(--s3); align-items: baseline; padding: .55rem 0; }
 .ev + .ev { border-top: var(--hairline); }
@@ -391,8 +401,8 @@
 a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(--accent); }
 /* the words in one column whose action always sits on its foot, so a row of doors lines up */
 .door-body { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; align-self: stretch; }
-.door-ic { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; border-radius: 50%; background: var(--cream); color: var(--accent); }
-.door-ic .ic { width: 1.7rem; height: 1.7rem; }
+.door-ic { display: grid; place-items: center; width: 4.25rem; height: 4.25rem; border-radius: 50%; background: var(--cream); color: var(--accent); }
+.door-ic .ic { width: 2.1rem; height: 2.1rem; }
 .door-ic .ic-hand { height: 2rem; }
 .door-title { font: 800 1.45rem/1.05 var(--font-display); text-transform: uppercase; padding-top: .35rem; }
 .door-text { line-height: 1.5; }
@@ -529,8 +539,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .directions h1, .directions h2:not(.dir-title) { font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.375rem); color: var(--cream); margin-bottom: var(--s2); }
 .dir-name { font-weight: 700; font-size: 1.25rem; margin-bottom: .2rem; }
 .dir-kind { font-size: var(--fs-small); font-weight: 700; margin-bottom: var(--s3); }
-.dir-jumps { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-top: var(--s3); }
-.dir-jumps a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: .2em; font-weight: 700; }
+/* Section navigation (src/render/secnav.mjs): segmented, icon-led, one bar per page section set.
+   The bar sits on the section's tint; each segment is a 44px target. On a phone the bar scrolls
+   sideways instead of wrapping into a tower. */
+.secnav { margin-top: var(--s4); }
+.secnav ul { list-style: none; display: flex; gap: var(--s1); margin: 0; padding: var(--s1); background: var(--accent-tint); border-radius: var(--r-chip); overflow-x: auto; scrollbar-width: thin; }
+.secnav-item { display: inline-flex; align-items: center; gap: var(--s2); min-height: 44px; padding-inline: var(--s3); border-radius: var(--r-chip); font-weight: 700; white-space: nowrap; color: var(--accent-deep); text-decoration: none; }
+.secnav-item:hover { background: var(--paper); }
+.secnav-ic { width: 1.25rem; height: 1.25rem; flex: none; }
 .places-jumps { margin-block: var(--s3) var(--s4); }
 .dir-access { margin-top: var(--s6); padding-top: var(--s4); border-top: var(--rule-line); }
 .dir-title[id], .dir-next[id], .hubcard h2[id], .hubcard h3[id], .places h2[id], .places h3[id] { scroll-margin-top: calc(var(--header-h) + var(--s4)); }
@@ -654,7 +670,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .involve.is-page + .questions { padding-top: var(--s3); }
 .qa-head .go { margin-top: var(--s1); }
 .qa-list { border-top: var(--rule-line); }
-.qa-group h3 { margin-block: var(--s3) var(--s1); }
+.qa-group h3 { margin-block: var(--s3) var(--s1); font-size: var(--fs-h3); color: var(--accent-deep); }
 .qa-group + .qa-group { margin-top: var(--s5); }
 .qa-links { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); padding-bottom: var(--s3); }
 .qa-list details { border-bottom: var(--rule-line); }
@@ -1042,6 +1058,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .expect-photos .photo:only-child { grid-row: 1 / -1; }
 .expect h2 { font-size: var(--fs-h2); color: var(--accent); margin-bottom: var(--s3); }
 .expect-words > p { max-width: var(--measure); font-size: var(--fs-lead); }
+/* A section's own mark: the workshop or program icon in its colour, above the heading. */
+.expect-mark { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: 0 0 var(--s3); border-radius: 50%; background: var(--accent-tint); color: var(--accent-deep); }
+.expect-mark .ic { width: 1.8rem; height: 1.8rem; }
+/* Statement banner (src/render/blocks/statement.mjs): one line, large and centred on the tint. */
+.statement { background: var(--tex-wash); background-blend-mode: normal, multiply; }
+.statement .wrap { text-align: center; }
+.statement-line { display: flex; align-items: center; justify-content: center; gap: var(--s4); margin: 0; font: 800 clamp(1.6rem, 1.2rem + 2vw, 2.6rem)/1.25 var(--font-display); color: var(--accent-deep); text-wrap: balance; }
+.statement-paw { width: 2rem; height: 2rem; flex: none; color: var(--accent); transform: rotate(-12deg); }
+.statement-paw:last-child { transform: rotate(12deg) scaleX(-1); }
+.statement-points { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin: var(--s4) 0 0; padding: 0; }
+.statement-points li { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-radius: var(--r-chip); background: var(--accent); color: var(--cream); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.statement-ic { width: 1.2rem; height: 1.2rem; }
+.statement .wrap > p { max-width: var(--measure); margin-inline: auto; }
+.statement-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s3) var(--s4); margin-top: var(--s4); }
 .expect-points { list-style: none; margin-top: var(--s4); border-bottom: var(--rule-line); }
 .expect-points li { display: flex; gap: var(--s3); align-items: center; padding-block: var(--s3); border-top: var(--rule-line); font-weight: 600; }
 .expect-points li > span { min-width: 0; overflow-wrap: anywhere; }
@@ -1432,6 +1462,10 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-count { margin: 0; font-weight: 700; }
 .res-relaxed { margin: var(--s1) 0 0; color: var(--muted); font-size: var(--fs-small); }
 .res-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: var(--s4); }
+.res-photo { border-radius: var(--r-input); overflow: hidden; }
+.res-more-row { display: flex; justify-content: center; margin-top: var(--s5); }
+.res-more-row[hidden] { display: none; }
+.res-count:focus { outline: none; }
 .res-card { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }
 .res-card h3 { font-size: var(--fs-h3); line-height: 1.2; color: var(--accent); margin: 0; }
 .res-what, .res-fit { margin: 0; }

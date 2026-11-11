@@ -72,7 +72,6 @@ export const CLIENT_TEXT = {
   "mood.js": ["mood.error", "mood.count.one", "mood.count.other"],
   "strip.js": ["strip.count"],
   "schedule.js": ["schedule.today", "schedule.happening", "schedule.nextUp"],
-  "questions.js": ["questions.expandAll", "questions.collapseAll"],
   "hero.js": ["hero.pause", "hero.play"],
   "staff.js": ["staff.*"],
   "form-setup.js": ["staff.*"],

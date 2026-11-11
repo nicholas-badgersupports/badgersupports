@@ -2901,16 +2901,6 @@
       "text": "Additional Details",
       "where": "On the resource list: the button on a card that opens the rest of its record."
     },
-    "questions.expandAll": {
-      "group": "page",
-      "text": "Expand All",
-      "where": "On a questions list: the button that opens every answer at once."
-    },
-    "questions.collapseAll": {
-      "group": "page",
-      "text": "Collapse All",
-      "where": "On a questions list: the button that closes every answer at once."
-    },
     "resources.view": {
       "group": "resources",
       "text": "View Details",

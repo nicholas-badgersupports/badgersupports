@@ -15,9 +15,9 @@
       "program": "other",
       "series": "dogs-on-call",
       "photos": [
-        "m-dogs-corgi",
-        "m-dogs-black-dog",
-        "m-openhouse-golden-retriever"
+        "m-dogs-lab-hero",
+        "m-dogs-two",
+        "m-dogs-session-wide"
       ],
       "links": [
         {
@@ -40,22 +40,68 @@
     },
     {
       "id": "b-dc-about",
-      "type": "text",
-      "body": [
-        "Every session is FREE & drop-in. All are welcome!",
-        "Dogs on Call is brought to the Student Mental Health Hub in collaboration with Badger Supports and UHS-Prevention.",
-        "Find other campus visits on the Dogs on Call Calendar."
-      ],
-      "links": [
+      "type": "statement",
+      "program": "other",
+      "text": "Every session is free and drop-in. All are welcome!",
+      "points": [
         {
-          "label": "Dogs on Call Calendar",
-          "href": "https://dogsoncall.org/calendar-of-events/",
-          "icon": "out"
+          "icon": "paw",
+          "text": "Free"
         },
+        {
+          "icon": "paw",
+          "text": "Drop-In"
+        },
+        {
+          "icon": "hand",
+          "text": "All Are Welcome"
+        }
+      ],
+      "body": [
+        "Dogs on Call is brought to the Student Mental Health Hub in collaboration with Badger Supports and UHS-Prevention. Find other campus visits on the Dogs on Call Calendar."
+      ],
+      "primary": {
+        "label": "Dogs on Call Calendar",
+        "href": "https://dogsoncall.org/calendar-of-events/",
+        "icon": "calendar"
+      },
+      "links": [
         {
           "label": "UHS-Prevention",
           "href": "https://www.uhs.wisc.edu/prevention/",
           "icon": "out"
+        }
+      ]
+    },
+    {
+      "id": "b-dc-gallery",
+      "type": "cards",
+      "variant": "whole",
+      "title": "Meet the Dogs",
+      "items": [
+        {
+          "id": "newfoundland",
+          "title": "Newfoundland",
+          "photo": "m-dogs-newfoundland",
+          "text": "September 2026, at the Student Mental Health Hub."
+        },
+        {
+          "id": "white-dog",
+          "title": "Small White Dog",
+          "photo": "m-dogs-white",
+          "text": "September 2026, at the Student Mental Health Hub."
+        },
+        {
+          "id": "lab-profile",
+          "title": "Black Labrador",
+          "photo": "m-dogs-lab-profile",
+          "text": "September 2026, at the Student Mental Health Hub."
+        },
+        {
+          "id": "newfoundland-face",
+          "title": "Newfoundland, Up Close",
+          "photo": "m-dogs-newfoundland-face",
+          "text": "September 2026, at the Student Mental Health Hub."
         }
       ]
     },

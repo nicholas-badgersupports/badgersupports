@@ -20,9 +20,9 @@
         "href": "/join/peer-support-groups/"
       },
       "photos": [
-        "m-peer-couch",
-        "m-people-welcome",
-        "m-craft-friends"
+        "m-training-team-lead",
+        "m-training-small-group",
+        "m-people-welcome"
       ],
       "links": [
         {
@@ -126,8 +126,8 @@
         }
       ],
       "photos": [
-        "m-peer-circle",
-        "m-peer-talk"
+        "m-peer-group-circle",
+        "m-peer-group-smiles"
       ]
     },
     {
@@ -148,8 +148,93 @@
         }
       ],
       "photos": [
-        "m-craft-table",
+        "m-craft-visionboards",
         "m-people-bedazzle"
+      ],
+      "disclosure": "More About Craft Nights",
+      "preview": [
+        "Take a break from classes with a creative activity and time with fellow Badgers.",
+        "Drop in on your own or with friends. No registration is needed, no crafting experience is needed, and our announced Craft Nights are free to attend."
+      ]
+    },
+    {
+      "id": "b-wwd-craft-gallery",
+      "type": "cards",
+      "variant": "activities",
+      "title": "Made at Craft Nights",
+      "program": "craft",
+      "items": [
+        {
+          "id": "painting-pots",
+          "title": "Painting Plant Pots",
+          "photo": "m-craft-pots-room",
+          "lines": [
+            "October 2026"
+          ]
+        },
+        {
+          "id": "succulents",
+          "title": "Succulents",
+          "photo": "m-craft-succulent-table",
+          "lines": [
+            "October 2026"
+          ]
+        },
+        {
+          "id": "planting-station",
+          "title": "The Planting Station",
+          "photo": "m-craft-planting-station",
+          "lines": [
+            "October 2026"
+          ]
+        },
+        {
+          "id": "pumpkin-painting",
+          "title": "Pumpkin Painting",
+          "photo": "m-craft-painted-pumpkin",
+          "lines": [
+            "October 2026"
+          ]
+        },
+        {
+          "id": "painted-pumpkins",
+          "title": "Painted Pumpkins",
+          "photo": "m-craft-pumpkins-done",
+          "lines": [
+            "October 2026"
+          ]
+        },
+        {
+          "id": "rhinestones",
+          "title": "Rhinestones and Gems",
+          "photo": "m-craft-rhinestones",
+          "lines": [
+            "October 2026"
+          ]
+        },
+        {
+          "id": "perler-beads",
+          "title": "Perler Beads",
+          "photo": "m-craft-perler-fish",
+          "lines": [
+            "September 2026"
+          ]
+        },
+        {
+          "id": "bead-crafts",
+          "title": "Bead Crafts",
+          "photo": "m-craft-bead-crafts",
+          "lines": [
+            "September 2026"
+          ]
+        }
+      ],
+      "links": [
+        {
+          "label": "Craft Nights",
+          "href": "/join/craft-nights/",
+          "icon": "arrow"
+        }
       ]
     },
     {

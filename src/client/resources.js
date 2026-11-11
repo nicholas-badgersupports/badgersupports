@@ -48,6 +48,16 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   });
   let topic = "";
 
+  /* Progressive reveal: the list opens with the first PAGE matches and a Show More button
+     reveals the next PAGE, so a long list never lands all at once. The reveal is worked out
+     inside apply(), so it follows the search, the topic and the filters exactly: any change
+     to what matches starts the reveal again. A safety resource is never held back by the
+     reveal — it stays visible whenever it matches. Without the script every card shows. */
+  const PAGE = 12;
+  const moreRow = box.querySelector("[data-res-more-row]");
+  let limit = PAGE;
+  let lastSig = null;
+
   const apply = () => {
     const q = words(input.value).split(" ").filter(Boolean);
     const cat = buttons.find((b) => b.dataset.topic === topic)?.dataset.category || "";
@@ -59,7 +69,18 @@ for (const box of document.querySelectorAll("[data-resources]")) {
       loose = shown.length > 0;
     }
     const on = new Set(shown);
-    for (const it of items) it.li.hidden = !on.has(it);
+    const sig = [topic, q.join(" "), GROUPS.map((g) => [...pressed[g]].sort().join(",")).join("|"), shown.map((it) => it.li.dataset.res).join(",")].join("§");
+    if (sig !== lastSig) { lastSig = sig; limit = PAGE; }
+    let seen = 0, visible = 0;
+    for (const it of items) {
+      if (!on.has(it)) { it.li.hidden = true; continue; }
+      const exempt = it.cats.includes("safety_survivor_support");
+      if (!exempt) seen++;
+      it.li.hidden = !exempt && seen > limit;
+      if (!it.li.hidden) visible++;
+    }
+    const held = shown.filter((it) => !it.cats.includes("safety_survivor_support")).length;
+    if (moreRow) moreRow.hidden = !(shown.length > 0 && held > limit);
     for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset.topic === topic));
     for (const b of fbuttons) b.setAttribute("aria-pressed", String(pressed[b.dataset.fgroup].has(b.dataset.fopt)));
     const nf = GROUPS.reduce((n, g) => n + pressed[g].size, 0);
@@ -82,9 +103,9 @@ for (const box of document.querySelectorAll("[data-resources]")) {
     if (relaxed) relaxed.hidden = !loose;
     if (none) none.hidden = shown.length > 0;
     list.hidden = !shown.length;
-    count.textContent = shown.length === items.length
+    count.textContent = visible === items.length
       ? (items.length === 1 ? t("resources.count.one") : t("resources.count.all", { n: items.length }))
-      : t("resources.count.some", { shown: shown.length, total: items.length });
+      : t("resources.count.some", { shown: visible, total: items.length });
     const url = new URL(location.href);
     if (topic) url.searchParams.set("topic", topic); else url.searchParams.delete("topic");
     if (input.value.trim()) url.searchParams.set("q", input.value.trim()); else url.searchParams.delete("q");
@@ -93,6 +114,12 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   };
 
   for (const b of buttons) b.addEventListener("click", () => { topic = b.dataset.topic; apply(); });
+  box.querySelector("[data-res-more]")?.addEventListener("click", () => {
+    limit += PAGE;
+    apply();
+    // The last reveal retires the button; keep the reader's place by moving focus to the count.
+    if (moreRow?.hidden) count.focus({ preventScroll: true });
+  });
   input.addEventListener("input", apply);
   clear?.addEventListener("click", () => { input.value = ""; apply(); input.focus(); });
   const clearAll = () => { input.value = ""; topic = ""; for (const g of GROUPS) pressed[g].clear(); apply(); input.focus(); };

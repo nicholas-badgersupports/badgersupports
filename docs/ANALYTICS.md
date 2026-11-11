@@ -1,8 +1,12 @@
 # Analytics
 
-**Nothing is measured yet.** The rebuild loads no analytics tag and sends nothing to Google or anyone else. This
-page records what the live site has, the hooks this rebuild already carries, and a plan for turning measurement on.
-The plan is a **proposal** and needs the owner's approval (`../../MASTER-PROMPT.md` §9; `DECISIONS.md` §4).
+**Nothing is measured yet, and the forwarder is built.** The owner decided on 11 Nov 2026 that the site
+carries Google Analytics (queue item 22; `DECISIONS.md`). The forwarder below is built and tested
+(`src/client/analytics.js`, `test/analytics.test.mjs`): a build measures only when it is given the verified
+property's measurement id (`GA_MEASUREMENT_ID`), and no build has been given one, so the site still sends
+nothing to Google or anyone else. There is **no consent step**: on a public page the tag loads as the page
+loads, as it does on the organisation's existing Google site (owner, 11 Nov 2026). This corrects the
+consent-first wording recorded earlier the same day, in this project and in the Session 12 handoff.
 
 Nothing on this page is a statement that any law or policy is met.
 
@@ -20,8 +24,10 @@ unknown.
 
 ## What the rebuild does today
 
-**No tag.** The Content Security Policy allows scripts from this site only (`script-src 'self'`, in
-`ops/build.mjs` `headersFile`). A page cannot load Google's tag even by mistake until that header changes.
+**No tag loads.** The forwarder rides on every page and does nothing without its configuration island
+(below). The Content Security Policy allows Google's hosts only in a configured build (`ops/build.mjs`
+`cspHeader`): an unconfigured build allows scripts from this site only, so a page cannot load Google's tag
+even by mistake.
 
 **The hooks are already in place**, so the plan below needs no change to any page or block:
 
@@ -32,23 +38,24 @@ unknown.
 | `data-analytics="off"` on the mood check-in's section | a marker a forwarder can test without knowing which block it is in | `src/render/blocks/mood.mjs`; `test/build.test.mjs`, "the mood check-in is excluded from analytics" |
 | The `bss:analytics` event | `form.js` announces `form_start` on the first input into a form and `form_submit_success` only once the server answered that the submission was stored. The detail is `{ name, form }`, where `form` is the form's key | `announce()` in `src/client/form.js` |
 
-**Nothing listens to `bss:analytics` yet.** The event goes nowhere.
+**The forwarder listens to `bss:analytics`** and passes an announcement on only when the dictionary below
+names it and every value is on its closed list. Until a build is configured, it still goes nowhere.
 
 The mood check-in keeps its own daily counts in the site's database (`mood_daily`). That count is not
 analytics: it holds one number per mood per day, and `netlify/lib/mood.mjs` sends nothing out.
 
-## Proposal: the event dictionary
+## The event dictionary
 
 Every event the site may send, with every parameter it may carry. Anything not in this table is dropped.
 
 | Event | When | Parameters | Status |
 |---|---|---|---|
-| `page_view` | a page whose `<body>` says `data-analytics="public"` opens | `page_path`: the path only, no query string and no `#` | proposed |
-| `form_start` | the first input into a form | `form`: one of the form keys in `content/forms/` | announced by `form.js`; not forwarded |
-| `form_submit_success` | the server stored the submission | `form`, as above | announced by `form.js`; not forwarded |
-| `drop_in` | a Drop in link is pressed | `place`: a place id from `content/places/` | proposed, not announced |
-| `calendar_add` | an Add to calendar link is pressed | none | proposed, not announced |
-| `reel_play` | the reel's Play button is pressed | none | proposed, not announced |
+| `page_view` | a page whose `<body>` says `data-analytics="public"` opens | `page_path`: the path only, no query string and no `#` | sent by the forwarder, once a build is configured |
+| `form_start` | the first input into a form | `form`: one of the form keys in `content/forms/` | announced by `form.js`; forwarded under the same condition |
+| `form_submit_success` | the server stored the submission | `form`, as above | announced by `form.js`; forwarded under the same condition |
+| `drop_in` | a Drop in link is pressed | `place`: a place id from `content/places/` | the forwarder accepts it; nothing announces it yet |
+| `calendar_add` | an Add to calendar link is pressed | none | the forwarder accepts it; nothing announces it yet |
+| `reel_play` | the reel's Play button is pressed | none | the forwarder accepts it; nothing announces it yet. The reel has had no Play button since Session 11, so this event may never fire |
 
 Form keys: the `key` of each file in `content/forms/` (`ls content/forms/`).
 
@@ -67,36 +74,49 @@ the share of visitors who start a form and finish it; the database says how many
 queue (Exchange request `PUBLIC-SITE-FORMS`) would list those rows. A count per form per day is not part of that
 request yet.
 
-## Proposal: the forwarder
+## The forwarder
 
-One small script of this site's own, `src/client/analytics.js` (**not built**), on every page. It is the only
+One small script of this site's own, `src/client/analytics.js`, on every page. It is the only
 thing that may load Google's tag, and it decides before loading it.
 
-1. **Read the page's own label first.** If `document.body.dataset.analytics` is anything but `public`, stop.
+1. **Read its configuration.** The build bakes the measurement id and the two closed lists (form keys,
+   place ids) into the page as a `bss-analytics` island, and only when the build was given an id with a
+   measurement id's shape (`GA_MEASUREMENT_ID`; `ops/build.mjs`, `analyticsConfig`). No island, or an id
+   that fails the shape check in the script itself: nothing happens on the page.
+2. **Read the page's own label.** If `document.body.dataset.analytics` is anything but `public`, stop.
    No request to Google is made on that page.
-2. **Refuse the private paths.** Stop on `/staff/`, `/api/`, any sign-in path, and the resource viewer once it
-   exists. These pages also carry `none`; the path check is a second lock in case one does not.
-3. **Only then load the tag**, configured to send no page view of its own. Send `page_view` by hand, with the
+3. **Refuse the private paths.** Stop on `/staff/` (where sign-in happens) and `/api/`. These pages also
+   carry `none`; the path check is a second lock in case one does not. The resource viewer's page carries
+   `none`, so the label refuses it.
+4. **Only then load the tag**, configured to send no page view of its own. Send `page_view` by hand, with the
    path stripped of its query string and `#`. URL tokens and filters never leave the page.
-4. **Forward `bss:analytics` events through the dictionary.** An unknown name is dropped. A parameter not listed
-   for that event is dropped. A value outside its closed list (a form key, a place id) is dropped.
-5. **Ignore anything inside `[data-analytics="off"]`**, and anything from a block declared `none`.
+5. **Forward `bss:analytics` events through the dictionary.** An unknown name is dropped. A parameter not listed
+   for that event is dropped. A value outside its closed list (a form key, a place id) ends the event.
 6. **Never set** a user id, a Connect account id, a name, an email address, a reference such as `WR-…`, an
-   answer, or any free text. None of these is in the dictionary, so step 4 already drops them; the rule is
+   answer, or any free text. None of these is in the dictionary, so step 5 already drops them; the rule is
    written here so that nobody adds one.
 
-### What it would take
+The one step in the earlier plan the build does not take: nothing inside `[data-analytics="off"]` can
+announce an event today — `form.js` announces on the document, not from inside a section, and the only
+`off` section is the mood check-in, whose block is `none` and whose script announces nothing.
 
-- **The CSP** gains Google's tag hosts in `script-src` and `connect-src`. Take the list from Google's own CSP
-  guide when this is built, not from this page.
+### What switching it on takes
+
+- **A verified property.** The id a build carries must be the organisation's own GA4 property. The
+  Analytics connector needs the owner's reauthentication before the property can be checked; the id on
+  the live home page (`G-XVT9XWRVQ5`) is **not** verified, and no build has carried it.
 - **Enhanced measurement off** in the GA4 data stream. It collects form interactions, site search terms and
   outbound clicks on its own, and those would bypass every rule above. This is a property setting; whether it
-  is on today is not verified.
-- **A decision on asking first.** Either the tag loads only after a visitor agrees, or it loads on public pages
-  without asking. This is the owner's call. Either way the steps above run first.
-- **Tests:** a browser test that opens `/staff/`, the not-found page, a form outcome page and the mood check-in,
-  and fails on any request to a host other than this site; and a unit test that feeds the forwarder every
-  forbidden parameter and expects nothing out.
+  is on today is not verified. The owner confirms it in the GA console when he verifies the property.
+- **The id reaches the publish build** as `GA_MEASUREMENT_ID`. With it set, the build also widens the CSP
+  by Google's own list for the GA4 tag (its CSP guide): `script-src` gains `https://*.googletagmanager.com`;
+  `img-src` gains `https://*.google-analytics.com` and `https://*.googletagmanager.com`; `connect-src` gains
+  those two and `https://*.analytics.google.com`. Without it, none of those hosts is allowed.
+- **Tests** (`test/analytics.test.mjs`): the dictionary fed every forbidden parameter expects nothing out;
+  the label and path checks; a build with no id carries no island and allows no Google host; a build with
+  one carries both, and the staff page's `none` label still stands. A browser test that watches the
+  network on the private pages is still owed: the suites' builds are unconfigured, so no request can be
+  made there, and a configured browser run needs the verified id first.
 
 ## What the exclusions cover
 

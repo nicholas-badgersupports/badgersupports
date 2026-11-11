@@ -984,3 +984,20 @@ From Nicholas's review of the session-10 screenshots, the same day:
   A card whose cost is not known carries no cost tag ("Cost Not Specified" is no longer shown).
 - The Next Peer Support Group box is a card on paper outlined in the program's deep colour, as Craft Nights shows
   its next night.
+
+## 11 November 2026 · Analytics, the receipt sender, the backup account, the reel notice (Owner; session 13)
+
+Four answers from Nicholas, given in chat while the queues were worked:
+
+- **Google Analytics is wanted** (queue item 22), superseding the 24 Oct position that Netlify Web
+  Analytics, not GA4, is the collector. The build follows `docs/ANALYTICS.md`: a verified property only,
+  the exclusions before any tag loads, no Connect identity. **No consent step**: the tag loads on public
+  pages as the page loads, matching the organisation's existing Google site. This corrects a
+  consent-first note recorded earlier the same day (in the Session 12 handoff): there is no asking first.
+  The property is still unverified — the Analytics connector needs Nicholas's reauthentication — so the
+  forwarder ships unconfigured and measures nothing until a publish build is given the verified id.
+- **The receipt sender is `directors@badgersupports.org`** (item 18; `WORK.md` owner action 4). Receipts
+  still wait for Connect's `publicReceipt` and for `RECEIPT_SENDER` to be set at switch-on.
+- **The backup workbook lives in the `directors@badgersupports.org` account** (item 18; owner action 5).
+- **No notice by the Instagram reel** (privacy draft, Gap 29): the draft stands as Sessions 11–12 left it
+  on this point.

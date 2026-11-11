@@ -194,6 +194,28 @@ export function loadContent({ production = false, launch = production, textEdits
   const resources = feed?.resources ? structuredClone(feed.resources) : readJson("content/fixtures/resources.json");
   if (!Array.isArray(resources.resources)) problems.push(`${resourcesAt}: resources is a list`);
   else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`${resourcesAt}: resources[${i}] needs an id and a name`);
+
+  // Courses: UW Course Search offerings pulled by ops/courses.mjs and mapped to interests by
+  // content/courses.json (EXPLORE-F-CLASSES). The data file is a cache of a public feed, and
+  // it is checked like one: a course the mapping does not claim is not this site's to show,
+  // and a course naming no verified term — neither open nor offered — came from a pull that
+  // went wrong, so both are refused here rather than drawn.
+  const courseMapping = readJson("content/courses.json");
+  const coursesFile = readJson("content/fixtures/courses.json");
+  const interestIds = new Set();
+  if (!Array.isArray(courseMapping.interests) || !courseMapping.interests.length) problems.push("content/courses.json: interests is a list");
+  for (const [i, it] of (courseMapping.interests || []).entries()) {
+    if (!it?.id || !it?.label || interestIds.has(it.id)) problems.push(`content/courses.json: interests[${i}] needs its own id and a label`);
+    interestIds.add(it?.id);
+    if (![...(it?.subjects || []), ...(it?.breadths || [])].length) problems.push(`content/courses.json: interest "${it?.id}" names no subjects or breadths`);
+  }
+  if (!Array.isArray(coursesFile.courses)) problems.push("content/fixtures/courses.json: courses is a list");
+  else for (const [i, c] of coursesFile.courses.entries()) {
+    if (!c?.id || !c?.title) problems.push(`content/fixtures/courses.json: courses[${i}] needs an id and a title`);
+    if (!c?.open && !c?.offered) problems.push(`content/fixtures/courses.json: courses[${i}] (${c?.id}) names no verified term`);
+    for (const id of c?.interests || []) if (!interestIds.has(id)) problems.push(`content/fixtures/courses.json: courses[${i}] names interest "${id}", which content/courses.json does not define`);
+  }
+  const courses = { mapping: courseMapping, file: coursesFile };
   // A form's resource question offers the same resources the resource list shows (withResources).
   for (const f of readDir("content/forms")) {
     const def = withResources(readJson(`content/forms/${f}`), Array.isArray(resources.resources) ? resources.resources : []);
@@ -315,7 +337,7 @@ export function loadContent({ production = false, launch = production, textEdits
   const previewPages = production ? [] : formPreviewPages(forms, makeT(text));
   for (const p of previewPages) if (paths.has(p.path)) throw new Error(`content/forms: ${p.path} is also a page in content/pages`);
   return {
-    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, alumni, alumniState, alumniSource, resources, textRegistry, text,
+    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, alumni, alumniState, alumniSource, resources, courses, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
     builtEdits: Object.fromEntries(overlay.applied.map(target => [target, edits[target].trim()])),
@@ -596,6 +618,10 @@ export async function build({ production = false, launch = production, today = n
     resources: content.resources.resources,
     resourcesSample: content.resources.fixture ? content.resources.label : null,
     resourcesUpdated: content.resources.sourceUpdatedAt,
+    courses: content.courses.file.courses,
+    courseInterests: content.courses.mapping.interests,
+    coursesSample: content.courses.file.fixture ? content.courses.file.label : null,
+    coursesUpdated: content.courses.file.sourceUpdatedAt,
     searchIndex: searchIndex(content, { today: day }),
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);

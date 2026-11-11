@@ -12,6 +12,7 @@ import { makeContext } from "../src/render/context.mjs";
 import { renderBlock } from "../src/render/registry.mjs";
 import { resourceVisible } from "../src/render/blocks/resources.mjs";
 import { navigatorProblems, navigatorResourceProblems } from "../src/render/blocks/navigator.mjs";
+import { normalizeCourses, prevTermCode, termWalk } from "../ops/courses.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build-explore");
 let built = null;
@@ -101,4 +102,62 @@ test("EXPLORE-G: the built page walks to real cards, and the full finder is link
   assert.match(section, /data-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
   assert.match(section, /data-nav-go="b-nav-step-course"/, "the course choice goes to the second question");
   assert.doesNotMatch(section, /<input|<textarea|<select/, "no free-text personal data is asked for");
+});
+
+/* ---------- EXPLORE-F: Discover Classes by Interest ---------- */
+
+const TERMS = [
+  { code: "1266", label: "Summer 2026", kind: "recent" },
+  { code: "1272", label: "Fall 2026", kind: "current" },
+  { code: "1274", label: "Spring 2027", kind: "upcoming" },
+];
+const MAPPING = [{ id: "languages", label: "Languages", subjects: ["872"] }, { id: "music", label: "Music", subjects: ["660"] }];
+const hit = (id, subjectCode, number, title) => ({ courseId: id, subject: { subjectCode, shortDescription: subjectCode === "872" ? "SCAND ST" : "MUSIC" }, catalogNumber: number, title, creditRange: "3", breadths: [] });
+
+test("EXPLORE-F: term codes step by two and roll at the season digit, labelled from the anchors", () => {
+  assert.equal(prevTermCode("1272"), "1266");
+  assert.equal(prevTermCode("1266"), "1264");
+  assert.equal(prevTermCode("1262"), "1256");
+  const walk = termWalk([{ code: "1272", season: "Fall", year: 2026 }, { code: "1274", season: "Spring", year: 2027 }], 3);
+  assert.equal(walk.get("1266").label, "Summer 2026");
+  assert.equal(walk.get("1264").label, "Spring 2026");
+  assert.equal(walk.get("1262").label, "Fall 2025");
+});
+
+test("EXPLORE-F: offerings classify as open or recently offered, by their own term", () => {
+  const hits = {
+    "1266": [hit("fall-only", "872", "101", "First Semester Norwegian"), hit("both", "872", "201", "Nordic Storytelling")],
+    "1272": [hit("both", "872", "201", "Nordic Storytelling")],
+    "1274": [hit("spring-only", "872", "102", "Second Semester Norwegian")],
+  };
+  const out = normalizeCourses(hits, TERMS, MAPPING);
+  const byId = Object.fromEntries(out.map((c) => [c.id, c]));
+  assert.equal(byId["fall-only"].open, null, "a course offered only in a past term is not available now");
+  assert.equal(byId["fall-only"].offered, "Summer 2026", "recently offered, with that term");
+  assert.equal(byId["spring-only"].open, "Spring 2027", "a published upcoming section shows as available, with its term");
+  assert.equal(byId["both"].open, "Fall 2026", "the earliest enterable term is the label");
+  assert.equal(byId["both"].offered, "Summer 2026", "its past offering is still on the record");
+  assert.deepEqual(out.map((c) => c.id), ["spring-only", "both", "fall-only"], "available courses come before recently offered ones, by subject then number within a group");
+});
+
+test("EXPLORE-F: a course with no published offering in the window, or outside the mapping, is excluded", () => {
+  const hits = { "1272": [hit("unmapped", "448", "101", "A History Course")] };
+  assert.deepEqual(normalizeCourses(hits, TERMS, MAPPING), [], "not the mapping's to show");
+  assert.deepEqual(normalizeCourses({}, TERMS, MAPPING), [], "a catalog entry with no offering in any served term never reaches the list");
+  const outside = normalizeCourses({ "1256": [hit("old", "872", "101", "First Semester Norwegian")] }, TERMS, MAPPING);
+  assert.deepEqual(outside, [], "an offering outside the verified window does not count");
+});
+
+test("EXPLORE-F: the built page shows the pulled courses with their terms and the official link", () => {
+  assert.ok(built);
+  const data = read("content/fixtures/courses.json");
+  const page = builtPage("explore/classes");
+  const section = page.slice(page.indexOf("data-courses"), page.indexOf("</section>", page.indexOf("data-courses")));
+  assert.ok(section.includes(data.label), "the sample pull says what it is until the owner accepts the verification note");
+  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, data.courses.length, "every pulled course is a card");
+  const card = (desig) => { const a = section.indexOf(desig); return a < 0 ? "" : section.slice(a, section.indexOf("</li>", a)); };
+  assert.match(card("SCAND ST 101"), /Open for Fall 2026/, "the fall-only Norwegian course is open for the fall term it is published in");
+  assert.match(card("SCAND ST 102"), /Open for Spring 2027/, "the spring-only course is open for spring, not shown as available now");
+  assert.match(section, /href="https:\/\/public\.enroll\.wisc\.edu\/search"/, "cards link to UW Course Search");
+  assert.doesNotMatch(section, /guarantee|might|may not be offered|uncertain/i, "no card carries future-uncertainty helper text; the term label does the work");
 });

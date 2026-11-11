@@ -1,0 +1,80 @@
+{
+  "about": "The interest mapping for Discover Classes by Interest (EXPLORE-F-CLASSES), read by ops/courses.mjs. Each interest names UW Course Search subjects by their subject codes (the aggregate at public.enroll.wisc.edu names them) and may also name breadth codes (breadths: B, H, L, N, P or S); the shipped mapping uses subjects only. Edit the mapping here; the course data in content/fixtures/courses.json is pulled from it. The mapping is reviewed by student staff before release (docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md).",
+  "interests": [
+    {
+      "id": "creativity",
+      "label": "Creativity",
+      "subjects": [
+        "168",
+        "180",
+        "359",
+        "495",
+        "741",
+        "942"
+      ]
+    },
+    {
+      "id": "music",
+      "label": "Music",
+      "subjects": [
+        "660",
+        "664"
+      ]
+    },
+    {
+      "id": "languages",
+      "label": "Languages",
+      "subjects": [
+        "186",
+        "351",
+        "400",
+        "424",
+        "428",
+        "442",
+        "508",
+        "524",
+        "550",
+        "782",
+        "872",
+        "888",
+        "912"
+      ]
+    },
+    {
+      "id": "nature",
+      "label": "Nature",
+      "subjects": [
+        "132",
+        "208",
+        "355",
+        "360",
+        "396",
+        "416",
+        "420",
+        "476",
+        "520",
+        "640",
+        "766",
+        "908",
+        "970"
+      ]
+    },
+    {
+      "id": "community",
+      "label": "Community",
+      "subjects": [
+        "106",
+        "140",
+        "184",
+        "228",
+        "230",
+        "247",
+        "864",
+        "896",
+        "900",
+        "963"
+      ]
+    }
+  ],
+  "schema": "bss.courses/1"
+}

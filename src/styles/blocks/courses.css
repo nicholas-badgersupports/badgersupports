@@ -1,0 +1,17 @@
+/* ============ courses: Discover Classes by Interest (EXPLORE-F) ============ */
+.cls-interests { display: flex; flex-wrap: wrap; gap: var(--s2); margin: var(--s4) 0 var(--s3); }
+.cls-chip { min-height: 44px; padding: .35rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-small); font-weight: 700; cursor: pointer; transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out); }
+.cls-chip:hover { border-color: var(--accent); }
+.cls-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--cream); }
+.cls-count { color: var(--muted); font-size: var(--fs-small); margin: 0 0 var(--s3); }
+.cls-group { margin-top: var(--s5); }
+.cls-list { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s3); }
+.cls-card { border: 2px solid var(--line); border-radius: var(--r-card); background: var(--paper); padding: var(--s4); }
+.cls-card[hidden] { display: none; }
+.cls-group[hidden] { display: none; }
+.cls-title { margin: 0; font-size: var(--fs-lead); }
+.cls-desig { font-weight: 800; }
+.cls-meta { margin: var(--s2) 0 0; color: var(--muted); font-size: var(--fs-small); display: flex; flex-wrap: wrap; gap: .35rem .9rem; }
+.cls-tag { font-weight: 700; color: var(--ink); }
+.cls-go { margin: var(--s3) 0 0; }
+.cls-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }

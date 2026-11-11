@@ -389,6 +389,15 @@ Reads: `resources` · analytics: `none` · photos load lazy · browser module `n
 | `lead` | one line of text |  |
 | `steps` | the navigator's steps, in order; the first is where the walk starts. Each step has an `id`, its question (`prompt`) and its choices (`options`); each choice has an `id`, its words (`label`), and goes to one place: a next step (`next`, another step's id) or a set of resources (`results`, ids from the resource library). Every step must be reachable from the first and able to reach a set of resources | **required** |
 
+### Discover Classes by Interest — `courses`
+
+Reads: `courses`, `courseInterests`, `coursesSample`, `coursesUpdated` · analytics: `none` · photos load lazy · browser module `courses.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+
 ### Site search — `sitesearch`
 
 Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module `search.js`

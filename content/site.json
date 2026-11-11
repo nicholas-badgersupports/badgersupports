@@ -5,7 +5,7 @@
   "liveOrigin": "https://www.badgersupports.org",
   "connectOrigin": "https://home.badgersupports.org",
   "lang": "en",
-  "description": "Free, student-led peer support groups, craft nights and wellness workshops at UW–Madison.",
+  "description": "Free, student-led peer support groups, craft nights and wellness workshops at UW\u2013Madison.",
   "nav": [
     {
       "id": "nav-about",
@@ -191,24 +191,12 @@
         "title": "Contact",
         "links": [
           {
-            "label": "Rooms and Directions",
-            "href": "/directions/"
-          },
-          {
-            "label": "hello@badgersupports.org",
-            "href": "mailto:hello@badgersupports.org"
-          },
-          {
             "label": "directors@badgersupports.org",
             "href": "mailto:directors@badgersupports.org"
           },
           {
             "label": "Email List",
             "href": "/join/email-list"
-          },
-          {
-            "label": "Report a Website Problem",
-            "href": "/about/faq/#b-faq-website-problem"
           }
         ]
       }
@@ -216,23 +204,31 @@
     "social": [
       {
         "label": "Instagram",
-        "href": "https://www.instagram.com/badgersupports/"
+        "href": "https://www.instagram.com/badgersupports/",
+        "icon": "instagram"
       },
       {
         "label": "TikTok",
-        "href": "https://www.tiktok.com/@badger.supports"
+        "href": "https://www.tiktok.com/@badger.supports",
+        "icon": "tiktok"
       },
       {
         "label": "LinkedIn",
-        "href": "https://www.linkedin.com/company/badger-supports/"
+        "href": "https://www.linkedin.com/company/badger-supports/",
+        "icon": "linkedin"
       },
       {
         "label": "WIN",
-        "href": "https://win.wisc.edu/organization/badgersupports"
+        "href": "https://win.wisc.edu/organization/badgersupports",
+        "icon": "win"
       }
     ],
+    "email": {
+      "label": "hello@badgersupports.org",
+      "href": "mailto:hello@badgersupports.org"
+    },
     "address": "Student Activity Center, 333 East Campus Mall, Suite 3203, Madison, WI 53715",
-    "affiliation": "Badger Supports is an independent, dual-registered student organization with University Health Services – Prevention.",
+    "affiliation": "Badger Supports is an independent, dual-registered student organization with University Health Services \u2013 Prevention.",
     "funding": "Funded in part by the Associated Students of Madison.",
     "spill": {
       "label": "Badger SPILL, our written peer support",
@@ -244,6 +240,10 @@
       {
         "label": "Privacy Policy and Terms",
         "href": "/operations/privacy-policy"
+      },
+      {
+        "label": "Report a Website Problem",
+        "href": "/about/faq/#b-faq-website-problem"
       }
     ],
     "staffSignIn": {

@@ -9,6 +9,7 @@ import { link, go } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { picture } from "../media.mjs";
 import { placePath } from "../places.mjs";
+import { sectionNav } from "../secnav.mjs";
 
 const where = (p) => [p.building, p.where].filter(Boolean).join(" · ");
 
@@ -28,7 +29,10 @@ export default {
     return html`<section class="places band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="places-head">${h}<span class="places-route" aria-hidden="true">${icon("pin")}</span></div>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
-  ${hubs.length && others.length ? html`<nav class="dir-jumps places-jumps" aria-label="${ctx.t("directions.onPage")}">${hubs.map((p) => html`<a href="#${b.id}-${p.id}">${p.name}</a>`)}<a href="#${b.id}-rooms">${b.roomsTitle || ctx.t("directions.eventRooms")}</a></nav>` : ""}
+  ${hubs.length && others.length ? sectionNav(ctx, ctx.t("directions.onPage"), [
+    ...hubs.map((p) => ({ href: `#${b.id}-${p.id}`, label: p.name, icon: "pin" })),
+    { href: `#${b.id}-rooms`, label: b.roomsTitle || ctx.t("directions.eventRooms"), icon: "house" },
+  ]) : ""}
   ${hubs.map((p) => html`<article class="${p.photo ? "hubcard has-photo" : "hubcard"}" aria-labelledby="${b.id}-${p.id}">
     <div class="hubcard-text">
       ${where(p) ? html`<p class="hubcard-where">${where(p)}</p>` : ""}

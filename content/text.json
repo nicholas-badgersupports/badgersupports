@@ -153,6 +153,11 @@
       "text": "Today",
       "where": "Tag on today's date in the timetable."
     },
+    "schedule.nextUp": {
+      "group": "home",
+      "text": "Next Up",
+      "where": "Tag on the next peer support group day or visit that is not today, so a visitor can spot the soonest one."
+    },
     "schedule.todayPrefix": {
       "group": "home",
       "text": "Today,",
@@ -2896,6 +2901,16 @@
       "text": "Additional Details",
       "where": "On the resource list: the button on a card that opens the rest of its record."
     },
+    "questions.expandAll": {
+      "group": "page",
+      "text": "Expand All",
+      "where": "On a questions list: the button that opens every answer at once."
+    },
+    "questions.collapseAll": {
+      "group": "page",
+      "text": "Collapse All",
+      "where": "On a questions list: the button that closes every answer at once."
+    },
     "resources.view": {
       "group": "resources",
       "text": "View Details",
@@ -3090,6 +3105,11 @@
       "group": "events",
       "text": "Join Our Email List",
       "where": "Day-card directions or no-upcoming-group action."
+    },
+    "resources.showMore": {
+      "group": "resources",
+      "text": "Show More",
+      "where": "On the resource list: the button that reveals more of the resources that match the current search and filters."
     },
     "schedule.weekEmpty": {
       "group": "events",

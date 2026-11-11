@@ -143,12 +143,17 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     only when the source states it; loading/empty/error states. Verify API terms first. Proposed / Not Implemented.
 42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → Connect's approved resources and approved UW
     KnowledgeBase articles in one search, labelled by source and publisher with official link and review date; Connect owns the library and
-    approval (its `QUEUE.md`, same ID; EXPLORE-D, EXPLORE-X). Proposed / Not Implemented.
+    approval (its `QUEUE.md`, same ID; EXPLORE-D, EXPLORE-X). Approved 2026-11-11. Public half built 2026-11-11 (branch
+    `explore-b-2026-11`): source lines with publisher and review date, unapproved outside records never drawn; Connect side
+    approved and with Connect Session 13.
 43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → published sections from UW Course Search (undocumented API: verify terms first);
     past-year and current/upcoming offerings, term-specific courses handled, most recent verified term, recently offered vs available, no
-    helper text on uncertainty, official link; no schedules, grades or enrollment data. Proposed / Not Implemented.
+    helper text on uncertainty, official link; no schedules, grades or enrollment data. Approved 2026-11-11. Built
+    2026-11-11 (branch `explore-b-2026-11`) with the pull labelled a verification sample; production waits on the owner
+    accepting the API note and Registrar permission being sought.
 44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → a few choice questions to approved resources and official contacts from the
-    shared library, a path to the full finder at every step; no free-text personal data, not advising or clinical support. Proposed / Not Implemented.
+    shared library, a path to the full finder at every step; no free-text personal data, not advising or clinical support. Approved
+    2026-11-11. Built 2026-11-11 (branch `explore-b-2026-11`); the tree needs its student-staff review before release.
 45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → several addresses × several buildings side by side; Metro GTFS +
     OpenStreetMap; direct / transfer / no connection, walking distances only; **no times, schedules or predictions**; addresses not kept;
     any Metro key server-side; unverified route never shown available. Verify licences and topology first. Proposed / Not Implemented.

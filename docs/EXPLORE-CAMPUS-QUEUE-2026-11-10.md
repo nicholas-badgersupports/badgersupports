@@ -129,7 +129,11 @@ Companion entries (same IDs, owned elsewhere):
   2. A KB record without approval status `approved` is not rendered.
   3. Existing resource descriptions render byte-identical to before.
   4. 320/390/1280 and keyboard/screen-reader checks pass; result count announced.
-- **Status:** Proposed / Not Implemented.
+- **Status:** Approved 2026-11-11; public half built 2026-11-11 (branch `explore-b-2026-11`):
+  cards carry a source line with publisher and last-reviewed date and link to the official
+  page; a record whose source is not approved is never drawn, and records with no source
+  draw exactly as before. The remainder (Connect's EXPLORE-X/C/D) is approved and with
+  Connect Session 13.
 
 ## EXPLORE-F-CLASSES · Discover Classes by Interest (WORK item 43)
 
@@ -164,7 +168,9 @@ Companion entries (same IDs, owned elsewhere):
   3. A catalog-only course with no published section in the window is excluded.
   4. No card contains future-uncertainty helper text; each links to UW Course Search.
   5. The API verification note exists and Nicholas has accepted it before the production switch.
-- **Status:** Proposed / Not Implemented.
+- **Status:** Approved 2026-11-11; built 2026-11-11 (branch `explore-b-2026-11`) with the API
+  verified and the pulled data labelled as a sample. Production waits on Accept 5: the owner
+  accepting `docs/research/COURSE-SEARCH-API-2026-11-11.md` and Registrar permission sought.
 
 ## EXPLORE-G-ACADEMIC-NAV · Academic Support Navigator (WORK item 44)
 
@@ -185,7 +191,9 @@ Companion entries (same IDs, owned elsewhere):
   2. Network capture shows no request carrying the visitor's answers.
   3. The full Resource Finder link is reachable from every step by keyboard.
   4. Wording review confirms no advising/diagnosis language.
-- **Status:** Proposed / Not Implemented.
+- **Status:** Approved 2026-11-11; built 2026-11-11 (branch `explore-b-2026-11`). The tree
+  needs its student-staff review before release; the library holds no general
+  academic-advising record, and the tree claims none.
 
 ## EXPLORE-I-BUS-ROUTES · Housing-to-Campus Bus Route Explorer (WORK item 45)
 

@@ -874,6 +874,48 @@ personal fallback are different states. Effective remote behavior is not establi
 **Submission ownership.** This site owns its submission rows, and hands Connect a copy through the outbox.
 Connect's copy is what the team works from. Nothing here copies Connect's roster (`../../MASTER-PROMPT.md` §5).
 
+## Explore Campus tools (items 40–45; runbook for 42, 43, 44)
+
+Three of the Explore Campus tools read data this site does not own, and each has one owner
+of its content and one refresh path. Nothing in this section is live until the redesign and
+Explore branches merge and Nicholas publishes; the Explore hub at `/explore/` belongs to
+item 40, and the tools below link to it.
+
+**Resource cards and their source (item 42, EXPLORE-C).** A record in the resource library
+may carry a `source` object: `{ kind: "kb" | "badger-supports", publisher, url, status,
+reviewedAt (YYYY-MM-DD), reviewedBy (role, never a name) }`. The renderer
+(`src/render/blocks/resources.mjs`, `resourceVisible`) draws a card only when the record
+carries no source at all — today's editorially held records — or its source is approved;
+an outside record awaiting review never reaches the page, and the announced count is the
+shown count. A sourced card links to the official page and ends with its source line:
+publisher and last-reviewed date. The field contract for Connect's side (EXPLORE-X) is in
+the Exchange note `PUBLIC-EXPLORE-RESOURCE-SOURCE-2026-11-11.md`; Connect owns approval,
+this site only renders the outcome.
+
+**Academic Support Navigator (item 44, EXPLORE-G).** The question tree is content
+(`content/pages/explore-academic-support.json`, the `navigator` block's `navsteps` field),
+drawn by `src/render/blocks/navigator.mjs`. The build refuses a tree that does not join up
+(every step reachable from the first, every step able to reach an answer, exactly one way
+onward per answer) or an answer naming a resource the library does not hold and show.
+Student staff own the tree: changing a question or an answer is a content edit, and the
+gate re-checks it. The library holds no general academic-advising record today; the tree
+sends a student only to services the library holds, and its first screen says the tool is
+not academic advising.
+
+**Discover Classes by Interest (item 43, EXPLORE-F).** Offerings come from UW Course
+Search, the university's official listings; the evidence and the terms finding are in
+`docs/research/COURSE-SEARCH-API-2026-11-11.md`. Refresh is a run, not an edit: from the
+site folder, `node ops/courses.mjs` re-reads the current, upcoming and most recent served
+terms, keeps the courses the interest mapping (`content/courses.json`) claims that had
+published sections, and rewrites `content/fixtures/courses.json`. Any failure stops the
+run and leaves the last good data file untouched; a successful run is committed with the
+site like any other content change. Whoever runs it owns the refresh cadence (once a term
+is enough; the data changes when terms are published). The interest mapping is content
+owned by student staff and names its sources in the research note. The data file ships
+flagged as a verification sample: the tool goes live only when the owner accepts the API
+note and Registrar permission has been sought, at which point a fresh pull writes the file
+without the flag.
+
 ## Photos at build time
 
 Each photo is encoded at build time and served from this site (`DESIGN.md`, "Photos").

@@ -379,6 +379,15 @@ Reads: `resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState` · a
 | `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `topics` | topics, in order: each an `id` (the address word, `?topic=`), a `label`, one of Connect's sixteen resource categories (`category`), and optional old address words (`aliases`) that open it; a topic no resource carries is not shown | **required** |
 
+### Site search — `sitesearch`
+
+Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module `search.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+
 ### Directory — `directory`
 
 Reads: nothing but its own fields · analytics: `none` · photos load lazy
@@ -529,7 +538,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-697 keys. Keys are permanent. Required text cannot be published empty and must keep each
+713 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -1272,6 +1281,27 @@ the site adds the markup.
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
 | `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
 | `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
+
+### Site search (16)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `search.label` | Site Search | On the search page: the label over the search box. |  |
+| `search.hint` | Search by a word on the page, such as craft, housing, or a room's name. | On the search page: the line under the search label. |  |
+| `search.clear` | Clear Search | On the search page: the button beside the search box once something is typed. |  |
+| `search.loading` | Loading the list of pages… | On the search page: the count line while the list of pages is on its way. |  |
+| `search.nojs` | Search runs in your browser and needs JavaScript. Every page is listed below. | On the search page: the count line before the script runs, and for a browser without JavaScript. |  |
+| `search.failed` | The list of pages could not be loaded. Every page is listed below. | On the search page: the count line when the list of pages does not arrive. |  |
+| `search.retry` | Try Again | On the search page: the button under the count line when the list of pages does not arrive. |  |
+| `search.count.all` | {{n}} Pages | On the search page: how many pages the search covers, when nothing is typed. | `{{n}}` |
+| `search.count.one` | 1 Page | On the search page: the count when the search covers one page. |  |
+| `search.count.some` | Showing {{shown}} of {{total}} Pages | On the search page: the count after words narrow the list. | `{{shown}}` `{{total}}` |
+| `search.relaxed` | No exact match. Showing pages that begin with your search words. | On the search page: the line under the count when no page carries every word typed. |  |
+| `search.none.title` | No Pages Match Your Search. | On the search page: the heading when no page matches. |  |
+| `search.none.body` | Try another word, or start over and browse the list. | On the search page: the line under the no-matches heading. |  |
+| `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
+| `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
+| `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
 ### Alumni History (6)
 

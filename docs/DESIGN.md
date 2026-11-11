@@ -367,6 +367,7 @@ Each kind of page has its own shape, so that pages are not all alike (owner, Rou
 | Peer support groups | green: a short header (what a group is, the next group, one main button, Find a Group This Week) beside the reel; the week with three numbered steps (pick a day, find the room, walk in); what a group is like, shown open; the talk words, the activities, the Hub directions |
 | Our team | groups of people cards, from Connect's public profiles (fictional samples in the prototype; on the live site, until the export exists, a tint panel saying profiles will appear here) |
 | Forms | two columns: the form head, a white card beside the questions, without a decorative coloured edge |
+| Search | one search card, then the matching pages as cards with a short piece of each page's words; before the script runs, and if the index cannot be loaded, every public page as a plain list of links |
 
 Every page is checked at 1280, 390 and 320 px by `npm run shots`. Nothing may scroll sideways at 320.
 

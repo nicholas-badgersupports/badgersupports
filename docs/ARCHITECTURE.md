@@ -741,8 +741,8 @@ the platform offers it and nothing here uses it; **unknown** = needs the Netlify
 
 | Capability | State | Evidence | Cost, as recorded |
 |---|---|---|---|
-| Search and filtering | used: the resources page filters in the browser; no site-wide search | `src/client/resources.js` | none |
-| Static search over the pages | available, not built: an index written at build time | — | none beyond bandwidth |
+| Search and filtering | used: the resources page filters in the browser; the search page searches the pages in the browser (item 39, slice 39-A) | `src/client/resources.js`, `src/client/search.js` | none |
+| Static search over the pages | built (item 39, slice 39-A, approved by the owner 11 Nov 2026): an index of the public pages and their words, written at build time to `search-index.json`, matched in the visitor's browser; noindex pages (staff, the 404) stay out | `ops/build.mjs` (`searchIndex`), `src/render/blocks/sitesearch.mjs` | none beyond bandwidth |
 | Events and calendar files | used: from Connect at build, refreshed between publishes | `ops/connect-feed.mjs`, `netlify/lib/live-events.mjs` | functions, CDN-held |
 | Waitlists, sign-ups | Connect's, not this site's | `DECISIONS.md`, one owner per fact | — |
 | Staff self-service | used: sign-in through Connect, the staff page, the editor | `netlify/lib/staff.mjs`, `edits.mjs` | database while staff use it |

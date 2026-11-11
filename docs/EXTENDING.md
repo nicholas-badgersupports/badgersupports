@@ -27,7 +27,8 @@ behaviour. Here is where each one is, and how far the build holds it:
 | | `refresh`: `true`, or a function of the block | a block that shows Connect's events. On a page built from Connect it is rendered again by `/api/events/<page>` and swapped in as the page loads (`ARCHITECTURE.md`, "Events between publishes"). Mark the parts that change with `data-live="<name>"` so only those are swapped; a block without them is replaced whole. `test/live-events.test.mjs` holds the answer to the published page, byte for byte |
 
 `ctx.data` holds `events`, `eventsState`, `wallNotes`, `wallSample`, `team`, `teamSample`, `mood`, `forms`, `places`,
-`resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState`, `teamState`, `alumni`, `alumniState` and `legal` (`ops/build.mjs`, where `ctx` is made; `test/blocks.test.mjs`
+`resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState`, `teamState`, `alumni`, `alumniState`, `legal` and
+`searchIndex` (`ops/build.mjs`, where `ctx` is made; `test/blocks.test.mjs`
 holds every block to that list).
 
 **Editors never add code.** An editor fills a block's fields; they cannot write HTML or a script. Where a page

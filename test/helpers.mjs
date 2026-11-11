@@ -16,7 +16,7 @@ export async function freshServer({ textEdits = {} } = {}) {
   const c = loadContent({ textEdits, edits: {} });
   useContent({
     schema: "bss.server/1", prototype: true, site: c.site, routes: c.routes, builtPaths: c.pages.map((p) => p.path),
-    forms: c.forms, mood: c.mood, media: c.media, text: c.text, editable: c.editable, assets: { css: "/assets/css/test.css", js: { "site.js": "/s.js", "form.js": "/f.js", "mood.js": "/m.js" } },
+    forms: c.forms, mood: c.mood, media: c.media, text: c.text, editable: c.editable, assets: { css: "/assets/css/test.css", js: { "site.js": "/s.js", "analytics.js": "/a.js", "form.js": "/f.js", "mood.js": "/m.js" } },
     formPages: Object.fromEntries(c.pages.flatMap(p => (p.blocks || []).filter(b => b.type === "form").map(b => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null, closedIntro: b.closedIntro || null }]))),
   });
   return db;

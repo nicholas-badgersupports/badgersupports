@@ -131,7 +131,9 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   // publishes; schedule.js does the asking (netlify/lib/live-events.mjs answers).
   const eventClock = blocks.some(refreshes);
   const refreshing = ctx.liveEvents && eventClock;
-  const clients = [...new Set([...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(eventClock ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
+  // analytics.js rides on every page: it is the only script that may load Google's tag, and it
+  // decides from the page's own label whether this page is measured at all (docs/ANALYTICS.md).
+  const clients = [...new Set(["analytics.js", ...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(eventClock ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
   const a = ctx.assets;
   const canonical = ctx.site.origin + page.path;
   const title = pageTitle(page, ctx.site);
@@ -174,6 +176,7 @@ ${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: 
 <script type="module" src="${a.js["site.js"]}"></script>
 ${clients.map((c) => html`<script type="module" src="${a.js[c]}"></script>`)}
 ${Object.keys(clientTable(ctx.t.table, clients)).length ? jsonIsland("bss-text", clientTable(ctx.t.table, clients)) : ""}
+${a.ga ? jsonIsland("bss-analytics", a.ga) : ""}
 </head>
 <body${attrs({ "data-page": page.id, "data-analytics": page.analytics || "public", "data-status": status, "data-refresh": refreshing ? "events" : null })}>
 <a class="skip" href="#main">${ctx.t("page.skip")}</a>

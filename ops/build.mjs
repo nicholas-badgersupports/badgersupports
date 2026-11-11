@@ -362,15 +362,30 @@ function moodCss(mood) {
   return mood.moods.map((m) => `.mood-${m.id}{--mood:${m.color}}`).join("\n") + "\n";
 }
 
-export function cspHeader() {
+/* Queue item 22: the Google Analytics configuration a build carries, or null. Configuration is
+   environment only, as for the forms and the Connect feed: GA_MEASUREMENT_ID names the property.
+   The id is carried only when it has a measurement id's shape, so an unverified or mistyped value
+   measures nothing rather than sending this site's visits to the wrong property. The closed lists
+   travel with it: the forwarder (src/client/analytics.js) sends no form or place outside them. */
+export function analyticsConfig(env = process.env, { forms = {}, places = {} } = {}) {
+  const id = (env.GA_MEASUREMENT_ID || "").trim();
+  if (!/^G-[A-Z0-9]{4,}$/.test(id)) return null;
+  // loadContent keys both by the value the forwarder checks: a form's key, a place's id.
+  const keys = (v) => (Array.isArray(v) ? v.map((x) => x.key || x.id) : Object.keys(v || {}));
+  return { id, forms: keys(forms).filter(Boolean), places: keys(places).filter(Boolean) };
+}
+
+export function cspHeader(ga = false) {
   const inline = crypto.createHash("sha256").update(INLINE_JS).digest("base64");
+  // The Google hosts are Google's own list for the GA4 tag (its CSP guide), present only when the
+  // build carries a measurement id: an unconfigured build allows no third-party script at all.
   return [
     "default-src 'self'",
-    `script-src 'self' 'sha256-${inline}'`,
+    `script-src 'self' 'sha256-${inline}'${ga ? " https://*.googletagmanager.com" : ""}`,
     "style-src 'self'",
-    "img-src 'self' data:",
+    `img-src 'self' data:${ga ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
     "font-src 'self'",
-    "connect-src 'self'",
+    `connect-src 'self'${ga ? " https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com" : ""}`,
     // An Instagram reel shows in Instagram's own frame (blocks/embed.mjs); the staff page's preview
     // frames this site's own /api/staff/preview/ (staff.js).
     "frame-src 'self' https://www.instagram.com",
@@ -383,9 +398,9 @@ export function cspHeader() {
 
 /* The headers every path gets. _headers carries them for the static files; the page function sets the same on
    the pages it draws, because Netlify does not lay _headers over a function's answer. */
-export function siteHeaders({ prototype }) {
+export function siteHeaders({ prototype, ga = false }) {
   return [
-    `Content-Security-Policy: ${cspHeader()}`,
+    `Content-Security-Policy: ${cspHeader(ga)}`,
     "X-Content-Type-Options: nosniff",
     "Referrer-Policy: strict-origin-when-cross-origin",
     "Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()",
@@ -394,8 +409,8 @@ export function siteHeaders({ prototype }) {
   ];
 }
 
-function headersFile({ prototype }) {
-  const all = siteHeaders({ prototype });
+function headersFile({ prototype, ga = false }) {
+  const all = siteHeaders({ prototype, ga });
   return [
     "/*", ...all.map((h) => `  ${h}`), "",
     // File names carry a content hash: a change is a new URL, so the old one may be cached forever.
@@ -490,6 +505,7 @@ export async function build({ production = false, launch = production, today = n
   }
   const day = today || chicagoDate();
   const content = loadContent({ production, launch, textEdits, edits, feed, now: today ? Date.parse(`${today}T12:00:00-06:00`) : Date.now() });
+  const ga = analyticsConfig(process.env, content);
 
   if (!out.startsWith(ROOT + path.sep)) throw new Error(`refusing to write outside the project: ${out}`);
   fs.rmSync(out, { recursive: true, force: true });
@@ -529,7 +545,7 @@ export async function build({ production = false, launch = production, today = n
   }
   for (const b of Object.values(BLOCKS)) for (const c of [].concat(b.client || [])) if (!js[c]) throw new Error(`block ${b.type} names client ${c}, which is not in src/client/`);
 
-  const assets = { css: `/assets/css/${cssName}`, js };
+  const assets = { css: `/assets/css/${cssName}`, js, ...(ga ? { ga } : {}) };
 
   const data = {
     alumni: content.alumni, alumniState: content.alumniState, legal: {},
@@ -573,7 +589,7 @@ export async function build({ production = false, launch = production, today = n
     if (left.length) throw Object.assign(new Error(`The site still leans on the live one in ${left.length} place(s):\n  ${left.join("\n  ")}`), { problems: left });
   }
 
-  fs.writeFileSync(path.join(out, "_headers"), headersFile({ prototype }));
+  fs.writeFileSync(path.join(out, "_headers"), headersFile({ prototype, ga: !!ga }));
   const redirects = redirectsFile(content.routes, content.pages, new Set(builtPaths));
   const teamCatchalls = new Set(teamRedirects());
   const staticRedirects = production && feed?.team ? redirects.text.split("\n").filter(line => !teamCatchalls.has(line)).join("\n") : redirects.text;
@@ -591,7 +607,7 @@ export async function build({ production = false, launch = production, today = n
     schema: "bss.server/1", prototype, assets, site: content.site, routes: content.routes, builtPaths,
     forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
     events: eventsForServer(content, { connect: !!feed }),
-    headers: siteHeaders({ prototype }), redirects: redirects.text,
+    headers: siteHeaders({ prototype, ga: !!ga }), redirects: redirects.text,
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({
       alumniSource: content.alumniSource,

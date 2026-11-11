@@ -31,6 +31,10 @@
  *    again; and of two answers, the newer ask's wins even when the older one arrives last.
  * 6. The resources page: a card's details open and close by keyboard and leave the page as it was,
  *    and Back keeps the topic and search.
+ * 7. The search page (item 39, slice 39-A): the index loads and lists every page; a word that
+ *    only one room's page carries finds that room alone; a word on no page shows the no-matches
+ *    block; an address with ?q= opens with its results; without JavaScript the box stays hidden
+ *    and every page is a plain link; a failed index says so, keeps the list, and Try Again loads it.
  * Fictional files and people only: a few bytes that start as a PDF does, Avery Example and Robin Example.
  */
 
@@ -2391,6 +2395,74 @@ await part("recommendation cycle context", async () => {
       check(errors.length === 0 && analytics.length > 0 && analytics.every(e => Object.keys(e).sort().join(",") === "form,name"), `letter context ${index}: no browser errors or cycle/answer information in analytics`);
     } finally { await ctx.close(); }
   }
+});
+
+/* ------------------------------------------------------------------ 7. site search */
+
+const searchState = (page) => page.evaluate(() => ({
+  tools: !document.querySelector("[data-srch-tools]")?.hidden,
+  count: document.querySelector("[data-srch-count]")?.textContent.trim(),
+  cards: [...document.querySelectorAll("[data-srch-list] .srch-card h3 a")].map((a) => a.getAttribute("href")),
+  listShown: !document.querySelector("[data-srch-list]")?.hidden,
+  none: !document.querySelector("[data-srch-none]")?.hidden,
+  all: !document.querySelector("[data-srch-all]")?.hidden,
+  allLinks: document.querySelectorAll("[data-srch-all] a").length,
+  again: !document.querySelector("[data-srch-again]")?.hidden,
+}));
+
+await part("site search", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  try {
+    const page = await ctx.newPage();
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(BASE + "/search/", { waitUntil: "networkidle" });
+    await page.waitForFunction(() => !document.querySelector("[data-srch-list]")?.hidden && document.querySelectorAll("[data-srch-list] .srch-card").length > 40);
+    const ready = await searchState(page);
+    check(ready.tools && ready.listShown && !ready.all && ready.count === words("search.count.all").replace("{{n}}", String(ready.cards.length)),
+      `search: the index loads and lists every page (${ready.cards.length} pages, "${ready.count}")`);
+    await page.fill("[data-srch-q]", "secular");
+    await page.waitForFunction(() => document.querySelectorAll("[data-srch-list] .srch-card").length === 1);
+    const found = await searchState(page);
+    check(found.cards.length === 1 && found.cards[0] === "/directions/lcm/" && !found.none,
+      `search: a word only one room's page carries finds that room alone (${JSON.stringify(found.cards)})`);
+    await page.fill("[data-srch-q]", "zxqwv");
+    await page.waitForFunction(() => !document.querySelector("[data-srch-none]")?.hidden);
+    const none = await searchState(page);
+    check(none.none && !none.listShown && none.count === words("search.count.some").replace("{{shown}}", "0").replace("{{total}}", String(ready.cards.length)),
+      `search: a word on no page shows the no-matches block (${JSON.stringify(none.count)})`);
+    await page.goto(BASE + "/search/?q=secular", { waitUntil: "networkidle" });
+    await page.waitForFunction(() => document.querySelectorAll("[data-srch-list] .srch-card").length === 1);
+    const linked = await searchState(page);
+    check(linked.cards.length === 1 && linked.cards[0] === "/directions/lcm/" && errors.length === 0,
+      `search: an address with ?q= opens with its results, no browser errors (${JSON.stringify(linked.cards)})`);
+  } finally { await ctx.close(); }
+
+  const plain = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false });
+  try {
+    const page = await plain.newPage();
+    await page.goto(BASE + "/search/", { waitUntil: "networkidle" });
+    const result = await searchState(page);
+    check(!result.tools && result.all && result.allLinks > 40 && result.count === words("search.nojs"),
+      `search: without JavaScript the box stays hidden and every page is a plain link (${result.allLinks} links)`);
+  } finally { await plain.close(); }
+
+  const cut = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  try {
+    const page = await cut.newPage();
+    let down = true;
+    await cut.route(/\/search-index\.json$/, async (route) => { if (down) await route.abort(); else await route.continue(); });
+    await page.goto(BASE + "/search/", { waitUntil: "networkidle" });
+    await page.waitForFunction(() => !document.querySelector("[data-srch-again]")?.hidden);
+    const failed = await searchState(page);
+    check(failed.count === words("search.failed") && failed.again && failed.all,
+      `search: a failed index says so and keeps the list of pages ("${failed.count}")`);
+    down = false;
+    await page.click("[data-srch-retry]");
+    await page.waitForFunction(() => !document.querySelector("[data-srch-list]")?.hidden && document.querySelectorAll("[data-srch-list] .srch-card").length > 40);
+    const back = await searchState(page);
+    check(back.listShown && !back.again, "search: Try Again loads the index");
+  } finally { await cut.close(); }
 });
 
 await browser.close();

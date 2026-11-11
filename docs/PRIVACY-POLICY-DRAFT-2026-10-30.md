@@ -4,6 +4,8 @@
 > this repository's code and docs. Words in [square brackets] are notes for the reviewer, not policy wording.
 > "Sources for review" ties each fact to a file; "Gaps for Nicholas and the reviewer" lists what the repository
 > does not settle.
+> Updated 10 Nov 2026: the Instagram passages now describe the player as it has loaded since 9 Nov 2026 — in the
+> page, with no Play button first (the owner's decision, `docs/DECISIONS.md`). Nothing else was re-checked.
 
 # Privacy Policy
 
@@ -25,7 +27,8 @@ In this policy, "we" means Badger Supports.
 - Every form on this site is closed right now. Two form pages send you to a Google Form instead.
 - When a form opens here, your answers are stored in the site's own database and passed to Badger Supports
   Connect, our internal system. Your IP address is not stored with them.
-- Nothing on our pages comes from another company, except an Instagram video that loads only when you press Play.
+- Nothing on our pages comes from another company, except an Instagram video on the Peer Support Groups page.
+  It loads as you reach it, before you press anything, and Instagram may set its own cookies.
 - Staff who sign in get cookies that keep them signed in for up to eight hours.
 
 ## When you visit
@@ -39,8 +42,9 @@ records of requests, and people with access to the Netlify team that runs the si
 **Reading pages writes nothing.** Our own code records nothing when you open a page. Pages are built ahead of
 time, and the code that serves them never reads or writes the database.
 
-**Everything comes from this site.** Each page loads its scripts, styles, fonts and pictures from
-www.badgersupports.org only. The site's security settings stop pages from loading scripts from other sites. Photos
+**Everything comes from this site, with one exception.** Each page loads its scripts, styles, fonts and pictures
+from www.badgersupports.org only. The site's security settings stop pages from loading scripts from other sites,
+and let a frame in from only one other place: Instagram, for the video described under "Cookies" below. Photos
 are copied onto the site when it is built, so your browser does not fetch them from Google Drive or anywhere else.
 
 **Links to other sites.** When you follow a link to another site, your browser tells that site at most our site's
@@ -74,8 +78,10 @@ localStorage or sessionStorage.
 
 On the live site, all three are sent only over secure (https) connections. Page scripts cannot read the first two.
 
-**Instagram.** The Peer Support Groups page has an Instagram video. Nothing from Instagram loads until you press
-Play. Then Instagram's player loads, and Instagram may set its own cookies. The page says so under the button.
+**Instagram.** The Peer Support Groups page has an Instagram video, shown in Instagram's own player. The player
+is part of the page: it loads when it nears the screen, before you press anything, and Instagram may set its own
+cookies then. The video itself starts only when you press play inside the player. Nothing on the page tells you
+Instagram's cookies are coming. [Whether a notice should sit by the video again is Gap 29.]
 
 ## Analytics
 
@@ -209,8 +215,8 @@ never deleted. The published words also record the first name of the person who 
   database, server code and stored files.
 - **Badger Supports Connect** (home.badgersupports.org, also hosted on Netlify) receives form answers when you send
   an open form, and handles sign-in when staff sign in.
-- **Instagram** receives your browser's request for its video player, and may set cookies, only after you press
-  Play on the video.
+- **Instagram** receives your browser's request for its video player when the video nears your screen on the
+  Peer Support Groups page, and may set cookies then — before you press play on the video.
 - **Google** receives what you enter in a Google Form, a room's address when you open a map link, and the email you
   send us (our email runs on Google Workspace). This happens only if you follow one of those links or email us.
 
@@ -240,7 +246,8 @@ listings come from Connect and include no contacts, volunteers or sign-ups.
 - You can read every page without cookies.
 - Every form is optional. Anonymous forms do not ask for an email address, and Programming Feedback's name
   question is optional.
-- You can leave the Instagram video unplayed. Nothing from Instagram loads until you press Play.
+- The Instagram video is only on the Peer Support Groups page, and its player loads as you reach it there.
+  Not opening that page keeps Instagram out entirely.
 - To ask what we hold about you, or to have it corrected or removed, email hello@badgersupports.org.
   [This promise comes from the current page. The site has no tool to correct or delete a submission: see Gaps.]
 
@@ -295,7 +302,7 @@ Paths are relative to the repository root, shortened as follows. `lib/` means `n
 | Requests carry headers such as the user agent | `lib/http.mjs:77-78` |
 | Netlify keeps request records that team members can view | `ARCHITECTURE.md:446`, `:490`, `:648` |
 | Page requests write nothing; the page function never reads the database | `ARCHITECTURE.md:434`, `:445-446` |
-| Scripts, styles, fonts, images only from the site | `ops/build.mjs:350-358`; `src/render/layout.mjs:117-123` |
+| Scripts, styles, fonts, images only from the site | `ops/build.mjs:365-381` (`cspHeader`) |
 | Photos encoded at build time and served from the site | `ARCHITECTURE.md:593`, `:601-602`; `ops/build.mjs:356` |
 | Other sites get at most the site's address | `ops/build.mjs:374` (`strict-origin-when-cross-origin`) |
 | Camera, microphone, location, payment, USB turned off | `ops/build.mjs:375` |
@@ -311,8 +318,9 @@ Paths are relative to the repository root, shortened as follows. `lib/` means `n
 | The session cookie is kept only as a hash | `lib/staff.mjs:117-121`; `mig/002:21-30` |
 | The hint loads the edit button | `lib/staff.mjs:16-18`; `src/client/site.js:78`; `src/render/layout.mjs:20` |
 | Sign-out, or a refused staff call, clears them | `lib/staff.mjs:165`; `src/client/staff.js:281`, `edit.js:448` |
-| Instagram only after Play | `src/client/embed.js:1-9`; `src/render/blocks/embed.mjs:1-5`; `ops/build.mjs:359-360` |
-| The page warns that Instagram may set cookies | `content/text.json:113-116` |
+| The player is in the page, loads as it nears the screen, no Play button | `src/render/blocks/embed.mjs:1-5`, `:17-22`; `content/pages/peer-support-groups.json:33-36`; `docs/DECISIONS.md`, 9 Nov 2026 ("The peer page's reel always shows") |
+| The one frame the security settings let in is Instagram's | `ops/build.mjs:365-381` (`frame-src 'self' https://www.instagram.com`) |
+| No notice sits by the video now; the old words stay in the file, unused | `content/text.json` (`embed.play`, `embed.notice`, unreferenced); `docs/DECISIONS.md`, 9 Nov 2026 |
 | The reel is on Peer Support Groups | `content/pages/peer-support-groups.json:30` |
 | **Analytics** | |
 | No analytics tag; CSP would block one | `ANALYTICS.md:3-4`, `:23-24`; `ops/build.mjs:354`, `:358` |
@@ -427,3 +435,7 @@ Paths are relative to the repository root, shortened as follows. `lib/` means `n
 26. Does the policy need to cover Connect's sign-in page and Google sign-in, which happen on Connect, not here?
 27. Keep a "Do Not Track" line? The site does no tracking that the signal would turn off.
 28. What effective date goes on the page, and who records each later change?
+29. Should a notice sit by the Instagram video again? Until 9 Nov 2026 a Play button carried the words "Playing
+    it loads Instagram, which may set its own cookies." The button and the notice went with the owner's decision
+    that the reel always shows; the words stay in `content/text.json`, unused. This draft now tells readers
+    instead. If a notice returns, it needs words an editor can change, like the old ones.

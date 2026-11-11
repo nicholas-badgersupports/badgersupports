@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 3 Nov 2026 after publication and signed-in read-only checks.
+brief is `../MASTER-PROMPT.md`. Updated 10 Nov 2026 (Session 12 queue cleanup; shipped detail moved to `docs/QUEUE-HISTORY-2026-11-10.md`).
 
 ## Where it stands
 
@@ -63,12 +63,9 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
   and Multipurpose take the Caucus steps with their own map, Marquee and Tripp show their address only (20 Oct 2026).
 
 ## Evidence
-Continuation candidate: separate `codex/public-queue-2026-11-03-e` tree; Craft Night practical guidance and captioned recap, grouped FAQ answers, current-room first visits, runtime-only team, closed shared email request, disabled alumni history, workshop context and event lifecycle corrections. Current checks/limits live in the shared PUBLIC-SITE handoff. No push/publication.
-
-Cloud runs, 2 Nov 2026, 21:55 and 22:29 Chicago, queue items 20 (the suites' cut reports) and 25 (no dot before Ended on a phone), without the photos (`node ops/check.mjs --browser --no-media` on `bf89c25` plus the change;
-Chromium 1243, linked; exit 0): 564 text keys over 75 files; the editor contract current; colours from tokens, no text under 14px; nothing private (228 files); 65 pages; delivered files clean (104); tests 265 passed, 0 failed,
-1 skipped (the photos); shots all 195; a11y all 231; interact all 169, each judged by its tally line against the result lines that arrived. Item 20: before the fix a 20,001-line report ending in `process.exit()` reached `check.mjs` cut to
-between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard breaks each failed alone. Item 25: the new check failed first at 390 and 320 px; four CSS breaks each failed alone. DECISIONS, 2 Nov. All local or fixture.
+Continuation candidate of 3 Nov: its team order and photos part landed in `389fc77` (item 19); the rest stays a
+separate `codex/public-queue-2026-11-03-e` tree, not merged. Cloud runs, 2 Nov 2026: items 20 and 25 verified;
+full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
 **Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
 
 ## Blockers
@@ -107,64 +104,34 @@ between 614 and 1,815 lines (seven readings), exit 0, and passed; seven guard br
 
 ## Queue, in order
 
-Each item names its acceptance test; numbers stay, because other files cite them. **Shipped**: in a commit the owner published whose Netlify deploy reads `ready` (Deployed, above); not tried live (Blocker 1). **Done** 20 Oct: 2 (Our Team), 3 (photo
-source), 5 (entrance photos), 8 (rooms), 11 (live pages; two 301s). **Done** 23 Oct (run log): 4 (photo hosts, §11), 6
-(engagement; recommendations 1–3 are the owner's words), 9 (blocks, §5), 10 (migrations, §4), 12 (mailing list, closed,
-§6), 13 (forms #1, #2, #4, closed, §3; #8 waits for a PDF, Google answers 401), 14 (applications, letter, closed, previews
-at `/forms/<key>/preview/`; to open one: a page, a routes row, the door link, `open`), 27, 28, 32 (colour; SPILL's lessons,
-§10), 29 (events between publishes, §7). **Added 24 Oct, queued only:** 33–39, from the brief, `../PUBLIC-PLATFORM-PROMPT-2026-10-24.md`
-(P1–P5) and `../PUBLIC-EXCHANGE-AND-SECURITY-PROMPT-2026-10-24.md` (X1–X4). P2 extends 15 and 16; P3, 18; P5, 22 and 23.
-**Added 10 Nov, queued only:** 40–47 (Explore Campus, the change history and its check); full entries in `docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md`. No relative priority assigned; item 19 stays first.
-
+**Done** 20 Oct: 2, 3, 5, 8, 11. **Done** 23 Oct: 4, 6, 9, 10, 12, 13, 14, 27, 28, 29, 32 (run log). **Added 24 Oct,
+queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–47 (full entries in
+`docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md`). Full original lists in `docs/QUEUE-HISTORY-2026-11-10.md`.
 19. **PRIORITY ONE · Complete Connect → public website delivery** (queued 3 Nov; Connect CONNECT-PUBLIC-DELIVERY-P1; Decisions, 3 Nov).
-    Finish the existing connection, starting with team profiles. Publish eligible profiles even when incomplete; configurable required fields prompt/remind, never block publication. Preserve opt-out/supporter disclosure and public-field restrictions; invent no facts. Local photo/order candidate: see the existing PUBLIC-SITE handoff.
-    Accept: verify the live export/consumer against Connect's 2 Nov handoff; saved changes arrive automatically within 30 minutes, incomplete profiles render without stopping other content, and private data stays absent. Verify existing events/resources/Wall paths too. No switch changes in this queue update.
+    Website consumer verified locally 10 Nov (Session 12): Connect's `publicTeam`, `publicWallNotes` and `publicEvents` actions exist, this site's consumer reads them, team and wall exports are on in `content/connect-feed.json`, incomplete profiles render, private fields stay out, and Connect's team order and photos are honoured (`389fc77`). Remaining: live verification after a publish that carries Connect's keys. No switch changes in this queue update.
 1. **Owner review of the design** → changes made, screenshots re-read at 1280, 390 and 320 px.
 7. **Live image inventory** (§11): 43 saved 20 Oct; 10 left to the owner, 28 more listed → each approved one fetched.
-15. **Editor and publishing** → **words done** 20 Oct; 25 Oct: every field a value, earlier versions, Restore, a save that publishes **shipped** in `9bf0ed5`. P2 → every field
-    (links, media, forms, navigation, sections, layouts, settings) saved live with grants, conflicts, immutable history, restore, sanitising, keyboard use;
-    a refused save keeps the edit; a form change keeps its submissions. Needs 34, 16. **Sections** (add, copy, reorder, retire, put back; ARCHITECTURE,
-    "Sections") **shipped** in `598ce71`. **Retire on one line at 390 px, and a retired section's words out of Edit Text** (queue item 14; DECISIONS) `d58d97e`, published in deploy `6ae92dab` (2 Nov). **Stale words after a save** (queue item 8; DECISIONS) **shipped** in `db64dd7`. **A menu entry put back** (ARCHITECTURE, "The menu"), **the site's settings** and **rooms' words and photos** (ARCHITECTURE, "Site settings", "Rooms") **shipped** in `96b32cd`, `fe8684a` and `bf83919` (deploy `6ae66fa0`). **The gaps item 8 left** (queue item 9; DECISIONS): every publish clears again after a pause, Refresh now reaches every running copy, the browser keeps no event answer; `860e70c`, published in deploy `6ae91d6b` (2 Nov).
-16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`), in Connect and the live editor (P2). **Shipped** in `1aaf44a` (a draft is a new page only, his answer; `docs/ARCHITECTURE.md`, "Pages"; migration 008 applied). **Put Back for a retired page** (queue item 13; ARCHITECTURE, "Put Back") `0e6f374`, published in deploy `6ae91d6b` (2 Nov). Connect: card words only (Exchange `PUBLIC-SITE-PAGES`).
+15. **Editor and publishing** → mostly **shipped** (words, sections, menu, settings, rooms, the gaps item 8 left; prerequisites 34 and 16 shipped). Full entry in `docs/QUEUE-HISTORY-2026-11-10.md`. Any P2 remainder is unverified — proposed archive (Session 12 handoff).
+16. **Connect: drafts, preview, restore; add, duplicate, reorder, retire pages** (`PUBLIC-SITE-EDITOR-REVISIONS`). **Shipped** in `1aaf44a`; **Put Back for a retired page** `0e6f374`, published in deploy `6ae91d6b` (2 Nov). Connect side: card words only (Exchange `PUBLIC-SITE-PAGES`).
 17. **Connect: forms** (`PUBLIC-SITE-FORMS`; answers reach Website Forms, **done** 20 Oct). The switch **built** 30 Oct: Open (asked
     twice) and Close on `/staff/` for `forms.switch:<key>`, on the page with no deploy; a stale tab refused (`test/intake.test.mjs`). Waits for Connect's grant (Exchange `PUBLIC-FORM-SWITCH-GRANT`). "34 passing tests" was Connect's count.
-18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **shipped, switched off**, in `9bf0ed5` (cloud run §5): claims across instances
-    (migration 006), waits ≤15 min, unknown outcomes resent under one key, an idle run never wakes the database; receipts
-    once a sender is verified; the workbook (Start Here, Dashboard, a tab per form, `cellText()`), fake Sheets only. One
-    submission → one record, receipt, row. Off until: Connect's `publicReceipt`, the sender, the workbook and its account,
-    the schedule (owner, `docs/COMMUNICATIONS.md`). Confidential answers left out unless the owner says (R.46).
-    Decisions and bulk mail stay Connect's, behind a director's approval.
-20. ~~Director sign-in~~ **built** 20 Oct (`PUBLIC-SITE-SSO`; §5). Connect's `publicSsoStatus` is on Connect's GitHub `main`
-    and in its production `202b88f` (read 30 Oct); not tried live. **Google sign-in consumer live 30 Oct, a78d13e** (Connect GOOGLE-SIGNIN): no `/staff/`
-    help; Connect's shared quote (`/api/signin-quotes`); sessions keep `method` (migration 007) for the status check. No Google code here. **The address after signing in** (queue item 15; DECISIONS; ARCHITECTURE, "Signing in"): Netlify puts the callback's query on its redirect (read live 2 Nov); the inline script takes `code` and `state` off; committed and pushed 2 Nov, not deployed.
-21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated. **Built closed** 30 Oct; Connect reports ingestion published 2 Nov: verify delivery before website activation. Queued 3 Nov: clear form/connection state and next actions (ADMIN-A6); report alerts configured in Connect Settings, not a new public mail engine.
-22. **Analytics** (Q1; §9) → an event dictionary; exclusions before any tag loads; no Connect identity; network read.
-    Netlify Web Analytics, reported on 24 Oct → verified per project and in billing; no other collector.
-23. ~~Netlify~~ keys and database 20 Oct; **cost plan** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Waits for a yes
-    → check form state at first keystroke. No new subscriptions (24 Oct): every change is costed against the allowance.
-24. ~~The §12 server tests~~ **mapped, shipped** in `9bf0ed5` (cloud run §4): each scenario has a fixture test; three new
-    (staff-only caching, analytics leakage, editor to public page). Revocation stays Connect's (`publicSsoStatus`, item 20).
+18. **Outbox and backup** (`PUBLIC-SITE-EMAIL-AND-BACKUP`) → **built, shipped switched off** in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Activation waits on: Connect's `publicReceipt`, a verified sender, the backup workbook and its account, and the schedule (owner, `docs/COMMUNICATIONS.md`).
+20. **Director sign-in** (`PUBLIC-SITE-SSO`) → **built** 20 Oct; Google sign-in consumer live 30 Oct (`a78d13e`); the address-after-sign-in fix was committed and pushed 2 Nov and deploys with the next publish (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Not tried live end-to-end (Blocker 1).
+21. **Resource viewer** (§8) → one viewer with Report a Problem, Suggest a Resource and Suggest an Update, moderated. **Built** 30 Oct; the three forms ship open (10 Nov). Connect reports ingestion published 2 Nov: delivery still to verify live before activation is claimed. Report alerts are configured in Connect Settings (ADMIN-A6), not a public mail engine.
+22. **Analytics** → Netlify Web Analytics is the collector (owner, 24 Oct); the GA4 part is **superseded** by that decision. Open: verify Web Analytics per project and in billing (needs a Netlify sign-in). Exclusions before any tag loads; no Connect identity.
+23. **Cost plan** → **done** 23 Oct (`docs/ARCHITECTURE.md`, Cost; owner action 15). Open tail: check form state at first keystroke — waits for the owner's yes. No new subscriptions (24 Oct).
+24. ~~The §12 server tests~~ **shipped** in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Revocation stays Connect's (`publicSsoStatus`, item 20).
 25. **Before the switch** → **checked** 30 Oct (`23afc2e`); plan and undo in `docs/SWITCH.md`. Mendota Lodge and a final `/` **fixed**,
     published in `2bab970` (queue 3a). Owed: www sign-in at Connect, the reviewed privacy policy, Connect's team export, the owner's word; his steps: `../SWITCH-SETUP-2026-10-30/`.
 26. **The one-week promise** on the workshop confirmation → confirmed by Programs, or removed.
-30. ~~Past craft nights~~ **answered** 24 Oct: Connect sends `recent` (its `7f32fd4`, now in its production `202b88f`); the site reads it
-    (`ops/connect-feed.mjs`). `endDate` **shipped** in `9bf0ed5` (cloud run §2): an event over several days shows on each day, names its dates, leaves after its last.
+30. ~~Past craft nights~~ **shipped**: Connect sends `recent`, the site reads it, `endDate` shipped in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
 31. **Form setup**: all permitted forms are configurable/openable through /staff/ → Set Up Forms; resource-choice validation is repaired and all 13 live journeys passed (shared public handoff, Nov 5). This staged candidate adds recommendation-cycle link context beside answers; Connect must support it first. No form opens automatically and no person is matched by name.
-33. **Functionality and UI pass** (24 Oct brief; `docs/OVERNIGHT-RUN-2026-10-24.md`) → (a) form failures **built**; (b) the
-    sign-in states and a shorter staff page **built**; (c) access freshness **built**; (d) width and helper text **built** (§5, §8);
-    (e) stale replies, Back/Forward, no refresh under typing **built** (§6). All **shipped** in `9bf0ed5`, each on a regression shown failing first.
-34. **Publishing and refresh** (P1) → slices 1–6 **shipped** in `9bf0ed5` (cloud run §3): a save is the published revision,
-    drawn by a page function with every cache ≤30 min; the notice, last update, Refresh now; no query forces it. Its two
-    packages and `netlify.toml` went live with it. Slice 7 **shipped** in `9bf0ed5`: links, photos, choices, on/off, numbers, dates (inventory in `docs/research/`); photos and link addresses opened from the page, each value named, **shipped** in `3106704`.
-35. ~~No decorative coloured bars~~ **shipped** in `9bf0ed5` (cloud run §1): `.form-head`'s 8px accent top is gone; `test/pages.test.mjs`
-    checks every edge, longhand, inset shadow, painted pseudo-element, gradient and SVG strip, and failed first on `.form-head`;
-    focus, selected, status and charts keep colour (R.31). Screenshots before and after in the cloud artifact.
-36. **A `to-public/` inbox** (X1) → the Exchange README and `../../CLAUDE.md` name three sessions; sibling handoffs; "Commit;
-    don't push" corrected; a fictional item found in all three. **Registered** 30 Oct (owner's go-ahead that day): the inbox, a pointer in `CLAUDE.md` and `AGENTS.md`, a registration item in each sibling's inbox; still → Connect's and SPILL's own pointers, theirs to make.
-37. ~~Clean delivered files~~ **shipped** in `9bf0ed5` (cloud run §7): CSS and scripts minified by parsers before hashing; `dist/`
-    ships only its list; a gate catches planted notes, maps and stray files; payload −33% gzip; its packages went live with it.
-38. ~~Crawlers and abuse~~ **shipped** in `9bf0ed5` (cloud run §6): limits audited; only the platform's address counts; 40 sends
-    an hour per form per address; 429 with Retry-After; form state cached a minute; `/crawlers/` and robots ask for `From`, not collected.
+33. **Functionality and UI pass** (24 Oct brief) → **shipped** in `9bf0ed5`, each part on a regression shown failing first (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
+34. **Publishing and refresh** (P1) → slices 1–7 **shipped** in `9bf0ed5` and `3106704` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
+35. ~~No decorative coloured bars~~ **shipped** in `9bf0ed5`; the guard is in `test/pages.test.mjs` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
+36. **A `to-public/` inbox** (X1) → **done for this site** 30 Oct: inbox registered, pointers in `CLAUDE.md` and `AGENTS.md` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Connect's and SPILL's own pointers are theirs to make. Inbox checked 10 Nov (Session 12): empty.
+37. ~~Clean delivered files~~ **shipped** in `9bf0ed5`; payload −33% gzip (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
+38. ~~Crawlers and abuse~~ **shipped** in `9bf0ed5`: 40 sends an hour per form per address, 429 with Retry-After (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
 39. **Netlify features already included** (P5; X4) → map **done** 25 Oct (cloud run §8; `docs/ARCHITECTURE.md`): used, available,
     unknown; Lighthouse run locally; Netlify Forms pilot not recommended. Waits for the owner to approve a first slice.
 40. **Explore Campus hub** (`EXPLORE-HUB`; queued 10 Nov) → one page gathering 41–45, each also linked from Resources, Navigating Housing,

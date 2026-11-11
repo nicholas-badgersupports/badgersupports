@@ -44,7 +44,7 @@ test("the context a block sees is the build's own object, so a once-per-build no
 
 test("every block's declared sources are ones the build provides", () => {
   // ops/build.mjs, where ctx is made; docs/EXTENDING.md lists the same.
-  const provided = ["events", "eventsState", "wallNotes", "wallSample", "team", "teamSample", "mood", "forms", "places", "resources", "resourcesSample", "resourcesUpdated", "resourcesState", "teamState", "alumni", "alumniState", "legal", "searchIndex"];
+  const provided = ["events", "eventsState", "wallNotes", "wallSample", "team", "teamSample", "mood", "forms", "places", "resources", "resourcesSample", "resourcesUpdated", "resourcesState", "teamState", "alumni", "alumniState", "legal", "searchIndex", "campusEvents", "campusInterests"];
   for (const b of Object.values(BLOCKS)) for (const d of b.data) assert.ok(provided.includes(d), `${b.type} declares ${d}`);
 });
 

@@ -47,6 +47,10 @@
       "label": "Site search"
     },
     {
+      "id": "explore",
+      "label": "Explore Campus"
+    },
+    {
       "id": "alumni",
       "label": "Alumni History"
     }
@@ -3080,6 +3084,161 @@
       "group": "search",
       "text": "This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page.",
       "where": "On the search page: the note under the results."
+    },
+    "explore.events.search": {
+      "group": "explore",
+      "text": "Search events",
+      "where": "On the Campus Events Explorer: the search box label."
+    },
+    "explore.events.interests": {
+      "group": "explore",
+      "text": "Interests",
+      "where": "On the Campus Events Explorer: the heading over the interest buttons."
+    },
+    "explore.events.category": {
+      "group": "explore",
+      "text": "Category",
+      "where": "On the Campus Events Explorer: the category menu label."
+    },
+    "explore.events.categoryAll": {
+      "group": "explore",
+      "text": "All categories",
+      "where": "On the Campus Events Explorer: the category menu's first choice."
+    },
+    "explore.events.source": {
+      "group": "explore",
+      "text": "Source",
+      "where": "On the Campus Events Explorer: the source menu label."
+    },
+    "explore.events.sourceAll": {
+      "group": "explore",
+      "text": "All sources",
+      "where": "On the Campus Events Explorer: the source menu's first choice."
+    },
+    "explore.events.from": {
+      "group": "explore",
+      "text": "From",
+      "where": "On the Campus Events Explorer: the first date field's label."
+    },
+    "explore.events.to": {
+      "group": "explore",
+      "text": "To",
+      "where": "On the Campus Events Explorer: the second date field's label."
+    },
+    "explore.events.view": {
+      "group": "explore",
+      "text": "View",
+      "where": "On the Campus Events Explorer: the label for the List and Calendar buttons."
+    },
+    "explore.events.viewList": {
+      "group": "explore",
+      "text": "List",
+      "where": "On the Campus Events Explorer: the button that shows events as a list."
+    },
+    "explore.events.viewCalendar": {
+      "group": "explore",
+      "text": "Calendar",
+      "where": "On the Campus Events Explorer: the button that shows events on a calendar."
+    },
+    "explore.events.reset": {
+      "group": "explore",
+      "text": "Clear filters",
+      "where": "On the Campus Events Explorer: the button that clears every filter."
+    },
+    "explore.events.failed": {
+      "group": "explore",
+      "text": "Events could not be loaded just now.",
+      "where": "On the Campus Events Explorer: the count line when no list could be loaded."
+    },
+    "explore.events.retry": {
+      "group": "explore",
+      "text": "Try again",
+      "where": "On the Campus Events Explorer: the button that tries loading the events again."
+    },
+    "explore.events.updated": {
+      "group": "explore",
+      "text": "Last updated {{when}}",
+      "where": "On the Campus Events Explorer: when the listings were last read from their sources."
+    },
+    "explore.events.count.one": {
+      "group": "explore",
+      "text": "1 event",
+      "where": "On the Campus Events Explorer: the count when one event matches."
+    },
+    "explore.events.count.other": {
+      "group": "explore",
+      "text": "{{n}} events",
+      "where": "On the Campus Events Explorer: the count when more than one event matches."
+    },
+    "explore.events.count.none": {
+      "group": "explore",
+      "text": "No events",
+      "where": "On the Campus Events Explorer: the count when nothing matches."
+    },
+    "explore.events.none.title": {
+      "group": "explore",
+      "text": "No events match these filters",
+      "where": "On the Campus Events Explorer: the heading when nothing matches."
+    },
+    "explore.events.none.body": {
+      "group": "explore",
+      "text": "Clear a filter or widen the dates to see more.",
+      "where": "On the Campus Events Explorer: the line under the no-matches heading."
+    },
+    "explore.events.program": {
+      "group": "explore",
+      "text": "Badger Supports program",
+      "where": "On the Campus Events Explorer: the label on a Badger Supports event card, so it is distinct from an outside listing by words, not colour."
+    },
+    "explore.events.sourceLine": {
+      "group": "explore",
+      "text": "Source: {{name}}",
+      "where": "On the Campus Events Explorer: the line naming where a listing came from."
+    },
+    "explore.events.official": {
+      "group": "explore",
+      "text": "Official listing",
+      "where": "On the Campus Events Explorer: the link to the event on its own source's site."
+    },
+    "explore.events.soldOut": {
+      "group": "explore",
+      "text": "Sold out",
+      "where": "On the Campus Events Explorer: shown on a card only when the source itself says the event is sold out."
+    },
+    "explore.events.allDay": {
+      "group": "explore",
+      "text": "All day",
+      "where": "On the Campus Events Explorer: in place of a time, for an event the source lists as all day."
+    },
+    "explore.events.prevMonth": {
+      "group": "explore",
+      "text": "Previous month",
+      "where": "On the Campus Events Explorer's calendar: the button for the month before."
+    },
+    "explore.events.nextMonth": {
+      "group": "explore",
+      "text": "Next month",
+      "where": "On the Campus Events Explorer's calendar: the button for the month after."
+    },
+    "explore.events.name.uw": {
+      "group": "explore",
+      "text": "UW\u2013Madison Events",
+      "where": "On the Campus Events Explorer: the source menu's name for the campus calendar, and the name on its cards."
+    },
+    "explore.events.name.union": {
+      "group": "explore",
+      "text": "Wisconsin Union",
+      "where": "On the Campus Events Explorer: the source menu's name for the Union calendar, and the name on its cards."
+    },
+    "explore.events.name.badger": {
+      "group": "explore",
+      "text": "Badger Supports",
+      "where": "On the Campus Events Explorer: the source menu's name for our own programs, and the name on their cards."
+    },
+    "explore.events.more": {
+      "group": "explore",
+      "text": "+{{n}} more",
+      "where": "On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named."
     },
     "schedule.directions": {
       "group": "events",

@@ -29,6 +29,7 @@ import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { forgetSharedEverywhere, teamPhotoResponse } from "./live-content.mjs";
 import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
+import { campusEventsNow } from "./campus-events.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
 import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList } from "./structure.mjs";
@@ -517,6 +518,13 @@ async function eventCalendar(req, [eventId]) {
   return new Response(r.text, { status: 200, headers: { "content-type": "text/calendar; charset=utf-8", "x-content-type-options": "nosniff", ...(r.stale ? STALE_CACHE : LIVE_CACHE) } });
 }
 
+
+async function campusEventsRoute(req) {
+  noQuery(req);
+  const r = await campusEventsNow();
+  return json(200, { ok: true, today: r.today, updated: r.updated, stale: r.stale, events: r.events, interests: r.interests, report: r.report || null }, { ...(r.stale ? STALE_CACHE : LIVE_CACHE), "netlify-cache-tag": "campus-events" });
+}
+
 export const ROUTES = [
   ...["GET", "HEAD"].map(method => ({ name: "teamPhoto", method, pattern: /^\/api\/team-photo\/([A-Za-z0-9_-]{1,100})$/, tier: "public", run: (req, [id]) => teamPhotoResponse(req, id) })),
   { name: "health", method: "GET", pattern: /^\/api\/health$/, tier: "public", run: async () => json(200, { ok: true }) },
@@ -525,6 +533,7 @@ export const ROUTES = [
   { name: "formFile", method: "POST", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/files$/, tier: "public", run: formFile },
   { name: "eventsPage", method: "GET", pattern: /^\/api\/events\/(pg-[a-z0-9-]{2,80})$/, tier: "public", run: eventsPage },
   { name: "eventCalendar", method: "GET", pattern: /^\/api\/calendar\/([A-Za-z0-9_-]{1,120})\.ics$/, tier: "public", run: eventCalendar },
+  { name: "campusEvents", method: "GET", pattern: /^\/api\/campus-events$/, tier: "public", run: campusEventsRoute },
   { name: "moodRead", method: "GET", pattern: /^\/api\/mood$/, tier: "public", run: moodRead },
   { name: "moodTap", method: "POST", pattern: /^\/api\/mood$/, tier: "public", run: moodTap },
   { name: "authStart", method: "GET", pattern: /^\/api\/auth\/start$/, tier: "public", run: authStart },

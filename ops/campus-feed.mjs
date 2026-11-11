@@ -227,6 +227,6 @@ export function fixtureCampusEvents(today) {
     mk(1, "19:00", "21:00", { id: "union-fixture-1", title: "WUD Film Presents: A Classic", place: "Marquee Cinema, Union South", organizer: "WUD Film", sources: [{ source: "union", name: SOURCE_NAMES.union, url: "https://union.wisc.edu/events-and-activities/event-calendar/" }], categories: ["Film"], cost: "Free for students" }),
     mk(2, "18:00", "20:00", { id: "union-fixture-2", title: "WUD Games Committee", place: "Memorial Union", organizer: "WUD Games", sources: [{ source: "union", name: SOURCE_NAMES.union, url: "https://union.wisc.edu/events-and-activities/event-calendar/" }], categories: ["Games"], status: null }),
     mk(3, "12:00", "13:00", { id: "uw-fixture-2", title: "Research Showcase: Student Posters", place: "Discovery Building", organizer: "Graduate School", sources: [{ source: "uw", name: SOURCE_NAMES.uw, url: "https://today.wisc.edu/" }], tags: ["science", "research"] }),
-    mk(5, "16:30", "18:00", { id: "badger-fixture-1", title: "Peer Support Group", place: "Student Mental Health Hub", organizer: SOURCE_NAMES.badger, sources: [{ source: "badger", name: SOURCE_NAMES.badger, url: "/peer-support-groups/" }], badger: true }),
+    mk(5, "16:30", "18:00", { id: "badger-fixture-1", title: "Peer Support Group", place: "Student Mental Health Hub", organizer: SOURCE_NAMES.badger, sources: [{ source: "badger", name: SOURCE_NAMES.badger, url: "/join/peer-support-groups/" }], badger: true }),
   ].sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
 }

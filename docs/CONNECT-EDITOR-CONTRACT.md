@@ -388,6 +388,16 @@ Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module 
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
 
+### Campus Events Explorer — `exploreevents`
+
+Reads: `campusEvents`, `campusInterests` · analytics: `none` · photos load lazy · browser module `campus-events.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `count` | a whole number |  |
+
 ### Directory — `directory`
 
 Reads: nothing but its own fields · analytics: `none` · photos load lazy
@@ -538,7 +548,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-713 keys. Keys are permanent. Required text cannot be published empty and must keep each
+741 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -1302,6 +1312,39 @@ the site adds the markup.
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
+
+### Explore Campus (28)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `explore.events.search` | Search events | On the Campus Events Explorer: the search box label. |  |
+| `explore.events.interests` | Interests | On the Campus Events Explorer: the heading over the interest buttons. |  |
+| `explore.events.category` | Category | On the Campus Events Explorer: the category menu label. |  |
+| `explore.events.categoryAll` | All categories | On the Campus Events Explorer: the category menu's first choice. |  |
+| `explore.events.source` | Source | On the Campus Events Explorer: the source menu label. |  |
+| `explore.events.sourceAll` | All sources | On the Campus Events Explorer: the source menu's first choice. |  |
+| `explore.events.from` | From | On the Campus Events Explorer: the first date field's label. |  |
+| `explore.events.to` | To | On the Campus Events Explorer: the second date field's label. |  |
+| `explore.events.view` | View | On the Campus Events Explorer: the label for the List and Calendar buttons. |  |
+| `explore.events.viewList` | List | On the Campus Events Explorer: the button that shows events as a list. |  |
+| `explore.events.viewCalendar` | Calendar | On the Campus Events Explorer: the button that shows events on a calendar. |  |
+| `explore.events.reset` | Clear filters | On the Campus Events Explorer: the button that clears every filter. |  |
+| `explore.events.failed` | Events could not be loaded just now. | On the Campus Events Explorer: the count line when no list could be loaded. |  |
+| `explore.events.retry` | Try again | On the Campus Events Explorer: the button that tries loading the events again. |  |
+| `explore.events.updated` | Last updated {{when}} | On the Campus Events Explorer: when the listings were last read from their sources. | `{{when}}` |
+| `explore.events.count.one` | 1 event | On the Campus Events Explorer: the count when one event matches. |  |
+| `explore.events.count.other` | {{n}} events | On the Campus Events Explorer: the count when more than one event matches. | `{{n}}` |
+| `explore.events.count.none` | No events | On the Campus Events Explorer: the count when nothing matches. |  |
+| `explore.events.none.title` | No events match these filters | On the Campus Events Explorer: the heading when nothing matches. |  |
+| `explore.events.none.body` | Clear a filter or widen the dates to see more. | On the Campus Events Explorer: the line under the no-matches heading. |  |
+| `explore.events.program` | Badger Supports program | On the Campus Events Explorer: the label on a Badger Supports event card, so it is distinct from an outside listing by words, not colour. |  |
+| `explore.events.sourceLine` | Source: {{name}} | On the Campus Events Explorer: the line naming where a listing came from. | `{{name}}` |
+| `explore.events.official` | Official listing | On the Campus Events Explorer: the link to the event on its own source's site. |  |
+| `explore.events.soldOut` | Sold out | On the Campus Events Explorer: shown on a card only when the source itself says the event is sold out. |  |
+| `explore.events.allDay` | All day | On the Campus Events Explorer: in place of a time, for an event the source lists as all day. |  |
+| `explore.events.prevMonth` | Previous month | On the Campus Events Explorer's calendar: the button for the month before. |  |
+| `explore.events.nextMonth` | Next month | On the Campus Events Explorer's calendar: the button for the month after. |  |
+| `explore.events.more` | +{{n}} more | On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named. | `{{n}}` |
 
 ### Alumni History (6)
 

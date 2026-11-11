@@ -1,0 +1,60 @@
+/* Campus Events Explorer (src/render/blocks/exploreevents.mjs): filter tools, then event cards
+   in the event-card family — a filled date block at the left — or a month grid of the same set.
+   A Badger Supports program is marked by its label line; no meaning rides on colour alone. */
+.exploreevents h2 { color: var(--accent); margin-bottom: var(--s3); }
+.exploreevents .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
+.ce-tools { display: grid; gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+.ce-tools label, .ce-interests legend, .ce-viewlabel { display: block; font-weight: 700; margin-bottom: var(--s1); }
+.ce-searchbox { position: relative; display: flex; align-items: center; }
+.ce-searchbox-ic { position: absolute; left: .9rem; width: 1.25rem; height: 1.25rem; color: var(--muted); pointer-events: none; }
+.ce-searchbox input { width: 100%; min-height: 48px; padding: .5rem 1rem .5rem 2.75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
+.ce-searchbox input:hover, .ce-row select:hover, .ce-row input:hover { border-color: var(--accent); }
+.ce-interests { border: 0; margin: 0; padding: 0; }
+.ce-chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.ce-chip { min-height: 44px; padding: .45rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.ce-chip:hover { border-color: var(--accent); }
+.ce-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.ce-chip--people { border-color: var(--accent); font-weight: 700; }
+.ce-row { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: end; }
+.ce-row select, .ce-row input[type="date"] { min-height: 48px; padding: .5rem .75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
+.ce-viewtoggle { display: flex; gap: var(--s1); }
+.ce-viewtoggle button { min-height: 48px; padding: .5rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.ce-viewtoggle button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.ce-status { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); align-items: baseline; margin-bottom: var(--s3); }
+.ce-count { margin: 0; font-weight: 700; }
+.ce-updated { margin: 0; color: var(--muted); font-size: var(--fs-small); }
+.ce-retry { margin: 0 0 var(--s3); }
+.cecards { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.cecard { display: flex; gap: var(--s3); padding: var(--s3); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+.cecard-date { flex: 0 0 4.2rem; display: flex; flex-direction: column; align-items: center; gap: .1rem; padding: var(--s2) 0; background: var(--accent); color: var(--paper); border-radius: var(--r-chip); text-align: center; height: fit-content; }
+.cecard-date .dow { font-size: var(--fs-small); font-weight: 700; text-transform: uppercase; }
+.cecard-date .dom { font-size: var(--fs-h3); font-weight: 800; line-height: 1; }
+.cecard-date .mon { font-size: var(--fs-small); text-transform: uppercase; }
+.cecard-date .today-tag { margin-top: var(--s1); padding: 0 .4rem; background: var(--paper); color: var(--accent); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
+.cecard-body { min-width: 0; }
+.cecard-body h3 { margin: 0 0 var(--s1); font-size: var(--fs-h3); line-height: 1.2; }
+.cecard-body h3 a { color: var(--accent); }
+.cecard-program { display: inline-block; margin: 0 0 var(--s1); padding: .1rem .6rem; background: var(--accent-tint); color: var(--accent-deep); border-radius: var(--r-chip); font-weight: 700; font-size: var(--fs-small); }
+.cecard-meta { margin: 0 0 var(--s1); font-weight: 700; }
+.cecard-org, .cecard-blurb { margin: 0 0 var(--s1); color: var(--muted); }
+.cecard-cost { margin: 0 0 var(--s1); font-weight: 700; }
+.cecard-status { margin: 0 0 var(--s1); font-weight: 800; color: var(--danger); }
+.cecard-source { margin: 0; font-size: var(--fs-small); color: var(--muted); }
+.ce-none { padding: var(--s4); background: var(--accent-tint); border-radius: var(--r-card); max-width: var(--measure); }
+.ce-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
+.ce-none p { margin: 0; }
+.cecal-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s3); }
+.cecal-title { margin: 0; font-size: var(--fs-h3); }
+.cecal-nav { min-height: 44px; padding: .45rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.cecal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--s1); }
+.cecal-dow { font-weight: 700; font-size: var(--fs-small); text-align: center; padding: var(--s1) 0; }
+.cecal-day { min-height: 5.5rem; padding: var(--s1); background: var(--paper); border: var(--hairline); border-radius: var(--r-chip); display: flex; flex-direction: column; gap: .2rem; overflow: hidden; }
+.cecal-day.is-today { border-color: var(--accent); border-width: 2px; }
+.cecal-dom { font-weight: 800; }
+.cecal-ev { border: 0; background: var(--accent-tint); color: var(--accent-deep); border-radius: var(--r-chip); padding: .15rem .4rem; font: inherit; font-size: var(--fs-small); text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cecal-more { font-size: var(--fs-small); color: var(--muted); }
+@media (max-width: 560px) {
+  .cecal-day { min-height: 3.5rem; padding: .2rem; }
+  .cecard { flex-direction: column; }
+  .cecard-date { flex-direction: row; flex-basis: auto; justify-content: center; gap: var(--s2); padding: var(--s1); }
+}

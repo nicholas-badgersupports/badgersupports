@@ -1,0 +1,94 @@
+[
+ {
+  "id": 227249,
+  "title": "Nursing Wellness: Scents of the Season",
+  "subtitle": "",
+  "description": "Nursing students, staff, and faculty, stop by the Cooper Hall Atrium and create a fall aroma bag!",
+  "startDate8601": "2026-11-11T08:00:00-06:00",
+  "endDate8601": "2026-11-11T16:30:00-06:00",
+  "startDateUnix": 1794405600,
+  "endDateUnix": 1794436200,
+  "allDayEvent": false,
+  "cost": "",
+  "url": "https://wellness.nursing.wisc.edu/",
+  "sponsor": "School of Nursing Academic Affairs",
+  "tags": [
+   "nursing",
+   "nursing student events"
+  ],
+  "location": "Signe Skott Cooper Hall",
+  "building": {
+   "id": 689,
+   "name": "Signe Skott Cooper Hall",
+   "latlng": [
+    43.07752145214933,
+    -89.42805964352885
+   ],
+   "street_address": "701 Highland Ave"
+  }
+ },
+ {
+  "id": 226734,
+  "title": "Isotope Fingerprints: Global Science Insights",
+  "subtitle": "",
+  "description": "Be part of Isotope Fingerprints: Global Science Insights Conference 2026, a multidisciplinary meeting highlighting the power of stable isotopes across environmental, ecological, forensic, and food &amp; agricultural sciences.",
+  "startDate8601": "2026-11-11T07:00:00-06:00",
+  "endDate8601": "2026-11-11T19:30:00-06:00",
+  "startDateUnix": 1794402000,
+  "endDateUnix": 1794447000,
+  "allDayEvent": false,
+  "cost": "See Website",
+  "url": "https://isotopefingerprints.biotech.wisc.edu/",
+  "sponsor": "Center for Genomic Science Innovation",
+  "tags": [
+   "science",
+   "conference",
+   "mass spectrometry",
+   "Biotechnology Center",
+   "Isotope Ratio Mass Spectrometry"
+  ],
+  "location": "Auditorium (1111), Genetics-Biotechnology Center Building",
+  "building": {
+   "id": 388,
+   "name": "Genetics-Biotechnology Center Building",
+   "latlng": [
+    43.07382219127579,
+    -89.40937813352107
+   ],
+   "street_address": "425 Henry Mall"
+  }
+ },
+ {
+  "id": 226895,
+  "title": "Salute to Service: Dog Tag Engraving Station",
+  "subtitle": "Dedicate a dog tag to a veteran in your life.",
+  "description": "Join University Veteran Services in Gekas Commons, right across from the Rathskeller, for a Veterans Day dedication event. Come dedicate a dog tag to a veteran or service member in your life. UVS will engrave the dog tags on site!",
+  "startDate8601": "2026-11-11T09:30:00-06:00",
+  "endDate8601": "2026-11-11T15:30:00-06:00",
+  "startDateUnix": 1794411000,
+  "endDateUnix": 1794432600,
+  "allDayEvent": false,
+  "cost": "",
+  "url": "",
+  "sponsor": "University Veteran Services",
+  "tags": [
+   "student life",
+   "#studentlife",
+   "uwveteran",
+   "#UWveterans",
+   "#UWVeteran",
+   "UWVeterans",
+   "UWVeterans2025"
+  ],
+  "location": "Gekas Commons, Memorial Union",
+  "building": {
+   "id": 432,
+   "name": "Memorial Union",
+   "latlng": [
+    43.076421006278224,
+    -89.39991444943722
+   ],
+   "street_address": "800 Langdon St."
+  }
+ }
+]

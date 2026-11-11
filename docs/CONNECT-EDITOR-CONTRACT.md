@@ -538,7 +538,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-713 keys. Keys are permanent. Required text cannot be published empty and must keep each
+723 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -695,7 +695,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (82)
+### Forms (92)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -769,6 +769,16 @@ the site adds the markup.
 | `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
 | `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
+| `form.steps.label` | Steps in this form | The name of the list of steps across the top of a long form, read by screen readers. |  |
+| `form.step.of` | Step {{n}} of {{m}} | Above the title of the step of a long form being read. | `{{n}}` `{{m}}` |
+| `form.step.back` | Back | The button under a long form that returns to the step before. |  |
+| `form.step.continue` | Continue | The button under a long form that goes on to the next step. |  |
+| `form.review.title` | Check your answers | The title of the last step of a long form, which lists every answer before it is sent. |  |
+| `form.review.intro` | Check your answers before you send the form. You can go back and change any answer. | Under that title. |  |
+| `form.review.change` | Change | The button beside an answer on that step, which returns to its question. |  |
+| `form.review.changeFor` | Change the answer to “{{label}}” | That button's name, read by screen readers. | `{{label}}` |
+| `form.review.blank` | No answer given | On that step, beside a question left empty. |  |
+| `form.review.yes` | Yes | On that step, as the answer to a question answered by ticking a box to confirm or agree. |  |
 | `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
 | `form.workshopGoogleSignIn` | Google sign-in is required to use this form. You can also email your workshop request. | Under the trusted Google workshop request fallback; not shown on an open native form or an intentional closure. |  |
 | `form.workshopEmail` | Request by Email | Workshop request alternative when the trusted Google Form requires sign-in. |  |

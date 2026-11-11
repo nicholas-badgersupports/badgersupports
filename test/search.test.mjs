@@ -1,6 +1,8 @@
-/* Site-wide search (queue item 39, slice 39-A): the build's index of the public pages, the
-   search page it feeds, and the menu entry that leads to it. The matching itself runs in the
-   visitor's browser (src/client/search.js); the interact suite presses it there. */
+/* Site-wide search (queue item 39, slice 39-A): the build's index of the public pages and the
+   search page it feeds. The matching itself runs in the visitor's browser
+   (src/client/search.js); the interact suite presses it there. The menu does not lead to the
+   page: the owner ruled on 11 Nov 2026 that search stays at its address, hidden from the
+   navigation, and the menu tests below hold that line. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -43,9 +45,10 @@ test("what stays out stays out: the staff page, the 404 page, previews and the s
   assert.ok(!index.some((p) => p.path.endsWith(".html")), "the 404 page is out");
 });
 
-test("the menu leads to the search page", () => {
+test("the menu does not lead to the search page (owner ruling, 11 Nov 2026)", () => {
   const flat = content.site.nav.flatMap((i) => [i, ...(i.children || [])]);
-  assert.ok(flat.some((i) => i.href === "/search/" && i.label === "Search"), "site.json's menu has Search");
+  assert.ok(!flat.some((i) => i.href === "/search/"), "no menu item points at /search/");
+  assert.ok(!flat.some((i) => i.label === "Search"), "no menu item is labelled Search");
 });
 
 const OUT = path.join(ROOT, "local", "test-search");
@@ -65,9 +68,10 @@ test("the build writes the index as its own file, and the search page lists ever
   for (const p of written.pages) assert.ok(html.includes(`href="${p.path}"`), `the page lists ${p.path} before the script runs`);
 });
 
-test("every page's menu carries Search, pointing at the built page", () => {
+test("no page's menu carries Search, while the search page itself still builds", () => {
   const home = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
-  assert.match(home, /<a href="\/search\/">Search<\/a>/, "the home page's menu has Search");
+  assert.doesNotMatch(home, /<a href="\/search\/"[^>]*>Search<\/a>/, "the home page's menu has no Search");
   const room = fs.readFileSync(path.join(OUT, "directions", "lcm", "index.html"), "utf8");
-  assert.match(room, /<a href="\/search\/" aria-current="page">Search<\/a>|<a href="\/search\/">Search<\/a>/, "a room page's menu has Search");
+  assert.doesNotMatch(room, /<a href="\/search\/"[^>]*>Search<\/a>/, "a room page's menu has no Search");
+  assert.ok(fs.existsSync(path.join(OUT, "search", "index.html")), "the search page is still built at /search/");
 });

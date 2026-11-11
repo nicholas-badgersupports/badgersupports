@@ -159,9 +159,13 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     `8e7e220` through `ed48843`, all standing in Unreleased — no deployment record for them was checked. Lands on `main`
     when the branch merges; detail in `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-ITEMS-46-47-HANDOFF-2026-11-11.md`.
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → install the package's release check; show Nicholas the
-    exact instruction diff first (his ruling, 10 Nov). Depends on 46. **Approved in principle 11 Nov 2026; not installed.**
-    The complete proposed diff, prepared against `main` at `ed48843`, is in
-    `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`; the install waits for Nicholas's approval of that diff.
+    exact instruction diff first (his ruling, 10 Nov). Depends on 46. **Approved by the owner 11 Nov 2026 — the diff
+    approved as prepared — and installed** on branch `items-46-47-2026-11` (`447c433`): the exact diff in
+    `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`, 9 files, +364/−0, verified file-for-file against that
+    document (the three package files sha256-identical to their sources) before commit. Lands on `main` when the branch
+    merges; the first `history:check` run is still owed — the Mac's load stayed saturated through the install session,
+    and the project's full gate is likewise owed (46–47 handoff). Detail in
+    `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-ITEMS-46-47-HANDOFF-2026-11-11.md`.
 
 ## Git and publishing
 

@@ -398,6 +398,17 @@ Reads: `campusEvents`, `campusInterests` · analytics: `none` · photos load laz
 | `lead` | one line of text |  |
 | `count` | a whole number |  |
 
+### Bus Route Explorer — `busroutes`
+
+Reads: `transitBuildings` · analytics: `none` · photos load lazy · browser module `bus-routes.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `privacy` | one line of text |  |
+| `credit` | one line of text |  |
+
 ### Directory — `directory`
 
 Reads: nothing but its own fields · analytics: `none` · photos load lazy
@@ -548,7 +559,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-741 keys. Keys are permanent. Required text cannot be published empty and must keep each
+767 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -1313,7 +1324,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (28)
+### Explore Campus (54)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1344,7 +1355,33 @@ the site adds the markup.
 | `explore.events.allDay` | All day | On the Campus Events Explorer: in place of a time, for an event the source lists as all day. |  |
 | `explore.events.prevMonth` | Previous month | On the Campus Events Explorer's calendar: the button for the month before. |  |
 | `explore.events.nextMonth` | Next month | On the Campus Events Explorer's calendar: the button for the month after. |  |
+| `explore.events.name.uw` | UW–Madison Events | On the Campus Events Explorer: the source menu's name for the campus calendar, and the name on its cards. |  |
+| `explore.events.name.union` | Wisconsin Union | On the Campus Events Explorer: the source menu's name for the Union calendar, and the name on its cards. |  |
+| `explore.events.name.badger` | Badger Supports | On the Campus Events Explorer: the source menu's name for our own programs, and the name on their cards. |  |
 | `explore.events.more` | +{{n}} more | On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named. | `{{n}}` |
+| `explore.bus.address` | Address {{n}} | On the Bus Route Explorer: the label over each address box. | `{{n}}` |
+| `explore.bus.addressesHeader` | Address | On the Bus Route Explorer: the results table's first column heading. |  |
+| `explore.bus.addAddress` | Add another address | On the Bus Route Explorer: the button that adds an address box. |  |
+| `explore.bus.remove` | Remove address {{n}} | On the Bus Route Explorer: the spoken name of an address box's remove button. | `{{n}}` |
+| `explore.bus.buildings` | Campus buildings | On the Bus Route Explorer: the heading over the building checklist. |  |
+| `explore.bus.compare` | Compare bus routes | On the Bus Route Explorer: the button that runs the comparison. |  |
+| `explore.bus.looking` | Looking up the addresses… | On the Bus Route Explorer: the status while addresses are being placed. |  |
+| `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
+| `explore.bus.notFound` | No match near Madison for “{{q}}”. Check the address and try again. | On the Bus Route Explorer: when an address cannot be placed. | `{{q}}` |
+| `explore.bus.failed` | The comparison could not be made just now. Try again. | On the Bus Route Explorer: when the comparison itself fails. |  |
+| `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
+| `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
+| `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |
+| `explore.bus.direct` | Direct bus | On the Bus Route Explorer: a pair one route serves, in the results table. |  |
+| `explore.bus.transfer` | One transfer | On the Bus Route Explorer: a pair needing two routes, in the results table. |  |
+| `explore.bus.none` | No suitable connection | On the Bus Route Explorer: a pair no route serves within the walking distance, in the results table. |  |
+| `explore.bus.routeOne` | Route {{routes}} | On the Bus Route Explorer: the one route of a direct pair. | `{{routes}}` |
+| `explore.bus.routeTwo` | Routes {{a}} then {{b}} | On the Bus Route Explorer: the two routes of a transfer pair, in order. | `{{a}}` `{{b}}` |
+| `explore.bus.walkTo` | About {{m}} m walk to {{stop}} | On the Bus Route Explorer: the walk from the address to the stop where the bus is caught. | `{{m}}` `{{stop}}` |
+| `explore.bus.walkFrom` | About {{m}} m walk from {{stop}} to the building | On the Bus Route Explorer: the walk from the stop where the bus is left to the building. | `{{m}}` `{{stop}}` |
+| `explore.bus.changeAt` | Change at {{stop}} | On the Bus Route Explorer: the stop where a transfer pair changes buses. | `{{stop}}` |
+| `explore.bus.mapTitle` | Map | On the Bus Route Explorer: the heading over the schematic map. |  |
+| `explore.bus.mapLegend` | Numbered markers are your addresses, squares are the buildings, and dots are the stops used. The table above is the same answer in words. | On the Bus Route Explorer: the line under the schematic map. |  |
 
 ### Alumni History (6)
 

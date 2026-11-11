@@ -3240,6 +3240,121 @@
       "text": "+{{n}} more",
       "where": "On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named."
     },
+    "explore.bus.address": {
+      "group": "explore",
+      "text": "Address {{n}}",
+      "where": "On the Bus Route Explorer: the label over each address box."
+    },
+    "explore.bus.addressesHeader": {
+      "group": "explore",
+      "text": "Address",
+      "where": "On the Bus Route Explorer: the results table's first column heading."
+    },
+    "explore.bus.addAddress": {
+      "group": "explore",
+      "text": "Add another address",
+      "where": "On the Bus Route Explorer: the button that adds an address box."
+    },
+    "explore.bus.remove": {
+      "group": "explore",
+      "text": "Remove address {{n}}",
+      "where": "On the Bus Route Explorer: the spoken name of an address box's remove button."
+    },
+    "explore.bus.buildings": {
+      "group": "explore",
+      "text": "Campus buildings",
+      "where": "On the Bus Route Explorer: the heading over the building checklist."
+    },
+    "explore.bus.compare": {
+      "group": "explore",
+      "text": "Compare bus routes",
+      "where": "On the Bus Route Explorer: the button that runs the comparison."
+    },
+    "explore.bus.looking": {
+      "group": "explore",
+      "text": "Looking up the addresses…",
+      "where": "On the Bus Route Explorer: the status while addresses are being placed."
+    },
+    "explore.bus.working": {
+      "group": "explore",
+      "text": "Working out the bus routes…",
+      "where": "On the Bus Route Explorer: the status while the comparison runs."
+    },
+    "explore.bus.notFound": {
+      "group": "explore",
+      "text": "No match near Madison for “{{q}}”. Check the address and try again.",
+      "where": "On the Bus Route Explorer: when an address cannot be placed."
+    },
+    "explore.bus.failed": {
+      "group": "explore",
+      "text": "The comparison could not be made just now. Try again.",
+      "where": "On the Bus Route Explorer: when the comparison itself fails."
+    },
+    "explore.bus.needAddress": {
+      "group": "explore",
+      "text": "Add at least one address.",
+      "where": "On the Bus Route Explorer: when Compare is pressed with every address box empty."
+    },
+    "explore.bus.needBuilding": {
+      "group": "explore",
+      "text": "Choose at least one campus building.",
+      "where": "On the Bus Route Explorer: when Compare is pressed with no building ticked."
+    },
+    "explore.bus.results": {
+      "group": "explore",
+      "text": "Bus connections",
+      "where": "On the Bus Route Explorer: the heading over the results table."
+    },
+    "explore.bus.direct": {
+      "group": "explore",
+      "text": "Direct bus",
+      "where": "On the Bus Route Explorer: a pair one route serves, in the results table."
+    },
+    "explore.bus.transfer": {
+      "group": "explore",
+      "text": "One transfer",
+      "where": "On the Bus Route Explorer: a pair needing two routes, in the results table."
+    },
+    "explore.bus.none": {
+      "group": "explore",
+      "text": "No suitable connection",
+      "where": "On the Bus Route Explorer: a pair no route serves within the walking distance, in the results table."
+    },
+    "explore.bus.routeOne": {
+      "group": "explore",
+      "text": "Route {{routes}}",
+      "where": "On the Bus Route Explorer: the one route of a direct pair."
+    },
+    "explore.bus.routeTwo": {
+      "group": "explore",
+      "text": "Routes {{a}} then {{b}}",
+      "where": "On the Bus Route Explorer: the two routes of a transfer pair, in order."
+    },
+    "explore.bus.walkTo": {
+      "group": "explore",
+      "text": "About {{m}} m walk to {{stop}}",
+      "where": "On the Bus Route Explorer: the walk from the address to the stop where the bus is caught."
+    },
+    "explore.bus.walkFrom": {
+      "group": "explore",
+      "text": "About {{m}} m walk from {{stop}} to the building",
+      "where": "On the Bus Route Explorer: the walk from the stop where the bus is left to the building."
+    },
+    "explore.bus.changeAt": {
+      "group": "explore",
+      "text": "Change at {{stop}}",
+      "where": "On the Bus Route Explorer: the stop where a transfer pair changes buses."
+    },
+    "explore.bus.mapTitle": {
+      "group": "explore",
+      "text": "Map",
+      "where": "On the Bus Route Explorer: the heading over the schematic map."
+    },
+    "explore.bus.mapLegend": {
+      "group": "explore",
+      "text": "Numbered markers are your addresses, squares are the buildings, and dots are the stops used. The table above is the same answer in words.",
+      "where": "On the Bus Route Explorer: the line under the schematic map."
+    },
     "schedule.directions": {
       "group": "events",
       "text": "Get Directions",

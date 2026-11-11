@@ -66,6 +66,32 @@
         "m-btw-housing-slide"
       ],
       "whole": true
+    },
+    {
+      "id": "b-btw-nh-bus",
+      "type": "busroutes",
+      "title": "Bus routes from a housing address",
+      "lead": "The same comparison as on its own page: several addresses against the campus buildings you pick, from Madison Metro's route data, with walking distances only.",
+      "privacy": "Your addresses are looked up with OpenStreetMap to place them on the map. They are not kept — not by this site, and not in its records — and only their positions are used for the comparison.",
+      "credit": "Bus routes: Data provided under license granted by City of Madison, WI, Metro Transit. Addresses and building places: © OpenStreetMap contributors. Route data read 11 November 2026 (feed S072_202608240858, 16 August to 5 December 2026); a stop counts as serving a place when it is within about 500 metres of it, measured in a straight line."
+    },
+    {
+      "id": "b-btw-nh-explore",
+      "type": "text",
+      "title": "Explore Campus",
+      "body": [
+        "Explore Campus gathers this bus tool with a campus events explorer in one place."
+      ],
+      "links": [
+        {
+          "label": "Bus Routes from Home",
+          "href": "/explore/bus-routes/"
+        },
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
     }
   ]
 }

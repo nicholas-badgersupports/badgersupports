@@ -619,6 +619,7 @@ export async function build({ production = false, launch = production, today = n
     searchIndex: searchIndex(content, { today: day }),
     campusEvents: campusData,
     campusInterests: readJson("content/explore/interests.json"),
+    transitBuildings: readJson("content/transit/buildings.json").buildings,
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
   const programs = pagePrograms(content.pages);
@@ -670,6 +671,7 @@ export async function build({ production = false, launch = production, today = n
     forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
     events: eventsForServer(content, { connect: !!feed }),
     campus: { source: production ? "live" : "fixture", built: campusData, interests: data.campusInterests },
+    transit: { topology: readJson("content/transit/topology.json"), buildings: data.transitBuildings },
     headers: siteHeaders({ prototype, ga: !!ga }), redirects: redirects.text,
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({

@@ -54,11 +54,12 @@ import spill from "./blocks/spill.mjs";
 import resources from "./blocks/resources.mjs";
 import sitesearch from "./blocks/sitesearch.mjs";
 import exploreevents from "./blocks/exploreevents.mjs";
+import busroutes from "./blocks/busroutes.mjs";
 import directory from "./blocks/directory.mjs";
 import alumni from "./blocks/alumni.mjs";
 import legal from "./blocks/legal.mjs";
 
-export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, ribbons, spill, staff, resources, sitesearch, exploreevents, directory, alumni, legal].map((b) => [b.type, b]));
+export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, ribbons, spill, staff, resources, sitesearch, exploreevents, busroutes, directory, alumni, legal].map((b) => [b.type, b]));
 
 /* What every block may carry besides its declared fields. */
 export const COMMON_FIELDS = ["id", "type", "enabled", "anchor", "startsOn", "endsOn"];

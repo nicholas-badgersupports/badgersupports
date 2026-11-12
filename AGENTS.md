@@ -27,3 +27,7 @@ Before writing or revising site text, read [WORDING-RULES.md](WORDING-RULES.md).
 
 These contextual choices supersede older generic style formulas on wording. Existing project rules for facts, policy, privacy, permissions, data, source ownership, verification, and publication remain in force. Preserve the scope of manual overrides and explicitly protected text. The local wording file remains usable in a clone without the shared Admin folder.
 <!-- END NICHOLAS WEBSITE WORDING -->
+
+## Version history
+
+At release-candidate handoff, update [the software changelog](docs/VERSION-HISTORY.md) using the [version-history runbook](.version-history/RUNBOOK.md) and [Public source guide](.version-history/PROJECT.md). Account for each meaningful change since the last review, including operations and administration. A full retrospective starts with the earliest available record. Run `npm run history:check` and include `--version-history` in the candidate gate. If the history check fails, keep the candidate open and record what still needs verification. The existing publication and privacy rules apply.

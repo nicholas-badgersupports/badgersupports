@@ -176,9 +176,18 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     approving the verification note, per this entry's Review line. Not merged or published.
 46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → the prepared history exists: local branch `bss/local-version-history`
     (`b4658bd`, imported 10 Nov from the 7 Nov package in `Admin/Handoffs/active/VERSION-HISTORY/`; 42 entries through
-    `8e7e220`). Extend it over the commits on `main` after `8e7e220`, rebase onto `main`, then commit. Proposed / Not Implemented.
+    `8e7e220`). **Approved by the owner 11 Nov 2026 and built** on branch `items-46-47-2026-11` (`594c9d1`, `a344fe5`):
+    `docs/VERSION-HISTORY.md` imported byte-identical from the prepared branch, then extended over the 44 commits after
+    `8e7e220` through `ed48843`, all standing in Unreleased — no deployment record for them was checked. Lands on `main`
+    when the branch merges; detail in `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-ITEMS-46-47-HANDOFF-2026-11-11.md`.
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → install the package's release check; show Nicholas the
-    exact instruction diff first (his ruling, 10 Nov). Depends on 46. Proposed / Not Implemented.
+    exact instruction diff first (his ruling, 10 Nov). Depends on 46. **Approved by the owner 11 Nov 2026 — the diff
+    approved as prepared — and installed** on branch `items-46-47-2026-11` (`447c433`): the exact diff in
+    `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`, 9 files, +364/−0, verified file-for-file against that
+    document (the three package files sha256-identical to their sources) before commit. Lands on `main` when the branch
+    merges; the first `history:check` run is still owed — the Mac's load stayed saturated through the install session,
+    and the project's full gate is likewise owed (46–47 handoff). Detail in
+    `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-ITEMS-46-47-HANDOFF-2026-11-11.md`.
 
 ## Git and publishing
 

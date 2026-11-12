@@ -1616,6 +1616,538 @@
       "provenance": "Published on the live request a program page; downloaded 2026-10-20 with the owner’s approval.",
       "compliance": "Looked at contact-sheet size 2026-10-20: people pictured, faces shown. faces wanted; name tags, QR codes, phone screens and UW marks are allowed (owner, 20 Oct 2026). Swappable by link.",
       "localFile": "program-audience.png"
+    },
+    {
+      "id": "m-training-team-lead",
+      "program": "peer",
+      "alt": "About forty Badger Supports students in three rows at the September 2026 peer support training, many in Wisconsin red or Badger Supports shirts, smiling at the camera.",
+      "focal": [
+        50,
+        55
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 391541,
+      "sha256": "39bb8f515860f5eb0152a30067ce1f3159433d93ef9a0e55cb476563205a8814",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_055.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "training-team-lead.jpg"
+    },
+    {
+      "id": "m-training-small-group",
+      "program": "peer",
+      "alt": "Six Badger Supports students standing close with their arms around each other at the September 2026 peer support training, smiling at the camera.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 278003,
+      "sha256": "5fb306c5685c2b2f8893c1b2c9f430bf4b07366cb125b03622e2441b460aaaf7",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_070.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "training-small-group.jpg"
+    },
+    {
+      "id": "m-craft-pots-room",
+      "program": "craft",
+      "alt": "A room full of students painting plant pots at long tables at a Badger Supports Craft Night.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 622208,
+      "sha256": "7c404be621cc494f00b5da15c939fa49b0c58687ceabdcfa1bd9de4b5c22f04f",
+      "source": "drive:Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0960.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-pots-room.jpg"
+    },
+    {
+      "id": "m-craft-succulent-table",
+      "program": "craft",
+      "alt": "Two students flashing peace signs behind a Craft Night table of succulents and bowls of soil.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 555547,
+      "sha256": "1c77f5aaaa13a6485f12f7eb846028583769965f64216027f924ac909068bf4b",
+      "source": "drive:Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0934.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-succulent-table.jpg"
+    },
+    {
+      "id": "m-craft-planting-station",
+      "program": "craft",
+      "alt": "A student talking with the student staffing the planting station at Craft Night, succulents on the table between them.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 634645,
+      "sha256": "cab766be860092786b2f365f3189fddb2a058438dc2186761c4b89e86aade956",
+      "source": "drive:Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0976.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-planting-station.jpg"
+    },
+    {
+      "id": "m-craft-painted-pumpkin",
+      "program": "craft",
+      "alt": "A student at a Craft Night table holding up her painted mini pumpkin, grinning, a paint palette beside her.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 499276,
+      "sha256": "6099b5e0cf7510098ab7a9180ee281488d79f74d8541a457f96f2af3194ea088",
+      "source": "drive:Craft Night Photos/2026-27/2026-10-20 Pumpkin Painting/IMG_2252.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-painted-pumpkin.jpg"
+    },
+    {
+      "id": "m-craft-pumpkins-done",
+      "program": "craft",
+      "alt": "Two finished painted mini pumpkins sitting on a counter at Craft Night.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 454235,
+      "sha256": "ccbf4f600c14105a40935fcc0d908e4a16f14833e7cea5190260e0f963906b50",
+      "source": "drive:Craft Night Photos/2026-27/2026-10-20 Pumpkin Painting/IMG_5705.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-pumpkins-done.jpg"
+    },
+    {
+      "id": "m-craft-rhinestones",
+      "program": "craft",
+      "alt": "A flat lay of rhinestone and gem sticker supplies in use at Craft Night.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 730940,
+      "sha256": "c0f7b335a7853e89a899b304f03886d4bad26418eb16d3375e11a61a9bafba6a",
+      "source": "drive:Craft Night Photos/2026-27/2026-10-20 Pumpkin Painting/IMG_5677.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-rhinestones.jpg"
+    },
+    {
+      "id": "m-craft-perler-fish",
+      "program": "craft",
+      "alt": "A rainbow Perler-bead fish on parchment paper, made at Craft Night.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 741180,
+      "sha256": "72fd2faf3cc40b299ecfc235efb5e0780d34405bbe0e439a6ec24fec07d58d9c",
+      "source": "drive:Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_2005.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-perler-fish.jpg"
+    },
+    {
+      "id": "m-craft-bead-crafts",
+      "program": "craft",
+      "alt": "Two students smiling at Craft Night, one holding up two small bead figures.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 651027,
+      "sha256": "c74a8fdb641802fa953b7a75e099191a19765e57a1f32a617190a2bc25ca7840",
+      "source": "drive:Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_2011.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-bead-crafts.jpg"
+    },
+    {
+      "id": "m-dogs-lab-hero",
+      "program": "other",
+      "alt": "A black Labrador wearing a blue gentle leader, looking into the camera while two students' hands pet her at Dogs on Call.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 339012,
+      "sha256": "e6eedb2331565f3933888f4c2251b54dabdf3d8c1dc6941a668344083c71c9d7",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/F26_Dogs on Call-50.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-lab-hero.jpg"
+    },
+    {
+      "id": "m-dogs-newfoundland",
+      "program": "other",
+      "alt": "A student kneeling on the floor petting a very large black Newfoundland dog at Dogs on Call.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 405388,
+      "sha256": "b9f976b82d8b950ff228df41f44f0bc45072328b15058ce56909bee997e6b542",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/F26_Dogs on Call-75.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-newfoundland.jpg"
+    },
+    {
+      "id": "m-dogs-newfoundland-face",
+      "program": "other",
+      "alt": "A close-up of a black Newfoundland's face, tongue out, a student's hands on its cheeks at Dogs on Call.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 372807,
+      "sha256": "7d514c4527b7dd4518407f8cebf2557ee1e26654fc38521c945f7490a19dabba",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/F26_Dogs on Call-64.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-newfoundland-face.jpg"
+    },
+    {
+      "id": "m-dogs-two",
+      "program": "other",
+      "alt": "Two dogs at a Dogs on Call session: a black Labrador seated with students, and a small white dog asleep on a student's lap on a paw-print blanket.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 505929,
+      "sha256": "09ab6b26798da937fa66b79dee7382dc6f50b9da352a3f172c7bc390d2eeb51e",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/F26_Dogs on Call-33.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-two.jpg"
+    },
+    {
+      "id": "m-dogs-white",
+      "program": "other",
+      "alt": "A small white dog in a pink harness looking up at Dogs on Call.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 283804,
+      "sha256": "37f291e62f5ac7bf2c71cc6375516cb56fd9035156b2b39732d7faac85d9b55b",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/F26_Dogs on Call-27.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-white.jpg"
+    },
+    {
+      "id": "m-dogs-lab-profile",
+      "program": "other",
+      "alt": "A black Labrador in profile between two smiling students at Dogs on Call.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1600,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 494524,
+      "sha256": "bb7dbd04b362837961db273c8b266c6b9a5f02c3b6b514887340ea652bd41859",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/F26_Dogs on Call-43.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-lab-profile.jpg"
+    },
+    {
+      "id": "m-dogs-session-wide",
+      "program": "other",
+      "alt": "Students sitting on floor mats with three dogs at a Dogs on Call session in the Student Mental Health Hub.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 545593,
+      "sha256": "dc98c6bc295a8d28ac36632a2bc9a6a71ba30919a63150b33995326d0929995f",
+      "source": "drive:Dogs on Call Photos/2026-27/2026-09-25 Dogs on Call/SMHH Open House/10-01-26 Dogs on Call/IMG_0906.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "dogs-session-wide.jpg"
+    },
+    {
+      "id": "m-oh-sticky-wall",
+      "program": "other",
+      "alt": "Two students smiling in front of the Student Mental Health Hub's affirmation sticky-note wall at the Open House.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 401707,
+      "sha256": "706111c1733c7cc1aee1851acf035147c094e273cdaa0a1131d35028e725e98a",
+      "source": "drive:Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04053.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "oh-sticky-wall.jpg"
+    },
+    {
+      "id": "m-oh-sea-support",
+      "program": "other",
+      "alt": "Students adding drawings to the Sea of Support poster at the Student Mental Health Hub Open House.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 458623,
+      "sha256": "6fd1830dae732d70ef1a6cb5cd36c231cb2585d59475f8a9e0d10cc12150335b",
+      "source": "drive:Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04065.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "oh-sea-support.jpg"
+    },
+    {
+      "id": "m-oh-sea-guest",
+      "program": "other",
+      "alt": "A student explaining the Sea of Support poster to a guest at the Open House, the row of Badger Supports program posters above them.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 358916,
+      "sha256": "bfd16dae22e4874e9b15753080dfbc24703afc9be8ffddfd4ebc780142a32c9d",
+      "source": "drive:Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04086.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "oh-sea-guest.jpg"
+    },
+    {
+      "id": "m-oh-group-posters",
+      "program": "other",
+      "alt": "Three students and a guest smiling under the Hub's You Are Not Alone and Be the Voice posters at the Open House.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 428318,
+      "sha256": "955137a61a1832b78d647ce920b4540ff96bd986240e2f03dce5eec63f450dc1",
+      "source": "drive:Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04098.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "oh-group-posters.jpg"
+    },
+    {
+      "id": "m-oh-craft-shelves",
+      "program": "other",
+      "alt": "Three students in front of the Student Mental Health Hub's craft-supply shelves at the Open House.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1600,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 485285,
+      "sha256": "26064d433c7f1de7cfe975c17db03e8968ec50ed4b1db37382b7a178bb1bf608",
+      "source": "drive:Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04040.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "oh-craft-shelves.jpg"
+    },
+    {
+      "id": "m-housing-toolkit",
+      "program": "workshops",
+      "alt": "The Hub resource table: the Navigating Housing Toolkit booklet and green Navigating Housing cards in a rack, beside Badger Recovery and basic-needs cards.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 345839,
+      "sha256": "87a5d86eb90fe6a070953d9b6e4bbf5ae662ddf419f8eef2856dfbed2383fc3b",
+      "source": "drive:Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/F26_Dogs on Call-1.jpg",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "housing-toolkit.jpg"
+    },
+    {
+      "id": "m-housing-flyer",
+      "program": "workshops",
+      "alt": "A resource table with the yellow Navigating Housing workshop and panel flyer in front of a rack of referral cards. Cropped at the left two-thirds so the Badger SPILL flyer beside it stays out of frame.",
+      "focal": [
+        35,
+        50
+      ],
+      "width": 2111,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 870107,
+      "sha256": "2d83b86472ae5337ca94f11a010503435dccef47e999c8c9f61e53d4f1dd762a",
+      "source": "drive:Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0949.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "housing-flyer.jpg"
+    },
+    {
+      "id": "m-tabling-library",
+      "program": "other",
+      "alt": "Three students staffing the Badger Supports table in front of Memorial Library at the Mental Wellbeing Resource Fair.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 579517,
+      "sha256": "31d0b60bde9956dc2c0e31dc0a5b8cdf4f7e421b2fc9f5434ae21134563e6b77",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_0999.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "tabling-library.jpg"
+    },
+    {
+      "id": "m-tabling-conversation",
+      "program": "other",
+      "alt": "A Badger Supports staffer talking with two students at the red tabling table on campus.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 644104,
+      "sha256": "7d005821c30312611690b51cefcdb6d85eeb47be7bd78721dc39f9badb16a160",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_1024.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "tabling-conversation.jpg"
+    },
+    {
+      "id": "m-take-ribbon",
+      "program": "other",
+      "alt": "A smiling student at the Take a Ribbon awareness-ribbon table outdoors.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 635047,
+      "sha256": "865842507709ef0f94220349ee1a33a4d55e6c91d5b694b2ada380fb025e35da",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_1046.JPG",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "take-ribbon.jpg"
+    },
+    {
+      "id": "m-window-logo",
+      "program": "other",
+      "alt": "The Badger Supports hand-and-heart logo painted on a window, reading Peer Support, Education, Community.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 603172,
+      "sha256": "f3ff3a69de54a93dfe1bb36f7b5851021e67beb5ac2305420f3eeef12d346415",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/2026-09-27 Paint the Town/IMG_2627.HEIC",
+      "sourcePage": "Badger Supports shared Drive (photo curation, November 2026 redesign)",
+      "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "window-logo.jpg"
     }
   ]
 }

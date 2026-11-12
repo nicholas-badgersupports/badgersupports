@@ -37,6 +37,12 @@ const PARTS = {
   pencil: `<path d="M15.5 4.5l4 4L9 19l-5 1 1-5z"/><path d="M13.5 6.5l4 4"/>`,
   ribbon: `<path d="M9.5 21 15 10.5c.9-1.8 1-3 .5-4.2a3.6 3.6 0 0 0-7 0c-.5 1.2-.4 2.4.5 4.2L14.5 21"/>`,
   search: `<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/>`,
+  account: `<circle cx="12" cy="8" r="3.6"/><path d="M5 19.5c1.2-3.2 3.9-4.8 7-4.8s5.8 1.6 7 4.8"/>`,
+  paw: `<ellipse cx="12" cy="15.8" rx="4.4" ry="3.5"/><circle cx="5.4" cy="11" r="1.8"/><circle cx="9.2" cy="7.8" r="1.8"/><circle cx="14.8" cy="7.8" r="1.8"/><circle cx="18.6" cy="11" r="1.8"/>`,
+  instagram: `<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><path d="M17.3 6.7v.1"/>`,
+  tiktok: `<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M10 16.8a2.9 2.9 0 1 0 2 2.7V8.2c.5 2 2 3.4 4.2 3.8"/>`,
+  linkedin: `<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M7.3 10.2V17"/><path d="M7.3 7.2v.1"/><path d="M10.8 17v-6.8"/><path d="M10.8 13.6c0-1.9 1.2-3.2 3-3.2 1.7 0 2.9.9 2.9 3.2V17"/>`,
+  win: `<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M6.8 8 9 16l3-6.5L15 16l2.2-8"/>`,
   sliders: `<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>`,
   close: `<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>`,
 };

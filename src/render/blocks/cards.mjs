@@ -1,8 +1,8 @@
 /* A row of photo cards, each its own small poster: a photo of people, a title in the display face,
    one or two lines in bold (a time, a slogan) and one quieter line, then at most one link. Three
    variants, so a page that uses two does not show the same row twice:
-     days        — portrait photos, four a row: one card a day, its times in bold (the peer support
-                   groups' week, as the live page lays it out)
+     days        — one row a day: its photo and name first, then its sessions in aligned
+                   columns of time, place and the way there (the peer support groups' week)
      activities  — square photos, three a row: what happens in a group
      whole       — each picture at its own shape, never cropped, two a row: a printed card or a slide
                    whose words must stay whole
@@ -30,19 +30,23 @@ export default {
   render(b, ctx) {
     if (b.variant === "days" && b.source === "events") {
       const groups = groupByDate(rowsBetween(ctx.data.events, ctx.today, 7).filter(r => r.program === (b.program || "peer")));
-      return html`<section class="cards cards--days band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+      // Today is named on its own card, and the soonest day after today is named next up, so the
+      // week reads at a glance. schedule.js keeps both marks on the visitor's real date.
+      const nextDate = groups.map((g) => g.date).find((d) => d > ctx.today);
+      return html`<section class="cards cards--days band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-program="${b.program || "peer"}"><div class="wrap">
         <h2 id="${b.id}-h">${b.title}</h2>${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
         ${steps(b)}
         ${groups.length ? html`<ul class="card-list">${groups.map(({ date, items }) => {
           const day = dateParts(date, ctx.t);
           const template = (b.items || []).find(it => it.id === ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][weekday(date)]);
           const photo = template?.photo;
-          return html`<li class="${photo ? "card has-photo" : "card"}" id="day-${date}">
-            ${photo ? html`<div class="photo">${picture(ctx, photo, { sizes: "(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), 17rem" })}</div>` : html`<div class="card-mark">${icon("calendar")}</div>`}
-            <div class="card-words"><h3>${template?.title || day.dowLong}</h3><p class="card-text">${day.monLong} ${day.dom}</p>
+          return html`<li class="${[photo ? "card has-photo" : "card", "day-card", date === ctx.today ? "is-today" : date === nextDate ? "is-next" : ""].filter(Boolean).join(" ")}" id="day-${date}" data-date="${date}">
+            ${photo ? html`<div class="photo">${picture(ctx, photo, { sizes: "(max-width: 860px) 7rem, 9rem" })}</div>` : html`<div class="card-mark">${icon("calendar")}</div>`}
+            <div class="day-head"><h3>${template?.title || day.dowLong}</h3><p class="card-text">${day.monLong} ${day.dom}</p><p class="day-tags">${date === ctx.today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : date === nextDate ? html`<span class="next-tag">${ctx.t("schedule.nextUp")}</span>` : ""}</p></div>
+            <div class="day-sessions">
               ${items.map(r => html`<div class="${eventClass("ev", r, ctx.now)}" data-starts="${r.startsAt}" data-ends="${r.endsAt}" data-date="${r.date}">
                 <p class="card-line ev-time">${timeRange(r.start, r.end, ctx.t)}${eventTags(ctx, r)}</p>
-                ${r.place ? html`<p class="card-text">${r.place.name}${r.place.detail ? html`<span class="where-detail">${r.place.detail}</span>` : ""}</p>` : ""}
+                ${r.place ? html`<p class="card-text ev-place">${r.place.name}${r.place.detail ? html`<span class="where-detail">${r.place.detail}</span>` : ""}</p>` : ""}
                 ${r.place?.href ? go(ctx, r.place.href, ctx.t("schedule.directions"), "pin") : ""}
               </div>`)}
             </div></li>`;

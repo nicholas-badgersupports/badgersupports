@@ -32,7 +32,7 @@ function firstVisit(b, ctx) {
   if (!next) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupNone")}</p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"), "mail")}</div>`;
   const p = dateParts(next.date, ctx.t), days = dayRange(next, ctx.t);
   return html`<div data-live="visit"><article${attrs({ class: eventClass("visit-event ev", next, ctx.now), "data-starts": next.startsAt, "data-ends": next.endsAt, "data-date": next.date })}>
-    <p class="visit-label">${b.upcoming.label || ctx.t("program.nextGroup")}</p>
+    <p class="visit-label">${b.upcoming.label || ctx.t("program.nextGroup")}<span class="visit-tags">${next.date === ctx.today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</span></p>
     <p class="ev-time"><strong>${days ? days.long : `${p.dowLong}, ${p.monLong} ${p.dom}`}</strong> · ${timeRange(next.start, next.end, ctx.t)}</p>
     ${next.place ? html`<p class="visit-room">${next.place.name}${next.place.detail ? ` · ${next.place.detail}` : ""}</p>` : ""}
     <div class="visit-actions">${timeUnconfirmed(next) ? timeContact(ctx) : next.place?.href ? link(ctx, next.place.href, ctx.t("schedule.directions"), { class: "btn visit-action", icon: "pin" }) : go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askLocation"), "mail")}${eventTags(ctx, next)}</div>

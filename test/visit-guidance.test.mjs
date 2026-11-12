@@ -11,7 +11,8 @@ import { emptyStructure, applyChange } from "../src/shared/structure.mjs";
 
 const read = name => JSON.parse(fs.readFileSync(new URL(`../content/${name}.json`, import.meta.url)));
 const text = resolveText(read("text"));
-const ctx = (events, { stale = false, now = "2026-11-03T12:00:00-06:00" } = {}) => makeContext({ site: { origin: "https://example.org", liveOrigin: "https://example.org", connectOrigin: "https://connect.example.org" }, text, data: { events, eventsState: { stale } }, now: Date.parse(now), today: "2026-11-03", builtPaths: ["/join/peer-support-groups/", "/join/email-list/", "/directions/sac-mhh/", "/directions/sac-caucus/"] });
+const media = JSON.parse(fs.readFileSync(new URL("../media/manifest.json", import.meta.url), "utf8"));
+const ctx = (events, { stale = false, now = "2026-11-03T12:00:00-06:00" } = {}) => makeContext({ site: { origin: "https://example.org", liveOrigin: "https://example.org", connectOrigin: "https://connect.example.org" }, media, text, data: { events, eventsState: { stale } }, now: Date.parse(now), today: "2026-11-03", builtPaths: ["/join/peer-support-groups/", "/join/email-list/", "/directions/sac-mhh/", "/directions/sac-caucus/"] });
 const intro = () => ({ ...read("pages/peer-support-groups").blocks[0], upcoming: { source: "events", program: "peer", count: 1 } });
 const events = (items = []) => ({ recurring: [], dated: items, places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } });
 const visit = (id, day = "2026-11-03", place = "changed") => ({ id, title: "Example Group", program: "peer", date: day, start: "17:00", end: "18:00", place });

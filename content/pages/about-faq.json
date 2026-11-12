@@ -232,20 +232,13 @@
       "title": "Report a Website Problem",
       "body": [
         "Email the student directors about a broken page, link or control. Include the public page title and a short description of what went wrong. The student directors review website reports.",
-        "Please leave out private links, form answers, personal details and support conversations. Your email address will be visible to the people reading the inbox. We do not attach page details or screenshots automatically.",
-        "The email link opens your email app. Review your message and send it there. Opening a draft does not submit a report. If the link does not open, email directors@badgersupports.org with the subject Website problem.",
-        "For information that needs correcting in a listed resource, use that resource’s Report a Problem or Suggest an Update link on the Resources page. Website reporting is separate from confidential concerns and peer support."
+        "Leave out private links, form answers, personal details and support conversations. The button opens a draft in your email app: review it and send it there; opening a draft does not submit a report. If it does not open, email directors@badgersupports.org with the subject Website problem."
       ],
       "links": [
         {
           "label": "Email the Student Directors",
           "href": "mailto:directors@badgersupports.org?subject=Website%20problem",
           "icon": "mail"
-        },
-        {
-          "label": "Find the Resource to Correct",
-          "href": "/resources/",
-          "icon": "arrow"
         }
       ]
     },

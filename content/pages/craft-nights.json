@@ -15,9 +15,9 @@
       "source": "events",
       "program": "craft",
       "photos": [
-        "m-craft-table",
-        "m-people-nostalgic",
-        "m-people-planter-solo"
+        "m-craft-pots-room",
+        "m-craft-painted-pumpkin",
+        "m-craft-bead-crafts"
       ],
       "links": [
         {
@@ -63,8 +63,8 @@
         }
       ],
       "photos": [
-        "m-craft-friends",
-        "m-craft-pair"
+        "m-craft-planting-station",
+        "m-craft-succulent-table"
       ],
       "links": [
         {
@@ -119,6 +119,15 @@
           "title": "Paint a Planter",
           "text": "A student with their painted planter.",
           "photo": "m-people-planter-solo"
+        },
+        {
+          "id": "craft-pumpkin",
+          "title": "Pumpkin Painting",
+          "lines": [
+            "October 2026"
+          ],
+          "text": "A student with their painted pumpkin.",
+          "photo": "m-craft-painted-pumpkin"
         }
       ]
     },

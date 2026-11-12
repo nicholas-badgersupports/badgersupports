@@ -153,6 +153,11 @@
       "text": "Today",
       "where": "Tag on today's date in the timetable."
     },
+    "schedule.nextUp": {
+      "group": "home",
+      "text": "Next Up",
+      "where": "Tag on the next peer support group day or visit that is not today, so a visitor can spot the soonest one."
+    },
     "schedule.todayPrefix": {
       "group": "home",
       "text": "Today,",
@@ -3090,6 +3095,11 @@
       "group": "events",
       "text": "Join Our Email List",
       "where": "Day-card directions or no-upcoming-group action."
+    },
+    "resources.showMore": {
+      "group": "resources",
+      "text": "Show More",
+      "where": "On the resource list: the button that reveals more of the resources that match the current search and filters."
     },
     "schedule.weekEmpty": {
       "group": "events",

@@ -10,6 +10,7 @@
 import { html, raw, attrs, jsonIsland } from "./html.mjs";
 import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
+import { icon } from "./icons.mjs";
 import { openingPortraits } from "./team.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
@@ -101,7 +102,7 @@ function footer(ctx) {
   <div class="footer-top">
     <div class="footer-brand">
       <div class="brand-row"><img src="/assets/brand/bss-hand-cream.png" width="301" height="440" alt=""><span class="wordmark">${ctx.t("header.wordmark")}</span></div>
-      <p>${f.address}</p>
+      ${f.email ? html`<p class="footer-mail">${icon("mail", "footer-mail-ic")}<a href="${f.email.href}">${f.email.label}</a></p>` : ""}
       <p>${f.affiliation}</p>
       <p>${f.funding}</p>
       ${f.spill ? link(ctx, f.spill.href, html`${spillLogo("footer-spill-logo", "6rem")}<span>${f.spill.label}</span>`, { class: "footer-spill" }) : ""}
@@ -110,8 +111,8 @@ function footer(ctx) {
   </div>
   <div class="footer-bottom">
     <p>${accessibility(ctx)}</p>
-    <ul class="social" aria-label="${ctx.t("footer.socialLabel")}">${f.social.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}</ul>
-    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, f.staffSignIn.label)}</li>` : ""}</ul>
+    <ul class="social" aria-label="${ctx.t("footer.socialLabel")}">${f.social.map((l) => html`<li>${link(ctx, l.href, html`${icon(l.icon || "out", "social-ic")}<span class="sr-only">${l.label}</span>`, { class: "social-link", attrs: { title: l.label } })}</li>`)}</ul>
+    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span class="sr-only">${f.staffSignIn.label}</span>`, { class: "staff-signin", attrs: { title: f.staffSignIn.label } })}</li>` : ""}</ul>
   </div>
 </div></footer>`;
 }

@@ -59,6 +59,33 @@ function mark() {
     if (tag && !isToday) tag.remove();
     if (!tag && isToday && block) block.append(Object.assign(document.createElement("span"), { className: "today-tag", textContent: t("schedule.today") }));
   }
+  // The week-of-groups day cards carry the same marks in bigger type: today named on its card,
+  // and the soonest day after today named next up. The marks follow the real date, so a card is
+  // never labelled today on a day it does not run.
+  const cards = [...document.querySelectorAll(".cards--days .card[data-date]")];
+  if (cards.length) {
+    const nextDate = cards.map((c) => c.dataset.date).sort().find((d) => d > today);
+    for (const card of cards) {
+      const isToday = card.dataset.date === today, isNext = !isToday && card.dataset.date === nextDate;
+      card.classList.toggle("is-today", isToday);
+      card.classList.toggle("is-next", isNext);
+      const slot = card.querySelector(".day-tags");
+      if (!slot) continue;
+      const want = isToday ? ["today-tag", "schedule.today"] : isNext ? ["next-tag", "schedule.nextUp"] : null;
+      let tag = slot.querySelector(".today-tag, .next-tag");
+      if (tag && (!want || !tag.classList.contains(want[0]))) { tag.remove(); tag = null; }
+      if (!tag && want) slot.append(Object.assign(document.createElement("span"), { className: want[0], textContent: t(want[1]) }));
+    }
+  }
+  // The next-group card says today too, when its session runs today.
+  for (const visit of document.querySelectorAll(".visit-event[data-date]")) {
+    const slot = visit.querySelector(".visit-tags");
+    if (!slot) continue;
+    const isToday = visit.dataset.date === today;
+    let tag = slot.querySelector(".today-tag");
+    if (tag && !isToday) tag.remove();
+    if (!tag && isToday) slot.append(Object.assign(document.createElement("span"), { className: "today-tag", textContent: t("schedule.today") }));
+  }
 }
 
 /* The page's event sections as published, read before mark() changes their classes. A swap writes

@@ -82,7 +82,7 @@ test("the peer support groups page leads with how to join: drop in, the week wit
   const page = read("join/peer-support-groups/index.html");
   const ids = [...page.matchAll(/data-block="(b-pg-[a-z]+)"/g)].map((m) => m[1]);
   // what to expect comes before the extras; the Hub directions sit after them, each group card links its own room
-  assert.deepEqual(ids, ["b-pg-intro", "b-pg-days", "b-pg-how", "b-pg-talk", "b-pg-activities", "b-pg-hub", "b-pg-spill", "b-pg-request", "b-pg-note"]);
+  assert.deepEqual(ids, ["b-pg-intro", "b-pg-days", "b-pg-reel", "b-pg-how", "b-pg-talk", "b-pg-activities", "b-pg-hub", "b-pg-spill", "b-pg-request", "b-pg-note"]);
   assert.match(block(page, "b-pg-intro"), /<p class="feature-primary"><a href="#b-pg-days" class="btn btn--big">/, "one main action near the top");
   assert.doesNotMatch(block(page, "b-pg-intro"), /Your First Visit/, "the visit steps live with the week, not in the header");
   assert.match(page, /<section class="directions band is-section" id="get-directions"[^>]*data-block="b-pg-hub">/);
@@ -92,7 +92,7 @@ test("the peer support groups page leads with how to join: drop in, the week wit
   const days = block(page, "b-pg-days");
   assert.equal([...days.matchAll(/<ol class="card-steps">[\s\S]*?<\/ol>/g)].length, 1, "how to join, as numbered steps above the week");
   assert.equal([...days.match(/<ol class="card-steps">([\s\S]*?)<\/ol>/)[1].matchAll(/<li>/g)].length, 3);
-  const cards = [...days.matchAll(/<li class="card has-photo" id="(day-[0-9-]+)">([\s\S]*?)<\/li>/g)];
+  const cards = [...days.matchAll(/<li class="card has-photo day-card[^"]*" id="(day-[0-9-]+)" data-date="[0-9-]+">([\s\S]*?)<\/li>/g)];
   assert.deepEqual(cards.map((m) => m[1]), ["day-2026-10-20", "day-2026-10-21", "day-2026-10-22", "day-2026-10-26"]);
   for (const [, id, card] of cards) {
     assert.match(card, /<div class="photo"><picture/, `${id}: a photo of people`);

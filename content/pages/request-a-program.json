@@ -165,7 +165,9 @@
       "photos": [
         "m-program-paintings",
         "m-peer-talk"
-      ]
+      ],
+      "icon": "chat",
+      "program": "peer"
     },
     {
       "id": "b-rp-training",
@@ -186,7 +188,8 @@
       "photos": [
         "m-program-audience",
         "m-involved-volunteers"
-      ]
+      ],
+      "icon": "badge"
     },
     {
       "id": "b-rp-housing",
@@ -208,7 +211,9 @@
       "photos": [
         "m-workshop-panel",
         "m-workshop-housing-team"
-      ]
+      ],
+      "icon": "house",
+      "program": "workshops"
     },
     {
       "id": "b-rp-spill",

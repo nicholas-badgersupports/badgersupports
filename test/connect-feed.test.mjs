@@ -24,7 +24,7 @@ const EVENTS = {
   ],
   events: [
     { id: "e1", type: "craft", title: "Craft night: paint an example", short: "Paint an example", date: "2026-10-21", endDate: "2026-10-21", start: "17:30", end: "19:30", room: "SAC Caucus Room", full: true },
-    { id: "e2", type: "outreach", title: "Dogs on Call at Example Hall", short: "", date: "2026-10-22", endDate: "2026-10-22", start: "12:00", end: "14:00", room: "Example Hall lounge", full: false },
+    { id: "e2", type: "openhouse", title: "Dogs on Call at Example Hall", short: "", date: "2026-10-22", endDate: "2026-10-22", start: "12:00", end: "14:00", room: "Example Hall lounge", full: false },
     { id: "e3", type: "hub", title: "Housing Hub drop-in", short: "", date: "2026-10-23", endDate: "2026-10-23", start: "13:00", end: "15:00", room: "Student Mental Health Hub, Student Activity Center 3203", full: false },
     { id: "e4", type: "workshop", title: "Example workshop with no time yet", short: "", date: "2026-10-24", endDate: "2026-10-24", start: "", end: "", room: "", full: false },
   ],
@@ -135,12 +135,29 @@ test("item 12: an event type the rules file does not name is named, with its eve
   assert.deepEqual(r.unnamed, [
     { type: "(no type)", shown: [{ program: "other", events: ["e7"] }] },
     { type: "hub", shown: [{ program: "other", events: ["e3"] }] },
-    { type: "openhouse", shown: [{ program: "other", events: ["e5", "e6"] }] },
-    { type: "outreach", shown: [{ program: "other", events: ["e2"] }] },
+    { type: "openhouse", shown: [{ program: "other", events: ["e2", "e5", "e6"] }] },
   ]);
-  assert.equal(unnamedLines(r.unnamed)[2], 'event type "openhouse" is not named in content/connect-feed.json: 2 events shown as other (e5, e6)', "the line the build prints");
+  assert.equal(unnamedLines(r.unnamed)[2], 'event type "openhouse" is not named in content/connect-feed.json: 3 events shown as other (e2, e5, e6)', "the line the build prints");
   assert.deepEqual(mapEvents({ ...EVENTS, events: [EVENTS.events[0]] }, RULES).unnamed, [], "a named type is not listed");
   assert.deepEqual(mapEvents({ ...EVENTS, events: [EVENTS.events[3]] }, RULES).unnamed, [], "an event left out is not listed twice");
+});
+
+/* The five types the 12 November 2026 publish found unnamed (11 events shown as other) are named in the
+   shipped rules: each maps to the Other program, and the two with a page of their own link to it the way
+   their series already did. An event of any of the five is no longer reported unnamed. */
+test("the types the November publish found unnamed are named in the shipped rules", () => {
+  const night = (id, type, title) => ({ id, type, title, short: "", date: "2026-11-20", endDate: "2026-11-20", start: "12:00", end: "13:00", room: "", full: false });
+  const r = mapEvents({ ...EVENTS, weekly: [], events: [
+    night("n1", "dogsoncall", "Dogs on Call"), night("n2", "navigatinghousing", "Navigating Housing"),
+    night("n3", "outreach", "Outreach"), night("n4", "spill", "SPILL"), night("n5", "tabling", "Tabling"),
+  ] }, RULES);
+  assert.deepEqual(r.unnamed, [], "none of the five is reported unnamed");
+  const by = Object.fromEntries(r.events.dated.map((e) => [e.id, e]));
+  assert.deepEqual([by["connect-n1"].program, by["connect-n1"].href], ["other", "/initiatives/dogs-on-call"]);
+  assert.deepEqual([by["connect-n2"].program, by["connect-n2"].href], ["other", "/initiatives/housing-hub"]);
+  assert.deepEqual([by["connect-n3"].program, by["connect-n3"].href ?? null], ["other", null]);
+  assert.deepEqual([by["connect-n4"].program, by["connect-n4"].href ?? null], ["other", null]);
+  assert.deepEqual([by["connect-n5"].program, by["connect-n5"].href ?? null], ["other", null]);
 });
 
 /* Connect's live Craft Night type is `craftnight`; its shipped default is `craft`. Either one is a craft night, so the
@@ -276,8 +293,8 @@ test("the published site shows Connect's events, each page its own, and no sampl
     "Connect's timestamp renders as its Chicago calendar day in the production resource list");
   assert.deepEqual({ ...report.connect, dropped: report.connect.dropped.length, unnamed: report.connect.unnamed.length }, { unnamed: 2, events: 3, weekly: 2, resources: RESOURCES.resources.length, dropped: 1, version: { events: "ev-1", resources: "cat-1" } });
   assert.ok(said.some((s) => s.includes("left out event e4")), "the build says what it left out");
-  assert.ok(said.some((s) => s === 'connect: event type "outreach" is not named in content/connect-feed.json: 1 event shown as other (e2)'), `item 12: the build names an unnamed type; it said: ${said.filter((s) => s.includes("type")).join(" | ") || "nothing about types"}`);
-  assert.deepEqual(report.connect.unnamed?.map((u) => u.type), ["hub", "outreach"], "item 12: and the report lists them");
+  assert.ok(said.some((s) => s === 'connect: event type "openhouse" is not named in content/connect-feed.json: 1 event shown as other (e2)'), `item 12: the build names an unnamed type; it said: ${said.filter((s) => s.includes("type")).join(" | ") || "nothing about types"}`);
+  assert.deepEqual(report.connect.unnamed?.map((u) => u.type), ["hub", "openhouse"], "item 12: and the report lists them");
 
   const week = section(read("index.html"), "b-home-week");
   assert.match(week, /Paint an example|Craft night: paint an example/);

@@ -60,6 +60,7 @@ export default {
     const home = b.home ? src.places?.[b.home] : null;
     const dropIn = Object.fromEntries((b.dropIn || []).map((d) => [d.program, d.href]));
     return html`<section class="week band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+  <div class="week-card">
   <header class="week-head">
     <h2 id="${b.id}-h">${b.title}</h2>
     ${b.intro ? html`<p>${b.intro}</p>` : ""}
@@ -72,6 +73,7 @@ export default {
     })}</ol>` : html`<div class="week-empty">${icon("calendar")}<p><strong>${ctx.t("schedule.none")}</strong><span>${ctx.t("schedule.noneMore")}</span></p></div>`}
     ${later.length ? html`<h3 class="later-title">${b.laterTitle || ctx.t("schedule.laterTitle")}</h3><ol class="days">${later.map((r) => html`<li class="day" data-date="${r.date}">${dateBlock(ctx, r.date, today)}<div><ul class="events">${eventRow(ctx, r, { withDate: true, dropIn })}</ul></div></li>`)}</ol>` : ""}
     ${b.connect ? html`<p class="week-foot">${go(ctx, b.connect.href, b.connect.label, "calendar")}</p>` : ""}
+  </div>
   </div>
 </div></section>`;
   },

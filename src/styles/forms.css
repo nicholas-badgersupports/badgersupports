@@ -219,7 +219,9 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 /* A dropdown's arrow sits in from the right edge (owner, 12 Nov 2026): the browser's own arrow hugs
    the field's border, so a select draws the site's chevron instead, with a clear space inside the
    field's right edge, and the words stop short of it. The error rule above restates the whole
-   background, so it is handed the chevron again here. */
+   background at a higher specificity, so the errored select is handed the whole treatment again
+   below — image, repeat, position and size. The image alone left the chevron tiled across the
+   field at its natural size (rendered proof: the round-2 arrow sweep, 12 Nov 2026). */
 .field select {
   appearance: none; -webkit-appearance: none;
   padding-right: 2.75rem;
@@ -228,4 +230,9 @@ html:not(.js) .bss-form.has-uploads { display: none; }
   background-position: right 1rem center;
   background-size: 1rem auto;
 }
-.field.has-error select { background-image: url("/assets/icons/chevron-down.svg"); }
+.field.has-error select {
+  background-image: url("/assets/icons/chevron-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem auto;
+}

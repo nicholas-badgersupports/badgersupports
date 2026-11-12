@@ -35,6 +35,8 @@
   transition: transform var(--t) var(--ease-out);
 }
 .nav details[open] > summary::after { transform: rotate(225deg); margin-top: .25rem; }
+/* A sub-menu's chevron keeps the same air inside the right edge as a select's arrow (owner, 12 Nov 2026). */
+.nav summary { padding-right: 1rem; }
 .nav a:hover, .nav summary:hover { background: var(--cream); color: var(--red-deep); }
 .nav a[aria-current="page"] { color: var(--red); box-shadow: inset 0 -3px 0 var(--red); border-radius: 0; }
 .nav details { position: relative; }

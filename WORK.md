@@ -60,9 +60,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 - **Words**: the live site's and the decks' own wording wherever a match exists (`docs/research/COPY-SOURCES.md`).
 - **The Hub** is the one place people find us; the others are event rooms (Round 4). Seven rooms, all published: Hearing
   and Multipurpose take the Caucus steps with their own map, Marquee and Tripp show their address only (20 Oct 2026).
-- **Room pages' “All Rooms” button** (12 Nov 2026): it stays removed. The redesign read the owner's brief's
-  “remove the 'Other Rooms We Use' button” as the room pages' “All Rooms” crumb and removed it; the owner
-  confirmed that reading on 12 Nov 2026. It is not restored.
+- **Room pages' “All Rooms” button** (12 Nov 2026): it stays removed — the redesign read the brief's “remove the 'Other Rooms We Use' button” as this crumb, and the owner confirmed that reading on 12 Nov 2026.
 
 ## Evidence
 Continuation candidate of 3 Nov: its team order and photos part landed in `389fc77` (item 19); the rest stays a
@@ -172,10 +170,8 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 `site/` is git, `main`, pushed to the public `nicholas-badgersupports/badgersupports`. A session commits and pushes its own work (Nicholas, 2 Nov 2026), every commit carrying `[skip netlify]`; only the owner
 publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`, which first makes `node_modules` match `package-lock.json` (`ops/deps-match.mjs`, then `npm ci` when they differ). A session reads git with `git --no-optional-locks`.
 The laptop's shell cannot push: a cloud clone pushes, then the laptop's `site/` is brought up to it (`git fetch`, `git merge --ff-only`). The 25 Oct cloud run's patch was published as `9bf0ed5`. Never link it to Netlify: a Netlify build creates a database.
-On 12 Nov 2026 the owner approved merging the `checks-2026-11-11` branch into `main` -- the three post-publish defect
-fixes (classes sideways scroll, bus-routes 2px overflow at 320, Directions room-ticket overlap) and the two stale
-suite expectations -- and it merged the same day. The merged head is published by the owner with the
-`../PUBLISH-MERGED-2026-11-12-NEXT/` file after he pushes `main`.
+On 12 Nov 2026 the owner approved merging `checks-2026-11-11` into `main` (the three post-publish defect fixes and two stale suite expectations); it merged the same day, and the owner publishes the merged head with the `../PUBLISH-MERGED-2026-11-12-NEXT/` file after he pushes `main`.
+
 ## Exchange
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
 `PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`; 30 Oct, from SPILL: `SPILL-CRAWLER-CONTACT` (`/crawlers/` now speaks for this site only).

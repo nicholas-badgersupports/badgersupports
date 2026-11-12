@@ -1035,3 +1035,27 @@ The ruling as built (branch `anim-narrow-2026-11-12`):
 - The arrows keep their move as a judgement call for the owner to veto: they are the badge on the
   site's main "go" buttons, where the slide is the button's own affordance. The close, sliders and
   pencil pops are likewise kept and flagged in the handoff.
+
+## 12 November 2026 · The narrowing corrected the same day: triggers narrowed, moves kept (Owner)
+
+Nicholas, later the same day: "public animations should be narrowed, but they shouldn't be
+done away with — narrowing for all 3 sites means they should not fire when they are randomly
+clicked, just when they are interacted with."
+
+That corrects the entry above. Its "still icons" list is withdrawn: every icon kind that has
+a move keeps it — the external-link arrow, pin, envelope, calendar, speech bubbles, scissors,
+bulb, badge, question mark, star and hand (as a press move), and the kinds that only ever had
+the plain pop (house, jar, ribbon, search, account, paw, and the footer social icons). What
+stays narrowed is the trigger, exactly as the entry above built it — a move starts only from
+its own icon: its own button or summary pressed, a mouse over the icon itself, or the keyboard
+reaching its control — and one trigger is added: an icon also plays its move once when it
+first comes into view. Pointing at a link's words, pressing a link, or clicking anywhere else
+still starts nothing. The plus still has no move to keep: its turn into a minus is a transition
+tied to its answer opening, not an animation.
+
+Built on branch `anim-narrow-all-2026-11-12`, on top of the narrowing branch, whose player and
+trigger discipline it keeps; the narrowing branch itself is superseded by this one. Untouched,
+as before: the homepage hero's drift, float and hand wave (owner, 20 Oct 2026), the SPILL logo's
+moves, and the animations that mark something appearing or changing. The arrows and the close,
+sliders and pencil pops are no longer a judgement call awaiting a veto: under the corrected
+rule every kind with a move keeps it, and theirs are moves like any other.

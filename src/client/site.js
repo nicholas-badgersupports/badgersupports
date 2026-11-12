@@ -72,17 +72,20 @@ document.addEventListener("click", (e) => {
   if (menuOpen() && !nav.contains(e.target) && !toggle.contains(e.target)) setMenu(false);
 });
 
-/* Icons: only the few in MOVING still move (motion.css) — the ones that confirm an action or
-   point the way on the main buttons. The rest are labels and never move; the external-link
-   arrow alone sits on thousands of directory entries. A move plays when its own button or
-   summary is pressed, when a mouse is over the icon itself, or when the keyboard reaches its
-   control. Pointing at a link's words, pressing a link (it navigates anyway), or clicking
+/* Icons: every kind in MOVING has a move (motion.css) and keeps it. The owner's narrowing
+   (12 Nov 2026, corrected the same day: "they shouldn't be done away with — they should not
+   fire when they are randomly clicked, just when they are interacted with") narrows when a
+   move may start, never which icons may move. A move starts only from its own icon: once
+   when the icon first comes into view (the observer below), when a mouse is over the icon
+   itself, when the keyboard reaches its control, or when its own button or summary is
+   pressed. Pointing at a link's words, pressing a link (it navigates anyway), or clicking
    anywhere else plays nothing — clicking around used to set every crossed icon off, because
-   pointing at any part of a control played all of its icons (owner, 12 Nov 2026: "can it be
-   more narrow?"). The class comes off when every part has finished, so the next press or
-   pointing can play it again. */
+   pointing at any part of a control played all of its icons. The class comes off when every
+   part has finished, so the next pointing, press or arrival of the keyboard can play it
+   again. The plus is not in MOVING: it has no move — its turn into a minus is a transition,
+   in motion.css. */
 const CONTROL = "a, button, summary, label";
-const MOVING = new Set(["arrow", "back", "down", "check", "close", "sliders", "pencil", "play", "pause"]);
+const MOVING = new Set(["arrow", "back", "down", "out", "pin", "mail", "calendar", "chat", "scissors", "bulb", "house", "badge", "question", "star", "check", "play", "pause", "jar", "pencil", "ribbon", "search", "account", "paw", "instagram", "tiktok", "linkedin", "win", "sliders", "close", "hand"]);
 const turns = new WeakMap();
 const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 function playIcon(ic) {
@@ -111,6 +114,21 @@ document.addEventListener("pointerover", (e) => {
   if (ic && !ic.contains(e.relatedTarget)) playIcon(ic);
 }, { passive: true });
 document.addEventListener("focusin", (e) => playControl(e.target.closest?.(CONTROL)));
+
+/* First sight: an icon plays its move once when it first comes into view, so nothing below
+   the fold spends its move unseen. The observer lets go of an icon once it has played, so
+   scrolling back and forth never restarts it — pointing at the icon itself, the keyboard,
+   or its own button plays it again. */
+if (typeof IntersectionObserver === "function") {
+  const iconObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      iconObserver.unobserve(entry.target);
+      playIcon(entry.target);
+    }
+  });
+  for (const ic of document.querySelectorAll("[data-i]")) iconObserver.observe(ic);
+}
 
 /* A link to a folded answer (#q-…) opens it. */
 function openTarget() {

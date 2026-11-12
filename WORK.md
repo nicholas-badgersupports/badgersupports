@@ -65,7 +65,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 Continuation candidate of 3 Nov: its team order and photos part landed in `389fc77` (item 19); the rest stays a
 separate `codex/public-queue-2026-11-03-e` tree, not merged. Cloud runs, 2 Nov 2026: items 20 and 25 verified;
 full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
-**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium.
+**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium. The merged-tree gate for the 11 Nov 2026 merge candidate: its one full run found two merge-caused failures, both fixed and re-verified by their targeted suites; the confirmation re-run was stopped at the owner's direction and the Session 17 publish file skips the checks step at his direction (11 Nov 2026) — each merged branch was gated on its own tree before merging. The browser gate and Explore B's viewport and keyboard passes are owed as post-publish verification (merge-pass handoff).
 
 ## Blockers
 

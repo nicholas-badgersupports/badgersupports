@@ -38,6 +38,11 @@ test("the TikTok glyph is drawn inside the frame it shares with the other social
   const svg = page.match(/<svg class="ic social-ic" data-i="tiktok"[\s\S]*?<\/svg>/)?.[0];
   assert.ok(svg, "the TikTok icon is in the footer");
   assert.match(svg, /<circle cx="10\.63" cy="14\.15" r="1\.85"\/>/, "the note's head is a circle inside the frame");
+  /* the glyph's line is thinned (owner, 12 Nov 2026): at the shared weight of
+     2 the note read heavy for its size, so the head and stem ride in a group
+     at stroke-width 1.5. The frame keeps the shared weight, like its
+     neighbours. The geometry is untouched, so the gaps below still hold. */
+  assert.match(svg, /<g stroke-width="1\.5"><circle/, "the TikTok glyph is drawn at the thinner weight");
   /* the glyph sits centred in the frame with real air around it: the space
      above it equals the space below it, and every edge keeps at least 4 grid
      units of clearance (owner, 12 Nov 2026 — first the head's bottom nearly
@@ -45,7 +50,8 @@ test("the TikTok glyph is drawn inside the frame it shares with the other social
      was centred; then, centred at 2.45 units of air, it still crowded the
      frame, so it was scaled to about two-thirds, about its own centre, until
      its top/bottom gaps matched the Instagram lens and the WIN mark at 4.5
-     units each). The frame spans 3.5..20.5; the glyph runs from the stem's
+     units each; then the glyph's line was thinned, geometry untouched).
+     The frame spans 3.5..20.5; the glyph runs from the stem's
      top to the head's bottom edge, and sideways from the head's left edge to
      the stem curve's end. */
   const cx = Number(svg.match(/<circle cx="([\d.]+)"/)[1]);

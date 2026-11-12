@@ -65,7 +65,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 Continuation candidate of 3 Nov: its team order and photos part landed in `389fc77` (item 19); the rest stays a
 separate `codex/public-queue-2026-11-03-e` tree, not merged. Cloud runs, 2 Nov 2026: items 20 and 25 verified;
 full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
-**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium. The merged-tree gate for the 11 Nov 2026 merge candidate: its one full run found two merge-caused failures, both fixed and re-verified by their targeted suites; the confirmation re-run was stopped at the owner's direction and the Session 17 publish file skips the checks step at his direction (11 Nov 2026) — each merged branch was gated on its own tree before merging. The browser gate and Explore B's viewport and keyboard passes are owed as post-publish verification (merge-pass handoff).
+**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium. The merged-tree gate for the 11 Nov 2026 merge candidate: its one full run found two merge-caused failures, both fixed and re-verified by their targeted suites; the confirmation re-run was stopped at the owner's direction and the Session 17 publish file skips the checks step at his direction (11 Nov 2026) — each merged branch was gated on its own tree before merging. The browser gate and Explore B's viewport and keyboard passes ran post-publish on the merged tree, 11 Nov 2026 (PUBLIC-POST-PUBLISH-CHECKS-HANDOFF-2026-11-11): the standard gate passed in full (tests 493 passed, 1 skipped) and accessibility passed 246/246; three sideways-scroll defects stand at items 43 and 45, one ticket defect on /directions/ (Multipurpose Room's name and address run under its stub at 1280), and two suite expectations that predate the redesign (Craft's captioned-card count; the room-arrival part's jump anchors, which the section navigation replaced) are recorded in the checks handoff.
 
 ## Blockers
 
@@ -144,20 +144,20 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     Union's full feed (the queue-named `feed_1` carries titles only; `docs/research/EXPLORE-FEEDS-VERIFICATION-2026-11-11.md`),
     deduplicated, Badger Supports programs from Connect's list, refreshed by `/api/campus-events` with the last good list
     kept. The Find Your People mapping (`content/explore/interests.json`) awaits Engagement staff review; the full browser
-    gate is owed as post-publish verification (merge-pass handoff).
+    gate ran post-publish on the merged tree (checks handoff); its Explore failures stand at items 43 and 45.
 42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → **built and merged to main
     11 Nov 2026**: source lines with publisher and review date, unapproved outside records never drawn. Connect side
     approved and with Connect Session 13.
 43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → **built and merged to main 11 Nov 2026** with the pull
     labelled a verification sample; the production switch stays **off** — it goes live only when the Registrar's
-    permission is answered (the owner accepted the API note 11 Nov 2026 and approved seeking permission).
+    permission is answered (the owner accepted the API note 11 Nov 2026 and approved seeking permission). Post-publish verification (checks handoff): the page scrolls sideways at 390 (17px) and 320 (84px) — one pulled title in `content/fixtures/courses.json` (GEN&WS 539, `Health&Embodiment_FemnistPract`) is a single unbroken 336px word that sets the card column's width — and the page loads 1,867 KB at phone widths.
 44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → **built and merged to main 11 Nov 2026** at
     `/explore/academic-support/`; the tree needs its student-staff review before release.
 45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → **built and merged to main 11 Nov 2026**:
     topology from the Metro GTFS (feed S072_202608240858) in `content/transit/topology.json`, 20 campus buildings from
     OpenStreetMap, `/api/geocode` and `/api/bus-routes`, **no times, schedules or predictions**; verification in
     `docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md`, approved by Nicholas 11 Nov 2026. On Navigating Housing
-    the tool is signposted, not hosted (his ruling, 11 Nov 2026), so the workshop pages keep their no-collection rule.
+    the tool is signposted, not hosted (his ruling, 11 Nov 2026), so the workshop pages keep their no-collection rule. Post-publish verification (checks handoff): /explore/bus-routes/ scrolls sideways by 2px at 320 — the form's rows measure 281px from x=41 and end at x=322.
 46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → **built and merged to main 11 Nov 2026**: `docs/VERSION-HISTORY.md`
     imported byte-identical from the prepared branch and extended through the merge candidate, all in Unreleased.
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → **installed and merged to main 11 Nov 2026** (the exact

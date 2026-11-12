@@ -38,7 +38,9 @@
  * 8. Email links (src/client/email.js): a press copies the address and opens the popup, and the
  *    mailto: is not followed; Copy again copies again; Open in mail app is left to the browser;
  *    Escape and a press outside close the popup and focus returns to the link; when the browser
- *    will not copy, the popup still opens and its note does not claim a copy.
+ *    will not copy, the popup still opens and its note does not claim a copy. Left alone it
+ *    dismisses itself at six seconds — hover, focus inside and a hidden tab pause that clock,
+ *    a press inside stops it — and scrolling it or its link out of sight closes it at once.
  * Fictional files and people only: a few bytes that start as a PDF does, Avery Example and Robin Example.
  */
 
@@ -2625,6 +2627,82 @@ await part("email links", async () => {
     const selectable = await page.evaluate(() => getComputedStyle(document.querySelector(".email-pop-addr")).userSelect);
     check(selectable === "all", `email fallback: the address is one-press selectable (user-select ${selectable})`);
   } finally { await cut.close(); }
+
+  /* The self-dismiss clock, in real time — the waits are the proof. One width only: the clock
+     is the same at every width. */
+  const timed = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
+  try {
+    const page = await timed.newPage();
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    const link = page.locator('.site-footer a[href^="mailto:"]').first();
+    const isOpen = () => page.evaluate(() => !!document.querySelector("dialog.email-pop")?.open);
+    const waitClosed = (ms) => page.waitForFunction(() => !document.querySelector("dialog.email-pop")?.open, null, { timeout: ms }).then(() => true, () => false);
+    const openPop = async () => {
+      await link.click();
+      await page.waitForSelector("dialog.email-pop[open]");
+      await page.waitForFunction(() => document.querySelector(".email-pop-note")?.textContent.includes("copied"));
+    };
+    /* The pointer must rest nowhere near the popup, or hover would pause the clock. */
+    const moveOff = async () => {
+      const s = await emailState(page);
+      const spots = [[8, 8], [1272, 8], [8, 892], [1272, 892]];
+      const [x, y] = spots.find(([px, py]) => !s.box || px < s.box.left || px > s.box.right || py < s.box.top || py > s.box.bottom) ?? [8, 8];
+      await page.mouse.move(x, y);
+    };
+
+    /* Left alone, it closes itself at about six seconds — and not before. */
+    await openPop();
+    await moveOff();
+    await sleep(3000);
+    check(await isOpen(), "email dismiss: three seconds left alone, the popup is still open");
+    check(await waitClosed(6000), "email dismiss: left alone, the popup closes itself (six-second clock)");
+
+    /* Hovering pauses the clock where it stands; the pointer leaving resumes what remains. */
+    await openPop();
+    await moveOff();
+    const hov = await emailState(page);
+    await page.mouse.move((hov.box.left + hov.box.right) / 2, (hov.box.top + hov.box.bottom) / 2);
+    await sleep(7000);
+    check(await isOpen(), "email dismiss: seven seconds hovering, the popup is still open");
+    await moveOff();
+    check(await waitClosed(9000), "email dismiss: the pointer leaving resumes the clock and it closes");
+
+    /* A hidden tab pauses the clock the same way. */
+    await openPop();
+    await moveOff();
+    await page.evaluate(() => {
+      Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await sleep(7000);
+    check(await isOpen(), "email dismiss: seven seconds with the tab hidden, the popup is still open");
+    await page.evaluate(() => {
+      Object.defineProperty(document, "hidden", { configurable: true, get: () => false });
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    check(await waitClosed(9000), "email dismiss: the tab showing again resumes the clock and it closes");
+
+    /* A press inside stops the clock for good; the × still closes at once; and scrolling the
+       link out of sight closes the popup even after that press. */
+    await openPop();
+    await moveOff();
+    await page.getByRole("button", { name: words("email.copyAgain") }).click();
+    await sleep(7000);
+    check(await isOpen(), "email dismiss: a press inside stops the clock — still open at seven seconds");
+    const xAt = Date.now();
+    await page.locator(".email-pop-x").click();
+    check((await waitClosed(2000)) && Date.now() - xAt < 2000, "email dismiss: the × closes at once, clock or no clock");
+    await openPop();
+    await page.getByRole("button", { name: words("email.copyAgain") }).click();
+    await page.evaluate(() => window.scrollTo(0, 0));
+    check(await waitClosed(3000), "email dismiss: scrolling the link out of sight closes it even after a press inside");
+    await openPop();
+    await page.evaluate(() => window.scrollTo(0, 0));
+    check(await waitClosed(3000), "email dismiss: scrolling the link out of sight closes an untouched popup at once");
+    check(errors.length === 0, `email dismiss: no page errors (${errors.join("; ")})`);
+  } finally { await timed.close(); }
 });
 
 await browser.close();

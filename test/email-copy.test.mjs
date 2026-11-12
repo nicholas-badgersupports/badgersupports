@@ -94,5 +94,9 @@ test("a built page carries the popup's words and the email script", async () => 
   assert.match(emailJs, /iconSvg\("copy"\)/, "the Copy again button is the copy icon");
   assert.match(emailJs, /iconSvg\("mail"\)/, "the Open in mail app button is the envelope icon");
   assert.match(emailJs, /aria-label/, "each icon button keeps its words as its accessible name");
+  assert.match(emailJs, /AUTO_DISMISS_MS=6e3/, "left alone, the popup dismisses itself after six seconds");
+  assert.match(emailJs, /setTimeout\(\(\)=>pop\.close\(\)/, "the self-dismiss clock closes the popup itself");
+  assert.match(emailJs, /visibilitychange/, "a hidden tab pauses the self-dismiss clock");
+  assert.match(emailJs, /"scroll",scrolledAway/, "scrolling the popup or its link out of sight closes it");
   assert.ok(fs.existsSync(path.join(ROOT, "src/client/email.js")));
 });

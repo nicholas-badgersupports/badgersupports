@@ -3,7 +3,8 @@
  * on: copy it again, or open the mail program after all. The link keeps its mailto: href, so
  * without this file the link behaves as a plain email link. A press another control already
  * claimed, a changed press (a modifier key, a button other than the main one) and the popup's
- * own Open link are left to the browser. */
+ * own Open link are left to the browser. Left alone, the popup dismisses itself (the clock
+ * below); it is never the only way out. */
 
 import { t } from "./text.js";
 
@@ -48,6 +49,94 @@ const iconSvg = (name) => `<svg class="ic" data-i="${name}" viewBox="0 0 24 24" 
 
 let pop = null, mark = null, noteText = null, addrLine = null, openLink = null;
 let opener = null, address = "";
+
+/* Self-dismiss (owner, 12 Nov 2026), on toast practice: left alone, the popup closes itself
+   after six seconds — the toast standard is five, and this one carries an address to read and
+   two actions. Hovering it, or keyboard focus on anything inside it, pauses the clock where
+   it stands, as does a hidden tab; a press inside stops the clock for good, so the popup then
+   closes only by ×, Escape, the backdrop, or scrolling its link out of sight — which closes
+   it at once whatever state the clock is in. The timed close is a convenience, never the only
+   way out: the instant closes stay, which is what WCAG 2.2.1 asks of a timed element. The
+   clock's handlers install with the popup and guard on it being open, so pages where the
+   popup never opens carry none of this. */
+const AUTO_DISMISS_MS = 6000;
+let clockTimer = 0, clockLeft = AUTO_DISMISS_MS, clockStarted = 0, clockEngaged = false;
+const clockPauses = new Set();
+
+function clockRun() {
+  if (clockEngaged || !pop.open) return;
+  clockStarted = Date.now();
+  clockTimer = setTimeout(() => pop.close(), clockLeft);
+}
+
+function clockHold() {
+  if (!clockTimer) return;
+  clearTimeout(clockTimer);
+  clockTimer = 0;
+  clockLeft = Math.max(0, clockLeft - (Date.now() - clockStarted));
+}
+
+function clockSync() {
+  if (clockEngaged || !pop.open) return;
+  if (clockPauses.size) clockHold();
+  else if (!clockTimer) clockRun();
+}
+
+function clockPause(reason, on) {
+  if (on) clockPauses.add(reason);
+  else clockPauses.delete(reason);
+  clockSync();
+}
+
+/* A press inside means the reader is using the popup: no timed close after that. */
+function clockEngage() {
+  if (clockEngaged) return;
+  clockEngaged = true;
+  clearTimeout(clockTimer);
+  clockTimer = 0;
+}
+
+/* Hover is judged by the pointer's place against the card's own rectangle, not by the
+   dialog's hover state: a modal dialog's backdrop spans the whole screen, so its pointer
+   enter/leave describe the screen, not the card. The last pointer place is noted from the
+   moves and presses that reach the document, and from the press that opens the popup. */
+let lastPointer = null;
+
+function hoverSync() {
+  if (!pop || !pop.open || !lastPointer) return;
+  const r = pop.getBoundingClientRect();
+  const inside = lastPointer.x >= r.left && lastPointer.x <= r.right && lastPointer.y >= r.top && lastPointer.y <= r.bottom;
+  clockPause("hover", inside);
+}
+
+function notePointer(e) {
+  if (typeof e.clientX !== "number") return;
+  lastPointer = { x: e.clientX, y: e.clientY };
+  hoverSync();
+}
+
+function clockFresh() {
+  clearTimeout(clockTimer);
+  clockTimer = 0;
+  clockLeft = AUTO_DISMISS_MS;
+  clockEngaged = false;
+  clockPauses.clear();
+  clockRun();
+}
+
+function clockStop() {
+  clearTimeout(clockTimer);
+  clockTimer = 0;
+  clockPauses.clear();
+}
+
+/* Wholly out of sight, in any direction: the popup or the link that opened it. */
+const outOfView = (r) => !r || r.bottom <= 0 || r.right <= 0 || r.top >= window.innerHeight || r.left >= window.innerWidth;
+
+function scrolledAway() {
+  if (!pop || !pop.open) return;
+  if (outOfView(pop.getBoundingClientRect()) || (opener && outOfView(opener.getBoundingClientRect()))) pop.close();
+}
 
 function build() {
   pop = document.createElement("dialog");
@@ -97,8 +186,25 @@ function build() {
   close.addEventListener("click", () => pop.close());
 
   pop.append(note, addrLine, actions, close);
-  pop.addEventListener("click", (e) => { if (e.target === pop) pop.close(); });
-  pop.addEventListener("close", () => { if (opener && opener.isConnected) opener.focus({ preventScroll: true }); });
+  /* A press on the dialog itself is its backdrop, and closes it; a press anywhere inside is
+     the reader engaging, and stops the self-dismiss clock for good. */
+  pop.addEventListener("click", (e) => { if (e.target === pop) pop.close(); else clockEngage(); });
+  /* The clock pauses while the pointer rests on the card and while focus is on anything
+     inside the popup; the popup's own opening focus is the dialog itself, which is its
+     resting state, not a pause. */
+  document.addEventListener("pointermove", notePointer, { capture: true, passive: true });
+  document.addEventListener("pointerdown", notePointer, { capture: true, passive: true });
+  pop.addEventListener("focusin", (e) => { if (e.target !== pop) clockPause("focus", true); });
+  pop.addEventListener("focusout", (e) => {
+    if (!e.relatedTarget || e.relatedTarget === pop || !pop.contains(e.relatedTarget)) clockPause("focus", false);
+  });
+  document.addEventListener("visibilitychange", () => clockPause("tab", document.hidden));
+  /* Scrolling the popup or its link out of sight closes it at once, in every clock state. */
+  window.addEventListener("scroll", scrolledAway, { capture: true, passive: true });
+  pop.addEventListener("close", () => {
+    clockStop();
+    if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+  });
   document.body.append(pop);
 }
 
@@ -139,6 +245,8 @@ async function open(from, fullHref, addr) {
     place(from);
     pop.focus({ preventScroll: true });
   }
+  clockFresh();
+  hoverSync();
   say(await copyText(addr));
 }
 
@@ -151,6 +259,7 @@ function start() {
     const addr = emailAddress(link.getAttribute("href"));
     if (!addr) return;
     e.preventDefault();
+    lastPointer = { x: e.clientX, y: e.clientY };
     void open(link, link.href, addr);
   });
 }

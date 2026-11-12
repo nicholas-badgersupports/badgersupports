@@ -153,7 +153,8 @@ test("EXPLORE-F: the built page shows the pulled courses with their terms and th
   const data = read("content/fixtures/courses.json");
   const page = builtPage("explore/classes");
   const section = page.slice(page.indexOf("data-courses"), page.indexOf("</section>", page.indexOf("data-courses")));
-  assert.ok(section.includes(data.label), "the sample pull says what it is until the owner accepts the verification note");
+  if (data.fixture) assert.ok(section.includes(data.label), "a sample pull says what it is until the owner accepts the verification note");
+  else assert.doesNotMatch(section, /Sample data/, "the production pull carries no sample note (switch on: the owner's ruling of 12 Nov 2026)");
   assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, data.courses.length, "every pulled course is a card");
   const card = (desig) => { const a = section.indexOf(desig); return a < 0 ? "" : section.slice(a, section.indexOf("</li>", a)); };
   assert.match(card("SCAND ST 101"), /Open for Fall 2026/, "the fall-only Norwegian course is open for the fall term it is published in");

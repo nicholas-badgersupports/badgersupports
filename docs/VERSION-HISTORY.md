@@ -20,7 +20,7 @@ Development from November 5 to November 11, 2026, checked into the repository an
 
 - The Bus Route Explorer at `/explore/bus-routes/` compares up to five housing addresses against the campus buildings a visitor picks, and reports a direct bus, one transfer or no suitable connection, from Madison Metro's published route data. It shows no times, schedules or predictions, and an address typed into it is not kept. On Navigating Housing the tool is signposted, not hosted, so the workshop pages keep their no-collection rule.
 
-- Discover Classes by Interest at `/explore/classes/` browses UW–Madison courses by interest from UW Course Search listings, each card labelled with its term. The course data is a labelled verification sample pulled on November 11, 2026; the tool goes live only when the Registrar's permission is answered.
+- Discover Classes by Interest at `/explore/classes/` browses UW–Madison courses by interest from UW Course Search listings, each card labelled with its term. The course data was first pulled on November 11, 2026 as a labelled verification sample; on November 12, 2026 the owner ruled that Registrar permission need not be sought, and the tool went live on the production pull.
 
 - The Academic Support Navigator at `/explore/academic-support/` walks a short question tree to the tutoring, accommodations and other academic support in the resource library, using the library's own cards. Its first screen states that it is not academic advising.
 

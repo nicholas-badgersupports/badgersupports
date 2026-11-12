@@ -168,9 +168,9 @@ Companion entries (same IDs, owned elsewhere):
   3. A catalog-only course with no published section in the window is excluded.
   4. No card contains future-uncertainty helper text; each links to UW Course Search.
   5. The API verification note exists and Nicholas has accepted it before the production switch.
-- **Status:** Approved 2026-11-11; built 2026-11-11 (branch `explore-b-2026-11`) with the API
-  verified and the pulled data labelled as a sample. Production waits on Accept 5: the owner
-  accepting `docs/research/COURSE-SEARCH-API-2026-11-11.md` and Registrar permission sought.
+- **Status:** Approved 2026-11-11; built 2026-11-11 (branch `explore-b-2026-11`); production switch
+  **on 2026-11-12** (branch `item43-switch-2026-11-12`). Accept 5's permission condition was superseded
+  by the owner's ruling of 12 Nov 2026: permission is no longer sought; the pull writes unflagged data.
 
 ## EXPLORE-G-ACADEMIC-NAV · Academic Support Navigator (WORK item 44)
 

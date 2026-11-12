@@ -137,3 +137,14 @@ test("the events the Badger Supports toggle gathers are the ones the feed marks 
   const own = fixtureCampusEvents("2026-11-11").filter((e) => e.badger);
   assert.deepEqual(own.map((e) => e.sources[0].source), ["badger"], "the toggle's set is the badger:true, source badger set");
 });
+
+test("the date block is a calendar square; today is a filled block plus a label in the meta line", () => {
+  const out = explorerHtml();
+  assert.match(out, /cecard-date is-today/, "today's block carries the filled state");
+  assert.match(out, /<span class="cecard-today">Today<\/span>/, "the word Today sits in the card's meta line");
+  assert.ok(!out.includes("today-tag"), "no tag is stuffed inside the date block");
+  const css = fs.readFileSync(new URL("../src/styles/blocks/exploreevents.css", import.meta.url), "utf8");
+  const rule = css.match(/\.cecard-date \{[^}]*\}/)[0];
+  assert.match(rule, /border-radius: var\(--r-card\)/, "the block wears the card radius");
+  assert.ok(!rule.includes("--r-chip"), "the stadium pill shape does not come back");
+});

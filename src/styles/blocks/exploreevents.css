@@ -1,5 +1,5 @@
 /* Campus Events Explorer (src/render/blocks/exploreevents.mjs): filter tools, then event cards
-   in the event-card family — a filled date block at the left — or a month grid of the same set.
+   in the event-card family — a calendar-style date block at the left — or a month grid of the same set.
    A Badger Supports program is marked by its label line; no meaning rides on colour alone. */
 .exploreevents h2 { color: var(--accent); margin-bottom: var(--s3); }
 .exploreevents .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
@@ -30,11 +30,16 @@
 .ce-more-row { display: flex; justify-content: center; margin-top: var(--s4); }
 .ce-more-row[hidden] { display: none; }
 .cecard { display: flex; gap: var(--s3); padding: var(--s3); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
-.cecard-date { flex: 0 0 4.75rem; display: flex; flex-direction: column; align-items: center; gap: var(--s1); padding: var(--s2) var(--s1); background: var(--accent); color: var(--paper); border-radius: var(--r-chip); text-align: center; height: fit-content; }
-.cecard-date .dow { font-size: var(--fs-small); font-weight: 700; text-transform: uppercase; }
-.cecard-date .dom { font-size: var(--fs-h3); font-weight: 800; line-height: 1; }
-.cecard-date .mon { font-size: var(--fs-small); text-transform: uppercase; }
-.cecard-date .today-tag { margin-top: var(--s1); padding: .15rem .5rem; background: var(--paper); color: var(--accent); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
+/* The date block is a calendar square, not a pill: the card's own corner radius, roughly as
+   wide as it is tall, the day number large between two calm small-cap lines. At rest it sits
+   quiet in the accent tint; today's block takes the full accent fill, and the word "Today"
+   rides in the card's meta line (.cecard-today) instead of being stuffed inside the block. */
+.cecard-date { flex: 0 0 4.5rem; width: 4.5rem; align-self: flex-start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s0); padding: var(--s1); background: var(--accent-tint); color: var(--accent-deep); border-radius: var(--r-card); text-align: center; }
+.cecard-date .dow { font-size: .8125rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; }
+.cecard-date .dom { font-size: 1.75rem; font-weight: 800; line-height: 1.05; }
+.cecard-date .mon { font-size: .8125rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; }
+.cecard-date.is-today { background: var(--accent); color: var(--paper); }
+.cecard-today { display: inline-block; margin-right: var(--s1); padding: .1rem .6rem; background: var(--accent); color: var(--paper); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
 .cecard-body { min-width: 0; }
 .cecard-body h3 { margin: 0 0 var(--s1); font-size: var(--fs-h3); line-height: 1.2; }
 .cecard-body h3 a { color: var(--accent); }
@@ -60,5 +65,4 @@
 @media (max-width: 560px) {
   .cecal-day { min-height: 3.5rem; padding: .2rem; }
   .cecard { flex-direction: column; }
-  .cecard-date { flex-direction: row; flex-basis: auto; justify-content: center; gap: var(--s2); padding: var(--s1) var(--s2); }
 }

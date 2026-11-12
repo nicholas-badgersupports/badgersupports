@@ -77,7 +77,8 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
     const date = el("div", "cecard-date"); date.setAttribute("aria-hidden", "true");
     const start = new Date(e.start);
     date.append(el("span", "dow", dayName.format(start)), el("span", "dom", String(Number(dayOf(e.start).slice(8)))), el("span", "mon", monthName.format(start)));
-    if (dayOf(e.start) === data.today) date.append(el("span", "today-tag", t("schedule.today")));
+    const isToday = dayOf(e.start) === data.today;
+    if (isToday) date.classList.add("is-today");
     const body = el("div", "cecard-body");
     const h = el("h3");
     const first = e.sources[0];
@@ -86,7 +87,7 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
     if (e.badger) body.append(el("p", "cecard-program", t("explore.events.program")));
     const when = e.allDay ? t("explore.events.allDay") : `${clock.format(start)}${e.end ? `–${clock.format(new Date(e.end))}` : ""}`;
     const meta = el("p", "cecard-meta");
-    const sr = el("span", "sr-only", `${dayLong.format(start)}, `); meta.append(sr, document.createTextNode(when + (e.place ? ` · ${e.place}` : "")));
+    const sr = el("span", "sr-only", `${dayLong.format(start)}, `); meta.append(sr); if (isToday) meta.append(el("span", "cecard-today", t("schedule.today"))); meta.append(document.createTextNode(when + (e.place ? ` · ${e.place}` : "")));
     body.append(meta);
     if (e.organizer) body.append(el("p", "cecard-org", e.organizer));
     if (e.blurb) body.append(el("p", "cecard-blurb", e.blurb));

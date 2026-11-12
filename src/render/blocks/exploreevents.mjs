@@ -37,11 +37,11 @@ export function eventCard(ctx, e, today) {
   const when = e.allDay ? ctx.t("explore.events.allDay") : timeRange(chicagoHm(e.start), e.end ? chicagoHm(e.end) : null, ctx.t);
   const [first, ...rest] = e.sources;
   return html`<li class="cecard${e.badger ? " is-badger" : ""}">
-    <div class="cecard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span>${date === today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
+    <div class="cecard-date${date === today ? " is-today" : ""}" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span></div>
     <div class="cecard-body">
       <h3>${first?.url ? link(ctx, first.url, e.title) : e.title}</h3>
       ${e.badger ? html`<p class="cecard-program">${ctx.t("explore.events.program")}</p>` : ""}
-      <p class="cecard-meta"><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${when}${e.place ? html` · ${e.place}` : ""}</p>
+      <p class="cecard-meta"><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${date === today ? html`<span class="cecard-today">${ctx.t("schedule.today")}</span>` : ""}${when}${e.place ? html` · ${e.place}` : ""}</p>
       ${e.organizer ? html`<p class="cecard-org">${e.organizer}</p>` : ""}
       ${e.blurb ? html`<p class="cecard-blurb">${e.blurb}</p>` : ""}
       ${e.cost ? html`<p class="cecard-cost">${e.cost}</p>` : ""}

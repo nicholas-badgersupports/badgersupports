@@ -106,6 +106,7 @@ const SHORT_EXITS = {
   "provenance.mjs": "one usage line",
   "deps-match.mjs": "a verdict line and at most a few differences",
   "contract.mjs": "one line",
+  "courses.mjs": "one failure line on a failed pull",
 };
 const ENDS_THROUGH_FINISH = ["shots.mjs", "a11y.mjs", "interact.mjs", "check.mjs", "editable.mjs", "build.mjs"];
 

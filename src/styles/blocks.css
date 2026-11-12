@@ -235,7 +235,8 @@
 .day-tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0; }
 .day-tags:empty { display: none; }
 .day-tags .today-tag, .day-tags .next-tag { margin-top: var(--s2); font-size: 1.0625rem; padding: .3rem .85rem; }
-.cards--days .card.is-today { background: var(--accent-tint); border-radius: var(--r-card); padding: var(--s3); }
+.day-tags .today-tag { border: 2px solid var(--accent); }
+.cards--days .card.is-today { background: var(--accent-tint); }
 .visit-tags { display: inline-flex; margin-left: var(--s2); vertical-align: middle; }
 .visit-tags:empty { display: none; }
 .visit-tags .today-tag { margin-top: 0; font-size: 1rem; padding: .25rem .8rem; }
@@ -478,10 +479,10 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .cards .lead { margin: calc(-1 * var(--s2)) 0 var(--s4); font-size: var(--fs-lead); }
 /* How to take part, above the week: three numbered steps on one rule, each a bold title and a line. */
 .card-steps { list-style: none; counter-reset: step; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); margin: 0 0 var(--s5); padding: var(--s4) 0 0; border-top: var(--rule-line); }
-.card-steps li { counter-increment: step; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: var(--s2); align-items: start; }
-.card-steps li::before { content: counter(step); grid-row: span 2; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--accent); color: var(--cream); font: 800 1.15rem/1 var(--font-display); }
-.card-steps strong { font-size: var(--fs-lead); line-height: 1.25; color: var(--accent); }
-.card-steps span { margin-top: .2rem; line-height: 1.5; }
+.card-steps li { counter-increment: step; position: relative; padding-left: calc(2.75rem + var(--s2)); }
+.card-steps li::before { content: counter(step); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--accent); color: var(--cream); font: 800 1.15rem/1 var(--font-display); }
+.card-steps strong { display: block; font-size: var(--fs-lead); line-height: 1.25; color: var(--accent); }
+.card-steps span { display: block; margin-top: .2rem; line-height: 1.5; }
 @media (max-width: 760px) { .card-steps { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } }
 /* The week sits in one panel on the band — the heading, the steps and every day inside a single
    card, as the site's other grouped panels sit (owner, 12 Nov 2026: nothing floating on the
@@ -489,10 +490,6 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    --lift is a card's shadow; --r-panel is the panel radius). */
 .cards--days .days-panel { background: var(--paper); border: var(--hairline); border-radius: var(--r-panel); box-shadow: var(--lift); padding: var(--s5); }
 @media (max-width: 760px) { .cards--days .days-panel { padding: var(--s3); } }
-/* On a narrow screen the tinted today row runs to the panel's own edges (its padding kept, the
-   panel's side padding given back), so its sessions column keeps the width the way-there pill
-   needs to stay on one line, as it did before the week had a panel. */
-@media (max-width: 760px) { .cards--days .card.is-today { margin-inline: calc(-1 * var(--s3)); padding-inline: var(--s3); } }
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
 .cards--days .card-list { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -515,7 +512,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* The week reads left to right: a day's photo and name, then its sessions in columns —
    time, place and the way there — the same columns on every row, so the eye runs across
    the week instead of down four uneven stacks. */
-.cards--days .card { display: grid; grid-template-columns: 8.5rem 12rem minmax(0, 1fr); gap: var(--s2) var(--s4); align-items: start; }
+.cards--days .card { display: grid; grid-template-columns: 8.5rem 12rem minmax(0, 1fr); gap: var(--s2) var(--s4); align-items: start; padding: var(--s3); border-radius: var(--r-card); }
 .cards--days .card h3 { font-size: 1.7rem; }
 .cards--days .card .day-head .card-text { margin: 0; }
 .cards--days .day-sessions { min-width: 0; }
@@ -551,6 +548,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .cards--activities .card-list, .cards--whole .card-list { grid-template-columns: minmax(0, 1fr); }
   .cards--days .card h3 { font-size: var(--fs-h3); }
   .cards--days .card-line { font-size: var(--fs-body); }
+  /* The sessions take the card's whole width, under the photo as well as the name: in the
+     beside-the-photo column the way-there pill (today's a step larger) no longer fits on
+     one line. Every row shares the move, so the sessions' left edge is the card's own
+     content edge on every day, the same edge the photo sits on. */
+  .cards--days .day-sessions { grid-column: 1 / -1; }
   /* A phone column is too narrow for the time beside the way there (the pill alone is
      wider than the time's share): the session stacks, time, place and way there in order. */
   .cards--days .card .ev { grid-template-columns: minmax(0, 1fr); justify-items: start; row-gap: var(--s1); }
@@ -1583,6 +1585,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 
 /* Each day can contain groups in different rooms; their time and route stay together. */
 .cards--days .ev .go { margin-top: 0; }
+/* The way-there pill on today's row stands a step larger than the other days' (owner,
+   12 Nov 2026): bigger type, more air around it, a larger badge; the tap height grows
+   past the 44px floor. */
+.cards--days .card.is-today .ev .go { font-size: 1.125rem; min-height: 3.25rem; padding: .45rem .45rem .45rem 1.25rem; }
+.cards--days .card.is-today .ev .go .go-ic { width: 2.5rem; height: 2.5rem; }
 .cards--days .where-detail { display: block; }
 
 .time-unconfirmed { display: block; font-weight: 600; }

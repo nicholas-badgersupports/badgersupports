@@ -180,6 +180,24 @@
         "href": "mailto:hello@badgersupports.org"
       },
       "note": "Badger Supports values diversity and is an Equal Opportunity Employer. Accommodations can be requested at accessibility@badgersupports.org."
+    },
+    {
+      "id": "b-gi-explore",
+      "type": "text",
+      "title": "Find your people",
+      "body": [
+        "Looking for a club, a community or something to go to? The Campus Events Explorer gathers UW-Madison and Wisconsin Union events with Badger Supports programs, and Find Your People collects the gatherings."
+      ],
+      "links": [
+        {
+          "label": "Campus Events Explorer",
+          "href": "/explore/events/"
+        },
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
     }
   ]
 }

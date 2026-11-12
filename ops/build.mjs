@@ -67,6 +67,8 @@ import { buildMedia, buildLinks, linkPlaceholders, loadManifest } from "./media.
 import { nextDated } from "../src/render/events.mjs";
 import { eventIcs, icsPath, hasCalendarTimes } from "../src/render/ics.mjs";
 import { feedConfig, feedRuleProblems, readConnectFeed, seriesIds } from "./connect-feed.mjs";
+import { fetchCampusEvents, fixtureCampusEvents, mergeCampusEvents, fromConnectRows } from "./campus-feed.mjs";
+import { addDays } from "../src/render/events.mjs";
 import { pagePrograms, sectionPrograms, siteSnapshot } from "../src/render/site.mjs";
 
 export const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
@@ -539,6 +541,26 @@ export async function build({ production = false, launch = production, today = n
   }
   const day = today || chicagoDate();
   const content = loadContent({ production, launch, textEdits, edits, feed, now: today ? Date.parse(`${today}T12:00:00-06:00`) : Date.now() });
+  /* The Campus Events Explorer's read (item 41): the two public feeds, read here for the page's
+   * first rendering and merged with Connect's dated programs. A production build whose feeds
+   * cannot be read still builds — Connect was already read above, and /api/campus-events reads
+   * the feeds again at run time — but it says so, and its page starts from Connect's list alone. */
+  const campusWindow = { from: day, to: addDays(day, 62) };
+  const badgerCampus = fromConnectRows(nextDated(content.events, day, Infinity));
+  const byStart = (a, b) => Date.parse(a.start) - Date.parse(b.start) || a.title.localeCompare(b.title);
+  let campusData;
+  if (production) {
+    try {
+      const got = await fetchCampusEvents({ today: day, fetchImpl: connectConfig?.fetch || fetch });
+      campusData = { events: [...got.events, ...mergeCampusEvents({ badger: badgerCampus }, campusWindow).events].sort(byStart), updated: got.updated, stale: false, report: got.report };
+    } catch (e) {
+      campusData = { events: mergeCampusEvents({ badger: badgerCampus }, campusWindow).events, updated: null, stale: true, report: { read: { uw: 0, union: 0, unionTitles: 0 }, shown: badgerCampus.length, dropped: [`the campus feeds could not be read at build (${e.message})`] } };
+    }
+  } else {
+    campusData = { events: [...fixtureCampusEvents(day), ...badgerCampus].sort(byStart), updated: null, stale: false, report: null };
+  }
+  for (const d of campusData.report?.dropped || []) log(`campus: left out ${d}`);
+
   const ga = analyticsConfig(process.env, content);
 
   if (!out.startsWith(ROOT + path.sep)) throw new Error(`refusing to write outside the project: ${out}`);
@@ -595,6 +617,9 @@ export async function build({ production = false, launch = production, today = n
     resourcesSample: content.resources.fixture ? content.resources.label : null,
     resourcesUpdated: content.resources.sourceUpdatedAt,
     searchIndex: searchIndex(content, { today: day }),
+    campusEvents: campusData,
+    campusInterests: readJson("content/explore/interests.json"),
+    transitBuildings: readJson("content/transit/buildings.json").buildings,
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
   const programs = pagePrograms(content.pages);
@@ -645,6 +670,8 @@ export async function build({ production = false, launch = production, today = n
     schema: "bss.server/1", prototype, assets, site: content.site, routes: content.routes, builtPaths,
     forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
     events: eventsForServer(content, { connect: !!feed }),
+    campus: { source: production ? "live" : "fixture", built: campusData, interests: data.campusInterests },
+    transit: { topology: readJson("content/transit/topology.json"), buildings: data.transitBuildings },
     headers: siteHeaders({ prototype, ga: !!ga }), redirects: redirects.text,
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({
@@ -664,6 +691,7 @@ export async function build({ production = false, launch = production, today = n
     edits: content.edits,
     pages: pageReport,
     search: data.searchIndex.length,
+    campus: campusData.report,
     calendar: calendar.map((r) => icsPath(r.event)),
     css: { name: cssName, bytes: Buffer.byteLength(css) },
     js: Object.fromEntries(jsFiles.map((f) => [f.name, Buffer.byteLength(f.text)])),
@@ -703,6 +731,7 @@ if (isDirect(import.meta.url)) {
     console.log(`  css ${r.css.bytes} B · js ${Object.values(r.js).reduce((a, b) => a + b, 0)} B · ${r.media.variants} image variants (${r.media.encoded} newly encoded)`);
     console.log(`  ${r.pendingLinks.length} internal links still point at the live site · ${r.redirectsWaiting.length} redirects wait for their page`);
     for (const line of unnamedLines(r.connect?.unnamed)) console.log(`  warning: ${line}`);
+    if (r.campus) console.log(`  campus events: read ${r.campus.read.uw} UW + ${r.campus.read.union} Union (titles feed ${r.campus.read.unionTitles}), shown ${r.campus.shown}${r.campus.dropped.length ? `; left out ${r.campus.dropped.length} (--verbose names them)` : ""}`);
     if (r.edits.applied.length || r.edits.skipped.length) console.log(`  ${r.edits.applied.length} edited words laid over the files${r.edits.skipped.length ? `; skipped ${r.edits.skipped.length}: ${r.edits.skipped.join(", ")}` : ""}`);
   } catch (e) {
     console.error(e.message);

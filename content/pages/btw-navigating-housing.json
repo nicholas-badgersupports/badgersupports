@@ -54,6 +54,38 @@
       ]
     },
     {
+      "id": "b-btw-nh-bus",
+      "type": "text",
+      "title": "Can you get to campus from there?",
+      "body": [
+        "A home is also a commute. The Bus Route Explorer compares the housing addresses you are considering against the campus buildings you pick, from Madison Metro's route data: a direct bus, one transfer, or no suitable connection, with walking distances only. Your addresses are looked up to place them and are not kept."
+      ],
+      "links": [
+        {
+          "label": "Bus Routes from Home",
+          "href": "/explore/bus-routes/"
+        }
+      ]
+    },
+    {
+      "id": "b-btw-nh-explore",
+      "type": "text",
+      "title": "Explore Campus",
+      "body": [
+        "Explore Campus gathers this bus tool with a campus events explorer in one place."
+      ],
+      "links": [
+        {
+          "label": "Bus Routes from Home",
+          "href": "/explore/bus-routes/"
+        },
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
+    },
+    {
       "id": "b-btw-nh-slide",
       "type": "cta",
       "title": "Can You Spot the Bedroom Window?",

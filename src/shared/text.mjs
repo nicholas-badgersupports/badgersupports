@@ -78,6 +78,8 @@ export const CLIENT_TEXT = {
   "edit.js": ["edit.*"],
   "resources.js": ["resources.count.*", "resources.chip.remove"],
   "search.js": ["search.loading", "search.failed", "search.count.*"],
+  "campus-events.js": ["explore.events.*", "schedule.today", "date.dow.*"],
+  "bus-routes.js": ["explore.bus.*"],
 };
 
 export function clientTable(table, modules) {

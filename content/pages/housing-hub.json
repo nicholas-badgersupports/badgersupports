@@ -248,6 +248,24 @@
           "href": "/join/get-involved/"
         }
       ]
+    },
+    {
+      "id": "b-hh-explore",
+      "type": "text",
+      "title": "Getting to campus",
+      "body": [
+        "Before you sign, check the bus: the Bus Route Explorer compares housing addresses against the campus buildings you pick — a direct bus, one transfer, or no suitable connection, with walking distances only."
+      ],
+      "links": [
+        {
+          "label": "Bus Routes from Home",
+          "href": "/explore/bus-routes/"
+        },
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
     }
   ]
 }

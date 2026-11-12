@@ -253,8 +253,6 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `disclosure` | one line of text |  |
 | `preview` | one or more paragraphs |  |
 | `whole` | on or off |  |
-| `icon` | one line of text |  |
-| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 
 ### Closing call to action — `cta`
 
@@ -390,6 +388,27 @@ Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module 
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
 
+### Campus Events Explorer — `exploreevents`
+
+Reads: `campusEvents`, `campusInterests` · analytics: `none` · photos load lazy · browser module `campus-events.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `count` | a whole number |  |
+
+### Bus Route Explorer — `busroutes`
+
+Reads: `transitBuildings` · analytics: `none` · photos load lazy · browser module `bus-routes.js`
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `lead` | one line of text |  |
+| `privacy` | one line of text |  |
+| `credit` | one line of text |  |
+
 ### Directory — `directory`
 
 Reads: nothing but its own fields · analytics: `none` · photos load lazy
@@ -419,23 +438,10 @@ Reads: `legal` · analytics: `none` · photos load lazy
 |---|---|---|
 | `doc` | one line of text | **required** |
 
-### Statement banner — `statement`
-
-Reads: nothing but its own fields · analytics: `page` · photos load lazy
-
-| Field | Type | |
-|---|---|---|
-| `text` | one line of text | **required** |
-| `points` | short statements, each its `text` and an optional `icon` (see Icons) |  |
-| `body` | one or more paragraphs |  |
-| `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
-| `links` | several links, in order |  |
-| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
-
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 
@@ -553,7 +559,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-725 keys. Keys are permanent. Required text cannot be published empty and must keep each
+767 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -579,7 +585,7 @@ the site adds the markup.
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
-### Homepage sections (34)
+### Homepage sections (33)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -588,7 +594,6 @@ the site adds the markup.
 | `hero.pause` | Pause the Moving Photos | Name and tooltip of the round button among the white dots of the hero's photo circles; it stops them drifting. Screen readers read it; it is not shown as text. |  |
 | `hero.play` | Play the Moving Photos | The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text. |  |
 | `schedule.today` | Today | Tag on today's date in the timetable. |  |
-| `schedule.nextUp` | Next Up | Tag on the next peer support group day or visit that is not today, so a visitor can spot the soonest one. |  |
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
 | `schedule.placeLink` | How to Find It | Link under the usual place in the timetable. |  |
 | `schedule.laterTitle` | Coming Up | Heading over later events, when the timetable block gives none. |  |
@@ -711,7 +716,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (92)
+### Forms (82)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -785,16 +790,6 @@ the site adds the markup.
 | `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
 | `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
-| `form.steps.label` | Steps in this form | The name of the list of steps across the top of a long form, read by screen readers. |  |
-| `form.step.of` | Step {{n}} of {{m}} | Above the title of the step of a long form being read. | `{{n}}` `{{m}}` |
-| `form.step.back` | Back | The button under a long form that returns to the step before. |  |
-| `form.step.continue` | Continue | The button under a long form that goes on to the next step. |  |
-| `form.review.title` | Check your answers | The title of the last step of a long form, which lists every answer before it is sent. |  |
-| `form.review.intro` | Check your answers before you send the form. You can go back and change any answer. | Under that title. |  |
-| `form.review.change` | Change | The button beside an answer on that step, which returns to its question. |  |
-| `form.review.changeFor` | Change the answer to “{{label}}” | That button's name, read by screen readers. | `{{label}}` |
-| `form.review.blank` | No answer given | On that step, beside a question left empty. |  |
-| `form.review.yes` | Yes | On that step, as the answer to a question answered by ticking a box to confirm or agree. |  |
 | `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
 | `form.workshopGoogleSignIn` | Google sign-in is required to use this form. You can also email your workshop request. | Under the trusted Google workshop request fallback; not shown on an open native form or an intentional closure. |  |
 | `form.workshopEmail` | Request by Email | Workshop request alternative when the trusted Google Form requires sign-in. |  |
@@ -1252,7 +1247,7 @@ the site adds the markup.
 | `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
 | `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
 
-### Resource list (52)
+### Resource list (51)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1307,7 +1302,6 @@ the site adds the markup.
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
 | `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
 | `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
-| `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
 ### Site search (16)
 
@@ -1329,6 +1323,65 @@ the site adds the markup.
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
+
+### Explore Campus (54)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `explore.events.search` | Search events | On the Campus Events Explorer: the search box label. |  |
+| `explore.events.interests` | Interests | On the Campus Events Explorer: the heading over the interest buttons. |  |
+| `explore.events.category` | Category | On the Campus Events Explorer: the category menu label. |  |
+| `explore.events.categoryAll` | All categories | On the Campus Events Explorer: the category menu's first choice. |  |
+| `explore.events.source` | Source | On the Campus Events Explorer: the source menu label. |  |
+| `explore.events.sourceAll` | All sources | On the Campus Events Explorer: the source menu's first choice. |  |
+| `explore.events.from` | From | On the Campus Events Explorer: the first date field's label. |  |
+| `explore.events.to` | To | On the Campus Events Explorer: the second date field's label. |  |
+| `explore.events.view` | View | On the Campus Events Explorer: the label for the List and Calendar buttons. |  |
+| `explore.events.viewList` | List | On the Campus Events Explorer: the button that shows events as a list. |  |
+| `explore.events.viewCalendar` | Calendar | On the Campus Events Explorer: the button that shows events on a calendar. |  |
+| `explore.events.reset` | Clear filters | On the Campus Events Explorer: the button that clears every filter. |  |
+| `explore.events.failed` | Events could not be loaded just now. | On the Campus Events Explorer: the count line when no list could be loaded. |  |
+| `explore.events.retry` | Try again | On the Campus Events Explorer: the button that tries loading the events again. |  |
+| `explore.events.updated` | Last updated {{when}} | On the Campus Events Explorer: when the listings were last read from their sources. | `{{when}}` |
+| `explore.events.count.one` | 1 event | On the Campus Events Explorer: the count when one event matches. |  |
+| `explore.events.count.other` | {{n}} events | On the Campus Events Explorer: the count when more than one event matches. | `{{n}}` |
+| `explore.events.count.none` | No events | On the Campus Events Explorer: the count when nothing matches. |  |
+| `explore.events.none.title` | No events match these filters | On the Campus Events Explorer: the heading when nothing matches. |  |
+| `explore.events.none.body` | Clear a filter or widen the dates to see more. | On the Campus Events Explorer: the line under the no-matches heading. |  |
+| `explore.events.program` | Badger Supports program | On the Campus Events Explorer: the label on a Badger Supports event card, so it is distinct from an outside listing by words, not colour. |  |
+| `explore.events.sourceLine` | Source: {{name}} | On the Campus Events Explorer: the line naming where a listing came from. | `{{name}}` |
+| `explore.events.official` | Official listing | On the Campus Events Explorer: the link to the event on its own source's site. |  |
+| `explore.events.soldOut` | Sold out | On the Campus Events Explorer: shown on a card only when the source itself says the event is sold out. |  |
+| `explore.events.allDay` | All day | On the Campus Events Explorer: in place of a time, for an event the source lists as all day. |  |
+| `explore.events.prevMonth` | Previous month | On the Campus Events Explorer's calendar: the button for the month before. |  |
+| `explore.events.nextMonth` | Next month | On the Campus Events Explorer's calendar: the button for the month after. |  |
+| `explore.events.name.uw` | UW–Madison Events | On the Campus Events Explorer: the source menu's name for the campus calendar, and the name on its cards. |  |
+| `explore.events.name.union` | Wisconsin Union | On the Campus Events Explorer: the source menu's name for the Union calendar, and the name on its cards. |  |
+| `explore.events.name.badger` | Badger Supports | On the Campus Events Explorer: the source menu's name for our own programs, and the name on their cards. |  |
+| `explore.events.more` | +{{n}} more | On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named. | `{{n}}` |
+| `explore.bus.address` | Address {{n}} | On the Bus Route Explorer: the label over each address box. | `{{n}}` |
+| `explore.bus.addressesHeader` | Address | On the Bus Route Explorer: the results table's first column heading. |  |
+| `explore.bus.addAddress` | Add another address | On the Bus Route Explorer: the button that adds an address box. |  |
+| `explore.bus.remove` | Remove address {{n}} | On the Bus Route Explorer: the spoken name of an address box's remove button. | `{{n}}` |
+| `explore.bus.buildings` | Campus buildings | On the Bus Route Explorer: the heading over the building checklist. |  |
+| `explore.bus.compare` | Compare bus routes | On the Bus Route Explorer: the button that runs the comparison. |  |
+| `explore.bus.looking` | Looking up the addresses… | On the Bus Route Explorer: the status while addresses are being placed. |  |
+| `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
+| `explore.bus.notFound` | No match near Madison for “{{q}}”. Check the address and try again. | On the Bus Route Explorer: when an address cannot be placed. | `{{q}}` |
+| `explore.bus.failed` | The comparison could not be made just now. Try again. | On the Bus Route Explorer: when the comparison itself fails. |  |
+| `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
+| `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
+| `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |
+| `explore.bus.direct` | Direct bus | On the Bus Route Explorer: a pair one route serves, in the results table. |  |
+| `explore.bus.transfer` | One transfer | On the Bus Route Explorer: a pair needing two routes, in the results table. |  |
+| `explore.bus.none` | No suitable connection | On the Bus Route Explorer: a pair no route serves within the walking distance, in the results table. |  |
+| `explore.bus.routeOne` | Route {{routes}} | On the Bus Route Explorer: the one route of a direct pair. | `{{routes}}` |
+| `explore.bus.routeTwo` | Routes {{a}} then {{b}} | On the Bus Route Explorer: the two routes of a transfer pair, in order. | `{{a}}` `{{b}}` |
+| `explore.bus.walkTo` | About {{m}} m walk to {{stop}} | On the Bus Route Explorer: the walk from the address to the stop where the bus is caught. | `{{m}}` `{{stop}}` |
+| `explore.bus.walkFrom` | About {{m}} m walk from {{stop}} to the building | On the Bus Route Explorer: the walk from the stop where the bus is left to the building. | `{{m}}` `{{stop}}` |
+| `explore.bus.changeAt` | Change at {{stop}} | On the Bus Route Explorer: the stop where a transfer pair changes buses. | `{{stop}}` |
+| `explore.bus.mapTitle` | Map | On the Bus Route Explorer: the heading over the schematic map. |  |
+| `explore.bus.mapLegend` | Numbered markers are your addresses, squares are the buildings, and dots are the stops used. The table above is the same answer in words. | On the Bus Route Explorer: the line under the schematic map. |  |
 
 ### Alumni History (6)
 

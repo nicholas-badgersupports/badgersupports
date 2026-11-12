@@ -47,6 +47,10 @@
       "label": "Site search"
     },
     {
+      "id": "explore",
+      "label": "Explore Campus"
+    },
+    {
       "id": "alumni",
       "label": "Alumni History"
     }
@@ -3135,6 +3139,276 @@
       "group": "search",
       "text": "This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page.",
       "where": "On the search page: the note under the results."
+    },
+    "explore.events.search": {
+      "group": "explore",
+      "text": "Search events",
+      "where": "On the Campus Events Explorer: the search box label."
+    },
+    "explore.events.interests": {
+      "group": "explore",
+      "text": "Interests",
+      "where": "On the Campus Events Explorer: the heading over the interest buttons."
+    },
+    "explore.events.category": {
+      "group": "explore",
+      "text": "Category",
+      "where": "On the Campus Events Explorer: the category menu label."
+    },
+    "explore.events.categoryAll": {
+      "group": "explore",
+      "text": "All categories",
+      "where": "On the Campus Events Explorer: the category menu's first choice."
+    },
+    "explore.events.source": {
+      "group": "explore",
+      "text": "Source",
+      "where": "On the Campus Events Explorer: the source menu label."
+    },
+    "explore.events.sourceAll": {
+      "group": "explore",
+      "text": "All sources",
+      "where": "On the Campus Events Explorer: the source menu's first choice."
+    },
+    "explore.events.from": {
+      "group": "explore",
+      "text": "From",
+      "where": "On the Campus Events Explorer: the first date field's label."
+    },
+    "explore.events.to": {
+      "group": "explore",
+      "text": "To",
+      "where": "On the Campus Events Explorer: the second date field's label."
+    },
+    "explore.events.view": {
+      "group": "explore",
+      "text": "View",
+      "where": "On the Campus Events Explorer: the label for the List and Calendar buttons."
+    },
+    "explore.events.viewList": {
+      "group": "explore",
+      "text": "List",
+      "where": "On the Campus Events Explorer: the button that shows events as a list."
+    },
+    "explore.events.viewCalendar": {
+      "group": "explore",
+      "text": "Calendar",
+      "where": "On the Campus Events Explorer: the button that shows events on a calendar."
+    },
+    "explore.events.reset": {
+      "group": "explore",
+      "text": "Clear filters",
+      "where": "On the Campus Events Explorer: the button that clears every filter."
+    },
+    "explore.events.failed": {
+      "group": "explore",
+      "text": "Events could not be loaded just now.",
+      "where": "On the Campus Events Explorer: the count line when no list could be loaded."
+    },
+    "explore.events.retry": {
+      "group": "explore",
+      "text": "Try again",
+      "where": "On the Campus Events Explorer: the button that tries loading the events again."
+    },
+    "explore.events.updated": {
+      "group": "explore",
+      "text": "Last updated {{when}}",
+      "where": "On the Campus Events Explorer: when the listings were last read from their sources."
+    },
+    "explore.events.count.one": {
+      "group": "explore",
+      "text": "1 event",
+      "where": "On the Campus Events Explorer: the count when one event matches."
+    },
+    "explore.events.count.other": {
+      "group": "explore",
+      "text": "{{n}} events",
+      "where": "On the Campus Events Explorer: the count when more than one event matches."
+    },
+    "explore.events.count.none": {
+      "group": "explore",
+      "text": "No events",
+      "where": "On the Campus Events Explorer: the count when nothing matches."
+    },
+    "explore.events.none.title": {
+      "group": "explore",
+      "text": "No events match these filters",
+      "where": "On the Campus Events Explorer: the heading when nothing matches."
+    },
+    "explore.events.none.body": {
+      "group": "explore",
+      "text": "Clear a filter or widen the dates to see more.",
+      "where": "On the Campus Events Explorer: the line under the no-matches heading."
+    },
+    "explore.events.program": {
+      "group": "explore",
+      "text": "Badger Supports program",
+      "where": "On the Campus Events Explorer: the label on a Badger Supports event card, so it is distinct from an outside listing by words, not colour."
+    },
+    "explore.events.sourceLine": {
+      "group": "explore",
+      "text": "Source: {{name}}",
+      "where": "On the Campus Events Explorer: the line naming where a listing came from."
+    },
+    "explore.events.official": {
+      "group": "explore",
+      "text": "Official listing",
+      "where": "On the Campus Events Explorer: the link to the event on its own source's site."
+    },
+    "explore.events.soldOut": {
+      "group": "explore",
+      "text": "Sold out",
+      "where": "On the Campus Events Explorer: shown on a card only when the source itself says the event is sold out."
+    },
+    "explore.events.allDay": {
+      "group": "explore",
+      "text": "All day",
+      "where": "On the Campus Events Explorer: in place of a time, for an event the source lists as all day."
+    },
+    "explore.events.prevMonth": {
+      "group": "explore",
+      "text": "Previous month",
+      "where": "On the Campus Events Explorer's calendar: the button for the month before."
+    },
+    "explore.events.nextMonth": {
+      "group": "explore",
+      "text": "Next month",
+      "where": "On the Campus Events Explorer's calendar: the button for the month after."
+    },
+    "explore.events.name.uw": {
+      "group": "explore",
+      "text": "UW\u2013Madison Events",
+      "where": "On the Campus Events Explorer: the source menu's name for the campus calendar, and the name on its cards."
+    },
+    "explore.events.name.union": {
+      "group": "explore",
+      "text": "Wisconsin Union",
+      "where": "On the Campus Events Explorer: the source menu's name for the Union calendar, and the name on its cards."
+    },
+    "explore.events.name.badger": {
+      "group": "explore",
+      "text": "Badger Supports",
+      "where": "On the Campus Events Explorer: the source menu's name for our own programs, and the name on their cards."
+    },
+    "explore.events.more": {
+      "group": "explore",
+      "text": "+{{n}} more",
+      "where": "On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named."
+    },
+    "explore.bus.address": {
+      "group": "explore",
+      "text": "Address {{n}}",
+      "where": "On the Bus Route Explorer: the label over each address box."
+    },
+    "explore.bus.addressesHeader": {
+      "group": "explore",
+      "text": "Address",
+      "where": "On the Bus Route Explorer: the results table's first column heading."
+    },
+    "explore.bus.addAddress": {
+      "group": "explore",
+      "text": "Add another address",
+      "where": "On the Bus Route Explorer: the button that adds an address box."
+    },
+    "explore.bus.remove": {
+      "group": "explore",
+      "text": "Remove address {{n}}",
+      "where": "On the Bus Route Explorer: the spoken name of an address box's remove button."
+    },
+    "explore.bus.buildings": {
+      "group": "explore",
+      "text": "Campus buildings",
+      "where": "On the Bus Route Explorer: the heading over the building checklist."
+    },
+    "explore.bus.compare": {
+      "group": "explore",
+      "text": "Compare bus routes",
+      "where": "On the Bus Route Explorer: the button that runs the comparison."
+    },
+    "explore.bus.looking": {
+      "group": "explore",
+      "text": "Looking up the addresses…",
+      "where": "On the Bus Route Explorer: the status while addresses are being placed."
+    },
+    "explore.bus.working": {
+      "group": "explore",
+      "text": "Working out the bus routes…",
+      "where": "On the Bus Route Explorer: the status while the comparison runs."
+    },
+    "explore.bus.notFound": {
+      "group": "explore",
+      "text": "No match near Madison for “{{q}}”. Check the address and try again.",
+      "where": "On the Bus Route Explorer: when an address cannot be placed."
+    },
+    "explore.bus.failed": {
+      "group": "explore",
+      "text": "The comparison could not be made just now. Try again.",
+      "where": "On the Bus Route Explorer: when the comparison itself fails."
+    },
+    "explore.bus.needAddress": {
+      "group": "explore",
+      "text": "Add at least one address.",
+      "where": "On the Bus Route Explorer: when Compare is pressed with every address box empty."
+    },
+    "explore.bus.needBuilding": {
+      "group": "explore",
+      "text": "Choose at least one campus building.",
+      "where": "On the Bus Route Explorer: when Compare is pressed with no building ticked."
+    },
+    "explore.bus.results": {
+      "group": "explore",
+      "text": "Bus connections",
+      "where": "On the Bus Route Explorer: the heading over the results table."
+    },
+    "explore.bus.direct": {
+      "group": "explore",
+      "text": "Direct bus",
+      "where": "On the Bus Route Explorer: a pair one route serves, in the results table."
+    },
+    "explore.bus.transfer": {
+      "group": "explore",
+      "text": "One transfer",
+      "where": "On the Bus Route Explorer: a pair needing two routes, in the results table."
+    },
+    "explore.bus.none": {
+      "group": "explore",
+      "text": "No suitable connection",
+      "where": "On the Bus Route Explorer: a pair no route serves within the walking distance, in the results table."
+    },
+    "explore.bus.routeOne": {
+      "group": "explore",
+      "text": "Route {{routes}}",
+      "where": "On the Bus Route Explorer: the one route of a direct pair."
+    },
+    "explore.bus.routeTwo": {
+      "group": "explore",
+      "text": "Routes {{a}} then {{b}}",
+      "where": "On the Bus Route Explorer: the two routes of a transfer pair, in order."
+    },
+    "explore.bus.walkTo": {
+      "group": "explore",
+      "text": "About {{m}} m walk to {{stop}}",
+      "where": "On the Bus Route Explorer: the walk from the address to the stop where the bus is caught."
+    },
+    "explore.bus.walkFrom": {
+      "group": "explore",
+      "text": "About {{m}} m walk from {{stop}} to the building",
+      "where": "On the Bus Route Explorer: the walk from the stop where the bus is left to the building."
+    },
+    "explore.bus.changeAt": {
+      "group": "explore",
+      "text": "Change at {{stop}}",
+      "where": "On the Bus Route Explorer: the stop where a transfer pair changes buses."
+    },
+    "explore.bus.mapTitle": {
+      "group": "explore",
+      "text": "Map",
+      "where": "On the Bus Route Explorer: the heading over the schematic map."
+    },
+    "explore.bus.mapLegend": {
+      "group": "explore",
+      "text": "Numbered markers are your addresses, squares are the buildings, and dots are the stops used. The table above is the same answer in words.",
+      "where": "On the Bus Route Explorer: the line under the schematic map."
     },
     "schedule.directions": {
       "group": "events",

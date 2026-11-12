@@ -128,6 +128,20 @@
           "icon": "mail"
         }
       ]
+    },
+    {
+      "id": "b-res-explore",
+      "type": "text",
+      "title": "Explore Campus",
+      "body": [
+        "Explore Campus gathers two tools in one place: a campus events explorer and a bus route explorer for housing addresses."
+      ],
+      "links": [
+        {
+          "label": "Explore Campus",
+          "href": "/explore/"
+        }
+      ]
     }
   ]
 }

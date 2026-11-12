@@ -1,0 +1,40 @@
+/* Bus Route Explorer (src/render/blocks/busroutes.mjs): address rows, a building checklist, and
+   the comparison table. The map is a schematic drawn from the same numbers as the table; the
+   table is the answer and works without it. */
+.busroutes h2 { color: var(--accent); margin-bottom: var(--s3); }
+.busroutes .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
+.bus-form { display: grid; gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+.bus-address label { display: block; font-weight: 700; margin-bottom: var(--s1); }
+.bus-address-line { display: flex; gap: var(--s2); align-items: center; }
+.bus-address-line input { flex: 1; min-height: 48px; padding: .5rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
+.bus-address-line input:hover { border-color: var(--accent); }
+.bus-remove { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.bus-remove:hover { background: var(--cream); color: var(--ink); }
+.bus-addrow { margin: 0; }
+.bus-buildings { border: 0; margin: 0; padding: 0; }
+.bus-buildings legend { font-weight: 700; margin-bottom: var(--s2); }
+.bus-building-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--s1) var(--s3); }
+.bus-building { display: flex; gap: var(--s2); align-items: center; min-height: 44px; cursor: pointer; }
+.bus-building input { width: 1.3rem; height: 1.3rem; accent-color: var(--accent); }
+.bus-privacy { margin: 0; color: var(--muted); max-width: var(--measure); }
+.bus-go { margin: 0; }
+.bus-status p { margin: 0 0 var(--s3); font-weight: 700; }
+.bus-results h3 { font-size: var(--fs-h3); margin: var(--s4) 0 var(--s2); }
+.bus-tablewrap { overflow-x: auto; }
+.bus-table { border-collapse: collapse; width: 100%; background: var(--paper); }
+.bus-table th, .bus-table td { border: var(--hairline); padding: var(--s2); text-align: left; vertical-align: top; min-width: 11rem; }
+.bus-table thead th { background: var(--accent-tint); }
+.bus-cell p { margin: 0 0 var(--s1); }
+.bus-kind { font-weight: 800; }
+.bus-route { font-weight: 700; }
+.bus-walk { color: var(--muted); }
+.bus-map { background: var(--paper); border: var(--hairline); border-radius: var(--r-card); padding: var(--s2); }
+.bus-svg { width: 100%; height: auto; display: block; }
+.bus-line { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .55; }
+.bus-sq { fill: var(--ink); }
+.bus-dot { fill: var(--accent); }
+.bus-dot--addr { fill: var(--accent); stroke: var(--paper); stroke-width: 2; }
+.bus-pt-num { fill: var(--paper); font-weight: 800; text-anchor: middle; }
+.bus-pt-label { fill: var(--ink); font-size: 15px; }
+.bus-maplegend { color: var(--muted); font-size: var(--fs-small); }
+.bus-credit { color: var(--muted); font-size: var(--fs-small); margin-top: var(--s4); }

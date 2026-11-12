@@ -1,7 +1,7 @@
 # Work
 
 Where the rebuild of www.badgersupports.org stands, what is left in order, and what only the owner can do. The
-brief is `../MASTER-PROMPT.md`. Updated 11 Nov 2026 (Session 13: item 15 closed, item 22 built, item 18 confirmations recorded; Session 14: state-table rows archived, item 22's Web Analytics remainder checked from local evidence, item 16's card words verified in Connect's branch; Session 12 cleanup detail in `docs/QUEUE-HISTORY-2026-11-10.md`).
+brief is `../MASTER-PROMPT.md`. Updated 11 Nov 2026 (merge pass: the redesign pages and fixes, the forms redesign, Explore A and B and items 46–47 merged to `main`; earlier session detail in `docs/QUEUE-HISTORY-2026-11-10.md` and the session handoffs).
 
 ## Where it stands
 
@@ -121,7 +121,7 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 24. ~~The §12 server tests~~ **shipped** in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`). Revocation stays Connect's (`publicSsoStatus`, item 20).
 25. **Before the switch** → **checked** 30 Oct (`23afc2e`); plan and undo in `docs/SWITCH.md`. Mendota Lodge and a final `/` **fixed**,
     published in `2bab970` (queue 3a). Owed: www sign-in at Connect, the reviewed privacy policy, the owner's word; his steps: `../SWITCH-SETUP-2026-10-30/`. (Connect's team export stood on this line until 11 Nov 2026: item 19 covers the delivery and its live verification, so the line was a duplicate — Session 14, from the Session 12 proposed-archive list.)
-26. **The one-week promise** on the workshop confirmation → **ruled by Programs, 11 Nov 2026 (relayed by Nicholas): remove the promise** — the workshop confirmation carries no response-time promise. Programs also ruled the same day: **yes to a per-submission email** — each workshop request sends Programs an email as it arrives. Both changes are queued: the confirmation wording goes with the forms work; the per-submission email is a notifications change to be built and verified before it is described as live.
+26. **The one-week promise** on the workshop confirmation → **ruled by Programs, 11 Nov 2026 (relayed by Nicholas): remove the promise** — the workshop confirmation carries no response-time promise. Programs also ruled the same day: **yes to a per-submission email** — each workshop request sends Programs an email as it arrives. Both are **built and merged to main 11 Nov 2026** (forms redesign, merge pass): the confirmation carries no promise, and each workshop request queues one notice to Programs, held until the verified sender is set and Connect's `publicNotify` action lands — not yet live.
 30. ~~Past craft nights~~ **shipped**: Connect sends `recent`, the site reads it, `endDate` shipped in `9bf0ed5` (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
 31. **Form setup**: all permitted forms are configurable/openable through /staff/ → Set Up Forms; resource-choice validation is repaired and all 13 live journeys passed (shared public handoff, Nov 5). This staged candidate adds recommendation-cycle link context beside answers; Connect must support it first. No form opens automatically and no person is matched by name.
 33. **Functionality and UI pass** (24 Oct brief) → **shipped** in `9bf0ed5`, each part on a regression shown failing first (full entry in `docs/QUEUE-HISTORY-2026-11-10.md`).
@@ -136,58 +136,33 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     visitor's browser against the build's index (`search-index.json`); `/staff/`, `/api/` and form answers stay out. **Hidden from the
     navigation** (Session 16): the owner ruled on 11 Nov 2026 that Search does not appear in the menu; the page works at its address,
     unlinked from the navigation. The rest of the map waits.
-40. **Explore Campus hub** (`EXPLORE-HUB`; queued 10 Nov) → one page gathering 41–45, each also linked from Resources, Navigating Housing,
-    Housing Hub, Get Involved, Home and Support Networks; approved Drive photographs only (`ops/media.mjs`); live tools only.
-    **Approved by Nicholas 11 Nov 2026 and built the same day** in the `explore-a-wt` worktree on branch `explore-a-2026-11`
-    (commits `1bf0049`, `54d9f50`): `/explore/` gathers the built explorers (41 and 45) as cards in `content/pages/explore.json`;
-    42–44 slot in at merge by appending cards. Linked from Home, Resources, Get Involved, Support Networks, Navigating Housing
-    and the Housing Hub. Not merged or published; the merge and the publish stay Nicholas's.
-41. **Campus Events Explorer** (`EXPLORE-A-EVENTS`) → UW Events API + all Wisconsin Union events, deduplicated; interests, categories, dates;
-    calendar and list; Find Your People; auto-refresh ≤30 min; organizer and source link; external vs Badger Supports distinct; cost/cancellation
-    only when the source states it; loading/empty/error states. Verify API terms first.
-    **Approved by Nicholas 11 Nov 2026 and built the same day** on branch `explore-a-2026-11` (commits `05b1367`, `9352a96`,
-    `4310c9a`): UW Events API plus the Union's full feed — the queue-named `feed_1` carries titles only, recorded in
-    `docs/research/EXPLORE-FEEDS-VERIFICATION-2026-11-11.md` — deduplicated, Badger Supports programs from Connect's list,
-    refreshed by `/api/campus-events` with the last good list kept. The Find Your People mapping
-    (`content/explore/interests.json`) awaits Engagement staff review. The full browser gate is owed (Mac load). Not merged
-    or published.
-42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → Connect's approved resources and approved UW
-    KnowledgeBase articles in one search, labelled by source and publisher with official link and review date; Connect owns the library and
-    approval (its `QUEUE.md`, same ID; EXPLORE-D, EXPLORE-X). Approved 2026-11-11. Public half built 2026-11-11 (branch
-    `explore-b-2026-11`): source lines with publisher and review date, unapproved outside records never drawn; Connect side
+40. **Explore Campus hub** (`EXPLORE-HUB`) → **built and merged to main 11 Nov 2026** (merge pass): `/explore/` gathers the
+    built explorers as cards in `content/pages/explore.json`, linked from Home, Resources, Get Involved, Support Networks,
+    Navigating Housing and the Housing Hub. The classes and academic support cards were appended at merge, as the hub was
+    built for. Publish stays Nicholas's.
+41. **Campus Events Explorer** (`EXPLORE-A-EVENTS`) → **built and merged to main 11 Nov 2026**: UW Events API plus the
+    Union's full feed (the queue-named `feed_1` carries titles only; `docs/research/EXPLORE-FEEDS-VERIFICATION-2026-11-11.md`),
+    deduplicated, Badger Supports programs from Connect's list, refreshed by `/api/campus-events` with the last good list
+    kept. The Find Your People mapping (`content/explore/interests.json`) awaits Engagement staff review; the full browser
+    gate is owed as post-publish verification (merge-pass handoff).
+42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → **built and merged to main
+    11 Nov 2026**: source lines with publisher and review date, unapproved outside records never drawn. Connect side
     approved and with Connect Session 13.
-43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → published sections from UW Course Search (undocumented API: verify terms first);
-    past-year and current/upcoming offerings, term-specific courses handled, most recent verified term, recently offered vs available, no
-    helper text on uncertainty, official link; no schedules, grades or enrollment data. Approved 2026-11-11. Built
-    2026-11-11 (branch `explore-b-2026-11`) with the pull labelled a verification sample; production waits on the owner
-    accepting the API note and Registrar permission being sought.
-44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → a few choice questions to approved resources and official contacts from the
-    shared library, a path to the full finder at every step; no free-text personal data, not advising or clinical support. Approved
-    2026-11-11. Built 2026-11-11 (branch `explore-b-2026-11`); the tree needs its student-staff review before release.
-45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → several addresses × several buildings side by side; Metro GTFS +
-    OpenStreetMap; direct / transfer / no connection, walking distances only; **no times, schedules or predictions**; addresses not kept;
-    any Metro key server-side; unverified route never shown available. Verify licences and topology first.
-    **Approved by Nicholas 11 Nov 2026 and built the same day** on branch `explore-a-2026-11` (commits `2a757a1`, `aaa3397`,
-    `54d9f50`): topology from the Metro GTFS (feed S072_202608240858) in `content/transit/topology.json`, 20 campus buildings
-    from OpenStreetMap, `/api/geocode` and `/api/bus-routes`; verification in
-    `docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md`. On Navigating Housing the tool is signposted rather than
-    hosted: the workshop detail pages carry a tested rule that they collect nothing, so the interactive tool itself sits on
-    its own page and the hub — Nicholas's ruling is needed if it must sit on that page. Production waits on Nicholas
-    approving the verification note, per this entry's Review line. Not merged or published.
-46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → the prepared history exists: local branch `bss/local-version-history`
-    (`b4658bd`, imported 10 Nov from the 7 Nov package in `Admin/Handoffs/active/VERSION-HISTORY/`; 42 entries through
-    `8e7e220`). **Approved by the owner 11 Nov 2026 and built** on branch `items-46-47-2026-11` (`594c9d1`, `a344fe5`):
-    `docs/VERSION-HISTORY.md` imported byte-identical from the prepared branch, then extended over the 44 commits after
-    `8e7e220` through `ed48843`, all standing in Unreleased — no deployment record for them was checked. Lands on `main`
-    when the branch merges; detail in `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-ITEMS-46-47-HANDOFF-2026-11-11.md`.
-47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → install the package's release check; show Nicholas the
-    exact instruction diff first (his ruling, 10 Nov). Depends on 46. **Approved by the owner 11 Nov 2026 — the diff
-    approved as prepared — and installed** on branch `items-46-47-2026-11` (`447c433`): the exact diff in
-    `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`, 9 files, +364/−0, verified file-for-file against that
-    document (the three package files sha256-identical to their sources) before commit. Lands on `main` when the branch
-    merges; the first `history:check` run is still owed — the Mac's load stayed saturated through the install session,
-    and the project's full gate is likewise owed (46–47 handoff). Detail in
-    `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-ITEMS-46-47-HANDOFF-2026-11-11.md`.
+43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → **built and merged to main 11 Nov 2026** with the pull
+    labelled a verification sample; the production switch stays **off** — it goes live only when the Registrar's
+    permission is answered (the owner accepted the API note 11 Nov 2026 and approved seeking permission).
+44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → **built and merged to main 11 Nov 2026** at
+    `/explore/academic-support/`; the tree needs its student-staff review before release.
+45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → **built and merged to main 11 Nov 2026**:
+    topology from the Metro GTFS (feed S072_202608240858) in `content/transit/topology.json`, 20 campus buildings from
+    OpenStreetMap, `/api/geocode` and `/api/bus-routes`, **no times, schedules or predictions**; verification in
+    `docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md`, approved by Nicholas 11 Nov 2026. On Navigating Housing
+    the tool is signposted, not hosted (his ruling, 11 Nov 2026), so the workshop pages keep their no-collection rule.
+46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → **built and merged to main 11 Nov 2026**: `docs/VERSION-HISTORY.md`
+    imported byte-identical from the prepared branch and extended through the merge candidate, all in Unreleased.
+47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → **installed and merged to main 11 Nov 2026** (the exact
+    diff Nicholas approved, `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`); `npm run history:check` run
+    green on the merged tree in the merge pass.
 
 ## Git and publishing
 

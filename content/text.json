@@ -1856,7 +1856,7 @@
     "staff.settings.title": {
       "group": "staff",
       "text": "Site Settings",
-      "where": "Heading of the part of the staff page, for a publisher, that changes the site's name, search description and accessibility email."
+      "where": "Heading of the part of the staff page, for a publisher, that changes the site's name, search description, accessibility email and Safety Exit destination."
     },
     "staff.settings.field.name": {
       "group": "staff",
@@ -1901,7 +1901,7 @@
     "staff.settings.save": {
       "group": "staff",
       "text": "Save Settings",
-      "where": "Button under Site Settings: saves the three settings as one change, which publishes."
+      "where": "Button under Site Settings: saves the four settings as one change, which publishes."
     },
     "staff.settings.done": {
       "group": "staff",
@@ -3415,7 +3415,7 @@
     },
     "explore.events.name.uw": {
       "group": "explore",
-      "text": "UW\u2013Madison Events",
+      "text": "UW–Madison Events",
       "where": "On the Campus Events Explorer: the source menu's name for the campus calendar, and the name on its cards."
     },
     "explore.events.name.union": {

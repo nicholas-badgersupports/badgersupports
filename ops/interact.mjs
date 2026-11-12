@@ -1745,7 +1745,8 @@ await part("first visit: current-room refresh waits for focus and exact end", as
   const intro = JSON.parse(fs.readFileSync(path.join(ROOT, "content/pages/peer-support-groups.json"))).blocks[0];
   const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json")));
   const text = Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text]));
-  const markup = (place, now = at("17:59"), stale = false, empty = false) => String(renderBlock(intro, makeContext({ site, text, today: DAY, now, builtPaths: ["/directions/sac-mhh/", "/directions/sac-caucus/", "/join/email-list/"], data: { eventsState: { stale }, events: { recurring: [], dated: empty ? [] : [{ id: "example-visit", title: "Example Group", program: "peer", date: DAY, start: "17:00", end: "18:00", place }], places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } } } })));
+  const media = JSON.parse(fs.readFileSync(path.join(ROOT, "media/manifest.json")));
+  const markup = (place, now = at("17:59"), stale = false, empty = false) => String(renderBlock(intro, makeContext({ site, media, text, today: DAY, now, builtPaths: ["/directions/sac-mhh/", "/directions/sac-caucus/", "/join/email-list/"], data: { eventsState: { stale }, events: { recurring: [], dated: empty ? [] : [{ id: "example-visit", title: "Example Group", program: "peer", date: DAY, start: "17:00", end: "18:00", place }], places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } } } })));
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }), page = await ctx.newPage();
   await page.clock.install({ time: at("17:59") });
   let release;
@@ -1791,6 +1792,7 @@ await part("Workshop comparison: native previews and changeable request choices"
   const { googleFormUrl } = await import("../src/shared/forms.mjs");
   const formDef = JSON.parse(fs.readFileSync(path.join(ROOT, "content/forms/workshop-request.json")));
   const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json")));
+  const media = JSON.parse(fs.readFileSync(path.join(ROOT, "media/manifest.json")));
   const topics = { "b-rw-networks": "support_network", "b-rw-selfcare": "stress_self_care", "b-rw-advocacy": "self_advocacy", "b-rw-housing": "housing" };
   const proof = path.join(ROOT, "local/workshop-comparison-proof"); fs.mkdirSync(proof, { recursive: true });
   for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
@@ -1848,7 +1850,7 @@ await part("Workshop comparison: native previews and changeable request choices"
     for (const state of ["google", "manual"]) {
       const def = structuredClone(formDef); def.state = "closed";
       if (state === "google") def.elsewhere = googleFormUrl(def);
-      const renderCtx = makeContext({ site, text: Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text])), formTopic: "housing", data: { forms: { "workshop-request": def } } });
+      const renderCtx = makeContext({ site, media, text: Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text])), formTopic: "housing", data: { forms: { "workshop-request": def } } });
       const html = String(renderBlock({ id: "b-form-workshop-request", type: "form", form: "workshop-request" }, renderCtx));
       await page.locator("main").evaluate((n, html) => { n.innerHTML = html; }, html);
       if (await page.locator("main input, main textarea, main form").count()) honest = false;

@@ -37,7 +37,16 @@ test("the TikTok glyph is drawn inside the frame it shares with the other social
   const page = read("index.html");
   const svg = page.match(/<svg class="ic social-ic" data-i="tiktok"[\s\S]*?<\/svg>/)?.[0];
   assert.ok(svg, "the TikTok icon is in the footer");
-  assert.match(svg, /<circle cx="9\.9" cy="16\.9" r="2\.8"\/>/, "the note's head is a circle inside the frame");
+  assert.match(svg, /<circle cx="9\.9" cy="15\.25" r="2\.8"\/>/, "the note's head is a circle inside the frame");
+  /* the glyph sits centred in the frame: the space above it equals the space
+     below it (owner, 12 Nov 2026 \u2014 the head's bottom used to nearly touch the
+     frame's lower line while the stem floated high). The frame spans 3.5..20.5;
+     the glyph runs from the stem's top to the head's bottom edge. */
+  const cy = Number(svg.match(/<circle cx="9\.9" cy="([\d.]+)"/)[1]);
+  const r = Number(svg.match(/<circle cx="9\.9" cy="[\d.]+" r="([\d.]+)"/)[1]);
+  const stemTop = Number(svg.match(/V([\d.]+)c\.4 2\.3/)[1]);
+  const above = stemTop - 3.5, below = 20.5 - (cy + r);
+  assert.ok(Math.abs(above - below) < 0.01, `the TikTok glyph is centred in its frame (above ${above}, below ${below})`);
   assert.doesNotMatch(svg, /a2\.9 2\.9/, "the old arc bulged below the frame (measured 22.46 of 24)");
   for (const name of ["instagram", "linkedin", "win"]) {
     assert.match(page, new RegExp(`data-i="${name}"[^>]*><rect x="3.5" y="3.5" width="17" height="17"`), name);

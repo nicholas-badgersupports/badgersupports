@@ -668,7 +668,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   color: var(--ink); text-decoration: none; border-radius: var(--r-card); box-shadow: var(--lift);
 }
 .ticket-link:hover { color: var(--ink); text-decoration: none; }
-.ticket-main { display: grid; gap: .3rem; align-content: start; padding: var(--s4); background: var(--field); border-radius: var(--r-card) 0 0 var(--r-card); }
+/* The one column is capped at the text column's own width: a name whose longest word
+   is wider than the ticket wraps inside the column instead of widening it under the stub. */
+.ticket-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: .3rem; align-content: start; padding: var(--s4); background: var(--field); border-radius: var(--r-card) 0 0 var(--r-card); }
 .ticket-where { font-size: var(--fs-small); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 .ticket-name { font: 800 1.6rem/1.05 var(--font-display); text-transform: uppercase; color: var(--accent); }
 .ticket-addr { color: var(--muted); }
@@ -706,7 +708,12 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .places-cols .hubcard.has-photo { grid-template-columns: minmax(0, 1fr); }
 .places-cols .hubcard-photo { order: -1; min-height: 0; aspect-ratio: 16 / 9; }
 .places-cols .tickets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.places-cols .ticket-name { font-size: 1.35rem; }
+/* At 1.35rem the longest name's first word alone ("Multipurpose") was wider than
+   its ticket's text column and ran under the stub. The names run smaller here, and
+   the text column a step wider, so the longest name wraps at its space and keeps
+   inside its ticket, as this section's note above intends. */
+.places-cols .ticket-main { padding-inline: var(--s3); }
+.places-cols .ticket-name { font-size: 1.1rem; }
 @media (max-width: 860px) {
   .places-cols { grid-template-columns: minmax(0, 1fr); }
   .places-cols .tickets { grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }

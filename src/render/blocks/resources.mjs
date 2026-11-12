@@ -15,7 +15,16 @@
    and the topic row under it (Connect's order) appear only when src/client/resources.js runs; it
    also turns Additional Details into a dialog. The records come from a named source:
    content/fixtures/resources.json until Connect publishes a list a director has approved for the
-   public site. */
+   public site.
+
+   A record may name where it comes from (EXPLORE-C-RESOURCE-FINDER): `source` holds a `kind`
+   ("kb" for a UW–Madison KnowledgeBase article, "badger-supports" for one of the organisation's
+   own), the `publisher`, the official `url`, a `status` and the review (`reviewedAt`,
+   `reviewedBy`, a role and never a name). A card whose record names a source says so, with the
+   publisher and the last reviewed date, and its button opens the source's official page. A
+   record from outside the organisation's own list shows only while its status is "approved":
+   approval is Connect's, and an unapproved record in the export is left out here, never shown
+   unlabelled. A record with no source keeps the card it has always had. */
 
 import { html, attrs } from "../html.mjs";
 import { link, go } from "../context.mjs";
@@ -99,8 +108,31 @@ function reportLink(ctx, form, r, label) {
   return html`<a${attrs({ href, "data-pending": to.pending ? "" : null })}>${label}<span class="sr-only">: ${r.name}</span></a>`;
 }
 
-function card(r, ctx, topicOf) {
-  const href = r.action?.url || r.url;
+/* Whether a record shows at all: one naming a source shows only under Connect's approval
+   (EXPLORE-C). No source, no condition: the record is one of the list's own, as before. */
+export const resourceVisible = (r) => {
+  const s = r?.source;
+  if (!s || typeof s !== "object") return true;
+  if (s.status != null) return s.status === "approved";
+  return s.kind == null || s.kind === "badger-supports";
+};
+
+const SOURCE_NAMES = { kb: "resources.source.kb", "badger-supports": "resources.source.badger" };
+
+/* The source line on a card whose record names one: the source, the publisher when it adds
+   anything, and the date the record was last reviewed. */
+function sourceLine(r, ctx) {
+  const s = r.source;
+  if (!s || typeof s !== "object") return "";
+  const name = SOURCE_NAMES[s.kind] ? ctx.t(SOURCE_NAMES[s.kind]) : (s.publisher || "");
+  if (!name) return "";
+  const pub = s.publisher && s.publisher !== name ? ` · ${s.publisher}` : "";
+  const reviewed = s.reviewedAt ? ` · ${ctx.t("resources.reviewed", dateParts(s.reviewedAt, ctx.t))}` : "";
+  return html`<p class="res-source"><span class="res-lead">${ctx.t("resources.source")}</span> ${name}${pub}${reviewed}</p>`;
+}
+
+export function resourceCard(r, ctx, topicOf) {
+  const href = r.source?.url || r.action?.url || r.url;
   const phone = r.contact?.phone;
   const topic = topicOf.get(r.primaryCategory);
   const where = WHERE[r.location?.campus];
@@ -111,6 +143,7 @@ function card(r, ctx, topicOf) {
     <h3>${r.name}</h3>
     ${r.summary ? html`<p class="res-what">${r.summary}</p>` : ""}
     ${r.bestFor ? html`<p class="res-fit"><span class="res-lead">${ctx.t("resources.fit")}</span> ${r.bestFor}</p>` : ""}
+    ${sourceLine(r, ctx)}
     <p class="res-tags">${topic ? html`<span class="res-tag res-topic">${topic}</span>` : ""}${COST[r.cost?.code] && COST[r.cost.code] !== "unknown" ? html`<span class="res-tag">${ctx.t(`resources.cost.${COST[r.cost.code]}`)}</span>` : ""}${where ? html`<span class="res-tag">${ctx.t(`resources.where.${where}`)}</span>` : ""}</p>
     <div class="res-foot">
       ${href ? link(ctx, href, button(r, ctx), { class: "btn res-go", icon: "out" }) : ""}
@@ -129,7 +162,7 @@ export default {
   analytics: "none",
   loading: "lazy",
   render(b, ctx) {
-    const all = (ctx.data.resources || []).filter((r) => r && r.id && r.name);
+    const all = (ctx.data.resources || []).filter((r) => r && r.id && r.name && resourceVisible(r));
     if (!all.length) return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
       <h2 id="${b.id}-h">${b.title}</h2>
       <p>${ctx.t(ctx.data.resourcesState?.stale ? "resources.unavailable" : "resources.empty")}</p>
@@ -167,7 +200,7 @@ export default {
     <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips><li aria-hidden="true"><span class="res-chip res-chip-ph">&nbsp;</span></li></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>
   </div>
   <div class="res-status" aria-live="polite"><p class="res-count" data-res-count tabindex="-1">${n === 1 ? ctx.t("resources.count.one") : ctx.t("resources.count.all", { n })}</p><p class="res-relaxed" data-res-relaxed hidden>${ctx.t("resources.relaxed")}</p></div>
-  <ul class="res-list">${list.map((r) => card(r, ctx, topicOf))}</ul>
+  <ul class="res-list">${list.map((r) => resourceCard(r, ctx, topicOf))}</ul>
   <p class="res-more-row" data-res-more-row hidden><button type="button" class="btn res-more-btn" data-res-more>${ctx.t("resources.showMore")}</button></p>
   <div class="res-none" data-res-none hidden>
     <h3>${ctx.t("resources.none.title")}</h3>

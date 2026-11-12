@@ -1,0 +1,35 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-explore-classes",
+  "path": "/explore/classes/",
+  "title": "Discover Classes by Interest",
+  "description": "Browse UW–Madison courses by interest — creativity, music, languages, nature and community — from UW Course Search listings.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-cls-head",
+      "type": "pagehead",
+      "title": "Discover Classes by Interest",
+      "lead": "Find courses by what interests you, from the listings in UW Course Search, the university's official course listings."
+    },
+    {
+      "id": "b-cls",
+      "type": "courses",
+      "title": "Courses by Interest"
+    },
+    {
+      "id": "b-cls-hub",
+      "type": "text",
+      "body": [
+        "This page is one of the Explore Campus tools."
+      ],
+      "links": [
+        {
+          "label": "Explore Campus",
+          "href": "/explore/",
+          "icon": "arrow"
+        }
+      ]
+    }
+  ]
+}

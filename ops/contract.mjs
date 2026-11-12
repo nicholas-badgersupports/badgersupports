@@ -46,6 +46,7 @@ const FIELD_TYPES = {
   place: "one published room (content/places)",
   source: "a named data source (events, wall notes, team, resources)",
   resourcetopics: "topics, in order: each an `id` (the address word, `?topic=`), a `label`, one of Connect's sixteen resource categories (`category`), and optional old address words (`aliases`) that open it; a topic no resource carries is not shown",
+  navsteps: "the navigator's steps, in order; the first is where the walk starts. Each step has an `id`, its question (`prompt`) and its choices (`options`); each choice has an `id`, its words (`label`), and goes to one place: a next step (`next`, another step's id) or a set of resources (`results`, ids from the resource library). Every step must be reachable from the first and able to reach a set of resources",
   teamgroups: "the groups to show, in order: each a group (`directors`, `associate-directors`, `staff`, `volunteers` or `advisors`) and, if it needs one, the heading over it",
   person: "one public profile from Connect, by its address name (`slug`)",
   eventquery: "which events to list: source, program, how many",

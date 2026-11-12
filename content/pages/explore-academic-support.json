@@ -1,0 +1,111 @@
+{
+  "schema": "bss.page/1",
+  "id": "pg-explore-academic-support",
+  "path": "/explore/academic-support/",
+  "title": "Academic Support Navigator",
+  "description": "Answer a few questions and find UW–Madison tutoring, accommodations and other academic support resources.",
+  "analytics": "none",
+  "blocks": [
+    {
+      "id": "b-nav-head",
+      "lead": "Answer a few questions and find the university resources that fit. This tool points you to resources and their official contacts; it is not academic advising.",
+      "title": "Academic Support Navigator",
+      "type": "pagehead"
+    },
+    {
+      "id": "b-nav",
+      "steps": [
+        {
+          "id": "start",
+          "options": [
+            {
+              "id": "tutoring",
+              "label": "Tutoring or study skills",
+              "results": [
+                "greater-university-tutoring-service"
+              ]
+            },
+            {
+              "id": "access",
+              "label": "Disability accommodations or access",
+              "results": [
+                "mcburney-disability-resource-center"
+              ]
+            },
+            {
+              "id": "course",
+              "label": "A course that is not going well",
+              "next": "course"
+            },
+            {
+              "id": "direction",
+              "label": "Exploring majors or careers",
+              "results": [
+                "career-exploration-center"
+              ]
+            },
+            {
+              "id": "international",
+              "label": "I am an international student",
+              "results": [
+                "international-student-services"
+              ]
+            },
+            {
+              "id": "technology",
+              "label": "A computer or technology for coursework",
+              "results": [
+                "doit-computer-lending-program"
+              ]
+            }
+          ],
+          "prompt": "What do you need help with?"
+        },
+        {
+          "id": "course",
+          "options": [
+            {
+              "id": "material",
+              "label": "I need help with the material",
+              "results": [
+                "greater-university-tutoring-service"
+              ]
+            },
+            {
+              "id": "barrier",
+              "label": "An access barrier in the course",
+              "results": [
+                "mcburney-disability-resource-center"
+              ]
+            },
+            {
+              "id": "wellbeing",
+              "label": "Stress or wellbeing is affecting my coursework",
+              "results": [
+                "uhs-mhs-workshops",
+                "greater-university-tutoring-service"
+              ]
+            }
+          ],
+          "prompt": "What is getting in the way?"
+        }
+      ],
+      "title": "What are you looking for?",
+      "type": "navigator"
+    },
+    {
+      "body": [
+        "This navigator is one of the Explore Campus tools."
+      ],
+      "id": "b-nav-hub",
+      "links": [
+        {
+          "href": "/explore/",
+          "icon": "arrow",
+          "label": "Explore Campus"
+        }
+      ],
+      "type": "text"
+    }
+  ]
+}

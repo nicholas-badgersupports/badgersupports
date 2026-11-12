@@ -77,6 +77,7 @@ export const CLIENT_TEXT = {
   "form-setup.js": ["staff.*"],
   "edit.js": ["edit.*"],
   "resources.js": ["resources.count.*", "resources.chip.remove"],
+  "courses.js": ["classes.count.*"],
   "search.js": ["search.loading", "search.failed", "search.count.*"],
   "campus-events.js": ["explore.events.*", "schedule.today", "date.dow.*"],
   "bus-routes.js": ["explore.bus.*"],

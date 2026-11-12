@@ -6,6 +6,7 @@
   "connectOrigin": "https://home.badgersupports.org",
   "lang": "en",
   "description": "Free, student-led peer support groups, craft nights and wellness workshops at UW\u2013Madison.",
+  "safetyExitUrl": "https://www.weather.gov/",
   "nav": [
     {
       "id": "nav-about",

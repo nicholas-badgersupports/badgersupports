@@ -72,6 +72,26 @@ document.addEventListener("click", (e) => {
   if (menuOpen() && !nav.contains(e.target) && !toggle.contains(e.target)) setMenu(false);
 });
 
+/* The Safety Exit: one press of the pill, or Escape three times in quick succession, leaves at
+   once — no confirmation, nothing asked first — and replaces this page in the history, so Back
+   does not bring it back. The pill is a plain link and still leaves without this file. Leaving
+   is never measured: nothing here sends anything of its own, to anyone. */
+const safetyExit = document.querySelector("[data-safety-exit]");
+function leaveQuickly() {
+  window.location.replace(safetyExit ? safetyExit.href : "https://www.weather.gov/");
+}
+if (safetyExit) {
+  safetyExit.addEventListener("click", (e) => { e.preventDefault(); leaveQuickly(); });
+}
+let escapes = [];
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" || e.repeat) return;
+  const now = performance.now();
+  escapes = escapes.filter((t) => now - t < 1000);
+  escapes.push(now);
+  if (escapes.length >= 3) { escapes = []; leaveQuickly(); }
+});
+
 /* Icons move once, each its own way (motion.css), when their link or button is pressed, or when
    a mouse comes onto it — as Badger SPILL's icons do. A second press starts the move again. The
    class comes off when every part has finished, so the next press can play it. */

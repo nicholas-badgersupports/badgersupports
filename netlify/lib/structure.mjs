@@ -41,7 +41,7 @@ export async function siteAsSaved(doc) {
 function settingsAt(doc) {
   const c = serverContent();
   const s = laySettings(structuredClone(c.render?.floor?.site || c.site), doc.settings);
-  return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null };
+  return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null, safetyExitUrl: s.safetyExitUrl ?? null };
 }
 
 /* The photo library's ids, the set a step's photo is checked against. */

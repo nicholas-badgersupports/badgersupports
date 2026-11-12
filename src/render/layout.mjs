@@ -14,7 +14,7 @@ import { icon } from "./icons.mjs";
 import { openingPortraits } from "./team.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
-import { bareTitle, TITLE_JOIN } from "../shared/structure.mjs";
+import { bareTitle, TITLE_JOIN, safetyExitHref } from "../shared/structure.mjs";
 
 /* The page whose title puts the site's name first, and whose description is the site's search description. */
 const HOME = "pg-home";
@@ -62,6 +62,7 @@ function header(ctx, path) {
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>${ctx.t("header.menu")}</button>
   <nav class="nav" id="site-nav" aria-label="${ctx.t("header.navLabel")}"><ul>${s.nav.map((i) => navItem(ctx, i, path))}</ul></nav>
   ${s.headerAction ? html`<div class="header-action">${link(ctx, s.headerAction.href, s.headerAction.label, { class: "btn btn--quiet" })}</div>` : ""}
+  <a class="safety-exit" href="${safetyExitHref(s)}" data-safety-exit>${icon("out", "safety-exit-ic")}<span>${ctx.t("header.safetyExit")}</span></a>
 </div></header>`;
 }
 

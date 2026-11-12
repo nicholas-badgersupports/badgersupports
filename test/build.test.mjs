@@ -57,8 +57,14 @@ test("an open application carries no Closed tag on the home page (its state come
   assert.doesNotMatch(read("index.html"), /Applications Closed/);
 });
 
-test("sample Wall notes say they are samples", () => {
-  assert.match(read("index.html"), /Sample notes written for this prototype/);
+test("the Wall shows the notes from its sheet, and none are labelled samples", () => {
+  const html = read("index.html");
+  assert.doesNotMatch(html, /Sample notes/, "the sample label went with the prototype's sample notes");
+  const wall = JSON.parse(fs.readFileSync(path.join(ROOT, "content/fixtures/wall-notes.json"), "utf8"));
+  assert.equal(wall.fixture, false, "the notes are a pull from the sheet (ops/wall-notes.mjs), not samples typed for review");
+  const island = html.match(/<script type="application\/json" id="b-home-wall-notes">([\s\S]*?)<\/script>/);
+  assert.ok(island, "the wall carries the full list behind its Show other notes button");
+  assert.deepEqual(JSON.parse(island[1]), wall.notes, "every note the sheet shows is on the page, wording unchanged");
 });
 
 test("links to pages not built yet go to the live site, never to a dead local path", () => {

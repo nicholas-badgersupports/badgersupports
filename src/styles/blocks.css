@@ -1292,17 +1292,27 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .person-title > span { padding-inline: .3em; background: linear-gradient(transparent 38%, var(--accent-tint) 38%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .sample-note { display: inline-block; margin-top: var(--s3); padding: var(--s1) var(--s3); border: var(--rule-line); border-radius: var(--r-card); font-size: var(--fs-small); color: var(--muted); }
 
-/* one person's page */
+/* one person's page: a card that leads with the photo, the words beside it, the synced facts in
+   a band of their own, and the rest of the bio under its own heading; below the card, the ways in */
 .profile { padding-block: var(--s5) var(--s7); }
 .crumb { margin-bottom: var(--s5); }
-.profile-main { display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: var(--s6); align-items: start; }
-.profile-photo .monogram { font-size: 5.5rem; }
+.profile-card { background: var(--paper); border: var(--rule-line); border-radius: var(--r-card); padding: var(--s6); }
+.profile-main { display: grid; grid-template-columns: minmax(0, 21rem) minmax(0, 1fr); gap: var(--s6); align-items: start; }
+.profile-photo .monogram { font-size: 6.5rem; }
 .profile-words .person-title { font-size: var(--fs-body); margin-bottom: var(--s2); }
-.profile h1 { font-size: var(--fs-page); margin-bottom: var(--s2); }
-.profile-meta { color: var(--muted); font-weight: 600; margin-bottom: var(--s4); }
+.profile h1 { font-size: var(--fs-page); margin-bottom: var(--s3); }
 .profile-contact { margin-top: var(--s4); }
-.profile-more { margin-top: var(--s7); padding-top: var(--s6); border-top: var(--rule-line); }
-.profile-more h2 { color: var(--accent); margin-bottom: var(--s4); }
+.profile-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr)); gap: var(--s3) var(--s5); margin: var(--s6) 0 0; padding-top: var(--s5); border-top: var(--rule-line); }
+.profile-fact dt { font-size: var(--fs-small); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--s1); }
+.profile-fact dd { margin: 0; font-weight: 600; }
+.profile-about { margin-top: var(--s6); padding-top: var(--s5); border-top: var(--rule-line); }
+.profile-about h2 { color: var(--accent); font-size: 1.375rem; margin-bottom: var(--s3); }
+.profile-about p { max-width: var(--measure); }
+.profile-next { margin-top: var(--s6); }
+.profile-next h2 { color: var(--accent); margin-bottom: var(--s4); }
+.profile-next-list { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); margin: 0; padding: 0; }
+.profile-next-list a { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 44px; padding: var(--s4); border: var(--rule-line); border-radius: var(--r-card); background: var(--paper); color: var(--ink); font-weight: 700; text-decoration: none; }
+.profile-next-list a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
 
 @media (max-width: 860px) {
   .expect.has-photos.is-flip .wrap { grid-template-columns: minmax(0, 1fr); }
@@ -1319,9 +1329,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .people { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5) var(--s3); }
 }
 @media (max-width: 760px) {
+  .profile-card { padding: var(--s4); }
   .profile-main { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
-  .profile-photo { width: 12rem; }
-  .profile-photo .monogram { font-size: 4rem; }
+  .profile-photo { width: 100%; aspect-ratio: 4 / 3; }
+  .profile-photo .monogram { font-size: 4.5rem; }
+  .profile-next-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* staff page (staff.js draws everything below the sign-in button) */

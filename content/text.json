@@ -908,6 +908,11 @@
       "text": "Yes",
       "where": "On that step, as the answer to a question answered by ticking a box to confirm or agree."
     },
+    "team.aboutFirst": {
+      "group": "team",
+      "text": "About {{first}}",
+      "where": "Heading over the rest of a person's bio on their profile page, below the facts band, when Connect synced more than one paragraph."
+    },
     "team.all": {
       "group": "team",
       "text": "Our Team",
@@ -923,10 +928,45 @@
       "text": "Connect with {{first}}",
       "where": "The email link on a profile page, shown only when the person chose to publish a contact."
     },
+    "team.factClass": {
+      "group": "team",
+      "text": "Class",
+      "where": "Label in the facts band on a profile page, over the class year from the person's Connect profile."
+    },
+    "team.factPronouns": {
+      "group": "team",
+      "text": "Pronouns",
+      "where": "Label in the facts band on a profile page, over the pronouns from the person's Connect profile."
+    },
+    "team.factTitle": {
+      "group": "team",
+      "text": "Title",
+      "where": "Label in the facts band on a profile page, over the title from the person's Connect profile."
+    },
     "team.more": {
       "group": "team",
       "text": "More of Our Team",
       "where": "Heading over the other people in the same group, at the foot of a profile page."
+    },
+    "team.nextGroups": {
+      "group": "team",
+      "text": "Come to a peer support group",
+      "where": "A way forward at the foot of a profile page, linking to the Peer Support Groups page."
+    },
+    "team.nextHeading": {
+      "group": "team",
+      "text": "Get Involved",
+      "where": "Heading over the ways forward at the foot of a profile page, below the person's card."
+    },
+    "team.nextJoin": {
+      "group": "team",
+      "text": "Join or volunteer",
+      "where": "A way forward at the foot of a profile page, linking to the Get Involved page."
+    },
+    "team.nextWorkshop": {
+      "group": "team",
+      "text": "Request a workshop",
+      "where": "A way forward at the foot of a profile page, linking to the Request a Workshop page."
     },
     "team.pageTitle": {
       "group": "team",

@@ -233,7 +233,7 @@ test("directory cards use normal priority and only the primary profile portrait 
     assert.match(image, /data-src=/); assert.doesNotMatch(image, /\ssrc=/);
   }
   const profile = images(await (await visit("/about/our-team/priority-person-2/")).text());
-  assert.equal(profile.length, 3);
+  assert.equal(profile.length, 1, "the profile page carries only the person's own portrait: the More of Our Team strip is gone");
   assert.match(profile[0], /fetchpriority="high"/);
   assert.doesNotMatch(profile[0], /loading="lazy"/);
   for (const image of profile.slice(1)) {

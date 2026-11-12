@@ -39,9 +39,10 @@
         "href": "#b-pg-days",
         "icon": "calendar"
       },
-      "photos": [
-        "m-peer-group-circle"
-      ]
+      "embed": {
+        "title": "Badger Supports on Instagram: peer support groups",
+        "url": "https://www.instagram.com/reel/DecSxrys1OY/"
+      }
     },
     {
       "id": "b-pg-days",
@@ -86,12 +87,6 @@
           "text": "No sign-up needed. A short check-in, an activity, then conversation. Share as much or as little as you like."
         }
       ]
-    },
-    {
-      "id": "b-pg-reel",
-      "type": "embed",
-      "title": "Badger Supports on Instagram: peer support groups",
-      "url": "https://www.instagram.com/reel/DecSxrys1OY/"
     },
     {
       "id": "b-pg-how",

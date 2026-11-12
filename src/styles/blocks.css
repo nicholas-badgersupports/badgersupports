@@ -483,6 +483,16 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .card-steps strong { font-size: var(--fs-lead); line-height: 1.25; color: var(--accent); }
 .card-steps span { margin-top: .2rem; line-height: 1.5; }
 @media (max-width: 760px) { .card-steps { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } }
+/* The week sits in one panel on the band — the heading, the steps and every day inside a single
+   card, as the site's other grouped panels sit (owner, 12 Nov 2026: nothing floating on the
+   page background). The card edge and lift are the design system's own (--hairline edges a card;
+   --lift is a card's shadow; --r-panel is the panel radius). */
+.cards--days .days-panel { background: var(--paper); border: var(--hairline); border-radius: var(--r-panel); box-shadow: var(--lift); padding: var(--s5); }
+@media (max-width: 760px) { .cards--days .days-panel { padding: var(--s3); } }
+/* On a narrow screen the tinted today row runs to the panel's own edges (its padding kept, the
+   panel's side padding given back), so its sessions column keeps the width the way-there pill
+   needs to stay on one line, as it did before the week had a panel. */
+@media (max-width: 760px) { .cards--days .card.is-today { margin-inline: calc(-1 * var(--s3)); padding-inline: var(--s3); } }
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
 .cards--days .card-list { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -958,10 +968,13 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .legal-doc .text-body h2:first-child { margin-top: 0; }
 .legal-doc .legal-version { margin-top: var(--s5); }
 .text-block.has-side .wrap { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: var(--s3) var(--s6); align-items: start; }
-.text-block.has-side .text-body { padding-top: var(--s2); border-top: var(--rule-line); }
+.text-block.has-side .text-body { padding-top: var(--s3); border-top: var(--rule-line); }
 /* the side column is 20rem at most: its heading is sized so the longest word fits whole */
 .text-block.has-side .wrap > h2 { font-size: min(var(--fs-h2), 1.875rem); }
-.text-block.has-side .text-body p { padding-top: var(--s2); }
+/* One rhythm inside the section (owner, 12 Nov 2026: the Information section's spacing was
+   awkward): the step under the rule is --s3, and the base paragraph margin (--s3) alone sets the
+   gap between paragraphs — paragraphs carry no padding of their own, so no two steps stack into
+   a third, uneven one. */
 @media (max-width: 860px) {
   .text-block.has-side .wrap { grid-template-columns: minmax(0, 1fr); }
 }

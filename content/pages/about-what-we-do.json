@@ -22,7 +22,7 @@
       "photos": [
         "m-training-team-lead",
         "m-training-small-group",
-        "m-people-welcome"
+        "m-craft-visionboard-sign"
       ],
       "links": [
         {
@@ -126,8 +126,8 @@
         }
       ],
       "photos": [
-        "m-peer-group-circle",
-        "m-peer-group-smiles"
+        "m-peer-group-art",
+        "m-peer-group-paintings"
       ]
     },
     {
@@ -149,7 +149,7 @@
       ],
       "photos": [
         "m-craft-visionboards",
-        "m-people-bedazzle"
+        "m-people-bedazzle-crafting"
       ],
       "disclosure": "More About Craft Nights",
       "preview": [
@@ -167,7 +167,7 @@
         {
           "id": "painting-pots",
           "title": "Painting Plant Pots",
-          "photo": "m-craft-pots-room",
+          "photo": "m-craft-paints-table",
           "lines": [
             "October 2026"
           ]
@@ -175,7 +175,7 @@
         {
           "id": "succulents",
           "title": "Succulents",
-          "photo": "m-craft-succulent-table",
+          "photo": "m-craft-succulents-pots",
           "lines": [
             "October 2026"
           ]
@@ -183,7 +183,7 @@
         {
           "id": "planting-station",
           "title": "The Planting Station",
-          "photo": "m-craft-planting-station",
+          "photo": "m-craft-planting-room",
           "lines": [
             "October 2026"
           ]
@@ -191,7 +191,7 @@
         {
           "id": "pumpkin-painting",
           "title": "Pumpkin Painting",
-          "photo": "m-craft-painted-pumpkin",
+          "photo": "m-craft-painted-pumpkin-face",
           "lines": [
             "October 2026"
           ]
@@ -223,7 +223,7 @@
         {
           "id": "bead-crafts",
           "title": "Bead Crafts",
-          "photo": "m-craft-bead-crafts",
+          "photo": "m-craft-perler-koala",
           "lines": [
             "September 2026"
           ]

@@ -112,7 +112,7 @@
           "lines": [
             "September 2026"
           ],
-          "photo": "m-people-nostalgic"
+          "photo": "m-craft-nostalgic"
         },
         {
           "id": "craft-planter",
@@ -127,7 +127,7 @@
             "October 2026"
           ],
           "text": "A student with their painted pumpkin.",
-          "photo": "m-craft-painted-pumpkin"
+          "photo": "m-people-pumpkin-painting"
         }
       ]
     },
@@ -148,7 +148,7 @@
         }
       ],
       "photos": [
-        "m-craft-stickers"
+        "m-people-bedazzle-table"
       ],
       "body": "Share an idea for a future Craft Night with our student team."
     },

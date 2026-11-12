@@ -2148,6 +2148,880 @@
       "provenance": "Curated for the November 2026 redesign (PHOTO-SHORTLIST.md). Read from the curated copy of the shared Drive photo, cropped where noted, resized to 2400 px and stripped of metadata 2026-11-11; the Drive master is unchanged.",
       "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
       "localFile": "window-logo.jpg"
+    },
+    {
+      "id": "m-people-visionboards-room",
+      "program": "craft",
+      "alt": "A room full of students making vision boards at long tables.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 663294,
+      "sha256": "db2fb5f614e7049994555253e0712fb53bcf75da55524f3d4c361f11f307fb3d",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_004.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-visionboards-room.jpg"
+    },
+    {
+      "id": "m-people-visionboards-group",
+      "program": "craft",
+      "alt": "Seven students posing together, each holding the vision board they made.",
+      "focal": [
+        50,
+        42
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 779320,
+      "sha256": "08ccf8b2a0a2b5bd5f22daa39033d0bda4d1f84b4fb3aa424a839aada8f432f3",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_032.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-visionboards-group.jpg"
+    },
+    {
+      "id": "m-people-visionboards-trio",
+      "program": "craft",
+      "alt": "Three students standing together, each holding a vision board.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 507773,
+      "sha256": "2b29f57e66fdcd4b1854d1a3dc078f30a1f81e6e3dbb9eea09b78abae5325b94",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_035.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-visionboards-trio.jpg"
+    },
+    {
+      "id": "m-people-visionboards-pair",
+      "program": "craft",
+      "alt": "Two students at a craft table, smiling and holding up a vision board.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 534601,
+      "sha256": "f24b0392ecf1f7143666eb5ddaf1eae20cedc6c8d8dae45ee9033a543a76ddec",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_008.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-visionboards-pair.jpg"
+    },
+    {
+      "id": "m-people-visionboards-duo",
+      "program": "craft",
+      "alt": "Two students standing against a wall, each holding a vision board.",
+      "focal": [
+        50,
+        38
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 496936,
+      "sha256": "6acb7a980334a2064602d6d5cbc3bbdf825381d789de27ea60a732af99d8ef29",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_019.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-visionboards-duo.jpg"
+    },
+    {
+      "id": "m-craft-visionboard-sign",
+      "program": "craft",
+      "alt": "A whiteboard reading 'Badger Supports — come make a Vision Board!'",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 280245,
+      "sha256": "8c6e78bcb4bbd08ba71e86280e209649db80fe4d408b58ff37e3b96735e9b5a2",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_042.heic",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-visionboard-sign.jpg"
+    },
+    {
+      "id": "m-people-visionboards-smiles",
+      "program": "craft",
+      "alt": "Two students holding up their vision boards at a craft table.",
+      "focal": [
+        50,
+        42
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 672081,
+      "sha256": "2268ec5712298e6694514e502e02a80e287d592b1db77b10c3fce58f194e34cf",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-02 Vision Boards/2026-09-02_Vision-Boards_027.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (vision boards craft night, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-visionboards-smiles.jpg"
+    },
+    {
+      "id": "m-people-nostalgic-crafts",
+      "program": "craft",
+      "alt": "Three students making crafts together at a table.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 598236,
+      "sha256": "897d0c882ee44af650bc93b164cc8fde1de1a2ba7194ef66389e8c30dd833aa5",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_1958.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (nostalgic crafts craft night, 2026-09-14). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-nostalgic-crafts.jpg"
+    },
+    {
+      "id": "m-craft-perler-hands",
+      "program": "craft",
+      "alt": "Hands placing perler beads on a pegboard, seen from above.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 515106,
+      "sha256": "ac78315b970e83e47204586f1c331a96bc4a3ba0a539cca4284b9cf95b251bda",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_1926.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (nostalgic crafts craft night, 2026-09-14). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-perler-hands.jpg"
+    },
+    {
+      "id": "m-craft-perler-koala",
+      "program": "craft",
+      "alt": "A koala made of perler beads on a clear pegboard.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 683628,
+      "sha256": "bb37fb3f1e5248bf9032ad94bb50d5f0d9329038b0c2e4a218dfce94f62adcc2",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-09-14 Nostalgic Crafts/IMG_1947.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (nostalgic crafts craft night, 2026-09-14). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-perler-koala.jpg"
+    },
+    {
+      "id": "m-people-bedazzle-table",
+      "program": "craft",
+      "alt": "Two students bedazzling crafts at a table.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 566021,
+      "sha256": "e8c652c45590a5cb132ae8dcf28f409b68bc30e3a89069a1bd431c55e931d3c3",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-10-06 bedazzle/IMG_5108.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (bedazzling craft night, 2026-10-06). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-bedazzle-table.jpg"
+    },
+    {
+      "id": "m-people-bedazzle-crafting",
+      "program": "craft",
+      "alt": "Students bedazzling crafts at tables in a bright room.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 437185,
+      "sha256": "256f807bf361f825b75486b0af9237da6eba2cd8818a2e17da7e5bdcdd4ef370",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-10-06 bedazzle/IMG_5114.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (bedazzling craft night, 2026-10-06). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-bedazzle-crafting.jpg"
+    },
+    {
+      "id": "m-craft-paints-table",
+      "program": "craft",
+      "alt": "Students choosing paints at a craft-night supplies table.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 517489,
+      "sha256": "8c56d884a69c33ff4a56ebb9b61717bf456a667b146a4a39181420a0cd2b44e8",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0915.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (plant painting craft night, 2026-10-14). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-paints-table.jpg"
+    },
+    {
+      "id": "m-craft-succulents-pots",
+      "program": "craft",
+      "alt": "Small potted succulents on a craft table.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 454558,
+      "sha256": "e1f3de25403d37cd7dbed34d101058901c26d558fa558c3713b19bdb5743e5c8",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0971.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (plant painting craft night, 2026-10-14). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-succulents-pots.jpg"
+    },
+    {
+      "id": "m-craft-planting-room",
+      "program": "craft",
+      "alt": "Students painting plant pots at tables in a large room.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 662295,
+      "sha256": "a7dbcbcec8fd572b89e9e6636a0aa71522eecdd0461825fab70c134ea2f7f721",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-14-26 Plant Painting/IMG_0925.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (plant painting craft night, 2026-10-14). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-planting-room.jpg"
+    },
+    {
+      "id": "m-people-pumpkin-painting",
+      "program": "craft",
+      "alt": "Students painting pumpkins at a craft-night table.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 503298,
+      "sha256": "2cfc9a03459c74e9d550d3f8ea1166d93974345e716477516ade5c10c47902b6",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-10-20 Pumpkin Painting/IMG_5703.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (pumpkin painting craft night, 2026-10-20). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-pumpkin-painting.jpg"
+    },
+    {
+      "id": "m-craft-painted-pumpkin-face",
+      "program": "craft",
+      "alt": "A small pumpkin painted with a smiling face, close up.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 330471,
+      "sha256": "26888c31306ccf43e930aa972cd05ec2900246d7f22e621d3313b93f60542025",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-10-20 Pumpkin Painting/IMG_5692.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (pumpkin painting craft night, 2026-10-20). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "craft-painted-pumpkin-face.jpg"
+    },
+    {
+      "id": "m-workshop-housing-panel-screen",
+      "program": "workshops",
+      "alt": "Panelists at a red-draped table under a screen introducing the panel.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 609980,
+      "sha256": "a25c51790c170158c5b8540da4d8bab47f01398f4382095a4fd46c3e64bf4dbb",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7534.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-09-28). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-panel-screen.jpg"
+    },
+    {
+      "id": "m-workshop-housing-team-standing",
+      "program": "workshops",
+      "alt": "Four panelists standing in front of a screen reading 'Welcome to Navigating Housing'.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 548163,
+      "sha256": "3cdee40aaeb609327b4091fee8e6c96af36a84bfc24407c48c8449c841638482",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7585.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-09-28). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-team-standing.jpg"
+    },
+    {
+      "id": "m-workshop-housing-panel-wide",
+      "program": "workshops",
+      "alt": "A housing panel speaking to an audience in a lecture hall.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 613170,
+      "sha256": "4ca77444536ccda6c3e392c2c7536c12e0fd0ee140e33d3a84f4d878e6988a91",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7540.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-09-28). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-panel-wide.jpg"
+    },
+    {
+      "id": "m-workshop-housing-questions",
+      "program": "workshops",
+      "alt": "A housing panel answering a question about roommate-matching resources.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 574254,
+      "sha256": "fab81346c43095a836876b6bfd0ce1c40164edb7546fc24af6fa80e433cc7c9f",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7554.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-09-28). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-questions.jpg"
+    },
+    {
+      "id": "m-workshop-housing-panel-close",
+      "program": "workshops",
+      "alt": "Panelists seated at a red-draped table, seen from the side.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 600370,
+      "sha256": "affa9f7ef79a05b3a69bac092c33b2c422a40d84a419996b5b2d35db894476e8",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7546.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-09-28). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-panel-close.jpg"
+    },
+    {
+      "id": "m-workshop-housing-hall",
+      "program": "workshops",
+      "alt": "A lecture hall during a housing workshop, with a slide about talking with potential roommates.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 697035,
+      "sha256": "fb0c47345e4a0bc016af9849a1b90052b5a465da730df87bc70936ff97f16e7c",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-09-28 Housing/IMG_7527.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-09-28). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-hall.jpg"
+    },
+    {
+      "id": "m-workshop-housing-group",
+      "program": "workshops",
+      "alt": "Seven students and staff smiling together after a housing workshop.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 407275,
+      "sha256": "9c69f9ac27bb14f3c5a2812a25dcece2593bcd9fc767ca6b7518b7b8c37ddbd6",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/Navigating Housing #3 2026 Fall/IMG_1090.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-11-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-group.jpg"
+    },
+    {
+      "id": "m-workshop-housing-panelists",
+      "program": "workshops",
+      "alt": "Five panelists seated at a long table during a housing workshop.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 425333,
+      "sha256": "f521f5e83f191ce1478e31d7f435f5d7d67dbdce209bc00afa823a38186ed0ea",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/Navigating Housing #3 2026 Fall/IMG_1077.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-11-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-panelists.jpg"
+    },
+    {
+      "id": "m-workshop-housing-classroom",
+      "program": "workshops",
+      "alt": "Students seated at tables in a housing workshop classroom.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 477129,
+      "sha256": "ff066d803d4baf57da599e4568c4adffefb9bcb5244753582ac1154a36f34ffd",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/Navigating Housing #3 2026 Fall/IMG_1056.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-11-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-classroom.jpg"
+    },
+    {
+      "id": "m-workshop-herald-table",
+      "program": "workshops",
+      "alt": "Students talking around a table in the Badger Herald office.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 649812,
+      "sha256": "aac0f527ca91c2733fa1bc33275fa5cd581216b7768b43c6422e010e15e10529",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-10-15 Badger Herald Workshop/IMG_8025.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Badger Herald workshop, 2026-10-15). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-herald-table.jpg"
+    },
+    {
+      "id": "m-workshop-training-panel",
+      "program": "workshops",
+      "alt": "Five facilitators seated at a training panel table with microphones.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 449358,
+      "sha256": "6809aed344e8a762e7acd189559290d47c7516d1d319411f76bf7aaecb75505c",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_012.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-training-panel.jpg"
+    },
+    {
+      "id": "m-workshop-training-room",
+      "program": "workshops",
+      "alt": "Trainees seated at long tables facing a slide about kinds of support.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 387962,
+      "sha256": "7ba34cb2c67b3d442c7e35652431381551c8dbe662ab82c1cd5ee896a0611f9e",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_023.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-training-room.jpg"
+    },
+    {
+      "id": "m-workshop-training-tables",
+      "program": "workshops",
+      "alt": "Students talking at long tables during facilitator training.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 418062,
+      "sha256": "b859be43d8a34b44f4717f4eb50d23c258e900607f21c3e45c0697855225f2dc",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_034.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-training-tables.jpg"
+    },
+    {
+      "id": "m-people-training-laptop",
+      "program": "peer",
+      "alt": "Two students at a laptop, one raising a hand and smiling.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 557344,
+      "sha256": "845beef5a846d3bbb716eda0022720d55d20742f6f065bb145198979f02033dd",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 2 (Directors)/2026-09-02_Training-Pt-2-Directors_014.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (directors training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-training-laptop.jpg"
+    },
+    {
+      "id": "m-workshop-directors-session",
+      "program": "workshops",
+      "alt": "Directors presenting to a room of student leaders in training.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 559181,
+      "sha256": "ad017e8f8eb0fa7d67bff68d1bc076e82e9ccc01eaa4b6c2867400e2b24d8ee7",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 2 (Directors)/2026-09-02_Training-Pt-2-Directors_007.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (directors training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-directors-session.jpg"
+    },
+    {
+      "id": "m-workshop-directors-roundtable",
+      "program": "workshops",
+      "alt": "Student leaders talking around a round table in training.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 623949,
+      "sha256": "0003a69d1ad80dd12bbc82865f67a4ec6e83570a4ce02ad54de5fe90b387a9dc",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 2 (Directors)/2026-09-02_Training-Pt-2-Directors_027.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (directors training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-directors-roundtable.jpg"
+    },
+    {
+      "id": "m-peer-group-session",
+      "program": "peer",
+      "alt": "A peer support group sitting in a circle of chairs, talking.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 960208,
+      "sha256": "a13fdbf00df3cdf56291ea3e9a533e6e2e3e62911b4799d5a05447904798c9ba",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2025-26/2025-10-10 Peer Group Promo/2025-10-10_Peer-Group-Promo_016.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer group promo, 2025-10-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-group-session.jpg"
+    },
+    {
+      "id": "m-peer-group-art",
+      "program": "peer",
+      "alt": "Six students in the Mental Health Hub holding up artwork.",
+      "focal": [
+        50,
+        42
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 974221,
+      "sha256": "70b0831eb070958cbb308cf77775179631a1fb807a06eacc3f4e036155de2918",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2026-27/IMG_2024.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer group promo, 2026-09-15). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-group-art.jpg"
+    },
+    {
+      "id": "m-peer-group-cards",
+      "program": "peer",
+      "alt": "Cards spread on the floor between two couches in the Mental Health Hub.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 1313417,
+      "sha256": "203fccb86f14a6c7efcca30752a8b2ba65fddcdce32b54db521b6eb138f445ad",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2025-26/2025-10-10 Peer Group Promo/2025-10-10_Peer-Group-Promo_003.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer group promo, 2025-10-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-group-cards.jpg"
+    },
+    {
+      "id": "m-peer-hub-chat",
+      "program": "peer",
+      "alt": "Four students relaxing and talking in the Mental Health Hub.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 722043,
+      "sha256": "2a1ce2f5f63ee4c94a3a724da6981c0e2c9ab34e49b9dfd0a996ad889c1596c2",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2025-26/2025-10-10 Peer Group Promo/2025-10-10_Peer-Group-Promo_007.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer group promo, 2025-10-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-hub-chat.jpg"
+    },
+    {
+      "id": "m-involved-tabling-team",
+      "program": "other",
+      "alt": "Three Badger Supports volunteers behind a red tabling table outdoors.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 603955,
+      "sha256": "d10563851e5ee66b1709ba5760eca2d53b694dcc93ab594b14a93b3a1a2dba91",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_0997.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (mental wellbeing resource fair tabling, 2026-10-08). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "involved-tabling-team.jpg"
+    },
+    {
+      "id": "m-involved-tabling-signup",
+      "program": "other",
+      "alt": "Students signing up at the Badger Supports table at an outdoor fair.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 700879,
+      "sha256": "e1d75d471bb29c0adec64eb218c1ecc5032b260d934cab959811d0ef8f37fb18",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_1012.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (mental wellbeing resource fair tabling, 2026-10-08). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "involved-tabling-signup.jpg"
+    },
+    {
+      "id": "m-peer-tabling-table",
+      "program": "other",
+      "alt": "A visitor writing at the Badger Supports tabling table outdoors.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 523840,
+      "sha256": "93e4770841302f706787866b6e825130473f250722e481b33125d8eb19617128",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_1006.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (mental wellbeing resource fair tabling, 2026-10-08). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-tabling-table.jpg"
+    },
+    {
+      "id": "m-people-tabling-talk",
+      "program": "other",
+      "alt": "A Badger Supports volunteer talking with two students at an outdoor table.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 771739,
+      "sha256": "9976cb93d9e6af3e8bbd8a9b937ca291f159c3908de4319fc74516bd0eb2660f",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/Mental Wellbeing Resource Fair Tabling Event 10-08-26/IMG_1026.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (mental wellbeing resource fair tabling, 2026-10-08). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "people-tabling-talk.jpg"
+    },
+    {
+      "id": "m-window-hand-heart",
+      "program": "other",
+      "alt": "A window painted with a red hand, a heart and the words 'Badger Supports'.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 641970,
+      "sha256": "9581fd5c994da4ad32280b88190330cf45a48f8cfbdb8f390f59d5af08232e59",
+      "source": "drive:🎥 Engagement Photos/Tabling Photos/2026-27/2026-09-27 Paint the Town/IMG_4812.HEIC",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (paint the town tabling, 2026-09-27). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured. Every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "window-hand-heart.jpg"
+    },
+    {
+      "id": "m-workshop-housing-presenter",
+      "program": "workshops",
+      "alt": "A presenter smiling beside a slide reading 'Starting Your Search'.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 326729,
+      "sha256": "0fb0475880f0f441a23e40b4065fd24ad382ccad6fda55c65299956d9304a3d1",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/Navigating Housing #3 2026 Fall/IMG_1097.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (navigating housing workshop, 2026-11-10). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-presenter.jpg"
+    },
+    {
+      "id": "m-peer-facilitator-panel",
+      "program": "peer",
+      "alt": "Three peer support facilitators seated at a training panel table.",
+      "focal": [
+        50,
+        40
+      ],
+      "width": 1600,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 486495,
+      "sha256": "99d8e29d997bd7151ad72e4a8c4360fc952554be5fcf3c3b4429e7573845de16",
+      "source": "drive:🎗️Wellness & Support Photos/Training/2026-27/2026-09-02 Training Pt 1 (Peer Support Groups)/2026-09-02_Training-Pt-1-Peer-Support-Groups_046.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer support training, 2026-09-02). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-facilitator-panel.jpg"
+    },
+    {
+      "id": "m-peer-group-paintings",
+      "program": "peer",
+      "alt": "Hands holding up colorful paintings in a circle.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 2400,
+      "height": 1800,
+      "format": "jpg",
+      "bytes": 775688,
+      "sha256": "09c975264f23305fdbcdbbe1019070e540dbf24deb6edd3946f27ce1b01f8353",
+      "source": "drive:🎗️Wellness & Support Photos/Promo & Materials Photos/2026-27/IMG_2021.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (peer group promo, 2026-09-15). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "peer-group-paintings.jpg"
+    },
+    {
+      "id": "m-people-bracelet-making",
+      "program": "craft",
+      "alt": "Two finished beaded bracelets with keychain clasps, one pink and one rainbow, on a wooden craft table.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 1062354,
+      "sha256": "14441a44bb8b0a97a98504cb90f0ffc2af21c45bf53ca997f431b396139f9aaa",
+      "source": "drive:🧵 Programs Photos/Craft Night Photos/2026-27/2026-08-25 Bracelets/IMG_0715.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Craft night: Bracelets, 2026-08-25). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
+      "compliance": "No people pictured; every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
+      "localFile": "people-bracelet-making.jpg"
     }
   ]
 }

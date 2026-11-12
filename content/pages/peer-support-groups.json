@@ -115,7 +115,7 @@
         }
       ],
       "photos": [
-        "m-peer-group-smiles"
+        "m-peer-group-cards"
       ]
     },
     {
@@ -186,7 +186,7 @@
             "Contribute to our campus-wide awareness ribbon campaign!"
           ],
           "icon": "ribbon",
-          "photo": "m-peer-ribbon",
+          "photo": "m-peer-tabling-table",
           "link": {
             "label": "Learn More",
             "href": "/initiatives/ribbons/"
@@ -231,7 +231,7 @@
         "href": "/request-a-program/"
       },
       "photos": [
-        "m-people-welcome"
+        "m-peer-facilitator-panel"
       ]
     },
     {

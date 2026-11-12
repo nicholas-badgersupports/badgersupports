@@ -16,9 +16,9 @@
         "href": "/forms/workshop-request/"
       },
       "photos": [
-        "m-workshop-herald-team",
+        "m-workshop-training-tables",
         "m-workshop-room",
-        "m-workshop-housing-team"
+        "m-workshop-housing-panel-wide"
       ],
       "links": [
         {
@@ -71,7 +71,7 @@
         }
       ],
       "photos": [
-        "m-workshop-herald-room",
+        "m-workshop-herald-table",
         "m-workshop-supplies"
       ],
       "audience": "Choose this if your group wants to strengthen how members ask for and offer support.",
@@ -116,7 +116,7 @@
         }
       ],
       "photos": [
-        "m-workshop-mindfulness"
+        "m-workshop-housing-classroom"
       ],
       "audience": "Choose this if your group wants practical ways to manage stress, build healthy habits, and respect boundaries.",
       "disclosure": "Preview Self-Care Bingo",
@@ -149,7 +149,7 @@
         }
       ],
       "photos": [
-        "m-peer-talk"
+        "m-workshop-directors-roundtable"
       ],
       "links": [
         {
@@ -200,8 +200,8 @@
         }
       ],
       "photos": [
-        "m-workshop-housing",
-        "m-workshop-panel"
+        "m-workshop-housing-panel-screen",
+        "m-workshop-housing-panel-close"
       ],
       "audience": "Choose this if your group is exploring housing options, roommate needs, and shared decisions.",
       "disclosure": "Preview Housing Questions",
@@ -229,7 +229,7 @@
       ],
       "photos": [
         "m-workshop-w-signs",
-        "m-workshop-listening"
+        "m-workshop-training-panel"
       ],
       "icon": "badge",
       "program": "workshops"

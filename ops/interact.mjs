@@ -35,6 +35,10 @@
  *    only one room's page carries finds that room alone; a word on no page shows the no-matches
  *    block; an address with ?q= opens with its results; without JavaScript the box stays hidden
  *    and every page is a plain link; a failed index says so, keeps the list, and Try Again loads it.
+ * 8. Email links (src/client/email.js): a press copies the address and opens the popup, and the
+ *    mailto: is not followed; Copy again copies again; Open in mail app is left to the browser;
+ *    Escape and a press outside close the popup and focus returns to the link; when the browser
+ *    will not copy, the popup still opens and its note does not claim a copy.
  * Fictional files and people only: a few bytes that start as a PDF does, Avery Example and Robin Example.
  */
 
@@ -2525,6 +2529,101 @@ await part("site search", async () => {
     await page.waitForFunction(() => !document.querySelector("[data-srch-list]")?.hidden && document.querySelectorAll("[data-srch-list] .srch-card").length > 40);
     const back = await searchState(page);
     check(back.listShown && !back.again, "search: Try Again loads the index");
+  } finally { await cut.close(); }
+});
+
+/* ------------------------------------------------------------------ 8. email links copy first */
+
+const emailState = (page) => page.evaluate(() => {
+  const pop = document.querySelector("dialog.email-pop");
+  const link = document.querySelector('.site-footer a[href^="mailto:"]');
+  const box = pop && pop.open ? pop.getBoundingClientRect() : null;
+  return {
+    open: !!pop?.open,
+    note: pop?.querySelector(".email-pop-note span:last-of-type")?.textContent ?? null,
+    addr: pop?.querySelector(".email-pop-addr")?.textContent ?? null,
+    openHref: pop?.querySelector(".email-pop-actions a")?.getAttribute("href") ?? null,
+    focusBack: document.activeElement === link,
+    box: box ? { left: box.left, top: box.top, right: box.right, bottom: box.bottom } : null,
+    scrollW: document.documentElement.scrollWidth,
+    url: location.href,
+  };
+});
+
+await part("email links", async () => {
+  for (const width of [1280, 390]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
+    try {
+      const page = await ctx.newPage();
+      const errors = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      await page.goto(BASE + "/", { waitUntil: "networkidle" });
+      const before = await page.evaluate(() => location.href);
+      const target = await page.locator('.site-footer a[href^="mailto:"]').first().getAttribute("href");
+      const address = decodeURIComponent(target.slice("mailto:".length).split("?")[0]);
+      await page.locator('.site-footer a[href^="mailto:"]').first().click();
+      await page.waitForSelector("dialog.email-pop[open]");
+      await page.waitForFunction(() => document.querySelector(".email-pop-note")?.textContent.includes("copied"));
+      let s = await emailState(page);
+      check(s.note === words("email.copied") && s.addr === address,
+        `email ${width}px: the popup says the address was copied and shows it ("${s.note}", "${s.addr}")`);
+      check(s.url === before, `email ${width}px: pressing the link did not follow the mailto:`);
+      const clip = await page.evaluate(() => navigator.clipboard.readText());
+      check(clip === address, `email ${width}px: the clipboard holds the address ("${clip}")`);
+      check(s.openHref === target, `email ${width}px: Open in mail app keeps the full mailto: href ("${s.openHref}")`);
+      check(s.box && s.box.left >= 0 && s.box.right <= width && s.box.top >= 0 && s.box.bottom <= 900 && s.scrollW <= width,
+        `email ${width}px: the popup sits inside the screen and the page does not scroll sideways`);
+
+      /* Copy again copies again: count the clipboard writes across the second press. */
+      await page.evaluate(() => { window.__writes = 0; const w = navigator.clipboard.writeText.bind(navigator.clipboard); navigator.clipboard.writeText = (text) => { window.__writes++; return w(text); }; });
+      await page.getByRole("button", { name: words("email.copyAgain") }).click();
+      await page.waitForFunction(() => window.__writes === 1);
+      check(true, `email ${width}px: Copy again copies the address once more`);
+
+      /* Open in mail app is not intercepted: the press is the browser's own mailto: following,
+         observable here as the popup closing around a link whose href is the mailto:. */
+      await page.getByRole("link", { name: words("email.openMail") }).click();
+      await page.waitForFunction(() => !document.querySelector("dialog.email-pop")?.open);
+      check(true, `email ${width}px: Open in mail app closes the popup and is left to the browser`);
+
+      /* Escape closes, and focus returns to the link that was pressed. */
+      await page.locator('.site-footer a[href^="mailto:"]').first().click();
+      await page.waitForSelector("dialog.email-pop[open]");
+      await page.keyboard.press("Escape");
+      await page.waitForFunction(() => !document.querySelector("dialog.email-pop")?.open);
+      s = await emailState(page);
+      check(s.focusBack, `email ${width}px: Escape closes the popup and focus returns to the email link`);
+
+      /* A press on the backdrop — the dialog itself, outside its card — closes it too. */
+      await page.locator('.site-footer a[href^="mailto:"]').first().click();
+      await page.waitForSelector("dialog.email-pop[open]");
+      await page.mouse.click(4, 4);
+      await page.waitForFunction(() => !document.querySelector("dialog.email-pop")?.open);
+      check(true, `email ${width}px: a press outside the popup closes it`);
+      check(errors.length === 0, `email ${width}px: no page errors (${errors.join("; ")})`);
+    } finally { await ctx.close(); }
+  }
+
+  /* When the browser will not copy — no clipboard API, and the legacy way refused — the popup
+     still opens, the note does not claim a copy, and the address is there to copy by hand. */
+  const cut = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  try {
+    const page = await cut.newPage();
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true });
+      document.execCommand = () => false;
+    });
+    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    const target = await page.locator('.site-footer a[href^="mailto:"]').first().getAttribute("href");
+    const address = decodeURIComponent(target.slice("mailto:".length).split("?")[0]);
+    await page.locator('.site-footer a[href^="mailto:"]').first().click();
+    await page.waitForSelector("dialog.email-pop[open]");
+    await page.waitForFunction(() => document.querySelector(".email-pop-note span:last-of-type")?.textContent.length > 0);
+    const s = await emailState(page);
+    check(s.open && s.note === words("email.copyFailed") && s.addr === address,
+      `email fallback: the popup opens, the note claims no copy, and the address shows ("${s.note}")`);
+    const selectable = await page.evaluate(() => getComputedStyle(document.querySelector(".email-pop-addr")).userSelect);
+    check(selectable === "all", `email fallback: the address is one-press selectable (user-select ${selectable})`);
   } finally { await cut.close(); }
 });
 

@@ -148,9 +148,9 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → **built and merged to main
     11 Nov 2026**: source lines with publisher and review date, unapproved outside records never drawn. Connect side
     approved and with Connect Session 13.
-43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → **built and merged to main 11 Nov 2026** with the pull
-    labelled a verification sample; the production switch stays **off** — it goes live only when the Registrar's
-    permission is answered (the owner accepted the API note 11 Nov 2026 and approved seeking permission).
+43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → **built and merged to main 11 Nov 2026**; production
+    switch **on 12 Nov 2026** — Nicholas's ruling of 12 Nov supersedes his 11 Nov ruling (permission was to be
+    sought): permission is no longer sought, on his stated basis that others have built on this data without it.
 44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → **built and merged to main 11 Nov 2026** at
     `/explore/academic-support/`; the tree needs its student-staff review before release.
 45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → **built and merged to main 11 Nov 2026**:

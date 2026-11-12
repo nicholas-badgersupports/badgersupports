@@ -1,9 +1,9 @@
 {
   "schema": "bss.courses-fixture/1",
-  "fixture": true,
-  "label": "Sample data: courses pulled from UW Course Search on 2026-11-11 to verify this tool. It goes live when the owner accepts the verification note in docs/research/COURSE-SEARCH-API-2026-11-11.md.",
-  "provenance": "ops/courses.mjs, 2026-11-11: the published-sections index of each term UW Course Search served (1266 Summer 2026, 1272 Fall 2026, 1274 Spring 2027), mapped to interests by content/courses.json.",
-  "sourceUpdatedAt": "2026-11-11",
+  "fixture": false,
+  "label": null,
+  "provenance": "ops/courses.mjs, 2026-11-12: the published-sections index of each term UW Course Search served (1266 Summer 2026, 1272 Fall 2026, 1274 Spring 2027), mapped to interests by content/courses.json.",
+  "sourceUpdatedAt": "2026-11-12",
   "terms": [
     {
       "code": "1266",
@@ -205,19 +205,6 @@
       "offered": null
     },
     {
-      "id": "023779.17",
-      "subject": "AFROAMER",
-      "subjectCode": "106",
-      "number": "271",
-      "title": "Multiculturalism & Soc Justice",
-      "credits": "3",
-      "interests": [
-        "community"
-      ],
-      "open": "Fall 2026",
-      "offered": null
-    },
-    {
       "id": "023779.38",
       "subject": "AFROAMER",
       "subjectCode": "106",
@@ -236,6 +223,19 @@
       "subjectCode": "106",
       "number": "271",
       "title": "Afrofuturism and Popular Cult",
+      "credits": "3",
+      "interests": [
+        "community"
+      ],
+      "open": "Fall 2026",
+      "offered": null
+    },
+    {
+      "id": "023779.17",
+      "subject": "AFROAMER",
+      "subjectCode": "106",
+      "number": "271",
+      "title": "Multiculturalism & Soc Justice",
       "credits": "3",
       "interests": [
         "community"
@@ -816,11 +816,11 @@
       "offered": null
     },
     {
-      "id": "026160.2",
+      "id": "026160",
       "subject": "AMER IND",
       "subjectCode": "140",
       "number": "303",
-      "title": "Dakota I",
+      "title": "Beginner Level Indigenous Language",
       "credits": "3",
       "interests": [
         "community"
@@ -829,11 +829,11 @@
       "offered": null
     },
     {
-      "id": "026160",
+      "id": "026160.2",
       "subject": "AMER IND",
       "subjectCode": "140",
       "number": "303",
-      "title": "Beginner Level Indigenous Language",
+      "title": "Dakota I",
       "credits": "3",
       "interests": [
         "community"
@@ -3117,11 +3117,11 @@
       "offered": null
     },
     {
-      "id": "001471",
+      "id": "001471.6",
       "subject": "ART HIST",
       "subjectCode": "180",
       "number": "567",
-      "title": "Proseminar in American Architecture",
+      "title": "Theory&Meth. Vernacular Arch.",
       "credits": "3",
       "interests": [
         "creativity"
@@ -3130,11 +3130,11 @@
       "offered": null
     },
     {
-      "id": "001471.6",
+      "id": "001471",
       "subject": "ART HIST",
       "subjectCode": "180",
       "number": "567",
-      "title": "Theory&Meth. Vernacular Arch.",
+      "title": "Proseminar in American Architecture",
       "credits": "3",
       "interests": [
         "creativity"
@@ -3507,11 +3507,11 @@
       "offered": null
     },
     {
-      "id": "024226",
+      "id": "024226.9",
       "subject": "ART HIST",
       "subjectCode": "180",
       "number": "775",
-      "title": "Topics in Japanese Art History",
+      "title": "Hist. of Japanese Architecture",
       "credits": "3",
       "interests": [
         "creativity"
@@ -3520,11 +3520,11 @@
       "offered": null
     },
     {
-      "id": "024226.9",
+      "id": "024226",
       "subject": "ART HIST",
       "subjectCode": "180",
       "number": "775",
-      "title": "Hist. of Japanese Architecture",
+      "title": "Topics in Japanese Art History",
       "credits": "3",
       "interests": [
         "creativity"
@@ -4521,6 +4521,19 @@
       "offered": null
     },
     {
+      "id": "026950.1",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "321",
+      "title": "Fifth Semester Hindi-Urdu",
+      "credits": "3-4",
+      "interests": [
+        "languages"
+      ],
+      "open": "Fall 2026",
+      "offered": null
+    },
+    {
       "id": "026950.2",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -4539,19 +4552,6 @@
       "subjectCode": "186",
       "number": "321",
       "title": "Fifth Semester Chinese",
-      "credits": "3-4",
-      "interests": [
-        "languages"
-      ],
-      "open": "Fall 2026",
-      "offered": null
-    },
-    {
-      "id": "026950.1",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "321",
-      "title": "Fifth Semester Hindi-Urdu",
       "credits": "3-4",
       "interests": [
         "languages"
@@ -4716,11 +4716,11 @@
       "offered": null
     },
     {
-      "id": "025113.7",
+      "id": "025113.1",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "355",
-      "title": "First Semester Thai",
+      "title": "First Semester Chinese",
       "credits": "4",
       "interests": [
         "languages"
@@ -4729,11 +4729,11 @@
       "offered": null
     },
     {
-      "id": "025113.1",
+      "id": "025113.7",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "355",
-      "title": "First Semester Chinese",
+      "title": "First Semester Thai",
       "credits": "4",
       "interests": [
         "languages"
@@ -4794,11 +4794,11 @@
       "offered": null
     },
     {
-      "id": "025113.4",
+      "id": "025113",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "355",
-      "title": "First Semester Filipino",
+      "title": "First Semester Asian Language for Graduate Students",
       "credits": "4",
       "interests": [
         "languages"
@@ -4807,11 +4807,11 @@
       "offered": null
     },
     {
-      "id": "025113",
+      "id": "025113.4",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "355",
-      "title": "First Semester Asian Language for Graduate Students",
+      "title": "First Semester Filipino",
       "credits": "4",
       "interests": [
         "languages"
@@ -4859,11 +4859,11 @@
       "offered": null
     },
     {
-      "id": "025114",
+      "id": "025114.8",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "356",
-      "title": "Second Semester Asian Language for Graduate Students",
+      "title": "Second Semester Persian",
       "credits": "4",
       "interests": [
         "languages"
@@ -4872,11 +4872,11 @@
       "offered": null
     },
     {
-      "id": "025114.8",
+      "id": "025114",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "356",
-      "title": "Second Semester Persian",
+      "title": "Second Semester Asian Language for Graduate Students",
       "credits": "4",
       "interests": [
         "languages"
@@ -4963,11 +4963,11 @@
       "offered": null
     },
     {
-      "id": "025132.10",
+      "id": "025132.1",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "357",
-      "title": "Third Semester Indonesian",
+      "title": "Third Semester Chinese",
       "credits": "4",
       "interests": [
         "languages"
@@ -4976,11 +4976,11 @@
       "offered": null
     },
     {
-      "id": "025132.1",
+      "id": "025132.10",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "357",
-      "title": "Third Semester Chinese",
+      "title": "Third Semester Indonesian",
       "credits": "4",
       "interests": [
         "languages"
@@ -5067,11 +5067,11 @@
       "offered": null
     },
     {
-      "id": "025133.6",
+      "id": "025133.3",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "358",
-      "title": "Fourth Semester Hmong",
+      "title": "Fourth Semester Korean",
       "credits": "4",
       "interests": [
         "languages"
@@ -5080,11 +5080,11 @@
       "offered": null
     },
     {
-      "id": "025133.3",
+      "id": "025133.6",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "358",
-      "title": "Fourth Semester Korean",
+      "title": "Fourth Semester Hmong",
       "credits": "4",
       "interests": [
         "languages"
@@ -5119,11 +5119,11 @@
       "offered": null
     },
     {
-      "id": "025133.18",
+      "id": "025133.1",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "358",
-      "title": "Fourth Semester Hindi-Urdu",
+      "title": "Fourth Semester Japanese",
       "credits": "4",
       "interests": [
         "languages"
@@ -5132,11 +5132,11 @@
       "offered": null
     },
     {
-      "id": "025133.1",
+      "id": "025133.18",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "358",
-      "title": "Fourth Semester Japanese",
+      "title": "Fourth Semester Hindi-Urdu",
       "credits": "4",
       "interests": [
         "languages"
@@ -5249,11 +5249,11 @@
       "offered": null
     },
     {
-      "id": "023467.5",
+      "id": "023467.12",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "421",
-      "title": "7th Semester Indonesian",
+      "title": "Seventh Semester Hindu-Urdu",
       "credits": "3-4",
       "interests": [
         "languages"
@@ -5262,11 +5262,11 @@
       "offered": null
     },
     {
-      "id": "023467.12",
+      "id": "023467.5",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "421",
-      "title": "Seventh Semester Hindu-Urdu",
+      "title": "7th Semester Indonesian",
       "credits": "3-4",
       "interests": [
         "languages"
@@ -5639,11 +5639,11 @@
       "offered": null
     },
     {
-      "id": "024200.2",
+      "id": "024200",
       "subject": "ASIAN AM",
       "subjectCode": "184",
       "number": "462",
-      "title": "Asian Americans and Sci Fi",
+      "title": "Topic in Asian American Literature",
       "credits": "3",
       "interests": [
         "community"
@@ -5652,11 +5652,11 @@
       "offered": null
     },
     {
-      "id": "024200",
+      "id": "024200.2",
       "subject": "ASIAN AM",
       "subjectCode": "184",
       "number": "462",
-      "title": "Topic in Asian American Literature",
+      "title": "Asian Americans and Sci Fi",
       "credits": "3",
       "interests": [
         "community"
@@ -6250,11 +6250,11 @@
       "offered": null
     },
     {
-      "id": "012829",
+      "id": "012829.20",
       "subject": "ATM OCN",
       "subjectCode": "640",
       "number": "801",
-      "title": "Topics in Theoretical Meteorology",
+      "title": "Weather, Climate, and Risk",
       "credits": "2-3",
       "interests": [
         "nature"
@@ -6263,11 +6263,11 @@
       "offered": null
     },
     {
-      "id": "012829.20",
+      "id": "012829",
       "subject": "ATM OCN",
       "subjectCode": "640",
       "number": "801",
-      "title": "Weather, Climate, and Risk",
+      "title": "Topics in Theoretical Meteorology",
       "credits": "2-3",
       "interests": [
         "nature"
@@ -11242,11 +11242,11 @@
       "offered": null
     },
     {
-      "id": "022835.84",
+      "id": "022835",
       "subject": "ENVIR ST",
       "subjectCode": "360",
       "number": "402",
-      "title": "Indigenous Geographies",
+      "title": "Special Topics: Social Perspectives in Environmental Studies",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -11255,11 +11255,11 @@
       "offered": null
     },
     {
-      "id": "022835",
+      "id": "022835.84",
       "subject": "ENVIR ST",
       "subjectCode": "360",
       "number": "402",
-      "title": "Special Topics: Social Perspectives in Environmental Studies",
+      "title": "Indigenous Geographies",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -11580,11 +11580,11 @@
       "offered": null
     },
     {
-      "id": "007359.34",
+      "id": "007359.18",
       "subject": "ENVIR ST",
       "subjectCode": "360",
       "number": "600",
-      "title": "Community Renewable Energy",
+      "title": "Art and the Environment",
       "credits": "3",
       "interests": [
         "nature"
@@ -11593,11 +11593,11 @@
       "offered": null
     },
     {
-      "id": "007359.18",
+      "id": "007359.34",
       "subject": "ENVIR ST",
       "subjectCode": "360",
       "number": "600",
-      "title": "Art and the Environment",
+      "title": "Community Renewable Energy",
       "credits": "3",
       "interests": [
         "nature"
@@ -11840,11 +11840,11 @@
       "offered": null
     },
     {
-      "id": "007404.129",
+      "id": "007404.133",
       "subject": "ENVIR ST",
       "subjectCode": "360",
       "number": "900",
-      "title": "AI for Earth Observation",
+      "title": "Environmentl Impact Evaluation",
       "credits": "1-3",
       "interests": [
         "nature"
@@ -11853,11 +11853,11 @@
       "offered": null
     },
     {
-      "id": "007404.133",
+      "id": "007404.129",
       "subject": "ENVIR ST",
       "subjectCode": "360",
       "number": "900",
-      "title": "Environmentl Impact Evaluation",
+      "title": "AI for Earth Observation",
       "credits": "1-3",
       "interests": [
         "nature"
@@ -12438,11 +12438,11 @@
       "offered": null
     },
     {
-      "id": "007661.79",
+      "id": "007661.81",
       "subject": "F&W ECOL",
       "subjectCode": "396",
       "number": "375",
-      "title": "Agroforestry Systems",
+      "title": "Stewardship Practice & Policy",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -12451,11 +12451,11 @@
       "offered": null
     },
     {
-      "id": "007661.81",
+      "id": "007661.79",
       "subject": "F&W ECOL",
       "subjectCode": "396",
       "number": "375",
-      "title": "Stewardship Practice & Policy",
+      "title": "Agroforestry Systems",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -14570,11 +14570,11 @@
       "offered": null
     },
     {
-      "id": "023835.46",
+      "id": "023835",
       "subject": "GEOG",
       "subjectCode": "416",
       "number": "475",
-      "title": "Earth Science AI Research",
+      "title": "Topics in Geography",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -14583,11 +14583,11 @@
       "offered": null
     },
     {
-      "id": "023835",
+      "id": "023835.46",
       "subject": "GEOG",
       "subjectCode": "416",
       "number": "475",
-      "title": "Topics in Geography",
+      "title": "Earth Science AI Research",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -15532,11 +15532,11 @@
       "offered": null
     },
     {
-      "id": "008661.205",
+      "id": "008661.204",
       "subject": "GEOSCI",
       "subjectCode": "420",
       "number": "875",
-      "title": "App of Lithium Isotope-Ore Dep",
+      "title": "AppliedTectonicGeochemPetro",
       "credits": "1-3",
       "interests": [
         "nature"
@@ -15545,11 +15545,11 @@
       "offered": null
     },
     {
-      "id": "008661.204",
+      "id": "008661.205",
       "subject": "GEOSCI",
       "subjectCode": "420",
       "number": "875",
-      "title": "AppliedTectonicGeochemPetro",
+      "title": "App of Lithium Isotope-Ore Dep",
       "credits": "1-3",
       "interests": [
         "nature"
@@ -16117,11 +16117,11 @@
       "offered": null
     },
     {
-      "id": "008741.25",
+      "id": "008741.24",
       "subject": "GERMAN",
       "subjectCode": "424",
       "number": "325",
-      "title": "Succes, of juist niet ",
+      "title": "Familie, geheimen ",
       "credits": "3",
       "interests": [
         "languages"
@@ -16130,11 +16130,11 @@
       "offered": null
     },
     {
-      "id": "008741.24",
+      "id": "008741.25",
       "subject": "GERMAN",
       "subjectCode": "424",
       "number": "325",
-      "title": "Familie, geheimen ",
+      "title": "Succes, of juist niet ",
       "credits": "3",
       "interests": [
         "languages"
@@ -17053,11 +17053,11 @@
       "offered": null
     },
     {
-      "id": "002918.82",
+      "id": "002918.88",
       "subject": "HDFS",
       "subjectCode": "230",
       "number": "501",
-      "title": "Hospitalized Child & Family",
+      "title": "Death and Dying",
       "credits": "1-3",
       "interests": [
         "community"
@@ -17066,11 +17066,11 @@
       "offered": null
     },
     {
-      "id": "002918.88",
+      "id": "002918.82",
       "subject": "HDFS",
       "subjectCode": "230",
       "number": "501",
-      "title": "Death and Dying",
+      "title": "Hospitalized Child & Family",
       "credits": "1-3",
       "interests": [
         "community"
@@ -18197,11 +18197,11 @@
       "offered": null
     },
     {
-      "id": "026123.4",
+      "id": "026123.3",
       "subject": "LAND ARC",
       "subjectCode": "520",
       "number": "590",
-      "title": "Theories of Landscape Colloqui",
+      "title": "Plants in the Sustainable City",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -18210,11 +18210,11 @@
       "offered": null
     },
     {
-      "id": "026123.3",
+      "id": "026123.4",
       "subject": "LAND ARC",
       "subjectCode": "520",
       "number": "590",
-      "title": "Plants in the Sustainable City",
+      "title": "Theories of Landscape Colloqui",
       "credits": "1-4",
       "interests": [
         "nature"
@@ -21317,19 +21317,6 @@
       "offered": null
     },
     {
-      "id": "013069.157",
-      "subject": "MUSIC",
-      "subjectCode": "660",
-      "number": "497",
-      "title": "Gamelan",
-      "credits": "1-3",
-      "interests": [
-        "music"
-      ],
-      "open": "Fall 2026",
-      "offered": null
-    },
-    {
       "id": "013069.153",
       "subject": "MUSIC",
       "subjectCode": "660",
@@ -21348,6 +21335,19 @@
       "subjectCode": "660",
       "number": "497",
       "title": "All-University Philharmonia",
+      "credits": "1-3",
+      "interests": [
+        "music"
+      ],
+      "open": "Fall 2026",
+      "offered": null
+    },
+    {
+      "id": "013069.157",
+      "subject": "MUSIC",
+      "subjectCode": "660",
+      "number": "497",
+      "title": "Gamelan",
       "credits": "1-3",
       "interests": [
         "music"
@@ -21395,11 +21395,11 @@
       "offered": null
     },
     {
-      "id": "013069.161",
+      "id": "013069.163",
       "subject": "MUSIC",
       "subjectCode": "660",
       "number": "497",
-      "title": "Universality of Rhythm",
+      "title": "Musical Women",
       "credits": "1-3",
       "interests": [
         "music"
@@ -21421,11 +21421,11 @@
       "offered": null
     },
     {
-      "id": "013069.167",
+      "id": "013069.161",
       "subject": "MUSIC",
       "subjectCode": "660",
       "number": "497",
-      "title": "Business of Singing",
+      "title": "Universality of Rhythm",
       "credits": "1-3",
       "interests": [
         "music"
@@ -21434,11 +21434,11 @@
       "offered": null
     },
     {
-      "id": "013069.163",
+      "id": "013069.167",
       "subject": "MUSIC",
       "subjectCode": "660",
       "number": "497",
-      "title": "Musical Women",
+      "title": "Business of Singing",
       "credits": "1-3",
       "interests": [
         "music"
@@ -22890,11 +22890,11 @@
       "offered": null
     },
     {
-      "id": "023056.29",
+      "id": "023056.32",
       "subject": "SCAND ST",
       "subjectCode": "872",
       "number": "404",
-      "title": "Second Sem Finnish for Grad St",
+      "title": "Second Year Danish for Grad St",
       "credits": "2-4",
       "interests": [
         "languages"
@@ -22903,11 +22903,11 @@
       "offered": null
     },
     {
-      "id": "023056.32",
+      "id": "023056.29",
       "subject": "SCAND ST",
       "subjectCode": "872",
       "number": "404",
-      "title": "Second Year Danish for Grad St",
+      "title": "Second Sem Finnish for Grad St",
       "credits": "2-4",
       "interests": [
         "languages"
@@ -23930,11 +23930,11 @@
       "offered": null
     },
     {
-      "id": "026844.9",
+      "id": "026844.8",
       "subject": "SOC",
       "subjectCode": "900",
       "number": "196",
-      "title": "AI and Society",
+      "title": "Fam, Work & Pub Pol-Who Cares?",
       "credits": "3-4",
       "interests": [
         "community"
@@ -23943,11 +23943,11 @@
       "offered": null
     },
     {
-      "id": "026844.8",
+      "id": "026844.9",
       "subject": "SOC",
       "subjectCode": "900",
       "number": "196",
-      "title": "Fam, Work & Pub Pol-Who Cares?",
+      "title": "AI and Society",
       "credits": "3-4",
       "interests": [
         "community"
@@ -25451,19 +25451,6 @@
       "offered": null
     },
     {
-      "id": "017516",
-      "subject": "SOC WORK",
-      "subjectCode": "896",
-      "number": "950",
-      "title": "PhD Proseminar",
-      "credits": "1-3",
-      "interests": [
-        "community"
-      ],
-      "open": "Spring 2027",
-      "offered": null
-    },
-    {
       "id": "017516.10",
       "subject": "SOC WORK",
       "subjectCode": "896",
@@ -25477,16 +25464,16 @@
       "offered": null
     },
     {
-      "id": "017517",
+      "id": "017516",
       "subject": "SOC WORK",
       "subjectCode": "896",
-      "number": "951",
+      "number": "950",
       "title": "PhD Proseminar",
       "credits": "1-3",
       "interests": [
         "community"
       ],
-      "open": "Fall 2026",
+      "open": "Spring 2027",
       "offered": null
     },
     {
@@ -25495,6 +25482,19 @@
       "subjectCode": "896",
       "number": "951",
       "title": "Crit Theo Social Sci Research",
+      "credits": "1-3",
+      "interests": [
+        "community"
+      ],
+      "open": "Fall 2026",
+      "offered": null
+    },
+    {
+      "id": "017517",
+      "subject": "SOC WORK",
+      "subjectCode": "896",
+      "number": "951",
+      "title": "PhD Proseminar",
       "credits": "1-3",
       "interests": [
         "community"
@@ -27375,6 +27375,19 @@
       "offered": null
     },
     {
+      "id": "019293.83",
+      "subject": "ZOOLOGY",
+      "subjectCode": "970",
+      "number": "400",
+      "title": "Trait-based ecology",
+      "credits": "1-3",
+      "interests": [
+        "nature"
+      ],
+      "open": "Spring 2027",
+      "offered": null
+    },
+    {
       "id": "019293.84",
       "subject": "ZOOLOGY",
       "subjectCode": "970",
@@ -27635,6 +27648,32 @@
       "offered": null
     },
     {
+      "id": "026415",
+      "subject": "ZOOLOGY",
+      "subjectCode": "970",
+      "number": "800",
+      "title": "Advanced Topics in the Biological Sciences",
+      "credits": "1-3",
+      "interests": [
+        "nature"
+      ],
+      "open": "Spring 2027",
+      "offered": null
+    },
+    {
+      "id": "026415.5",
+      "subject": "ZOOLOGY",
+      "subjectCode": "970",
+      "number": "800",
+      "title": "Trait-based Ecology",
+      "credits": "1-3",
+      "interests": [
+        "nature"
+      ],
+      "open": "Spring 2027",
+      "offered": null
+    },
+    {
       "id": "019437.13",
       "subject": "ZOOLOGY",
       "subjectCode": "970",
@@ -27804,37 +27843,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "001155.227",
-      "subject": "ART",
-      "subjectCode": "168",
-      "number": "448",
-      "title": "Ceramics: Wheel Thrown Pottery",
-      "credits": "1-4",
-      "interests": [
-        "creativity"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
       "id": "001155.228",
       "subject": "ART",
       "subjectCode": "168",
       "number": "448",
       "title": "Screen Printing",
-      "credits": "1-4",
-      "interests": [
-        "creativity"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
-      "id": "001155.229",
-      "subject": "ART",
-      "subjectCode": "168",
-      "number": "448",
-      "title": "Scientific Torchworking",
       "credits": "1-4",
       "interests": [
         "creativity"
@@ -27856,12 +27869,25 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "024684",
-      "subject": "ART HIST",
-      "subjectCode": "180",
-      "number": "103",
-      "title": "Topics in Art History",
-      "credits": "3-4",
+      "id": "001155.229",
+      "subject": "ART",
+      "subjectCode": "168",
+      "number": "448",
+      "title": "Scientific Torchworking",
+      "credits": "1-4",
+      "interests": [
+        "creativity"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "001155.227",
+      "subject": "ART",
+      "subjectCode": "168",
+      "number": "448",
+      "title": "Ceramics: Wheel Thrown Pottery",
+      "credits": "1-4",
       "interests": [
         "creativity"
       ],
@@ -27874,6 +27900,19 @@
       "subjectCode": "180",
       "number": "103",
       "title": "Visual Truth After AI",
+      "credits": "3-4",
+      "interests": [
+        "creativity"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "024684",
+      "subject": "ART HIST",
+      "subjectCode": "180",
+      "number": "103",
+      "title": "Topics in Art History",
       "credits": "3-4",
       "interests": [
         "creativity"
@@ -27908,11 +27947,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "022592.23",
+      "id": "022592",
       "subject": "ART HIST",
       "subjectCode": "180",
       "number": "430",
-      "title": "Queer Ecologies",
+      "title": "Topics in Visual Culture",
       "credits": "3",
       "interests": [
         "creativity"
@@ -27921,11 +27960,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "022592",
+      "id": "022592.23",
       "subject": "ART HIST",
       "subjectCode": "180",
       "number": "430",
-      "title": "Topics in Visual Culture",
+      "title": "Queer Ecologies",
       "credits": "3",
       "interests": [
         "creativity"
@@ -27973,19 +28012,6 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025105",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "307",
-      "title": "First Semester Southeast Asian Language",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
       "id": "025105.2",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -28004,6 +28030,19 @@
       "subjectCode": "186",
       "number": "307",
       "title": "1st Sem Thai",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025105",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "307",
+      "title": "First Semester Southeast Asian Language",
       "credits": "4",
       "interests": [
         "languages"
@@ -28038,11 +28077,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025106.2",
+      "id": "025106.6",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "308",
-      "title": "2nd Sem Burmese",
+      "title": "2nd Sem Indonesian",
       "credits": "4",
       "interests": [
         "languages"
@@ -28051,11 +28090,24 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025106.6",
+      "id": "025106",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "308",
-      "title": "2nd Sem Indonesian",
+      "title": "Second Semester Southeast Asian Language",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025106.2",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "308",
+      "title": "2nd Sem Burmese",
       "credits": "4",
       "interests": [
         "languages"
@@ -28077,11 +28129,24 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025106",
+      "id": "025111.4",
       "subject": "ASIALANG",
       "subjectCode": "186",
-      "number": "308",
-      "title": "Second Semester Southeast Asian Language",
+      "number": "317",
+      "title": "1st Sem Hindi",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025111.13",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "317",
+      "title": "1st Sem Urdu",
       "credits": "4",
       "interests": [
         "languages"
@@ -28121,32 +28186,6 @@
       "subjectCode": "186",
       "number": "317",
       "title": "1st Sem Sanskrit",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
-      "id": "025111.13",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "317",
-      "title": "1st Sem Urdu",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
-      "id": "025111.4",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "317",
-      "title": "1st Sem Hindi",
       "credits": "4",
       "interests": [
         "languages"
@@ -28272,19 +28311,6 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025138.3",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "408",
-      "title": "4th Sem Filipino",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
       "id": "025138.8",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -28324,6 +28350,19 @@
       "offered": "Summer 2026"
     },
     {
+      "id": "025138.3",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "408",
+      "title": "4th Sem Filipino",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
       "id": "025139.10",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -28350,19 +28389,6 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025139",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "417",
-      "title": "Third Semester Summer Asian Language",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
       "id": "025139.4",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -28381,6 +28407,19 @@
       "subjectCode": "186",
       "number": "417",
       "title": "3rd Sem Sanskrit",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025139",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "417",
+      "title": "Third Semester Summer Asian Language",
       "credits": "4",
       "interests": [
         "languages"
@@ -28428,6 +28467,58 @@
       "offered": "Summer 2026"
     },
     {
+      "id": "025140.13",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "427",
+      "title": "4th Sem Urdu",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025140",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "427",
+      "title": "Fourth Semester Summer Asian Language",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025140.16",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "427",
+      "title": "4th Sem Persian",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
+      "id": "025140.4",
+      "subject": "ASIALANG",
+      "subjectCode": "186",
+      "number": "427",
+      "title": "4th Sem Hindi",
+      "credits": "4",
+      "interests": [
+        "languages"
+      ],
+      "open": null,
+      "offered": "Summer 2026"
+    },
+    {
       "id": "025140.8",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -28454,58 +28545,6 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025140.13",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "427",
-      "title": "4th Sem Urdu",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
-      "id": "025140.4",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "427",
-      "title": "4th Sem Hindi",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
-      "id": "025140.16",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "427",
-      "title": "4th Sem Persian",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
-      "id": "025140",
-      "subject": "ASIALANG",
-      "subjectCode": "186",
-      "number": "427",
-      "title": "Fourth Semester Summer Asian Language",
-      "credits": "4",
-      "interests": [
-        "languages"
-      ],
-      "open": null,
-      "offered": "Summer 2026"
-    },
-    {
       "id": "025148.13",
       "subject": "ASIALANG",
       "subjectCode": "186",
@@ -28519,11 +28558,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025148.15",
+      "id": "025148",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "517",
-      "title": "5th Sem Persian",
+      "title": "Fifth Semester Summer Asian Language",
       "credits": "4",
       "interests": [
         "languages"
@@ -28532,11 +28571,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "025148",
+      "id": "025148.15",
       "subject": "ASIALANG",
       "subjectCode": "186",
       "number": "517",
-      "title": "Fifth Semester Summer Asian Language",
+      "title": "5th Sem Persian",
       "credits": "4",
       "interests": [
         "languages"
@@ -29026,11 +29065,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "026645",
+      "id": "026645.4",
       "subject": "ZOOLOGY",
       "subjectCode": "970",
       "number": "200",
-      "title": "Topics in Biology",
+      "title": "Introduction to Neuroscience",
       "credits": "1-3",
       "interests": [
         "nature"
@@ -29039,11 +29078,11 @@
       "offered": "Summer 2026"
     },
     {
-      "id": "026645.4",
+      "id": "026645",
       "subject": "ZOOLOGY",
       "subjectCode": "970",
       "number": "200",
-      "title": "Introduction to Neuroscience",
+      "title": "Topics in Biology",
       "credits": "1-3",
       "interests": [
         "nature"

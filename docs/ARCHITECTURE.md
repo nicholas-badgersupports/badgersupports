@@ -913,10 +913,10 @@ published sections, and rewrites `content/fixtures/courses.json`. Any failure st
 run and leaves the last good data file untouched; a successful run is committed with the
 site like any other content change. Whoever runs it owns the refresh cadence (once a term
 is enough; the data changes when terms are published). The interest mapping is content
-owned by student staff and names its sources in the research note. The data file ships
-flagged as a verification sample: the tool goes live only when the owner accepts the API
-note and Registrar permission has been sought, at which point a fresh pull writes the file
-without the flag.
+owned by student staff and names its sources in the research note. The data file first
+shipped flagged as a verification sample; the owner accepted the API note on 11 Nov 2026
+and on 12 Nov 2026 ruled that Registrar permission need not be sought, so the pull writes
+the file without the flag and the tool is live.
 
 ## Photos at build time
 

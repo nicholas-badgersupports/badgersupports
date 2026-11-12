@@ -135,8 +135,8 @@ export async function pullCourses({ log = () => {} } = {}) {
   for (const t of labelled) { hitsByTerm[t.code] = await searchTerm(t.code); log(`courses: term ${t.code} (${t.label}): ${hitsByTerm[t.code].length} courses with published sections`); }
   const courses = normalizeCourses(hitsByTerm, labelled, mapping.interests);
   const day = chicagoDay();
-  return { schema: "bss.courses-fixture/1", fixture: true,
-    label: `Sample data: courses pulled from UW Course Search on ${day} to verify this tool. It goes live when the owner accepts the verification note in docs/research/COURSE-SEARCH-API-2026-11-11.md.`,
+  return { schema: "bss.courses-fixture/1", fixture: false,
+    label: null,
     provenance: `ops/courses.mjs, ${day}: the published-sections index of each term UW Course Search served (${labelled.map((t) => `${t.code} ${t.label}`).join(", ")}), mapped to interests by content/courses.json.`,
     sourceUpdatedAt: day, terms: labelled, courses };
 }

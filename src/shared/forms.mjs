@@ -590,16 +590,20 @@ function walkProse(prefix, holder, key, visit) {
   const v = holder[key];
   if (typeof v === "string") return visit(`${prefix}.0`, v, (w) => { holder[key] = w; });
   if (!Array.isArray(v)) return;
-  v.forEach((p, i) => {
-    const at = `${prefix}.${i}`;
-    if (typeof p === "string") return visit(at, p, (w) => { v[i] = w; });
-    if (!p || typeof p !== "object") return;
-    if (typeof p.heading === "string") visit(`${at}.heading`, p.heading, (w) => { p.heading = w; });
-    if (Array.isArray(p.list)) p.list.forEach((x, j) => typeof x === "string" && visit(`${at}.item.${j}`, x, (w) => { p.list[j] = w; }));
-    if (Array.isArray(p.links)) p.links.forEach((l, j) => l && typeof l.label === "string" && visit(`${at}.link.${j}`, l.label, (w) => { l.label = w; }));
-    if (typeof p.more === "string") visit(`${at}.more`, p.more, (w) => { p.more = w; });
-    if (Array.isArray(p.body)) p.body.forEach((x, j) => typeof x === "string" && visit(`${at}.body.${j}`, x, (w) => { p.body[j] = w; }));
-  });
+  v.forEach((p, i) => prosePart(`${prefix}.${i}`, p, (w) => { v[i] = w; }, visit));
+}
+
+/* One part of a prose list, and the parts nested inside it: a { more, body } part holds a whole
+   prose list of its own (the renderer draws it with the same prose()), so its headings, list
+   items and link labels are slots too, nested under .body.<j> as the scheme above names them. */
+function prosePart(at, p, set, visit) {
+  if (typeof p === "string") return visit(at, p, set);
+  if (!p || typeof p !== "object") return;
+  if (typeof p.heading === "string") visit(`${at}.heading`, p.heading, (w) => { p.heading = w; });
+  if (Array.isArray(p.list)) p.list.forEach((x, j) => typeof x === "string" && visit(`${at}.item.${j}`, x, (w) => { p.list[j] = w; }));
+  if (Array.isArray(p.links)) p.links.forEach((l, j) => l && typeof l.label === "string" && visit(`${at}.link.${j}`, l.label, (w) => { l.label = w; }));
+  if (typeof p.more === "string") visit(`${at}.more`, p.more, (w) => { p.more = w; });
+  if (Array.isArray(p.body)) p.body.forEach((x, j) => prosePart(`${at}.body.${j}`, x, (w) => { p.body[j] = w; }, visit));
 }
 export function walkWording(def, visit) {
   const one = (slot, holder, key) => typeof holder?.[key] === "string" && visit(slot, holder[key], (w) => { holder[key] = w; });

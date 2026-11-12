@@ -4,6 +4,9 @@
    and coming Back to a page the browser kept. Nothing traps focus: Tab leaves the menu as it would
    any list of links. Without this file the navigation still works (see layout.mjs). */
 
+/* Email links copy their address and offer the mail program as a choice, never as a surprise. */
+import "./email.js";
+
 const toggle = document.querySelector("[data-menu-toggle]");
 /* The initials stay visible until a portrait has loaded; a failed photo never blanks a profile. */
 const teamPortraits = [...document.querySelectorAll("img[data-team-portrait]")];

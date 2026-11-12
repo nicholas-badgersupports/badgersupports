@@ -102,6 +102,7 @@
       "id": "b-cn-past-work",
       "type": "cards",
       "variant": "whole",
+      "craftGallery": true,
       "anchor": "b-cn-past-work",
       "title": "Made at Past Craft Nights",
       "lead": "Students and their creations from past Craft Nights.",
@@ -128,6 +129,24 @@
           ],
           "text": "A student with their painted pumpkin.",
           "photo": "m-craft-painted-pumpkin"
+        },
+        {
+          "id": "craft-vision-boards",
+          "title": "Vision Boards",
+          "text": "Students with the vision boards they made.",
+          "photo": "m-people-visionboards"
+        },
+        {
+          "id": "craft-bracelets",
+          "title": "Bracelet Making",
+          "text": "Students making beaded bracelets.",
+          "photo": "m-people-bracelets"
+        },
+        {
+          "id": "craft-bedazzle",
+          "title": "Bedazzled Crafts",
+          "text": "A student with the lip gloss tube they bedazzled.",
+          "photo": "m-people-bedazzle"
         }
       ]
     },

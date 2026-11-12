@@ -164,6 +164,7 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → **installed and merged to main 11 Nov 2026** (the exact
     diff Nicholas approved, `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`); `npm run history:check` run
     green on the merged tree in the merge pass.
+48. **Craft Nights gallery row** (`CRAFT-GALLERY-ROW`) → **built on branch `craft-row-2026-11-12`, not merged**: "Made at Past Craft Nights" stands in one row of smaller pictures by default (sideways-scrolling on a phone), with two Site Settings — Craft Nights Photos to Show (1–12, default six) and Craft Nights Gallery Layout (One Row / Grid) — taking effect on the next publish. Handoff: `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-CRAFT-ROW-HANDOFF-2026-11-12.md`. (The safety-exit branch also numbers its item 48; the merge pass renumbers one.)
 
 ## Git and publishing
 

@@ -389,7 +389,8 @@ let pagesChanged = () => {};
 /* Each change names the version of the pages it started from; a refusal keeps what was typed and says why. */
 const PAGE_ERRORS = { "page.path": "path", "page.path.reserved": "reserved", "page.path.taken": "taken", "page.title": "title",
   "page.description": "description", "page.fixed": "fixed", "page.retireTo": "retireTo", "menu.entry": "menu", "menu.group": "menu",
-  "settings.name": "siteName", "settings.description": "description", "settings.email": "email" };
+  "settings.name": "siteName", "settings.description": "description", "settings.email": "email",
+  "settings.craftPhotoCount": "craftCount", "settings.craftLayout": "craftLayout" };
 const STATE_CHIP = { live: "is-open", draft: "is-closed", retired: "is-closed" };
 let fieldCount = 0;
 /* A labelled field; `help`, when given, goes between the label and the control and is read with the control. */
@@ -699,7 +700,8 @@ function pagesSection(me) {
     return part;
   }
 
-  /* The site's settings, a publisher's: its name, search description and accessibility email, saved together as one
+  /* The site's settings, a publisher's: its name, search description, accessibility email and the Craft
+     Nights gallery's photo count and layout, saved together as one
      change. The fields are made once, so what was typed stays through a refusal and through the list being drawn again;
      they take the saved values only when first drawn and after a save that lands. The part keeps its own version token
      and the values that token stands for (`seen`): a stale save is refused with the settings saved since (structure.mjs),
@@ -711,12 +713,17 @@ function pagesSection(me) {
   const siteName = textInput();
   const siteDescription = el("textarea", { rows: 4 });
   const siteEmail = el("input", { type: "email", autocomplete: "off", spellcheck: false });
-  const SETTINGS = [["name", siteName], ["description", siteDescription], ["accessibilityEmail", siteEmail]];
+  const siteCraftCount = el("input", { type: "number", min: 1, max: 12, step: 1, autocomplete: "off" });
+  const siteCraftLayout = choice([["row", t("staff.settings.layout.row")], ["grid", t("staff.settings.layout.grid")]], "row");
+  const SETTINGS = [["name", siteName], ["description", siteDescription], ["accessibilityEmail", siteEmail],
+    ["craftPhotoCount", siteCraftCount], ["craftLayout", siteCraftLayout]];
   const settingsSave = el("button", { type: "submit", className: "btn", textContent: t("staff.settings.save") });
   const settingsFields = {
     name: field(t("staff.settings.field.name"), siteName, t("staff.settings.help.name")),
     description: field(t("staff.settings.field.description"), siteDescription, t("staff.settings.help.description")),
     accessibilityEmail: field(t("staff.settings.field.email"), siteEmail, t("staff.settings.help.email")),
+    craftPhotoCount: field(t("staff.settings.field.craftCount"), siteCraftCount, t("staff.settings.help.craftCount")),
+    craftLayout: field(t("staff.settings.field.craftLayout"), siteCraftLayout, t("staff.settings.help.craftLayout")),
   };
   const sinceLines = Object.fromEntries(SETTINGS.map(([k, input]) => {
     const line = el("p", { className: "staff-since", id: `${input.id}-since`, hidden: true });
@@ -726,7 +733,10 @@ function pagesSection(me) {
   const settingsForm = el("form", { className: "staff-form staff-settings", noValidate: true },
     el("h3", { textContent: t("staff.settings.title") }), settingsProblem, ...Object.values(settingsFields),
     el("div", { className: "staff-actions" }, settingsSave));
-  const valuesOf = (site) => ({ name: site?.name || "", description: site?.description || "", accessibilityEmail: site?.accessibilityEmail || "" });
+  /* The gallery's two values read as the words the form holds: the count the site's default (six) when
+     none is saved, the layout "row" when none is saved — the defaults structure.mjs draws with. */
+  const valuesOf = (site) => ({ name: site?.name || "", description: site?.description || "", accessibilityEmail: site?.accessibilityEmail || "",
+    craftPhotoCount: site?.craftPhotoCount == null ? "6" : String(site.craftPhotoCount), craftLayout: site?.craftLayout || "row" });
   const sameValues = (a, b) => SETTINGS.every(([k]) => a[k] === b[k]);
   let started = null, seen = null;
   /* The line under a field: the value saved since, or none (null). Read with the field while it shows. */

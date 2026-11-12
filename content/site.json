@@ -6,6 +6,8 @@
   "connectOrigin": "https://home.badgersupports.org",
   "lang": "en",
   "description": "Free, student-led peer support groups, craft nights and wellness workshops at UW\u2013Madison.",
+  "craftPhotoCount": 6,
+  "craftLayout": "row",
   "nav": [
     {
       "id": "nav-about",

@@ -164,6 +164,7 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → **installed and merged to main 11 Nov 2026** (the exact
     diff Nicholas approved, `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`); `npm run history:check` run
     green on the merged tree in the merge pass.
+48. **Safety Exit** (`SAFETY-EXIT-PUBLIC`) → **built on branch `safety-exit-2026-11-12`, not merged**: a pill at the header's right on every page — a plain link to the Safety Exit destination (Site Settings; default https://www.weather.gov/, and an unset, empty or invalid value falls back to it; a change takes effect on the next publish) — leaving by `location.replace` on one press or three quick Escapes, never measured; the privacy policy says plainly what the button cannot do. Handoff: `Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-SAFETY-EXIT-HANDOFF-2026-11-12.md`.
 
 ## Git and publishing
 

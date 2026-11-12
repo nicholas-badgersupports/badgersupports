@@ -2559,15 +2559,16 @@ await part("8. the safety exit", async () => {
           };
           return {
             href: el.getAttribute("href"), label: el.textContent.trim(),
-            top: Math.round(b.top), right: Math.round(innerWidth - b.right), h: Math.round(b.height),
-            headH: Math.round(head.height), overlap: hits(".brand") || hits("[data-menu-toggle]") || hits("#site-nav"),
+            top: Math.round(b.top), bottom: Math.round(b.bottom), right: Math.round(innerWidth - b.right), h: Math.round(b.height),
+            headTop: Math.round(head.top), headBottom: Math.round(head.bottom),
+            overlap: hits(".brand") || hits("[data-menu-toggle]") || hits("#site-nav"),
             sideways: document.documentElement.scrollWidth - innerWidth,
           };
         });
         check(r.href === "https://www.weather.gov/" && r.label === words("header.safetyExit"),
           `safety exit @${w} ${path}: a plain link to the weather forecast, labelled "${r.label}"`);
-        check(r.top >= 0 && r.top < r.headH && r.right >= 0 && r.h >= 44 && !r.overlap && r.sideways <= 0,
-          `safety exit @${w} ${path}: in the header's top-right, ${r.h}px tall, covering nothing, no sideways scroll`);
+        check(r.top >= r.headTop - 1 && r.bottom <= r.headBottom + 1 && r.right >= 0 && r.h >= 44 && !r.overlap && r.sideways <= 0,
+          `safety exit @${w} ${path}: inside the header at its right, ${r.h}px tall, covering nothing, no sideways scroll`);
       }
     }
 

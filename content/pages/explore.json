@@ -12,7 +12,7 @@
       "title": "Explore Campus",
       "lead": "What is on, and how to get there.",
       "body": [
-        "Two tools, each reading a public source and naming it. Badger Supports programs are labelled as ours; everything else keeps its own organizer and a link to its official listing."
+        "Four tools, each reading a public source and naming it. Badger Supports programs are labelled as ours; everything else keeps its own organizer and a link to its official listing."
       ]
     },
     {
@@ -46,6 +46,32 @@
             "label": "Compare bus routes",
             "href": "/explore/bus-routes/"
           }
+        },
+        {
+          "id": "classes",
+          "title": "Discover Classes by Interest",
+          "icon": "star",
+          "lines": [
+            "UW Course Search \u00b7 Official course listings"
+          ],
+          "text": "Find courses by what interests you \u2014 creativity, music, languages, nature and community \u2014 from the listings in UW Course Search.",
+          "link": {
+            "label": "Browse classes by interest",
+            "href": "/explore/classes/"
+          }
+        },
+        {
+          "id": "academic-support",
+          "title": "Academic Support Navigator",
+          "icon": "question",
+          "lines": [
+            "UW\u2013Madison resources \u00b7 Not academic advising"
+          ],
+          "text": "Answer a few questions and find the university resources that fit \u2014 tutoring, accommodations and other academic support.",
+          "link": {
+            "label": "Find academic support",
+            "href": "/explore/academic-support/"
+          }
         }
       ]
     },
@@ -54,7 +80,7 @@
       "type": "text",
       "title": "Where the listings come from",
       "body": [
-        "Event listings come from UW-Madison Events and the Wisconsin Union event calendar; Badger Supports programs come from Badger Supports Connect. Bus routes come from Madison Metro's published route data, and addresses are placed with OpenStreetMap. Nothing you type into a tool here is kept."
+        "Event listings come from UW-Madison Events and the Wisconsin Union event calendar; Badger Supports programs come from Badger Supports Connect. Bus routes come from Madison Metro's published route data, and addresses are placed with OpenStreetMap. Class listings come from UW Course Search, the university\u2019s official course listings, and the Academic Support Navigator points to resources in this site\u2019s resource library. Nothing you type into a tool here is kept."
       ],
       "links": [
         {

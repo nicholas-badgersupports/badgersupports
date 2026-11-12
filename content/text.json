@@ -245,6 +245,31 @@
       "text": "{{n}} of {{total}}",
       "where": "Position in a photo strip."
     },
+    "carousel.prev": {
+      "group": "home",
+      "text": "Previous photo",
+      "where": "Button that moves the Drop In This Week photo carousel back."
+    },
+    "carousel.next": {
+      "group": "home",
+      "text": "Next photo",
+      "where": "Button that moves the Drop In This Week photo carousel on."
+    },
+    "carousel.dot": {
+      "group": "home",
+      "text": "Go to photo {{n}}",
+      "where": "Button that jumps to one photo in the Drop In This Week carousel. {{n}} is its position."
+    },
+    "carousel.count": {
+      "group": "home",
+      "text": "Photo {{n}} of {{total}}",
+      "where": "Position in the Drop In This Week photo carousel, read by screen readers."
+    },
+    "carousel.label": {
+      "group": "home",
+      "text": "{{title}}: photos",
+      "where": "The Drop In This Week photo carousel's name, read by screen readers. {{title}} is the section heading."
+    },
     "wall.more": {
       "group": "home",
       "text": "Show Other Notes",

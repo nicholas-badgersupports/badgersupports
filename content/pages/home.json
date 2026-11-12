@@ -73,6 +73,13 @@
       "later": 3,
       "laterTitle": "Coming Up",
       "home": "sac-mhh",
+      "photos": [
+        "m-hub-corner",
+        "m-hub-peer-poster",
+        "m-openhouse-counter",
+        "m-hub-flag",
+        "m-openhouse-stickers"
+      ],
       "dropIn": [
         {
           "program": "peer",

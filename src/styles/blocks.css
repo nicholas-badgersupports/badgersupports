@@ -283,6 +283,47 @@
 .week-empty span { display: block; color: var(--muted); }
 .week-foot { margin-top: var(--s4); font-weight: 700; }
 
+/* The week's photos: a carousel across the foot of the timetable card, under the timetable,
+   spanning both columns so it never crowds the rows. One photo at a time; the track scrolls
+   sideways by touch, and the controls (shown with the script) walk it a photo at a time. */
+.week-photos { grid-column: 1 / -1; min-width: 0; }
+.carousel-track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  list-style: none; scrollbar-width: none;
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-slide { scroll-snap-align: start; }
+.carousel-slide .photo { aspect-ratio: 2 / 1; border-radius: var(--r-card); }
+.carousel-controls { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); }
+.js .carousel-controls { display: flex; }
+.carousel-controls > button {
+  width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); background: var(--paper); color: var(--accent);
+  cursor: pointer; display: grid; place-items: center; flex: none;
+}
+.carousel-controls > button svg { width: 18px; height: 18px; }
+.carousel-dots { display: flex; gap: var(--s1); margin-inline: auto; }
+.carousel-dots button {
+  width: 44px; height: 44px; border: 0; background: none; padding: 0;
+  cursor: pointer; display: grid; place-items: center;
+}
+.carousel-dots button span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent); opacity: .35;
+}
+.carousel-dots button[aria-current="true"] span { opacity: 1; }
+@media (max-width: 860px) {
+  .carousel-slide .photo { aspect-ratio: 3 / 2; }
+}
+/* A phone is too narrow for the arrows and five dots in one row: the dots take their own
+   centred line under the arrows instead of pushing the next button out of the card. */
+@media (max-width: 560px) {
+  .carousel-controls { flex-wrap: wrap; }
+  .carousel-controls > [data-carousel-next] { margin-left: auto; }
+  .carousel-dots { order: 3; flex-basis: 100%; justify-content: center; margin-top: var(--s1); }
+  .carousel-dots button { width: 40px; height: 40px; }
+}
+
 @media (max-width: 860px) {
   .week-card { grid-template-columns: 1fr; gap: var(--s4); padding: var(--s4); }
   .week-head { position: static; }

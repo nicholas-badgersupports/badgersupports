@@ -164,6 +164,7 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → **installed and merged to main 11 Nov 2026** (the exact
     diff Nicholas approved, `Admin/Handoffs/active/PUBLIC-ITEM-47-DIFF-2026-11-11.md`); `npm run history:check` run
     green on the merged tree in the merge pass.
+48. **Drop In This Week photo carousel** → **built on `dropin-carousel-2026-11-12`** (off the timetable-container branch): five Hub photos as a carousel across the foot of the home timetable card, with buttons, dots and arrow keys; handoff `PUBLIC-DROPIN-CAROUSEL-HANDOFF-2026-11-12.md`.
 
 ## Git and publishing
 

@@ -21,6 +21,7 @@ const PARTS = {
   out: `<path d="M13.5 4.5h6v6"/><path d="m19.5 4.5-8 8"/><path d="M17.5 14v4.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1H10"/>`,
   pin: `<path d="M12 21.5s-7-6-7-11.5a7 7 0 0 1 14 0c0 5.5-7 11.5-7 11.5Z"/><circle cx="12" cy="10" r="2.4"/>`,
   mail: `<rect x="3.5" y="6" width="17" height="12.5" rx="1.2"/><path d="m3.8 6.6 8.2 6.4 8.2-6.4"/>`,
+  copy: `<rect x="9" y="9" width="11.5" height="11.5" rx="1.5"/><path d="M15.5 9V5.5a1 1 0 0 0-1-1h-10a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1H9"/>`,
   calendar: `<rect x="4" y="5.5" width="16" height="14.5" rx="1.5"/><path d="M4 10.5h16"/><path d="M8.5 3.5v4M15.5 3.5v4"/>`,
   chat: `<path d="M3.5 4.5h11v8.5H9l-3.2 3v-3H3.5z"/><path d="M14.5 8.5h6v8.5h-2.3v3l-3.2-3H11v-2"/>`,
   scissors: `<g><circle cx="6.5" cy="18" r="2.6"/><path d="M8.4 16.2 19.5 4"/></g><g><circle cx="17.5" cy="18" r="2.6"/><path d="M15.6 16.2 4.5 4"/></g>`,

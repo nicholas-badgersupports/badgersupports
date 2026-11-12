@@ -37,6 +37,15 @@ export async function copyText(text, { clipboard, doc } = {}) {
   } catch { return false; } finally { area.remove(); }
 }
 
+/* The two actions are icons, not words (owner, 12 Nov 2026): the copy glyph and the envelope,
+   drawn exactly as src/render/icons.mjs draws them (same parts, same wrapper), each button
+   named by the words it replaced, as its label and its tooltip. */
+const ICON_PARTS = {
+  copy: `<rect x="9" y="9" width="11.5" height="11.5" rx="1.5"/><path d="M15.5 9V5.5a1 1 0 0 0-1-1h-10a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1H9"/>`,
+  mail: `<rect x="3.5" y="6" width="17" height="12.5" rx="1.2"/><path d="m3.8 6.6 8.2 6.4 8.2-6.4"/>`,
+};
+const iconSvg = (name) => `<svg class="ic" data-i="${name}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICON_PARTS[name]}</svg>`;
+
 let pop = null, mark = null, noteText = null, addrLine = null, openLink = null;
 let opener = null, address = "";
 
@@ -64,12 +73,16 @@ function build() {
   const copy = document.createElement("button");
   copy.type = "button";
   copy.className = "btn btn--quiet";
-  copy.textContent = t("email.copyAgain");
+  copy.innerHTML = iconSvg("copy");
+  copy.setAttribute("aria-label", t("email.copyAgain"));
+  copy.title = t("email.copyAgain");
   copy.addEventListener("click", async () => say(await copyText(address)));
 
   openLink = document.createElement("a");
   openLink.className = "btn";
-  openLink.textContent = t("email.openMail");
+  openLink.innerHTML = iconSvg("mail");
+  openLink.setAttribute("aria-label", t("email.openMail"));
+  openLink.title = t("email.openMail");
   openLink.addEventListener("click", () => pop.close());
 
   const actions = document.createElement("div");

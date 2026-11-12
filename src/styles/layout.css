@@ -139,8 +139,9 @@
 .email-pop-note { display: flex; align-items: center; gap: var(--s1); margin: 0 var(--s5) var(--s1) 0; font-size: 1rem; font-weight: 700; }
 .email-pop-mark { color: var(--ok); }
 .email-pop-addr { margin: 0 0 var(--s3); overflow-wrap: anywhere; user-select: all; }
-.email-pop-actions { display: flex; flex-wrap: wrap; gap: var(--s1); }
-.email-pop-actions .btn { flex: 1 1 auto; min-height: 44px; padding: .6rem 1.1rem; font-size: var(--fs-small); }
+.email-pop-actions { display: flex; flex-wrap: nowrap; gap: var(--s1); }
+.email-pop-actions .btn { flex: none; width: 44px; height: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.email-pop-actions .ic { width: 1.3rem; height: 1.3rem; }
 .email-pop-x {
   position: absolute; top: var(--s1); right: var(--s1); width: 44px; height: 44px; padding: 0;
   border: 0; background: none; color: var(--muted); font: 400 1.4rem/1 var(--font-body); cursor: pointer;

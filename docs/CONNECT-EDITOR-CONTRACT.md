@@ -475,7 +475,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `copy`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 

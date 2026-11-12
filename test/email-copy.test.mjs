@@ -91,5 +91,8 @@ test("a built page carries the popup's words and the email script", async () => 
   const emailFile = jsDir.find((f) => f.endsWith("email.js"));
   const emailJs = fs.readFileSync(path.join(siteDir, emailFile), "utf8");
   assert.match(emailJs, /mailto:/, "the shipped script still keys on mailto:");
+  assert.match(emailJs, /iconSvg\("copy"\)/, "the Copy again button is the copy icon");
+  assert.match(emailJs, /iconSvg\("mail"\)/, "the Open in mail app button is the envelope icon");
+  assert.match(emailJs, /aria-label/, "each icon button keeps its words as its accessible name");
   assert.ok(fs.existsSync(path.join(ROOT, "src/client/email.js")));
 });

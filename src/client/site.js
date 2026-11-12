@@ -72,32 +72,45 @@ document.addEventListener("click", (e) => {
   if (menuOpen() && !nav.contains(e.target) && !toggle.contains(e.target)) setMenu(false);
 });
 
-/* Icons move once, each its own way (motion.css), when their link or button is pressed, or when
-   a mouse comes onto it — as Badger SPILL's icons do. A second press starts the move again. The
-   class comes off when every part has finished, so the next press can play it. */
+/* Icons: only the few in MOVING still move (motion.css) — the ones that confirm an action or
+   point the way on the main buttons. The rest are labels and never move; the external-link
+   arrow alone sits on thousands of directory entries. A move plays when its own button or
+   summary is pressed, when a mouse is over the icon itself, or when the keyboard reaches its
+   control. Pointing at a link's words, pressing a link (it navigates anyway), or clicking
+   anywhere else plays nothing — clicking around used to set every crossed icon off, because
+   pointing at any part of a control played all of its icons (owner, 12 Nov 2026: "can it be
+   more narrow?"). The class comes off when every part has finished, so the next press or
+   pointing can play it again. */
 const CONTROL = "a, button, summary, label";
+const MOVING = new Set(["arrow", "back", "down", "check", "close", "sliders", "pencil", "play", "pause"]);
 const turns = new WeakMap();
 const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-function play(el) {
-  if (reduce.matches || !el) return;
-  for (const ic of el.querySelectorAll("[data-i]")) {
-    const turn = (turns.get(ic) || 0) + 1;
-    turns.set(ic, turn);
-    ic.classList.remove("i-press");
-    void ic.getBoundingClientRect();
-    ic.classList.add("i-press");
-    const done = () => { if (turns.get(ic) === turn) ic.classList.remove("i-press"); };
-    const moves = typeof ic.getAnimations === "function" ? ic.getAnimations({ subtree: true }) : [];
-    if (moves.length) Promise.all(moves.map((a) => a.finished.catch(() => {}))).then(done);
-    else setTimeout(done, 1200);
-  }
+function playIcon(ic) {
+  if (reduce.matches || !ic || !MOVING.has(ic.getAttribute("data-i"))) return;
+  const turn = (turns.get(ic) || 0) + 1;
+  turns.set(ic, turn);
+  ic.classList.remove("i-press");
+  void ic.getBoundingClientRect();
+  ic.classList.add("i-press");
+  const done = () => { if (turns.get(ic) === turn) ic.classList.remove("i-press"); };
+  const moves = typeof ic.getAnimations === "function" ? ic.getAnimations({ subtree: true }) : [];
+  if (moves.length) Promise.all(moves.map((a) => a.finished.catch(() => {}))).then(done);
+  else setTimeout(done, 1200);
 }
-document.addEventListener("click", (e) => play(e.target.closest?.(CONTROL)), { passive: true });
+function playControl(el) {
+  if (!el) return;
+  for (const ic of el.querySelectorAll("[data-i]")) playIcon(ic);
+}
+document.addEventListener("click", (e) => {
+  const el = e.target.closest?.(CONTROL);
+  if (el && (el.tagName === "BUTTON" || el.tagName === "SUMMARY")) playControl(el);
+}, { passive: true });
 document.addEventListener("pointerover", (e) => {
   if (e.pointerType !== "mouse") return;
-  const el = e.target.closest?.(CONTROL);
-  if (el && !el.contains(e.relatedTarget)) play(el);
+  const ic = e.target.closest?.("[data-i]");
+  if (ic && !ic.contains(e.relatedTarget)) playIcon(ic);
 }, { passive: true });
+document.addEventListener("focusin", (e) => playControl(e.target.closest?.(CONTROL)));
 
 /* A link to a folded answer (#q-…) opens it. */
 function openTarget() {

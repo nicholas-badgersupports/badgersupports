@@ -1,9 +1,11 @@
 /* Icons, the "go" link, and every move on the site.
  *
- * Moves follow Badger SPILL (its base.css, "icon presses") and Connect's motion rules: each icon
- * moves once, its own way, when its link is pointed at or pressed (src/client/site.js adds
- * .i-press and takes it off when the move ends); a few things say hello once when the page opens
- * and then rest. Nothing here loops. The one loop on the site is the homepage hero's drift and float
+ * Moves follow Badger SPILL (its base.css, "icon presses") and Connect's motion rules, narrowed
+ * by the owner on 12 Nov 2026: only a few icons still move — the ones that confirm an action or
+ * point the way on the main buttons — and only when their own button is pressed, the icon itself
+ * is pointed at, or the keyboard reaches their control (src/client/site.js adds .i-press and
+ * takes it off when the move ends). The rest are labels and stay still. A few things say hello
+ * once when the page opens and then rest. Nothing here loops. The one loop on the site is the homepage hero's drift and float
  * in blocks.css, which the owner asked for on 20 Oct 2026 and Connect's rules do not allow (see
  * docs/DECISIONS.md). It runs only once src/client/hero.js starts it, and that file's Pause button
  * stops it (owner, 20 Oct 2026). Nothing moves at all for anyone who asks for less motion: the last rule in
@@ -50,9 +52,14 @@
 .btn .ic-hand, .door-ic .ic-hand { width: auto; object-fit: contain; }
 .btn .ic-hand { height: 1.45em; margin-block: -.15em; }
 
-/* ---------- moves (one each; .i-press is added and removed by site.js) ---------- */
-[data-i].i-press { animation: i-pop .42s cubic-bezier(.3, 1.5, .5, 1); }
-[data-i].i-press:is([data-i="out"], [data-i="mail"], [data-i="chat"], [data-i="scissors"], [data-i="bulb"], [data-i="check"], [data-i="plus"]) { animation: none; }
+/* ---------- moves (one each; .i-press is added and removed by site.js) ----------
+   Only the icons in site.js's MOVING set still move. The plain pop below belongs to a few action
+   buttons (close, sliders, pencil, play, pause); the arrows and the tick have their own moves
+   further down. Every other icon is a label and is still: the moves the external-link arrow,
+   pin, envelope, calendar, speech bubbles, scissors, bulb, badge, question mark, star and hand
+   used to make were removed on 12 Nov 2026 — pointing at any part of a control played them all,
+   and labels do not need to move. The artwork is unchanged. */
+[data-i].i-press:is([data-i="close"], [data-i="sliders"], [data-i="pencil"], [data-i="play"], [data-i="pause"]) { animation: i-pop .42s cubic-bezier(.3, 1.5, .5, 1); }
 @keyframes i-pop { 35% { scale: .78; } 70% { scale: 1.14; } }
 
 /* arrows: away, and in again from the other side */
@@ -62,46 +69,11 @@
 @keyframes i-go { 45% { translate: 6px 0; opacity: .3; } 46% { translate: -6px 0; } }
 @keyframes i-back { 45% { translate: -6px 0; opacity: .3; } 46% { translate: 6px 0; } }
 @keyframes i-down { 45% { translate: 0 6px; opacity: .3; } 46% { translate: 0 -6px; } }
-/* leaving the site: the arrow flies out of its box and comes back */
-[data-i="out"].i-press path:nth-child(-n+2) { animation: i-out .5s ease; }
-@keyframes i-out { 40% { transform: translate(5px, -5px); opacity: 0; } 41% { transform: translate(-5px, 5px); opacity: 0; } 80% { transform: none; opacity: 1; } }
-/* the pin drops onto the map and settles */
-[data-i="pin"].i-press { animation: i-drop .6s cubic-bezier(.3, 1.4, .5, 1); transform-origin: 50% 100%; }
-@keyframes i-drop { 0% { translate: 0 -7px; } 45% { translate: 0 0; scale: 1.14 .84; } 70% { translate: 0 -2px; scale: .96 1.05; } }
-/* the envelope's flap opens and shuts */
-[data-i="mail"].i-press path { animation: i-flap .6s ease; transform-origin: 12px 6.6px; }
-@keyframes i-flap { 35%, 60% { transform: scaleY(-.9); } }
-/* the calendar: a page flips over */
-[data-i="calendar"].i-press { animation: i-tear .6s ease; transform-origin: 50% 20%; }
-@keyframes i-tear { 45% { rotate: x 75deg; } }
-/* two speech bubbles take turns */
-[data-i="chat"].i-press path:nth-child(1) { animation: i-talk .5s ease; transform-origin: 9px 10px; }
-[data-i="chat"].i-press path:nth-child(2) { animation: i-talk .5s ease .18s; transform-origin: 16px 14px; }
-@keyframes i-talk { 35% { transform: scale(1.14, .9); } 65% { transform: scale(.95, 1.06); } }
-/* scissors: snip, snip */
-[data-i="scissors"].i-press g:nth-child(1) { animation: i-snip-a .6s ease; transform-origin: 12px 11.8px; }
-[data-i="scissors"].i-press g:nth-child(2) { animation: i-snip-b .6s ease; transform-origin: 12px 11.8px; }
-@keyframes i-snip-a { 25% { transform: rotate(-13deg); } 50% { transform: none; } 75% { transform: rotate(-9deg); } }
-@keyframes i-snip-b { 25% { transform: rotate(13deg); } 50% { transform: none; } 75% { transform: rotate(9deg); } }
-/* the bulb lights: it swells and its rays flicker */
-[data-i="bulb"].i-press path:nth-child(2) { animation: i-swell .55s ease; transform-origin: 12px 10px; }
-[data-i="bulb"].i-press path:nth-child(3) { animation: i-flicker .55s steps(1); }
-@keyframes i-swell { 45% { transform: scale(1.15); } }
-@keyframes i-flicker { 20%, 60% { opacity: .1; } 40%, 80% { opacity: 1; } }
-/* a name badge swings on its lanyard */
-[data-i="badge"].i-press { animation: i-swing .8s ease; transform-origin: 50% 10%; }
-@keyframes i-swing { 20% { rotate: 12deg; } 45% { rotate: -9deg; } 70% { rotate: 5deg; } 88% { rotate: -2deg; } }
-/* the question mark tilts its head */
-[data-i="question"].i-press { animation: i-ponder .6s ease; }
-@keyframes i-ponder { 25% { rotate: -16deg; } 55% { rotate: 10deg; } 80% { rotate: -3deg; } }
-/* the star spins once */
-[data-i="star"].i-press { animation: i-star .6s ease; }
-@keyframes i-star { 50% { scale: 1.3; } to { rotate: 144deg; } }
 /* the tick draws itself */
 [data-i="check"].i-press path { stroke-dasharray: 22; animation: i-draw .4s ease-out; }
 @keyframes i-draw { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
-/* the hand waves: the organisation's wave, as on Connect's bookmark */
-[data-i="hand"].i-press { animation: i-wave .9s ease-in-out; transform-origin: 50% 92%; }
+/* the hand's wave survives only as the hero button's hello, below; the press rule that waved
+   it on every pointed-at link was removed with the other label moves */
 @keyframes i-wave { 18% { rotate: -14deg; } 38% { rotate: 11deg; } 58% { rotate: -8deg; } 78% { rotate: 4deg; } }
 /* plus turns into minus while its answer is open */
 details > summary [data-i="plus"] path:first-child { transform-origin: 12px 12px; transition: transform var(--t-slow) var(--ease-out); }

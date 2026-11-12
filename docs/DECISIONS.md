@@ -1001,3 +1001,37 @@ Four answers from Nicholas, given in chat while the queues were worked:
 - **The backup workbook lives in the `directors@badgersupports.org` account** (item 18; owner action 5).
 - **No notice by the Instagram reel** (privacy draft, Gap 29): the draft stands as Sessions 11–12 left it
   on this point.
+
+## 12 November 2026 · Icon moves narrowed; label icons no longer move (Owner)
+
+Nicholas, in chat: "on all 3 websites when you click around all of the icon animations play, can it
+be more narrow?" — and, added the same day, a judgement on which icons need animation at all:
+animation is warranted where it signals state, confirms an action, or draws the eye to something
+that changed; it is not warranted for static navigation, labels, or decorative repeats.
+
+What was wrong: `src/client/site.js` played the icons of *any* link, button, summary or label the
+pointer merely entered, or that was clicked — all of its icons at once, wherever in the control the
+pointer was. Ordinary mouse travel on the way to a click crossed control after control (the
+external-link arrow alone appears 2,425 times across the built site), so clicking around set icon
+animations off constantly. A browser probe on the pre-change build counted 8 animation starts from
+hovering the *text* of four external links on `/resources/`, and 4 from three arrow links on the
+home page; no control holds more than two icons and no script re-renders the page, so the breadth
+was in the triggers, not the artwork.
+
+The ruling as built (branch `anim-narrow-2026-11-12`):
+
+- **Still icons.** The external-link arrow, pin, envelope, calendar, speech bubbles, scissors,
+  bulb, badge, question mark, star, hand (as a press move), house, paw, ribbon, jar, search-field
+  magnifier, and the footer social and account icons no longer animate. Their artwork is unchanged;
+  their move rules were removed from `src/styles/motion.css`.
+- **Moving icons, narrowed.** The arrows (`arrow`, `back`, `down`), the tick (`check`), and a plain
+  pop on the close, sliders, pencil, play and pause buttons still move — only when their own
+  button or summary is pressed, the mouse is over the icon itself, or the keyboard reaches their
+  control. Clicking a link, pointing at a link's words, or clicking anywhere else plays nothing.
+- **Untouched.** The homepage hero's drift, float and hand wave (owner, 20 Oct 2026), the SPILL
+  logo's moves (already scoped to the logo itself), the plus-to-minus turn on folded answers, and
+  the animations that mark something appearing or changing (panels, the bingo stamp, a folded card
+  flipping over). Reduced-motion behaviour is unchanged.
+- The arrows keep their move as a judgement call for the owner to veto: they are the badge on the
+  site's main "go" buttons, where the slide is the button's own affordance. The close, sliders and
+  pencil pops are likewise kept and flagged in the handoff.

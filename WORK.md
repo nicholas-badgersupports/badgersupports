@@ -60,12 +60,15 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
 - **Words**: the live site's and the decks' own wording wherever a match exists (`docs/research/COPY-SOURCES.md`).
 - **The Hub** is the one place people find us; the others are event rooms (Round 4). Seven rooms, all published: Hearing
   and Multipurpose take the Caucus steps with their own map, Marquee and Tripp show their address only (20 Oct 2026).
+- **Room pages' “All Rooms” button** (12 Nov 2026): it stays removed. The redesign read the owner's brief's
+  “remove the 'Other Rooms We Use' button” as the room pages' “All Rooms” crumb and removed it; the owner
+  confirmed that reading on 12 Nov 2026. It is not restored.
 
 ## Evidence
 Continuation candidate of 3 Nov: its team order and photos part landed in `389fc77` (item 19); the rest stays a
 separate `codex/public-queue-2026-11-03-e` tree, not merged. Cloud runs, 2 Nov 2026: items 20 and 25 verified;
 full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
-**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium. The merged-tree gate for the 11 Nov 2026 merge candidate: its one full run found two merge-caused failures, both fixed and re-verified by their targeted suites; the confirmation re-run was stopped at the owner's direction and the Session 17 publish file skips the checks step at his direction (11 Nov 2026) — each merged branch was gated on its own tree before merging. The browser gate and Explore B's viewport and keyboard passes are owed as post-publish verification (merge-pass handoff).
+**Not run:** anything deployed or live (Netlify, Blobs, the CDN, Connect, Google, mail); the photos; the pinned Chromium. The merged-tree gate for the 11 Nov 2026 merge candidate: its one full run found two merge-caused failures, both fixed and re-verified by their targeted suites; the confirmation re-run was stopped at the owner's direction and the Session 17 publish file skips the checks step at his direction (11 Nov 2026) — each merged branch was gated on its own tree before merging. The browser gate and Explore B's viewport and keyboard passes ran post-publish on the merged tree, 11 Nov 2026 (PUBLIC-POST-PUBLISH-CHECKS-HANDOFF-2026-11-11): the standard gate passed in full (tests 493 passed, 1 skipped) and accessibility passed 246/246; those defects and the two suite expectations that predated the redesign (Craft's captioned-card count; the room-arrival part's jump anchors, which the section navigation replaced) were fixed on the checks branch the same night (PUBLIC-DEFECT-FIXES-HANDOFF-2026-11-11), and the full gate re-run there passed everything: tests 493 passed, 1 skipped; shots 210/210; accessibility 246/246; interact 827/827.
 
 ## Blockers
 
@@ -144,20 +147,20 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
     Union's full feed (the queue-named `feed_1` carries titles only; `docs/research/EXPLORE-FEEDS-VERIFICATION-2026-11-11.md`),
     deduplicated, Badger Supports programs from Connect's list, refreshed by `/api/campus-events` with the last good list
     kept. The Find Your People mapping (`content/explore/interests.json`) awaits Engagement staff review; the full browser
-    gate is owed as post-publish verification (merge-pass handoff).
+    gate ran post-publish on the merged tree (checks handoff); its Explore failures stand at items 43 and 45.
 42. **Enhanced Resource Finder, public half** (`EXPLORE-C-RESOURCE-FINDER`; extends 21) → **built and merged to main
     11 Nov 2026**: source lines with publisher and review date, unapproved outside records never drawn. Connect side
     approved and with Connect Session 13.
 43. **Discover Classes by Interest** (`EXPLORE-F-CLASSES`) → **built and merged to main 11 Nov 2026**; production
     switch **on 12 Nov 2026** — Nicholas's ruling of 12 Nov supersedes his 11 Nov ruling (permission was to be
-    sought): permission is no longer sought, on his stated basis that others have built on this data without it.
+    sought): permission is no longer sought, on his stated basis that others have built on this data without it. Post-publish verification (checks handoff): the page scrolls sideways at 390 (17px) and 320 (84px) — one pulled title in `content/fixtures/courses.json` (GEN&WS 539, `Health&Embodiment_FemnistPract`) is a single unbroken 336px word that sets the card column's width — and the page loads 1,867 KB at phone widths. The sideways scroll was fixed on the checks branch and merged to main 12 Nov 2026 with Nicholas's approval (defect-fixes handoff): the list's one column is capped at its own width and a title that arrives as one unbroken word breaks inside its card, its text unchanged; the page weight stands as recorded.
 44. **Academic Support Navigator** (`EXPLORE-G-ACADEMIC-NAV`) → **built and merged to main 11 Nov 2026** at
     `/explore/academic-support/`; the tree needs its student-staff review before release.
 45. **Housing-to-Campus Bus Route Explorer** (`EXPLORE-I-BUS-ROUTES`) → **built and merged to main 11 Nov 2026**:
     topology from the Metro GTFS (feed S072_202608240858) in `content/transit/topology.json`, 20 campus buildings from
     OpenStreetMap, `/api/geocode` and `/api/bus-routes`, **no times, schedules or predictions**; verification in
     `docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md`, approved by Nicholas 11 Nov 2026. On Navigating Housing
-    the tool is signposted, not hosted (his ruling, 11 Nov 2026), so the workshop pages keep their no-collection rule.
+    the tool is signposted, not hosted (his ruling, 11 Nov 2026), so the workshop pages keep their no-collection rule. Post-publish verification (checks handoff): /explore/bus-routes/ scrolls sideways by 2px at 320 — the form's rows measure 281px from x=41 and end at x=322. Fixed on the checks branch and merged to main 12 Nov 2026 with the owner's approval (defect-fixes handoff): the form's one column is capped at its own width and the buildings fieldset may shrink below its widest line; the rows now end inside the form at 320.
 46. **Change history** (`CHANGELOG-PUBLIC-RECONCILE`) → **built and merged to main 11 Nov 2026**: `docs/VERSION-HISTORY.md`
     imported byte-identical from the prepared branch and extended through the merge candidate, all in Unreleased.
 47. **Version history check** (`VERSION-HISTORY-GATE-PUBLIC`) → **installed and merged to main 11 Nov 2026** (the exact
@@ -169,6 +172,10 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 `site/` is git, `main`, pushed to the public `nicholas-badgersupports/badgersupports`. A session commits and pushes its own work (Nicholas, 2 Nov 2026), every commit carrying `[skip netlify]`; only the owner
 publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`, which first makes `node_modules` match `package-lock.json` (`ops/deps-match.mjs`, then `npm ci` when they differ). A session reads git with `git --no-optional-locks`.
 The laptop's shell cannot push: a cloud clone pushes, then the laptop's `site/` is brought up to it (`git fetch`, `git merge --ff-only`). The 25 Oct cloud run's patch was published as `9bf0ed5`. Never link it to Netlify: a Netlify build creates a database.
+On 12 Nov 2026 the owner approved merging the `checks-2026-11-11` branch into `main` -- the three post-publish defect
+fixes (classes sideways scroll, bus-routes 2px overflow at 320, Directions room-ticket overlap) and the two stale
+suite expectations -- and it merged the same day. The merged head is published by the owner with the
+`../PUBLISH-MERGED-2026-11-12-NEXT/` file after he pushes `main`.
 ## Exchange
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,
 `PUBLIC-EVENT-IDS-AND-SIGN-IN`, `NETLIFY-DATABASE-AWAKE`; 25 Oct, in Connect's `73cf3cf`: `APPLICATION-FORMS-*`, `APPLICATION-FILES-HANDOVER`, `RECOMMENDATION-LETTERS-INTO-CONNECT`, `PUBLIC-EMAIL-LIST-STATES`; 30 Oct, from SPILL: `SPILL-CRAWLER-CONTACT` (`/crawlers/` now speaks for this site only).

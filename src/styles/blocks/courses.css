@@ -5,11 +5,15 @@
 .cls-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--cream); }
 .cls-count { color: var(--muted); font-size: var(--fs-small); margin: 0 0 var(--s3); }
 .cls-group { margin-top: var(--s5); }
-.cls-list { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s3); }
+/* The one column is capped at the list's own width: a card's widest unbreakable
+   line must not be able to widen the column, and every card with it, past the screen. */
+.cls-list { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
 .cls-card { border: 2px solid var(--line); border-radius: var(--r-card); background: var(--paper); padding: var(--s4); }
 .cls-card[hidden] { display: none; }
 .cls-group[hidden] { display: none; }
-.cls-title { margin: 0; font-size: var(--fs-lead); }
+/* A pulled title can arrive as one unbroken token. It breaks inside the card
+   rather than pushing the page sideways; the title's text is unchanged. */
+.cls-title { margin: 0; font-size: var(--fs-lead); overflow-wrap: anywhere; }
 .cls-desig { font-weight: 800; }
 .cls-meta { margin: var(--s2) 0 0; color: var(--muted); font-size: var(--fs-small); display: flex; flex-wrap: wrap; gap: .35rem .9rem; }
 .cls-tag { font-weight: 700; color: var(--ink); }

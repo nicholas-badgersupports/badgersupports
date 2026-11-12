@@ -1745,7 +1745,8 @@ await part("first visit: current-room refresh waits for focus and exact end", as
   const intro = JSON.parse(fs.readFileSync(path.join(ROOT, "content/pages/peer-support-groups.json"))).blocks[0];
   const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json")));
   const text = Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text]));
-  const markup = (place, now = at("17:59"), stale = false, empty = false) => String(renderBlock(intro, makeContext({ site, text, today: DAY, now, builtPaths: ["/directions/sac-mhh/", "/directions/sac-caucus/", "/join/email-list/"], data: { eventsState: { stale }, events: { recurring: [], dated: empty ? [] : [{ id: "example-visit", title: "Example Group", program: "peer", date: DAY, start: "17:00", end: "18:00", place }], places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } } } })));
+  const media = JSON.parse(fs.readFileSync(path.join(ROOT, "media/manifest.json")));
+  const markup = (place, now = at("17:59"), stale = false, empty = false) => String(renderBlock(intro, makeContext({ site, media, text, today: DAY, now, builtPaths: ["/directions/sac-mhh/", "/directions/sac-caucus/", "/join/email-list/"], data: { eventsState: { stale }, events: { recurring: [], dated: empty ? [] : [{ id: "example-visit", title: "Example Group", program: "peer", date: DAY, start: "17:00", end: "18:00", place }], places: { hub: { name: "Example Hub", href: "/directions/sac-mhh/" }, changed: { name: "Changed Room", href: "/directions/sac-caucus/" } } } } })));
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }), page = await ctx.newPage();
   await page.clock.install({ time: at("17:59") });
   let release;
@@ -1791,6 +1792,7 @@ await part("Workshop comparison: native previews and changeable request choices"
   const { googleFormUrl } = await import("../src/shared/forms.mjs");
   const formDef = JSON.parse(fs.readFileSync(path.join(ROOT, "content/forms/workshop-request.json")));
   const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json")));
+  const media = JSON.parse(fs.readFileSync(path.join(ROOT, "media/manifest.json")));
   const topics = { "b-rw-networks": "support_network", "b-rw-selfcare": "stress_self_care", "b-rw-advocacy": "self_advocacy", "b-rw-housing": "housing" };
   const proof = path.join(ROOT, "local/workshop-comparison-proof"); fs.mkdirSync(proof, { recursive: true });
   for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
@@ -1848,7 +1850,7 @@ await part("Workshop comparison: native previews and changeable request choices"
     for (const state of ["google", "manual"]) {
       const def = structuredClone(formDef); def.state = "closed";
       if (state === "google") def.elsewhere = googleFormUrl(def);
-      const renderCtx = makeContext({ site, text: Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text])), formTopic: "housing", data: { forms: { "workshop-request": def } } });
+      const renderCtx = makeContext({ site, media, text: Object.fromEntries(Object.entries(TEXT).map(([k,v]) => [k,v.text])), formTopic: "housing", data: { forms: { "workshop-request": def } } });
       const html = String(renderBlock({ id: "b-form-workshop-request", type: "form", form: "workshop-request" }, renderCtx));
       await page.locator("main").evaluate((n, html) => { n.innerHTML = html; }, html);
       if (await page.locator("main input, main textarea, main form").count()) honest = false;
@@ -1901,7 +1903,7 @@ await part("Craft refinement: hierarchy, captions and no JavaScript", async () =
     const captions = await page.locator("#b-cn-past-work .card-words").allTextContents();
     const visibleCaptions = await Promise.all((await page.locator("#b-cn-past-work .card-words").all()).map(n => n.isVisible()));
     const visibleTitles = await Promise.all((await page.locator("#b-cn-past-work .card-words h3").all()).map(n => n.isVisible()));
-    check(whole && visibleCaptions.every(Boolean) && visibleTitles.length === 2 && visibleTitles.every(Boolean) && captions.length === 2 && /Nostalgic Crafts[\s\S]*September 2026/.test(captions[0]) && /Paint a Planter/.test(captions[1]), `Craft ${width}px JS=${javaScriptEnabled}: captioned people photos retain their whole image`);
+    check(whole && visibleCaptions.every(Boolean) && visibleTitles.length === 3 && visibleTitles.every(Boolean) && captions.length === 3 && /Nostalgic Crafts[\s\S]*September 2026/.test(captions[0]) && /Paint a Planter/.test(captions[1]) && /Pumpkin Painting[\s\S]*October 2026/.test(captions[2]), `Craft ${width}px JS=${javaScriptEnabled}: captioned people photos retain their whole image`);
     const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, inputs: document.querySelectorAll("main input, main textarea").length, cutoff: /\b[35] days before/.test(document.querySelector("#b-cn-access").textContent) }));
     check(!state.scrolls && !state.inputs && !state.cutoff && !errors.length, `Craft ${width}px JS=${javaScriptEnabled}: no overflow, personal input, unsupported cutoff or script error`);
     await ctx.close();
@@ -2272,6 +2274,8 @@ await part("Equity: unchanged statement and quiet contacts", async () => {
   }
 });
 
+/* The arrival jumps are the redesign's section navigation (render/secnav.mjs):
+   the same native in-page anchors, under the component's markup. */
 await part("room arrival", async () => {
   for (const width of [1280, 390, 320]) for (const javaScriptEnabled of [true, false]) {
     const ctx = await browser.newContext({ viewport: { width, height: 900 }, javaScriptEnabled, reducedMotion: "reduce" });
@@ -2279,16 +2283,16 @@ await part("room arrival", async () => {
       const page = await ctx.newPage();
       await page.goto(BASE + "/directions/", { waitUntil: "networkidle" });
       check(await page.locator(".hubcard").count() === 1 && await page.locator(".tickets .ticket").count() === 6, `arrival ${width}px JS=${javaScriptEnabled}: Hub and six event rooms remain distinct`);
-      await page.locator('.places-jumps a[href$="-rooms"]').click();
+      await page.locator('.secnav a[href$="-rooms"]').click();
       check(await page.evaluate(() => { const h = document.querySelector(location.hash); const y = h.getBoundingClientRect().top; return y >= document.querySelector(".site-header").getBoundingClientRect().bottom - 1 && y < innerHeight; }), `arrival ${width}px JS=${javaScriptEnabled}: Event Rooms jump clears the sticky header`);
       for (const id of ["sac-mhh", "sac-caucus", "sac-hearing", "sac-multipurpose", "lcm", "union-south-marquee", "memorial-union-tripp"]) {
         await page.goto(BASE + `/directions/${id}/`, { waitUntil: "networkidle" });
         const addressOnly = ["union-south-marquee", "memorial-union-tripp"].includes(id);
         check(await page.locator("main h1").count() === 1 && await page.locator(".dir-steps").count() === (addressOnly ? 0 : 1) && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `arrival ${id} ${width}px JS=${javaScriptEnabled}: readable room, appropriate route and no overflow`);
         check(await page.locator(".dir-side").evaluate(n => { const photo = n.querySelector(".dir-photo"); return !photo || n.querySelector("address").getBoundingClientRect().bottom < photo.getBoundingClientRect().top; }), `arrival ${id} ${width}px JS=${javaScriptEnabled}: address and map precede photography`);
-        await page.locator('.dir-jumps a[href$="-access"]').click();
+        await page.locator('.dir-side .secnav a[href$="-access"]').click();
         check(await page.locator('.dir-access a[href="mailto:accessibility@badgersupports.org"]').isVisible(), `arrival ${id} ${width}px JS=${javaScriptEnabled}: access contact reached by native jump`);
-        await page.locator('.dir-jumps a[href$="-next"]').click();
+        await page.locator('.dir-side .secnav a[href$="-next"]').click();
         check(await page.locator(".dir-next").isVisible() && await page.locator(".dir-next").textContent() !== "", `arrival ${id} ${width}px JS=${javaScriptEnabled}: room remains useful with or without events`);
       }
     } finally { await ctx.close(); }

@@ -3,7 +3,9 @@
    table is the answer and works without it. */
 .busroutes h2 { color: var(--accent); margin-bottom: var(--s3); }
 .busroutes .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
-.bus-form { display: grid; gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+/* The one column is capped at the form's own width: a row's widest unbreakable
+   line must not be able to widen the column, and every row with it, past the screen. */
+.bus-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
 .bus-address label { display: block; font-weight: 700; margin-bottom: var(--s1); }
 .bus-address-line { display: flex; gap: var(--s2); align-items: center; }
 .bus-address-line input { flex: 1; min-height: 48px; padding: .5rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
@@ -11,7 +13,10 @@
 .bus-remove { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
 .bus-remove:hover { background: var(--cream); color: var(--ink); }
 .bus-addrow { margin: 0; }
-.bus-buildings { border: 0; margin: 0; padding: 0; }
+/* min-width: 0 — a fieldset otherwise refuses to shrink below its contents'
+   widest line, which held the whole form open past a narrow screen. The building
+   list then takes the form's width and its labels wrap inside it. */
+.bus-buildings { border: 0; margin: 0; padding: 0; min-width: 0; }
 .bus-buildings legend { font-weight: 700; margin-bottom: var(--s2); }
 .bus-building-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--s1) var(--s3); }
 .bus-building { display: flex; gap: var(--s2); align-items: center; min-height: 44px; cursor: pointer; }

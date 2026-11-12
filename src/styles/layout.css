@@ -108,9 +108,14 @@
 .footer-mail { display: flex; align-items: center; gap: var(--s2); }
 .footer-mail-ic { width: 1.25rem; height: 1.25rem; flex: none; }
 .footer-mail a { font-weight: 700; text-decoration: underline; text-underline-offset: .18em; overflow-wrap: anywhere; }
-.footer-bottom .social a, .footer-bottom .staff-signin { display: inline-flex; width: 44px; height: 44px; min-height: 44px; align-items: center; justify-content: center; border: 1.5px solid var(--cream); border-radius: 50%; text-decoration: none; }
-.footer-bottom .social-ic, .footer-bottom .staff-ic { width: 1.4rem; height: 1.4rem; }
-.footer-bottom .social a:hover, .footer-bottom .staff-signin:hover { background: var(--cream); color: var(--red); }
+.footer-bottom .social a { display: inline-flex; width: 44px; height: 44px; min-height: 44px; align-items: center; justify-content: center; border: 1.5px solid var(--cream); border-radius: 50%; text-decoration: none; }
+.footer-bottom .social-ic { width: 1.4rem; height: 1.4rem; }
+.footer-bottom .social a:hover { background: var(--cream); color: var(--red); }
+/* Director Sign-In: a quiet utility link at the end of the legal row, in the same text style as
+   its neighbours — never a floating button. Its class is its own on purpose: the staff page's
+   sign-in block (.staff-signin in blocks.css) must not reach it. */
+.footer-bottom .staff-in { gap: .45rem; }
+.footer-bottom .staff-ic { width: 1.05rem; height: 1.05rem; flex: none; }
 .footer-bottom { border-top: var(--hairline-on-red); padding-block: var(--s4) var(--s5); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); justify-content: space-between; align-items: center; }
 .footer-bottom p { margin: 0; max-width: none; }
 .footer-bottom ul { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }

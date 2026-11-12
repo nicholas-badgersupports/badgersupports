@@ -112,7 +112,7 @@ function footer(ctx) {
   <div class="footer-bottom">
     <p>${accessibility(ctx)}</p>
     <ul class="social" aria-label="${ctx.t("footer.socialLabel")}">${f.social.map((l) => html`<li>${link(ctx, l.href, html`${icon(l.icon || "out", "social-ic")}<span class="sr-only">${l.label}</span>`, { class: "social-link", attrs: { title: l.label } })}</li>`)}</ul>
-    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span class="sr-only">${f.staffSignIn.label}</span>`, { class: "staff-signin", attrs: { title: f.staffSignIn.label } })}</li>` : ""}</ul>
+    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span>${f.staffSignIn.label}</span>`, { class: "staff-in" })}</li>` : ""}</ul>
   </div>
 </div></footer>`;
 }
@@ -166,7 +166,9 @@ ${description ? html`<meta name="twitter:description" content="${description}">`
 <meta name="twitter:image" content="${shareImage}">
 <meta name="twitter:image:alt" content="${ctx.site.name}">` : ""}
 <meta name="theme-color" content="#B60000">
-<link rel="icon" href="/assets/brand/bss-hand-red.png" type="image/png">
+<link rel="icon" href="/assets/brand/bss-hex.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/brand/favicon-64.png" type="image/png" sizes="64x64">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/montserrat-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>

@@ -236,7 +236,6 @@
 .day-tags:empty { display: none; }
 .day-tags .today-tag, .day-tags .next-tag { margin-top: var(--s2); font-size: 1.0625rem; padding: .3rem .85rem; }
 .cards--days .card.is-today { background: var(--accent-tint); border-radius: var(--r-card); padding: var(--s3); }
-.cards--days .card.is-today .card-words { padding-bottom: var(--s1); }
 .visit-tags { display: inline-flex; margin-left: var(--s2); vertical-align: middle; }
 .visit-tags:empty { display: none; }
 .visit-tags .today-tag { margin-top: 0; font-size: 1rem; padding: .25rem .8rem; }
@@ -306,6 +305,9 @@
 /* feature: big photo, the facts as a timetable */
 .program--feature .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: var(--s6); align-items: center; }
 .program--feature .photo { aspect-ratio: 3 / 2; }
+/* A page's own lead feature starts its photo at the top, in the flow beside the heading:
+   centred against the taller words, it floated in a gap of empty tint. */
+.program--feature.is-page .wrap { align-items: start; }
 .facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); margin: var(--s4) 0 0; border-top: var(--rule-line); }
 .facts dt, .facts dd { margin: 0; padding: .6rem 0; border-bottom: var(--rule-line); }
 .facts dt { font-weight: 700; color: var(--accent); padding-right: var(--s4); }
@@ -482,14 +484,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .card-steps span { margin-top: .2rem; line-height: 1.5; }
 @media (max-width: 760px) { .card-steps { grid-template-columns: minmax(0, 1fr); gap: var(--s3); } }
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
-.cards--days .card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cards--days .card-list { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 /* four cards make a square, not a row of three and one left over */
 @media (min-width: 961px) { .cards--activities .card-list:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .cards--whole .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s6) var(--s5); }
 .card { display: flex; flex-direction: column; gap: var(--s3); }
 .card .photo { border-radius: var(--r-card); }
-.cards--days .photo { aspect-ratio: 4 / 5; }
+.cards--days .photo { aspect-ratio: 1 / 1; }
 .cards--activities .photo { aspect-ratio: 1 / 1; }
 .cards--whole .photo img { height: auto; }
 .card-words { display: flex; flex-direction: column; flex: 1; align-items: flex-start; }
@@ -500,6 +502,18 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* A row of cards ends on one line of buttons, however many times a card lists. */
 .card.has-photo .card-text { margin-bottom: var(--s3); }
 .card.has-photo .card-words .go { margin-top: auto; }
+/* The week reads left to right: a day's photo and name, then its sessions in columns —
+   time, place and the way there — the same columns on every row, so the eye runs across
+   the week instead of down four uneven stacks. */
+.cards--days .card { display: grid; grid-template-columns: 8.5rem 12rem minmax(0, 1fr); gap: var(--s2) var(--s4); align-items: start; }
+.cards--days .card h3 { font-size: 1.7rem; }
+.cards--days .card .day-head .card-text { margin: 0; }
+.cards--days .day-sessions { min-width: 0; }
+.cards--days .card .ev { display: grid; grid-template-columns: 11rem minmax(0, 1fr) auto; gap: var(--s1) var(--s4); align-items: center; padding: var(--s2) 0; }
+.cards--days .card .ev:first-child { padding-top: 0; }
+.cards--days .card .ev + .ev { border-top: var(--hairline); }
+.cards--days .card .card-text.ev-place { margin: 0; font-size: var(--fs-body); color: var(--ink); }
+.cards--days .card .ev-place .where-detail { font-size: var(--fs-small); color: var(--muted); }
 /* No photo yet: the icon sits beside the words, on a rule, so three of them do not read as
    three identical boxes. */
 .card:not(.has-photo) { flex-direction: row; align-items: flex-start; gap: var(--s3); padding-top: var(--s4); border-top: var(--rule-line); }
@@ -508,18 +522,33 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 [data-brand="spill"] .card-mark { background: var(--spill); color: var(--spill-ink); }
 .card:not(.has-photo) h3 { font-size: var(--fs-h3); }
 .card:not(.has-photo) .card-line { font-size: var(--fs-body); font-weight: 600; }
-@media (max-width: 960px) { .cards--days .card-list, .cards--activities .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 960px) {
+  .cards--activities .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards--days .card { grid-template-columns: 7rem 10.5rem minmax(0, 1fr); }
+  .cards--days .card .ev { grid-template-columns: 9.5rem minmax(0, 1fr) auto; }
+}
+/* Narrower, a day keeps its photo and name on one line and its sessions underneath them:
+   each session's time and way there share a line, its place sits below both. */
+@media (max-width: 860px) {
+  .cards--days .card { grid-template-columns: 6.5rem minmax(0, 1fr); }
+  .cards--days .day-head, .cards--days .day-sessions { grid-column: 2; }
+  .cards--days .card .ev { grid-template-columns: minmax(0, 1fr) auto; }
+  .cards--days .card .ev-time { grid-column: 1; grid-row: 1; }
+  .cards--days .card .ev .go { grid-column: 2; grid-row: 1; }
+  .cards--days .card .ev-place { grid-column: 1 / -1; grid-row: 2; }
+}
 @media (max-width: 560px) {
-  .cards--days .card-list, .cards--activities .card-list, .cards--whole .card-list { grid-template-columns: minmax(0, 1fr); }
-  /* On a phone a day is a row, its photo beside its times, so the week is one screen and not four. */
-  .cards--days .card.has-photo { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); align-items: start; }
+  .cards--activities .card-list, .cards--whole .card-list { grid-template-columns: minmax(0, 1fr); }
   .cards--days .card h3 { font-size: var(--fs-h3); }
   .cards--days .card-line { font-size: var(--fs-body); }
+  /* A phone column is too narrow for the time beside the way there (the pill alone is
+     wider than the time's share): the session stacks, time, place and way there in order. */
+  .cards--days .card .ev { grid-template-columns: minmax(0, 1fr); justify-items: start; row-gap: var(--s1); }
+  .cards--days .card .ev-time, .cards--days .card .ev .go, .cards--days .card .ev-place { grid-column: 1; grid-row: auto; }
 }
-/* Too narrow for a photo beside a button: the photo goes back on top, wide and short. */
+/* Too narrow for the full-size thumb: the day's photo shrinks and the row keeps its shape. */
 @media (max-width: 380px) {
-  .cards--days .card.has-photo { display: flex; }
-  .cards--days .photo { aspect-ratio: 3 / 2; }
+  .cards--days .card { grid-template-columns: 5rem minmax(0, 1fr); gap: var(--s2) var(--s3); }
 }
 
 /* ============ a room: a red card for where, then the way in as a route ============ */
@@ -547,6 +576,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .secnav-item { display: inline-flex; align-items: center; gap: var(--s2); min-height: 44px; padding-inline: var(--s3); border-radius: var(--r-chip); font-weight: 700; white-space: nowrap; color: var(--accent-deep); text-decoration: none; }
 .secnav-item:hover { background: var(--paper); }
 .secnav-ic { width: 1.25rem; height: 1.25rem; flex: none; }
+/* In a room's side column the bar stands upright (secnav.mjs, the "stack" variant): a list
+   beside the content it navigates, every segment whole, where the sideways bar would be
+   wider than the column and cut its own words off. */
+.secnav--stack ul { flex-direction: column; overflow-x: visible; }
+.secnav--stack .secnav-item { display: flex; width: 100%; }
 .places-jumps { margin-block: var(--s3) var(--s4); }
 .dir-access { margin-top: var(--s6); padding-top: var(--s4); border-top: var(--rule-line); }
 .dir-title[id], .dir-next[id], .hubcard h2[id], .hubcard h3[id], .places h2[id], .places h3[id] { scroll-margin-top: calc(var(--header-h) + var(--s4)); }
@@ -572,6 +606,12 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .dir-steps p { margin: 0; font-size: var(--fs-lead); line-height: 1.45; align-self: center; }
 /* a step's photo keeps its own shape, so a map is never cut at the edges; only a tall one is trimmed */
 .dir-steps .photo { grid-column: 2; max-width: 26rem; border-radius: var(--r-card); }
+/* On a wide screen a step's photo sits beside its words, so the route reads across and the
+   page stays compact; stacked again where the column is too narrow for both. */
+@media (min-width: 861px) {
+  .dir-steps li:has(.photo) { grid-template-columns: 3.25rem minmax(0, 1fr) minmax(0, 21rem); }
+  .dir-steps li:has(.photo) .photo { grid-column: 3; grid-row: 1; align-self: start; max-width: none; }
+}
 .dir-steps .photo img, .dir-arrive-photo img { height: auto; max-height: 24rem; }
 .dir-arrive { display: flex; align-items: center; gap: var(--s3); margin: 0; font: 700 1.25rem/1.3 var(--font-body); color: var(--accent); }
 .dir-arrive .ic { width: 3.25rem; height: 3.25rem; padding: .7rem; border-radius: 50%; border: 3px solid var(--accent); background: var(--paper); stroke-width: 2.2; flex: none; }
@@ -616,7 +656,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .hubcard-photo { min-height: 18rem; }
 .hubcard-photo picture, .hubcard-photo img { width: 100%; height: 100%; }
 .hubcard-photo img { object-fit: cover; }
-.places > .wrap > h2, .places > .wrap > h3 { font-size: var(--fs-h3); font-family: var(--font-body); color: var(--ink); margin-bottom: var(--s3); }
+.places > .wrap > h2, .places > .wrap > h3, .places-rooms > h2, .places-rooms > h3 { font-size: var(--fs-h3); font-family: var(--font-body); color: var(--ink); margin-bottom: var(--s3); }
 @media (max-width: 860px) {
   .hubcard.has-photo { grid-template-columns: minmax(0, 1fr); }
   .hubcard-photo { min-height: 0; aspect-ratio: 3 / 2; order: -1; }
@@ -655,6 +695,21 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
     background: radial-gradient(circle at 9px 50%, var(--ground) 5px, transparent 5.5px) 0 0 / 18px 16px repeat-x;
   }
   .ticket-stub .ic { width: 1.5rem; height: 1.5rem; }
+}
+
+/* The Hub and the event rooms side by side (places.mjs): the Hub card in one column, the
+   rooms in the other, so finding a room is a screen and not a scroll. The Hub's photo
+   leads its narrower card, and the rooms' names run a size smaller in their narrower
+   tickets, so a long name keeps inside its ticket. On a phone the two stack, Hub first. */
+.places-cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--s4) var(--s6); align-items: start; }
+.places-cols .hubcard { margin-bottom: 0; }
+.places-cols .hubcard.has-photo { grid-template-columns: minmax(0, 1fr); }
+.places-cols .hubcard-photo { order: -1; min-height: 0; aspect-ratio: 16 / 9; }
+.places-cols .tickets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.places-cols .ticket-name { font-size: 1.35rem; }
+@media (max-width: 860px) {
+  .places-cols { grid-template-columns: minmax(0, 1fr); }
+  .places-cols .tickets { grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
 }
 
 /* ============ questions: the heading beside them, folded answers filling the width ============ */
@@ -1506,8 +1561,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 }
 
 /* Each day can contain groups in different rooms; their time and route stay together. */
-.cards--days .ev { display: block; padding: var(--s2) 0; }
-.cards--days .ev .go { margin-top: var(--s1); }
+.cards--days .ev .go { margin-top: 0; }
 .cards--days .where-detail { display: block; }
 
 .time-unconfirmed { display: block; font-weight: 600; }

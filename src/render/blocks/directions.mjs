@@ -51,7 +51,7 @@ export default {
       steps.length ? { href: `#${b.id}-route`, label: ctx.t("directions.stepsTitle"), icon: "pin" } : null,
       { href: `#${b.id}-next`, label: ctx.t("directions.nextHere"), icon: "calendar" },
       { href: `#${b.id}-access`, label: ctx.t("directions.accessTitle"), icon: "question" },
-    ]) : ""}
+    ], "stack") : ""}
   </div>
   ${body ? html`<div class="dir-body">
     ${steps.length ? html`${page ? html`<h2 class="dir-title" id="${b.id}-route">${ctx.t("directions.stepsTitle")}</h2>` : html`<h3 class="dir-title">${ctx.t("directions.stepsTitle")}</h3>`}

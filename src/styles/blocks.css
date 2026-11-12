@@ -264,7 +264,7 @@
 .ev.is-past .drop { display: none; }
 .ev.is-past .ev-time, .ev.is-past .ev-what strong { color: var(--muted); font-weight: 400; }
 .ended-tag { display: none; }
-.ongoing-tag { display: none; font-weight: 700; color: var(--accent); }
+.ongoing-tag { display: none; font-weight: 700; color: var(--ok); }
 .is-happening .ongoing-tag { display: inline; }
 .ev.is-happening .ongoing-tag::before { content: "·"; margin-inline: .35em; }
 .evcard.is-feature.is-happening .feature-label { display: none; }
@@ -1354,7 +1354,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-form > p { margin: 0 0 var(--s2); }
 .staff-chip { display: inline-block; padding: .15rem .65rem; border-radius: var(--r-chip); font: 600 var(--fs-small)/1.4 var(--font-body); }
 .staff-chip.is-open { background: var(--ok-tint); color: var(--ok); }
-.staff-chip.is-closed { background: var(--cream); color: var(--muted); }
+.staff-chip.is-closed { background: var(--paused-tint); color: var(--paused); }
 .staff-delivery { color: var(--ok); font-weight: 600; }
 .staff-delivery.is-failing { color: var(--danger); }
 .staff-answers { margin-top: var(--s3); }
@@ -1376,6 +1376,18 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-settings .staff-note { margin-bottom: var(--s4); }
 /* The value someone else saved since the page was opened, under the field that kept what was typed. */
 .staff-since { margin: 0; font-size: var(--fs-small); line-height: 1.5; font-weight: 700; color: var(--ink); }
+/* One setting, one row (owner, 12 Nov 2026): on the two settings forms — a form's settings and the
+   site's — the setting's name sits in a fixed column and its help, control and saved-since line sit
+   beside it, so the eye reads down the names and across to one control at a time, never across a
+   crowd of settings side by side. On a phone the name takes its own line again. */
+.staff-settings .field, .staff-form-settings .field { display: grid; grid-template-columns: 13rem minmax(0, 1fr); column-gap: var(--s4); align-items: start; }
+.staff-settings .field > label, .staff-form-settings .field > label { grid-column: 1; padding-top: .8rem; }
+.staff-settings .field > :not(label), .staff-form-settings .field > :not(label) { grid-column: 2; min-width: 0; }
+@media (max-width: 40rem) {
+  .staff-settings .field, .staff-form-settings .field { grid-template-columns: minmax(0, 1fr); }
+  .staff-settings .field > label, .staff-form-settings .field > label { padding-top: 0; }
+  .staff-settings .field > :not(label), .staff-form-settings .field > :not(label) { grid-column: 1; }
+}
 /* An open room: its words, then each step as a group (its words and its photo, the photo shown small and whole). */
 .staff-room { margin-top: var(--s4); display: grid; gap: var(--s3); }
 .staff-room .field, .staff-step .field { margin-bottom: 0; }
@@ -1424,12 +1436,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .edit-pick:hover { border-color: var(--accent); }
 .edit-pick-where { display: block; color: var(--muted); font-size: var(--fs-small); }
 .edit-more .btn { margin-top: var(--s3); }
-.edit-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
+/* The words being edited can be long: the box takes the page's width, less its gutters (owner, 12 Nov 2026). */
+.edit-dialog { width: min(64rem, calc(100vw - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
 .edit-dialog::backdrop { background: var(--scrim); }
 .edit-form { display: grid; gap: var(--s3); padding: var(--s5); }
 .edit-form h2 { font-size: var(--fs-h3); }
 .edit-where { margin: 0; color: var(--muted); font-size: var(--fs-small); }
 .edit-form label { font-weight: 600; }
+.edit-form select { width: 100%; min-height: 48px; padding: .65rem 2.75rem .65rem .8rem; border: 2px solid var(--field-border); border-radius: var(--r-input); background-color: var(--field); background-image: url("/assets/icons/chevron-down.svg"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem auto; color: var(--ink); font: inherit; appearance: none; -webkit-appearance: none; }
 .edit-form textarea { width: 100%; min-height: 8rem; padding: .6rem .75rem; border: 1px solid var(--field-border); border-radius: var(--r-input); background: var(--field); font: inherit; line-height: 1.5; resize: vertical; }
 .edit-original, .edit-by { margin: 0; color: var(--muted); font-size: var(--fs-small); }
 .edit-status { margin: 0; font-weight: 600; }

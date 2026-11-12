@@ -215,3 +215,17 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .kept-answers { margin: var(--s3) 0 0; display: grid; gap: var(--s1) var(--s3); }
 .kept-answers dt { font-weight: 700; }
 .kept-answers dd { margin: 0 0 var(--s2); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* A dropdown's arrow sits in from the right edge (owner, 12 Nov 2026): the browser's own arrow hugs
+   the field's border, so a select draws the site's chevron instead, with a clear space inside the
+   field's right edge, and the words stop short of it. The error rule above restates the whole
+   background, so it is handed the chevron again here. */
+.field select {
+  appearance: none; -webkit-appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("/assets/icons/chevron-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem auto;
+}
+.field.has-error select { background-image: url("/assets/icons/chevron-down.svg"); }

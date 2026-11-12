@@ -14,6 +14,22 @@ Development from November 5 to November 11, 2026, checked into the repository an
 
 - Forms gained setup guides, and hiring forms can retain a recommendation across the hiring cycle; that retention depends on the paired Connect receiver. The resource directory gained Cost, Location and Access filters, presented as chips.
 
+- An Explore Campus hub at `/explore/` gathers the site's explorer tools in one cards block and links to each; every tool names where its listings come from.
+
+- The Campus Events Explorer at `/explore/events/` searches campus events and filters them by interest, category and date, in a calendar or a list. Listings come from UW–Madison Events and the Wisconsin Union, with Badger Supports programs from Connect labelled as ours; a cost or sold-out state appears only when a source states it.
+
+- The Bus Route Explorer at `/explore/bus-routes/` compares up to five housing addresses against the campus buildings a visitor picks, and reports a direct bus, one transfer or no suitable connection, from Madison Metro's published route data. It shows no times, schedules or predictions, and an address typed into it is not kept. On Navigating Housing the tool is signposted, not hosted, so the workshop pages keep their no-collection rule.
+
+- Discover Classes by Interest at `/explore/classes/` browses UW–Madison courses by interest from UW Course Search listings, each card labelled with its term. The course data is a labelled verification sample pulled on November 11, 2026; the tool goes live only when the Registrar's permission is answered.
+
+- The Academic Support Navigator at `/explore/academic-support/` walks a short question tree to the tutoring, accommodations and other academic support in the resource library, using the library's own cards. Its first screen states that it is not academic advising.
+
+- A resource record that Connect exports with source data ends its card with the publisher and last-reviewed date and links to the official page, and shows only while its status is approved. Records without source data render exactly as before.
+
+- A workshop request now queues one notice to Programs as it arrives. The notice is held until a verified sender is set and Connect's matching action is in place, and a request is never delayed or lost for want of it.
+
+- The site's version history became a tracked record with a review gate: this file is the canonical history, and a release candidate is checked against it before publication (items 46 and 47).
+
 ### Changed
 
 - The Peer Support Groups page: its Instagram reel now loads without a click and without the midterms caption; the header, join steps and expectations were reworked, and the peer and Hub photos come from the organisation's Drive library. The home hero leads with the peer circle, its pause control is a dot icon, and headings and cards keep whole words.
@@ -23,6 +39,18 @@ Development from November 5 to November 11, 2026, checked into the repository an
 - The menu no longer lists Rooms, and the hub entry reads Mental Health Hub. A website problem reported from the FAQ now goes to the directors. Forms open by default, and hiring forms close on December 18, 2026. Form wording, legal documents and agreements read from Connect, and the alumni history reads Connect each time it is drawn.
 
 - The privacy draft was updated to describe the site as it now ships: the Instagram embed as it loads, and the forms as they now work. It remains a draft, frozen for the owner's and legal review, and is not published.
+
+- The public pages were redesigned within the standing brand: the footer drops its street address and its rooms-and-directions link, gives hello@badgersupports.org a prominent mail link, and makes the social links and the Director Sign-In 44-pixel icon buttons; the crisis strip keeps its exact wording, centred. Room pages navigate by an icon-led section list, and Directions stands side by side, so the page needs less scrolling.
+
+- Peer Support Groups reads left to right: each day is one row, its sessions in aligned time, place and Get Directions columns, with a large Today tag on the day that is running and Next Up on the following one, both worked out from the visitor's real date. The photograph at the head of the drop-in section sits level with its heading instead of floating below a gap.
+
+- Resources reveals its matching cards progressively — twelve at a time behind Show More, following search and filters — and safety and survivor-support cards are never held back by the reveal. Dogs on Call states "Every session is free and drop-in. All are welcome!" as a banner with its calendar button and its UHS Prevention line, and gains a Meet the Dogs photo row.
+
+- What We Do leads with the full Fall 2026 training cohort photograph the owner chose, with dated group photographs beside it; Craft Nights gains a Made at Craft Nights gallery of eight photographs of past work; History's era years are set oversized on its timeline. No milestone, schedule or fact was added or changed.
+
+- All 13 forms present as one centred sheet: the form's own title and introduction in the head, one card per question, and choice rows at least 44 pixels tall. A long form — at least two sections and ten questions — walks in named steps with progress, Back and Continue, and a Check Your Answers review; short forms stay on one page. No question, order, required status, endpoint, routing or access control changed.
+
+- The FAQ's website-problem section is two paragraphs in place of four, keeping who triages a report and what to include; the Find the Resource to Correct link is removed, and the Email the Student Directors button remains.
 
 ### Fixed
 

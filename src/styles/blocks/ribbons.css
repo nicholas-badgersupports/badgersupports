@@ -64,7 +64,7 @@
 .ribbon-causes { padding-left: 1.2rem; display: grid; gap: var(--s2); }
 .ribbon-context { margin-top: var(--s3); color: var(--muted); font-size: var(--fs-small); }
 .ribbon-references { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s4); }
-.ribbon-source { color: var(--muted); font-size: var(--fs-small); text-decoration: underline; text-underline-offset: .2em; overflow-wrap: anywhere; }
+.ribbon-source { color: var(--muted); font-size: var(--fs-small); overflow-wrap: anywhere; }
 .ribbon-source .ic { width: 1em; height: 1em; margin-left: var(--s1); }
 .ribbon-plain { padding: var(--s4); display: grid; place-items: center; }
 .ribbon-dialog { width: min(46rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--note-shadow); margin: auto; overscroll-behavior: contain; }

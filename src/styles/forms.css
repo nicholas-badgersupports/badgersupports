@@ -74,7 +74,7 @@ html:not(.js) .bss-form.has-uploads { display: none; }
   transition: transform var(--t) var(--ease-out);
 }
 .prose-more[open] > summary::after { transform: rotate(225deg); margin-top: .25rem; }
-.prose-more > summary:hover { color: var(--accent-deep); text-decoration: underline; }
+.prose-more > summary:hover { color: var(--accent-deep); }
 .prose-more-body { padding-top: var(--s1); }
 
 /* The steps of a long form, across the top of the body: a numbered circle and the section's own
@@ -96,7 +96,6 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .step-link.is-done .step-dot { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-deep); }
 .step-link[aria-current="step"] { color: var(--ink); }
 .step-link[aria-current="step"] .step-dot { background: var(--accent); border-color: var(--accent); color: var(--cream); }
-.step-link:hover .step-name { text-decoration: underline; }
 /* "Step 2 of 5" above a step's own title, and above the review's. */
 .step-eyebrow { display: block; font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s1); }
 /* A stepped form shows the step being read; the rest wait their turn. */

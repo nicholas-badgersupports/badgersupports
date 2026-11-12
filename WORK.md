@@ -171,6 +171,7 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov, queued only:** 40–4
 publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`, which first makes `node_modules` match `package-lock.json` (`ops/deps-match.mjs`, then `npm ci` when they differ). A session reads git with `git --no-optional-locks`.
 The laptop's shell cannot push: a cloud clone pushes, then the laptop's `site/` is brought up to it (`git fetch`, `git merge --ff-only`). The 25 Oct cloud run's patch was published as `9bf0ed5`. Never link it to Netlify: a Netlify build creates a database.
 On 12 Nov 2026 the owner approved merging `checks-2026-11-11` into `main` (the three post-publish defect fixes and two stale suite expectations); it merged the same day, and the owner publishes the merged head with the `../PUBLISH-MERGED-2026-11-12-NEXT/` file after he pushes `main`.
+On 12 Nov 2026 the owner ruled that underlines are only for tappable links; branch link-underline-2026-11-12 removed the hover underlines from non-link controls (the resource and prose more summaries, and form step names) and from the unused ribbon-source style. Real links keep their underlines unchanged.
 
 ## Exchange
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,

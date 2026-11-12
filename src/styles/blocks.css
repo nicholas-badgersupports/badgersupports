@@ -1227,6 +1227,60 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .pagehead.has-1 .pagehead-photos { grid-template-columns: minmax(0, 1fr); grid-template-rows: 22rem; }
 .pagehead.has-2 .pagehead-photos .photo { grid-row: 1 / -1; }
 
+/* ============ header button rows: one loud button, the rest quiet (owner, 12 Nov 2026) ============
+   A page opening's row carries one full-strength button; every other way on in the same row is a
+   quieter pill drawn from that header's own colour, never grey and never the old white: on a
+   pagehead's pale band (and in the next-event card, which stands on white) the pill is the band's
+   own tint made solid, its words the deep shade, its badge a wash of the accent with no ring; on an
+   event hero's full colour the pill is a wash of cream over that colour, its words and badge cream.
+   Measured (flat, WCAG): the deep shade on each solid tint is 6.9-9.5 to 1; cream on each washed
+   colour 4.6-6.6 to 1 (table in PUBLIC-HEADER-BUTTONS-HANDOFF-2026-11-12). On a desktop the row
+   never wraps: the pills give up a little size, and a row still too wide for its column scrolls
+   sideways in its own strip instead of stacking; under 861px the row wraps again, as it always has. */
+.pagehead-actions .go, .feature-actions .go {
+  background: var(--accent-tint); border: 1.5px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  color: var(--accent-deep); font-size: var(--fs-small);
+  padding: .2rem .2rem .2rem .85rem; gap: .45rem;
+}
+.pagehead-actions .go .go-ic, .feature-actions .go .go-ic {
+  width: 1.55rem; height: 1.55rem; padding: .34rem;
+  background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-deep);
+}
+.pagehead-actions .go:hover, .feature-actions .go:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--accent-tint)); border-color: var(--accent); color: var(--accent-deep);
+}
+.pagehead-actions .go:hover .go-ic, .feature-actions .go:hover .go-ic { background: var(--accent); color: var(--cream); }
+.eventhero .more-links .go {
+  background: color-mix(in srgb, var(--cream) 7%, transparent); border: 1.5px solid color-mix(in srgb, var(--cream) 42%, transparent);
+  color: var(--cream); font-size: var(--fs-small);
+  padding: .2rem .2rem .2rem .85rem; gap: .45rem;
+}
+.eventhero .more-links .go .go-ic {
+  width: 1.55rem; height: 1.55rem; padding: .34rem;
+  background: color-mix(in srgb, var(--cream) 20%, transparent); color: var(--cream);
+}
+.eventhero .more-links .go:hover {
+  background: color-mix(in srgb, var(--accent-deep) 30%, transparent); border-color: var(--cream); color: var(--cream);
+}
+.eventhero .more-links .go:hover .go-ic { background: var(--cream); color: var(--accent-deep); }
+@media (min-width: 861px) {
+  .pagehead-actions { flex-wrap: nowrap; gap: var(--s2) var(--s3); overflow-x: auto; scrollbar-width: none; padding-block: .3rem; }
+  .pagehead-actions::-webkit-scrollbar { display: none; }
+  .pagehead-actions > * { flex: none; }
+  .feature-actions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-top: calc(var(--s3) + .3rem); padding-bottom: .3rem; }
+  .feature-actions::-webkit-scrollbar { display: none; }
+  .feature-actions > * { flex: none; }
+  .eventhero .more-links { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-block: .3rem; }
+  .eventhero .more-links { gap: var(--s2); }
+  /* with photos beside the words, the row takes the band's whole width under both (pagehead.mjs
+     renders it as the wrap's own child), so a page that lists its parts — workshops above all —
+     fits them on the one row instead of scrolling */
+  .pagehead.has-photos .pagehead-photos { grid-column: 2; grid-row: 1; }
+  .pagehead.has-photos .pagehead-actions { grid-column: 1 / -1; grid-row: 2; }
+  .eventhero .more-links::-webkit-scrollbar { display: none; }
+  .eventhero .more-links > li { flex: none; }
+}
+
 /* the team, laid out as the live page has it: each group under a big red heading in capitals, four
    square photos to a row, the role over the photo and the name under it in red; the advisors' card
    puts the name in red and the full title under it. No clipart beside the headings. */

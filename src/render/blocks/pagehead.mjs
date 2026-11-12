@@ -32,11 +32,11 @@ export default {
     ${b.label ? html`<p class="pagehead-label">${b.label}</p>` : ""}
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
     ${body.map((p) => html`<p>${p}</p>`)}
+  </div>
     ${actions ? html`<div class="pagehead-actions">
       ${primary ? link(ctx, primary.href, primary.label, { class: "btn btn--big", icon: primary.icon || "arrow" }) : ""}
       ${(links || []).map((l) => link(ctx, l.href, l.label, { class: "go", icon: l.icon || "arrow" }))}
     </div>` : ""}
-  </div>
   ${photos.length ? html`<div class="pagehead-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: true, priority: i === 0 ? "high" : null })}</div>`)}</div>` : ""}
 </div></section>`;
   },

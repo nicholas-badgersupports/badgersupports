@@ -196,6 +196,12 @@ export function loadContent({ production = false, launch = production, textEdits
   const resources = feed?.resources ? structuredClone(feed.resources) : readJson("content/fixtures/resources.json");
   if (!Array.isArray(resources.resources)) problems.push(`${resourcesAt}: resources is a list`);
   else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`${resourcesAt}: resources[${i}] needs an id and a name`);
+  // The navigator's tree is content, so the resources it names are checked against the fixture
+  // library the tree was authored against — never against Connect's export: an export that
+  // succeeds with fewer records (or none) is a data state the pages render explicitly, and it
+  // must not break a production build. The render already leaves out a card it cannot find.
+  const navLibraryRaw = feed?.resources ? readJson("content/fixtures/resources.json") : resources;
+  const navLibrary = Array.isArray(navLibraryRaw?.resources) ? navLibraryRaw.resources : [];
 
   // Courses: UW Course Search offerings pulled by ops/courses.mjs and mapped to interests by
   // content/courses.json (EXPLORE-F-CLASSES). The data file is a cache of a public feed, and
@@ -279,7 +285,7 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "ribbons") for (const p of ribbonProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "directory") for (const p of directoryProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "resources") for (const p of resourceProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
-    if (b.type === "navigator") { for (const p of navigatorProblems(b)) problems.push(`content/pages: ${page.id}.${p}`); for (const p of navigatorResourceProblems(b, Array.isArray(resources.resources) ? resources.resources : [])) problems.push(`content/pages: ${page.id}.${p}`); }
+    if (b.type === "navigator") { for (const p of navigatorProblems(b)) problems.push(`content/pages: ${page.id}.${p}`); for (const p of navigatorResourceProblems(b, navLibrary)) problems.push(`content/pages: ${page.id}.${p}`); }
     if (b.type === "embed") for (const p of embedProblems(b)) problems.push(`content/pages: ${page.id}.${b.id}: ${p}`);
     if (b.type === "program" && b.embed) for (const p of embedProblems(b.embed)) problems.push(`content/pages: ${page.id}.${b.id}: video ${p}`);
     if (b.type === "program" && !b.photos?.length && !(b.variant === "feature" && b.embed) && b.variant !== "topics") problems.push(`content/pages: ${page.id}.${b.id}: a ${b.variant} section needs photos${b.variant === "feature" ? " or a video" : ""}`);

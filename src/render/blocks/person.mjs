@@ -1,8 +1,9 @@
 /* One person's page, as they wrote it in Connect: a card that leads with their photo — square and
    cropped, as on their card, larger — with their title on the pale-red stripe over their name beside
-   it and the first paragraph of their bio under that. The facts Connect syncs (their title, their
-   pronouns, their class year) get a band of their own under the photo and words; the rest of the bio
-   follows under an "About" heading. A field Connect did not supply leaves its piece out entirely —
+   it and the first paragraph of their bio under that. The rest of the bio
+   follows under an "About" heading, and the facts Connect syncs (their title, their pronouns, their
+   class year) close the card in a band of their own at the bottom — below the About words when there
+   are any, straight after the photo and words when there are not. A field Connect did not supply leaves its piece out entirely —
    no photo shows their initials, no bio shows nothing — never filler. Below the card, where "More of
    Our Team" used to offer more browsing, are the things a visitor can do next: join, come to a
    group, request a workshop. Their email appears only if they chose to publish one. */
@@ -55,11 +56,11 @@ export default {
         ${ctx.data.teamSample ? html`<p class="sample-note">${ctx.data.teamSample}</p>` : ""}
       </div>
     </div>
-    ${facts.length ? html`<dl class="profile-facts">${facts.map((f) => html`<div class="profile-fact"><dt>${f.label}</dt><dd>${f.value}</dd></div>`)}</dl>` : ""}
     ${rest.length ? html`<div class="profile-about">
       <h2>${ctx.t("team.aboutFirst", { first: first || name })}</h2>
       ${rest.map((x) => html`<p>${x}</p>`)}
     </div>` : ""}
+    ${facts.length ? html`<dl class="profile-facts">${facts.map((f) => html`<div class="profile-fact"><dt>${f.label}</dt><dd>${f.value}</dd></div>`)}</dl>` : ""}
   </div>
   <div class="profile-next">
     <h2 id="${b.id}-next">${ctx.t("team.nextHeading")}</h2>

@@ -199,6 +199,10 @@ export async function submit(key, input, { now = new Date() } = {}) {
     // A receipt only where the form's workflow has it switched on ("proposed" is not on), and
     // even then it waits for a person: the sender address is not verified (docs/COMMUNICATIONS.md).
     if (!def.anonymous && def.workflow?.receipt === "on" && check.answers.email) await outbox("mail.receipt", "held", "sender-unverified");
+    // A notice to the owning team, where its workflow has it on (Programs asked for one per
+    // workshop request, 11 Nov 2026): held the same way, and addressed by Connect, which holds
+    // the team's address — this site never names one (docs/COMMUNICATIONS.md).
+    if (def.workflow?.notify === "on") await outbox("mail.notify", "held", "sender-unverified");
     return { ok: true, ref: row.ref, def, duplicate: false };
   });
   // Read after the transaction ends: on one connection (PGlite) a read beside it waits for it.

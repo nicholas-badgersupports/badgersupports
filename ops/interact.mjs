@@ -269,19 +269,40 @@ await part("upload still going", async () => {
   await ctx.close();
 });
 
-/* A question takes the form's whole column (a 40rem cap left 640px fields in a 715px column at
-   1280), a control for a short value keeps its compact width, and secondary help stays folded
-   until asked for, by keyboard as by pointer, with or without JavaScript. */
+/* A question's card takes its section's whole width (a 40rem cap once left 640px fields in a
+   715px column at 1280), a control fills its card's inside, a control for a short value keeps
+   its compact width, and secondary help stays folded until asked for, by keyboard as by
+   pointer, with or without JavaScript. A stepped form is measured step by step, walking its
+   own step buttons, and the measures of every step are gathered together. */
 const COMPACT = 'input[type="number"], input[type="tel"], input[type="date"], input[type="datetime-local"], .other-text, .rank select';
 const widths = (page) => page.evaluate((compact) => {
   const shown = (el) => el.getClientRects().length > 0;
-  const form = document.querySelector("form[data-form]").getBoundingClientRect().width;
-  const fields = [...document.querySelectorAll(".bss-form .field")].filter(shown);
-  const short = fields.filter((f) => Math.abs(f.getBoundingClientRect().width - form) > 1).map((f) => f.id || f.querySelector("[id]")?.id);
-  const controls = [...document.querySelectorAll(".bss-form .field input:not([type=checkbox]):not([type=radio]):not([type=file]), .bss-form .field textarea, .bss-form .field select")].filter(shown);
-  const narrow = controls.filter((c) => !c.matches(compact) && Math.abs(c.getBoundingClientRect().width - c.closest(".field").getBoundingClientRect().width) > 1).map((c) => c.id);
-  const compacts = controls.filter((c) => c.matches(compact)).map((c) => c.getBoundingClientRect().width < c.closest(".field").getBoundingClientRect().width - 1);
-  return { form: Math.round(form), fields: fields.length, short, narrow, compacts, sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+  const out = { form: 0, fields: 0, short: [], narrow: [], compacts: [], sideways: 0 };
+  const seen = new Set();
+  const measure = () => {
+    const form = document.querySelector("form[data-form]");
+    out.form = Math.round(form.getBoundingClientRect().width);
+    for (const f of document.querySelectorAll(".bss-form .field")) {
+      if (!shown(f)) continue;
+      const key = f.dataset.q || f.querySelector("[id]")?.id || "";
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.fields++;
+      const sec = f.closest("[data-section]") || form;
+      if (Math.abs(f.getBoundingClientRect().width - sec.getBoundingClientRect().width) > 1) out.short.push(key);
+      const cs = getComputedStyle(f);
+      const inside = f.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth);
+      for (const c of f.querySelectorAll("input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]), textarea, select")) {
+        if (!shown(c)) continue;
+        if (c.matches(compact)) out.compacts.push(c.getBoundingClientRect().width < inside - 1);
+        else if (Math.abs(c.getBoundingClientRect().width - inside) > 1) out.narrow.push(c.id);
+      }
+    }
+    out.sideways = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+  };
+  measure();
+  for (const b of document.querySelectorAll("[data-step-item]:not([hidden]) [data-step-link]")) { b.click(); measure(); }
+  return out;
 }, COMPACT);
 
 await part("a form's width", async () => {
@@ -307,23 +328,42 @@ await part("Other answer fields at phone and desktop widths", async () => {
       const page = await ctx.newPage();
       await page.goto(BASE + path, { waitUntil: "load" });
       if (branch) await page.locator(`input[name="category"][value="${branch}"]`).check();
-      if (js) for (const control of await page.locator('input[value="__other"]').all()) if (await control.isVisible()) await control.check();
-      const inputs = await page.locator("input.other-text:visible").all();
-      // Without JavaScript a form that uploads a PDF gives its other way in instead of its questions.
-      if (!js && !inputs.length && await page.locator("form.has-uploads").count()) {
-        check(await page.getByRole("heading", { name: words("form.upload.alternativeTitle") }).isVisible(), `Other input no JS @${width} ${path}: the upload form gives its other way in`);
-        await ctx.close(); continue;
+      const measure = async () => {
+        let ok = true, n = 0;
+        for (const input of await page.locator("input.other-text:visible").all()) {
+          n++;
+          await input.fill("An example Other answer");
+          const r = await input.evaluate(el => {
+            const b = el.getBoundingClientRect(), p = el.closest(".choices").getBoundingClientRect();
+            return { width: b.width, right: b.right, parentRight: p.right, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, value: el.value };
+          });
+          ok &&= r.width >= 100 && r.right <= r.parentRight + 1 && r.overflow <= 0 && r.value === "An example Other answer";
+        }
+        return { ok, n };
+      };
+      let fits = false, count = 0;
+      if (js) {
+        // A long form is walked a section at a time: choose Other on each step that offers it,
+        // and measure each step's boxes while that step is up.
+        const stepIds = await page.locator("[data-step-link]").evaluateAll((bs) => bs.map((b) => b.dataset.stepLink)).catch(() => []);
+        let allOk = true;
+        for (const id of stepIds.length ? stepIds : [null]) {
+          if (id) await page.locator(`[data-step-link="${id}"]`).click().catch(() => {});
+          for (const control of await page.locator('input[value="__other"]').all()) if (await control.isVisible()) await control.check();
+          const m = await measure();
+          count += m.n; allOk &&= m.ok;
+        }
+        fits = count > 0 && allOk;
+      } else {
+        const m = await measure();
+        count = m.n; fits = m.ok && count > 0;
+        // Without JavaScript a form that uploads a PDF gives its other way in instead of its questions.
+        if (!count && await page.locator("form.has-uploads").count()) {
+          check(await page.getByRole("heading", { name: words("form.upload.alternativeTitle") }).isVisible(), `Other input no JS @${width} ${path}: the upload form gives its other way in`);
+          await ctx.close(); continue;
+        }
       }
-      let fits = inputs.length > 0;
-      for (const input of inputs) {
-        await input.fill("An example Other answer");
-        const r = await input.evaluate(el => {
-          const b = el.getBoundingClientRect(), p = el.closest(".choices").getBoundingClientRect();
-          return { width: b.width, right: b.right, parentRight: p.right, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, value: el.value };
-        });
-        fits &&= r.width >= 100 && r.right <= r.parentRight + 1 && r.overflow <= 0 && r.value === "An example Other answer";
-      }
-      check(fits, `Other input ${js ? "JS" : "no JS"} @${width} ${path}${branch ? `/${branch}` : ""}: ${inputs.length} fields fit, stay usable and accept typing`);
+      check(fits, `Other input ${js ? "JS" : "no JS"} @${width} ${path}${branch ? `/${branch}` : ""}: ${count} fields fit, stay usable and accept typing`);
       await ctx.close();
     }
   }
@@ -403,11 +443,28 @@ async function openWorkshop({ js = true, onSubmit } = {}) {
   return { ctx, page, errors, sends };
 }
 
+/* A long form is walked a section at a time with JavaScript on: bring a question's step up
+   before filling it. A no-op when the question is already on screen, and without JavaScript,
+   when the form is one scroll. */
+async function showField(page, selector) {
+  await page.evaluate((sel) => {
+    const el = document.querySelector(sel);
+    const sec = el?.closest("[data-section]");
+    if (!sec || sec.getClientRects().length) return;
+    document.querySelector(`[data-step-link="${sec.dataset.section}"]`)?.click();
+  }, selector).catch(() => {});
+}
+
 async function fillWorkshop(page) {
   for (const [id, v] of [["name", "Avery Example"], ["email", "avery@example.org"], ["affiliation", "Example Hall Council"], ["attendees", "25"],
     ["option_1", "2026-11-02T18:00"], ["option_2", "2026-11-03T18:00"], ["option_3", "2026-11-04T18:00"],
-    ["location", "Example Hall lounge"], ["group_notes", "First workshop for the group."], ["access_needs", "None known."]]) await page.fill(`#f-${id}`, v);
+    ["location", "Example Hall lounge"], ["group_notes", "First workshop for the group."], ["access_needs", "None known."]]) {
+    await showField(page, `#f-${id}`);
+    await page.fill(`#f-${id}`, v);
+  }
+  await showField(page, 'input[name="topics"][value="stress_self_care"]');
   await page.check('input[name="topics"][value="stress_self_care"]');
+  await showField(page, 'input[name="projection"][value="yes"]');
   await page.check('input[name="projection"][value="yes"]');
 }
 
@@ -532,6 +589,7 @@ await part("closed while the page is open", async () => {
 await part("a long answer near its limit", async () => {
   await freshServer();
   const { ctx, page, errors } = await openWorkshop();
+  await showField(page, "#f-contact_other");
   const box = page.locator("#f-contact_other");
   const max = Number(await box.getAttribute("maxlength"));
   const room = () => page.evaluate(() => {
@@ -1780,6 +1838,7 @@ await part("Workshop comparison: native previews and changeable request choices"
       const chosen = () => page.locator('input[name="topics"]').evaluateAll(nodes => nodes.filter(n => n.checked).map(n => n.value));
       if (JSON.stringify(await chosen()) !== JSON.stringify([topic])) choices = false;
       const other = Object.values(topics).find(x => x !== topic);
+      await showField(page, 'input[name="topics"]');
       await page.locator(`input[name="topics"][value="${topic}"]`).uncheck();
       await page.locator(`input[name="topics"][value="${other}"]`).check();
       if (JSON.stringify(await chosen()) !== JSON.stringify([other])) choices = false;

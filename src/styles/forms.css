@@ -1,54 +1,62 @@
-/* Native forms. Labels above controls, errors written as what to do next, one Send button. */
+/* Native forms. One centred sheet: its head carries the form's title and instructions on the
+   page colour's tint, its body the questions — each question its own card, each choice a bordered
+   row — and its foot bar the actions. Long forms walk a section at a time with the steps named
+   across the top (src/client/form.js); without JavaScript every section shows, as it always has.
+   Labels above controls, errors written as what to do next. */
 html:not(.js) .bss-form.has-uploads { display: none; }
 
-/* The form's title and instructions on the style guide's white card, topped with the page's colour,
-   that stays beside the questions; the questions fill the rest of the width. One column on a phone.
-   The card's text keeps a 28px rhythm: every line box is 28px, and its gaps are whole lines. */
-.form-page { padding-block: var(--s6) var(--s7); }
-.form-page .wrap { display: grid; grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); gap: 0 var(--s6); align-items: start; }
-.form-page .wrap > :not(.form-head) { grid-column: 2; }
-.form-page .wrap > :not(.form-head) + :not(.form-head) { margin-top: var(--s4); }
-.form-head {
-  grid-row: 1 / span 20; position: sticky; top: calc(var(--header-h) + var(--s4));
-  padding: 28px var(--s4) 28px; border-radius: var(--r-panel); border: 2px solid var(--line);
-  background: var(--paper);
+.form-page { padding-block: var(--s6) var(--s7); padding-inline: var(--gutter); }
+.form-page .wrap {
+  max-width: 47.5rem; margin-inline: auto; padding-inline: 0;
+  background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-panel);
+  box-shadow: var(--lift); overflow: hidden;
 }
+/* A form still on Google Forms: the sheet is only its head and one big button, centred,
+   with no card around them. */
+.form-page .wrap:has(> .closed-panel.is-elsewhere) {
+  max-width: 36rem; background: none; border: 0; border-radius: 0; box-shadow: none; overflow: visible;
+}
+.form-page .wrap:has(> .closed-panel.is-elsewhere) .form-head { border: 2px solid var(--line); border-radius: var(--r-panel); }
+
+/* The sheet's head: the title and the instructions on the tint, in the form's own colour. */
+.form-head { background: var(--tex-wash); background-blend-mode: normal, multiply; padding: var(--s5); container-type: inline-size; }
 /* the longest word of a form's name, RECOMMENDATION, is 10.4em wide in capitals, so the name is sized
-   to the card (9.4% of its width) and that word fits whole on a 320px phone as on a desk */
-.form-head { container-type: inline-size; }
-.form-head h1 { font-size: min(2.125rem, 9.4cqi); line-height: 1; color: var(--accent); margin-bottom: 28px; }
-.form-head p { line-height: 28px; margin-bottom: 28px; }
+   to the sheet (9.4% of its width) and that word fits whole on a 320px phone as on a desk */
+.form-head h1 { font-size: min(var(--fs-page), 9.4cqi); line-height: 1; color: var(--accent); margin-bottom: var(--s3); }
+.form-head p { line-height: var(--lh-body); margin-bottom: var(--s3); }
 .form-head p:last-child { margin-bottom: 0; }
 /* An intro written as prose (src/render/form.mjs prose): its headings and lists keep to the rules. */
-.form-head h2 { font: 700 var(--fs-h3)/28px var(--font-body); color: var(--ink); }
-.form-head ul, .form-head ol { line-height: 28px; margin-bottom: 28px; padding-left: 1.4rem; }
+.form-head h2 { font: 700 var(--fs-h3)/1.3 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
+.form-head ul, .form-head ol { line-height: var(--lh-body); margin-bottom: var(--s3); padding-left: 1.4rem; }
 .form-head ul:last-child, .form-head ol:last-child { margin-bottom: 0; }
-.form-head .more-links { margin: 0 0 28px; padding-left: 0; }
-/* An intro too long to stay beside the questions scrolls with the page. */
-.form-head.is-long { position: static; }
-@media (max-width: 960px) {
-  .form-page .wrap { grid-template-columns: minmax(0, 1fr); }
-  .form-page .wrap > :not(.form-head) { grid-column: 1; }
-  .form-page .wrap > .form-head + * { margin-top: var(--s5); }
-  .form-head { position: static; grid-row: auto; }
-}
-/* On a phone the card gives its width to the words and the page gives less to the space above it,
-   so the first question comes up the screen; the 28px line rhythm is kept. */
+.form-head .more-links { margin: 0 0 var(--s3); padding-left: 0; }
 @media (max-width: 480px) {
   .form-page { padding-top: var(--s4); }
-  .form-page .wrap > .form-head + * { margin-top: var(--s4); }
-  .form-head { padding-inline: var(--s3); }
+  .form-head { padding: var(--s4) var(--s3); }
 }
-.bss-form { margin-top: 0; }
-.bss-form > .form-rule:first-child { margin-top: 0; }
-.bss-form fieldset.section { border: 0; margin: 0; padding: var(--s5) 0 var(--s3); border-top: var(--rule-line); min-width: 0; }
+
+/* The line naming the topic a request arrived with, above the questions. */
+.form-topic { padding: var(--s4) var(--s5) 0; font-weight: 700; }
+@media (max-width: 480px) { .form-topic { padding-inline: var(--s3); } }
+.form-elsewhere-note { padding: var(--s4) var(--s5) 0; }
+@media (max-width: 480px) { .form-elsewhere-note { padding-inline: var(--s3); } }
+
+/* The sheet's body. --form-pad is its side room; the foot bar spends it back so it runs
+   edge to edge across the sheet's foot. */
+.bss-form { --form-pad: var(--s5); margin-top: 0; padding-inline: var(--form-pad); padding-bottom: var(--s5); }
+@media (max-width: 480px) { .bss-form { --form-pad: var(--s3); } }
+
+.bss-form fieldset.section { border: 0; margin: 0; padding: var(--s5) 0 var(--s2); min-width: 0; }
 .bss-form fieldset.section[hidden] { display: none; }
 .bss-form legend { padding: 0; margin-bottom: var(--s2); }
 /* A section's title is its heading (h2 inside the legend); a section of words only is not a fieldset. */
 .bss-form .section h2 { font: 700 var(--fs-h3)/1.25 var(--font-body); letter-spacing: 0; color: var(--ink); }
-.bss-form .section.is-words { padding: var(--s5) 0 var(--s3); border-top: var(--rule-line); }
+.bss-form .section.is-words { padding: var(--s5) 0 var(--s3); }
 .bss-form .section.is-words > h2 { margin-bottom: var(--s2); }
 .bss-form .section.is-words[hidden] { display: none; }
+/* On a form read whole, a hairline parts one section from the next; a stepped form shows one
+   section at a time, so it needs none. */
+.bss-form:not(.is-stepped) > .section ~ .section { border-top: var(--hairline); }
 .section-intro { color: var(--muted); margin-bottom: var(--s3); }
 .is-words .section-intro { color: var(--ink); }
 .section-intro h3 { font: 700 var(--fs-body)/1.4 var(--font-body); color: var(--ink); margin: var(--s4) 0 var(--s1); }
@@ -69,10 +77,37 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .prose-more > summary:hover { color: var(--accent-deep); text-decoration: underline; }
 .prose-more-body { padding-top: var(--s1); }
 
-/* A question takes the whole of the form's column, as Connect's fields take theirs (its
-   --maxw-field: 100%): no cap of its own, so a long answer has room. A control for a short value
-   (a number, a phone number, a date, an Other) keeps its compact width; paragraphs keep the measure. */
-.field { display: grid; gap: .4rem; margin-bottom: var(--s4); min-width: 0; }
+/* The steps of a long form, across the top of the body: a numbered circle and the section's own
+   name. A finished step's circle fills with the tint; the step being read wears the full colour.
+   JavaScript shows and hides them (render/form.mjs renders them hidden); without it the form is
+   one scroll and there is nothing to name. */
+.form-steps { margin-top: var(--s4); }
+.form-steps ol { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); list-style: none; margin: 0; padding: 0; }
+.form-steps li[hidden] { display: none; }
+.step-link {
+  display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .3rem .7rem .3rem .3rem;
+  background: none; border: 0; border-radius: var(--r-chip); cursor: pointer;
+  font: 700 var(--fs-small)/1.25 var(--font-body); color: var(--muted); text-align: left;
+}
+.step-dot {
+  display: inline-grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: 50%;
+  border: 2px solid var(--rule-strong); background: var(--paper); color: var(--ink); font-size: var(--fs-small);
+}
+.step-link.is-done .step-dot { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-deep); }
+.step-link[aria-current="step"] { color: var(--ink); }
+.step-link[aria-current="step"] .step-dot { background: var(--accent); border-color: var(--accent); color: var(--cream); }
+.step-link:hover .step-name { text-decoration: underline; }
+/* "Step 2 of 5" above a step's own title, and above the review's. */
+.step-eyebrow { display: block; font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s1); }
+/* A stepped form shows the step being read; the rest wait their turn. */
+.bss-form.is-stepped > [data-section]:not([hidden]):not(.is-current) { display: none; }
+.bss-form.is-stepped > .form-review[hidden] { display: none; }
+
+/* Each question its own card on the cream, so a long form reads as a series of single decisions.
+   A control for a short value (a number, a phone number, a date, an Other) keeps its compact
+   width; paragraphs keep the measure. The card is scoped to the form: the staff pages use
+   .field for their own plainer fields, and this stylesheet is sent with every page. */
+.bss-form .field { display: grid; gap: .45rem; margin-bottom: var(--s3); padding: var(--s4); min-width: 0; background: var(--cream-soft); border: 2px solid var(--line); border-radius: var(--r-card); }
 .field[hidden] { display: none; }
 .field > label, .field > .q-label, .field legend.q-label { font-weight: 700; font-size: 1.0625rem; line-height: 1.4; }
 .optional { font-weight: 400; color: var(--muted); }
@@ -92,11 +127,18 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .field textarea { resize: vertical; }
 .field-left { color: var(--muted); font-size: var(--fs-small); margin: 0; }
 .field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
-fieldset.field { border: 0; padding: 0; margin-inline: 0; min-width: 0; }
-.choices { display: grid; gap: .25rem; }
-.choice { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: .6rem; align-items: start; min-height: 44px; padding: .55rem .25rem; border-radius: var(--r-input); cursor: pointer; }
-.choice:hover { background: var(--cream); }
-.choice input { width: 1.25rem; height: 1.25rem; margin: .15rem 0 0; accent-color: var(--accent); }
+.bss-form fieldset.field { margin-inline: 0; min-width: 0; }
+.choices { display: grid; gap: var(--s1); }
+/* A choice is a bordered row of its own: the whole row is the target, and the chosen one fills
+   with the form's tint. */
+.choice { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: .6rem; align-items: center; min-height: 44px; padding: .6rem .8rem; background: var(--field); border: 2px solid var(--field-border); border-radius: var(--r-card); cursor: pointer; }
+.choice:hover { border-color: var(--accent); }
+.choice:has(> input:checked) { border-color: var(--accent); background: var(--accent-tint); }
+.choice:has(> input:focus-visible) { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
+.choice input { width: 1.25rem; height: 1.25rem; margin: 0; accent-color: var(--accent); }
+/* A confirmation or an agreement is one consequential tick: a full colour border and bold words,
+   so it never reads as one preference among many. */
+.bss-form .field > .choice { border-color: var(--accent); font-weight: 700; }
 .field input.other-text { margin-left: 2.1rem; width: calc(100% - 2.1rem); max-width: 24rem; min-width: 0; }
 
 /* A ranking: each option's name beside its place. */
@@ -119,7 +161,8 @@ fieldset.field { border: 0; padding: 0; margin-inline: 0; min-width: 0; }
 .upload-status:empty { display: none; }
 .upload-note { margin: 0; color: var(--danger); font-weight: 700; }
 
-/* An error marks the control itself, as Connect's do; no bar beside the field. */
+/* An error marks the card and the control itself; no bar beside the field. */
+.bss-form .field.has-error { border-color: var(--danger); }
 .field.has-error input, .field.has-error textarea, .field.has-error select { border-color: var(--danger); background: var(--danger-tint); }
 .field-error { color: var(--danger); font-weight: 700; font-size: 1rem; display: flex; gap: .4rem; align-items: baseline; margin: 0; }
 .field-error::before { content: "!"; display: inline-grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--danger); color: var(--paper); font-size: .875rem; }
@@ -130,25 +173,41 @@ fieldset.field { border: 0; padding: 0; margin-inline: 0; min-width: 0; }
 .error-summary ul { padding-left: 1.2rem; display: grid; gap: .2rem; }
 .error-summary a { color: var(--danger); font-weight: 700; }
 
-.form-notice { margin: var(--s4) 0; padding: var(--s4); border-radius: var(--r-card); background: var(--paper); border: var(--rule-line); }
+.form-notice { margin: var(--s4) 0; padding: var(--s4); border-radius: var(--r-card); background: var(--cream-soft); border: 2px solid var(--line); }
 .form-notice h2 { font: 700 1.25rem/1.3 var(--font-body); margin-bottom: var(--s2); }
 .form-notice[hidden] { display: none; }
 
-.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); padding-top: var(--s4); border-top: var(--rule-line); }
-.form-actions .btn { min-width: 12rem; }
+.bss-form > .form-rule { margin-top: var(--s4); }
+
+/* The review: every answer the form will send, each with its way back to its question. */
+.form-review { padding: var(--s5) 0 var(--s2); }
+.form-review[hidden] { display: none; }
+.form-review > h2 { font: 700 var(--fs-h3)/1.25 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
+.review-item { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); align-items: start; justify-content: space-between; padding-block: var(--s3); border-top: var(--hairline); }
+.review-item:first-child { border-top: 0; padding-top: var(--s1); }
+.review-text { min-width: 0; flex: 1 1 16rem; }
+.review-q { font: 700 var(--fs-body)/1.4 var(--font-body); margin-bottom: var(--s0); }
+.review-a { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.review-a.is-blank { color: var(--muted); }
+.review-change { flex: none; min-width: 0; padding-inline: 1.1rem; }
+
+/* The sheet's foot: Back at the left, the way on and Send at the right, on the cream. */
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: var(--s4) calc(-1 * var(--form-pad)) calc(-1 * var(--s5)); padding: var(--s4) var(--form-pad); background: var(--cream-soft); border-top: var(--rule-line); }
+.form-actions .btn { min-width: 10rem; }
+.form-actions [data-step-back] { margin-right: auto; }
+.form-actions [hidden] { display: none; }
 .form-status { margin: 0; font-weight: 600; }
 
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
-.closed-panel, .done-panel { margin-top: var(--s5); padding: var(--s5); border-radius: var(--r-card); background: var(--accent-tint); }
-/* A form still on Google Forms: the page is its sheet and one big button, centred in a single column,
-   so no empty second column waits for questions that are not here. */
-.form-page .wrap:has(> .closed-panel.is-elsewhere) { grid-template-columns: minmax(0, 36rem); justify-content: center; }
-.form-page .wrap:has(> .closed-panel.is-elsewhere) > * { grid-column: 1; }
-.form-page .wrap:has(> .closed-panel.is-elsewhere) > .form-head { position: static; grid-row: auto; }
+/* A closed form's panel and the confirmation sit inside the sheet, under its head. */
+.closed-panel, .done-panel { margin: var(--s5); padding: var(--s5); border-radius: var(--r-card); background: var(--accent-tint); }
 .closed-panel.is-elsewhere { margin-top: var(--s5); padding: 0; background: none; border: 0; box-shadow: none; text-align: center; }
 .closed-panel.is-elsewhere p { margin: 0; }
-@media (max-width: 480px) { .closed-panel.is-elsewhere .btn { width: 100%; justify-content: center; } }
+@media (max-width: 480px) {
+  .closed-panel, .done-panel { margin: var(--s3); }
+  .closed-panel.is-elsewhere .btn { width: 100%; justify-content: center; }
+}
 .closed-panel h2, .done-panel h2 { font-size: clamp(1.9rem, 1.5rem + 1.5vw, 2.6rem); color: var(--accent); margin-bottom: var(--s3); }
 .done-panel .ref { display: inline-block; margin: var(--s2) 0 var(--s3); padding: .35rem .8rem; border-radius: var(--r-card); background: var(--cream); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
 .done-panel:focus { outline: none; }

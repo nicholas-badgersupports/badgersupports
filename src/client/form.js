@@ -15,7 +15,7 @@
  * form key only. It never reads answers into them.
  */
 
-import { visibility, validateAnswers, readRaw, errorText, allQuestions, QUESTION_TYPES, hiringContext } from "./forms.mjs";
+import { visibility, validateAnswers, readRaw, errorText, allQuestions, answerWords, OTHER, QUESTION_TYPES, hiringContext } from "./forms.mjs";
 import { t } from "./text.js";
 
 const STALE_MS = 10 * 60 * 1000;
@@ -45,6 +45,7 @@ function applyVisibility(form, def) {
   }
   for (const f of form.querySelectorAll(".field[data-show-if]")) f.hidden = !vis.questions.has(f.dataset.q);
   for (const p of form.querySelectorAll("[data-only-if]")) p.hidden = true;
+  form._stepper?.refresh();
   for (const box of form.querySelectorAll(".choices")) {
     const otherRadio = box.querySelector("[data-other]");
     const otherText = box.querySelector(".other-text");
@@ -119,7 +120,126 @@ function showErrors(form, def, errors) {
   }));
   sum.hidden = false;
   sum.setAttribute("role", "alert");
+  form._stepper?.reveal(errors);
   sum.focus();
+}
+
+/* A long form walked a section at a time (steppedForm in src/shared/forms.mjs; the steps, the
+   review and the Back and Continue buttons are rendered by src/render/form.mjs, hidden until
+   this runs). Stepping only ever shows and hides: which sections are live is applyVisibility's,
+   by the hidden attribute, and the step being read is a class, so nothing here changes what is
+   asked, what is checked, or what is sent. Send stays in reach on every step and checks the
+   whole form, as it always has; Continue checks only the step being read. The last step lists
+   every answer the form will send, each with its way back to its question. */
+const REVIEW = "__review";
+function makeStepper(form, def) {
+  const nav = form.querySelector("[data-step-nav]");
+  const reviewBox = form.querySelector("[data-review]");
+  const back = form.querySelector("[data-step-back]");
+  const next = form.querySelector("[data-step-next]");
+  const submit = form.querySelector("[data-submit]");
+  if (!nav || !reviewBox || !back || !next || !submit) return null;
+  const sections = [...form.querySelectorAll("[data-section]")].map((el) => ({ id: el.dataset.section, el }));
+  const eyebrow = (parent, before) => {
+    const eb = Object.assign(document.createElement("span"), { className: "step-eyebrow" });
+    parent.insertBefore(eb, before);
+    return eb;
+  };
+  for (const s of sections) {
+    const legend = s.el.querySelector(":scope > legend");
+    s.eyebrow = legend ? eyebrow(legend, legend.firstChild) : eyebrow(s.el, s.el.querySelector("h2"));
+  }
+  const reviewEyebrow = eyebrow(reviewBox, reviewBox.querySelector("h2"));
+  let current = form.querySelector(".field.has-error")?.closest("[data-section]")?.dataset.section || null;
+
+  const steps = () => [...sections.filter((s) => !s.el.hidden).map((s) => s.id), REVIEW];
+  function show(id, { focus = false } = {}) {
+    current = id;
+    const ids = steps();
+    const at = ids.indexOf(id);
+    for (const s of sections) {
+      s.el.classList.toggle("is-current", s.id === id);
+      const i = ids.indexOf(s.id);
+      if (i >= 0) s.eyebrow.textContent = t("form.step.of", { n: i + 1, m: ids.length });
+    }
+    reviewBox.hidden = id !== REVIEW;
+    reviewEyebrow.textContent = t("form.step.of", { n: ids.length, m: ids.length });
+    if (id === REVIEW) buildReview();
+    for (const li of nav.querySelectorAll("[data-step-item]")) {
+      const mine = li.dataset.stepItem;
+      li.hidden = !ids.includes(mine);
+      const link = li.querySelector("[data-step-link]");
+      link.classList.toggle("is-done", ids.indexOf(mine) >= 0 && ids.indexOf(mine) < at);
+      if (mine === id) link.setAttribute("aria-current", "step");
+      else link.removeAttribute("aria-current");
+    }
+    back.hidden = at <= 0;
+    next.hidden = id === REVIEW;
+    submit.className = id === REVIEW ? "btn" : "btn btn--quiet";
+    if (focus) {
+      const h = id === REVIEW ? reviewBox.querySelector("h2") : sections.find((s) => s.id === id)?.el.querySelector("h2");
+      if (h) { h.tabIndex = -1; h.focus(); }
+    }
+  }
+  function buildReview() {
+    const { answers } = validateAnswers(def, rawFrom(form, def));
+    const vis = visibility(def, answers);
+    const list = reviewBox.querySelector("[data-review-list]");
+    list.replaceChildren();
+    for (const { section, q } of allQuestions(def)) {
+      if (!vis.questions.has(q.id)) continue;
+      const item = Object.assign(document.createElement("div"), { className: "review-item" });
+      const text = Object.assign(document.createElement("div"), { className: "review-text" });
+      const aEl = Object.assign(document.createElement("p"), { className: "review-a" });
+      let words;
+      if (q.type === "file") words = form.querySelector(`[data-upload="${q.id}"] [data-upload-status]`)?.textContent.trim() || "";
+      else if (q.type === "confirm" || q.type === "agree") words = answers[q.id] ? t("form.review.yes") : "";
+      else {
+        const w = answerWords(q, answers[q.id]);
+        words = Array.isArray(w) ? w.join(q.type === "rank" || q.type === "links" ? "\n" : ", ") : w;
+        const other = answers[`${q.id}${OTHER}`];
+        if (other) words = words ? `${words}: ${other}` : other;
+      }
+      if (!words) { aEl.textContent = t("form.review.blank"); aEl.classList.add("is-blank"); }
+      else aEl.textContent = words;
+      text.append(Object.assign(document.createElement("p"), { className: "review-q", textContent: q.label }), aEl);
+      const change = Object.assign(document.createElement("button"), { type: "button", className: "btn btn--quiet review-change", textContent: t("form.review.change") });
+      change.setAttribute("aria-label", t("form.review.changeFor", { label: q.label }));
+      change.addEventListener("click", () => { show(section.id); form.querySelector(`#f-${q.id}`)?.focus(); });
+      item.append(text, change);
+      list.append(item);
+    }
+  }
+  const stepper = {
+    refresh() {
+      const ids = steps();
+      if (current !== REVIEW && !ids.includes(current)) current = ids[0];
+      show(current);
+    },
+    reveal(errors) {
+      const first = allQuestions(def).find(({ q }) => errors[q.id]);
+      if (first && first.section.id !== current) show(first.section.id);
+    },
+  };
+  nav.addEventListener("click", (e) => {
+    const link = e.target.closest("[data-step-link]");
+    if (link) show(link.dataset.stepLink, { focus: true });
+  });
+  back.addEventListener("click", () => { const ids = steps(); show(ids[Math.max(0, ids.indexOf(current) - 1)], { focus: true }); });
+  next.addEventListener("click", () => {
+    const check = validateAnswers(def, rawFrom(form, def));
+    const mine = {};
+    for (const { section, q } of allQuestions(def)) if (section.id === current && check.errors[q.id]) mine[q.id] = check.errors[q.id];
+    if (Object.keys(mine).length) { showErrors(form, def, mine); return; }
+    clearErrors(form);
+    const ids = steps();
+    show(ids[Math.min(ids.length - 1, ids.indexOf(current) + 1)], { focus: true });
+  });
+  form.classList.add("is-stepped");
+  nav.hidden = false;
+  form._stepper = stepper;
+  stepper.refresh();
+  return stepper;
 }
 
 function notice(form, title, ...lines) {
@@ -277,6 +397,7 @@ function enhance(form, { started = false } = {}) {
   for (const box of form.querySelectorAll("[data-upload]")) uploader(form, key, box, { preview, uploads, onClosed: close, onSettled: settled });
   counters(form);
   applyVisibility(form, def);
+  if (def.stepped) makeStepper(form, def);
   // A preview is of a closed form, so it neither asks whether the form is open nor counts a start.
   if (!preview) {
     checkState();

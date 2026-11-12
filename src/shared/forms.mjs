@@ -284,6 +284,15 @@ export function visibility(def, answers) {
   return { sections, questions };
 }
 
+/* A long form is walked a section at a time (src/client/form.js): enough sections to be worth
+   dividing, and enough questions that one scroll is a burden. A short form stays on one page.
+   Sections with no questions still count: they are steps of words (an introduction, an agreement). */
+export function steppedForm(def) {
+  const sections = def.sections || [];
+  const questions = sections.reduce((n, s) => n + (s.questions || []).length, 0);
+  return sections.length >= 2 && questions >= 10;
+}
+
 /* ------------------------------------------------------------------ reading raw input */
 
 /* Turns what arrived — URLSearchParams-like pairs from a no-JS POST, or a JSON object from the

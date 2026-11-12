@@ -846,6 +846,56 @@
       "text": "{{form}}, shown for review while it is closed.",
       "where": "The summary of a closed form's preview page on the prototype site."
     },
+    "form.steps.label": {
+      "group": "forms",
+      "text": "Steps in this form",
+      "where": "The name of the list of steps across the top of a long form, read by screen readers."
+    },
+    "form.step.of": {
+      "group": "forms",
+      "text": "Step {{n}} of {{m}}",
+      "where": "Above the title of the step of a long form being read."
+    },
+    "form.step.back": {
+      "group": "forms",
+      "text": "Back",
+      "where": "The button under a long form that returns to the step before."
+    },
+    "form.step.continue": {
+      "group": "forms",
+      "text": "Continue",
+      "where": "The button under a long form that goes on to the next step."
+    },
+    "form.review.title": {
+      "group": "forms",
+      "text": "Check your answers",
+      "where": "The title of the last step of a long form, which lists every answer before it is sent."
+    },
+    "form.review.intro": {
+      "group": "forms",
+      "text": "Check your answers before you send the form. You can go back and change any answer.",
+      "where": "Under that title."
+    },
+    "form.review.change": {
+      "group": "forms",
+      "text": "Change",
+      "where": "The button beside an answer on that step, which returns to its question."
+    },
+    "form.review.changeFor": {
+      "group": "forms",
+      "text": "Change the answer to “{{label}}”",
+      "where": "That button's name, read by screen readers."
+    },
+    "form.review.blank": {
+      "group": "forms",
+      "text": "No answer given",
+      "where": "On that step, beside a question left empty."
+    },
+    "form.review.yes": {
+      "group": "forms",
+      "text": "Yes",
+      "where": "On that step, as the answer to a question answered by ticking a box to confirm or agree."
+    },
     "team.all": {
       "group": "team",
       "text": "Our Team",

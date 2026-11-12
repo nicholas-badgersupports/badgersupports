@@ -91,12 +91,16 @@ In `netlify/lib/intake.mjs`:
    - an outbox row `mail.receipt`, state **`held`**, reason `sender-unverified`, but only where the form is not
      anonymous, its `workflow.receipt` is `on`, and an email answer exists (`mail.receipt`). **No form has `on` today**,
      so no receipt row is written.
+   - an outbox row `mail.notify`, state **`held`**, reason `sender-unverified`, where the form's
+     `workflow.notify` is `on`. The workshop request has it on: Programs asked for an email as each
+     request arrives (11 Nov 2026). Connect addresses the notice to the team, so this site holds no
+     team address; delivery hands Connect a `publicNotify` call (template `public.<form>.notify`),
+     which is Connect's half to build (Exchange).
 3. Only after the commit does the server answer `ok` with the reference, such as `WR-` and two groups of four
    characters for a workshop request (`newRef()`).
 
 Each outbox row carries `dedupe_key` = `<kind>:<reference>`, which the table holds unique
-(`netlify/database/migrations/001_intake/migration.sql`). A retry cannot queue the same work twice. The table
-also allows `mail.notify`; nothing writes one.
+(`netlify/database/migrations/001_intake/migration.sql`). A retry cannot queue the same work twice.
 
 **Only the Connect row is sent** (20 Oct 2026). `netlify/lib/deliver.mjs` hands each `connect.ingest` row to
 Connect's Website Forms, and a director signed in at `/staff/` reads the latest answers (`ARCHITECTURE.md`, "Staff
@@ -112,7 +116,7 @@ The communications matrix asked for by §7. Template names follow Exchange reque
 | Form | Message | To | From | When | Status |
 |---|---|---|---|---|---|
 | Workshop request | receipt | the address given in the form | `directors@badgersupports.org` | once stored | proposed; held until the sender is confirmed |
-| Workshop request | notify | Programs | Connect | the submission appears in Connect's queue | proposed; whether Programs also wants an email is theirs to say |
+| Workshop request | notify | Programs | Connect | as the request arrives | approved by Programs 11 Nov 2026; the site's half is built (`workflow.notify: "on"`, a held `mail.notify` row per request) and waits on the verified sender and Connect's `publicNotify` |
 | Programming feedback | receipt | nobody | | | **none**: the form is anonymous and asks for no address |
 | Programming feedback | notify | Programs | Connect | as above | proposed |
 | Staff application | receipt | the applicant | `directors@badgersupports.org` | once stored | proposed; the form is closed |
@@ -130,9 +134,9 @@ The rules this keeps:
   are written `held`.
 - **Mail goes through Connect's mail path**, not from this site. Connect answers each send with its message
   id, and the outbox row records it. "Sent" means accepted by the mail service, not read.
-- **No promise about how fast anyone replies.** The rebuild adds none. The workshop request's confirmation
-  says the team will reach out "within one week". That is the Google Form's own wording, kept word for word,
-  and nobody has confirmed it with Programs (the form's `review` note; `../WORK.md`).
+- **No promise about how fast anyone replies.** The rebuild adds none. The old Google Form's confirmation
+  promised a reply "within one week"; Programs ruled on 11 Nov 2026 that the confirmation carries no
+  response-time promise, and the native form's confirmation has none (`../WORK.md`, item 26).
 - **Anonymous stays anonymous.** An anonymous form never asks for an address, so it never gets a receipt. No
   submission records the sender's connection, for any form. The rate limit counts by a keyed hash of the
   connection in its own table, kept apart from submissions; rows over a day old are deleted at the next count

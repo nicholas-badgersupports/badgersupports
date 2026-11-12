@@ -253,8 +253,6 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `disclosure` | one line of text |  |
 | `preview` | one or more paragraphs |  |
 | `whole` | on or off |  |
-| `icon` | one line of text |  |
-| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 
 ### Closing call to action — `cta`
 
@@ -419,23 +417,10 @@ Reads: `legal` · analytics: `none` · photos load lazy
 |---|---|---|
 | `doc` | one line of text | **required** |
 
-### Statement banner — `statement`
-
-Reads: nothing but its own fields · analytics: `page` · photos load lazy
-
-| Field | Type | |
-|---|---|---|
-| `text` | one line of text | **required** |
-| `points` | short statements, each its `text` and an optional `icon` (see Icons) |  |
-| `body` | one or more paragraphs |  |
-| `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
-| `links` | several links, in order |  |
-| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
-
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 
@@ -553,7 +538,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-715 keys. Keys are permanent. Required text cannot be published empty and must keep each
+723 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -579,7 +564,7 @@ the site adds the markup.
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
-### Homepage sections (34)
+### Homepage sections (33)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -588,7 +573,6 @@ the site adds the markup.
 | `hero.pause` | Pause the Moving Photos | Name and tooltip of the round button among the white dots of the hero's photo circles; it stops them drifting. Screen readers read it; it is not shown as text. |  |
 | `hero.play` | Play the Moving Photos | The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text. |  |
 | `schedule.today` | Today | Tag on today's date in the timetable. |  |
-| `schedule.nextUp` | Next Up | Tag on the next peer support group day or visit that is not today, so a visitor can spot the soonest one. |  |
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
 | `schedule.placeLink` | How to Find It | Link under the usual place in the timetable. |  |
 | `schedule.laterTitle` | Coming Up | Heading over later events, when the timetable block gives none. |  |
@@ -711,7 +695,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (82)
+### Forms (92)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -785,6 +769,16 @@ the site adds the markup.
 | `form.preview.file` | Preview only: {{name}} would upload here. Nothing was sent. | Under a file question of a form preview once a PDF is chosen. | `{{name}}` |
 | `form.preview.pageTitle` | Preview: {{form}} | The browser-tab title of a closed form's preview page on the prototype site; the site's name is added after it. | `{{form}}` |
 | `form.preview.pageDescription` | {{form}}, shown for review while it is closed. | The summary of a closed form's preview page on the prototype site. | `{{form}}` |
+| `form.steps.label` | Steps in this form | The name of the list of steps across the top of a long form, read by screen readers. |  |
+| `form.step.of` | Step {{n}} of {{m}} | Above the title of the step of a long form being read. | `{{n}}` `{{m}}` |
+| `form.step.back` | Back | The button under a long form that returns to the step before. |  |
+| `form.step.continue` | Continue | The button under a long form that goes on to the next step. |  |
+| `form.review.title` | Check your answers | The title of the last step of a long form, which lists every answer before it is sent. |  |
+| `form.review.intro` | Check your answers before you send the form. You can go back and change any answer. | Under that title. |  |
+| `form.review.change` | Change | The button beside an answer on that step, which returns to its question. |  |
+| `form.review.changeFor` | Change the answer to “{{label}}” | That button's name, read by screen readers. | `{{label}}` |
+| `form.review.blank` | No answer given | On that step, beside a question left empty. |  |
+| `form.review.yes` | Yes | On that step, as the answer to a question answered by ticking a box to confirm or agree. |  |
 | `form.workshopTopic` | Workshop from your link: {{topic}} | Workshop request, the offered topic carried from a workshop page. | `{{topic}}` |
 | `form.workshopGoogleSignIn` | Google sign-in is required to use this form. You can also email your workshop request. | Under the trusted Google workshop request fallback; not shown on an open native form or an intentional closure. |  |
 | `form.workshopEmail` | Request by Email | Workshop request alternative when the trusted Google Form requires sign-in. |  |
@@ -1242,7 +1236,7 @@ the site adds the markup.
 | `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
 | `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
 
-### Resource list (52)
+### Resource list (51)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1297,7 +1291,6 @@ the site adds the markup.
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
 | `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
 | `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
-| `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
 ### Site search (16)
 

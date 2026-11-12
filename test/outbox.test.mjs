@@ -19,10 +19,10 @@ const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
 /* A fake Connect: Website Forms keeps one copy per ref, the mail path one message per dedupe key. `fail(action,
    n)` says what the nth call of an action does: "down" (never arrives), "lost" (arrives, the answer is lost). */
 function fakeConnect({ fail = () => null, slow = 0 } = {}) {
-  const stored = new Map(), mailed = new Map(), calls = [];
+  const stored = new Map(), mailed = new Map(), notified = new Map(), calls = [];
   const n = {};
   return {
-    stored, mailed, calls,
+    stored, mailed, notified, calls,
     cfg: {
       url: "https://connect.example.test", keyId: "outbox-test-key", secret: "o".repeat(40), ssoSecret: "s".repeat(40),
       fetch: async (url, init) => {
@@ -35,6 +35,7 @@ function fakeConnect({ fail = () => null, slow = 0 } = {}) {
         let reply;
         if (body.action === "publicFormIngest") { const again = stored.has(body.ref); stored.set(body.ref, body); reply = { ok: true, ref: body.ref, stored: again ? "already" : "new" }; }
         else if (body.action === "publicReceipt") { const again = mailed.has(body.dedupeKey); if (!again) mailed.set(body.dedupeKey, body); reply = { ok: true, messageId: `m-${mailed.size}`, sent: again ? "already" : "new" }; }
+        else if (body.action === "publicNotify") { const again = notified.has(body.dedupeKey); if (!again) notified.set(body.dedupeKey, body); reply = { ok: true, messageId: `n-${notified.size}`, sent: again ? "already" : "new" }; }
         else reply = { ok: false };
         if (how === "lost") throw new TypeError("connection reset");
         return { json: async () => reply };
@@ -175,6 +176,29 @@ test("receipts: held until a sender is verified, then sent once each; never for 
   await runOutbox();
   assert.equal(connect.mailed.size, 2);
   assert.equal((await one("SELECT state FROM outbox WHERE dedupe_key LIKE 'mail.receipt:hand-%'")).state, "cancelled");
+});
+
+test("notices: a workshop request queues one notice to Programs, held until a sender is verified, then sent once each and addressed by Connect", async () => {
+  const connect = fakeConnect();
+  // The shipped workshop request has workflow.notify on (Programs asked for one per request,
+  // 11 Nov 2026); no other form submitted here does.
+  await waiting(2, { connect });
+  assert.deepEqual((await many("SELECT state, hold_reason FROM outbox WHERE kind = 'mail.notify'")).map((r) => `${r.state}:${r.hold_reason}`), ["held:sender-unverified", "held:sender-unverified"]);
+  const off = await runOutbox();
+  assert.equal(off.notifies.configured, false);
+  assert.equal(connect.notified.size, 0, "no sender, no notice");
+
+  process.env.RECEIPT_SENDER = "directors@badgersupports.org";
+  const on = await runOutbox();
+  assert.equal(on.notifies.sent, 2);
+  const notes = [...connect.notified.values()];
+  assert.deepEqual(notes.map((m) => [m.action, m.template, m.sender, "to" in m]), [["publicNotify", "public.workshop-request.notify", "directors@badgersupports.org", false], ["publicNotify", "public.workshop-request.notify", "directors@badgersupports.org", false]],
+    "each notice names its template and the verified sender, and no recipient: Connect addresses it to Programs");
+  assert.deepEqual(notes.map((m) => m.ref), (await rows("mail.notify")).map((r) => r.ref), "one notice per submission, by its reference");
+  await q("UPDATE outbox SET state = 'pending', next_at = now() WHERE kind = 'mail.notify'");
+  await wake();
+  assert.equal((await runOutbox()).notifies.sent, 2);
+  assert.equal(connect.notified.size, 2, "sent again, mailed once: Connect keeps one notice per dedupe key");
 });
 
 test("the backup workbook: Start Here, a Dashboard of counts, and a styled tab per form; each answer once, never a formula", async () => {

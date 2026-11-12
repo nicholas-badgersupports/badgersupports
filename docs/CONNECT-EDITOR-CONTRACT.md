@@ -253,6 +253,8 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `disclosure` | one line of text |  |
 | `preview` | one or more paragraphs |  |
 | `whole` | on or off |  |
+| `icon` | one line of text |  |
+| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 
 ### Closing call to action — `cta`
 
@@ -417,10 +419,23 @@ Reads: `legal` · analytics: `none` · photos load lazy
 |---|---|---|
 | `doc` | one line of text | **required** |
 
+### Statement banner — `statement`
+
+Reads: nothing but its own fields · analytics: `page` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `text` | one line of text | **required** |
+| `points` | short statements, each its `text` and an optional `icon` (see Icons) |  |
+| `body` | one or more paragraphs |  |
+| `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
+| `links` | several links, in order |  |
+| `program` | one of `peer`, `craft`, `workshops`, `other` |  |
+
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 
@@ -538,7 +553,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-723 keys. Keys are permanent. Required text cannot be published empty and must keep each
+725 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -564,7 +579,7 @@ the site adds the markup.
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
-### Homepage sections (33)
+### Homepage sections (34)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -573,6 +588,7 @@ the site adds the markup.
 | `hero.pause` | Pause the Moving Photos | Name and tooltip of the round button among the white dots of the hero's photo circles; it stops them drifting. Screen readers read it; it is not shown as text. |  |
 | `hero.play` | Play the Moving Photos | The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text. |  |
 | `schedule.today` | Today | Tag on today's date in the timetable. |  |
+| `schedule.nextUp` | Next Up | Tag on the next peer support group day or visit that is not today, so a visitor can spot the soonest one. |  |
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
 | `schedule.placeLink` | How to Find It | Link under the usual place in the timetable. |  |
 | `schedule.laterTitle` | Coming Up | Heading over later events, when the timetable block gives none. |  |
@@ -1236,7 +1252,7 @@ the site adds the markup.
 | `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
 | `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
 
-### Resource list (51)
+### Resource list (52)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1291,6 +1307,7 @@ the site adds the markup.
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
 | `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
 | `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
+| `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
 ### Site search (16)
 

@@ -93,3 +93,47 @@ test("the prototype fixture spans the three sources and starts today", () => {
 test("feed_1's count is read from its titles", () => {
   assert.equal(countUnionTitles("<feed><event><event_title>A</event_title></event><event><event_title>B</event_title></event></feed>"), 2);
 });
+
+/* The explorer block as rendered (events fixes, 12 Nov 2026): the list carries a Show More row
+ * for the stepped reveal, a toggle that limits the list to Badger Supports' own events, and no
+ * interest chip styled apart from the others. */
+import { makeContext } from "../src/render/context.mjs";
+import { renderBlock } from "../src/render/registry.mjs";
+import { resolveText } from "../src/shared/text.mjs";
+
+const registry = JSON.parse(fs.readFileSync(new URL("../content/text.json", import.meta.url), "utf8"));
+const interestsFile = JSON.parse(fs.readFileSync(new URL("../content/explore/interests.json", import.meta.url), "utf8"));
+const explorerHtml = () => {
+  const ctx = makeContext({
+    site: {}, media: { items: [] }, today: "2026-11-11",
+    text: resolveText(registry),
+    data: {
+      campusEvents: { events: fixtureCampusEvents("2026-11-11"), updated: null, stale: false },
+      campusInterests: interestsFile,
+    },
+  });
+  return String(renderBlock({ id: "b-ce-explorer", type: "exploreevents", title: "What is on", count: 40 }, ctx));
+};
+
+test("the explorer renders a Show More row and a Badger Supports toggle, both at rest", () => {
+  const out = explorerHtml();
+  assert.match(out, /data-ce-more-row hidden/);
+  assert.match(out, /<button type="button" class="btn ce-more-btn" data-ce-more>Show More<\/button>/);
+  assert.match(out, /<button type="button" class="ce-badger-toggle" aria-pressed="false" data-ce-badger>All Badger Supports events<\/button>/);
+});
+
+test("Find Your People renders as a plain chip, styled no differently from its siblings", () => {
+  const out = explorerHtml();
+  assert.ok(!out.includes("ce-chip--people"), "no chip carries a special class");
+  assert.match(out, /<button type="button" class="ce-chip" aria-pressed="false" data-ce-interest="people">Find Your People<\/button>/);
+  const css = fs.readFileSync(new URL("../src/styles/blocks/exploreevents.css", import.meta.url), "utf8");
+  assert.ok(!css.includes("ce-chip--people"), "the stylesheet holds no people-only chip rule");
+});
+
+test("the events the Badger Supports toggle gathers are the ones the feed marks as ours", () => {
+  const out = explorerHtml();
+  assert.equal((out.match(/cecard is-badger/g) || []).length, 1, "exactly the Connect-fed program renders as a Badger Supports card");
+  assert.match(out, /Badger Supports program/);
+  const own = fixtureCampusEvents("2026-11-11").filter((e) => e.badger);
+  assert.deepEqual(own.map((e) => e.sources[0].source), ["badger"], "the toggle's set is the badger:true, source badger set");
+});

@@ -14,7 +14,9 @@
 .ce-chip { min-height: 44px; padding: .45rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
 .ce-chip:hover { border-color: var(--accent); }
 .ce-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
-.ce-chip--people { border-color: var(--accent); font-weight: 700; }
+.ce-badger-toggle { min-height: 48px; padding: .5rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.ce-badger-toggle:hover { border-color: var(--accent); }
+.ce-badger-toggle[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
 .ce-row { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: end; }
 .ce-row select, .ce-row input[type="date"] { min-height: 48px; padding: .5rem .75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
 .ce-viewtoggle { display: flex; gap: var(--s1); }
@@ -25,12 +27,14 @@
 .ce-updated { margin: 0; color: var(--muted); font-size: var(--fs-small); }
 .ce-retry { margin: 0 0 var(--s3); }
 .cecards { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.ce-more-row { display: flex; justify-content: center; margin-top: var(--s4); }
+.ce-more-row[hidden] { display: none; }
 .cecard { display: flex; gap: var(--s3); padding: var(--s3); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
-.cecard-date { flex: 0 0 4.2rem; display: flex; flex-direction: column; align-items: center; gap: .1rem; padding: var(--s2) 0; background: var(--accent); color: var(--paper); border-radius: var(--r-chip); text-align: center; height: fit-content; }
+.cecard-date { flex: 0 0 4.75rem; display: flex; flex-direction: column; align-items: center; gap: var(--s1); padding: var(--s2) var(--s1); background: var(--accent); color: var(--paper); border-radius: var(--r-chip); text-align: center; height: fit-content; }
 .cecard-date .dow { font-size: var(--fs-small); font-weight: 700; text-transform: uppercase; }
 .cecard-date .dom { font-size: var(--fs-h3); font-weight: 800; line-height: 1; }
 .cecard-date .mon { font-size: var(--fs-small); text-transform: uppercase; }
-.cecard-date .today-tag { margin-top: var(--s1); padding: 0 .4rem; background: var(--paper); color: var(--accent); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
+.cecard-date .today-tag { margin-top: var(--s1); padding: .15rem .5rem; background: var(--paper); color: var(--accent); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
 .cecard-body { min-width: 0; }
 .cecard-body h3 { margin: 0 0 var(--s1); font-size: var(--fs-h3); line-height: 1.2; }
 .cecard-body h3 a { color: var(--accent); }
@@ -56,5 +60,5 @@
 @media (max-width: 560px) {
   .cecal-day { min-height: 3.5rem; padding: .2rem; }
   .cecard { flex-direction: column; }
-  .cecard-date { flex-direction: row; flex-basis: auto; justify-content: center; gap: var(--s2); padding: var(--s1); }
+  .cecard-date { flex-direction: row; flex-basis: auto; justify-content: center; gap: var(--s2); padding: var(--s1) var(--s2); }
 }

@@ -3413,6 +3413,16 @@
       "text": "+{{n}} more",
       "where": "On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named."
     },
+    "explore.events.showMore": {
+      "group": "explore",
+      "text": "Show More",
+      "where": "On the Campus Events Explorer: the button under the list that reveals more of the events that match the current search and filters."
+    },
+    "explore.events.onlyBadger": {
+      "group": "explore",
+      "text": "All Badger Supports events",
+      "where": "On the Campus Events Explorer: the toggle beside the source menu that limits the list to Badger Supports' own programs, the events from Badger Supports Connect."
+    },
     "explore.bus.address": {
       "group": "explore",
       "text": "Address {{n}}",

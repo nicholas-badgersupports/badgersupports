@@ -3,7 +3,13 @@
  * this asks /api/campus-events for the current read (the feeds are re-read there at most every few
  * minutes; a failed read there keeps the last good list) and then filters in the browser. Nothing
  * typed is sent anywhere: the only request is the read itself. Cards are built with textContent,
- * so feed text can never become markup. */
+ * so feed text can never become markup.
+ *
+ * The list is revealed in steps, the way the Resources list is: the first PAGE matches show and
+ * Show More reveals the next PAGE of the same filtered set; any change to the filters starts the
+ * reveal again. The Badger Supports toggle beside the source menu is the same filter as that
+ * menu's Badger Supports choice — it sets the menu, and the menu sets it — limiting the list to
+ * the events the Connect feed marks as Badger Supports' own (badger: true). */
 
 import { t } from "./text.js";
 
@@ -38,7 +44,11 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
   const list = box.querySelector("[data-ce-list]");
   const cal = box.querySelector("[data-ce-cal]");
   const none = box.querySelector("[data-ce-none]");
-  const state = { interests: new Set(), view: "list", month: null };
+  const moreRow = box.querySelector("[data-ce-more-row]");
+  const moreBtn = box.querySelector("[data-ce-more]");
+  const badgerBtn = box.querySelector("[data-ce-badger]");
+  const PAGE = 12;
+  const state = { interests: new Set(), view: "list", month: null, limit: PAGE, sig: null };
 
   const interestOf = (id) => (data.interests || []).find((i) => i.id === id);
   function matches(e) {
@@ -140,11 +150,16 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
 
   function render() {
     const events = filtered();
+    /* The reveal counts the filtered set: when the filters change, the first PAGE shows again. */
+    const sig = [q.value, cat.value, src.value, from.value, to.value, [...state.interests].sort().join(",")].join("§");
+    if (sig !== state.sig) { state.sig = sig; state.limit = PAGE; }
+    if (badgerBtn) badgerBtn.setAttribute("aria-pressed", String(src.value === "badger"));
     count.textContent = events.length ? t(events.length === 1 ? "explore.events.count.one" : "explore.events.count.other", { n: events.length }) : t("explore.events.count.none");
     if (updated) updated.textContent = data.updated ? t("explore.events.updated", { when: updatedFmt.format(new Date(data.updated)) }) : "";
     none.hidden = events.length > 0;
+    if (moreRow) moreRow.hidden = !(state.view === "list" && events.length > state.limit);
     if (state.view === "calendar") { list.replaceChildren(); renderCalendar(events); }
-    else { cal.replaceChildren(); list.replaceChildren(...events.slice(0, 200).map(card)); }
+    else { cal.replaceChildren(); list.replaceChildren(...events.slice(0, state.limit).map(card)); }
   }
 
   async function refresh() {
@@ -169,6 +184,16 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
     render();
   });
   for (const b of views) b.addEventListener("click", () => { setView(b.dataset.ceView); render(); });
+  moreBtn?.addEventListener("click", () => {
+    state.limit += PAGE;
+    render();
+    // The last reveal retires the button; keep the reader's place by moving focus to the count.
+    if (moreRow?.hidden) count.focus({ preventScroll: true });
+  });
+  badgerBtn?.addEventListener("click", () => {
+    src.value = src.value === "badger" ? "" : "badger";
+    render();
+  });
   reset.addEventListener("click", () => {
     q.value = ""; cat.value = ""; src.value = ""; from.value = ""; to.value = "";
     state.interests.clear();

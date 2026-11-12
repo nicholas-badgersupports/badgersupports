@@ -14,7 +14,7 @@ import { personPages } from "./team.mjs";
 import { formPreviewPages } from "./blocks/form.mjs";
 import { resolveText, makeT } from "../shared/text.mjs";
 import { applyEdits } from "../shared/edits.mjs";
-import { layStructure, addMadeSections, laySettings, layRooms } from "../shared/structure.mjs";
+import { layStructure, addMadeSections, laySettings, layRooms, layMood } from "../shared/structure.mjs";
 
 /* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
 export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
@@ -49,7 +49,7 @@ function withLegal(pages, legal) {
 
 export function composeSite(snap, edits = snap.builtEdits || {}, structure = null, shared = null) {
   const team = shared?.team?.value || snap.team;
-  const liveData = { ...snap.data, ...(shared?.events ? { events: shared.events.value, eventsState: shared.events } : {}), ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}), ...(shared?.alumni ? { alumni: shared.alumni.value, alumniState: shared.alumni.state } : {}), ...(shared?.legal ? { legal: shared.legal.value || {} } : {}) };
+  const liveData = { ...snap.data, ...(snap.data?.mood ? { mood: layMood(snap.data.mood, structure?.settings) } : {}), ...(shared?.events ? { events: shared.events.value, eventsState: shared.events } : {}), ...(shared?.team ? { team, teamState: shared.team } : {}), ...(shared?.resources ? { resources: shared.resources.value.resources, resourcesUpdated: shared.resources.value.sourceUpdatedAt, resourcesState: shared.resources } : {}), ...(shared?.wall ? { wallNotes: shared.wall.value.notes, wallState: shared.wall } : {}), ...(shared?.alumni ? { alumni: shared.alumni.value, alumniState: shared.alumni.state } : {}), ...(shared?.legal ? { legal: shared.legal.value || {} } : {}) };
   const site = laySettings(structuredClone(snap.floor.site), structure?.settings);
   const made = Object.values(structure?.pages || {}).filter((r) => r.page).map((r) => structuredClone(r.page));
   const authored = [...structuredClone(snap.floor.pages), ...made];

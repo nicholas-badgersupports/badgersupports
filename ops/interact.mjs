@@ -35,6 +35,11 @@
  *    only one room's page carries finds that room alone; a word on no page shows the no-matches
  *    block; an address with ?q= opens with its results; without JavaScript the box stays hidden
  *    and every page is a plain link; a failed index says so, keeps the list, and Try Again loads it.
+ * 8. The mood check-in on the home page: each feeling is its emoji over its word, in its own colour;
+ *    a tap bursts confetti and the answer shows one of the feeling's reply lines and the day's
+ *    counts; a visitor who asked to reduce motion gets the answer with no burst. And its editor:
+ *    a publisher sees the Feeling Check-In part with the set as it stands, a set that breaks the
+ *    rules is refused and says why, and a saved set is what the structure then holds.
  * Fictional files and people only: a few bytes that start as a PDF does, Avery Example and Robin Example.
  */
 
@@ -2526,6 +2531,82 @@ await part("site search", async () => {
     const back = await searchState(page);
     check(back.listShown && !back.again, "search: Try Again loads the index");
   } finally { await cut.close(); }
+});
+
+/* ------------------------------------------------------------------ 8. the mood check-in */
+
+await part("mood check-in", async () => {
+  const MOODS = JSON.parse(fs.readFileSync(path.join(ROOT, "content/widgets/mood.json"), "utf8")).moods;
+  /* The block's own script has run when it has laid each button's named colour on it. */
+  const ready = (page) => page.waitForFunction(() => document.querySelector(".mood-btn")?.style.getPropertyValue("--mood") !== "", null, { timeout: 5000 });
+  const answered = (page) => page.waitForFunction(() => { const o = document.querySelector("[data-mood-result]"); return o && !o.hidden && o.textContent.includes("checked in today"); }, null, { timeout: 5000 });
+
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  try {
+    const page = await ctx.newPage();
+    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    await ready(page);
+    const lay = await page.evaluate(() => {
+      const btn = document.querySelector(".mood-btn");
+      const e = btn.querySelector(".e").getBoundingClientRect();
+      const l = btn.querySelector(".mood-label").getBoundingClientRect();
+      return { dir: getComputedStyle(btn).flexDirection, emojiAbove: e.bottom <= l.top + 2,
+        colour: getComputedStyle(btn).getPropertyValue("--mood").trim(), named: btn.dataset.color,
+        count: document.querySelectorAll(".mood-btn").length };
+    });
+    check(lay.count === MOODS.length && lay.dir === "column" && lay.emojiAbove && lay.colour === lay.named,
+      `mood: the feelings stand as an emoji over each word, in their own colours (${JSON.stringify(lay)})`);
+    const pick = MOODS[MOODS.length - 1];
+    await page.click(`button[name="mood"][value="${pick.id}"]`);
+    const burst = await page.waitForSelector("canvas.mood-confetti", { timeout: 1500 }).then(() => true, () => false);
+    await answered(page);
+    const answer = await page.evaluate(() => document.querySelector("[data-mood-result]").textContent);
+    check(burst, "mood: a tap bursts confetti from the feeling");
+    check(pick.messages.some((m) => answer.includes(m)) && MOODS.every((m) => answer.includes(m.label)),
+      `mood: the answer gives one of the feeling's reply lines and the day's counts (${JSON.stringify(answer.slice(0, 120))})`);
+  } finally { await ctx.close(); }
+
+  const calm = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+  try {
+    const page = await calm.newPage();
+    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    await ready(page);
+    await page.click(`button[name="mood"][value="${MOODS[0].id}"]`);
+    await answered(page);
+    await sleep(400);
+    const made = await page.evaluate(() => !!document.querySelector("canvas.mood-confetti"));
+    check(!made, "mood: reduced motion gets the answer with no confetti burst");
+  } finally { await calm.close(); }
+});
+
+await part("mood check-in editor", async () => {
+  await freshServer();
+  const { useContent } = await import("../netlify/lib/content.mjs");
+  const { structureNow } = await import("../netlify/lib/structure.mjs");
+  useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
+  const MOODS = JSON.parse(fs.readFileSync(path.join(ROOT, "content/widgets/mood.json"), "utf8")).moods;
+  const { ctx, page } = await openStaff({ session: ["site.edit", "site.publish"] });
+  try {
+    const form = page.locator("form.staff-mood");
+    await form.waitFor({ timeout: 5000 });
+    const labels = await form.evaluate((f) => [...f.querySelectorAll(".staff-mood-row")].map((r) => r.querySelectorAll("input")[1].value));
+    check(labels.join("|") === MOODS.map((m) => m.label).join("|"),
+      `mood editor: a publisher sees the feelings as they stand (${JSON.stringify(labels)})`);
+    await form.scrollIntoViewIfNeeded();
+    await form.screenshot({ path: path.join(ROOT, "local", "feeling-settings-1280.png") });
+    const firstLabel = form.locator(".staff-mood-row").first().locator("input").nth(1);
+    await firstLabel.fill("");
+    await page.getByRole("button", { name: words("staff.mood.save") }).click();
+    const refused = await page.waitForFunction((w) => document.body.textContent.includes(w), words("staff.pages.error.mood"), { timeout: 5000 }).then(() => true, () => false);
+    check(refused && !(await structureNow()).doc.settings?.moodCheckin,
+      "mood editor: a feeling with no word is refused, says why, and stores nothing");
+    await firstLabel.fill("Wiped Out");
+    await page.getByRole("button", { name: words("staff.mood.save") }).click();
+    const done = await page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words("staff.mood.done"), { timeout: 5000 }).then(() => true, () => false);
+    const stored = (await structureNow()).doc.settings?.moodCheckin;
+    check(done && stored?.moods?.length === MOODS.length && stored.moods[0].id === MOODS[0].id && stored.moods[0].label === "Wiped Out",
+      `mood editor: a saved set is what the structure holds, its ids kept (${JSON.stringify(stored?.moods?.[0])})`);
+  } finally { await ctx.close(); }
 });
 
 await browser.close();

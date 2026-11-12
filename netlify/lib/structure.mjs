@@ -13,7 +13,7 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { editableFor, revisionEdits, original, problemFor } from "./edits.mjs";
 import { redirectFor } from "./pages.mjs";
-import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, backTo, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
+import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, backTo, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layMood, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
 import { variantName, variantWidths } from "../../src/render/media.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 
@@ -42,6 +42,13 @@ function settingsAt(doc) {
   const c = serverContent();
   const s = laySettings(structuredClone(c.render?.floor?.site || c.site), doc.settings);
   return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null };
+}
+
+/* The feeling check-in's set as drawn at structure `doc`: the build's (content/widgets/mood.json), with
+   that version's saved feelings laid over them — what the staff page's Feeling Check-In part edits. */
+function moodAt(doc) {
+  const mood = layMood(serverContent().mood, doc.settings);
+  return { moods: (mood?.moods || []).map((m) => ({ id: m.id, emoji: m.emoji, label: m.label, color: m.color, messages: [...(m.messages || [])] })) };
 }
 
 /* The photo library's ids, the set a step's photo is checked against. */
@@ -80,7 +87,7 @@ export async function pagesList() {
     .map((p) => ({ id: p.id, path: p.file ? `/${p.file}` : p.path, title: shortTitle(p.title, p.id), description: p.description || "",
       state: stateOf(doc, p.id), made: !!doc.pages[p.id]?.page, fixed: FIXED_PAGES.has(p.id), sections: !SECTION_FIXED.has(p.id),
       ...(stateOf(doc, p.id) === "retired" ? { back: backTo(doc.pages[p.id]) } : {}) }));
-  return { version, menu: menuOutline(site.site.nav), offMenu: site.offMenu, pages, site: settingsAt(doc), settings: doc.settings || {} };
+  return { version, menu: menuOutline(site.site.nav), offMenu: site.offMenu, pages, site: settingsAt(doc), settings: doc.settings || {}, moodCheckin: moodAt(doc) };
 }
 
 /* One page's sections for the editor: those on the page in order, and the retired ones, each with its id, kind, first

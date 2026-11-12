@@ -389,7 +389,7 @@ let pagesChanged = () => {};
 /* Each change names the version of the pages it started from; a refusal keeps what was typed and says why. */
 const PAGE_ERRORS = { "page.path": "path", "page.path.reserved": "reserved", "page.path.taken": "taken", "page.title": "title",
   "page.description": "description", "page.fixed": "fixed", "page.retireTo": "retireTo", "menu.entry": "menu", "menu.group": "menu",
-  "settings.name": "siteName", "settings.description": "description", "settings.email": "email" };
+  "settings.name": "siteName", "settings.description": "description", "settings.email": "email", "settings.mood": "mood" };
 const STATE_CHIP = { live: "is-open", draft: "is-closed", retired: "is-closed" };
 let fieldCount = 0;
 /* A labelled field; `help`, when given, goes between the label and the control and is read with the control. */
@@ -785,12 +785,82 @@ function pagesSection(me) {
     return settingsForm;
   }
 
+  /* The feeling check-in's set, a publisher's, saved as one settings change like the settings above:
+     each feeling's emoji, word, colour and reply lines, in the order they show. The rows are filled
+     from what the server says the check-in shows now (now.moodCheckin: the build's set with any saved
+     one laid over it). A feeling keeps the id it was filled with — the day's counts are kept under it,
+     so renaming the word keeps them — and a feeling added here is given an id from its word when the
+     set is collected. The rows are filled again whenever the part is drawn and what they hold is what
+     they were filled with, so a set saved elsewhere is picked up; rows a publisher is part-way
+     through changing are left alone. */
+  const moodRowsBox = el("div", { className: "staff-mood-rows" });
+  const moodAdd = el("button", { type: "button", className: "btn", textContent: t("staff.mood.add") });
+  const moodSave = el("button", { type: "submit", className: "btn", textContent: t("staff.mood.save") });
+  const moodForm = el("form", { className: "staff-form staff-mood", noValidate: true },
+    el("h3", { textContent: t("staff.mood.title") }), el("p", { textContent: t("staff.mood.help") }),
+    moodRowsBox, el("div", { className: "staff-actions" }, moodAdd, moodSave));
+  let moodFilled = null;
+  function moodRow(m = {}) {
+    const emoji = textInput(m.emoji || "");
+    const label = textInput(m.label || "");
+    const color = el("input", { type: "color", value: /^#[0-9a-f]{6}$/i.test(m.color || "") ? m.color : "#b60000" });
+    const messages = el("textarea", { rows: 3 });
+    messages.value = (m.messages || []).join("\n");
+    const remove = el("button", { type: "button", className: "btn", textContent: t("staff.mood.remove") });
+    const row = el("div", { className: "staff-mood-row" },
+      field(t("staff.mood.field.emoji"), emoji), field(t("staff.mood.field.label"), label),
+      field(t("staff.mood.field.color"), color), field(t("staff.mood.field.messages"), messages),
+      el("div", { className: "staff-mood-remove" }, remove));
+    row.dataset.id = m.id || "";
+    row.mood = { emoji, label, color, messages, remove };
+    remove.addEventListener("click", () => { row.remove(); moodSync(); });
+    return row;
+  }
+  const moodSlug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "feeling";
+  function collectMood() {
+    const used = new Set();
+    return [...moodRowsBox.children].map((row) => {
+      const f = row.mood;
+      let id = row.dataset.id || moodSlug(f.label.value);
+      const base = id; let n = 2;
+      while (used.has(id)) id = `${base}_${n++}`;
+      used.add(id);
+      return { id, emoji: f.emoji.value.trim(), label: f.label.value.trim(), color: f.color.value,
+        messages: f.messages.value.split("\n").map((x) => x.trim()).filter(Boolean) };
+    });
+  }
+  function moodSync() {
+    moodAdd.disabled = moodRowsBox.children.length >= 8;
+    for (const row of moodRowsBox.children) row.mood.remove.disabled = moodRowsBox.children.length <= 1;
+  }
+  function fillMood() {
+    moodRowsBox.replaceChildren(...(now.moodCheckin?.moods || []).map(moodRow));
+    moodSync();
+    moodFilled = JSON.stringify(collectMood());
+  }
+  function moodPart() {
+    if (moodFilled === null || JSON.stringify(collectMood()) === moodFilled) fillMood();
+    return moodForm;
+  }
+  moodAdd.addEventListener("click", () => {
+    const row = moodRow();
+    moodRowsBox.append(row);
+    moodSync();
+    row.mood.emoji.focus();
+  });
+  moodForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (await send(moodSave, { action: "settings", settings: { moodCheckin: { moods: collectMood() } } }, t("staff.mood.done"))) fillMood();
+    // The list is drawn again after a save, which moves the form: focus goes back to its button.
+    if (moodForm.isConnected && (!document.activeElement || document.activeElement === document.body)) moodSave.focus();
+  });
+
   /* Drafts first, then the pages on the site by address, then retired pages made here. */
   const RANK = { draft: 0, live: 1, retired: 2 };
   function draw() {
     const shown = now.pages.filter((p) => p.state !== "retired" || p.made)
       .sort((a, b) => RANK[a.state] - RANK[b.state] || a.path.localeCompare(b.path));
-    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart(), me.canPublish && settingsPart()].filter(Boolean));
+    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart(), me.canPublish && settingsPart(), me.canPublish && moodPart()].filter(Boolean));
   }
   pagesChanged = () => { if (section.isConnected) load(); };
   load();

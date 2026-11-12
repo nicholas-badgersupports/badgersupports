@@ -35,7 +35,7 @@ import { publishRevision, currentRevision, purgeTags, listRevisions, readRevisio
 import { formTags, previewResponse } from "./pages.mjs";
 import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList } from "./structure.mjs";
 import { revisionEdits } from "./edits.mjs";
-import { SECTION_ACTIONS, laySettings } from "../../src/shared/structure.mjs";
+import { SECTION_ACTIONS, laySettings, layMood } from "../../src/shared/structure.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
 import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
@@ -197,8 +197,15 @@ async function signinQuotesRoute() {
   return json(200, { ok: true, quotes: await signinQuotes(connectConfig()) }, { "cache-control": "no-store" });
 }
 
+/* The check-in's set as published now: the build's, with a publisher's saved feelings laid over
+   them (settingsNow reads the published revision's structure), so a tap answers with the same
+   feelings the home page showed. */
+async function moodCfg() {
+  return layMood(serverContent().mood, await settingsNow());
+}
+
 async function moodRead() {
-  return json(200, { ok: true, ...(await moodCounts(chicagoDate())) });
+  return json(200, { ok: true, ...(await moodCounts(chicagoDate(), await moodCfg())) });
 }
 
 async function moodTap(req, _m, context) {
@@ -206,7 +213,7 @@ async function moodTap(req, _m, context) {
   const body = await readBody(req);
   await rateLimit(`mood:${connectionHash(req, context)}`, 30, 3600);
   const id = typeof body.get === "function" ? body.get("mood") : body.mood;
-  const r = await recordMood(String(id || ""));
+  const r = await recordMood(String(id || ""), new Date(), await moodCfg());
   if (asJson) return json(200, r);
   return page(200, { id: "pg-mood", path: "/", titleKey: "mood.pageTitle" }, (ctx) => html`<section class="mood mood--page band" aria-labelledby="mood-h"><div class="wrap">
   <h1 id="mood-h">${ctx.t("mood.pageTitle")}</h1>

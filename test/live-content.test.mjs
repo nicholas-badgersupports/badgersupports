@@ -118,6 +118,15 @@ test('photo proxy preserves version syntax and current producer eligibility with
   const head = await teamPhotoResponse(new Request(url, { method: 'HEAD' }), ID); assert.equal(head.status, 200); assert.equal((await head.arrayBuffer()).byteLength, 0);
   reply.publicTeam.people = []; res = await teamPhotoResponse(new Request(url), ID); assert.equal(res.status, 404); assert.equal(res.headers.get('netlify-cdn-cache-control'), 'no-store');
 });
+test('a sized photo request stays bounded and falls back to the original bytes when no resized copy can be had', async () => {
+  const plain = await teamPhotoResponse(new Request(`https://site.test/api/team-photo/${ID}?v=${VERSION}`), ID);
+  assert.equal(plain.headers.get('netlify-vary'), 'query=v|w');
+  const res = await teamPhotoResponse(new Request(`https://site.test/api/team-photo/${ID}?v=${VERSION}&w=512`, { headers: { accept: 'image/avif,image/webp,image/*' } }), ID);
+  assert.equal(res.status, 200);
+  /* This rig has no image CDN to resize with, so the original bytes are served under the original tag. */
+  assert.deepEqual(Buffer.from(await res.arrayBuffer()), Buffer.from(await plain.arrayBuffer()));
+  assert.equal(res.headers.get('etag'), plain.headers.get('etag'));
+});
 test('non-string identities are isolated before rendering or generating paths', () => {
   for (const value of [123, true, {}, []]) for (const field of ['id', 'slug']) {
     const mapped = mapTeam({ people: [{ ...PERSON, [field]: value }, PERSON] }); assert.equal(mapped.team.people.length, 1); assert.equal(mapped.team.people[0].slug, PERSON.slug);
@@ -156,7 +165,7 @@ test('the frozen fictional producer fixture renders incomplete profiles and vers
 });
 test('untrusted or repeated photo parameters and mismatched profile photos cannot reach a fetch', async () => {
   const before = calls.length;
-  for (const suffix of ['?v=invalid', '?v=' + VERSION + '&url=https://example.org', '?v=' + VERSION + '&v=' + VERSION, '?url=https://example.org']) assert.equal((await teamPhotoResponse(new Request(`https://site.test/api/team-photo/${ID}${suffix}`), ID)).status, 400);
+  for (const suffix of ['?v=invalid', '?v=' + VERSION + '&url=https://example.org', '?v=' + VERSION + '&v=' + VERSION, '?url=https://example.org', '?v=' + VERSION + '&w=999', '?v=' + VERSION + '&w=512&w=256', '?w=512&w=512']) assert.equal((await teamPhotoResponse(new Request(`https://site.test/api/team-photo/${ID}${suffix}`), ID)).status, 400);
   assert.equal(calls.length, before);
   reply.publicTeam.people = [{ ...PERSON, photo: { url: PHOTO.replace(ID, 'p' + '2'.repeat(24)) } }];
   const page = await (await get('/about/our-team/')).text(); assert.doesNotMatch(page, /api\/team-photo/);

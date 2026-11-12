@@ -113,6 +113,13 @@ export const teamRedirects = () => OLD_GROUPS.map((g) => `${TEAM_PATH}${g}/*  ${
 
 const publicPhotoSource = p => `/api/team-photo/${encodeURIComponent(p.photo.uploadId || p.id)}${p.photo.version ? `?v=${p.photo.version}` : ""}`;
 
+/* The same photo at a square width the proxy can serve resized (netlify/lib/live-team.mjs).
+   Cards offer three widths and the profile two, so a browser takes the smallest that stays
+   sharp at the size the photo is actually shown; the 512 copy is the plain fallback. */
+const CARD_WIDTHS = [256, 512, 800], PROFILE_WIDTHS = [512, 800];
+const sizedPhoto = (source, w) => `${source}${source.includes("?") ? "&" : "?"}w=${w}`;
+const photoSrcset = (source, widths) => widths.map((w) => `${sizedPhoto(source, w)} ${w}w`).join(", ");
+
 /* Selection and order are shared by directory cards and their request-local hints. */
 export const teamGroups = (team, groups) => {
   const people = publicPeople(team);
@@ -126,19 +133,28 @@ export function openingPortraits(ctx, blocks) {
   for (const block of blocks.filter(block => block.type === "team")) {
     for (const group of teamGroups(ctx.data.team, block.groups)) {
       const members = group.people;
-      return members.slice(0, 4).flatMap((person, index) => person.photo ? [{
-        href: publicPhotoSource(person), media: index < 2 ? null : "not all and (max-width: 860px)",
-      }] : []);
+      return members.slice(0, 4).flatMap((person, index) => {
+        if (!person.photo) return [];
+        const source = publicPhotoSource(person);
+        return [{
+          href: sizedPhoto(source, 512),
+          srcset: photoSrcset(source, CARD_WIDTHS), sizes: "(max-width: 860px) 45vw, 16rem",
+          media: index < 2 ? null : "not all and (max-width: 860px)",
+        }];
+      });
     }
   }
   return [];
 }
 
-/* Public profile photos stay under the bounded proxy; library fixture photos retain responsive variants. */
+/* Public profile photos stay under the bounded proxy, asked for at the widths the proxy can
+   serve resized; library fixture photos retain responsive variants. */
 export function personPhoto(ctx, p, options) {
   if (ctx.data.team?.source !== "connect") return picture(ctx, p.photo, options);
   const source = publicPhotoSource(p);
+  const srcset = photoSrcset(source, options.eager ? PROFILE_WIDTHS : CARD_WIDTHS);
+  const fallback = sizedPhoto(source, 512);
   const filterId = `portrait-${p.id}-${options.eager ? "profile" : "card"}`;
   const priority = options.eager ? "high" : null;
-  return html`<span class="live-portrait"><span class="monogram" aria-hidden="true">${initials(p.name) || "?"}</span><picture class="live-portrait-image"><img${attrs({ src: options.eager ? source : null, "data-src": options.eager ? null : source, "data-team-portrait": "", width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", fetchpriority: priority, decoding: "async" })}></picture><noscript><svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><defs><filter id="${filterId}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="${source}" x="0" y="0" width="400" height="400" preserveAspectRatio="xMidYMid slice"></feImage></filter></defs><rect width="400" height="400" filter="${`url(#${filterId})`}"></rect></svg></noscript></span>`;
+  return html`<span class="live-portrait"><span class="monogram" aria-hidden="true">${initials(p.name) || "?"}</span><picture class="live-portrait-image"><img${attrs({ src: options.eager ? fallback : null, srcset: options.eager ? srcset : null, "data-src": options.eager ? null : fallback, "data-srcset": options.eager ? null : srcset, sizes: options.sizes || null, "data-team-portrait": "", width: 400, height: 400, alt: "", loading: options.eager ? null : "lazy", fetchpriority: priority, decoding: "async" })}></picture><noscript><svg viewBox="0 0 400 400" aria-hidden="true" focusable="false"><defs><filter id="${filterId}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="${fallback}" x="0" y="0" width="400" height="400" preserveAspectRatio="xMidYMid slice"></feImage></filter></defs><rect width="400" height="400" filter="${`url(#${filterId})`}"></rect></svg></noscript></span>`;
 }

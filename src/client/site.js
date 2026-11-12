@@ -13,6 +13,9 @@ function activatePortrait(image, eager = true) {
   if (!source) return;
   portraitObserver?.unobserve(image);
   image.removeAttribute("data-src");
+  /* The width choices go on before the address, so the browser picks from them, not the fallback. */
+  const srcset = image.getAttribute("data-srcset");
+  if (srcset) { image.srcset = srcset; image.removeAttribute("data-srcset"); }
   if (eager) image.loading = "eager";
   image.src = source;
   if (image.complete) revealPortrait(image);

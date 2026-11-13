@@ -1658,7 +1658,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    the target, under the 44px ideal, the trade Connect's launcher makes too. It rests in the
    Safety Exit's own corner (the pill's 1rem seat, which .edit-ui takes above), at its left. */
 .edit-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; min-width: 36px; min-height: 36px; padding: 0; border: 0; border-radius: 50%; background: var(--ink); color: var(--cream); cursor: pointer; box-shadow: var(--menu-shadow); transition: background-color var(--t) var(--ease-out); }
-.edit-toggle:hover { background: #242222; }
+.edit-toggle:hover { background: var(--ink-deep); }
 .edit-toggle .ic { width: 18px; height: 18px; }
 .edit-toggle:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 .edit-toggle[disabled] { opacity: .55; cursor: not-allowed; }

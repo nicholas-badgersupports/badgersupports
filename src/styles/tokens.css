@@ -34,6 +34,7 @@
   --red: #B60000;
   --cream: #F2EBE1;
   --ink: #393737;
+  --ink-deep: #242222;         /* the ink darkened: the edit button's hover, Connect's deeper charcoal */
   --khaki: #A99A6F;            /* decoration only: as text it fails 4.5 on the cream */
   --blue: #0479A8;             /* links on white; on the textured cream it measures 3.69, so --link */
 

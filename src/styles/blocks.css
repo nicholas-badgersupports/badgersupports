@@ -294,16 +294,14 @@
 .week-empty span { display: block; color: var(--muted); }
 .week-foot { margin-top: var(--s4); font-weight: 700; }
 
-/* The week's photos: a small carousel in the card's first column, in the blank the short head
-   leaves beside the tall timetable. It takes its own row at the foot of that column — level
-   with the end of Coming Up — while the timetable spans both rows, so the rows keep their
-   places and the card's height is the timetable's own, exactly as before the photos came.
-   One photo at a time; the track scrolls sideways by touch, and the controls (shown with
-   the script) walk it a photo at a time. */
-.week-card:has(> .week-photos) { grid-template-rows: 1fr auto; }
-.week-card:has(> .week-photos) .week-head { grid-column: 1; grid-row: 1; }
-.week-card:has(> .week-photos) .week-body { grid-column: 2; grid-row: 1 / -1; }
-.week-photos { grid-column: 1; grid-row: 2; min-width: 0; }
+/* The week's photos: a carousel directly below the timetable card, flush against its foot —
+   no gap — and spanning the wrap's width like the card above it. The photos are of people
+   at the Hub, so on desktop the crop is a wide band (3:1) and each photo's focal point holds
+   the faces; on a phone the crop is the fuller 3:2. The photo's top corners are square so
+   it seats against the card; its bottom corners keep the card radius. One photo at a time;
+   the track scrolls sideways by touch, and the controls (shown with the script) walk it
+   a photo at a time. */
+.week-photos { margin-top: 0; min-width: 0; }
 .carousel-track {
   display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
   overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
@@ -312,6 +310,7 @@
 .carousel-track::-webkit-scrollbar { display: none; }
 .carousel-slide { scroll-snap-align: start; }
 .carousel-slide .photo { aspect-ratio: 3 / 2; border-radius: var(--r-card); }
+.week-photos .carousel-slide .photo { aspect-ratio: 3 / 1; border-radius: 0 0 var(--r-card) var(--r-card); }
 .carousel-controls { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); }
 .js .carousel-controls { display: flex; }
 .carousel-controls > button {
@@ -340,8 +339,7 @@
 
 @media (max-width: 860px) {
   .week-card { grid-template-columns: 1fr; gap: var(--s4); padding: var(--s4); }
-  .week-card:has(> .week-photos) { grid-template-rows: none; }
-  .week-card:has(> .week-photos) .week-head, .week-card:has(> .week-photos) .week-body, .week-card:has(> .week-photos) .week-photos { grid-column: auto; grid-row: auto; }
+  .week-photos .carousel-slide .photo { aspect-ratio: 3 / 2; }
   .week-head { position: static; }
   .day { grid-template-columns: 3.75rem minmax(0, 1fr); gap: var(--s2); }
   .dateblock .dom { font-size: 2rem; }

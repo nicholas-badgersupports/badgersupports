@@ -171,7 +171,7 @@ ${description ? html`<meta name="twitter:description" content="${description}">`
 <link rel="preload" href="/assets/fonts/montserrat-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
 ${preload}
-${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: photo.href, media: photo.media })}>`)}
+${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: photo.href, imagesrcset: photo.srcset || null, imagesizes: photo.sizes || null, media: photo.media })}>`)}
 <link rel="stylesheet" href="${a.css}">
 <script>${raw(INLINE_JS)}</script>
 <script type="module" src="${a.js["site.js"]}"></script>

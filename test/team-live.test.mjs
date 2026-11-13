@@ -31,7 +31,7 @@ const BASE = REAL || STANDALONE;
 const RULES = readFeedRules(ROOT);
 const RESOURCES = JSON.parse(fs.readFileSync(path.join(ROOT, "content/fixtures/resources.json"), "utf8")).resources;
 const OUT = path.join(ROOT, "local/test-build-live-team");
-const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j9l8AAAAASUVORK5CYII=", "base64");
+const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAT0lEQVR42u3PQQkAAAgEsMtiB+Pa1Qi+hcEKLFP9WgQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQELgtAfEDigk9u5gAAAABJRU5ErkJggg==", "base64");
 let reply = structuredClone(BASE), down = false, photoKind = "ok", photoBytes = PNG, calls = [], photoCalls = [];
 const cfg = {
   url: "https://home.badgersupports.org", keyId: "fictional-team-key", secret: "fictional-public-team-secret-32-chars-long",
@@ -86,7 +86,7 @@ test("real Connect handler export passes through the signed public reader and re
   for (const p of REAL.people) assert.match(body, new RegExp(`/about/our-team/${p.slug}/`));
   assert.match(body, /Team Member/);
   assert.doesNotMatch(body, /undefined|null|payrollSlot|workdayId|public_profile_settings/);
-  assert.match(body, /src="\/api\/team-photo\/p[0-9a-f]{24}\?v=[0-9a-f]{32}"/);
+  assert.match(body, /src="\/api\/team-photo\/p[0-9a-f]{24}\?v=[0-9a-f]{32}(&amp;w=\d+)?"/);
   assert.doesNotMatch(body, /src="https:\/\/home\.badgersupports\.org/);
 });
 
@@ -269,7 +269,7 @@ test("opening portrait hints follow current rendered card positions without pers
   assert.equal(selected.length, 3);
   for (const [index, person] of [reply.people[2], reply.people[4], reply.people[5]].entries()) {
     assert.ok(selected[index].includes(person.id), "hints follow the same group and card order as the rendered links");
-    assert.ok(body.includes(`data-src="/api/team-photo/${person.id}?v=${VERSION}"`));
+    assert.ok(body.includes(`data-src="/api/team-photo/${person.id}?v=${VERSION}&amp;w=512"`));
     assert.match(selected[index], /rel="preload" as="image"/);
     assert.doesNotMatch(selected[index], /fetchpriority=/);
     if (index) assert.match(selected[index], /media="not all and \(max-width: 860px\)"/);

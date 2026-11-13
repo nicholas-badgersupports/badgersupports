@@ -224,6 +224,21 @@
 .place span { display: block; color: var(--muted); font-size: var(--fs-small); }
 .place a { font-weight: 700; font-size: var(--fs-small); }
 
+/* With the week's photos under it, the Hub card and the carousel are one element:
+   one 2px line (the house card's edge) runs around the pair, rounded at the very
+   top and the very bottom only. At the seam both halves are square and neither
+   carries a border, so the pale card flows into the photo with no bump. The
+   controls stay below the frame, as they were. */
+.place:has(+ .week-photos) {
+  border: 2px solid var(--line); border-bottom: 0;
+  border-radius: var(--r-card) var(--r-card) 0 0;
+}
+.place:has(+ .week-photos) + .week-photos .carousel-track {
+  border: 2px solid var(--line); border-top: 0;
+  border-radius: 0 0 var(--r-card) var(--r-card);
+}
+.place:has(+ .week-photos) + .week-photos .carousel-slide .photo { border-radius: 0; }
+
 .days { list-style: none; border-top: var(--rule-line); }
 .day { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--s4); padding-block: var(--s3); border-bottom: var(--rule-line); }
 .dateblock { display: grid; justify-items: center; align-content: start; text-align: center; line-height: 1; padding-top: .2rem; }

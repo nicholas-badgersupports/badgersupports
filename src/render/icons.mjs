@@ -29,6 +29,13 @@ const PARTS = {
   badge: `<path d="M8 2.5l4 6 4-6"/><rect x="5.5" y="8.5" width="13" height="13" rx="1.5"/><circle cx="12" cy="13.5" r="2"/><path d="M9.3 18h5.4"/>`,
   question: `<circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.3-.9.8-.9 1.4v.5"/><path d="M12 16.9v.1"/>`,
   face: `<path d="M5.75 10.55A1.45 0.95 0 0 1 8.65 10.55"/><path d="M15.35 10.55A1.45 0.95 0 0 1 18.25 10.55"/><path d="M6.6 14.2c2 1.3 3.6 2.2 5.4 2.2s3.4-.9 5.4-2.2"/>`,
+  /* Smile options 2-5: variants of "face" drawn for the owner to choose between (hero
+   * experiment, 12 Nov 2026). Every variant spans the same 5.75-18.25 of the grid, stroke
+   * included 14.6 units, so each lands at the centre word's width in the same .you-face box. */
+  face2: `<path d="M6.8 9.9v.1"/><path d="M17.2 9.9v.1"/><path d="M7.6 14.4c1.6 1 2.9 1.5 4.4 1.5s2.8-.5 4.4-1.5"/>`,
+  face3: `<path d="M5.75 10.55A1.45 0.95 0 0 1 8.65 10.55"/><path d="M15.35 10.55A1.45 0.95 0 0 1 18.25 10.55"/><path d="M6.2 13.9c2.2 1.7 3.9 2.6 5.8 2.6s3.6-.9 5.8-2.6"/>`,
+  face4: `<path d="M6.8 9.9v.1"/><path d="M17.2 9.9v.1"/><path d="M6.85 12.35c.45.35.95.5 1.45.55"/><path d="M15.7 12.9c.5-.05 1-.2 1.45-.55"/><path d="M9.7 14.8c.85.65 1.65 1.1 2.3 1.1s1.45-.45 2.3-1.1"/>`,
+  face5: `<path d="M5.75 10.9A1.45 1.45 0 0 1 8.65 10.9"/><path d="M15.35 10.9A1.45 1.45 0 0 1 18.25 10.9"/><path d="M8.8 14h6.4a3.2 3.2 0 0 1-6.4 0Z"/>`,
   plus: `<path d="M12 5v14"/><path d="M5 12h14"/>`,
   star: `<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>`,
   check: `<path d="m5 12.5 4.5 4.5L19 7.5"/>`,

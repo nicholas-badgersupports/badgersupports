@@ -1,8 +1,10 @@
 /* The icon set. Every icon is drawn here on a 24-unit grid, in strokes, and each part of an icon
  * is its own element so it can move by itself: the pin drops and bounces, the envelope's flap
  * opens, the scissors snip, the calendar's page flips. The moves are in src/styles/motion.css;
- * src/client/site.js plays an icon's move when its link is pointed at or pressed (as Badger SPILL
- * does with its own icons), and nothing moves for anyone who asks for less motion.
+ * src/client/site.js plays an icon's move only from that icon — when it first comes into view,
+ * when the icon itself is pointed at, when the keyboard reaches its control, or when its own
+ * button is pressed (owner, 12 Nov 2026) — and nothing moves for anyone who asks for less
+ * motion.
  *
  * The hand is the organisation's own mark, not a drawing: the brand file itself, heart and all.
  * "hand" is the red hand with its white heart, for cream and white grounds; "hand-cream" is the

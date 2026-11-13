@@ -1,13 +1,18 @@
 /* Icons, the "go" link, and every move on the site.
  *
- * Moves follow Badger SPILL (its base.css, "icon presses") and Connect's motion rules: each icon
- * moves once, its own way, when its link is pointed at or pressed (src/client/site.js adds
- * .i-press and takes it off when the move ends); a few things say hello once when the page opens
- * and then rest. Nothing here loops. The one loop on the site is the homepage hero's drift and float
- * in blocks.css, which the owner asked for on 20 Oct 2026 and Connect's rules do not allow (see
- * docs/DECISIONS.md). It runs only once src/client/hero.js starts it, and that file's Pause button
- * stops it (owner, 20 Oct 2026). Nothing moves at all for anyone who asks for less motion: the last rule in
- * base.css switches every animation and transition off.
+ * Every icon that has a move keeps it (owner, 12 Nov 2026, correcting the same day's
+ * narrowing, which had made most icons still): what is narrowed is when a move may start,
+ * never which icons may move. A move starts only from its own icon — once when the icon
+ * first comes into view, again when a mouse is over the icon itself, when the keyboard
+ * reaches its control, or when its own button or summary is pressed (src/client/site.js
+ * adds .i-press and takes it off when the move ends). Pointing at a link's words, pressing
+ * a link, or clicking anywhere else starts nothing. A few things say hello once when the
+ * page opens and then rest. Nothing here loops. The one loop on the site is the homepage
+ * hero's drift and float in blocks.css, which the owner asked for on 20 Oct 2026 and
+ * Connect's rules do not allow (see docs/DECISIONS.md). It runs only once src/client/hero.js
+ * starts it, and that file's Pause button stops it (owner, 20 Oct 2026). Nothing moves at
+ * all for anyone who asks for less motion: the last rule in base.css switches every
+ * animation and transition off.
  */
 
 /* ---------- icons ---------- */
@@ -50,7 +55,13 @@
 .btn .ic-hand, .door-ic .ic-hand { width: auto; object-fit: contain; }
 .btn .ic-hand { height: 1.45em; margin-block: -.15em; }
 
-/* ---------- moves (one each; .i-press is added and removed by site.js) ---------- */
+/* ---------- moves (one each; .i-press is added and removed by site.js) ----------
+   Every icon kind with a move is here. Most take the plain pop below; the kinds whose
+   parts move on their own — the leaving arrow, the envelope, the speech bubbles, the
+   scissors, the bulb, the tick — are named in the second rule, which stills the whole
+   icon so only its parts move, and each has its own rule further down. The plus has no
+   move to restore: its turn into a minus is a transition tied to its answer opening,
+   not an animation. The artwork never changed; only these rules did. */
 [data-i].i-press { animation: i-pop .42s cubic-bezier(.3, 1.5, .5, 1); }
 [data-i].i-press:is([data-i="out"], [data-i="mail"], [data-i="chat"], [data-i="scissors"], [data-i="bulb"], [data-i="check"], [data-i="plus"]) { animation: none; }
 @keyframes i-pop { 35% { scale: .78; } 70% { scale: 1.14; } }

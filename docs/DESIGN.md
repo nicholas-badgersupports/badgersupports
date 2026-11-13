@@ -222,6 +222,9 @@ None is ever `#`.
 
 - `bss-lockup-red.png` and `bss-lockup-white.png`: the lockup for light and red grounds.
 - `bss-hand-red.png` and `bss-hand-cream.png`: the hand alone.
+- `bss-hex.svg`, `favicon-64.png` and `apple-touch-icon.png`: the site icon — the cream hand centred in a
+  brand-red hexagon, drawn from `bss-hand-cream.png`. It is the favicon every page carries; the hand files
+  themselves stay the header mark and the icon set's hands.
 - `paper-coldpress.jpg` and `paper-crumpled.jpg`, the brand's two CC0 papers ([Paper](#paper)), with
   `TEXTURES-LICENCE.txt`.
 - `spill-logo-wide-*.webp`: SPILL's own logo, used only on its card (`src/render/spill.mjs`).

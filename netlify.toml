@@ -1,8 +1,11 @@
 # www.badgersupports.org — Netlify configuration. Nothing here publishes or turns anything on. The
 # owner publishes from the laptop with ../PUBLISH-WEBSITE-2026-10-23.command, which runs the production
 # build below on the laptop through Netlify's command line (`--context production`); that also creates the
-# Netlify Database and applies netlify/database/migrations/. The repository is never linked to Netlify, so
-# nothing builds on Netlify's machines.
+# Netlify Database and applies netlify/database/migrations/. The site IS linked to this repository
+# (Netlify holds it as a git site following the main branch), so a push would start a build on Netlify's
+# machines if anything let it; the ignore line under [build] below is what does not let it. Publishing is
+# the laptop flow only — a build on Netlify's machines has no photo originals and no publish key, and by
+# design it stops and names what is missing rather than publishing something lesser.
 #
 # Two builds (owner, 23 Oct 2026: "have it be the live site, I want it to be actually connected to Connect"):
 #   production  `--production`: the live site. Events and resources are read from Connect when it builds
@@ -21,6 +24,14 @@
   command = "node ops/build.mjs --fetch-media"
   publish = "dist"
   functions = "netlify/functions"
+  # No build ever runs on Netlify's machines (owner's model above: releases are built on the laptop, which
+  # holds the photo originals). The ignore command is the switch Netlify's own build system reads before
+  # building a pushed commit: it always succeeds, so every build a push starts is set aside at once, before
+  # anything is built or published. It is read only by that system — the laptop's own builds and deploys
+  # through Netlify's command line do not consult it — and [skip netlify] in a commit message stays in use
+  # as well, as a second, visible signal. Set 13 November 2026, after a push-triggered build failed on
+  # Netlify's machines against settings this repository does not carry.
+  ignore = "true"
 
 [context.production]
   command = "node ops/build.mjs --production --fetch-media"

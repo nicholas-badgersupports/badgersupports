@@ -16,7 +16,7 @@ const FINISH = `import { finish } from ${JSON.stringify(url.pathToFileURL(path.j
 /* A result line as each suite prints it. A suite added to SUITES without a shape here fails the tests below. */
 function result(suite, ok, i) {
   if (suite.tag === "shots") return `${`/page-${i}/`.padEnd(32)} 1280px     12 KB loaded (3 KB images)${ok ? "" : "  SCROLLS SIDEWAYS by 4px"}`;
-  if (suite.tag === "a11y" || suite.tag === "interact") return `${ok ? "  ok  " : "  FAIL"} check ${i}`;
+  if (suite.tag === "a11y" || suite.tag.startsWith("interact")) return `${ok ? "  ok  " : "  FAIL"} check ${i}`;
   throw new Error(`no result-line shape for the suite "${suite.tag}" in test/suites.test.mjs`);
 }
 const report = (suite, n, failing = 0) => [
@@ -31,12 +31,12 @@ function fakeSuite(ending) {
   fs.writeFileSync(file, `${ending === "finish" ? FINISH : ""}
 const line = "x".repeat(140);
 for (let i = 0; i < 20000; i++) console.log(\`  ok   check \${i} \${line}\`);
-console.log("interact: all 20000 passed");
+console.log("${interact.tag}: all 20000 passed");
 ${ending === "finish" ? "finish(0);" : "process.exit(0);"}
 `);
   return { file, dir };
 }
-const interact = SUITES.find((s) => s.tag === "interact");
+const interact = SUITES.find((s) => s.tag.startsWith("interact"));
 
 test("a suite that ends with finish() keeps its whole report in a pipe, and check.mjs passes it", async () => {
   const { file, dir } = fakeSuite("finish");
@@ -44,7 +44,7 @@ test("a suite that ends with finish() keeps its whole report in a pipe, and chec
     const r = await runSuite(file, { cwd: ROOT, env: process.env });
     const lines = r.out.trim().split("\n");
     assert.equal(lines.length, 20001, `${lines.length} of 20001 lines arrived through the pipe`);
-    assert.equal(lines.at(-1), "interact: all 20000 passed");
+    assert.equal(lines.at(-1), `${interact.tag}: all 20000 passed`);
     assert.equal(r.status, 0);
     assert.deepEqual(judgeSuite(interact, r).problems, []);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
@@ -108,7 +108,12 @@ const SHORT_EXITS = {
   "contract.mjs": "one line",
   "courses.mjs": "one failure line on a failed pull",
 };
-const ENDS_THROUGH_FINISH = ["shots.mjs", "a11y.mjs", "interact.mjs", "check.mjs", "editable.mjs", "build.mjs"];
+const ENDS_THROUGH_FINISH = ["shots.mjs", "a11y.mjs", "check.mjs", "editable.mjs", "build.mjs",
+  /* The behaviour suite's twelve group files (C-40): each prints a report and ends through
+     finish(). The shared harness is a module, not a command, and ends nothing. */
+  "interact-menu.mjs", "interact-uploads.mjs", "interact-workshop.mjs", "interact-staff.mjs",
+  "interact-events.mjs", "interact-resources.mjs", "interact-pages.mjs", "interact-forms.mjs",
+  "interact-search.mjs", "interact-email.mjs", "interact-safety.mjs", "interact-mood.mjs"];
 
 test("every command in ops/ that prints a report ends through finish(), and no other process.exit() is off the list", () => {
   const code = (f) => fs.readFileSync(path.join(OPS, f), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");

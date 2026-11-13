@@ -14,6 +14,16 @@ import { isDirect } from "./direct.mjs";
  *   - a t("key") that the registry lacks, or that a browser script uses without CLIENT_TEXT
  *     sending it to the page.
  * Keys nobody uses are listed as a warning, not a failure.
+ *
+ * An attribute is not a word (13 November 2026, proposal C-40, deciding the standing red the
+ * audit recorded as P4). A nested template can be only an attribute — cards.mjs renders
+ * html` tabindex="0"` for its row layout — and a bare fragment has no tag for the scanner to
+ * strip, so the attribute's name reached the text test and failed every full check while
+ * naming no word a visitor reads. The scan strips attribute assignments from a template's
+ * text before judging it, as a category: any attribute, not this one string. What it does
+ * not strip is an attribute whose value a person hears — aria-label, alt, title and
+ * placeholder are still judged above, fragment or not. The calibration in test/text.test.mjs
+ * proves both directions.
  */
 
 import fs from "node:fs";
@@ -83,7 +93,14 @@ function templateProblems(file, src) {
     }
     const text = tpl.replace(/<!--[\s\S]*?-->/g, "").replace(/<[^>]*>/g, "\u0002");
     for (const seg of text.split("\u0002")) {
-      const words = seg.replace(/\u0001/g, " ").replace(/&[a-z]+;|&#\d+;/g, " ").trim();
+      /* Attribute assignments are markup, not words (see the header): in a tag they are
+         stripped with it; in a bare nested fragment they survive to here, so strip them as
+         a category before judging what is left as text. */
+      const words = seg.replace(/\u0001/g, " ")
+        .replace(/\b[a-zA-Z][a-zA-Z0-9-]*="[^"]*"/g, " ")
+        .replace(/\b[a-zA-Z][a-zA-Z0-9-]*='[^']*'/g, " ")
+        .replace(/\b[a-zA-Z][a-zA-Z0-9-]*=[^\s"'=]+/g, " ")
+        .replace(/&[a-z]+;|&#\d+;/g, " ").trim();
       if (WORD.test(words)) out.push(`${file}: text "${words.slice(0, 60)}"`);
     }
   }

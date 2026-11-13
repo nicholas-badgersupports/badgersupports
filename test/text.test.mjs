@@ -37,6 +37,17 @@ test("the editable scan catches a planted word (calibration)", () => {
   assert.equal(sourceProblems("x.mjs", 'const a = html`<p>${t("x.y")}</p>`;').length, 0);
 });
 
+test("an attribute is not a word, and a word beside one is still caught (calibration, C-40)", () => {
+  // A nested template that is only an attribute — cards.mjs's row layout — names no word a
+  // visitor reads, and no longer fails the scan (the standing red decided under C-40).
+  assert.equal(sourceProblems("x.mjs", 'const a = html`<ul${x ? html` tabindex="0"` : ""}></ul>`;').length, 0);
+  // The same fragment beside real words: the words are still caught, once.
+  assert.equal(sourceProblems("x.mjs", 'const a = html`<ul${x ? html` tabindex="0"` : ""}>Hello there</ul>`;').length, 1);
+  // An attribute a person hears still fails, even as a bare fragment with no tag around it:
+  // the fix is a category (assignments are markup), not a pass for attribute values.
+  assert.equal(sourceProblems("x.mjs", 'const a = html` aria-label="Close menu"`;').length, 1);
+});
+
 test("a published text edit reaches the built page", async () => {
   const out = path.join(ROOT, "local", "test-build-text");
   await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", textEdits: { "form.send": "Send my request", "header.menu": "Browse" } });

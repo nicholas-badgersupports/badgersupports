@@ -50,7 +50,7 @@ test('approved history is read from Connect on each draw, stays runtime-only and
  let alumniReply={ok:true,schema:'bss.alumni-history/1',groups:[]},down=false;
  const cfg={url:'https://home.badgersupports.org',keyId:'fixture',secret:'x'.repeat(40),fetch:async(url,init)=>{if(down)throw TypeError('fictional outage');return {json:async()=>({publicAlumniHistory:alumniReply,publicEvents:{ok:true,schema:1,events:[],weekly:[]},publicResourceExport:{ok:true,schema:1,resources},publicTeam:{ok:true,schema:'bss.team/1',people:[]},publicWallNotes:{ok:true,schema:'bss.wall/1',notes:[]}}[JSON.parse(init.body).action])}}};
  const out=path.join(ROOT,'local/test-alumni-runtime');await build({production:true,connectConfig:cfg,out,serverDir:path.join(out,'_server'),media:false,today:'2026-11-03'});
- const server=JSON.parse(fs.readFileSync(path.join(out,'_server/server.json')));assert.equal(server.render.alumniSource.enabled,false);assert.doesNotMatch(fs.readFileSync(path.join(out,'join/alumni/index.html'),'utf8'),/River Example|Casey Sample/);
+ const server=JSON.parse(fs.readFileSync(path.join(out,'_server/server.json')));assert.equal(server.render.alumniSource.enabled,true);assert.doesNotMatch(fs.readFileSync(path.join(out,'join/alumni/index.html'),'utf8'),/River Example|Casey Sample/);
  server.render.alumniSource.enabled=true;useContent(server);useConnect(cfg);useDist(out);useStore(memoryStore());
  alumniReply={ok:true,...prepareHistory(review()).result};
  const get=()=>handlePage(new Request('https://site.test/join/alumni/'),{today:'2026-11-03'});

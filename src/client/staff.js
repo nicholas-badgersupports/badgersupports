@@ -259,7 +259,7 @@ function formCard(f, connect) {
   return card;
 }
 
-function formsSection(me) {
+function formsSection(me, onData) {
   const list = el("ul", { className: "staff-forms" });
   const setupPlace = el("div");
   const setup = el("button", { type: "button", className: "btn", textContent: t("staff.setup.start"), hidden: true });
@@ -287,6 +287,8 @@ function formsSection(me) {
     if (!r.forms.length) list.replaceChildren(el("li", { textContent: t("staff.forms.empty") }));
     off.hidden = r.connect;
     retry.hidden = !r.connect || !r.forms.some((f) => f.delivery.pending || f.delivery.failed);
+    /* The overview hears what the forms are carrying: answers waiting or failed, or no Connect at all. */
+    onData?.({ connect: !!r.connect, pending: r.forms.reduce((n, f) => n + (f.delivery?.pending || 0), 0), failed: r.forms.reduce((n, f) => n + (f.delivery?.failed || 0), 0) });
   }
   retry.addEventListener("click", async () => {
     if (isBusy(retry)) return;
@@ -546,7 +548,7 @@ function sectionsBox(me, changed) {
   };
 }
 
-function pagesSection(me) {
+function pagesSection(me, onData) {
   const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
   const problem = el("div", { hidden: true });
   const preview = previewBox();
@@ -570,7 +572,6 @@ function pagesSection(me) {
     if (!section.isConnected) return;
     if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
     now = r.body;
-    syncSettings();
     draw();
   }
   /* Send one change; on success the list is drawn again from the server. Returns whether it saved. */
@@ -699,6 +700,49 @@ function pagesSection(me) {
     return part;
   }
 
+  /* Drafts first, then the pages on the site by address, then retired pages made here. */
+  const RANK = { draft: 0, live: 1, retired: 2 };
+  function draw() {
+    const shown = now.pages.filter((p) => p.state !== "retired" || p.made)
+      .sort((a, b) => RANK[a.state] - RANK[b.state] || a.path.localeCompare(b.path));
+    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart()].filter(Boolean));
+    /* The overview hears how many pages are still drafts. */
+    onData?.({ drafts: now.pages.filter((p) => p.state === "draft").length });
+  }
+  pagesChanged = () => { if (section.isConnected) load(); };
+  load();
+  return section;
+}
+
+/* ---------- settings ---------- */
+
+function settingsSection(me) {
+  const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
+  const section = el("section", { className: "staff-part" },
+    el("h2", { id: "staff-settings-h", textContent: t("staff.settings.title") }), body);
+  section.setAttribute("aria-labelledby", "staff-settings-h");
+  let now = null;
+
+  /* `where`: the box a refusal is shown in. */
+  const show = (box, words, where) => { where.replaceChildren(box); where.hidden = false; say(words); };
+  function failed(r, where) {
+    if (r.status === 409) return show(noteBox(t("staff.pages.conflict")), t("staff.pages.conflict"), where);
+    if (r.status === 422 || r.status === 400) { const w = t(`staff.pages.error.${PAGE_ERRORS[r.body.error] || "failed"}`); return show(noteBox(w), w, where); }
+    const [box, words] = r.status === 0 ? [noteBox(t("staff.pages.error.failed")), t("staff.pages.error.failed")] : refused(r);
+    return show(box, words, where);
+  }
+  async function load() {
+    const r = await call("/api/staff/pages").catch(offline);
+    if (!section.isConnected) return;
+    if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
+    now = r.body;
+    syncSettings();
+    draw();
+  }
+  function draw() {
+    body.replaceChildren(settingsPart());
+  }
+
   /* The site's settings, a publisher's: its name, search description and accessibility email, saved together as one
      change. The fields are made once, so what was typed stays through a refusal and through the list being drawn again;
      they take the saved values only when first drawn and after a save that lands. The part keeps its own version token
@@ -706,7 +750,9 @@ function pagesSection(me) {
      each shown under its field when it differs from what the fields started with, and only then does the token move to
      theirs, so Save Settings again replaces them knowingly. A refusal with nothing new to show (settings already seen,
      or back to what the fields started with: another part's change) is sent again once with the new token. A list drawn
-     again moves the token only when its settings are the ones already seen. */
+     again moves the token only when its settings are the ones already seen. The settings live with the
+     pages in the server's answer, so this part in its own view reads that answer for itself, and after a save
+     tells the pages part to draw again: a save here moves the version the pages part's changes name. */
   const settingsProblem = el("div", { hidden: true });
   const siteName = textInput();
   const siteDescription = el("textarea", { rows: 4 });
@@ -724,7 +770,7 @@ function pagesSection(me) {
     return [k, line];
   }));
   const settingsForm = el("form", { className: "staff-form staff-settings", noValidate: true },
-    el("h3", { textContent: t("staff.settings.title") }), settingsProblem, ...Object.values(settingsFields),
+    settingsProblem, ...Object.values(settingsFields),
     el("div", { className: "staff-actions" }, settingsSave));
   const valuesOf = (site) => ({ name: site?.name || "", description: site?.description || "", accessibilityEmail: site?.accessibilityEmail || "" });
   const sameValues = (a, b) => SETTINGS.every(([k]) => a[k] === b[k]);
@@ -764,13 +810,14 @@ function pagesSection(me) {
         show(noteBox(t("staff.pages.error.failed")), t("staff.pages.error.failed"), settingsProblem);
       } else show(noteBox(t("staff.settings.conflict")), t("staff.settings.conflict"), settingsProblem);
       await load();
+      pagesChanged();
       return;
     }
     if (r.status !== 200) { failed(r, settingsProblem); return; }
-    problem.hidden = true;
     settingsProblem.hidden = true;
     say(r.body.publishError ? t("staff.edit.updateFailed") : t("staff.settings.done"));
     published();
+    pagesChanged();
     await load();
     fillSettings();
   }
@@ -785,14 +832,6 @@ function pagesSection(me) {
     return settingsForm;
   }
 
-  /* Drafts first, then the pages on the site by address, then retired pages made here. */
-  const RANK = { draft: 0, live: 1, retired: 2 };
-  function draw() {
-    const shown = now.pages.filter((p) => p.state !== "retired" || p.made)
-      .sort((a, b) => RANK[a.state] - RANK[b.state] || a.path.localeCompare(b.path));
-    body.replaceChildren(...[me.canEdit && addForm, el("ul", { className: "staff-forms" }, ...shown.map(card)), me.canPublish && menuPart(), me.canPublish && settingsPart()].filter(Boolean));
-  }
-  pagesChanged = () => { if (section.isConnected) load(); };
   load();
   return section;
 }
@@ -1065,16 +1104,100 @@ function before(mode) {
   if (quote) quote.hidden = !quote.textContent || mode !== "signIn";
 }
 
+/* ---------- overview ---------- */
+
+/* The landing view, in SPILL's Today shape: what needs attention first, in the order it blocks the
+   site, each line the whole way into the view that deals with it; then a card for every other view
+   this account may use. The session note already carries the words state; the forms and pages parts
+   report what they find as they load (answers waiting or failed, pages still drafts) through the
+   two notes returned here, and the list is drawn again whenever one lands. An account with no tool
+   at all gets the standing note instead, where it stood before. */
+function overviewSection(me, go, offered, bare) {
+  const TITLES = { forms: "staff.forms.title", words: "staff.edit.title", pages: "staff.pages.title",
+    rooms: "staff.rooms.title", versions: "staff.versions.title", settings: "staff.settings.title" };
+  const LINES = { forms: t("staff.overview.tool.forms"), words: t("staff.overview.tool.words"), pages: t("staff.overview.tool.pages"),
+    rooms: t("staff.overview.tool.rooms"), versions: t("staff.overview.tool.versions"), settings: t("staff.overview.tool.settings") };
+  const found = { deliveries: null, drafts: null };
+  const needs = el("div", { className: "staff-needs" });
+  const draw = () => {
+    if (bare) { needs.replaceChildren(el("p", { className: "staff-note", textContent: t("staff.nothing") })); return; }
+    const items = [];
+    if (me.publishError) items.push(["words", t("staff.edit.updateFailed")]);
+    const d = found.deliveries;
+    if (d && !d.connect) items.push(["forms", t("staff.delivery.off")]);
+    else if (d) {
+      if (d.failed) items.push(["forms", t(d.failed === 1 ? "staff.overview.failedSend.one" : "staff.overview.failedSend.other", { n: d.failed })]);
+      if (d.pending) items.push(["forms", t(d.pending === 1 ? "staff.overview.waitingSend.one" : "staff.overview.waitingSend.other", { n: d.pending })]);
+    }
+    if (me.waiting) items.push(["words", t(me.waiting === 1 ? "staff.edit.waiting.one" : "staff.edit.waiting.other", { n: me.waiting })]);
+    if (found.drafts) items.push(["pages", t(found.drafts === 1 ? "staff.overview.drafts.one" : "staff.overview.drafts.other", { n: found.drafts })]);
+    needs.replaceChildren(...(items.length ? items.map(([view, line]) => {
+      const a = el("a", { className: "staff-need", href: `#${view}` },
+        el("span", { textContent: line }), el("span", { className: "staff-need-go", textContent: t(TITLES[view]) }));
+      a.addEventListener("click", (e) => { e.preventDefault(); go(view); });
+      return a;
+    }) : [el("div", { className: "staff-clear" },
+      el("p", { textContent: t("staff.overview.clear") }),
+      ...(offered.some(([id]) => id === "words") ? [el("p", { className: "staff-note", textContent: updateLine(me) })] : []))]));
+  };
+  const cards = el("div", { className: "staff-tools" }, ...offered.map(([id, titleKey]) => {
+    const a = el("a", { className: "staff-tool", href: `#${id}` },
+      el("span", { className: "staff-tool-name", textContent: t(titleKey) }),
+      el("span", { textContent: LINES[id] }));
+    a.addEventListener("click", (e) => { e.preventDefault(); go(id); });
+    return a;
+  }));
+  const part = el("section", { className: "staff-part" },
+    el("h2", { id: "staff-overview-h", textContent: t("staff.nav.overview") }),
+    el("p", { textContent: t("staff.overview.how") }), needs, cards);
+  part.setAttribute("aria-labelledby", "staff-overview-h");
+  draw();
+  return { part, noteForms: (d) => { found.deliveries = d; draw(); }, notePages: (d) => { found.drafts = d.drafts; draw(); } };
+}
+
 function showTools(me) {
   before("none");
   note("");
   intro.hidden = true;
   if (quote) quote.hidden = true;
-  const forms = me.canRead || me.canSwitch || me.canEdit ? formsSection(me) : me.readAgain && readAgainSection();
-  const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
+  /* One view at a time under the section menu, the shape Connect's app uses: the tools open on the
+     overview, every job lives in its own view, and the menu stays above whichever view is open, so
+     nothing is a scroll through the other jobs. The view named by the address's hash opens when
+     this account may use it; the menu and the overview's cards write the hash as they go, so a
+     reload, and a kept page checking again on pageshow, lands back where the person was working.
+     Every part still loads as it is built: the menu only shows and hides views, so no part's state
+     — typed words, an open card, a stale token — is ever rebuilt by moving between views. */
+  let overview = null;
+  const forms = me.canRead || me.canSwitch || me.canEdit ? formsSection(me, (d) => overview?.noteForms(d)) : me.readAgain && readAgainSection();
   const pages = me.canEdit || me.canPublish;
-  app.replaceChildren(...[onward, whoBar(me), forms, pages && editSection(me), pages && pagesSection(me), me.canPublish && roomsSection(), pages && versionsSection(me)].filter(Boolean));
-  if (!forms && !me.canEdit && !me.canPublish) app.prepend(el("p", { className: "staff-note", textContent: t("staff.nothing") }));
+  const views = [];
+  const add = (id, node, titleKey) => { if (node) views.push([id, node, titleKey]); };
+  add("forms", forms, "staff.forms.title");
+  add("words", pages && editSection(me), "staff.edit.title");
+  add("pages", pages && pagesSection(me, (d) => overview?.notePages(d)), "staff.pages.title");
+  add("rooms", me.canPublish && roomsSection(), "staff.rooms.title");
+  add("versions", pages && versionsSection(me), "staff.versions.title");
+  add("settings", me.canPublish && settingsSection(me), "staff.settings.title");
+  overview = overviewSection(me, (id) => show(id, true), views.map(([id, , titleKey]) => [id, titleKey]), !views.length);
+  const all = [["overview", overview.part], ...views.map(([id, node]) => [id, node])];
+  const links = {};
+  const nav = el("nav", { className: "secnav staff-nav", ariaLabel: t("staff.nav.label") },
+    el("ul", {}, ...[["overview", t("staff.nav.overview")], ...views.map(([id, , titleKey]) => [id, t(titleKey)])].map(([id, label]) => {
+      const a = el("a", { className: "secnav-item", href: `#${id}`, textContent: label });
+      a.addEventListener("click", (e) => { e.preventDefault(); show(id, true); });
+      links[id] = a;
+      return el("li", {}, a);
+    })));
+  function show(id, focus = false) {
+    const current = id === "overview" || views.some(([v]) => v === id) ? id : "overview";
+    for (const [v, node] of all) node.hidden = v !== current;
+    for (const [v, a] of Object.entries(links)) { if (v === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); }
+    history.replaceState(null, "", `#${current}`);
+    if (focus) { const h = all.find(([v]) => v === current)[1].querySelector("h2"); if (h) { h.tabIndex = -1; h.focus(); } }
+  }
+  const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
+  app.replaceChildren(...[onward, whoBar(me), nav, ...all.map(([, node]) => node)].filter(Boolean));
+  show(location.hash.slice(1));
   app.hidden = false;
   say(me.name ? t("staff.signedInAs", { name: me.name }) : t("staff.signedIn"));
 }

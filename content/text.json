@@ -4075,6 +4075,86 @@
       "group": "staff",
       "text": "Current settings reloaded. Your edited fields are kept; review the changes before saving.",
       "where": "Guided form setup on the staff page."
+    },
+    "staff.nav.label": {
+      "group": "staff",
+      "text": "Staff tools",
+      "where": "Staff page, signed in: the name of the menu of views, read aloud by screen readers."
+    },
+    "staff.nav.overview": {
+      "group": "staff",
+      "text": "Overview",
+      "where": "Staff page, signed in: the first menu item, and the landing view's heading."
+    },
+    "staff.overview.how": {
+      "group": "staff",
+      "text": "What needs attention on the site, and the tool for each job.",
+      "where": "Staff page, the Overview: the line under the heading."
+    },
+    "staff.overview.clear": {
+      "group": "staff",
+      "text": "Nothing needs attention right now.",
+      "where": "Staff page, the Overview: shown when no tool is waiting on anything."
+    },
+    "staff.overview.failedSend.one": {
+      "group": "staff",
+      "text": "{{n}} answer could not be sent to Connect.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
+    },
+    "staff.overview.failedSend.other": {
+      "group": "staff",
+      "text": "{{n}} answers could not be sent to Connect.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
+    },
+    "staff.overview.waitingSend.one": {
+      "group": "staff",
+      "text": "{{n}} answer is waiting to send to Connect.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
+    },
+    "staff.overview.waitingSend.other": {
+      "group": "staff",
+      "text": "{{n}} answers are waiting to send to Connect.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
+    },
+    "staff.overview.drafts.one": {
+      "group": "staff",
+      "text": "{{n}} draft page is not on the site yet.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Pages on the Site."
+    },
+    "staff.overview.drafts.other": {
+      "group": "staff",
+      "text": "{{n}} draft pages are not on the site yet.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Pages on the Site."
+    },
+    "staff.overview.tool.forms": {
+      "group": "staff",
+      "text": "Answers to the site's forms, and opening and closing each one.",
+      "where": "Staff page, the Overview: the Website Forms card."
+    },
+    "staff.overview.tool.words": {
+      "group": "staff",
+      "text": "Saved word changes, when the site last updated, and the edits file.",
+      "where": "Staff page, the Overview: the Words on the Site card."
+    },
+    "staff.overview.tool.pages": {
+      "group": "staff",
+      "text": "The site's pages and drafts, their sections, and the menu.",
+      "where": "Staff page, the Overview: the Pages on the Site card."
+    },
+    "staff.overview.tool.rooms": {
+      "group": "staff",
+      "text": "Each room's words, its steps and their photos.",
+      "where": "Staff page, the Overview: the Rooms card."
+    },
+    "staff.overview.tool.versions": {
+      "group": "staff",
+      "text": "The versions the site has published, and bringing one back.",
+      "where": "Staff page, the Overview: the Earlier Versions card."
+    },
+    "staff.overview.tool.settings": {
+      "group": "staff",
+      "text": "The site's name, its search description and its accessibility email.",
+      "where": "Staff page, the Overview: the Site Settings card."
     }
   }
 }

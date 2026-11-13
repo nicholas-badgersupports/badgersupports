@@ -1550,6 +1550,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .staff-settings .field > label, .staff-form-settings .field > label { padding-top: 0; }
   .staff-settings .field > :not(label), .staff-form-settings .field > :not(label) { grid-column: 1; }
 }
+/* The feeling check-in's set: one group per feeling, as a room's steps are grouped — its emoji, word,
+   colour and reply lines, with its Remove at the foot. */
+.staff-mood { margin-top: var(--s4); }
+.staff-mood-rows { display: grid; gap: var(--s3); margin-top: var(--s3); }
+.staff-mood-row { padding: var(--s3) var(--s4) var(--s4); border: var(--hairline); border-radius: var(--r-card); display: grid; gap: var(--s3); min-width: 0; }
+.staff-mood-row .field { margin-bottom: 0; }
+.staff-mood-row .field + .field { margin-top: 0; }
+.staff-mood-remove { display: flex; justify-content: flex-end; }
 /* An open room: its words, then each step as a group (its words and its photo, the photo shown small and whole). */
 .staff-room { margin-top: var(--s4); display: grid; gap: var(--s3); }
 .staff-room .field, .staff-step .field { margin-bottom: 0; }

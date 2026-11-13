@@ -16,8 +16,9 @@
  *     order: null | [every block id, retired ones included], retired: [block ids] }.
  *
  *   The document may also hold the site's settings: settings: { name?, description?, accessibilityEmail?,
- *   safetyExitUrl? }, only the keys a publisher saved; a key left out keeps the build's value
- *   (content/site.json). laySettings lays them.
+ *   safetyExitUrl?, moodCheckin? }, only the keys a publisher saved; a key left out keeps the build's value
+ *   (content/site.json). laySettings lays the words over the site; layMood lays the feeling check-in's set
+ *   over the build's (content/widgets/mood.json).
  *
  *   And rooms' words and photos: rooms: { "<room id>": { name?, short?, building?, where?, address?, note?,
  *   steps?: { "<step id>": { text?, photo?: "<library id>" | null } } } }, only what a publisher saved; layRooms lays
@@ -40,8 +41,8 @@
  *   - Only a section drawn from its own words alone (no data source, no script) is copied; a new one is a Text section.
  *   - A section a link on the site lands on (its anchor, or an id inside it) is not retired while that link stands.
  *   - A page's title is stored without the site's name; the name is added when the page is drawn (layout.mjs).
- *   - Only the site's name, search description, accessibility email and Safety Exit destination change here; any
- *     other setting is refused.
+ *   - Only the site's name, search description, accessibility email, Safety Exit destination and the feeling
+ *     check-in's set change here; any other setting is refused.
  *   - Of a room, only its words (name, short, building, where, address, note, each step's text) and each step's photo
  *     change here; adding or taking down a room, its id, aliases, links, published flag and its steps' number and order
  *     stay a change in the files. A step's photo is a library photo or none, drawn at its own shape.
@@ -92,7 +93,7 @@ function description(value, code = "page.description") {
 
 /* ---------- the site's settings ---------- */
 
-export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail", "safetyExitUrl"];
+export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail", "safetyExitUrl", "moodCheckin"];
 /* The Safety Exit's destination when no setting stands: Google — the plain, everyday page
    UHS's quick exit uses, and the same default on all three sites. */
 export const SAFETY_EXIT_DEFAULT = "https://www.google.com/";
@@ -136,9 +137,48 @@ function siteSafetyExit(value) {
 export function safetyExitHref(site) {
   try { return siteSafetyExit(site?.safetyExitUrl); } catch { return SAFETY_EXIT_DEFAULT; }
 }
-const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail, safetyExitUrl: siteSafetyExit };
+/* The feeling check-in's set: the feelings a visitor may tap, in order. Each is an id (the count a tap adds
+   to is kept under it, so it never changes its shape), the emoji shown over the word, the word itself, the
+   colour the button and the day's counts wear, and the reply lines a tap may answer with — the set the live
+   check-in reads from its sheet, kept to the same shape here. At most eight feelings, so the row stays a
+   row; every feeling carries at least one reply line, or a tap would answer with nothing. */
+export const MOOD_LIMITS = { count: 8, id: 40, emoji: 8, label: 40, messages: 6, message: 200 };
+const MOOD_ID_RE = /^[a-z][a-z0-9_]*$/;
+const MOOD_COLOR_RE = /^#[0-9a-f]{6}$/;
+const MOOD_FIELDS = new Set(["id", "emoji", "label", "color", "messages"]);
+function moodCheckin(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) fail("settings.mood");
+  const keys = Object.keys(value);
+  if (keys.length !== 1 || keys[0] !== "moods") fail("settings.mood");
+  const list = value.moods;
+  if (!Array.isArray(list) || !list.length || list.length > MOOD_LIMITS.count) fail("settings.mood");
+  const ids = new Set();
+  const moods = list.map((m) => {
+    if (!m || typeof m !== "object" || Array.isArray(m)) fail("settings.mood");
+    if (Object.keys(m).some((k) => !MOOD_FIELDS.has(k))) fail("settings.mood");
+    if (typeof m.id !== "string" || m.id.length > MOOD_LIMITS.id || !MOOD_ID_RE.test(m.id) || ids.has(m.id)) fail("settings.mood");
+    ids.add(m.id);
+    if (typeof m.emoji !== "string") fail("settings.mood");
+    const emoji = m.emoji.trim();
+    if (!emoji || [...emoji].length > MOOD_LIMITS.emoji || CONTROL.test(emoji) || /[<>]/.test(emoji)) fail("settings.mood");
+    if (typeof m.label !== "string") fail("settings.mood");
+    const label = clean(m.label);
+    if (!label || label.length > MOOD_LIMITS.label || CONTROL.test(m.label.replace(/[\n\t]/g, ""))) fail("settings.mood");
+    if (typeof m.color !== "string" || !MOOD_COLOR_RE.test(m.color.trim().toLowerCase())) fail("settings.mood");
+    if (!Array.isArray(m.messages) || !m.messages.length || m.messages.length > MOOD_LIMITS.messages) fail("settings.mood");
+    const messages = m.messages.map((x) => {
+      if (typeof x !== "string") fail("settings.mood");
+      const v = clean(x);
+      if (!v || v.length > MOOD_LIMITS.message) fail("settings.mood");
+      return v;
+    });
+    return { id: m.id, emoji, label, color: m.color.trim().toLowerCase(), messages };
+  });
+  return { moods };
+}
+const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail, safetyExitUrl: siteSafetyExit, moodCheckin };
 
-/* The settings a change saves, merged over the saved ones. Refuses any key but the four, and a change naming none. */
+/* The settings a change saves, merged over the saved ones. Refuses any key but the five, and a change naming none. */
 function settingsChange(doc, change) {
   const s = change.settings;
   if (!s || typeof s !== "object" || Array.isArray(s)) fail("settings.field");
@@ -158,11 +198,23 @@ export function laySettings(site, settings) {
   Object.defineProperty(site, "built", { value: built, enumerable: false, configurable: true });
   for (const k of SETTINGS_KEYS) {
     if (settings?.[k] === undefined) continue;
+    if (k === "moodCheckin") continue; // the check-in's set is not a word of the site; layMood lays it instead
     let v;
     try { v = SETTING_CHECKS[k](settings[k]); } catch { continue; }
     if (k === "accessibilityEmail") { if (site.footer) site.footer.accessibilityEmail = v; } else site[k] = v;
   }
   return site;
+}
+
+/* The feeling check-in's set as saved in the settings, laid over the build's (content/widgets/mood.json): the
+   saved feelings replace the build's list whole; the line after a tap and the rest of the file stay the
+   build's. A saved set that no longer passes its check keeps the build's set, as a saved word that fails
+   keeps the floor. */
+export function layMood(mood, settings) {
+  if (!mood || settings?.moodCheckin === undefined) return mood;
+  let v;
+  try { v = SETTING_CHECKS.moodCheckin(settings.moodCheckin); } catch { return mood; }
+  return { ...mood, moods: v.moods };
 }
 
 /* ---------- rooms: their words and photos ---------- */

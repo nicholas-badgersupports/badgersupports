@@ -1868,6 +1868,11 @@
       "text": "That did not save. What you typed is still here; try again.",
       "where": "Staff page, a change that failed."
     },
+    "staff.pages.error.mood": {
+      "group": "staff",
+      "text": "Check the feelings: each one needs an emoji, a word, a colour and at least one reply line, and there can be no more than eight.",
+      "where": "Staff page, a refused Feeling Check-In save."
+    },
     "staff.pages.menu.title": {
       "group": "staff",
       "text": "The Menu",
@@ -2007,6 +2012,56 @@
       "group": "staff",
       "text": "(none)",
       "where": "Shown as the value saved since when that value is empty (a search description left blank)."
+    },
+    "staff.mood.title": {
+      "group": "staff",
+      "text": "Feeling Check-In",
+      "where": "Heading of the part of the staff page, for a publisher, that changes the feelings on the home page check-in."
+    },
+    "staff.mood.help": {
+      "group": "staff",
+      "text": "The feelings on the home page check-in, in the order they show. A tap adds one to that feeling's count for the day and answers with one of its reply lines, picked at random. Saving publishes with the site; the day's counts belong to each feeling itself, so renaming a feeling keeps its counts.",
+      "where": "Under the Feeling Check-In heading: what the feelings do and what saving changes."
+    },
+    "staff.mood.field.emoji": {
+      "group": "staff",
+      "text": "Emoji",
+      "where": "Label of a feeling's emoji field under Feeling Check-In: the picture shown over the word."
+    },
+    "staff.mood.field.label": {
+      "group": "staff",
+      "text": "Feeling",
+      "where": "Label of a feeling's word field under Feeling Check-In: the word shown under its emoji, and the name its count is read out with."
+    },
+    "staff.mood.field.color": {
+      "group": "staff",
+      "text": "Colour",
+      "where": "Label of a feeling's colour field under Feeling Check-In: the colour of its button and its bar in the day's counts."
+    },
+    "staff.mood.field.messages": {
+      "group": "staff",
+      "text": "Reply lines (one per line)",
+      "where": "Label of a feeling's reply lines field under Feeling Check-In: a tap answers with one of them."
+    },
+    "staff.mood.remove": {
+      "group": "staff",
+      "text": "Remove",
+      "where": "Button on a feeling under Feeling Check-In: takes it off the list when the feelings are saved."
+    },
+    "staff.mood.add": {
+      "group": "staff",
+      "text": "Add a Feeling",
+      "where": "Button under Feeling Check-In: adds one more feeling to the list, up to eight."
+    },
+    "staff.mood.save": {
+      "group": "staff",
+      "text": "Save Feelings",
+      "where": "Button under Feeling Check-In: saves the feelings as one change, which publishes."
+    },
+    "staff.mood.done": {
+      "group": "staff",
+      "text": "Feelings saved.",
+      "where": "Read out once the Feeling Check-In feelings are saved and published."
     },
     "staff.rooms.title": {
       "group": "staff",

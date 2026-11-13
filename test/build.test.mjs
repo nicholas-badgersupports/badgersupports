@@ -53,6 +53,13 @@ test("the mood check-in is excluded from analytics and works without JavaScript"
   assert.match(html, /<form method="post" action="\/api\/mood"/);
 });
 
+test("the mood check-in shows each feeling's emoji over its word, and names its colour", () => {
+  const html = read("index.html");
+  assert.match(html, /<button type="submit" name="mood" value="burnt_out" class="mood-btn mood-burnt_out" data-color="#a40000" aria-pressed="false"><span class="e" aria-hidden="true">😓<\/span><span class="mood-label">Burnt out<\/span><\/button>/);
+  assert.equal([...html.matchAll(/class="mood-btn /g)].length, 5, "the build's five feelings");
+  assert.doesNotMatch(html, /class="mood-btn[^>]*\sstyle=/, "no inline style on a feeling: the client lays its colour on");
+});
+
 test("an open application carries no Closed tag on the home page (its state comes from the same switch the API reads)", () => {
   assert.doesNotMatch(read("index.html"), /Applications Closed/);
 });

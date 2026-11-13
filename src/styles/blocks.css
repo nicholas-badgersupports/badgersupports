@@ -1372,7 +1372,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    Measured (flat, WCAG): the deep shade on each solid tint is 6.9-9.5 to 1; cream on each washed
    colour 4.6-6.6 to 1 (table in PUBLIC-HEADER-BUTTONS-HANDOFF-2026-11-12). On a desktop the row
    never wraps: the pills give up a little size, and a row still too wide for its column scrolls
-   sideways in its own strip instead of stacking; under 861px the row wraps again, as it always has. */
+   sideways in its own strip instead of stacking; under 861px the row wraps again, as it always has.
+   Exception for the event hero's two rows, 13 Nov 2026: they wrap on a desktop too — see the
+   desktop block below. */
 .pagehead-actions .go, .feature-actions .go {
   background: var(--accent-tint); border: 1.5px solid color-mix(in srgb, var(--accent) 38%, transparent);
   color: var(--accent-deep); font-size: var(--fs-small);
@@ -1403,17 +1405,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .pagehead-actions { flex-wrap: nowrap; gap: var(--s2) var(--s3); overflow-x: auto; scrollbar-width: none; padding-block: .3rem; }
   .pagehead-actions::-webkit-scrollbar { display: none; }
   .pagehead-actions > * { flex: none; }
-  .feature-actions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-top: calc(var(--s3) + .3rem); padding-bottom: .3rem; }
-  .feature-actions::-webkit-scrollbar { display: none; }
+  /* the event hero's two rows wrap on a desktop too (owner, 13 Nov 2026): they sit in the hero's
+     main column beside the photos, and the next-event card's buttons and the three pills under it
+     together run wider than that column at every desktop width, so the strip left the last button
+     cut at the column's edge with no scrollbar to find it by — on Craft Nights, the
+     "Suggest a Craft Night" pill. Their base rules already wrap; nothing here overrides that.
+     The extra padding from the strip days stays, so the rows keep their breathing room. */
+  .feature-actions { padding-top: calc(var(--s3) + .3rem); padding-bottom: .3rem; }
   .feature-actions > * { flex: none; }
-  .eventhero .more-links { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-block: .3rem; }
-  .eventhero .more-links { gap: var(--s2); }
+  .eventhero .more-links { gap: var(--s2); padding-block: .3rem; }
   /* with photos beside the words, the row takes the band's whole width under both (pagehead.mjs
      renders it as the wrap's own child), so a page that lists its parts — workshops above all —
      fits them on the one row instead of scrolling */
   .pagehead.has-photos .pagehead-photos { grid-column: 2; grid-row: 1; }
   .pagehead.has-photos .pagehead-actions { grid-column: 1 / -1; grid-row: 2; }
-  .eventhero .more-links::-webkit-scrollbar { display: none; }
   .eventhero .more-links > li { flex: none; }
 }
 

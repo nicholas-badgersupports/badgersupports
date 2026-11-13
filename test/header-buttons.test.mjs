@@ -1,7 +1,9 @@
 /* Header button rows (owner, 12 Nov 2026): in a page opening's row the primary keeps the full
    treatment and every other pill goes quieter in the header's own colour — never grey, never the
-   old white — and on a desktop the row never wraps. These tests pin the rules in blocks.css and
-   re-measure the shipped colour pairs from tokens.css. */
+   old white — and on a desktop the pagehead row never wraps. The event hero's two rows are the
+   exception (owner, 13 Nov 2026): in the hero's narrower column the strip cut the last button,
+   so they wrap on a desktop too. These tests pin the rules in blocks.css and re-measure the
+   shipped colour pairs from tokens.css. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -36,8 +38,8 @@ test("event-hero pills are a cream wash over the hero's own colour, cream words"
   assert.doesNotMatch(r, /--field|#fff/i);
 });
 
-test("on a desktop the header rows never wrap; they scroll in their own strip instead", () => {
-  for (const sel of [".pagehead-actions", ".feature-actions", ".eventhero .more-links"]) {
+test("on a desktop the pagehead row never wraps; it scrolls in its own strip instead", () => {
+  for (const sel of [".pagehead-actions"]) {
     const j = css.indexOf(sel + " { flex-wrap: nowrap");
     assert.ok(j >= 0, `${sel} nowrap rule`);
     const media = css.lastIndexOf("@media", j);
@@ -46,6 +48,20 @@ test("on a desktop the header rows never wrap; they scroll in their own strip in
     assert.match(r, /overflow-x: auto/, sel);
     assert.match(r, /scrollbar-width: none/, sel);
   }
+});
+
+test("the event hero's rows wrap on a desktop too, so every button stays in the frame", () => {
+  /* The hero's rows sit in its narrower main column beside the photos; as a scroll strip the
+     last button was cut at the column's edge at every desktop width (measured 861-1600,
+     PUBLIC-CRAFT-SUGGEST-CLIP-HANDOFF-2026-11-13). Their base rules wrap; this pins that the
+     desktop block no longer overrides that for either row. */
+  assert.equal(css.indexOf(".feature-actions { flex-wrap: nowrap"), -1);
+  assert.equal(css.indexOf(".eventhero .more-links { flex-wrap: nowrap"), -1);
+  assert.match(rule(".feature-actions"), /flex-wrap: wrap/);
+  const base = fs.readFileSync(path.join(ROOT, "src/styles/base.css"), "utf8");
+  const i = base.indexOf(".more-links {");
+  assert.ok(i >= 0, "base .more-links rule");
+  assert.match(base.slice(i, base.indexOf("}", i)), /flex-wrap: wrap/);
 });
 
 /* --- the shipped pairs, re-measured from tokens.css --- */

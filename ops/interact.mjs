@@ -733,6 +733,11 @@ const staffState = (page) => page.evaluate(() => {
   };
 });
 
+/* The tools open on the Overview; a part presses the section menu's item for the view it works in. */
+const goStaff = async (page, key) => {
+  await page.locator(".staff-nav").getByRole("link", { name: words(key), exact: true }).click();
+};
+
 await part("staff page: signed in, no Sign In flash", async () => {
   await freshServer();
   const { ctx, page, errors } = await openStaff({ session: ["forms.read:*", "site.edit"], slow: 600 });
@@ -741,7 +746,9 @@ await part("staff page: signed in, no Sign In flash", async () => {
   check(!seen.signIn && seen.checking && s.who === "Signed in as Robin Example" && !s.signIn,
     `staff signed in: the Sign In button never shows while the session is checked, a checking line does, then who is signed in (sign-in seen ${seen.signIn}, checking seen ${seen.checking}, "${s.who}")`);
   check(!s.intro && !s.quote, `staff signed in: the before-sign-in words and the quote give way to the tools (intro "${s.intro.slice(0, 40)}", quote "${s.quote}")`);
-  check(s.text.includes(words("staff.forms.how")), "staff signed in, a reader: the forms part says answers are worked through in Connect");
+  await goStaff(page, "staff.forms.title");
+  const f = await staffState(page);
+  check(f.text.includes(words("staff.forms.how")), "staff signed in, a reader: the forms part says answers are worked through in Connect");
   check(!errors.length, `staff signed in: no script errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
   await ctx.close();
 });
@@ -829,15 +836,23 @@ await part("staff sign-in: the address bar", async () => {
 await part("staff page: editor only", async () => {
   await freshServer();
   const { ctx, page } = await openStaff({ session: ["site.edit"] });
-  const s = await staffState(page);
-  check(s.who && s.headings.includes(words("staff.forms.title")) && s.headings.includes(words("staff.edit.title")) && !s.buttons.includes(words("staff.answers.show")) && !s.buttons.includes(words("staff.switch.open")) && !s.buttons.includes(words("staff.edit.download")),
-    `staff editor only: form wording and page tools without answers, intake controls or publishing (headings ${JSON.stringify(s.headings)})`);
+  const who = (await staffState(page)).who;
+  /* Each view in turn: the headings and buttons this account is offered, gathered across its views. */
+  const headings = [], buttons = [];
+  for (const key of ["staff.nav.overview", "staff.forms.title", "staff.edit.title", "staff.pages.title", "staff.versions.title"]) {
+    if (key !== "staff.nav.overview") await goStaff(page, key);
+    const s = await staffState(page);
+    headings.push(...s.headings); buttons.push(...s.buttons);
+  }
+  check(who && headings.includes(words("staff.forms.title")) && headings.includes(words("staff.edit.title")) && !buttons.includes(words("staff.answers.show")) && !buttons.includes(words("staff.switch.open")) && !buttons.includes(words("staff.edit.download")),
+    `staff editor only: form wording and page tools without answers, intake controls or publishing (headings ${JSON.stringify(headings)})`);
   await ctx.close();
 });
 
 await part("staff page: when the words last reached the site, and Refresh Now", async () => {
   await freshServer();
   const { ctx, page, errors } = await openStaff({ session: ["site.edit"] });
+  await goStaff(page, "staff.edit.title");
   const before = words("staff.edit.timing").split("{{when}}")[0];
   let s = await staffState(page);
   check(s.text.includes(before + words("staff.edit.neverUpdated")), `refresh: the page says changes take up to 30 minutes, and that nothing has been published yet ("${s.text.split("\n").find((l) => l.startsWith(before)) || ""}")`);
@@ -860,6 +875,7 @@ await part("staff page: answers the account may no longer read", async () => {
   await freshServer();
   await handle(post("/api/forms/workshop-request/submit", workshopAnswers(), { json: false }), { ip: "198.51.100.201" });
   const { ctx, page } = await openStaff({ session: ["forms.read:workshop-request"], slow: 500 });
+  await goStaff(page, "staff.forms.title");
   await q("UPDATE staff_sessions SET scopes = '[\"site.edit\"]'::jsonb");
   const show = page.getByRole("button", { name: words("staff.answers.show") });
   await show.click({ timeout: 3000 });
@@ -877,6 +893,7 @@ await part("staff page: Open and Close a form", async () => {
   // Forms ship open; a director closed this one earlier, so the run starts from a closed switch row.
   await q("INSERT INTO form_state (form_key, state, changed_by) VALUES ('resource-problem', 'closed', 'fixture')");
   const { ctx, page, errors } = await openStaff({ session: ["forms.switch:resource-problem"] });
+  await goStaff(page, "staff.forms.title");
   const rows = async () => (await q("SELECT state FROM form_state WHERE form_key = 'resource-problem'")).rows.map((r) => r.state);
   const untouched = async () => (await rows()).join() === "closed";
   const card = () => page.evaluate(() => {
@@ -911,6 +928,7 @@ await part("staff page: Back after signing out", async () => {
   await freshServer();
   await handle(post("/api/forms/workshop-request/submit", workshopAnswers(), { json: false }), { ip: "198.51.100.202" });
   const { ctx, page } = await openStaff({ session: ["forms.read:*"] });
+  await goStaff(page, "staff.forms.title");
   await page.getByRole("button", { name: words("staff.answers.show") }).click();
   await page.waitForSelector(".staff-table");
   /* Headless Chromium here keeps no page in the back-forward cache (measured), so the events a
@@ -1365,6 +1383,7 @@ await part("staff page: pages, preview and earlier versions", async () => {
   const { useContent } = await import("../netlify/lib/content.mjs");
   useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
   const { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  await goStaff(page, "staff.pages.title");
   const cardOf = (title) => page.locator(".staff-form").filter({ has: page.locator("h3", { hasText: title }) });
   await page.getByLabel(words("staff.pages.field.title")).first().fill("Spring Retreat");
   await page.getByLabel(words("staff.pages.field.path")).first().fill("/Spring Retreat/");
@@ -1423,6 +1442,7 @@ await part("staff page: pages, preview and earlier versions", async () => {
   const versions = () => page.evaluate(() => [...document.querySelectorAll("#staff-versions-h ~ div .staff-form > p:first-child")].map((p) => p.textContent));
   const before = await versions();
   const oldest = before.at(-1);
+  await goStaff(page, "staff.versions.title");
   await page.getByRole("button", { name: words("staff.versions.restore").replace("{{n}}", "1") }).click();
   const asked = await page.evaluate(() => document.activeElement?.textContent);
   await page.getByRole("button", { name: words("staff.versions.yes") }).click();
@@ -1442,6 +1462,7 @@ await part("staff page: the sections of a page", async () => {
   const { useContent } = await import("../netlify/lib/content.mjs");
   useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
   const { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  await goStaff(page, "staff.pages.title");
   const box = page.locator(".staff-sections-box");
   const names = () => box.evaluate((b) => [...b.querySelectorAll(".staff-sections > li > span")].map((s) => s.firstChild.textContent));
   const retiredNames = () => box.evaluate((b) => [...b.querySelectorAll("h4 + .staff-menu > li > span")].map((s) => s.textContent));
@@ -1515,6 +1536,7 @@ await part("staff page: a menu entry taken off and put back", async () => {
   const { useContent } = await import("../netlify/lib/content.mjs");
   useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
   const { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  await goStaff(page, "staff.pages.title");
   const fill = (key, label) => words(key).replace("{{label}}", label);
   const status = (key) => page.waitForFunction((w) => document.querySelector("[role=status]")?.textContent === w, words(key), { timeout: 5000 }).then(() => true, () => false);
   const group = () => page.evaluate(() => [...(document.querySelector(".staff-menu > li > ol")?.querySelectorAll(":scope > li > span") || [])].map((s) => s.textContent));
@@ -1560,6 +1582,7 @@ await part("staff page: Site Settings", async () => {
   useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
   const label = { name: words("staff.settings.field.name"), description: words("staff.settings.field.description"), email: words("staff.settings.field.email") };
   let { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  await goStaff(page, "staff.settings.title");
   const form = page.locator("form.staff-settings");
   await form.waitFor({ timeout: 5000 });
   const values = () => form.evaluate((f) => [...f.querySelectorAll("input, textarea")].map((x) => x.value));
@@ -1614,6 +1637,7 @@ await part("staff page: Site Settings", async () => {
   await ctx.close();
 
   ({ ctx, page } = await openStaff({ session: ["site.edit"] }));
+  await goStaff(page, "staff.pages.title");
   await page.locator("#staff-pages-h ~ div ul.staff-forms").first().waitFor({ timeout: 5000 });
   const shown = await page.locator("form.staff-settings").count();
   const headings = await page.evaluate(() => [...document.querySelectorAll("h3")].map((h) => h.textContent));
@@ -1630,6 +1654,7 @@ await part("staff page: Rooms", async () => {
   const { structureNow } = await import("../netlify/lib/structure.mjs");
   useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
   let { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
+  await goStaff(page, "staff.rooms.title");
   const ROOM = "sac-caucus";
   await page.locator(`[data-room="${ROOM}"]`).click({ timeout: 5000 });
   const form = page.locator("form.staff-room");
@@ -1685,6 +1710,7 @@ await part("staff page: Rooms", async () => {
   await ctx.close();
 
   ({ ctx, page } = await openStaff({ session: ["site.edit"] }));
+  await goStaff(page, "staff.pages.title");
   await page.locator("#staff-pages-h ~ div ul.staff-forms").first().waitFor({ timeout: 5000 });
   const shown = await page.locator("#staff-rooms-h, form.staff-room").count();
   check(shown === 0, `rooms: someone with site.edit only does not see Rooms (${shown})`);
@@ -2175,6 +2201,7 @@ await part("editable native form settings", async () => {
     await freshServer(); useConnect(false);
     const { ctx, page, errors } = await openStaff({ session: ["site.edit", "forms.switch:staff-application"], viewport: { width, height: 900 } });
     try {
+      await goStaff(page, "staff.forms.title");
       let card = page.locator('[data-form-card="staff-application"]');
       await card.locator("summary").click();
       await card.locator('[id$="-opensAt"]').fill("2099-01-01T12:00");
@@ -2322,6 +2349,7 @@ await part("form setup wizard", async () => {
     await freshServer(); useConnect(false);
     const { ctx, page, errors } = await openStaff({ session: ["site.edit", "forms.switch:*"], viewport: { width, height: 900 } });
     try {
+      await goStaff(page, "staff.forms.title");
       await page.getByRole("button", { name: "Set Up Forms", exact: true }).click();
       let wizard = page.locator("[data-form-setup]"); await wizard.locator("#setup-form").waitFor({ state: "visible" });
       check(await wizard.locator("#setup-form option").count() === 14, `setup ${width}px: every one of the thirteen forms is selectable`);
@@ -2354,6 +2382,7 @@ await part("form setup wizard", async () => {
   await freshServer(); useConnect(false);
   {
     const { ctx, page } = await openStaff({ session: ["site.edit"], viewport: { width: 390, height: 900 } });
+    await goStaff(page, "staff.forms.title");
     try {
       await page.getByRole("button", { name: "Set Up Forms", exact: true }).click(); const w = page.locator("[data-form-setup]"); await w.locator("#setup-form").waitFor({ state: "visible" });
       await w.locator("#setup-form").selectOption("staff-application"); await w.getByRole("button", { name: "Next", exact: true }).click();
@@ -2367,6 +2396,7 @@ await part("form setup wizard", async () => {
   await freshServer(); useConnect(false);
   {
     const { ctx, page } = await openStaff({ session: ["forms.switch:staff-application"], viewport: { width: 320, height: 900 } });
+    await goStaff(page, "staff.forms.title");
     try {
       await page.getByRole("button", { name: "Set Up Forms", exact: true }).click(); const w = page.locator("[data-form-setup]"); await w.locator("#setup-form").waitFor({ state: "visible" });
       check(await w.locator("#setup-form option").count() === 2, "setup switcher: only the permitted form is offered");
@@ -2385,6 +2415,7 @@ await part("form setup wizard", async () => {
   await freshServer(); useConnect(false);
   {
     const { ctx, page } = await openStaff({ session: ["site.edit", "forms.switch:*"], viewport: { width: 390, height: 900 } });
+    await goStaff(page, "staff.forms.title");
     try {
       await page.getByRole("button", { name: "Set Up Forms", exact: true }).click(); const w = page.locator("[data-form-setup]"); await w.locator("#setup-form").waitFor({ state: "visible" });
       await w.locator("#setup-form").selectOption("workshop-request"); await w.getByRole("button", { name: "Next", exact: true }).click(); await w.locator('input[id$="-title"]').fill("Kept Draft Title");

@@ -1938,13 +1938,16 @@ await part("Craft refinement: hierarchy, captions and no JavaScript", async () =
     let whole = true;
     for (const img of await page.locator("#b-cn-past-work img").all()) {
       await img.scrollIntoViewIfNeeded(); await img.evaluate(img => img.decode());
-      const dimensions = await img.evaluate(img => { const b = img.getBoundingClientRect(), frame = img.closest(".photo").getBoundingClientRect(); return { clipped: b.bottom > frame.bottom + 2 || b.right > frame.right + 2 || b.top < frame.top - 2 || b.left < frame.left - 2, shown: b.width > 0 && b.height > 0, ratio: b.width / b.height, natural: img.naturalWidth / img.naturalHeight, alt: img.alt }; });
-      if (!dimensions.shown || dimensions.clipped || !dimensions.alt || Math.abs(dimensions.ratio - dimensions.natural) > .02) whole = false;
+      const dimensions = await img.evaluate(img => { const b = img.getBoundingClientRect(), frame = img.closest(".photo").getBoundingClientRect(); return { clipped: b.bottom > frame.bottom + 2 || b.right > frame.right + 2 || b.top < frame.top - 2 || b.left < frame.left - 2, shown: b.width > 0 && b.height > 0, ratio: b.width / b.height, alt: img.alt }; });
+      /* The gallery stands in one row of even shapes by the owner's setting (craft-row), so a photo
+         fills its 4/3 frame instead of showing whole; what must hold is that it sits inside its
+         frame, is really shown, and carries its alt words. */
+      if (!dimensions.shown || dimensions.clipped || !dimensions.alt || Math.abs(dimensions.ratio - 4 / 3) > .05) whole = false;
     }
     const captions = await page.locator("#b-cn-past-work .card-words").allTextContents();
     const visibleCaptions = await Promise.all((await page.locator("#b-cn-past-work .card-words").all()).map(n => n.isVisible()));
     const visibleTitles = await Promise.all((await page.locator("#b-cn-past-work .card-words h3").all()).map(n => n.isVisible()));
-    check(whole && visibleCaptions.every(Boolean) && visibleTitles.length === 3 && visibleTitles.every(Boolean) && captions.length === 3 && /Nostalgic Crafts[\s\S]*September 2026/.test(captions[0]) && /Paint a Planter/.test(captions[1]) && /Pumpkin Painting[\s\S]*October 2026/.test(captions[2]), `Craft ${width}px JS=${javaScriptEnabled}: captioned people photos retain their whole image`);
+    check(whole && visibleCaptions.every(Boolean) && visibleTitles.length === 6 && visibleTitles.every(Boolean) && captions.length === 6 && /Nostalgic Crafts[\s\S]*September 2026/.test(captions[0]) && /Paint a Planter/.test(captions[1]) && /Pumpkin Painting[\s\S]*October 2026/.test(captions[2]) && /Bracelet Making/.test(captions[3]) && /Bedazzled Crafts/.test(captions[4]) && /Garden Wall/.test(captions[5]), `Craft ${width}px JS=${javaScriptEnabled}: the past-work gallery stands six captioned photos even in their frames`);
     const state = await page.evaluate(() => ({ scrolls: document.documentElement.scrollWidth > innerWidth + 1, inputs: document.querySelectorAll("main input, main textarea").length, cutoff: /\b[35] days before/.test(document.querySelector("#b-cn-access").textContent) }));
     check(!state.scrolls && !state.inputs && !state.cutoff && !errors.length, `Craft ${width}px JS=${javaScriptEnabled}: no overflow, personal input, unsupported cutoff or script error`);
     await ctx.close();

@@ -73,7 +73,7 @@ export const CLIENT_TEXT = {
   "strip.js": ["strip.count"],
   "carousel.js": ["carousel.count"],
   "schedule.js": ["schedule.today", "schedule.happening", "schedule.nextUp"],
-  "hero.js": ["hero.pause", "hero.play"],
+  "hero.js": ["hero.pause", "hero.play", "hero.youFace", "hero.youWord"],
   "staff.js": ["staff.*"],
   "form-setup.js": ["staff.*"],
   "edit.js": ["edit.*"],

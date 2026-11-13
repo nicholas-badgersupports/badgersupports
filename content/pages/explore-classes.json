@@ -2,6 +2,9 @@
   "schema": "bss.page/1",
   "id": "pg-explore-classes",
   "path": "/explore/classes/",
+  "aliases": [
+    "/classes"
+  ],
   "title": "Discover Classes by Interest",
   "description": "Browse UW–Madison courses by interest — creativity, music, languages, nature and community — from UW Course Search listings.",
   "analytics": "none",

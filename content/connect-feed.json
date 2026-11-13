@@ -5,7 +5,12 @@
     "craft": { "program": "craft", "href": "/join/craft-nights" },
     "craftnight": { "program": "craft", "href": "/join/craft-nights" },
     "peergroup": { "program": "peer", "href": "/join/peer-support-groups" },
-    "workshop": { "program": "workshops" }
+    "workshop": { "program": "workshops" },
+    "dogsoncall": { "program": "other", "href": "/initiatives/dogs-on-call" },
+    "navigatinghousing": { "program": "other", "href": "/initiatives/housing-hub" },
+    "outreach": { "program": "other" },
+    "spill": { "program": "other" },
+    "tabling": { "program": "other" }
   },
   "otherProgram": "other",
   "series": [

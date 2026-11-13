@@ -359,6 +359,24 @@ function moreList() {
     ...(here.length || everywhere.length ? [] : [el("p", { textContent: t("edit.more.none") })]));
 }
 
+/* The pencil the render side draws (src/render/icons.mjs), built here as nodes: the edit
+   button is a circle carrying this alone, as Connect's is (owner, 13 Nov 2026). */
+function pencil() {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "ic");
+  svg.setAttribute("data-i", "pencil");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  for (const d of ["M15.5 4.5l4 4L9 19l-5 1 1-5z", "M13.5 6.5l4 4"]) {
+    const p = document.createElementNS(NS, "path");
+    p.setAttribute("d", d);
+    svg.append(p);
+  }
+  return svg;
+}
+
 /* ---------- the bar ---------- */
 
 let liveLine;
@@ -375,7 +393,11 @@ function signInAgain(newTab) {
 }
 
 function drawBar() {
-  ui.toggle.textContent = editing ? t("edit.done") : me.waiting ? t("edit.buttonWaiting", { n: me.waiting }) : t("edit.button");
+  /* The button's face is the pencil alone (owner, 13 Nov 2026): its words ride as its label and
+     its tooltip instead, the same words in the same states as when they were printed on it. */
+  const label = editing ? t("edit.done") : me.waiting ? t("edit.buttonWaiting", { n: me.waiting }) : t("edit.button");
+  ui.toggle.title = label;
+  ui.toggle.setAttribute("aria-label", label);
   ui.toggle.setAttribute("aria-pressed", String(editing));
   ui.moreButton.hidden = !editing;
   ui.moreButton.setAttribute("aria-expanded", String(!ui.more.hidden));
@@ -384,7 +406,7 @@ function drawBar() {
 function build() {
   liveLine = el("p", { className: "edit-live" });
   liveLine.setAttribute("role", "status");
-  const toggle = el("button", { type: "button", className: "btn edit-toggle" });
+  const toggle = el("button", { type: "button", className: "edit-toggle" }, pencil());
   toggle.addEventListener("click", () => (editing ? leave() : enter()));
   const more = el("div", { className: "edit-more", id: "edit-more", hidden: true });
   const moreButton = el("button", { type: "button", className: "btn btn--quiet edit-more-button", textContent: t("edit.more"), hidden: true });
@@ -402,6 +424,12 @@ function build() {
   find.addEventListener("input", moreList);
 
   const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, toggle);
+  /* The Safety Exit keeps the corner: the bar takes the pill in as its last seat, so the edit
+     button rests at its left with their bottoms on one line and neither covers the other
+     (owner, 13 Nov 2026). The pill's own words, link and destination are untouched, and the
+     press site.js bound to the element itself moves with it. */
+  const exit = document.querySelector("[data-safety-exit]");
+  if (exit) bar.append(exit);
   bar.setAttribute("role", "region");
   bar.setAttribute("aria-label", t("edit.region"));
 

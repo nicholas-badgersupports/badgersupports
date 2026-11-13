@@ -1644,9 +1644,23 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 }
 
 /* the edit button (edit.js): a bar in the corner, and the words under it outlined while it is on */
-.edit-ui { position: fixed; right: var(--s4); bottom: var(--s4); z-index: 40; display: grid; justify-items: end; gap: var(--s2); max-width: calc(100vw - 2 * var(--s4)); font-family: var(--font-body); }
-.edit-bar { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--s2); }
+.edit-ui { position: fixed; right: 1rem; bottom: 1rem; z-index: 40; display: grid; justify-items: end; gap: var(--s2); max-width: calc(100vw - 2 * var(--s4)); font-family: var(--font-body); }
+.edit-bar { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: flex-end; gap: var(--s2); }
 .edit-bar .btn { box-shadow: var(--menu-shadow); }
+/* The edit button is a circle carrying the pencil alone, as Connect's is (owner, 13 Nov 2026):
+   36px across in the site's ink, the same #393737 as Connect's charcoal, darkening under a
+   pointer to Connect's #242222, its words kept as its label and tooltip. The whole circle is
+   the target, under the 44px ideal, the trade Connect's launcher makes too. It rests in the
+   Safety Exit's own corner (the pill's 1rem seat, which .edit-ui takes above), at its left. */
+.edit-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; min-width: 36px; min-height: 36px; padding: 0; border: 0; border-radius: 50%; background: var(--ink); color: var(--cream); cursor: pointer; box-shadow: var(--menu-shadow); transition: background-color var(--t) var(--ease-out); }
+.edit-toggle:hover { background: #242222; }
+.edit-toggle .ic { width: 18px; height: 18px; }
+.edit-toggle:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.edit-toggle[disabled] { opacity: .55; cursor: not-allowed; }
+/* The Safety Exit, taken into the bar by edit.js as its last seat: out of its fixed place and
+   into the row, so the corner reads edit button, then exit. On its own, for anyone who is not
+   editing, it keeps the fixed seat layout.css gives it. */
+.edit-bar .safety-exit { position: static; flex: none; }
 .edit-more-button { background: var(--paper); }
 .edit-live { margin: 0; padding: var(--s2) var(--s3); border-radius: var(--r-card); background: var(--ink); color: var(--cream); font-size: var(--fs-small); max-width: 26rem; }
 .edit-live:empty { display: none; }
@@ -1687,8 +1701,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .is-editing img[data-edit-target]:focus-visible { outline-offset: -4px; }
 .edit-section ul { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: var(--s1); }
 @media (max-width: 560px) {
-  .edit-ui { right: var(--s2); bottom: var(--s2); left: var(--s2); max-width: none; }
-  .edit-bar { justify-content: stretch; }
+  .edit-ui { right: 1rem; bottom: 1rem; left: var(--s2); max-width: none; }
+  .edit-bar { justify-content: flex-end; }
   .edit-bar .btn { flex: 1 1 auto; }
 }
 

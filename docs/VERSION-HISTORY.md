@@ -42,6 +42,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The privacy draft was updated to describe the site as it now ships: the Instagram embed as it loads, and the forms as they now work. It remains a draft, frozen for the owner's and legal review, and is not published.
 
+- The staff edit button is now a small dark circle carrying a pencil, as the same button is in Connect, and it rests at the left of the Safety Exit pill instead of over it; its words are still read aloud, and shown as a tooltip.
+
 - The public pages were redesigned within the standing brand: the footer drops its street address and its rooms-and-directions link, gives hello@badgersupports.org a prominent mail link, and makes the social links and the Director Sign-In 44-pixel icon buttons; the crisis strip keeps its exact wording, centred. Room pages navigate by an icon-led section list, and Directions stands side by side, so the page needs less scrolling.
 
 - Peer Support Groups reads left to right: each day is one row, its sessions in aligned time, place and Get Directions columns, with a large Today tag on the day that is running and Next Up on the following one, both worked out from the visitor's real date. The photograph at the head of the drop-in section sits level with its heading instead of floating below a gap.

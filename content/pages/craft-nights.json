@@ -129,6 +129,24 @@
           ],
           "text": "A student with their painted pumpkin.",
           "photo": "m-people-pumpkin-painting"
+        },
+        {
+          "id": "craft-bracelets",
+          "title": "Bracelet Making",
+          "text": "Bowls of beads set out for bracelet making.",
+          "photo": "m-craft-bracelets"
+        },
+        {
+          "id": "craft-bedazzle",
+          "title": "Bedazzled Crafts",
+          "text": "Two students at the craft table, beads and rhinestones out.",
+          "photo": "m-craft-pair"
+        },
+        {
+          "id": "craft-garden-wall",
+          "title": "Garden Wall",
+          "text": "A flower garden drawn by students on the wall at the Hub.",
+          "photo": "m-openhouse-garden-wall"
         }
       ]
     },

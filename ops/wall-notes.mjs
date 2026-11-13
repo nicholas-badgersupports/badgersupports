@@ -25,6 +25,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import { isDirect } from "./direct.mjs";
+import { finish } from "./finish.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const FILE = path.join(ROOT, "content/fixtures/wall-notes.json");
@@ -70,5 +71,5 @@ async function pull() {
 }
 
 if (isDirect(import.meta.url)) {
-  pull().catch((e) => { console.error(`wall notes: ${e.message}`); process.exit(1); });
+  pull().then(() => finish(0), (e) => { console.error(`wall notes: ${e.message}`); finish(1); });
 }

@@ -36,9 +36,9 @@
    quiet in the accent tint; today's block takes the full accent fill, and the word "Today"
    rides in the card's meta line (.cecard-today) instead of being stuffed inside the block. */
 .cecard-date { flex: 0 0 4.5rem; width: 4.5rem; align-self: flex-start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s0); padding: var(--s1); background: var(--accent-tint); color: var(--accent-deep); border-radius: var(--r-card); text-align: center; }
-.cecard-date .dow { font-size: .8125rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; }
+.cecard-date .dow { font-size: .875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; }
 .cecard-date .dom { font-size: 1.75rem; font-weight: 800; line-height: 1.05; }
-.cecard-date .mon { font-size: .8125rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; }
+.cecard-date .mon { font-size: .875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.2; }
 .cecard-date.is-today { background: var(--accent); color: var(--paper); }
 .cecard-today { display: inline-block; margin-right: var(--s1); padding: .1rem .6rem; background: var(--accent); color: var(--paper); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
 .cecard-body { min-width: 0; }

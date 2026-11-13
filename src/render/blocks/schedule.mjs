@@ -20,7 +20,7 @@ const ARROW_R = html`<svg viewBox="0 0 20 20" aria-hidden="true" focusable="fals
 function carousel(ctx, b) {
   const total = b.photos.length;
   return html`<div class="carousel week-photos" data-carousel role="region" aria-roledescription="carousel" aria-label="${ctx.t("carousel.label", { title: b.title })}">
-    <ul class="carousel-track" data-carousel-track tabindex="0">${b.photos.map((id, i) => html`<li class="carousel-slide" role="group" aria-roledescription="slide" aria-label="${ctx.t("carousel.count", { n: i + 1, total })}"><div class="photo">${picture(ctx, id, { sizes: "(max-width: 860px) calc(100vw - 2rem), 20rem" })}</div></li>`)}</ul>
+    <ul class="carousel-track" data-carousel-track tabindex="0">${b.photos.map((id, i) => html`<li class="carousel-slide"><div class="photo" role="group" aria-roledescription="slide" aria-label="${ctx.t("carousel.count", { n: i + 1, total })}">${picture(ctx, id, { sizes: "(max-width: 860px) calc(100vw - 2rem), 20rem" })}</div></li>`)}</ul>
     <div class="carousel-controls">
       <button type="button" data-carousel-prev aria-label="${ctx.t("carousel.prev")}">${ARROW_L}</button>
       <div class="carousel-dots">${b.photos.map((id, i) => html`<button${attrs({ type: "button", "data-carousel-dot": true, "aria-label": ctx.t("carousel.dot", { n: i + 1 }), "aria-current": i === 0 ? "true" : null })}><span aria-hidden="true"></span></button>`)}</div>

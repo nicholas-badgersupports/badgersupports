@@ -389,7 +389,7 @@
   .ev { grid-template-columns: 1fr; gap: 0; padding-left: var(--s2); }
   .ev-sign { white-space: normal; flex-wrap: wrap; }
   /* One column: "Ended" starts its own line, so it needs no dot to part it from the words before it. */
-  .ev.is-past .ended-tag { display: block; }
+  .ev.is-past .ended-tag { display: block; flex-basis: 100%; }
   .ev.is-happening .ongoing-tag { display: block; }
   .ev.is-happening .ongoing-tag::before { content: none; }
   .ev.is-past .ended-tag::before { content: none; }

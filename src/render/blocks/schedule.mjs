@@ -36,15 +36,17 @@ function dateBlock(ctx, date, today) {
 
 /* An event anyone can walk into gets a Drop in button: to the program's own page when the block
    names one (peer support groups: what a group is, then the way to the Hub), otherwise to the
-   room's directions. With neither, it just says no sign-up is needed. */
+   room's directions. With neither, the cell stays blank: needing no sign-up needs no words
+   (owner, 12 Nov 2026). */
 function signup(ctx, r, dropIn) {
   if (timeUnconfirmed(r)) return timeContact(ctx);
   if (r.signup === "connect" && r.signupUrl) return link(ctx, r.signupUrl, ctx.t("schedule.signup.connect"));
   if (r.signup === "none") {
     const to = dropIn?.[r.program] || r.place?.href;
     if (to) return link(ctx, to, html`${ctx.t("schedule.dropIn")}<span class="sr-only">: ${r.title}</span>`, { class: "drop", icon: "pin" });
+    return "";
   }
-  return ["none", "link"].includes(r.signup) ? ctx.t(`schedule.signup.${r.signup}`) : "";
+  return r.signup === "link" ? ctx.t("schedule.signup.link") : "";
 }
 
 function eventRow(ctx, r, { withDate = false, dropIn = null } = {}) {

@@ -35,6 +35,7 @@ import { addDays } from "../src/render/events.mjs";
 import { chicagoDate } from "../src/render/context.mjs";
 import { validChicagoInstant } from "../src/shared/chicago-time.mjs";
 import { photoProblems } from "../src/render/media.mjs";
+import { canonicalPlaceName } from "../src/shared/place-names.mjs";
 import { TEAM_SCHEMA, GROUPS, publicTeamOrder } from "../src/render/team.mjs";
 
 export const FEED_SCHEMA = "bss.connect-feed/1";
@@ -120,7 +121,7 @@ function seriesFor(rules, title) {
 
 /* Connect's two lists as the site's event source (src/render/events.mjs): recurring rows from the
    weekly groups, dated rows from the events. Words that name no room become a place of their own,
-   shown unlinked. Returns { events, dropped, unnamed }, `dropped` naming each event left out and why, and `unnamed` each
+   shown unlinked under the full form of its name (src/shared/place-names.mjs). Returns { events, dropped, unnamed }, `dropped` naming each event left out and why, and `unnamed` each
    event type the rules do not name, sorted by type, with the events of that type and the program each was shown as. */
 export function mapEvents(reply, rules) {
   const recurring = [];
@@ -131,7 +132,7 @@ export function mapEvents(reply, rules) {
   const placeFor = (room, fallback) => {
     const id = roomFor(rules, room);
     if (id) return id;
-    const text = String(room || "").trim();
+    const text = canonicalPlaceName(String(room || "").trim());
     if (!text) return fallback || null;
     const key = `connect-room:${words(text).trim().replace(/ /g, "-")}`;
     rooms[key] = { name: text.slice(0, 120), detail: "", href: null };

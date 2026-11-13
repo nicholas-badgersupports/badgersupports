@@ -156,7 +156,7 @@ export function resourceCard(r, ctx, topicOf) {
 export default {
   type: "resources",
   label: "Resource list",
-  fields: { title: "text!", lead: "text", source: "source!", topics: "resourcetopics!" },
+  fields: { title: "text!", lead: "text", source: "source!", topics: "resourcetopics!", feedback: "paragraphs", feedbackLink: "link" },
   data: ["resources", "resourcesSample", "resourcesUpdated", "resourcesState"],
   client: "resources.js",
   analytics: "none",
@@ -207,8 +207,12 @@ export default {
     <p>${ctx.t("resources.none.body")}</p>
     <button type="button" class="btn btn--quiet" data-res-reset>${ctx.t("resources.none.reset")}</button>
   </div>
-  <p class="res-scope">${ctx.t("resources.scope")}${updated ? html` <span class="res-updated">${ctx.t("resources.updated", dateParts(updated, ctx.t))}</span>` : ""}</p>
-  <p class="res-suggest">${go(ctx, "/forms/resource-suggestion/", ctx.t("resources.report.suggest"))}</p>
+  <div class="res-closing">
+    <p class="res-scope">${ctx.t("resources.scope")}${updated ? html` <span class="res-updated">${ctx.t("resources.updated", dateParts(updated, ctx.t))}</span>` : ""}</p>
+    <p class="res-suggest">${link(ctx, "/forms/resource-suggestion/", ctx.t("resources.report.suggest"), { class: "btn" })}</p>
+    ${(b.feedback || []).map((p) => html`<p>${p}</p>`)}
+    ${b.feedbackLink ? html`<p class="res-feedback-link">${link(ctx, b.feedbackLink.href, b.feedbackLink.label, { class: "btn btn--quiet" })}</p>` : ""}
+  </div>
   <dialog class="res-dialog" aria-labelledby="${b.id}-dh" data-res-dialog>
     <div class="res-dialog-head"><h2 id="${b.id}-dh" data-res-dtitle></h2><button type="button" class="btn btn--quiet res-close" data-res-close>${ctx.t("resources.close")}</button></div>
     <div class="res-dialog-body" data-res-dbody></div>

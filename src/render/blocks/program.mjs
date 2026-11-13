@@ -107,7 +107,7 @@ const VARIANTS = { feature, gallery, topics };
 export default {
   type: "program",
   label: "Program section",
-  fields: { variant: "choice:feature|gallery|topics!", program: "choice:peer|craft|workshops!", heading: "choice:h1|h2", title: "text!", lead: "text", body: "paragraphs", list: "visitlist", facts: "termlist", note: "text", photos: "media[]", embed: "embed", links: "link[]", upcoming: "eventquery", topics: "termlist", disclosure: "text", primary: "link" },
+  fields: { variant: "choice:feature|gallery|topics!", program: "choice:peer|craft|workshops!", heading: "choice:h1|h2", title: "text!", lead: "text", body: "paragraphs", list: "visitlist", facts: "termlist", note: "text", photos: "media[]", embed: "embed", links: "link[]", upcoming: "eventquery", topics: "termlist", disclosure: "text", primary: "link", boxed: "boolean" },
   data: ["events", "eventsState"],
   client: ["strip.js"],
   refresh: (b) => !!b.upcoming,
@@ -116,6 +116,6 @@ export default {
   render(b, ctx) {
     const v = VARIANTS[b.variant];
     if (!v) throw new Error(`${b.id}: unknown program variant ${b.variant}`);
-    return html`<section class="program program--${b.variant}${b.heading === "h1" ? " is-page" : ""} band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-program="${b.program}">${v(b, ctx)}</section>`;
+    return html`<section class="program program--${b.variant}${b.heading === "h1" ? " is-page" : ""}${b.boxed ? " is-boxed" : ""} band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-program="${b.program}">${v(b, ctx)}</section>`;
   },
 };

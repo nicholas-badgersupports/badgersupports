@@ -104,19 +104,12 @@ document.addEventListener("keydown", (e) => {
   if (escapes.length >= 3) { escapes = []; leaveQuickly(); }
 });
 
-/* Icons: every kind in MOVING has a move (motion.css) and keeps it. The owner's narrowing
-   (12 Nov 2026, corrected the same day: "they shouldn't be done away with — they should not
-   fire when they are randomly clicked, just when they are interacted with") narrows when a
-   move may start, never which icons may move. A move starts only from its own icon: once
-   when the icon first comes into view (the observer below), when a mouse is over the icon
-   itself, when the keyboard reaches its control, or when its own button or summary is
-   pressed. Pointing at a link's words, pressing a link (it navigates anyway), or clicking
-   anywhere else plays nothing — clicking around used to set every crossed icon off, because
-   pointing at any part of a control played all of its icons. The class comes off when every
-   part has finished, so the next pointing, press or arrival of the keyboard can play it
-   again. The plus is not in MOVING: it has no move — its turn into a minus is a transition,
-   in motion.css. */
-const CONTROL = "a, button, summary, label";
+/* Icons: every kind in MOVING has a move (motion.css) and keeps it — no icon loses its move.
+   When a move may start is the owner's rule, restated 12 Nov 2026 (21:07): never on scroll
+   into view, never on hover, never on focus — only on a click, and a click plays only the
+   single icon closest to the click point (the listener below). The class comes off when
+   every part has finished, so the next click can play it again. The plus is not in MOVING:
+   it has no move — its turn into a minus is a transition, in motion.css. */
 const MOVING = new Set(["arrow", "back", "down", "out", "pin", "mail", "calendar", "chat", "scissors", "bulb", "house", "badge", "question", "star", "check", "play", "pause", "jar", "pencil", "ribbon", "search", "account", "paw", "instagram", "tiktok", "linkedin", "win", "sliders", "close", "hand"]);
 const turns = new WeakMap();
 const reduce = matchMedia("(prefers-reduced-motion: reduce)");
@@ -132,35 +125,22 @@ function playIcon(ic) {
   if (moves.length) Promise.all(moves.map((a) => a.finished.catch(() => {}))).then(done);
   else setTimeout(done, 1200);
 }
-function playControl(el) {
-  if (!el) return;
-  for (const ic of el.querySelectorAll("[data-i]")) playIcon(ic);
-}
+/* A click — anywhere — plays the one move whose icon sits closest to the click point, and
+   no other: not the other icons of the button pressed, not every icon on the page. A click
+   on an icon itself is distance zero, so the icon clicked is always the one that plays. */
 document.addEventListener("click", (e) => {
-  const el = e.target.closest?.(CONTROL);
-  if (el && (el.tagName === "BUTTON" || el.tagName === "SUMMARY")) playControl(el);
+  if (reduce.matches) return;
+  let best = null, bestD = Infinity;
+  for (const ic of document.querySelectorAll("[data-i]")) {
+    if (!MOVING.has(ic.getAttribute("data-i")) || !ic.getClientRects().length) continue;
+    const r = ic.getBoundingClientRect();
+    const dx = e.clientX < r.left ? r.left - e.clientX : e.clientX > r.right ? e.clientX - r.right : 0;
+    const dy = e.clientY < r.top ? r.top - e.clientY : e.clientY > r.bottom ? e.clientY - r.bottom : 0;
+    const d = dx * dx + dy * dy;
+    if (d < bestD) { bestD = d; best = ic; }
+  }
+  if (best) playIcon(best);
 }, { passive: true });
-document.addEventListener("pointerover", (e) => {
-  if (e.pointerType !== "mouse") return;
-  const ic = e.target.closest?.("[data-i]");
-  if (ic && !ic.contains(e.relatedTarget)) playIcon(ic);
-}, { passive: true });
-document.addEventListener("focusin", (e) => playControl(e.target.closest?.(CONTROL)));
-
-/* First sight: an icon plays its move once when it first comes into view, so nothing below
-   the fold spends its move unseen. The observer lets go of an icon once it has played, so
-   scrolling back and forth never restarts it — pointing at the icon itself, the keyboard,
-   or its own button plays it again. */
-if (typeof IntersectionObserver === "function") {
-  const iconObserver = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      iconObserver.unobserve(entry.target);
-      playIcon(entry.target);
-    }
-  });
-  for (const ic of document.querySelectorAll("[data-i]")) iconObserver.observe(ic);
-}
 
 /* A link to a folded answer (#q-…) opens it. */
 function openTarget() {

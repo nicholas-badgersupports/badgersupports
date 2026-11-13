@@ -16,10 +16,10 @@
   border-bottom: var(--rule-line);
 }
 .site-header .wrap { display: flex; align-items: center; gap: var(--s4); min-height: var(--header-h); }
-.brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--red); text-decoration: none; margin-right: auto; }
+.brand { flex: none; display: inline-flex; align-items: center; gap: .55rem; color: var(--red); text-decoration: none; margin-right: auto; }
 .brand:hover { color: var(--red); text-decoration: none; }
 .brand img { width: 30px; height: auto; }
-.brand span { font: 800 1.6rem/1 var(--font-display); letter-spacing: -.01em; padding-top: .2rem; }
+.brand span { font: 800 1.6rem/1 var(--font-display); letter-spacing: -.01em; padding-top: .2rem; white-space: nowrap; }
 
 .nav { display: flex; align-items: center; }
 .nav > ul { display: flex; align-items: center; gap: var(--s1); list-style: none; }
@@ -43,6 +43,7 @@
    never colour alone. Measured flat: ink on the tint 9.37, red-deep on the tint 7.48. */
 .site-header .nav a[aria-current="page"] { background: var(--red-tint); color: var(--ink); font-weight: 700; border-radius: var(--r-chip); }
 .site-header .nav a[aria-current="page"]:hover { background: var(--red-tint); color: var(--red-deep); }
+.site-header .nav .sub a[aria-current="page"] { border-radius: var(--r-input); }
 .nav details { position: relative; }
 .nav .sub {
   position: absolute; top: calc(100% + .35rem); left: 0; min-width: 15rem; z-index: 30;
@@ -54,13 +55,14 @@
 .menu-toggle { display: none; }
 
 /* ---------- safety exit ---------- */
-/* The pill at the header's right, on every page: the brand red, flat like every button here, and
-   always in reach because the header sticks. On a phone the header wraps and the pill takes the
-   row under the brand, pushed right — it never covers the brand, the Menu button or the menu. */
+/* The pill floats at the bottom right of the screen, on every page (moved out of the header at
+   the owner's direction, 12 Nov 2026, to sit where SPILL and Connect put theirs): the brand
+   red, flat like every button here, always in reach, floating over the page's foot. */
 .safety-exit {
-  flex: none; display: inline-flex; align-items: center; gap: .45rem;
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 40;
+  display: inline-flex; align-items: center; gap: .45rem;
   min-height: 44px; padding: 0 1rem; border-radius: var(--r-chip);
-  background: var(--red); color: var(--cream);
+  background: var(--red); color: var(--cream); box-shadow: var(--menu-shadow);
   font: 700 .9375rem var(--font-body); text-decoration: none; white-space: nowrap;
 }
 .safety-exit:hover { background: var(--red-deep); color: var(--cream); text-decoration: none; }
@@ -77,8 +79,6 @@
   .brand span { font-size: clamp(1rem, (100vw - 9.5rem) / 9.6, 1.6rem); }
   /* without JavaScript the navigation stays open, as a wrapped list under the brand */
   .nav { width: 100%; }
-  /* the pill wraps to its own row, at the right, clear of the brand and the Menu button */
-  .safety-exit { margin-left: auto; }
   .nav > ul { flex-wrap: wrap; gap: 0; padding-bottom: var(--s1); }
   .nav .sub { position: static; box-shadow: none; border: 0; background: transparent; padding: 0 0 var(--s1) var(--s3); min-width: 0; }
   .js .menu-toggle {
@@ -120,7 +120,7 @@
 .footer-brand p { margin: 0; line-height: 1.5; }
 /* Badger SPILL, a Badger Supports program: its logo on a cream chip, so its own colours read on the red */
 .footer-brand .footer-spill { display: inline-flex; align-items: center; gap: var(--s2); align-self: start; padding: .35rem 1rem .35rem .5rem;
-  background: var(--spill-panel); color: var(--spill-ink); border-radius: 14px; font-weight: 700; text-decoration: none; box-shadow: 0 3px 0 var(--ink);
+  background: var(--spill-panel); color: var(--spill-ink); border-radius: var(--r-card); font-weight: 700; text-decoration: none; box-shadow: 0 3px 0 var(--ink);
   transition: translate var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
 .footer-brand .footer-spill:hover { color: var(--spill-ink); text-decoration: none; translate: 0 -2px; box-shadow: 0 5px 0 var(--ink); }
 .footer-brand .footer-spill-logo { width: 6rem; height: auto; }

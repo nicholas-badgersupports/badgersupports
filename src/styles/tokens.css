@@ -8,7 +8,7 @@
  *           Corners round (~20pt), soft, never sharp. Backgrounds are never a flat fill: a paper
  *           texture in the topic colour. Contrast at least 4.5:1, tap targets 44px.
  *   system  the brand design system (Admin/Design/Badger Supports design system, src/tokens/tokens.css
- *           and its components): the radius scale (sm 8, md 20 the default, lg 32 for cards and
+ *           and its components): the radius scale (sm 8, md 12 the default for cards and
  *           panels, pill for buttons); the poster headline is Montserrat at its heaviest, uppercase and
  *           tight; a button is a flat pill with no shadow; the two CC0 paper textures in
  *           /assets/brand/ (TEXTURES-LICENCE.txt).
@@ -179,11 +179,12 @@
   --measure: 62ch;
   --header-h: 4.5rem;
 
-  /* shape, the design system's scale: --r-card is the brand default (20), --r-panel is for cards,
-     info panels and photo cards (32), --r-input the small mark (8). Bands, header and footer stay
-     square: they run edge to edge. */
-  --r-card: 20px;
-  --r-panel: 32px;
+  /* shape, the scale as the owner tightened it (12 Nov 2026: one smaller standard for boxes,
+     less rounding the better): --r-card is the brand default (12), --r-panel matches it (12)
+     for info panels and photo cards, --r-input the small mark (8). Pills and circles keep
+     their shape (--r-chip, 50%). Bands, header and footer stay square: they run edge to edge. */
+  --r-card: 12px;
+  --r-panel: 12px;
   --r-input: 8px;
   --r-chip: 999px;
   /* the height of SPILL's double wave (src/render/wave.mjs), not drawn on this site since 23 Oct 2026 */

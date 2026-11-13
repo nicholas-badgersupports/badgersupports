@@ -2777,7 +2777,7 @@ await part("9. the safety exit", async () => {
           };
           return {
             href: el.getAttribute("href"), label: el.textContent.trim(),
-            top: Math.round(b.top), bottom: Math.round(b.bottom), right: Math.round(innerWidth - b.right), h: Math.round(b.height),
+            top: Math.round(b.top), bottom: Math.round(b.bottom), fromBottom: Math.round(innerHeight - b.bottom), right: Math.round(innerWidth - b.right), h: Math.round(b.height),
             headTop: Math.round(head.top), headBottom: Math.round(head.bottom),
             overlap: hits(".brand") || hits("[data-menu-toggle]") || hits("#site-nav"),
             sideways: document.documentElement.scrollWidth - innerWidth,
@@ -2785,8 +2785,8 @@ await part("9. the safety exit", async () => {
         });
         check(r.href === "https://www.google.com/" && r.label === words("header.safetyExit"),
           `safety exit @${w} ${path}: a plain link to Google, labelled "${r.label}"`);
-        check(r.top >= r.headTop - 1 && r.bottom <= r.headBottom + 1 && r.right >= 0 && r.h >= 44 && !r.overlap && r.sideways <= 0,
-          `safety exit @${w} ${path}: inside the header at its right, ${r.h}px tall, covering nothing, no sideways scroll`);
+        check(r.fromBottom >= 8 && r.fromBottom <= 40 && r.right >= 8 && r.right <= 40 && r.top >= 0 && r.h >= 44 && !r.overlap && r.sideways <= 0,
+          `safety exit @${w} ${path}: floating at the screen's bottom right, ${r.h}px tall, covering nothing, no sideways scroll`);
       }
     }
 
@@ -2797,9 +2797,9 @@ await part("9. the safety exit", async () => {
     await sleep(300);
     const stuck = await page.evaluate(() => {
       const b = document.querySelector("[data-safety-exit]").getBoundingClientRect();
-      return { top: b.top, bottom: b.bottom };
+      return { top: b.top, bottom: b.bottom, fromBottom: innerHeight - b.bottom };
     });
-    check(stuck.top >= 0 && stuck.bottom <= 200, `safety exit: still visible after scrolling (top ${Math.round(stuck.top)})`);
+    check(stuck.top >= 0 && stuck.fromBottom >= 8 && stuck.fromBottom <= 40, `safety exit: still at the bottom right after scrolling (${Math.round(stuck.fromBottom)}px from the foot)`);
 
     /* one press opens Google in a new tab and replaces this page with it too, and nothing is measured on the way out */
     exits.length = 0;

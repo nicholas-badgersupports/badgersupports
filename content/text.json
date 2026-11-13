@@ -2005,7 +2005,7 @@
     },
     "staff.settings.help.safetyExit": {
       "group": "staff",
-      "text": "Where the Safety Exit button in the header of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish.",
+      "text": "Where the Safety Exit button at the bottom right of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish.",
       "where": "Under the Safety Exit destination label: what the address changes, and the fallback."
     },
     "staff.settings.field.craftCount": {

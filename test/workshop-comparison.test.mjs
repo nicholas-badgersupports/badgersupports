@@ -37,7 +37,7 @@ test('Workshop comparison has equal native topic jumps and preserves original ta
  assert.equal(h.primary.href,'/forms/workshop-request/');
  const targets=new Set([...pageStrings(p),...pageValues(p)].map(r=>r.target));
  for(const path of ['b-rw-head/title','b-rw-head/lead','b-rw-head/primary/href','b-rw-networks/body/0','b-rw-networks/items/0/text','b-rw-selfcare/body/0','b-rw-advocacy/items/0/text','b-rw-housing/items/0/text','b-rw-training/links/0/href','b-rw-faq/items/0/a/0','b-rw-access/body/0'])assert.ok(targets.has('page:'+p.id+':'+path),path);
- const photos={'b-rw-head':['m-workshop-training-tables','m-workshop-room','m-workshop-housing-panel-wide'],'b-rw-networks':['m-workshop-herald-table','m-workshop-supplies'],'b-rw-selfcare':['m-workshop-housing-classroom'],'b-rw-advocacy':['m-workshop-directors-roundtable'],'b-rw-housing':['m-workshop-housing-panel-screen','m-workshop-housing-panel-close']};
+ const photos={'b-rw-head':['m-workshop-training-tables','m-workshop-room','m-workshop-housing-panel-wide'],'b-rw-networks':['m-workshop-herald-table','m-workshop-supplies'],'b-rw-selfcare':['m-workshop-housing-classroom'],'b-rw-advocacy':['m-oh-group-posters'],'b-rw-housing':['m-workshop-housing-panel-screen','m-workshop-housing-panel-close']};
  for(const[id,want]of Object.entries(photos))assert.deepEqual(p.blocks.find(b=>b.id===id).photos,want);
  const out=markup(p);for(const href of hrefs)assert.ok(out.includes(`id="${href.slice(1)}"`),href);
  assert.doesNotMatch(out,/<form|<input|<textarea|Requests must be submitted 5 days|respond within|capacity of/);

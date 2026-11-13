@@ -62,8 +62,16 @@ function header(ctx, path) {
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>${ctx.t("header.menu")}</button>
   <nav class="nav" id="site-nav" aria-label="${ctx.t("header.navLabel")}"><ul>${s.nav.map((i) => navItem(ctx, i, path))}</ul></nav>
   ${s.headerAction ? html`<div class="header-action">${link(ctx, s.headerAction.href, s.headerAction.label, { class: "btn btn--quiet" })}</div>` : ""}
-  <a class="safety-exit" href="${safetyExitHref(s)}" data-safety-exit>${icon("out", "safety-exit-ic")}<span>${ctx.t("header.safetyExit")}</span></a>
 </div></header>`;
+}
+
+/* The Safety Exit floats at the bottom right of the screen on every page (moved out of the
+   header at the owner's direction, 12 Nov 2026, to sit where SPILL and Connect put theirs):
+   the same pill, the same destination, the same plain link for anyone without JavaScript.
+   site.js gives a press its quick-leave behaviour. */
+function safetyExit(ctx) {
+  const s = ctx.site;
+  return html`<a class="safety-exit" href="${safetyExitHref(s)}" data-safety-exit>${icon("out", "safety-exit-ic")}<span>${ctx.t("header.safetyExit")}</span></a>`;
 }
 
 function supportLine(ctx) {
@@ -192,6 +200,7 @@ ${body ?? main.map((b) => renderBlock(b, ctx))}
 </main>
 ${supportLine(ctx)}
 ${footer(ctx)}
+${safetyExit(ctx)}
 </body>
 </html>
 `;

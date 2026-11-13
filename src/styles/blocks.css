@@ -1253,16 +1253,23 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .expect-mark { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: 0 0 var(--s3); border-radius: 50%; background: var(--accent-tint); color: var(--accent-deep); }
 .expect-mark .ic { width: 1.8rem; height: 1.8rem; }
 /* Statement banner (src/render/blocks/statement.mjs): one line, large and centred on the tint. */
-.statement { background: var(--tex-wash); background-blend-mode: normal, multiply; }
-.statement .wrap { text-align: center; }
-.statement-line { display: flex; align-items: center; justify-content: center; gap: var(--s4); margin: 0; font: 800 clamp(1.6rem, 1.2rem + 2vw, 2.6rem)/1.25 var(--font-display); color: var(--accent-deep); text-wrap: balance; }
-.statement-paw { width: 2rem; height: 2rem; flex: none; color: var(--accent); transform: rotate(-12deg); }
-.statement-paw:last-child { transform: rotate(12deg) scaleX(-1); }
-.statement-points { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin: var(--s4) 0 0; padding: 0; }
+.statement { position: relative; overflow: hidden; background: var(--tex-wash); background-blend-mode: normal, multiply; }
+.statement .wrap { position: relative; text-align: center; }
+.statement-paws { position: absolute; inset: 0; pointer-events: none; }
+.statement-paws .ic { position: absolute; color: var(--accent); opacity: .09; }
+.statement-paws .ic:nth-child(1) { left: 4%; top: 10%; width: 3.4rem; height: 3.4rem; transform: rotate(-18deg); }
+.statement-paws .ic:nth-child(2) { left: 15%; bottom: 8%; width: 2.2rem; height: 2.2rem; transform: rotate(24deg); }
+.statement-paws .ic:nth-child(3) { right: 5%; top: 14%; width: 2.6rem; height: 2.6rem; transform: rotate(14deg) scaleX(-1); }
+.statement-paws .ic:nth-child(4) { right: 18%; bottom: 6%; width: 4rem; height: 4rem; transform: rotate(-8deg); }
+.statement-paws .ic:nth-child(5) { left: 38%; top: 3%; width: 1.8rem; height: 1.8rem; transform: rotate(30deg); }
+.statement-paws .ic:nth-child(6) { right: 36%; bottom: 3%; width: 2rem; height: 2rem; transform: rotate(-26deg) scaleX(-1); }
+.statement-line { margin: 0; font: 800 clamp(1.6rem, 1.2rem + 2vw, 2.6rem)/1.25 var(--font-display); color: var(--accent-deep); text-wrap: balance; }
+.statement-points { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin: var(--s5) 0 0; padding: 0; }
 .statement-points li { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-radius: var(--r-chip); background: var(--accent); color: var(--cream); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
 .statement-ic { width: 1.2rem; height: 1.2rem; }
 .statement .wrap > p { max-width: var(--measure); margin-inline: auto; }
-.statement-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s3) var(--s4); margin-top: var(--s4); }
+.statement .wrap > p:not(.statement-line) { margin-top: var(--s5); }
+.statement-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s3) var(--s4); margin-top: var(--s5); }
 .expect-points { list-style: none; margin-top: var(--s4); border-bottom: var(--rule-line); }
 .expect-points li { display: flex; gap: var(--s3); align-items: center; padding-block: var(--s3); border-top: var(--rule-line); font-weight: 600; }
 .expect-points li > span { min-width: 0; overflow-wrap: anywhere; }
@@ -1783,7 +1790,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
 .res-none p { margin: 0 0 var(--s2); }
 .res-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
-.res-suggest { margin: var(--s3) 0 0; }
+.res-closing { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--lift); padding: var(--s5); margin-top: var(--s6); display: grid; gap: var(--s3); justify-items: start; }
+.res-closing p { margin: 0; }
+.res-suggest { margin: 0; }
 .res-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); max-height: min(40rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
 .res-dialog::backdrop { background: var(--scrim); }
 .res-dialog-head { position: sticky; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); padding: var(--s4) var(--s4) var(--s2) var(--s5); background: var(--paper); }
@@ -1879,3 +1888,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-tool { display: grid; gap: var(--s1); align-content: start; padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); color: var(--ink); text-decoration: none; }
 .staff-tool:hover { border-color: var(--accent); }
 .staff-tool-name { font-weight: 700; font-size: var(--fs-h3); line-height: 1.15; }
+
+/* Boxed sections (the owner's containers, 12 Nov 2026): a block marked boxed in its page's
+   content draws its wrap as the site's card — paper, a line, the card radius and the soft
+   lift — so a run of sections reads as one container each instead of one loose flow. */
+.expect.is-boxed .wrap, .program.is-boxed .wrap {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card);
+  box-shadow: var(--lift); padding: var(--s5);
+}
+@media (max-width: 860px) {
+  .expect.is-boxed .wrap, .program.is-boxed .wrap { padding: var(--s4); }
+}

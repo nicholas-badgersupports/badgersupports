@@ -115,7 +115,7 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .field-help p { margin-bottom: var(--s1); }
 .field-help h3 { font: 700 var(--fs-small)/1.5 var(--font-body); color: var(--ink); margin: var(--s2) 0 var(--s0); }
 .field-help h3:first-child { margin-top: 0; }
-.field input[type="text"], .field input[type="email"], .field input[type="tel"], .field input[type="number"], .field input[type="date"],
+.field input[type="text"], .field input[type="email"], .field input[type="url"], .field input[type="tel"], .field input[type="number"], .field input[type="date"],
 .field input[type="datetime-local"], .field textarea, .field select {
   width: 100%; min-height: 48px; padding: .65rem .8rem; font: 400 1.0625rem/1.4 var(--font-body); color: var(--ink);
   background: var(--field); border: 2px solid var(--field-border); border-radius: var(--r-input);

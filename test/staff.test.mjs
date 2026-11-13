@@ -1912,7 +1912,8 @@ test("item 15, settings (f): one save sets all three, publishes them, and clears
   assert.deepEqual((await currentRevision()).structure.settings, all, "the published revision carries them");
   const list = await pagesNow(publisher);
   assert.deepEqual(list.settings, all);
-  assert.deepEqual(list.site, { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL });
+  assert.deepEqual(list.site, { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL, safetyExitUrl: "https://www.google.com/" },
+    "the three saved, and the Safety Exit destination at the build's own value, unsaved");
 });
 
 test("item 15, settings (g): bringing back an earlier version brings back its settings, and one from before any brings back the build's", async (t) => {
@@ -1983,7 +1984,7 @@ test("item 15, settings (i): a stale tab's refusal carries the settings saved si
   const typed = { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL };
   const stale = await saveSettings(mine, typed, v.version);
   assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", other.body.version]);
-  assert.deepEqual(stale.body.site, { name: "Their Test Name", description: "", accessibilityEmail: "accessibility@badgersupports.org" },
+  assert.deepEqual(stale.body.site, { name: "Their Test Name", description: "", accessibilityEmail: "accessibility@badgersupports.org", safetyExitUrl: "https://www.google.com/" },
     "the refusal carries the settings as saved at the version it names");
   assert.equal(await homeTitle(), "Their Test Name — peer support at UW–Madison", "nothing of mine was saved");
   const page = await change(mine, { action: "add", expected: v.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });

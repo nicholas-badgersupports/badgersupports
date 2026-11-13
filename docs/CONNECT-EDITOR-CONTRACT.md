@@ -594,11 +594,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-818 keys. Keys are permanent. Required text cannot be published empty and must keep each
-806 keys. Keys are permanent. Required text cannot be published empty and must keep each
+822 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (23)
+### Every page (24)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -612,6 +611,7 @@ the site adds the markup.
 | `header.homeSuffix` | — home | Read aloud after the name in the header link, so it says where the link goes. |  |
 | `header.menu` | Menu | The menu button on a phone. |  |
 | `header.navLabel` | Main | The main menu's name, read by screen readers. |  |
+| `header.safetyExit` | Safety Exit | The pill at the right of the header, on every page: one press opens Google in a new tab and replaces this page in the Back history. |  |
 | `link.toConnect` | (opens Badger Supports Connect) | Read aloud after every link that leaves for Connect. |  |
 | `support.label` | If you need help now | The crisis-line band's name, read by screen readers. The band's sentence is edited in Site settings. |  |
 | `footer.socialLabel` | Badger Supports elsewhere | The social links' name, read by screen readers. |  |
@@ -884,7 +884,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (414)
+### Staff page and edit button (417)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1047,14 +1047,17 @@ the site adds the markup.
 | `staff.pages.menu.backName` | Put {{label}} back on the menu | Staff page, button name for screen readers. | `{{label}}` |
 | `staff.pages.error.siteName` | Give the site a name of up to 60 characters, without a long dash (—). | Under Site Settings on the staff page, when the site name is empty, too long or holds the dash that joins it to page titles. |  |
 | `staff.pages.error.email` | Use one email address, like name@example.org. | Under Site Settings on the staff page, when the accessibility email is not one address. |  |
-| `staff.settings.title` | Site Settings | Heading of the part of the staff page, for a publisher, that changes the site's name, search description and accessibility email. |  |
+| `staff.pages.error.safetyExit` | Use one web address starting with https://, like https://www.google.com/. | Under Site Settings on the staff page, when the Safety Exit destination is not one https address. |  |
+| `staff.settings.title` | Site Settings | Heading of the part of the staff page, for a publisher, that changes the site's name, search description, accessibility email and Safety Exit destination. |  |
 | `staff.settings.field.name` | Site Name | Label of the site name field under Site Settings. |  |
 | `staff.settings.help.name` | Added to the title of every page. | Under the Site Name label: what the name changes. |  |
 | `staff.settings.field.description` | Search Description | Label of the search description field under Site Settings. |  |
 | `staff.settings.help.description` | What search engines show for the home page. A new page starts with it as its own. | Under the Search Description label: what the description changes. |  |
 | `staff.settings.field.email` | Accessibility Email | Label of the accessibility email field under Site Settings. |  |
 | `staff.settings.help.email` | Linked in the accessibility line at the foot of every page. | Under the Accessibility Email label: where the address shows. |  |
-| `staff.settings.save` | Save Settings | Button under Site Settings: saves the three settings as one change, which publishes. |  |
+| `staff.settings.field.safetyExit` | Safety Exit destination | Label of the Safety Exit destination field under Site Settings. |  |
+| `staff.settings.help.safetyExit` | Where the Safety Exit button in the header of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish. | Under the Safety Exit destination label: what the address changes, and the fallback. |  |
+| `staff.settings.save` | Save Settings | Button under Site Settings: saves the four settings as one change, which publishes. |  |
 | `staff.settings.done` | Settings saved. | Read out once Site Settings are saved and published. |  |
 | `staff.settings.conflict` | Someone saved settings since you opened this page. Their values are under each field. Save Settings again to replace them with yours. | Under Site Settings, when someone else saved settings after this page was opened; the fields keep what was typed. |  |
 | `staff.settings.since` | Saved since you opened this page: {{value}} | Under a Site Settings field whose saved value changed after this page was opened, with that value. | `{{value}}` |

@@ -78,6 +78,32 @@ document.addEventListener("click", (e) => {
   if (menuOpen() && !nav.contains(e.target) && !toggle.contains(e.target)) setMenu(false);
 });
 
+/* The Safety Exit: one press of the pill, or Escape three times in quick succession, leaves at
+   once — no confirmation, nothing asked first. The destination opens in a new tab, and this
+   tab is replaced by it too, its entry in the history overwritten, so Back does not bring the
+   site back; the script also tries to close this tab outright, which a browser only allows
+   for a tab the page itself opened, so the replace is what guarantees the leaving. The pill
+   is a plain link and still leaves without this file. Leaving is never measured: nothing
+   here sends anything of its own, to anyone. */
+const safetyExit = document.querySelector("[data-safety-exit]");
+function leaveQuickly() {
+  const url = safetyExit ? safetyExit.href : "https://www.google.com/";
+  window.open(url, "_blank");
+  window.location.replace(url);
+  window.close();
+}
+if (safetyExit) {
+  safetyExit.addEventListener("click", (e) => { e.preventDefault(); leaveQuickly(); });
+}
+let escapes = [];
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" || e.repeat) return;
+  const now = performance.now();
+  escapes = escapes.filter((t) => now - t < 1000);
+  escapes.push(now);
+  if (escapes.length >= 3) { escapes = []; leaveQuickly(); }
+});
+
 /* Icons: every kind in MOVING has a move (motion.css) and keeps it. The owner's narrowing
    (12 Nov 2026, corrected the same day: "they shouldn't be done away with — they should not
    fire when they are randomly clicked, just when they are interacted with") narrows when a

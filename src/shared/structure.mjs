@@ -15,8 +15,9 @@
  *   A page's record may also hold its sections: sections: { made: { "<b-id>": <a block made or copied here> },
  *     order: null | [every block id, retired ones included], retired: [block ids] }.
  *
- *   The document may also hold the site's settings: settings: { name?, description?, accessibilityEmail? }, only the
- *   keys a publisher saved; a key left out keeps the build's value (content/site.json). laySettings lays them.
+ *   The document may also hold the site's settings: settings: { name?, description?, accessibilityEmail?,
+ *   safetyExitUrl? }, only the keys a publisher saved; a key left out keeps the build's value
+ *   (content/site.json). laySettings lays them.
  *
  *   And rooms' words and photos: rooms: { "<room id>": { name?, short?, building?, where?, address?, note?,
  *   steps?: { "<step id>": { text?, photo?: "<library id>" | null } } } }, only what a publisher saved; layRooms lays
@@ -39,7 +40,8 @@
  *   - Only a section drawn from its own words alone (no data source, no script) is copied; a new one is a Text section.
  *   - A section a link on the site lands on (its anchor, or an id inside it) is not retired while that link stands.
  *   - A page's title is stored without the site's name; the name is added when the page is drawn (layout.mjs).
- *   - Only the site's name, search description and accessibility email change here; any other setting is refused.
+ *   - Only the site's name, search description, accessibility email and Safety Exit destination change here; any
+ *     other setting is refused.
  *   - Of a room, only its words (name, short, building, where, address, note, each step's text) and each step's photo
  *     change here; adding or taking down a room, its id, aliases, links, published flag and its steps' number and order
  *     stay a change in the files. A step's photo is a library photo or none, drawn at its own shape.
@@ -90,7 +92,11 @@ function description(value, code = "page.description") {
 
 /* ---------- the site's settings ---------- */
 
-export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail"];
+export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail", "safetyExitUrl"];
+/* The Safety Exit's destination when no setting stands: Google — the plain, everyday page
+   UHS's quick exit uses, and the same default on all three sites. */
+export const SAFETY_EXIT_DEFAULT = "https://www.google.com/";
+export const URL_MAX = 2000;
 const EMAIL_RE = /^[a-z0-9._%+-]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/;
 
 /* The site's name: checked as a page title is, at most NAME_MAX characters, and without the dash that joins it to a
@@ -113,9 +119,26 @@ function siteEmail(value) {
   if (!v || v.length > EMAIL_MAX || !EMAIL_RE.test(v)) fail("settings.email");
   return v;
 }
-const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail };
+/* The Safety Exit's destination: one https address and nothing else — no script, no credentials,
+   no whitespace inside it. Anything else is refused at a save and skipped when laid over the
+   build (laySettings), so a bad or empty stored value leaves the build's destination standing. */
+function siteSafetyExit(value) {
+  if (typeof value !== "string") fail("settings.safetyExitUrl");
+  const v = value.trim();
+  if (!v || v.length > URL_MAX || /\s/.test(v)) fail("settings.safetyExitUrl");
+  let u;
+  try { u = new URL(v); } catch { fail("settings.safetyExitUrl"); }
+  if (u.protocol !== "https:" || !u.hostname || u.username || u.password) fail("settings.safetyExitUrl");
+  return v;
+}
+/* The destination a page's Safety Exit points at: the site's setting when it passes the check,
+   the default when it is unset, empty or invalid — the exit never breaks for a bad value. */
+export function safetyExitHref(site) {
+  try { return siteSafetyExit(site?.safetyExitUrl); } catch { return SAFETY_EXIT_DEFAULT; }
+}
+const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail, safetyExitUrl: siteSafetyExit };
 
-/* The settings a change saves, merged over the saved ones. Refuses any key but the three, and a change naming none. */
+/* The settings a change saves, merged over the saved ones. Refuses any key but the four, and a change naming none. */
 function settingsChange(doc, change) {
   const s = change.settings;
   if (!s || typeof s !== "object" || Array.isArray(s)) fail("settings.field");

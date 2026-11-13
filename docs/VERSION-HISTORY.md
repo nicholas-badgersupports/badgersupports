@@ -130,6 +130,12 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The Resources page scrolled sideways at phone width: its closing card's single grid column sized itself to the longest line inside it, running 40 pixels past a 320-pixel screen. The column now shrinks with the card, and the page fits.
 
+- On the event pages — Craft Nights, Dogs on Call and the Housing Hub — the buttons beside the event photograph now wrap onto a second row on wide screens instead of running past the edge of their column, so the last button is always whole: on Craft Nights, Suggest a Craft Night was cut off at every desktop width, and Add to Calendar at some.
+
+- The Wall of Support on the home page is never blank: when Connect's list of approved notes is empty, six notes stand in their place — the six the owner approved on November 13, 2026, carried word for word from the wall's own sheet. When Connect holds even one approved note, the stand-ins do not appear.
+
+- The short address /classes now leads to Discover Classes by Interest under Explore; before, it landed on a page that does not exist, while the classes page itself stood at its Explore address.
+
 
 ## 2026-11-04 to 2026-11-05 — Development period — Form setup, file delivery and visitor pages
 

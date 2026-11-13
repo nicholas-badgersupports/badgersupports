@@ -71,10 +71,10 @@
   animation: you-in .9s ease .55s both;
 }
 /* The face is sized to the centre word it replaces: "you" renders 2.266em wide, and the
-   drawing, stroke included, spans 16.5 of the 24 grid units, so its box is 3.295em and the
+   drawing, stroke included, spans 14.6 of the 24 grid units, so its box is 3.725em and the
    drawing lands at the word's width at any size. The translate lifts it one grid unit — the
    features are drawn centred at y 13, not y 12 — so the face itself sits mid-circle. */
-.hub-you .you-face { width: 3.295em; height: 3.295em; translate: 0 -4.1667%; stroke-width: 2.1; }
+.hub-you .you-face { width: 3.725em; height: 3.725em; translate: 0 -4.1667%; stroke-width: 2.1; }
 .bubble { position: absolute; aspect-ratio: 1; border-radius: 50%; animation: hub-in .6s cubic-bezier(.3, 1.45, .5, 1) .6s both, float-a 9s ease-in-out 1.2s infinite; animation-play-state: running, paused; }
 .network.is-moving .hub, .network.is-moving .bubble { animation-play-state: running; }
 .bubble-3 { animation-name: hub-in, float-b; animation-duration: .6s, 11s; animation-delay: .7s, 1.6s; }

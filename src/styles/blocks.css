@@ -579,6 +579,21 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .cards--days .photo { aspect-ratio: 1 / 1; }
 .cards--activities .photo { aspect-ratio: 1 / 1; }
 .cards--whole .photo img { height: auto; }
+/* The Craft Nights gallery as one row: a single line of smaller pictures, each card taking the same
+   share of the line however many the setting shows, every photo one even shape so the row reads as
+   a strip. The grid setting leaves the "whole" drawing above untouched. */
+.cards--craft-row .card-list { display: flex; gap: var(--s4); }
+.cards--craft-row .card { flex: 1 1 0; min-width: 0; }
+.cards--craft-row .photo { aspect-ratio: 4 / 3; }
+.cards--craft-row .photo img { width: 100%; height: 100%; object-fit: cover; }
+.cards--craft-row .card h3 { font-size: 1.25rem; }
+.cards--craft-row .card-line { font-size: var(--fs-body); }
+@media (max-width: 560px) {
+  /* A phone is too narrow for the whole row at reading size: the strip scrolls sideways instead,
+     each photo most of the screen wide and the next one peeking in — still one row, never a stack. */
+  .cards--craft-row .card-list { overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--s2); }
+  .cards--craft-row .card { flex: 0 0 62%; scroll-snap-align: start; }
+}
 .card-words { display: flex; flex-direction: column; flex: 1; align-items: flex-start; }
 .card h3 { font: 700 clamp(1.6rem, 1.3rem + 1vw, 2.1rem)/1.1 var(--font-display); color: var(--accent); margin-bottom: var(--s1); }
 .card-line { margin: 0; font-weight: 700; font-size: var(--fs-lead); }

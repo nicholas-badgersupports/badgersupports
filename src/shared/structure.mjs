@@ -16,9 +16,9 @@
  *     order: null | [every block id, retired ones included], retired: [block ids] }.
  *
  *   The document may also hold the site's settings: settings: { name?, description?, accessibilityEmail?,
- *   safetyExitUrl?, moodCheckin? }, only the keys a publisher saved; a key left out keeps the build's value
- *   (content/site.json). laySettings lays the words over the site; layMood lays the feeling check-in's set
- *   over the build's (content/widgets/mood.json).
+ *   safetyExitUrl?, moodCheckin?, craftPhotoCount?, craftLayout? }, only the keys a publisher saved; a key
+ *   left out keeps the build's value (content/site.json). laySettings lays the words over the site; layMood
+ *   lays the feeling check-in's set over the build's (content/widgets/mood.json).
  *
  *   And rooms' words and photos: rooms: { "<room id>": { name?, short?, building?, where?, address?, note?,
  *   steps?: { "<step id>": { text?, photo?: "<library id>" | null } } } }, only what a publisher saved; layRooms lays
@@ -41,8 +41,8 @@
  *   - Only a section drawn from its own words alone (no data source, no script) is copied; a new one is a Text section.
  *   - A section a link on the site lands on (its anchor, or an id inside it) is not retired while that link stands.
  *   - A page's title is stored without the site's name; the name is added when the page is drawn (layout.mjs).
- *   - Only the site's name, search description, accessibility email, Safety Exit destination and the feeling
- *     check-in's set change here; any other setting is refused.
+ *   - Only the site's name, search description, accessibility email, Safety Exit destination, the feeling
+ *     check-in's set and the Craft Nights gallery's two settings change here; any other setting is refused.
  *   - Of a room, only its words (name, short, building, where, address, note, each step's text) and each step's photo
  *     change here; adding or taking down a room, its id, aliases, links, published flag and its steps' number and order
  *     stay a change in the files. A step's photo is a library photo or none, drawn at its own shape.
@@ -93,7 +93,7 @@ function description(value, code = "page.description") {
 
 /* ---------- the site's settings ---------- */
 
-export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail", "safetyExitUrl", "moodCheckin"];
+export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail", "safetyExitUrl", "moodCheckin", "craftPhotoCount", "craftLayout"];
 /* The Safety Exit's destination when no setting stands: Google — the plain, everyday page
    UHS's quick exit uses, and the same default on all three sites. */
 export const SAFETY_EXIT_DEFAULT = "https://www.google.com/";
@@ -176,9 +176,40 @@ function moodCheckin(value) {
   });
   return { moods };
 }
-const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail, safetyExitUrl: siteSafetyExit, moodCheckin };
+/* The Craft Nights gallery ("Made at Past Craft Nights"): how many of its photos show, and whether they
+   stand in one row or in the grid. The defaults are the one-row design's: six photos, in a row. A saved
+   value a publisher set is laid over the build by laySettings like the settings above; craftGallery()
+   reads them back with the defaults, so a build carrying an older saved settings document still draws. */
+export const CRAFT_COUNT_MIN = 1;
+export const CRAFT_COUNT_MAX = 12;
+export const CRAFT_PHOTO_COUNT_DEFAULT = 6;
+export const CRAFT_LAYOUTS = ["row", "grid"];
+export const CRAFT_LAYOUT_DEFAULT = "row";
+/* A whole count, as a number or as the digits a form sends; anything else, and a count outside the
+   range, is refused — never rounded or clamped into a value nobody chose. */
+function craftCount(value) {
+  const n = typeof value === "number" ? value : typeof value === "string" && /^\d+$/.test(value.trim()) ? Number(value.trim()) : NaN;
+  if (!Number.isInteger(n) || n < CRAFT_COUNT_MIN || n > CRAFT_COUNT_MAX) fail("settings.craftPhotoCount");
+  return n;
+}
+/* The layout is one of the two words; anything else is refused. */
+function craftLayout(value) {
+  if (typeof value !== "string") fail("settings.craftLayout");
+  const v = value.trim().toLowerCase();
+  if (!CRAFT_LAYOUTS.includes(v)) fail("settings.craftLayout");
+  return v;
+}
+/* The gallery's settings as they stand on a site: each saved value checked again, a missing or
+   no-longer-valid one falling back to its default. */
+export function craftGallery(site) {
+  let count = CRAFT_PHOTO_COUNT_DEFAULT, layout = CRAFT_LAYOUT_DEFAULT;
+  try { count = craftCount(site?.craftPhotoCount); } catch { /* the default stands */ }
+  try { layout = craftLayout(site?.craftLayout); } catch { /* the default stands */ }
+  return { count, layout };
+}
+const SETTING_CHECKS = { name: siteName, description: siteDescription, accessibilityEmail: siteEmail, safetyExitUrl: siteSafetyExit, moodCheckin, craftPhotoCount: craftCount, craftLayout: craftLayout };
 
-/* The settings a change saves, merged over the saved ones. Refuses any key but the five, and a change naming none. */
+/* The settings a change saves, merged over the saved ones. Refuses any key but the seven, and a change naming none. */
 function settingsChange(doc, change) {
   const s = change.settings;
   if (!s || typeof s !== "object" || Array.isArray(s)) fail("settings.field");

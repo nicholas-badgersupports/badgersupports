@@ -1943,6 +1943,16 @@
       "text": "Use one web address starting with https://, like https://www.google.com/.",
       "where": "Under Site Settings on the staff page, when the Safety Exit destination is not one https address."
     },
+    "staff.pages.error.craftCount": {
+      "group": "staff",
+      "text": "Use a whole number of photos from 1 to 12.",
+      "where": "Under Site Settings on the staff page, when the Craft Nights photo count is not a whole number in range."
+    },
+    "staff.pages.error.craftLayout": {
+      "group": "staff",
+      "text": "Choose One Row or Grid.",
+      "where": "Under Site Settings on the staff page, when the Craft Nights gallery layout is not one of its two choices."
+    },
     "staff.settings.title": {
       "group": "staff",
       "text": "Site Settings",
@@ -1987,6 +1997,36 @@
       "group": "staff",
       "text": "Where the Safety Exit button in the header of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish.",
       "where": "Under the Safety Exit destination label: what the address changes, and the fallback."
+    },
+    "staff.settings.field.craftCount": {
+      "group": "staff",
+      "text": "Craft Nights Photos to Show",
+      "where": "Label of the Craft Nights photo count field under Site Settings."
+    },
+    "staff.settings.help.craftCount": {
+      "group": "staff",
+      "text": "How many photos the Made at Past Craft Nights gallery shows, from 1 to 12. It starts at six. A change takes effect on the next publish.",
+      "where": "Under the Craft Nights Photos to Show label: what the count changes, its range, and when it applies."
+    },
+    "staff.settings.field.craftLayout": {
+      "group": "staff",
+      "text": "Craft Nights Gallery Layout",
+      "where": "Label of the Craft Nights gallery layout field under Site Settings."
+    },
+    "staff.settings.help.craftLayout": {
+      "group": "staff",
+      "text": "One Row: the gallery's photos in a single row of smaller pictures; on a phone the row scrolls sideways. Grid: the photos in rows of two, each at its own shape. A change takes effect on the next publish.",
+      "where": "Under the Craft Nights Gallery Layout label: what each layout looks like, and when a change applies."
+    },
+    "staff.settings.layout.row": {
+      "group": "staff",
+      "text": "One Row",
+      "where": "The One Row choice in the Craft Nights Gallery Layout field under Site Settings."
+    },
+    "staff.settings.layout.grid": {
+      "group": "staff",
+      "text": "Grid",
+      "where": "The Grid choice in the Craft Nights Gallery Layout field under Site Settings."
     },
     "staff.settings.save": {
       "group": "staff",

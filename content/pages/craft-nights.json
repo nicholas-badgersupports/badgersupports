@@ -102,6 +102,7 @@
       "id": "b-cn-past-work",
       "type": "cards",
       "variant": "whole",
+      "craftGallery": true,
       "anchor": "b-cn-past-work",
       "title": "Made at Past Craft Nights",
       "lead": "Students and their creations from past Craft Nights.",

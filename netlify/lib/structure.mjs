@@ -41,7 +41,7 @@ export async function siteAsSaved(doc) {
 function settingsAt(doc) {
   const c = serverContent();
   const s = laySettings(structuredClone(c.render?.floor?.site || c.site), doc.settings);
-  return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null, safetyExitUrl: s.safetyExitUrl ?? null };
+  return { name: s.name, description: s.description, accessibilityEmail: s.footer?.accessibilityEmail ?? null, safetyExitUrl: s.safetyExitUrl ?? null, craftPhotoCount: s.craftPhotoCount ?? null, craftLayout: s.craftLayout ?? null };
 }
 
 /* The feeling check-in's set as drawn at structure `doc`: the build's (content/widgets/mood.json), with

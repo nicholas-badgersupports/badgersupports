@@ -1887,6 +1887,11 @@ test("item 15, settings (e): a stale tab is refused 409; another field, a bad ad
     [{ accessibilityEmail: "one@@example.org" }, "settings.email"],
     [{ accessibilityEmail: `${"x".repeat(243)}@example.org` }, "settings.email"],
     [{ accessibilityEmail: "" }, "settings.email"],
+    [{ craftPhotoCount: 0 }, "settings.craftPhotoCount"],
+    [{ craftPhotoCount: 13 }, "settings.craftPhotoCount"],
+    [{ craftPhotoCount: "six" }, "settings.craftPhotoCount"],
+    [{ craftLayout: "rows" }, "settings.craftLayout"],
+    [{ craftLayout: "" }, "settings.craftLayout"],
   ];
   for (const [values, code] of refused) {
     const no = await saveSettings(publisher, values, now);
@@ -1912,8 +1917,8 @@ test("item 15, settings (f): one save sets all three, publishes them, and clears
   assert.deepEqual((await currentRevision()).structure.settings, all, "the published revision carries them");
   const list = await pagesNow(publisher);
   assert.deepEqual(list.settings, all);
-  assert.deepEqual(list.site, { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL, safetyExitUrl: "https://www.google.com/" },
-    "the three saved, and the Safety Exit destination at the build's own value, unsaved");
+  assert.deepEqual(list.site, { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL, safetyExitUrl: "https://www.google.com/", craftPhotoCount: 6, craftLayout: "row" },
+    "the three saved, and the Safety Exit destination and the Craft Nights gallery's two at the build's own values, unsaved");
 });
 
 test("item 15, settings (g): bringing back an earlier version brings back its settings, and one from before any brings back the build's", async (t) => {
@@ -1984,7 +1989,7 @@ test("item 15, settings (i): a stale tab's refusal carries the settings saved si
   const typed = { name: SITE_NAME, description: SITE_DESC, accessibilityEmail: SITE_EMAIL };
   const stale = await saveSettings(mine, typed, v.version);
   assert.deepEqual([stale.status, stale.body.error, stale.body.current], [409, "pages.conflict", other.body.version]);
-  assert.deepEqual(stale.body.site, { name: "Their Test Name", description: "", accessibilityEmail: "accessibility@badgersupports.org", safetyExitUrl: "https://www.google.com/" },
+  assert.deepEqual(stale.body.site, { name: "Their Test Name", description: "", accessibilityEmail: "accessibility@badgersupports.org", safetyExitUrl: "https://www.google.com/", craftPhotoCount: 6, craftLayout: "row" },
     "the refusal carries the settings as saved at the version it names");
   assert.equal(await homeTitle(), "Their Test Name — peer support at UW–Madison", "nothing of mine was saved");
   const page = await change(mine, { action: "add", expected: v.version, title: "Spring Retreat", path: "/programs/spring-retreat/" });

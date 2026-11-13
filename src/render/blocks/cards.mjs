@@ -7,11 +7,14 @@
      whole       — each picture at its own shape, never cropped, two a row: a printed card or a slide
                    whose words must stay whole
    A card without a photo shows its icon, when it names one, large on the red tint; no other photo
-   stands in for a missing one. */
+   stands in for a missing one.
+   One "whole" row is the Craft Nights gallery (craftGallery): it answers to Site Settings — how many
+   of its photos show, and whether they stand in one row of smaller pictures or in the grid. */
 
 import { html, attrs } from "../html.mjs";
 import { go } from "../context.mjs";
 import { icon } from "../icons.mjs";
+import { craftGallery } from "../../shared/structure.mjs";
 import { rowsBetween, groupByDate, dateParts, timeRange, weekday } from "../events.mjs";
 import { picture } from "../media.mjs";
 import { eventClass, eventTags } from "../event-status.mjs";
@@ -22,7 +25,7 @@ const steps = (b) => (b.steps?.length ? html`<ol class="card-steps">${b.steps.ma
 export default {
   type: "cards",
   label: "Photo cards",
-  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", steps: "termlist", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other" },
+  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", steps: "termlist", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other", craftGallery: "boolean" },
   data: ["events"],
   refresh: b => b.variant === "days" && b.source === "events",
   analytics: "page",
@@ -54,12 +57,18 @@ export default {
         ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
       </div></div></section>`;
     }
-    const sizes = `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
-    return html`<section id="${b.anchor || b.id}" class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    /* The Craft Nights gallery (craftGallery) answers to Site Settings: how many of its photos show
+       (craftPhotoCount) and whether they stand in one row of smaller pictures or in the grid the
+       "whole" variant otherwise draws (craftLayout). Grid is exactly the ordinary drawing below;
+       row adds its classes and takes the first `count` cards. */
+    const craft = b.craftGallery ? craftGallery(ctx.site) : null;
+    const items = craft ? b.items.slice(0, craft.count) : b.items;
+    const sizes = craft?.layout === "row" ? `(max-width: 560px) 62vw, 13rem` : `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
+    return html`<section id="${b.anchor || b.id}" class="${["cards", `cards--${b.variant}`, "band", craft ? "cards--craft" : "", craft ? `cards--craft-${craft.layout}` : ""].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${steps(b)}
-  <ul class="card-list">${b.items.map((it) => html`<li${attrs({ class: it.photo ? "card has-photo" : "card", id: it.id, "data-program": it.program || null, "data-brand": /^https:\/\/(?:www\.)?badgerspill\.org(?:\/|$)/.test(it.link?.href || "") ? "spill" : null })}>
+  <ul class="card-list">${items.map((it) => html`<li${attrs({ class: it.photo ? "card has-photo" : "card", id: it.id, "data-program": it.program || null, "data-brand": /^https:\/\/(?:www\.)?badgerspill\.org(?:\/|$)/.test(it.link?.href || "") ? "spill" : null })}>
     ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
     <div class="card-words">
       <h3>${it.title}</h3>

@@ -92,6 +92,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The word-editing dialog is wider, settings forms set each setting's name in a fixed column beside its control so the eye reads down the names, and the site's state colours were aligned across its styles.
 
+- The example conversation in the self-advocacy workshop preview, on the home page and on Request a Program, now follows Sam, who asks for lecture slides to be posted before class, in place of the workplace example about Devon; its three answers and their verdicts were rewritten to match.
+
 - Dropdowns whose arrow a shared background rule had wiped or tiled across the field — the error-state select was the visible case — draw their own chevron again, inset at the field's right edge; every rendered dropdown on the affected page families was re-measured.
 
 - Words nested inside a form's expandable prose — the Volunteer Application's Our programs and teams passage — could not be reached by the site's wording editor, so a saved change to them never showed; the editor now reaches them, and no wording itself changed.

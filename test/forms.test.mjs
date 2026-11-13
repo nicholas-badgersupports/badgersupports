@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { definitionProblems, visibility, validateAnswers, readRaw, cellText, errorText, OTHER, proseProblem, proseText, withResources, answerWords } from "../src/shared/forms.mjs";
+import { definitionProblems, visibility, validateAnswers, readRaw, cellText, errorText, OTHER, proseProblem, proseText, withResources, answerWords, wordingSlots, withWording } from "../src/shared/forms.mjs";
 import { ingestPayload } from "../netlify/lib/deliver.mjs";
 import { prose, publicDefinition, renderForm } from "../src/render/form.mjs";
 import { html } from "../src/render/html.mjs";
@@ -132,4 +132,24 @@ test("secondary help folds under its label: closed, never empty, never nested, s
   assert.match(out, /<details class="prose-more"><summary>Our programs<\/summary><div class="prose-more-body"><h3>Programs<\/h3><ol><li>Peer support<\/li><\/ol><\/div><\/details>/);
   assert.doesNotMatch(out, /<details[^>]* open/);
   assert.doesNotMatch(String(html`${prose(["First."])}`), /details/);
+});
+
+test("words nested inside a prose fold are wording slots, and Connect's change reaches them", () => {
+  const def = {
+    key: "nested-prose", version: 1, title: "Nested",
+    sections: [{ id: "about", title: "About", intro: [
+      "Opening words.",
+      { more: "Our programs and teams", body: [
+        { heading: "Our Core Programs" },
+        { ordered: true, list: ["Weekly Peer Support Groups", "Badger Break Day / Stress Awareness"] },
+      ] },
+    ], questions: [] }],
+  };
+  const slots = wordingSlots(def);
+  assert.equal(slots["section:about.intro.1.body.0.heading"], "Our Core Programs");
+  assert.equal(slots["section:about.intro.1.body.1.item.0"], "Weekly Peer Support Groups");
+  assert.equal(slots["section:about.intro.1.body.1.item.1"], "Badger Break Day / Stress Awareness");
+  const changed = withWording(def, { "section:about.intro.1.body.0.heading": "Programs at a Glance" });
+  assert.equal(changed.sections[0].intro[1].body[0].heading, "Programs at a Glance");
+  assert.equal(def.sections[0].intro[1].body[0].heading, "Our Core Programs");
 });

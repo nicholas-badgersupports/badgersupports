@@ -294,13 +294,12 @@
 .week-empty span { display: block; color: var(--muted); }
 .week-foot { margin-top: var(--s4); font-weight: 700; }
 
-/* The week's photos: a carousel directly below the timetable card, flush against its foot —
-   no gap — and spanning the wrap's width like the card above it. The photos are of people
-   at the Hub, so on desktop the crop is a wide band (3:1) and each photo's focal point holds
-   the faces; on a phone the crop is the fuller 3:2. The photo's top corners are square so
-   it seats against the card; its bottom corners keep the card radius. One photo at a time;
-   the track scrolls sideways by touch, and the controls (shown with the script) walk it
-   a photo at a time. */
+/* The week's photos: a carousel inside the timetable card, in the head column directly
+   below the Hub place card — its top touches that card's foot, no gap. It takes the
+   column's width (20rem on desktop, the full card width on a phone) and the 3:2 crop, so
+   the faces in each photo stay readable at that size. One photo at a time; the track
+   scrolls sideways by touch, and the controls (shown with the script) walk it a photo
+   at a time. */
 .week-photos { margin-top: 0; min-width: 0; }
 .carousel-track {
   display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
@@ -310,7 +309,6 @@
 .carousel-track::-webkit-scrollbar { display: none; }
 .carousel-slide { scroll-snap-align: start; }
 .carousel-slide .photo { aspect-ratio: 3 / 2; border-radius: var(--r-card); }
-.week-photos .carousel-slide .photo { aspect-ratio: 3 / 1; border-radius: 0 0 var(--r-card) var(--r-card); }
 .carousel-controls { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); }
 .js .carousel-controls { display: flex; }
 .carousel-controls > button {
@@ -339,7 +337,6 @@
 
 @media (max-width: 860px) {
   .week-card { grid-template-columns: 1fr; gap: var(--s4); padding: var(--s4); }
-  .week-photos .carousel-slide .photo { aspect-ratio: 3 / 2; }
   .week-head { position: static; }
   .day { grid-template-columns: 3.75rem minmax(0, 1fr); gap: var(--s2); }
   .dateblock .dom { font-size: 2rem; }

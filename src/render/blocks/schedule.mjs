@@ -13,14 +13,14 @@ import { eventClass, eventTags, timeContact } from "../event-status.mjs";
 const ARROW_L = html`<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ARROW_R = html`<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="m7.5 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-/* The week's photos as a carousel directly below the timetable card, flush against its
-   foot and spanning the wrap's width: photos of the people who come to the Hub.
+/* The week's photos as a carousel inside the card, directly below the Hub place card in
+   the head column: photos of the people who come to the Hub, sized to that column.
    (src/client/carousel.js adds the buttons, dots and the slow advance.) Without the
    script the track is an ordinary sideways scroll, like a strip. */
 function carousel(ctx, b) {
   const total = b.photos.length;
   return html`<div class="carousel week-photos" data-carousel role="region" aria-roledescription="carousel" aria-label="${ctx.t("carousel.label", { title: b.title })}">
-    <ul class="carousel-track" data-carousel-track tabindex="0">${b.photos.map((id, i) => html`<li class="carousel-slide" role="group" aria-roledescription="slide" aria-label="${ctx.t("carousel.count", { n: i + 1, total })}"><div class="photo">${picture(ctx, id, { sizes: "(max-width: 860px) calc(100vw - 2rem), 72rem" })}</div></li>`)}</ul>
+    <ul class="carousel-track" data-carousel-track tabindex="0">${b.photos.map((id, i) => html`<li class="carousel-slide" role="group" aria-roledescription="slide" aria-label="${ctx.t("carousel.count", { n: i + 1, total })}"><div class="photo">${picture(ctx, id, { sizes: "(max-width: 860px) calc(100vw - 2rem), 20rem" })}</div></li>`)}</ul>
     <div class="carousel-controls">
       <button type="button" data-carousel-prev aria-label="${ctx.t("carousel.prev")}">${ARROW_L}</button>
       <div class="carousel-dots">${b.photos.map((id, i) => html`<button${attrs({ type: "button", "data-carousel-dot": true, "aria-label": ctx.t("carousel.dot", { n: i + 1 }), "aria-current": i === 0 ? "true" : null })}><span aria-hidden="true"></span></button>`)}</div>
@@ -86,6 +86,7 @@ export default {
     <h2 id="${b.id}-h">${b.title}</h2>
     ${b.intro ? html`<p>${b.intro}</p>` : ""}
     ${home ? html`<div class="place"><strong>${home.name}</strong><span>${home.detail}</span>${home.href ? go(ctx, home.href, ctx.t("schedule.placeLink"), "pin") : ""}</div>` : ""}
+    ${b.photos?.length ? carousel(ctx, b) : ""}
   </header>
   <div class="week-body">
     ${week.length ? html`<ol class="days">${week.map((d) => {
@@ -96,7 +97,6 @@ export default {
     ${b.connect ? html`<p class="week-foot">${go(ctx, b.connect.href, b.connect.label, "calendar")}</p>` : ""}
   </div>
   </div>
-  ${b.photos?.length ? carousel(ctx, b) : ""}
 </div></section>`;
   },
 };

@@ -88,6 +88,7 @@ Reads: `events`, `eventsState` · analytics: `page` · photos load lazy · brows
 | `topics` | rows of a term and its text (and, for topics, an optional link) |  |
 | `disclosure` | one line of text |  |
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
+| `boxed` | on or off |  |
 
 ### Wall of Support — `wall`
 
@@ -254,6 +255,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `disclosure` | one line of text |  |
 | `preview` | one or more paragraphs |  |
 | `whole` | on or off |  |
+| `boxed` | on or off |  |
 | `icon` | one line of text |  |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 
@@ -382,6 +384,8 @@ Reads: `resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState` · a
 | `lead` | one line of text |  |
 | `source` | a named data source (events, wall notes, team, resources) | **required** |
 | `topics` | topics, in order: each an `id` (the address word, `?topic=`), a `label`, one of Connect's sixteen resource categories (`category`), and optional old address words (`aliases`) that open it; a topic no resource carries is not shown | **required** |
+| `feedback` | one or more paragraphs |  |
+| `feedbackLink` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 
 ### Academic Support Navigator — `navigator`
 
@@ -1070,7 +1074,7 @@ the site adds the markup.
 | `staff.settings.field.email` | Accessibility Email | Label of the accessibility email field under Site Settings. |  |
 | `staff.settings.help.email` | Linked in the accessibility line at the foot of every page. | Under the Accessibility Email label: where the address shows. |  |
 | `staff.settings.field.safetyExit` | Safety Exit destination | Label of the Safety Exit destination field under Site Settings. |  |
-| `staff.settings.help.safetyExit` | Where the Safety Exit button in the header of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish. | Under the Safety Exit destination label: what the address changes, and the fallback. |  |
+| `staff.settings.help.safetyExit` | Where the Safety Exit button at the bottom right of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish. | Under the Safety Exit destination label: what the address changes, and the fallback. |  |
 | `staff.settings.field.craftCount` | Craft Nights Photos to Show | Label of the Craft Nights photo count field under Site Settings. |  |
 | `staff.settings.help.craftCount` | How many photos the Made at Past Craft Nights gallery shows, from 1 to 12. It starts at six. A change takes effect on the next publish. | Under the Craft Nights Photos to Show label: what the count changes, its range, and when it applies. |  |
 | `staff.settings.field.craftLayout` | Craft Nights Gallery Layout | Label of the Craft Nights gallery layout field under Site Settings. |  |

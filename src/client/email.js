@@ -42,10 +42,24 @@ export async function copyText(text, { clipboard, doc } = {}) {
    drawn exactly as src/render/icons.mjs draws them (same parts, same wrapper), each button
    named by the words it replaced, as its label and its tooltip. */
 const ICON_PARTS = {
-  copy: `<rect x="9" y="9" width="11.5" height="11.5" rx="1.5"/><path d="M15.5 9V5.5a1 1 0 0 0-1-1h-10a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1H9"/>`,
-  mail: `<rect x="3.5" y="6" width="17" height="12.5" rx="1.2"/><path d="m3.8 6.6 8.2 6.4 8.2-6.4"/>`,
+  copy: [["rect", { x: "9", y: "9", width: "11.5", height: "11.5", rx: "1.5" }], ["path", { d: "M15.5 9V5.5a1 1 0 0 0-1-1h-10a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1H9" }]],
+  mail: [["rect", { x: "3.5", y: "6", width: "17", height: "12.5", rx: "1.2" }], ["path", { d: "m3.8 6.6 8.2 6.4 8.2-6.4" }]],
 };
-const iconSvg = (name) => `<svg class="ic" data-i="${name}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICON_PARTS[name]}</svg>`;
+const SVG_NS = "http://www.w3.org/2000/svg";
+function iconSvg(name) {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("class", "ic");
+  svg.setAttribute("data-i", name);
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  for (const [tag, attrs] of ICON_PARTS[name]) {
+    const part = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) part.setAttribute(k, v);
+    svg.append(part);
+  }
+  return svg;
+}
 
 let pop = null, mark = null, noteText = null, addrLine = null, openLink = null;
 let opener = null, address = "";
@@ -162,14 +176,14 @@ function build() {
   const copy = document.createElement("button");
   copy.type = "button";
   copy.className = "btn btn--quiet";
-  copy.innerHTML = iconSvg("copy");
+  copy.append(iconSvg("copy"));
   copy.setAttribute("aria-label", t("email.copyAgain"));
   copy.title = t("email.copyAgain");
   copy.addEventListener("click", async () => say(await copyText(address)));
 
   openLink = document.createElement("a");
   openLink.className = "btn";
-  openLink.innerHTML = iconSvg("mail");
+  openLink.append(iconSvg("mail"));
   openLink.setAttribute("aria-label", t("email.openMail"));
   openLink.title = t("email.openMail");
   openLink.addEventListener("click", () => pop.close());

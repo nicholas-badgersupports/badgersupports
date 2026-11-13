@@ -30,7 +30,7 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The site's version history became a tracked record with a review gate: this file is the canonical history, and a release candidate is checked against it before publication (items 46 and 47).
 
-- Alumni can subscribe to email updates on the Alumni page, under the Alumni History: a short form asks for a name and an email address, held apart from the general email list under its own form name, and the form also stands on its own page at `/forms/alumni-updates/` (item 52). A form placed inside a page now heads under that page's heading instead of adding a second one.
+- Alumni can subscribe to email updates on the Alumni page, under the Alumni History: a short form asks for a name and an email address, held apart from the general email list under its own form name, and the form also stands on its own page at `/forms/alumni-updates/` (item 53). The Alumni page's top “Request Email Updates” button leads to that form's page; before, it led to the general email list. A form placed inside a page now heads under that page's heading instead of adding a second one.
 
 ### Changed
 

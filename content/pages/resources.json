@@ -113,21 +113,14 @@
           "label": "Research & Creative Work",
           "category": "research_creation"
         }
-      ]
-    },
-    {
-      "id": "b-res-feedback",
-      "type": "text",
-      "body": [
+      ],
+      "feedback": [
         "For requests or feedback on this resource list, please email us."
       ],
-      "links": [
-        {
-          "label": "directors@badgersupports.org",
-          "href": "mailto:directors@badgersupports.org",
-          "icon": "mail"
-        }
-      ]
+      "feedbackLink": {
+        "label": "directors@badgersupports.org",
+        "href": "mailto:directors@badgersupports.org"
+      }
     },
     {
       "id": "b-res-explore",

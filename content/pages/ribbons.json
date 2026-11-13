@@ -2,14 +2,14 @@
   "schema": "bss.page/1",
   "id": "pg-ribbons",
   "path": "/initiatives/ribbons/",
-  "title": "Colors of Support Solidarity Ribbons",
+  "title": "Ribbons",
   "description": "Colors of Support is a campus-wide ribbon initiative by Badger Supports that brings visibility, connection, and care to UW–Madison.",
   "analytics": "public",
   "blocks": [
     {
       "id": "b-rb-head",
       "type": "pagehead",
-      "title": "Colors of Support Solidarity Ribbons",
+      "title": "Ribbons",
       "lead": "Explore the colors and causes behind solidarity ribbons. Choose a ribbon below to learn about its meanings, including how we use it in Colors of Support.",
       "body": [
         "Choose a cause you want to support and wear a ribbon on your backpack or jacket. A ribbon can show solidarity without sharing a personal story.",

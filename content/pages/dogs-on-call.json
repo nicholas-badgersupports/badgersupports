@@ -74,38 +74,6 @@
       ]
     },
     {
-      "id": "b-dc-gallery",
-      "type": "cards",
-      "variant": "whole",
-      "title": "Meet the Dogs",
-      "items": [
-        {
-          "id": "newfoundland",
-          "title": "Newfoundland",
-          "photo": "m-dogs-newfoundland",
-          "text": "September 2026, at the Student Mental Health Hub."
-        },
-        {
-          "id": "white-dog",
-          "title": "Small White Dog",
-          "photo": "m-dogs-white",
-          "text": "September 2026, at the Student Mental Health Hub."
-        },
-        {
-          "id": "lab-profile",
-          "title": "Black Labrador",
-          "photo": "m-dogs-lab-profile",
-          "text": "September 2026, at the Student Mental Health Hub."
-        },
-        {
-          "id": "newfoundland-face",
-          "title": "Newfoundland, Up Close",
-          "photo": "m-dogs-newfoundland-face",
-          "text": "September 2026, at the Student Mental Health Hub."
-        }
-      ]
-    },
-    {
       "id": "b-dc-hub",
       "type": "directions",
       "anchor": "get-directions",

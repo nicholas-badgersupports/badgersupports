@@ -145,7 +145,8 @@
           "label": "Learn More on Our Workshops Page",
           "href": "/join/request-a-workshop/"
         }
-      ]
+      ],
+      "boxed": true
     },
     {
       "id": "b-rp-groups",
@@ -167,7 +168,8 @@
         "m-peer-hub-chat"
       ],
       "icon": "chat",
-      "program": "peer"
+      "program": "peer",
+      "boxed": true
     },
     {
       "id": "b-rp-training",
@@ -189,7 +191,8 @@
         "m-program-audience",
         "m-workshop-training-room"
       ],
-      "icon": "badge"
+      "icon": "badge",
+      "boxed": true
     },
     {
       "id": "b-rp-housing",
@@ -213,7 +216,8 @@
         "m-workshop-housing-questions"
       ],
       "icon": "house",
-      "program": "workshops"
+      "program": "workshops",
+      "boxed": true
     },
     {
       "id": "b-rp-spill",

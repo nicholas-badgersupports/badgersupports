@@ -81,7 +81,8 @@
         "Choose one area of support and consider where your network could grow."
       ],
       "icon": "chat",
-      "program": "workshops"
+      "program": "workshops",
+      "boxed": true
     },
     {
       "id": "b-rw-selfcare",
@@ -125,7 +126,8 @@
         "Examples include taking a walk, calling a friend, or making time to journal."
       ],
       "icon": "star",
-      "program": "workshops"
+      "program": "workshops",
+      "boxed": true
     },
     {
       "id": "b-rw-advocacy",
@@ -149,7 +151,7 @@
         }
       ],
       "photos": [
-        "m-workshop-directors-roundtable"
+        "m-oh-group-posters"
       ],
       "links": [
         {
@@ -164,7 +166,8 @@
         "Compare ways to ask for what you need clearly and respectfully."
       ],
       "icon": "bulb",
-      "program": "workshops"
+      "program": "workshops",
+      "boxed": true
     },
     {
       "id": "b-rw-housing",
@@ -210,7 +213,8 @@
         "What would you ask a landlord or property manager before deciding?"
       ],
       "icon": "house",
-      "program": "workshops"
+      "program": "workshops",
+      "boxed": true
     },
     {
       "id": "b-rw-training",
@@ -232,7 +236,8 @@
         "m-workshop-training-panel"
       ],
       "icon": "badge",
-      "program": "workshops"
+      "program": "workshops",
+      "boxed": true
     },
     {
       "id": "b-rw-faq",

@@ -87,13 +87,20 @@ export async function startSignIn(req) {
   const cfg = connectConfig();
   if (!cfg) throw new HttpError(503, "auth.unavailable");
   const state = randomB64u(24), verifier = randomB64u(48), nonce = randomB64u(16);
+  const back = returnPath(new URL(req.url).searchParams.get("return"));
   await q("DELETE FROM auth_starts WHERE expires_at < now() - interval '1 day'");
   await q("DELETE FROM staff_sessions WHERE expires_at < now()");
   await q(`INSERT INTO auth_starts (state_hash, verifier, nonce, return_to, expires_at)
            VALUES ($1, $2, $3, $4, now() + ($5::int * interval '1 minute'))`,
-    [sha256Hex(state), verifier, nonce, returnPath(new URL(req.url).searchParams.get("return")), START_MINUTES]);
+    [sha256Hex(state), verifier, nonce, back, START_MINUTES]);
   const fragment = new URLSearchParams({ client: CLIENT_ID, state, challenge: sha256B64u(verifier), redirect: callbackUrl(req), nonce });
-  return redirect(`${cfg.url}/public-sso.html#${fragment}`, [cookie(req, names(req).auth, state, { maxAge: START_MINUTES * 60 })]);
+  /* The platform keeps a request's query on a redirect whose address has none of its own
+     (ops/dev-server.mjs, netlifyLocation), so an address without a query would carry the visitor's
+     own ?return= on to Connect exactly as sent — any length, any value — where it lands in Connect's
+     addresses and logs. This address therefore carries the return itself, as returnPath() settled
+     it: a path on this site and nothing else. Connect's door reads its request from the fragment and
+     takes no direction from the query; the stored return_to above is what the callback lands on. */
+  return redirect(`${cfg.url}/public-sso.html?return=${encodeURIComponent(back)}#${fragment}`, [cookie(req, names(req).auth, state, { maxAge: START_MINUTES * 60 })]);
 }
 
 export async function finishSignIn(req) {

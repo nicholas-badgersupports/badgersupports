@@ -110,6 +110,14 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The example conversation in the self-advocacy workshop preview, on the home page and on Request a Program, now follows Sam, who asks for lecture slides to be posted before class, in place of the workplace example about Devon; its three answers and their verdicts were rewritten to match.
 
+- Director Sign-In now hands Connect only the return path this site settled on. A visitor's own return value no longer rides on to Connect's page in the address, where it would have been kept in addresses and logs; the sign-in itself is unchanged.
+
+- The site's JSON answers now carry the hardened headers the pages carry — a content-security policy under which nothing may load from a JSON answer, and the pages' own referrer policy — where before they went out with only the no-store and type-sniffing headers.
+
+- A form answer that cannot be delivered now stops being retried after five failures and shows on the staff page as needing a person, with the reason kept; Send Waiting Answers Now is the way a person sends it. Before, a delivery that could never succeed was retried every fifteen minutes without end.
+
+- The text-editing scan and the bus-data refresh now run the same started through a link — a worktree alias, macOS's temporary folder — as by their own paths. Before, the refresh silently did nothing through a link, and the scan resolved its tree from the path it was started by.
+
 - Dropdowns whose arrow a shared background rule had wiped or tiled across the field — the error-state select was the visible case — draw their own chevron again, inset at the field's right edge; every rendered dropdown on the affected page families was re-measured.
 
 - Words nested inside a form's expandable prose — the Volunteer Application's Our programs and teams passage — could not be reached by the site's wording editor, so a saved change to them never showed; the editor now reaches them, and no wording itself changed.

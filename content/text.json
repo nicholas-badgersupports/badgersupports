@@ -1328,6 +1328,11 @@
       "text": "{{n}} could not be sent",
       "where": "Staff page, how many answers failed to reach Connect."
     },
+    "staff.delivery.stuck": {
+      "group": "staff",
+      "text": "{{n}} needs a person",
+      "where": "Staff page, how many answers failed so often that sending them is now a person's to start again."
+    },
     "staff.delivery.off": {
       "group": "staff",
       "text": "Connect is not set up for this copy of the site, so answers are kept here and sent once it is.",
@@ -1422,6 +1427,11 @@
       "group": "staff",
       "text": "Not Sent",
       "where": "Staff page, answers table: will not be sent."
+    },
+    "staff.row.stuck": {
+      "group": "staff",
+      "text": "Needs a Person",
+      "where": "Staff page, answers table: sending failed for the last time; a person starts it again."
     },
     "staff.edit.title": {
       "group": "staff",
@@ -4334,6 +4344,16 @@
     "staff.overview.failedSend.other": {
       "group": "staff",
       "text": "{{n}} answers could not be sent to Connect.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
+    },
+    "staff.overview.stuckSend.one": {
+      "group": "staff",
+      "text": "{{n}} answer could not be sent and will not be tried again.",
+      "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
+    },
+    "staff.overview.stuckSend.other": {
+      "group": "staff",
+      "text": "{{n}} answers could not be sent and will not be tried again.",
       "where": "Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms."
     },
     "staff.overview.waitingSend.one": {

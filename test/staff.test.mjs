@@ -16,7 +16,7 @@ import { freshServer, workshopAnswers, post, ORIGIN } from "./helpers.mjs";
 import * as router from "../netlify/lib/router.mjs";
 import { handle } from "../netlify/lib/router.mjs";
 import { useConnect, resetQuoteCache } from "../netlify/lib/connect.mjs";
-import { deliverDue, deliveriesSettled } from "../netlify/lib/deliver.mjs";
+import { deliverDue, deliveriesSettled, MAX_ATTEMPTS } from "../netlify/lib/deliver.mjs";
 import { serverContent, useContent } from "../netlify/lib/content.mjs";
 import { netlifyLocation } from "../ops/dev-server.mjs";
 import { many, one, q, migrate } from "../netlify/lib/db.mjs";
@@ -65,10 +65,16 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
     statusMethods: [],
     quotes: [],       // publicSigninQuotes: Connect's one shared list, [] when its Show switch is off
     quoteCalls: 0,
-    /* Connect's sign-in page: the director signs in, and Connect hands back a one-time code. */
+    /* Connect's sign-in page: the director signs in, and Connect hands back a one-time code. The page is
+       served at this address with or without a query; what Connect takes direction from is the fragment.
+       The one query value it may be handed is a return path on the site that sent it (P-3: Public
+       settles the value itself rather than passing a visitor's through) — anything else fails here. */
     approve(location) {
-      assert.ok(location.startsWith(`${CONNECT}/public-sso.html#`), `sign-in goes to Connect's page, not ${location}`);
-      const f = new URLSearchParams(location.split("#")[1]);
+      const u = new URL(location);
+      assert.equal(`${u.origin}${u.pathname}`, `${CONNECT}/public-sso.html`, `sign-in goes to Connect's page, not ${location}`);
+      for (const k of u.searchParams.keys()) assert.equal(k, "return", "nothing but a return path rides in the query");
+      if (u.searchParams.has("return")) assert.match(u.searchParams.get("return"), /^\/(?!\/)/, "and the return is a path on the site that sent it");
+      const f = new URLSearchParams(u.hash.slice(1));
       const code = b64u(crypto.randomBytes(24));
       codes.set(code, { client: f.get("client"), challenge: f.get("challenge"), redirect: f.get("redirect"), nonce: f.get("nonce"), used: false });
       return { code, state: f.get("state"), fragment: f };
@@ -191,7 +197,8 @@ test("a director signs in through Connect, and the staff page knows who they are
   assert.equal(f.get("client"), "badgersupports-public");
   assert.equal(f.get("redirect"), `${ORIGIN}/api/auth/callback`);
   assert.ok(f.get("challenge") && f.get("nonce"));
-  assert.ok(!loc.split("#")[0].includes("?"), "nothing about the sign-in is in the query string, where servers log it");
+  assert.ok(!/[?&](state|code|challenge|nonce)=/.test(loc.split("#")[0]), "no state, code or challenge is in the query string, where servers log it");
+  assert.equal(new URLSearchParams(loc.split("#")[0].split("?")[1] || "").get("return"), "/staff/", "the one query value is the return path, as returnPath() settled it");
   const authCookie = setCookies(start).find((c) => c.startsWith("bss_auth="));
   assert.match(authCookie, /HttpOnly/);
   assert.match(authCookie, /SameSite=Lax/);
@@ -296,6 +303,39 @@ test("a sign-in start works once, only in the browser that began it, and not for
   const away = await handle(get(`/api/auth/start?return=${encodeURIComponent("//elsewhere.test/")}`, { json: false }), ip());
   assert.equal(away.status, 302);
   assert.equal((await one("SELECT return_to FROM auth_starts ORDER BY created_at DESC, return_to LIMIT 1")).return_to, "/staff/");
+});
+
+/* The address Connect receives is the function's Location as the platform delivers it: Netlify keeps
+   a request's query on a redirect whose address has none of its own (netlifyLocation, applied here as
+   the rig applies it). Before this fix the start's address had no query, so a visitor's ?return= rode
+   on to Connect exactly as sent; now the address carries the return as returnPath() settled it. */
+test("the address that reaches Connect carries the return as this site settled it, never as it was sent", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const delivered = (res, search) => netlifyLocation(search, res.status, res.headers.get("location"));
+  const hostile = [
+    "https://elsewhere.test/landing",
+    "//elsewhere.test/landing",
+    "/" + "x".repeat(400),
+    "/staff/\r\nLocation: https://elsewhere.test/",
+    "javascript:alert(1)",
+  ];
+  for (const value of hostile) {
+    const search = `?return=${encodeURIComponent(value)}`;
+    const start = await handle(get(`/api/auth/start${search}`, { json: false }), ip());
+    assert.equal(start.status, 302);
+    const onward = delivered(start, search);
+    assert.ok(!onward.includes("elsewhere.test"), `nothing of the sent value reaches Connect: ${JSON.stringify(value.slice(0, 40))}`);
+    assert.ok(!onward.includes(encodeURIComponent(value)), "and not its encoded form either");
+    const u = new URL(onward);
+    assert.deepEqual([...u.searchParams.keys()], ["return"], "the return is the only thing in the query");
+    assert.equal(u.searchParams.get("return"), "/staff/", "and it is the settled path on this site");
+  }
+  // A good return is carried as itself.
+  const search = `?return=${encodeURIComponent("/forms/workshop-request/")}`;
+  const start = await handle(get(`/api/auth/start${search}`, { json: false }), ip());
+  assert.equal(new URL(delivered(start, search)).searchParams.get("return"), "/forms/workshop-request/");
 });
 
 test("Connect saying no, a note that does not check out, or Connect not answering, signs nobody in", async () => {
@@ -664,7 +704,9 @@ test("a delivery that fails waits longer each time, shows as failing, and Try ag
   r = await row();
   assert.equal(r.attempts, 2);
   assert.ok(r.wait > 220 && r.wait <= 240, `four minutes, not ${r.wait}s`);
-  await q("UPDATE outbox SET attempts = 12 WHERE kind = 'connect.ingest'");
+  // Near the ceiling: the next wait would be sixteen minutes with no cap on it. (What happens AT the
+  // ceiling — the row parks, and only a person's Try again claims it — is the outbox suite's own test.)
+  await q(`UPDATE outbox SET attempts = ${MAX_ATTEMPTS - 2} WHERE kind = 'connect.ingest'`);
   await deliverDue({ force: true });
   assert.ok((await row()).wait <= 6 * 3600, "never more than six hours");
 

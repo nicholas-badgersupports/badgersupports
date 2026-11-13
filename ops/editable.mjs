@@ -22,7 +22,11 @@ import url from "node:url";
 import { CLIENT_TEXT } from "../src/shared/text.mjs";
 import { finish } from "./finish.mjs";
 
-const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
+/* The tree this tool belongs to, by the real path of the file itself: invoked through a link (a worktree
+   alias, a linked folder), the address it was started by names the link, and the scan must still read the
+   tree the file lives in, never the link's neighbourhood. */
+const here = (() => { const p = url.fileURLToPath(import.meta.url); try { return fs.realpathSync(p); } catch { return p; } })();
+const ROOT = path.resolve(path.dirname(here), "..");
 const WORD = /[A-Za-z]{2,}/;
 const A11Y_ATTRS = /\b(aria-label|aria-description|alt|title|placeholder)="([^"]*)"/g;
 

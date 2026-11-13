@@ -110,7 +110,8 @@ function deliveryLine(f, connect) {
   if (d.sent) parts.push(t("staff.delivery.sent", { n: d.sent }));
   if (d.pending) parts.push(t("staff.delivery.waiting", { n: d.pending }));
   if (d.failed) parts.push(t("staff.delivery.failed", { n: d.failed }));
-  return parts.length ? el("p", { className: d.failed ? "staff-delivery is-failing" : "staff-delivery", textContent: parts.join(" · ") }) : null;
+  if (d.stuck) parts.push(t("staff.delivery.stuck", { n: d.stuck }));
+  return parts.length ? el("p", { className: d.failed || d.stuck ? "staff-delivery is-failing" : "staff-delivery", textContent: parts.join(" · ") }) : null;
 }
 
 function answersTable(r) {
@@ -286,9 +287,9 @@ function formsSection(me, onData) {
     setup.hidden = !r.forms.some(f => f.settings && (f.canEdit || f.canSwitch));
     if (!r.forms.length) list.replaceChildren(el("li", { textContent: t("staff.forms.empty") }));
     off.hidden = r.connect;
-    retry.hidden = !r.connect || !r.forms.some((f) => f.delivery.pending || f.delivery.failed);
-    /* The overview hears what the forms are carrying: answers waiting or failed, or no Connect at all. */
-    onData?.({ connect: !!r.connect, pending: r.forms.reduce((n, f) => n + (f.delivery?.pending || 0), 0), failed: r.forms.reduce((n, f) => n + (f.delivery?.failed || 0), 0) });
+    retry.hidden = !r.connect || !r.forms.some((f) => f.delivery.pending || f.delivery.failed || f.delivery.stuck);
+    /* The overview hears what the forms are carrying: answers waiting, failed or stuck, or no Connect at all. */
+    onData?.({ connect: !!r.connect, pending: r.forms.reduce((n, f) => n + (f.delivery?.pending || 0), 0), failed: r.forms.reduce((n, f) => n + (f.delivery?.failed || 0), 0), stuck: r.forms.reduce((n, f) => n + (f.delivery?.stuck || 0), 0) });
   }
   retry.addEventListener("click", async () => {
     if (isBusy(retry)) return;
@@ -1224,6 +1225,7 @@ function overviewSection(me, go, offered, bare) {
     const d = found.deliveries;
     if (d && !d.connect) items.push(["forms", t("staff.delivery.off")]);
     else if (d) {
+      if (d.stuck) items.push(["forms", t(d.stuck === 1 ? "staff.overview.stuckSend.one" : "staff.overview.stuckSend.other", { n: d.stuck })]);
       if (d.failed) items.push(["forms", t(d.failed === 1 ? "staff.overview.failedSend.one" : "staff.overview.failedSend.other", { n: d.failed })]);
       if (d.pending) items.push(["forms", t(d.pending === 1 ? "staff.overview.waitingSend.one" : "staff.overview.waitingSend.other", { n: d.pending })]);
     }

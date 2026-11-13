@@ -33,7 +33,7 @@ export default {
       // Today is named on its own card, and the soonest day after today is named next up, so the
       // week reads at a glance. schedule.js keeps both marks on the visitor's real date.
       const nextDate = groups.map((g) => g.date).find((d) => d > ctx.today);
-      return html`<section class="cards cards--days band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-program="${b.program || "peer"}"><div class="wrap">
+      return html`<section class="cards cards--days band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-program="${b.program || "peer"}"><div class="wrap"><div class="days-panel">
         <h2 id="${b.id}-h">${b.title}</h2>${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
         ${steps(b)}
         ${groups.length ? html`<ul class="card-list">${groups.map(({ date, items }) => {
@@ -52,7 +52,7 @@ export default {
             </div></li>`;
         })}</ul>` : html`<p class="evlist-none">${ctx.t("schedule.weekEmpty")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p>`}
         ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
-      </div></section>`;
+      </div></div></section>`;
     }
     const sizes = `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
     return html`<section id="${b.anchor || b.id}" class="cards cards--${b.variant} band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">

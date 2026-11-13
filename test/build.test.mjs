@@ -93,6 +93,7 @@ test("old addresses move only once their page exists", () => {
   assert.match(file, /^\/home {2}\/ {2}301$/m);
   assert.match(file, /^\/initiatives\/ribbons-%E0%B1%A8%E0%A7%8E {2}\/initiatives\/ribbons\/ {2}301$/m, "a renamed live page moves to its plain address");
   assert.match(file, /^\/resources\/health {2}\/resources\/\?topic=health {2}301$/m, "an old resource page opens its topic");
+  assert.match(file, /^\/classes {2}\/explore\/classes\/ {2}301$/m, "the short classes address moves to the classes page under Explore");
   const routes = [{ live: "/resources/health", path: "/resources/", disposition: "replace" }];
   const before = redirectsFile(routes, [], new Set());
   assert.equal(before.text.trim(), "");

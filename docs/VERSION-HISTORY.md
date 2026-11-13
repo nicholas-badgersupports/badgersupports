@@ -44,7 +44,7 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - Peer Support Groups reads left to right: each day is one row, its sessions in aligned time, place and Get Directions columns, with a large Today tag on the day that is running and Next Up on the following one, both worked out from the visitor's real date. The photograph at the head of the drop-in section sits level with its heading instead of floating below a gap.
 
-- Resources reveals its matching cards progressively — twelve at a time behind Show More, following search and filters — and safety and survivor-support cards are never held back by the reveal. Dogs on Call states "Every session is free and drop-in. All are welcome!" as a banner with its calendar button and its UHS Prevention line, and gains a Meet the Dogs photo row.
+- Resources reveals its matching cards progressively — twelve at a time behind Show More, following search and filters — and safety and survivor-support cards are never held back by the reveal. Dogs on Call states "Every session is free and drop-in. All are welcome!" as a banner with its calendar button and its UHS Prevention line, the statement given more room around it, with faded paw prints scattered behind it.
 
 - What We Do leads with the full Fall 2026 training cohort photograph the owner chose, with dated group photographs beside it; Craft Nights gains a Made at Craft Nights gallery of eight photographs of past work; History's era years are set oversized on its timeline. No milestone, schedule or fact was added or changed.
 
@@ -52,11 +52,27 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The FAQ's website-problem section is two paragraphs in place of four, keeping who triages a report and what to include; the Find the Resource to Correct link is removed, and the Email the Student Directors button remains.
 
+- On Peer Support Groups, a photograph of people replaces the photograph of an empty room, and on Request a Workshop a photograph of people replaces the presenter photograph the owner set aside.
+
+- The Ribbons page is now titled Ribbons; its former title, Colors of Support Solidarity Ribbons, is retired. The initiative's own name, Colors of Support, is unchanged in the page's words.
+
+- Resources ends in one closing card: the note that details change, with the date the page was last reviewed, the Suggest a Resource button and the invitation to email the directors with feedback stand together under the list.
+
+- Workshops and Request a Program present their sections in boxed cards, as the site's other boxed sections do; the setting is a per-section switch the wording editor carries.
+
+- The Alumni History is switched on: the page lists the organisation's historical leadership rosters — 108 names across ten groups, carried over as printed on the former Google Sites page — and reads them from Connect each time the page is drawn.
+
+- Cards and panels across the site take one smaller corner radius — 12 pixels, with form fields at 8 — and the wordmark in the header sits on one line.
+
+### Removed
+
+- The Meet the Dogs section is removed from Dogs on Call.
+
 ### Fixed
 
 - The screenshot checks count only the site's own console messages, so an embedded service's noise no longer fails a page.
 
-- A Safety Exit pill now stands in the header of every page: one press, or three quick Escape presses, opens Google in a new tab, replaces the current tab with it so Back does not return, and tries to close the tab. The destination is a Site Settings value whose default is https://www.google.com/ and which falls back to it when unset, empty or invalid; without JavaScript the pill is a plain link, and leaving is never measured.
+- A Safety Exit pill floats at the bottom right of every page, clear of the header: one press, or three quick Escape presses, opens Google in a new tab, replaces the current tab with it so Back does not return, and tries to close the tab. The destination is a Site Settings value whose default is https://www.google.com/ and which falls back to it when unset, empty or invalid; without JavaScript the pill is a plain link, and leaving is never measured.
 
 - Pressing an email link now copies the address and opens a small popup saying so, offering Copy again and Open in mail app; the mail program is never opened uninvited, and without JavaScript the link stays a plain mailto. Left alone, the popup dismisses itself after six seconds — hovering, keyboard focus inside and a hidden tab pause that clock, a press inside stops it — and scrolling it or its link out of sight closes it at once.
 
@@ -84,7 +100,7 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The footer's Director Sign-In is now a quiet text link in the legal row. The site has a new icon — a red hexagon with a cream hand — serving as its favicon and touch icon, and the TikTok glyph is centred, spaced and thinned so it sits evenly with the other social icons.
 
-- Icon animations now start only from the icon itself: once when the icon first comes into view, and again when that icon is hovered, focused or pressed — never from a click elsewhere on the page. Narrowing the triggers did not remove any animation: every icon kind that ships a move keeps it.
+- An icon's animation now plays only on a click, and a click plays only the single animated icon closest to where the visitor clicked — nothing plays on arrival, on scroll or on hover. Narrowing the triggers did not remove any animation: every icon kind that ships a move keeps it.
 
 - In Drop In This Week, a session with no sign-up now shows a blank sign-up cell instead of the words No Sign-Up, and the room short-named S-MHH is written out in full everywhere as the Student Mental Health Hub.
 
@@ -97,6 +113,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 - Dropdowns whose arrow a shared background rule had wiped or tiled across the field — the error-state select was the visible case — draw their own chevron again, inset at the field's right edge; every rendered dropdown on the affected page families was re-measured.
 
 - Words nested inside a form's expandable prose — the Volunteer Application's Our programs and teams passage — could not be reached by the site's wording editor, so a saved change to them never showed; the editor now reaches them, and no wording itself changed.
+
+- The Resources page scrolled sideways at phone width: its closing card's single grid column sized itself to the longest line inside it, running 40 pixels past a 320-pixel screen. The column now shrinks with the card, and the page fits.
 
 
 ## 2026-11-04 to 2026-11-05 — Development period — Form setup, file delivery and visitor pages

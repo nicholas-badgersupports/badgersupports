@@ -21,7 +21,7 @@ test('Craft hierarchy keeps original edit paths, people photos and useful anchor
  const currentTargets=new Set([...pageStrings(current),...pageValues(current)].map(r=>r.target));
  const stable=['b-cn-hero/title','b-cn-hero/lead','b-cn-expect/title','b-cn-expect/body/0','b-cn-expect/items/0/text','b-cn-expect/items/1/text','b-cn-expect/items/2/text','b-cn-next/title','b-cn-recent/title','b-cn-cta/title','b-cn-cta/primary/label','b-cn-cta/primary/href','b-cn-access/body/0'];
  for(const path of stable)assert.ok(currentTargets.has(`page:pg-craft-nights:${path}`),path);
- const photos={'b-cn-hero':['m-craft-pots-room','m-craft-painted-pumpkin','m-craft-bead-crafts'],'b-cn-expect':['m-craft-planting-station','m-craft-succulent-table'],'b-cn-cta':['m-craft-stickers']};
+ const photos={'b-cn-hero':['m-craft-pots-room','m-craft-painted-pumpkin','m-craft-bead-crafts'],'b-cn-expect':['m-craft-planting-station','m-craft-succulent-table'],'b-cn-cta':['m-people-bedazzle-table']};
  for(const [id,items] of Object.entries(photos))assert.deepEqual(current.blocks.find(b=>b.id===id).photos,items,id);
  const out=current.blocks.map(b=>String(renderBlock(b,ctx(source())))).join('');
  assert.ok(out.includes('id="b-cn-hero"'));
@@ -35,7 +35,7 @@ test('Craft hierarchy keeps original edit paths, people photos and useful anchor
 
 test('Craft archive captions are editable, source-associated and retain whole photos',()=>{
  const p=page(),b=p.blocks.find(b=>b.id==='b-cn-past-work');assert.equal(b.variant,'whole');
- assert.equal(b.items[0].photo,'m-people-nostalgic');assert.equal(b.items[1].photo,'m-people-planter-solo');
+ assert.equal(b.items[0].photo,'m-craft-nostalgic');assert.equal(b.items[1].photo,'m-people-planter-solo');
  assert.match(b.items[0].title,/Nostalgic/);assert.match(b.items[0].lines.join(' '),/September 2026/);
  assert.match(b.items[1].title,/Planter/);assert.doesNotMatch(JSON.stringify(b.items[1]),/2026-14|November/);
  const words=pageStrings(p),values=pageValues(p);

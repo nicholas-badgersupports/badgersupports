@@ -12,9 +12,9 @@
       "title": "Request a Program",
       "lead": "Free for any UW–Madison student or student group.",
       "photos": [
-        "m-workshop-herald-team",
+        "m-workshop-directors-session",
         "m-peer-circle",
-        "m-workshop-room"
+        "m-workshop-housing-hall"
       ],
       "body": [
         "Bring a workshop, a peer support group or a volunteer training to your organization, class, residence hall or team. Choose a program, tell us about your group, and we will follow up to plan it."
@@ -164,7 +164,7 @@
       ],
       "photos": [
         "m-program-paintings",
-        "m-peer-talk"
+        "m-peer-hub-chat"
       ],
       "icon": "chat",
       "program": "peer"
@@ -187,7 +187,7 @@
       ],
       "photos": [
         "m-program-audience",
-        "m-involved-volunteers"
+        "m-workshop-training-room"
       ],
       "icon": "badge"
     },
@@ -210,7 +210,7 @@
       ],
       "photos": [
         "m-workshop-panel",
-        "m-workshop-housing-team"
+        "m-workshop-housing-questions"
       ],
       "icon": "house",
       "program": "workshops"

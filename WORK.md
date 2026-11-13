@@ -45,6 +45,7 @@ else this session chose is a **proposal** (`docs/DECISIONS.md` §4).
   pick on quality; every slot can be swapped by link. 43 live images are approved and saved; any other download is
   listed for the owner's OK first; the LCM banner photo stays. SAC and University Square are rebuilt, out of the menu
   as live; Little Hearts and Leadership 301. Connect's 86 resource records are approved; "email us" is directors@.
+- **One photo, one place** (12 Nov 2026): a photo appears once on this site; a repeat use is replaced with a different Drive photo — audit and replacements in Admin/Handoffs/active/PUBLIC-SITE/PUBLIC-PHOTO-ONCE-HANDOFF-2026-11-12.md.
 - **Launch** (20 Oct 2026): releases are built on the laptop, which holds the photo originals; the native forms
   launch closed, each page linking its Google Form; the hero's moving circles have a Pause button.
 - **The live site, connected to Connect** (23 Oct 2026): a publish runs the production build, which reads Connect's

@@ -14,7 +14,7 @@
       "photos": [
         "m-tabling-library",
         "m-tabling-conversation",
-        "m-take-ribbon"
+        "m-involved-tabling-signup"
       ],
       "items": [
         {
@@ -29,7 +29,7 @@
           "icon": "hand",
           "more": {
             "anchor": "volunteering",
-            "photo": "m-involved-volunteers",
+            "photo": "m-involved-tabling-team",
             "title": "Volunteers",
             "lead": "Volunteers at Badger Supports are a new program offered starting 2026–2027, and they are trained to participate in all areas of our Directorates.",
             "lists": [

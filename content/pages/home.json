@@ -42,7 +42,7 @@
           "program": "peer"
         },
         {
-          "media": "m-workshop-herald-team",
+          "media": "m-people-training-laptop",
           "label": "Workshops",
           "href": "#workshops",
           "icon": "bulb",
@@ -109,7 +109,7 @@
         }
       ],
       "photos": [
-        "m-peer-group-circle"
+        "m-peer-group-session"
       ],
       "links": [
         {
@@ -157,7 +157,7 @@
         "label": "Next Craft Nights"
       },
       "photos": [
-        "m-people-visionboards",
+        "m-people-visionboards-group",
         "m-people-bedazzle",
         "m-people-perler",
         "m-people-planter",
@@ -178,8 +178,8 @@
       "title": "Wellness Workshops",
       "lead": "Interactive sessions led by trained peer facilitators, tailored to your group’s needs.",
       "photos": [
-        "m-workshop-housing-team",
-        "m-workshop-herald-room"
+        "m-workshop-housing-team-standing",
+        "m-workshop-housing-presenter"
       ],
       "primary": {
         "label": "Request a Workshop",

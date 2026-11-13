@@ -155,10 +155,18 @@ test("EXPLORE-F: the built page shows the pulled courses with their terms and th
   const section = page.slice(page.indexOf("data-courses"), page.indexOf("</section>", page.indexOf("data-courses")));
   if (data.fixture) assert.ok(section.includes(data.label), "a sample pull says what it is until the owner accepts the verification note");
   else assert.doesNotMatch(section, /Sample data/, "the production pull carries no sample note (switch on: the owner's ruling of 12 Nov 2026)");
-  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, data.courses.length, "every pulled course is a card");
-  const card = (desig) => { const a = section.indexOf(desig); return a < 0 ? "" : section.slice(a, section.indexOf("</li>", a)); };
+  /* First use (C-23): the page carries the first courses of each group and names the data
+     file beside it; the file carries every pulled course as a card. */
+  const payload = JSON.parse(fs.readFileSync(path.join(OUT, "explore/classes/courses-data.json"), "utf8"));
+  const cards = payload.groups.flatMap((g) => g.cards);
+  assert.equal(payload.schema, "bss.courses-data/1");
+  assert.equal(cards.length, data.courses.length, "every pulled course is a card in the data file");
+  assert.match(section, /data-courses-src="\/explore\/classes\/courses-data\.json"/, "the page names its data file");
+  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, payload.groups.reduce((n, g) => n + Math.min(12, g.cards.length), 0), "the page carries the first courses of each group");
+  const all = cards.join("");
+  const card = (desig) => { const a = all.indexOf(desig); return a < 0 ? "" : all.slice(a, all.indexOf("</li>", a)); };
   assert.match(card("SCAND ST 101"), /Open for Fall 2026/, "the fall-only Norwegian course is open for the fall term it is published in");
   assert.match(card("SCAND ST 102"), /Open for Spring 2027/, "the spring-only course is open for spring, not shown as available now");
   assert.match(section, /href="https:\/\/public\.enroll\.wisc\.edu\/search"/, "cards link to UW Course Search");
-  assert.doesNotMatch(section, /guarantee|might|may not be offered|uncertain/i, "no card carries future-uncertainty helper text; the term label does the work");
+  assert.doesNotMatch(all, /guarantee|might|may not be offered|uncertain/i, "no card carries future-uncertainty helper text; the term label does the work");
 });

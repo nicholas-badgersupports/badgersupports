@@ -1,9 +1,13 @@
 /* The Campus Events Explorer's filters, calendar and refresh (src/render/blocks/exploreevents.mjs).
- * The page arrives with the build's read of the feeds rendered and the same data in a JSON island;
- * this asks /api/campus-events for the current read (the feeds are re-read there at most every few
- * minutes; a failed read there keeps the last good list) and then filters in the browser. Nothing
- * typed is sent anywhere: the only request is the read itself. Cards are built with textContent,
- * so feed text can never become markup.
+ * The page arrives with the build's read of the feeds rendered as the first cards; the same data
+ * rides in a file beside the page (events-data.json, named by the section's data-ce-data), fetched
+ * the first time the visitor opens, searches or filters the explorer — the site search's way of
+ * working. Only then does this ask /api/campus-events for the current read (the feeds are re-read
+ * there at most every few minutes; a failed read there keeps the last good list) and filter in the
+ * browser. Until the file lands, the controls hold their state and the rendered cards stand; if it
+ * does not arrive, the count line says so and offers Try Again. Nothing typed is sent anywhere:
+ * the only requests are the reads themselves. Cards are built with textContent, so feed text can
+ * never become markup.
  *
  * The list is revealed in steps, the way the Resources list is: the first PAGE matches show and
  * Show More reveals the next PAGE of the same filtered set; any change to the filters starts the
@@ -26,9 +30,10 @@ const dayOf = (iso) => dayKey.format(new Date(iso));
 const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 for (const box of document.querySelectorAll("[data-campus-events]")) {
-  const island = box.querySelector("script[type=\"application/json\"]");
   let data = { events: [], interests: [], updated: null, stale: false, today: dayKey.format(new Date()) };
-  try { data = { ...data, ...JSON.parse(island.textContent) }; } catch { /* the rendered list stays */ }
+  /* False until the data file beside the page has landed: until then render() leaves the
+     rendered first cards standing and the controls only hold their state. */
+  let loaded = false;
   const tools = box.querySelector("[data-ce-tools]");
   const q = box.querySelector("[data-ce-q]");
   const cat = box.querySelector("[data-ce-cat]");
@@ -145,11 +150,15 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
   function setView(v) {
     state.view = v;
     for (const b of views) b.setAttribute("aria-pressed", String(b.dataset.ceView === v));
+    if (!loaded) { poke(); return; }
     list.hidden = v !== "list";
     cal.hidden = v !== "calendar";
   }
 
   function render() {
+    if (!loaded) return;
+    list.hidden = state.view !== "list";
+    cal.hidden = state.view !== "calendar";
     const events = filtered();
     /* The reveal counts the filtered set: when the filters change, the first PAGE shows again. */
     const sig = [q.value, cat.value, src.value, from.value, to.value, [...state.interests].sort().join(",")].join("§");
@@ -162,6 +171,29 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
     if (state.view === "calendar") { list.replaceChildren(); renderCalendar(events); }
     else { cal.replaceChildren(); list.replaceChildren(...events.slice(0, state.limit).map(card)); }
   }
+
+  /* The build's read, fetched once, the first time the explorer is used: what the page used to
+     carry in a JSON island. When it lands, whatever state the controls already hold is
+     rendered, and the live read (refresh) follows as it always has. */
+  let asking = null;
+  async function load() {
+    count.textContent = t("explore.events.loading");
+    try {
+      const res = await fetch(box.dataset.ceData, { headers: { accept: "application/json" } });
+      if (!res.ok) throw new Error("bad answer");
+      const got = await res.json();
+      if (!got || !Array.isArray(got.events)) throw new Error("bad answer");
+      data = { events: got.events, interests: got.interests || [], updated: got.updated || null, stale: !!got.stale, today: got.today || data.today };
+      loaded = true;
+      retryRow.hidden = true;
+      render();
+      refresh();
+    } catch {
+      retryRow.hidden = false;
+      count.textContent = t("explore.events.failed");
+    } finally { asking = null; }
+  }
+  const poke = () => { if (!loaded && !asking) asking = load(); };
 
   async function refresh() {
     try {
@@ -179,6 +211,7 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
   }
 
   for (const chip of chips) chip.addEventListener("click", () => {
+    poke();
     const id = chip.dataset.ceInterest;
     if (state.interests.has(id)) { state.interests.delete(id); chip.setAttribute("aria-pressed", "false"); }
     else { state.interests.add(id); chip.setAttribute("aria-pressed", "true"); }
@@ -186,24 +219,33 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
   });
   for (const b of views) b.addEventListener("click", () => { setView(b.dataset.ceView); render(); });
   moreBtn?.addEventListener("click", () => {
+    poke();
     state.limit += PAGE;
     render();
     // The last reveal retires the button; keep the reader's place by moving focus to the count.
     if (moreRow?.hidden) count.focus({ preventScroll: true });
   });
   badgerBtn?.addEventListener("click", () => {
+    poke();
     src.value = src.value === "badger" ? "" : "badger";
     render();
   });
   reset.addEventListener("click", () => {
+    poke();
     q.value = ""; cat.value = ""; src.value = ""; from.value = ""; to.value = "";
     state.interests.clear();
     for (const chip of chips) chip.setAttribute("aria-pressed", "false");
     setView("list"); render();
   });
-  box.querySelector("[data-ce-retrybtn]")?.addEventListener("click", refresh);
-  for (const input of [q, cat, src, from, to]) input.addEventListener("input", render);
+  box.querySelector("[data-ce-retrybtn]")?.addEventListener("click", () => { if (!loaded) poke(); else refresh(); });
+  for (const input of [q, cat, src, from, to]) input.addEventListener("input", () => { poke(); render(); });
   if (tools) tools.hidden = false;
-  render();
-  refresh();
+  /* A plain arrival leaves the rendered first cards standing until a first use — a press, a
+     keystroke, the explorer scrolling into view. */
+  box.addEventListener("pointerdown", poke);
+  box.addEventListener("focusin", poke);
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); poke(); } }, { rootMargin: "600px" });
+    io.observe(box);
+  }
 }

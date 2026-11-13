@@ -41,6 +41,13 @@ export function makeContext({ site, media, builtPaths, programs = new Map(), rou
     // A new path that replaces several live pages (the resource viewer) links to the first listed.
     liveFor: routes.reduce((m, r) => (r.path && r.live && !r.path.includes("{") && !m.has(r.path) ? m.set(r.path, r.live) : m), new Map()),
     pendingLinks: new Set(),
+    /* Data a block holds back from the page for the visitor's browser to fetch on first use
+       (the catalogue pages, C-23): the block names the file and hands over its body; the build
+       writes it beside the page (ops/build.mjs). Renders outside a build — the server drawing a
+       page again — register into the same list and nothing reads it there: the file the build
+       wrote is what the browser asks for, as the search index works. */
+    deferred: [],
+    defer(entry) { this.deferred.push(entry); },
     // The page being rendered, so a list on it does not link back to it (W3C technique G128).
     path,
     link(href) { return resolveLink(this, href); },

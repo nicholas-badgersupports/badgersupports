@@ -599,7 +599,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-863 keys. Keys are permanent. Required text cannot be published empty and must keep each
+870 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -1358,7 +1358,7 @@ the site adds the markup.
 | `staff.overview.tool.versions` | The versions the site has published, and bringing one back. | Staff page, the Overview: the Earlier Versions card. |  |
 | `staff.overview.tool.settings` | The site's name, its search description and its accessibility email. | Staff page, the Overview: the Site Settings card. |  |
 
-### Resource list (56)
+### Resource list (59)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1417,6 +1417,9 @@ the site adds the markup.
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
 | `resources.stale` | Showing the most recently available resource list. Some details may have changed. | Resource catalogue state or recovery action. |  |
 | `resources.contact` | Email Us | Resource catalogue state or recovery action. |  |
+| `resources.loading` | Loading the resources… | On the resource list: the count line while the full resource list is on its way. |  |
+| `resources.failed` | The resources could not be loaded. The first resources are listed below. | On the resource list: the count line when the full resource list does not arrive. |  |
+| `resources.retry` | Try Again | On the resource list: the button under the count line when the full resource list does not arrive. |  |
 | `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
 ### Site search (16)
@@ -1440,12 +1443,13 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (56)
+### Explore Campus (57)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `explore.events.search` | Search events | On the Campus Events Explorer: the search box label. |  |
 | `explore.events.interests` | Interests | On the Campus Events Explorer: the heading over the interest buttons. |  |
+| `explore.events.loading` | Loading the events… | On the Campus Events Explorer: the count line while the full event list is on its way. |  |
 | `explore.events.category` | Category | On the Campus Events Explorer: the category menu label. |  |
 | `explore.events.categoryAll` | All categories | On the Campus Events Explorer: the category menu's first choice. |  |
 | `explore.events.source` | Source | On the Campus Events Explorer: the source menu label. |  |
@@ -1512,7 +1516,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (14)
+### Discover Classes by Interest (17)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1530,6 +1534,9 @@ the site adds the markup.
 | `classes.source` | Courses and terms are from UW Course Search, University of Wisconsin–Madison. | On the classes page: the line under the list naming where the course data comes from. |  |
 | `classes.updated` | Last Updated {{monLong}} {{dom}}, {{year}} | On the classes page: the date the course data was last refreshed, after the source line. | `{{monLong}}` `{{dom}}` `{{year}}` |
 | `classes.empty` | No courses are listed right now. Please check UW Course Search for the current listings. | On the classes page: shown when the course data holds no courses. |  |
+| `classes.loading` | Loading the courses… | On the classes page: the count line while the full course list is on its way. |  |
+| `classes.failed` | The courses could not be loaded. The first courses are listed below. | On the classes page: the count line when the full course list does not arrive. |  |
+| `classes.retry` | Try Again | On the classes page: the button under the count line when the full course list does not arrive. |  |
 
 ### Academic Support Navigator (4)
 

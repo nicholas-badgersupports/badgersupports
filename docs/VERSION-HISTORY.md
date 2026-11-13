@@ -64,6 +64,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - Cards and panels across the site take one smaller corner radius — 12 pixels, with form fields at 8 — and the wordmark in the header sits on one line.
 
+- The three catalogue pages — Discover Classes, the resource list and the Campus Events Explorer — now carry their first view in the page and load the rest of the catalogue from a data file beside the page when a visitor first opens, searches or filters into it, so the pages arrive lighter (the classes page was about 1.6 MB of HTML). Search, filters and addressed links work as before once the file lands; if it does not arrive, the first view stays and the page offers Try Again.
+
 ### Removed
 
 - The Meet the Dogs section is removed from Dogs on Call.

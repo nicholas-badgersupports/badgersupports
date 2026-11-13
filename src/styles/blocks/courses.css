@@ -4,6 +4,7 @@
 .cls-chip:hover { border-color: var(--accent); }
 .cls-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--cream); }
 .cls-count { color: var(--muted); font-size: var(--fs-small); margin: 0 0 var(--s3); }
+.cls-again { margin: 0 0 var(--s3); }
 .cls-group { margin-top: var(--s5); }
 /* The one column is capped at the list's own width: a card's widest unbreakable
    line must not be able to widen the column, and every card with it, past the screen. */

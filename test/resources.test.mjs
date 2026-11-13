@@ -13,22 +13,31 @@ const read = (p) => fs.readFileSync(path.join(OUT, p), "utf8");
 const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "fixtures", "resources.json"), "utf8"));
 const pageJson = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "pages", "resources.json"), "utf8"));
 let page;
+/* First use (C-23): the page carries the reveal's first set of cards; the whole list rides in
+   the data file beside the page. Card assertions read the file's cards — the same strings the
+   page used to carry, drawn by the same hand. */
+let cards;
 const card = (id) => {
-  const a = page.indexOf(`data-res="${id}"`);
-  assert.ok(a > 0, `card ${id}`);
-  return page.slice(a, page.indexOf("</li>", a));
+  const a = cards.indexOf(`data-res="${id}"`);
+  assert.ok(a >= 0, `card ${id}`);
+  return cards.slice(a, cards.indexOf("</li>", a));
 };
 const button = (id) => card(id).match(/<a [^>]*class="btn res-go"[^>]*>(?:<span class="go-label">)?([^<]*)/)?.[1];
 
 test.before(async () => {
   await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: "2026-10-20" });
   page = read("resources/index.html");
+  cards = JSON.parse(read("resources/resources-data.json")).cards.join("");
 });
 
 test("every record in the source is a card, on campus first, and the list works without a script", () => {
-  const ids = [...page.matchAll(/<li class="res-card" data-res="([^"]+)"/g)].map((m) => m[1]);
+  const ids = [...cards.matchAll(/<li class="res-card" data-res="([^"]+)"/g)].map((m) => m[1]);
   assert.equal(ids.length, fixture.resources.length);
   assert.deepEqual([...ids].sort(), fixture.resources.map((r) => r.id).sort());
+  const onPage = [...page.matchAll(/<li class="res-card" data-res="([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(onPage.length < ids.length, "the page itself carries a first set, not the whole list");
+  assert.deepEqual(onPage, ids.filter((id) => onPage.includes(id)), "the page's cards are the file's first set, in the list's order");
+  assert.match(page, /data-res-src="\/resources\/resources-data\.json"/, "the page names the data file beside it");
   const campus = ids.map((id) => fixture.resources.find((r) => r.id === id).location.campus);
   assert.ok(campus.lastIndexOf("on_campus") < campus.indexOf("madison_community"), "on campus before Madison");
   assert.ok(campus.lastIndexOf("madison_community") < campus.indexOf("national"), "Madison before national");
@@ -53,8 +62,8 @@ test("only topics a resource carries are offered, and the old resource pages ope
 });
 
 test("no button calls, texts or emails: those say View Details, and the number stays on the card", () => {
-  assert.doesNotMatch(page, /<a [^>]*class="btn res-go"[^>]*href="(tel|sms|mailto):/);
-  assert.doesNotMatch(page, /<a [^>]*href="(tel|sms|mailto):[^"]*"[^>]*class="btn res-go"/);
+  assert.doesNotMatch(cards, /<a [^>]*class="btn res-go"[^>]*href="(tel|sms|mailto):/);
+  assert.doesNotMatch(cards, /<a [^>]*href="(tel|sms|mailto):[^"]*"[^>]*class="btn res-go"/);
   assert.equal(button("foodshare"), "View FoodShare", "a short label of the record's own is kept");
   assert.equal(button("access-community-health-centers"), "View Details", "a label that says Call");
   assert.equal(button("slow-food-uw"), "View Details", "Email Slow Food UW opens a web page");
@@ -105,7 +114,7 @@ test("a resource list with a topic it cannot draw fails the build", () => {
 });
 
 test("the list offers Cost, Location and Access filters for what its cards carry, behind a Filters button, and a clear-all", () => {
-  assert.doesNotMatch(page, /Cost Not Specified/i, "a card with no known cost carries no cost tag");
+  assert.doesNotMatch(cards, /Cost Not Specified/i, "a card with no known cost carries no cost tag");
   for (const g of ["cost", "where", "how"]) assert.match(page, new RegExp(`data-fgroup="${g}"`), g);
   assert.match(page, /<button type="button" class="res-filter-toggle" aria-expanded="false" aria-controls="[^"]+-filters" data-res-ftoggle><svg[^>]*data-i="sliders"[\s\S]*?<span>Filters<\/span>/);
   assert.match(page, /data-res-clearall>Clear All</);

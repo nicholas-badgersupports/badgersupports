@@ -10,7 +10,14 @@
    anything about a future offering beyond the terms shown. Every card links to UW Course
    Search, where a student reads the sections and enrolls; this page holds no schedules,
    grades or enrollment state, and nothing a visitor chooses is sent anywhere
-   (src/client/courses.js filters in the page). Without a script every course shows. */
+   (src/client/courses.js filters in the page).
+
+   The page carries the first courses of each group; the whole catalogue rides in a data
+   file the build writes beside the page (courses-data.json, registered with ctx.defer),
+   and the script fetches it when the visitor first opens, scrolls to or filters the list —
+   the site search's pattern (src/render/blocks/sitesearch.mjs). The cards in the file are
+   drawn by the same courseCard as the ones on the page, so a card is written once. Without
+   a script the first courses of each group show, under the count of the whole catalogue. */
 
 import { html, attrs } from "../html.mjs";
 import { link } from "../context.mjs";
@@ -32,6 +39,10 @@ function courseCard(c, ctx) {
   </li>`;
 }
 
+/* How many of a group's courses the page itself carries; the rest ride in the data file.
+   The resource list's page size, so a first view is the same depth on both pages. */
+const FIRST = 12;
+
 export default {
   type: "courses",
   label: "Discover Classes by Interest",
@@ -52,10 +63,20 @@ export default {
     const recent = all.filter((c) => !c.open);
     const group = (id, heading, list) => list.length ? html`<div class="cls-group" data-cls-group="${id}">
       <h3>${heading}</h3>
-      <ul class="cls-list">${list.map((c) => courseCard(c, ctx))}</ul>
+      <ul class="cls-list">${list.slice(0, FIRST).map((c) => courseCard(c, ctx))}</ul>
     </div>` : "";
+    /* The whole catalogue, held back for the script to fetch on first use: both groups in
+       full, their cards drawn by the same hand as the page's. */
+    const groups = [
+      { id: "available", heading: ctx.t("classes.group.available"), list: available },
+      { id: "recent", heading: ctx.t("classes.group.recent"), list: recent },
+    ].filter((g) => g.list.length);
+    ctx.defer({
+      file: "courses-data.json",
+      body: JSON.stringify({ schema: "bss.courses-data/1", groups: groups.map((g) => ({ id: g.id, heading: g.heading, cards: g.list.map((c) => String(courseCard(c, ctx))) })) }) + "\n",
+    });
     const updated = ctx.data.coursesUpdated;
-    return html`<section class="courses band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-courses><div class="wrap">
+    return html`<section class="courses band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-courses data-courses-src="${ctx.path || ""}courses-data.json"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${ctx.data.coursesSample ? html`<p class="sample-note">${ctx.data.coursesSample}</p>` : ""}
@@ -66,6 +87,7 @@ export default {
     </div>
   </div>
   <div class="cls-status" aria-live="polite"><p class="cls-count" data-cls-count>${all.length === 1 ? ctx.t("classes.count.one") : ctx.t("classes.count.all", { n: all.length })}</p></div>
+  <p class="cls-again" data-cls-again hidden><button type="button" class="btn btn--quiet" data-cls-retry>${ctx.t("classes.retry")}</button></p>
   ${group("available", ctx.t("classes.group.available"), available)}
   ${group("recent", ctx.t("classes.group.recent"), recent)}
   <p class="cls-scope">${ctx.t("classes.source")}${updated ? html` <span class="cls-updated">${ctx.t("classes.updated", dateParts(updated, ctx.t))}</span>` : ""}</p>

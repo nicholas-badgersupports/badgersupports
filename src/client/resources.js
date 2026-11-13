@@ -204,10 +204,11 @@ for (const box of document.querySelectorAll("[data-resources]")) {
       const r = await fetch(box.dataset.resSrc, { headers: { accept: "application/json" } });
       if (!r.ok) throw new Error(String(r.status));
       const got = await r.json();
-      const tpl = document.createElement("template");
-      tpl.innerHTML = (got.cards || []).join("");
-      if (!tpl.content.querySelector("[data-res]")) throw new Error("empty");
-      list.replaceChildren(...tpl.content.children);
+      /* The cards are the build's renderer's own markup, every word from text.json;
+         parsed in a document of its own, where nothing loads or runs until placed. */
+      const doc = new DOMParser().parseFromString((got.cards || []).join(""), "text/html");
+      if (!doc.body.querySelector("[data-res]")) throw new Error("empty");
+      list.replaceChildren(...doc.body.children);
       buildItems();
       apply();
       if (fromAddress) { fromAddress = false; settleChosen(); }

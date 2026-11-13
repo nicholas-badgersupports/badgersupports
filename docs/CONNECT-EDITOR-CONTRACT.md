@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-870 keys. Keys are permanent. Required text cannot be published empty and must keep each
+874 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -900,7 +900,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (454)
+### Staff page and edit button (458)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -940,6 +940,7 @@ the site adds the markup.
 | `staff.delivery.sent` | {{n}} in Connect | Staff page, how many answers reached Connect. | `{{n}}` |
 | `staff.delivery.waiting` | {{n}} waiting to send | Staff page, how many answers have not gone to Connect yet. | `{{n}}` |
 | `staff.delivery.failed` | {{n}} could not be sent | Staff page, how many answers failed to reach Connect. | `{{n}}` |
+| `staff.delivery.stuck` | {{n}} needs a person | Staff page, how many answers failed so often that sending them is now a person's to start again. | `{{n}}` |
 | `staff.delivery.off` | Connect is not set up for this copy of the site, so answers are kept here and sent once it is. | Staff page, above the forms when Connect is not set up. |  |
 | `staff.retry` | Send Waiting Answers Now | Staff page, button under the forms when some have not reached Connect. |  |
 | `staff.retrying` | Sending… | Staff page, on the send button while waiting answers are sent. |  |
@@ -959,6 +960,7 @@ the site adds the markup.
 | `staff.row.failed` | Not Sent Yet | Staff page, answers table: sending failed and will be tried again. |  |
 | `staff.row.held` | Held | Staff page, answers table: kept back on purpose. |  |
 | `staff.row.cancelled` | Not Sent | Staff page, answers table: will not be sent. |  |
+| `staff.row.stuck` | Needs a Person | Staff page, answers table: sending failed for the last time; a person starts it again. |  |
 | `staff.edit.title` | Words on the Site | Staff page, heading above the edit tools. |  |
 | `staff.edit.how` | Open any page of this site and press Edit text in the bottom corner. Every word you can change gets a dotted outline; choose one, change it and save. | Staff page, how to use the edit button. |  |
 | `staff.edit.none` | Every saved change is already on the site. | Staff page, when nothing waits to publish. |  |
@@ -1348,6 +1350,8 @@ the site adds the markup.
 | `staff.overview.clear` | Nothing needs attention right now. | Staff page, the Overview: shown when no tool is waiting on anything. |  |
 | `staff.overview.failedSend.one` | {{n}} answer could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.failedSend.other` | {{n}} answers could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
+| `staff.overview.stuckSend.one` | {{n}} answer could not be sent and will not be tried again. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
+| `staff.overview.stuckSend.other` | {{n}} answers could not be sent and will not be tried again. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.waitingSend.one` | {{n}} answer is waiting to send to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.waitingSend.other` | {{n}} answers are waiting to send to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.drafts.one` | {{n}} draft page is not on the site yet. | Staff page, the Overview: a line under Needs attention; the whole line leads to Pages on the Site. | `{{n}}` |

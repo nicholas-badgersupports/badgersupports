@@ -56,9 +56,10 @@ for (const box of document.querySelectorAll("[data-courses]")) {
         h.textContent = g.heading;
         const ul = document.createElement("ul");
         ul.className = "cls-list";
-        const tpl = document.createElement("template");
-        tpl.innerHTML = (g.cards || []).join("");
-        ul.append(...tpl.content.children);
+        /* The cards are the build's renderer's own markup, every word from text.json;
+           parsed in a document of its own, where nothing loads or runs until placed. */
+        const doc = new DOMParser().parseFromString((g.cards || []).join(""), "text/html");
+        ul.append(...doc.body.children);
         div.append(h, ul);
         built.push(div);
       }

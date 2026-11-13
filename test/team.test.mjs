@@ -61,7 +61,10 @@ test("a person's page writes to them only if they published a contact", () => {
   const avery = read("about/our-team/avery-example/index.html");
   assert.match(avery, /<h1 id="b-person-h">Avery Example<\/h1>/);
   assert.match(avery, /href="mailto:avery\.example@example\.org"[^>]*>[\s\S]*?Connect with Avery/);
-  assert.match(avery, /class="profile-more"/);
+  assert.match(avery, /class="profile-card"/);
+  assert.match(avery, /class="profile-facts"/);
+  assert.match(avery, /class="profile-next"/);
+  assert.doesNotMatch(avery, /profile-more|More of Our Team/);
   const jordan = section(read("about/our-team/jordan-placeholder/index.html"), "b-person");
   assert.doesNotMatch(jordan, /mailto:|profile-contact/);
 });

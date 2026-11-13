@@ -65,16 +65,32 @@
 .hub-link:focus-visible .hub-photo { outline: 3px solid var(--focus-on-red); outline-offset: 9px; }
 .hub-you {
   position: absolute; left: 40.5%; top: 34.5%; width: 19%; aspect-ratio: 1; z-index: 6; margin: 0;
-  display: grid; place-items: center; border-radius: 50%;
+  display: grid; place-items: center; border: 0; padding: 0; border-radius: 50%; cursor: pointer;
   background: var(--cream); color: var(--accent); box-shadow: 0 0 0 7px var(--accent), 0 0 0 11px var(--cream);
-  font: 800 clamp(1.15rem, .8rem + 1.3vw, 1.9rem)/1 var(--font-display); text-transform: uppercase; letter-spacing: -.01em; pointer-events: none;
+  font: 800 clamp(1.15rem, .8rem + 1.3vw, 1.9rem)/1 var(--font-display); text-transform: uppercase; letter-spacing: -.01em;
+  perspective: 30rem;
   animation: you-in .9s ease .55s both;
+  transition: scale var(--t) var(--ease-out);
 }
-/* The face is sized to the centre word it replaces: "you" renders 2.266em wide, and the
-   drawing, stroke included, spans 14.6 of the 24 grid units, so its box is 3.725em and the
+.hub-you:hover { scale: 1.035; }
+.hub-you:focus-visible { outline: 3px solid var(--focus-on-red); outline-offset: 4px; }
+/* The face is sized to the centre word it shares the circle with: "you" renders 2.266em wide, and
+   the drawing, stroke included, spans 14.6 of the 24 grid units, so its box is 3.725em and the
    drawing lands at the word's width at any size. The translate lifts it one grid unit — the
    features are drawn centred at y 13, not y 12 — so the face itself sits mid-circle. */
 .hub-you .you-face { width: 3.725em; height: 3.725em; translate: 0 -4.1667%; stroke-width: 2.1; }
+/* The circle turns over (owner, 12 Nov 2026): the word rests on the front and the face on the
+   back, and the whole inner card turns edge-on and back — at the halfway point it has no width,
+   so the swap itself is never seen. Six hundred milliseconds, ease-in-out: quickest exactly at
+   the edge-on moment, gentle setting off and settling in, one plain turn with no bounce or spin
+   (the round-4 smile research: restrained reads friendly). Both sides fill the same box, so
+   nothing changes size and the page never shifts. src/client/hero.js adds .is-face — once on its
+   own when the circle first comes into view, then on each press. For anyone who asks for less
+   motion, base.css switches transitions off, so a press swaps the sides at once. */
+.you-flip { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s ease-in-out; }
+.hub-you.is-face .you-flip { transform: rotateY(180deg); }
+.you-side { position: absolute; inset: 0; display: grid; place-items: center; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.you-side--face { transform: rotateY(180deg); }
 .bubble { position: absolute; aspect-ratio: 1; border-radius: 50%; animation: hub-in .6s cubic-bezier(.3, 1.45, .5, 1) .6s both, float-a 9s ease-in-out 1.2s infinite; animation-play-state: running, paused; }
 .network.is-moving .hub, .network.is-moving .bubble { animation-play-state: running; }
 .bubble-3 { animation-name: hub-in, float-b; animation-duration: .6s, 11s; animation-delay: .7s, 1.6s; }

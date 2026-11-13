@@ -13,10 +13,14 @@
  * glugs when pointed at (src/client/spill-logo.js), beside a line and a way to write a SPILL (owner,
  * 20 Oct 2026: "Badger SPILL represented ... in the hero element on the front page").
  *
- * Experiment (12 Nov 2026, branch hero-smiley-2026-11-12, unmerged): the centre circle draws a
- * smiley face (the "face" icon) instead of the centre word. The word itself is untouched — it is
- * still this block's `centre` text field, set in the page's content ("you" in
- * content/pages/home.json) — so taking the icon back out of the render restores it exactly.
+ * The centre circle is a button (owner, 12 Nov 2026, branch hero-smiley-2026-11-12, unmerged). It
+ * rests on the centre word — this block's `centre` text field, set in the page's content ("you" in
+ * content/pages/home.json), rendered exactly as before — and the smiley face (the "face2" icon, the
+ * owner's pick of five) lives on the back of the same circle. When the circle first comes into
+ * view, src/client/hero.js turns it over once to the face; pressing it turns it back and forth.
+ * The turn is the flip in blocks.css. Anyone who asks for less motion keeps the word until they
+ * press, and then it swaps at once. The button's name says what pressing it does, and follows the
+ * side showing.
  */
 
 import { html, attrs } from "../html.mjs";
@@ -45,7 +49,7 @@ export default {
   </div>
   ${circles.length ? html`<div class="network" data-network>
     <ul class="network-list" aria-label="${ctx.t("hero.photosLabel")}">${circles.map((c, i) => html`<li${attrs({ class: `hub hub-${i + 1}`, "data-program": ctx.programOf(c.href) })}>${link(ctx, c.href, html`<span class="hub-photo">${picture(ctx, c.media, { sizes: i === 0 ? "(max-width: 860px) 52vw, 19rem" : "(max-width: 860px) 44vw, 16rem", eager: true, priority: i === 0 ? "high" : null, alt: "" })}</span><span class="hub-tag"><span>${c.label}</span>${icon(c.icon || "arrow", "go-ic")}</span>`, { class: "hub-link" })}</li>`)}</ul>
-    ${b.centre ? html`<p class="hub-you" aria-hidden="true">${icon("face2", "you-face")}</p>` : ""}
+    ${b.centre ? html`<button type="button" class="hub-you" data-you aria-pressed="false"><span class="you-flip" aria-hidden="true"><span class="you-side you-side--word">${b.centre}</span><span class="you-side you-side--face">${icon("face2", "you-face")}</span></span><span class="sr-only" data-you-label>${ctx.t("hero.youFace")}</span></button>` : ""}
     <span class="bubble bubble-1" aria-hidden="true"></span><span class="bubble bubble-3" aria-hidden="true"></span><span class="bubble bubble-4" aria-hidden="true"></span><span class="bubble bubble-5" aria-hidden="true"></span>
     <button type="button" class="still" data-still hidden>${icon("pause", "still-pause")}${icon("play", "still-play")}<span class="sr-only">${ctx.t("hero.pause")}</span></button>
   </div>` : ""}

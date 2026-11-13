@@ -160,6 +160,16 @@
       "text": "Play the Moving Photos",
       "where": "The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text."
     },
+    "hero.youFace": {
+      "group": "home",
+      "text": "Show the Smiley Face",
+      "where": "Name of the hero's middle circle while it shows its word; pressing it turns the circle over to a smiley face. Screen readers read it; it is not shown as text."
+    },
+    "hero.youWord": {
+      "group": "home",
+      "text": "Show the Word in the Middle",
+      "where": "The same middle circle while it shows the smiley face; pressing it turns the circle back to its word. Screen readers read it; it is not shown as text."
+    },
     "schedule.today": {
       "group": "home",
       "text": "Today",

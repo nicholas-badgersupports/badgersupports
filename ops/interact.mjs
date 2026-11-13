@@ -37,8 +37,8 @@
  *    and every page is a plain link; a failed index says so, keeps the list, and Try Again loads it.
  * 8. The Safety Exit: the pill is in the header's top-right on every page at five widths, at
  *    least 44px tall and covering nothing; it is still in reach after scrolling; one press (or
- *    three quick Escapes, never two) leaves for the weather forecast with no analytics request
- *    fired; without JavaScript it is still there, a plain working link.
+ *    three quick Escapes, never two) leaves for Google, in a new tab and in this tab both,
+ *    with no analytics request fired; without JavaScript it is still there, a plain working link.
  * Fictional files and people only: a few bytes that start as a PDF does, Avery Example and Robin Example.
  */
 
@@ -2540,7 +2540,7 @@ await part("8. the safety exit", async () => {
     const page = await ctx.newPage();
     const exits = [];
     const ga = [];
-    await ctx.route(/weather\.gov/, async (route) => { exits.push(route.request().url()); await route.abort(); });
+    await ctx.route(/google\.com/, async (route) => { exits.push(route.request().url()); await route.abort(); });
     page.on("request", (r) => { if (/google-analytics|googletagmanager/.test(r.url())) ga.push(r.url()); });
 
     for (const path of ["/", "/operations/privacy-policy/"]) {
@@ -2565,8 +2565,8 @@ await part("8. the safety exit", async () => {
             sideways: document.documentElement.scrollWidth - innerWidth,
           };
         });
-        check(r.href === "https://www.weather.gov/" && r.label === words("header.safetyExit"),
-          `safety exit @${w} ${path}: a plain link to the weather forecast, labelled "${r.label}"`);
+        check(r.href === "https://www.google.com/" && r.label === words("header.safetyExit"),
+          `safety exit @${w} ${path}: a plain link to Google, labelled "${r.label}"`);
         check(r.top >= r.headTop - 1 && r.bottom <= r.headBottom + 1 && r.right >= 0 && r.h >= 44 && !r.overlap && r.sideways <= 0,
           `safety exit @${w} ${path}: inside the header at its right, ${r.h}px tall, covering nothing, no sideways scroll`);
       }
@@ -2583,12 +2583,12 @@ await part("8. the safety exit", async () => {
     });
     check(stuck.top >= 0 && stuck.bottom <= 200, `safety exit: still visible after scrolling (top ${Math.round(stuck.top)})`);
 
-    /* one press leaves for the forecast, and nothing is measured on the way out */
+    /* one press opens Google in a new tab and replaces this page with it too, and nothing is measured on the way out */
     exits.length = 0;
     await page.click("[data-safety-exit]");
     await sleep(600);
-    check(exits.length === 1 && exits[0].startsWith("https://www.weather.gov"),
-      `safety exit: one press leaves for the forecast (${exits.length} leavings)`);
+    check(exits.length === 2 && exits.every((u) => u.startsWith("https://www.google.com")),
+      `safety exit: one press opens a new tab and replaces this page (${exits.length} leavings)`);
     check(!ga.length, `safety exit: no analytics request fired while leaving (${ga.length})`);
 
     /* three Escapes in quick succession do the same; two do not */
@@ -2602,7 +2602,7 @@ await part("8. the safety exit", async () => {
     await page.keyboard.press("Escape");
     await page.keyboard.press("Escape");
     await sleep(600);
-    check(exits.length === 1, `safety exit: three quick Escapes leave (${exits.length} leavings)`);
+    check(exits.length === 2, `safety exit: three quick Escapes leave the same way (${exits.length} leavings)`);
     check(!ga.length, `safety exit: the Escape exit is not measured either (${ga.length})`);
   } finally { await ctx.close(); }
 
@@ -2611,14 +2611,14 @@ await part("8. the safety exit", async () => {
   try {
     const page = await plain.newPage();
     const exits = [];
-    await plain.route(/weather\.gov/, async (route) => { exits.push(route.request().url()); await route.abort(); });
+    await plain.route(/google\.com/, async (route) => { exits.push(route.request().url()); await route.abort(); });
     await page.goto(BASE + "/", { waitUntil: "load" });
     const r = await page.evaluate(() => {
       const el = document.querySelector("[data-safety-exit]");
       return { href: el.getAttribute("href"), label: el.textContent.trim(), shown: !!el.getClientRects().length };
     });
-    check(r.shown && r.href === "https://www.weather.gov/" && r.label === words("header.safetyExit"),
-      "safety exit: without JavaScript the pill shows, as a link to the forecast");
+    check(r.shown && r.href === "https://www.google.com/" && r.label === words("header.safetyExit"),
+      "safety exit: without JavaScript the pill shows, as a link to Google");
     await page.click("[data-safety-exit]");
     await sleep(500);
     check(exits.length === 1, "safety exit: without JavaScript the link still leaves");

@@ -93,9 +93,9 @@ function description(value, code = "page.description") {
 /* ---------- the site's settings ---------- */
 
 export const SETTINGS_KEYS = ["name", "description", "accessibilityEmail", "safetyExitUrl"];
-/* The Safety Exit's destination when no setting stands: the National Weather Service forecast —
-   neutral, fast, and it opens no app on a phone. The same default on all three sites. */
-export const SAFETY_EXIT_DEFAULT = "https://www.weather.gov/";
+/* The Safety Exit's destination when no setting stands: Google — the plain, everyday page
+   UHS's quick exit uses, and the same default on all three sites. */
+export const SAFETY_EXIT_DEFAULT = "https://www.google.com/";
 export const URL_MAX = 2000;
 const EMAIL_RE = /^[a-z0-9._%+-]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/;
 

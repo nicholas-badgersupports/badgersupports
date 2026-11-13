@@ -211,7 +211,7 @@
       "type": "text",
       "title": "Leaving This Site Quickly",
       "body": [
-        "Every page of this site carries a Safety Exit button in the header. Pressing it — or pressing the Escape key three times in quick succession — takes you straight to the National Weather Service forecast and replaces this page in your browser's Back history, so the Back button does not bring this page back.",
+        "Every page of this site carries a Safety Exit button in the header. Pressing it — or pressing the Escape key three times in quick succession — opens Google in a new tab straight away, and replaces this page in your browser's Back history with Google in this tab too, so the Back button does not bring this page back.",
         "The button cannot erase your browser history, and no website can. If you need to leave as little trace as possible, view this site in a private or incognito window, and clear your browser history afterwards if it is safe for you to do so."
       ]
     }

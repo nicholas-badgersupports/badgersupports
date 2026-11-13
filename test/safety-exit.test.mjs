@@ -1,6 +1,7 @@
-/* The Safety Exit: a pill in the header of every built page, a plain link to the weather
-   forecast, the script that makes a press replace the page in the history (and counts three
-   Escapes), and the privacy page's honest note about what the button cannot do. */
+/* The Safety Exit: a pill in the header of every built page, a plain link to Google, the
+   script that makes a press open Google in a new tab, replace the page in this tab and try
+   to close it (and counts three Escapes), and the privacy page's honest note about what
+   the button cannot do. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -22,8 +23,8 @@ test.before(async () => {
   await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: "2026-10-20" });
 });
 
-test("the destination is the weather forecast, the same as the other two sites", () => {
-  assert.equal(SAFETY_EXIT_DEFAULT, "https://www.weather.gov/");
+test("the destination is Google, the same as the other two sites", () => {
+  assert.equal(SAFETY_EXIT_DEFAULT, "https://www.google.com/");
   const site = JSON.parse(fs.readFileSync(path.join(ROOT, "content/site.json"), "utf8"));
   assert.equal(site.safetyExitUrl, SAFETY_EXIT_DEFAULT, "the build's own setting carries the default");
 });
@@ -36,8 +37,8 @@ test("a custom destination in the site's settings is the one the pill points at"
   assert.equal(safetyExitHref(site), "https://example.org/leave", "the laid-over setting reaches the href the header draws");
 });
 
-test("an unset, empty or invalid destination falls back to the weather forecast", () => {
-  for (const bad of [undefined, null, "", "   ", "not a url", "http://www.weather.gov/", "javascript:alert(1)", "https://", "https://exa mple.org/", 42]) {
+test("an unset, empty or invalid destination falls back to Google", () => {
+  for (const bad of [undefined, null, "", "   ", "not a url", "http://www.google.com/", "javascript:alert(1)", "https://", "https://exa mple.org/", 42]) {
     assert.equal(safetyExitHref({ safetyExitUrl: bad }), SAFETY_EXIT_DEFAULT, JSON.stringify(bad));
     const site = { name: "Badger Supports", safetyExitUrl: SAFETY_EXIT_DEFAULT, footer: {} };
     laySettings(site, { safetyExitUrl: bad });
@@ -60,12 +61,12 @@ test("the destination saves through Site Settings, and a bad one is refused whol
   }
 });
 
-test("every built page carries one Safety Exit pill, a plain link to the forecast", () => {
+test("every built page carries one Safety Exit pill, a plain link to Google", () => {
   const pages = htmlFiles(OUT);
   assert.ok(pages.length > 40, `built pages found (${pages.length})`);
   for (const p of pages) {
     const page = fs.readFileSync(p, "utf8");
-    const pills = [...page.matchAll(/<a class="safety-exit" href="https:\/\/www\.weather\.gov\/" data-safety-exit>/g)];
+    const pills = [...page.matchAll(/<a class="safety-exit" href="https:\/\/www\.google\.com\/" data-safety-exit>/g)];
     assert.equal(pills.length, 1, `${path.relative(OUT, p)}: one pill`);
     assert.ok(page.includes(`>${TEXT["header.safetyExit"].text}</span></a>`), `${path.relative(OUT, p)}: the label`);
     const header = page.slice(page.indexOf('<header class="site-header">'), page.indexOf("</header>"));
@@ -80,10 +81,12 @@ test("the privacy page says plainly what the button can and cannot do", () => {
   assert.match(page, /private or incognito window/);
 });
 
-test("the script leaves by replacing the page, counts three Escapes, and measures nothing", () => {
+test("the script opens a new tab, replaces the page, tries to close the tab, counts three Escapes, and measures nothing", () => {
   const src = fs.readFileSync(path.join(ROOT, "src/client/site.js"), "utf8");
   const exit = src.slice(src.indexOf("The Safety Exit"), src.indexOf("/* Icons move"));
+  assert.match(exit, /window\.open\(/);
   assert.match(exit, /window\.location\.replace\(/);
+  assert.match(exit, /window\.close\(\)/);
   assert.match(exit, /safetyExit\.addEventListener\("click"/);
   assert.match(exit, /escapes\.length >= 3/);
   assert.doesNotMatch(exit, /gtag|sendBeacon|analytics|fetch\(|XMLHttpRequest/);

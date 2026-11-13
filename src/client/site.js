@@ -73,12 +73,18 @@ document.addEventListener("click", (e) => {
 });
 
 /* The Safety Exit: one press of the pill, or Escape three times in quick succession, leaves at
-   once — no confirmation, nothing asked first — and replaces this page in the history, so Back
-   does not bring it back. The pill is a plain link and still leaves without this file. Leaving
-   is never measured: nothing here sends anything of its own, to anyone. */
+   once — no confirmation, nothing asked first. The destination opens in a new tab, and this
+   tab is replaced by it too, its entry in the history overwritten, so Back does not bring the
+   site back; the script also tries to close this tab outright, which a browser only allows
+   for a tab the page itself opened, so the replace is what guarantees the leaving. The pill
+   is a plain link and still leaves without this file. Leaving is never measured: nothing
+   here sends anything of its own, to anyone. */
 const safetyExit = document.querySelector("[data-safety-exit]");
 function leaveQuickly() {
-  window.location.replace(safetyExit ? safetyExit.href : "https://www.weather.gov/");
+  const url = safetyExit ? safetyExit.href : "https://www.google.com/";
+  window.open(url, "_blank");
+  window.location.replace(url);
+  window.close();
 }
 if (safetyExit) {
   safetyExit.addEventListener("click", (e) => { e.preventDefault(); leaveQuickly(); });

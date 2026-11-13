@@ -227,8 +227,11 @@
 /* The Find Us pill breathes: the shared .go geometry leaves its 2rem badge 4px from the pill's
    top, bottom and right edges, which reads cramped on the pale card. In this card the badge gets
    .5rem of air on every side and a wider gap from the words; the pill grows a little taller and
-   wider to pay for it, and still sits well inside the column. */
-.place .go { padding: .5rem .5rem .5rem 1.05rem; gap: .75rem; }
+   wider to pay for it, and still sits well inside the column. The pill also sits a full step
+   below the address: with no margin its top edge touched the last line of the detail, so it
+   takes the --s3 the site's cards put between their words and a following button
+   (.card-words .go), which is also this card's own vertical padding step. */
+.place .go { padding: .5rem .5rem .5rem 1.05rem; gap: .75rem; margin-top: var(--s3); }
 
 /* With the week's photos under it, the Hub card and the carousel are one element:
    one 2px line (the house card's edge) runs around the pair, rounded at the very

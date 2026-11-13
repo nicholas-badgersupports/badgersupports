@@ -1767,7 +1767,7 @@ await part("first visit: current-room refresh waits for focus and exact end", as
   check(await page.locator(".visit-action").isVisible(), "first visit: exact end preserves the focused action until focus leaves");
   await page.locator("#b-pg-days a.go").first().focus(); await sleep(100);
   check(!await page.locator(".visit-action").isVisible(), "first visit: ended directions disappear after focus leaves");
-  await page.locator(".visit-event .ended-tag").evaluate((n, words) => n.before(document.createTextNode(words)), words("schedule.signup.none"));
+  await page.locator(".visit-event .ended-tag").evaluate((n, words) => n.before(document.createTextNode(words)), words("schedule.signup.link"));
   const endedRows = [];
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });

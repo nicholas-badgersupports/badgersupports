@@ -112,9 +112,9 @@ for (const p of withEvents) {
 /* An ended row's "Ended": on a desktop it sits after a dot in the row's sign-up cell; on a phone, where the row is one
    column and the cell wraps, it starts its own line with no dot. Each page with events is held a minute after its own
    last one, so every listed row is ended and every one is measured. An ended row hides its Drop in, so the pages' cells
-   hold "Ended" alone; the first row of each page is measured again with its sign-up words ("No Sign-Up") put back. */
+   hold "Ended" alone; the first row of each page is measured again with its sign-up words ("Sign-Up Needed") put back. */
 {
-  const words = JSON.parse(fs.readFileSync(path.join(ROOT, "content/text.json"), "utf8")).text["schedule.signup.none"].text;
+  const words = JSON.parse(fs.readFileSync(path.join(ROOT, "content/text.json"), "utf8")).text["schedule.signup.link"].text;
   const seen = { rows: 0, worded: 0, wrong: [], unmeasured: [] };
   const counts = {};
   for (const p of withEvents) {

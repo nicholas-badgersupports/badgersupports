@@ -185,11 +185,6 @@
       "text": "Coming Up",
       "where": "Heading over later events, when the timetable block gives none."
     },
-    "schedule.signup.none": {
-      "group": "home",
-      "text": "No Sign-Up",
-      "where": "Beside an event anyone can walk into."
-    },
     "schedule.dropIn": {
       "group": "home",
       "text": "Drop In",

@@ -20,7 +20,7 @@
     "review": "Connect's weekly rows are its peer support groups, titled with the directorate's name and often with no room. The site titles them as its own pages do, and places a row with no room at the Student Mental Health Hub, where the live peer support page says the groups meet."
   },
   "rooms": [
-    { "place": "sac-mhh", "words": ["student mental health hub", "mental health hub", "sac 3203", "student activity center 3203"] },
+    { "place": "sac-mhh", "words": ["student mental health hub", "mental health hub", "sac 3203", "student activity center 3203", "s-mhh", "smhh"] },
     { "place": "sac-caucus", "words": ["sac caucus", "caucus room"] },
     { "place": "sac-hearing", "words": ["sac hearing", "hearing room sac", "hearing room student activity center"] },
     { "place": "sac-multipurpose", "words": ["sac multipurpose", "multipurpose room sac", "multipurpose room student activity center"] },
@@ -28,7 +28,7 @@
     { "place": "memorial-union-tripp", "words": ["tripp commons"] },
     { "place": "lcm", "words": ["lcm student center", "lcm"] }
   ],
-  "review": "Proposed 23 Oct 2026 (overnight run, decision 2.4). Words are matched whole, case and punctuation ignored, longest first; a room that matches nothing is shown in Connect's words with no link. The room names are Connect's own (its saved rooms include 'SAC Caucus Room' and 'Student Mental Health Hub, Student Activity Center 3203'). 'Hearing room' and 'multipurpose room' match only with the building named, since other buildings have rooms by those names.",
+  "review": "Proposed 23 Oct 2026 (overnight run, decision 2.4). Words are matched whole, case and punctuation ignored, longest first; a room that matches nothing is shown in Connect's words with no link. The room names are Connect's own (its saved rooms include 'SAC Caucus Room' and 'Student Mental Health Hub, Student Activity Center 3203'). 'S-MHH' is saved there too, as the Hub's short name; it names the same room, and the site shows the full name (owner, 12 Nov 2026). 'Hearing room' and 'multipurpose room' match only with the building named, since other buildings have rooms by those names.",
   "exports": {
     "team": true,
     "wall": true,

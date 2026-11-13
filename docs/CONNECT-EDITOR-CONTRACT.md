@@ -51,7 +51,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager · b
 
 ### Event timetable — `schedule`
 
-Reads: `events` · analytics: `page` · photos load eager · browser module `schedule.js`
+Reads: `events` · analytics: `page` · photos load eager · browser modules `schedule.js`, `carousel.js`
 
 | Field | Type | |
 |---|---|---|
@@ -64,6 +64,7 @@ Reads: `events` · analytics: `page` · photos load eager · browser module `sch
 | `home` | one published room (content/places) |  |
 | `dropIn` | for a program, the page its Drop in button opens (otherwise it opens the room's directions) |  |
 | `connect` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
+| `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 
 ### Program section — `program`
 
@@ -593,7 +594,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-801 keys. Keys are permanent. Required text cannot be published empty and must keep each
+805 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (18)
@@ -619,7 +620,7 @@ the site adds the markup.
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
-### Homepage sections (34)
+### Homepage sections (38)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -632,7 +633,6 @@ the site adds the markup.
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
 | `schedule.placeLink` | How to Find It | Link under the usual place in the timetable. |  |
 | `schedule.laterTitle` | Coming Up | Heading over later events, when the timetable block gives none. |  |
-| `schedule.signup.none` | No Sign-Up | Beside an event anyone can walk into. |  |
 | `schedule.dropIn` | Drop In | Button beside an event anyone can walk into. Opens the program’s page (peer support groups) or the room’s directions. |  |
 | `schedule.signup.connect` | Sign Up on Connect | Link beside an event that needs a sign-up on Connect. |  |
 | `schedule.signup.link` | Sign-Up Needed | Beside an event that needs a sign-up somewhere else. |  |
@@ -644,6 +644,11 @@ the site adds the markup.
 | `strip.next` | Next photo | Button that moves a photo strip on. |  |
 | `strip.trackLabel` | {{title}}: photos, scroll sideways for more | A photo strip's name, read by screen readers. {{title}} is the section heading. | `{{title}}` |
 | `strip.count` | {{n}} of {{total}} | Position in a photo strip. | `{{n}}` `{{total}}` |
+| `carousel.prev` | Previous photo | Button that moves the Drop In This Week photo carousel back. |  |
+| `carousel.next` | Next photo | Button that moves the Drop In This Week photo carousel on. |  |
+| `carousel.dot` | Go to photo {{n}} | Button that jumps to one photo in the Drop In This Week carousel. {{n}} is its position. | `{{n}}` |
+| `carousel.count` | Photo {{n}} of {{total}} | Position in the Drop In This Week photo carousel, read by screen readers. | `{{n}}` `{{total}}` |
+| `carousel.label` | {{title}}: photos | The Drop In This Week photo carousel's name, read by screen readers. {{title}} is the section heading. | `{{title}}` |
 | `wall.more` | Show Other Notes | Button on the Wall of Support, when the block gives none. |  |
 | `involve.closed` | Applications Closed | Tag on a way to get involved whose application form is switched off. |  |
 | `workshops.inWorkshop` | In the Full Workshop | Above the list of what each workshop covers, beside its preview. |  |

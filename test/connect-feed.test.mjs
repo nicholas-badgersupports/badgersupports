@@ -91,6 +91,8 @@ test("the rules file names only rooms the site has", () => {
 
 test("Connect's room words find the site's room, whole words only, longest phrase first", () => {
   assert.equal(roomFor(RULES, "Student Mental Health Hub, Student Activity Center 3203"), "sac-mhh");
+  assert.equal(roomFor(RULES, "S-MHH"), "sac-mhh", "the Hub's short name in Connect names the same room");
+  assert.equal(roomFor(RULES, "SMHH"), "sac-mhh");
   assert.equal(roomFor(RULES, "SAC Caucus Room"), "sac-caucus");
   assert.equal(roomFor(RULES, "Tripp Commons"), "memorial-union-tripp");
   assert.equal(roomFor(RULES, "Strippcommons"), null, "part of a word is not the word");
@@ -248,6 +250,38 @@ test("Connect's recent events fill a page's Recent list; a Connect that sends no
   assert.match(shown, /class="evcard is-recent"/);
   assert.doesNotMatch(shown, /evcard-cal|paint an example/i, "a night that happened has no calendar button, and nothing to come is listed");
   assert.equal(render(mapEvents(EVENTS, RULES).events), '<section data-block="b-cn-recent" hidden></section>');
+});
+
+test("a room Connect saves as S-MHH is the Student Mental Health Hub here", () => {
+  const reply = {
+    ...EVENTS,
+    weekly: [{ id: "w9", title: "Example directorate", weekday: 2, start: "17:00", end: "18:00", room: "S-MHH", from: null, until: null, skip: [] }],
+    events: [{ id: "e9", type: "hub", title: "Hub drop-in with the short room name", short: "", date: "2026-10-21", endDate: "2026-10-21", start: "13:00", end: "15:00", room: "S-MHH", full: false }],
+  };
+  const { events } = mapEvents(reply, RULES);
+  assert.equal(events.dated[0].place, "sac-mhh");
+  assert.equal(events.recurring[0].place, "sac-mhh");
+  assert.deepEqual(Object.keys(events.rooms), [], "the short name never becomes a room of its own");
+});
+
+test("a timetable row with no sign-up and nowhere to drop in shows a blank sign-up cell", () => {
+  const events = {
+    recurring: [], dated: [
+      { id: "x1", program: "other", title: "Example open house", date: "2026-10-21", start: "13:00", end: "15:00", place: "hall", signup: "none" },
+      { id: "x2", program: "peer", title: "Example group at the Hub", date: "2026-10-21", start: "17:00", end: "18:00", place: "hub", signup: "none" },
+      { id: "x3", program: "other", title: "Example booked talk", date: "2026-10-21", start: "19:00", end: "20:00", place: "hall", signup: "link" },
+    ],
+    places: { hall: { name: "Example Hall", detail: "", href: null }, hub: { name: "Student Mental Health Hub", detail: "", href: "/directions/sac-mhh" } },
+  };
+  const ctx = makeContext({ site: {}, media: { items: [] }, data: { events }, text: TEXT, today: "2026-10-20" });
+  const out = String(BLOCKS.schedule.render({ id: "b-x", type: "schedule", title: "This week", source: "events" }, ctx));
+  assert.doesNotMatch(out, /No Sign-Up/, "no row says a sign-up is missing");
+  const rowOf = (title) => out.split("<li").find((r) => r.includes(title)) || "";
+  const cellOf = (title) => (rowOf(title).match(/<span class="ev-sign">([\s\S]*?)<\/span>\s*<\/li>/) || [])[1] ?? "";
+  const bare = (cell) => cell.replace(/<span class="ongoing-tag">[\s\S]*?<\/span>/, "").replace(/<span class="ended-tag">[\s\S]*?<\/span>/, "").trim();
+  assert.equal(bare(cellOf("Example open house")), "", "the open house's sign-up cell holds nothing of its own (the state tags are CSS-hidden until they apply)");
+  assert.match(cellOf("Example group at the Hub"), />Drop In</, "the Hub row keeps its Drop In button");
+  assert.ok(cellOf("Example booked talk").includes(TEXT["schedule.signup.link"]), "a row that needs a sign-up elsewhere still says so");
 });
 
 test("a week with nothing on says so", () => {

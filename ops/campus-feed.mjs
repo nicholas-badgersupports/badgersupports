@@ -18,6 +18,7 @@
  */
 
 import { chicagoInstant } from "../src/shared/chicago-time.mjs";
+import { canonicalPlaceName } from "../src/shared/place-names.mjs";
 
 export const UW_EVENTS_URL = "https://today.wisc.edu/events.json";
 export const UNION_FEED_URL = "https://union.wisc.edu/events-and-activities/event-calendar/feed";
@@ -149,11 +150,14 @@ const dedupKey = (e) => `${norm(e.title)}|${Math.floor(Date.parse(e.start) / 600
 
 /* The three lists as one: a listing in both external feeds (the Union cross-posts to the campus
  * calendar) becomes one card keeping both source links; Badger Supports programs never merge into
- * an external listing. Only events running into the window are kept. */
+ * an external listing. Only events running into the window are kept. A place a feed names by a
+ * short name is first put in its full form (src/shared/place-names.mjs), so the two writings of
+ * one room are one listing. */
 export function mergeCampusEvents({ uw = [], union = [], badger = [] } = {}, { from, to } = {}) {
   const dropped = [];
   const byKey = new Map();
   const out = [];
+  const atFullName = (e) => (typeof e?.place === "string" ? { ...e, place: canonicalPlaceName(e.place) } : e);
   const put = (e) => {
     const key = dedupKey(e);
     const held = byKey.get(key);
@@ -167,9 +171,9 @@ export function mergeCampusEvents({ uw = [], union = [], badger = [] } = {}, { f
     held.categories = [...new Set([...held.categories, ...e.categories])];
     dropped.push(`merged duplicate: "${e.title.slice(0, 60)}"`);
   };
-  for (const e of uw) put(e);
-  for (const e of union) put(e);
-  for (const e of badger) out.push(e);
+  for (const e of uw) put(atFullName(e));
+  for (const e of union) put(atFullName(e));
+  for (const e of badger) out.push(atFullName(e));
   const fromMs = from ? Date.parse(`${from}T00:00:00-06:00`) : -Infinity;
   const toMs = to ? Date.parse(`${to}T23:59:59-06:00`) : Infinity;
   const events = out.filter((e) => { const s = Date.parse(e.start); const en = Date.parse(e.end || e.start); return en >= fromMs && s <= toMs; })

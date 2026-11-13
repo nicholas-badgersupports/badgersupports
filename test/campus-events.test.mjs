@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 import { parseUwEvent, parseUnionFeed, countUnionTitles, mergeCampusEvents, fromConnectRows, fetchCampusEvents, fixtureCampusEvents } from "../ops/campus-feed.mjs";
+import { canonicalPlaceName } from "../src/shared/place-names.mjs";
 
 const uwRows = JSON.parse(fs.readFileSync(new URL("./fixtures/campus-uw.json", import.meta.url), "utf8"));
 const unionXml = fs.readFileSync(new URL("./fixtures/campus-union.xml", import.meta.url), "utf8");
@@ -92,4 +93,23 @@ test("the prototype fixture spans the three sources and starts today", () => {
 
 test("feed_1's count is read from its titles", () => {
   assert.equal(countUnionTitles("<feed><event><event_title>A</event_title></event><event><event_title>B</event_title></event></feed>"), 2);
+});
+
+test("a place entered by its short name is the Student Mental Health Hub", () => {
+  assert.equal(canonicalPlaceName("S-MHH"), "Student Mental Health Hub");
+  assert.equal(canonicalPlaceName("smhh"), "Student Mental Health Hub");
+  assert.equal(canonicalPlaceName("S-MHH, Student Activity Center"), "Student Mental Health Hub, Student Activity Center");
+  assert.equal(canonicalPlaceName("Memorial Union"), "Memorial Union", "other places are as written");
+  assert.equal(canonicalPlaceName(null), null, "no place stated stays no place");
+
+  const at = (place) => parseUwEvent({
+    id: 999002, title: "Example at the Hub", description: "", startDate8601: "2026-11-12T17:00:00-06:00", endDate8601: "2026-11-12T18:00:00-06:00",
+    allDayEvent: false, cost: "", url: "", sponsor: "Example", tags: [], location: place, building: { name: place },
+  }).event;
+  const { events } = mergeCampusEvents({ uw: [at("S-MHH")] }, { from: "2026-11-01", to: "2026-12-31" });
+  assert.equal(events.length, 1);
+  assert.equal(events[0].place, "Student Mental Health Hub", "the merged list carries the full name");
+
+  const both = mergeCampusEvents({ uw: [at("S-MHH"), at("Student Mental Health Hub")] }, { from: "2026-11-01", to: "2026-12-31" });
+  assert.equal(both.events.length, 1, "the two writings of the one room are one listing");
 });

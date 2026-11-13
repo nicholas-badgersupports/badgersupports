@@ -141,6 +141,9 @@
   --danger-tint: #FBEDE6;
   --ok: var(--peer);
   --ok-tint: var(--peer-tint);
+  /* a paused or closed state wears the same dark orange, always beside its word, never colour alone */
+  --paused: var(--danger);
+  --paused-tint: var(--danger-tint);
   --focus-ring: #304674;
   --focus-on-red: #F2EBE1;
   --scrim: #39373799;          /* behind the edit dialog: ink at sixty per cent */

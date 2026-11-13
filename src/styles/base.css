@@ -93,6 +93,7 @@ a:hover { color: var(--link-deep); text-decoration-thickness: 2px; }
   background: var(--paper-deep); color: var(--muted);
 }
 .chip--closed::before { content: ""; width: .55em; height: .55em; border-radius: 50%; border: 2px solid currentColor; }
+.chip--closed { background: var(--paused-tint); color: var(--paused); }
 
 /* prototype notice: build-flagged, never in a production build */
 .proto {

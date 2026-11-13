@@ -124,3 +124,25 @@
 @media (max-width: 480px) {
   .footer-top { grid-template-columns: 1fr; }
 }
+
+/* ---------- email links: the copy popup (src/client/email.js) ---------- */
+/* Positioned by the script beside the link that was pressed (centred on a phone), so the page
+   under it never moves. The page stays visible: the popup is a note about one address, not a
+   screen of its own, so its backdrop lets the page show through. */
+.email-pop {
+  position: fixed; margin: 0; width: min(19rem, calc(100vw - 2 * var(--s2)));
+  padding: var(--s3); border: 1px solid var(--line); border-radius: var(--r-card);
+  background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow);
+  font-size: var(--fs-small);
+}
+.email-pop::backdrop { background: transparent; }
+.email-pop-note { display: flex; align-items: center; gap: var(--s1); margin: 0 var(--s5) var(--s1) 0; font-size: 1rem; font-weight: 700; }
+.email-pop-mark { color: var(--ok); }
+.email-pop-addr { margin: 0 0 var(--s3); overflow-wrap: anywhere; user-select: all; }
+.email-pop-actions { display: flex; flex-wrap: nowrap; gap: var(--s1); }
+.email-pop-actions .btn { flex: none; width: 44px; height: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.email-pop-actions .ic { width: 1.3rem; height: 1.3rem; }
+.email-pop-x {
+  position: absolute; top: var(--s1); right: var(--s1); width: 44px; height: 44px; padding: 0;
+  border: 0; background: none; color: var(--muted); font: 400 1.4rem/1 var(--font-body); cursor: pointer;
+}

@@ -476,7 +476,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `copy`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 
@@ -594,14 +594,20 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-805 keys. Keys are permanent. Required text cannot be published empty and must keep each
+818 keys. Keys are permanent. Required text cannot be published empty and must keep each
+806 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (18)
+### Every page (23)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `page.skip` | Skip to Content | First link on every page, for keyboard users. |  |
+| `email.copied` | Email address copied | The note at the top of the small popup that opens when an email link is pressed, once the address has been copied. |  |
+| `email.copyFailed` | Copy this email address | The note at the top of the email link popup when the browser would not copy the address itself; the address under it can be copied by hand. |  |
+| `email.copyAgain` | Copy again | The button in the email link popup that copies the address once more. |  |
+| `email.openMail` | Open in mail app | The button in the email link popup that opens the visitor's mail program with the address filled in. |  |
+| `email.close` | Close | The name of the × button that closes the email link popup, read by screen readers. |  |
 | `header.wordmark` | badger supports | The name beside the hand, in the header and the footer. |  |
 | `header.homeSuffix` | — home | Read aloud after the name in the header link, so it says where the link goes. |  |
 | `header.menu` | Menu | The menu button on a phone. |  |

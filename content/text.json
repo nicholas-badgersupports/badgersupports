@@ -69,6 +69,31 @@
       "text": "Skip to Content",
       "where": "First link on every page, for keyboard users."
     },
+    "email.copied": {
+      "group": "page",
+      "text": "Email address copied",
+      "where": "The note at the top of the small popup that opens when an email link is pressed, once the address has been copied."
+    },
+    "email.copyFailed": {
+      "group": "page",
+      "text": "Copy this email address",
+      "where": "The note at the top of the email link popup when the browser would not copy the address itself; the address under it can be copied by hand."
+    },
+    "email.copyAgain": {
+      "group": "page",
+      "text": "Copy again",
+      "where": "The button in the email link popup that copies the address once more."
+    },
+    "email.openMail": {
+      "group": "page",
+      "text": "Open in mail app",
+      "where": "The button in the email link popup that opens the visitor's mail program with the address filled in."
+    },
+    "email.close": {
+      "group": "page",
+      "text": "Close",
+      "where": "The name of the × button that closes the email link popup, read by screen readers."
+    },
     "header.wordmark": {
       "group": "page",
       "text": "badger supports",

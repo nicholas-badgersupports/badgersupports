@@ -176,7 +176,7 @@ ${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: 
 <script>${raw(INLINE_JS)}</script>
 <script type="module" src="${a.js["site.js"]}"></script>
 ${clients.map((c) => html`<script type="module" src="${a.js[c]}"></script>`)}
-${Object.keys(clientTable(ctx.t.table, clients)).length ? jsonIsland("bss-text", clientTable(ctx.t.table, clients)) : ""}
+${Object.keys(clientTable(ctx.t.table, ["email.js", ...clients])).length ? jsonIsland("bss-text", clientTable(ctx.t.table, ["email.js", ...clients])) : ""}
 ${a.ga ? jsonIsland("bss-analytics", a.ga) : ""}
 </head>
 <body${attrs({ "data-page": page.id, "data-analytics": page.analytics || "public", "data-status": status, "data-refresh": refreshing ? "events" : null })}>

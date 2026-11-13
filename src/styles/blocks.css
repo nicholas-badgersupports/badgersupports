@@ -1635,7 +1635,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-tel { margin: 0; font-weight: 700; }
 .res-more { flex-basis: 100%; }
 .res-more > summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; cursor: pointer; }
-.res-more > summary:hover { color: var(--accent-deep); text-decoration: underline; }
+.res-more > summary:hover { color: var(--accent-deep); }
 .res-more-body { display: grid; gap: var(--s1); padding-top: var(--s2); font-size: var(--fs-small); }
 .res-more-body p, .res-dialog-body p { margin: 0; overflow-wrap: anywhere; }
 .res-report { display: flex; flex-wrap: wrap; gap: 0 var(--s4); }

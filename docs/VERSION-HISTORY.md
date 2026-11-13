@@ -4,7 +4,7 @@ Software changes through November 11, 2026, for visitors, staff and maintainers.
 
 ## Unreleased
 
-Development from November 5 to November 11, 2026, checked into the repository and not yet published. A publication date will be recorded here when a deployment record supports one.
+Development from November 5 to November 12, 2026, checked into the repository and not yet published. A publication date will be recorded here when a deployment record supports one.
 
 ### Added
 
@@ -55,6 +55,47 @@ Development from November 5 to November 11, 2026, checked into the repository an
 ### Fixed
 
 - The screenshot checks count only the site's own console messages, so an embedded service's noise no longer fails a page.
+
+- A Safety Exit pill now stands in the header of every page: one press, or three quick Escape presses, opens Google in a new tab, replaces the current tab with it so Back does not return, and tries to close the tab. The destination is a Site Settings value whose default is https://www.google.com/ and which falls back to it when unset, empty or invalid; without JavaScript the pill is a plain link, and leaving is never measured.
+
+- Pressing an email link now copies the address and opens a small popup saying so, offering Copy again and Open in mail app; the mail program is never opened uninvited, and without JavaScript the link stays a plain mailto. Left alone, the popup dismisses itself after six seconds — hovering, keyboard focus inside and a hidden tab pause that clock, a press inside stops it — and scrolling it or its link out of sight closes it at once.
+
+- The home page gains the feeling check-in from the organisation's earlier site: five feelings, each its emoji over its word in its own colour; a tap bursts confetti — never for a visitor who prefers reduced motion — and answers with one of the feeling's reply lines and the day's counts. A publisher can edit the set under Site Settings: up to eight feelings, never fewer than one, each with at least one reply line.
+
+- The staff page is no longer one long scroll: it opens on an Overview listing what needs attention, and each job — Website Forms, Words on the Site, Pages on the Site, Rooms, Earlier Versions of the Site, Site Settings — has its own view under a section menu that keeps the open view across reloads. Buttons at the ends of the menu scroll it when the views run past the edge of the screen.
+
+- The Craft Nights gallery (Made at Past Craft Nights) stands in one row of smaller pictures by default, and two Site Settings — Craft Nights Photos to Show, from 1 to 12 and starting at six, and Craft Nights Gallery Layout, One Row or Grid — choose how it shows; a change takes effect on the next publish.
+
+- The Wall of Support now shows the wall's real notes — the 55 notes held in its own sheet, in sheet order and with their wording unchanged — in place of the twelve sample notes typed for review; a repeatable pull refreshes them and refuses a pull that carries an empty, over-long or repeated note.
+
+- The home hero's centre circle rests on the word YOU and flips once to a smiley face — dot eyes and a gentle smile, the owner's pick of five drawn options — when it first comes into view; a tap on the circle flips between the word and the face.
+
+- A team member's profile page is now one card: the photo leads, with the title stripe, name and the first paragraph of About beside it, the rest of About below, and a facts band — title, pronouns and class, each only when Connect sends it — closing the card; More of Our Team is replaced by a Get Involved row of three action cards. Profile photos are served right-sized through the site's own photo proxy, so the Team page loads a small fraction of the bytes it did.
+
+- Drop In This Week sits in the house card container, and a carousel of five photographs of people stands joined to the Student Mental Health Hub card as one element directly under it, inside the timetable card. The Find Us button gained comfortable spacing inside the pill and a clear step of space above it, and the Happening Now tag is a filled pill stacked over the Drop In pill.
+
+- The Campus Events Explorer reveals its list in steps of twelve behind Show More, gathers Badger Supports' own events behind an All Badger Supports events toggle, and shows each event's date as a calendar-style square block; today's block is filled, with the word Today in the card's meta line. Five Connect event types the November publish found unnamed — Dogs on Call, Navigating Housing, outreach, SPILL and tabling — now carry their names.
+
+- The Peer Support Groups page: the Instagram reel is back as the first element of the hero, Join us for a group stands inside the days panel, every day row keeps one aligned box, and the Walk In step ends by saying that running a little late is okay; the sentence about choosing what to share is removed.
+
+- Page headers carry their action buttons as quieter pills drawn from each header's own colour, with every text pairing passing contrast checks, and the menu marks the page being read with a soft bubble behind its word instead of a red underline.
+
+- Under the owner's ruling that a photo may be used only once on the public website, every repeated photo use was replaced slot by slot with a distinct photograph from the organisation's Drive library; the content audit now finds no duplicate content photos. Directions photographs of a destination may still repeat where several pages embed directions to that same place.
+
+- The footer's Director Sign-In is now a quiet text link in the legal row. The site has a new icon — a red hexagon with a cream hand — serving as its favicon and touch icon, and the TikTok glyph is centred, spaced and thinned so it sits evenly with the other social icons.
+
+- Icon animations now start only from the icon itself: once when the icon first comes into view, and again when that icon is hovered, focused or pressed — never from a click elsewhere on the page. Narrowing the triggers did not remove any animation: every icon kind that ships a move keeps it.
+
+- In Drop In This Week, a session with no sign-up now shows a blank sign-up cell instead of the words No Sign-Up, and the room short-named S-MHH is written out in full everywhere as the Student Mental Health Hub.
+
+- Underlines now mark tappable links only: the hover underlines on controls that are not links — the resource and prose More summaries and the form step names — are removed, and real links keep theirs.
+
+- The word-editing dialog is wider, settings forms set each setting's name in a fixed column beside its control so the eye reads down the names, and the site's state colours were aligned across its styles.
+
+- Dropdowns whose arrow a shared background rule had wiped or tiled across the field — the error-state select was the visible case — draw their own chevron again, inset at the field's right edge; every rendered dropdown on the affected page families was re-measured.
+
+- Words nested inside a form's expandable prose — the Volunteer Application's Our programs and teams passage — could not be reached by the site's wording editor, so a saved change to them never showed; the editor now reaches them, and no wording itself changed.
+
 
 ## 2026-11-04 to 2026-11-05 — Development period — Form setup, file delivery and visitor pages
 

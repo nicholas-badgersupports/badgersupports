@@ -95,6 +95,15 @@ team page has its people when www moves; a member's old address (`/about/our-tea
 and are the owner's to accept: Google Analytics stops counting www, because this site loads no tag (`ANALYTICS.md`);
 and links shared on social media show no picture.
 
+### While the site is held at public.badgersupports.org (added 12 November 2026)
+
+The site is served at `public.badgersupports.org` while the switch waits, by the owner's decision. Step 2 above
+was written for the switch, but its rule applies to every address the site is served at: that address's callback
+must be in Connect's `PUBLIC_SSO_CLIENTS`, or Staff (Director) sign-in stops at Connect with "That sign-in link is
+not complete." On 12 November 2026 `https://public.badgersupports.org/api/auth/callback` was missing from that
+setting and Director sign-in was broken; adding it is the whole fix. Both sides were building and checking the
+link correctly — nothing in either codebase was wrong.
+
 ## The switch
 
 Nothing else in DNS changes.

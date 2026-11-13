@@ -7,7 +7,14 @@
  *
  * An external listing is distinct from a Badger Supports program by words, not colour alone: a
  * program card says so, and every card names its source. Cost and "Sold out" appear only when the
- * source states them — ops/campus-feed.mjs keeps an unstated field absent. */
+ * source states them — ops/campus-feed.mjs keeps an unstated field absent.
+ *
+ * The list is revealed in steps (campus-events.js): the first set shows, and a Show More button
+ * reveals the next set of the events the filters currently match, the way the Resources list
+ * does. A toggle beside the source menu limits the list to Badger Supports' own programs — the
+ * events the Connect feed marks as ours (badger: true, source "badger") — for a reader who came
+ * only for those. No interest chip is styled apart from the others: a chip reads as chosen only
+ * while it is pressed. */
 
 import { html, jsonIsland } from "../html.mjs";
 import { go, link } from "../context.mjs";
@@ -30,11 +37,11 @@ export function eventCard(ctx, e, today) {
   const when = e.allDay ? ctx.t("explore.events.allDay") : timeRange(chicagoHm(e.start), e.end ? chicagoHm(e.end) : null, ctx.t);
   const [first, ...rest] = e.sources;
   return html`<li class="cecard${e.badger ? " is-badger" : ""}">
-    <div class="cecard-date" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span>${date === today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</div>
+    <div class="cecard-date${date === today ? " is-today" : ""}" aria-hidden="true"><span class="dow">${p.dow}</span><span class="dom">${p.dom}</span><span class="mon">${p.mon}</span></div>
     <div class="cecard-body">
       <h3>${first?.url ? link(ctx, first.url, e.title) : e.title}</h3>
       ${e.badger ? html`<p class="cecard-program">${ctx.t("explore.events.program")}</p>` : ""}
-      <p class="cecard-meta"><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${when}${e.place ? html` · ${e.place}` : ""}</p>
+      <p class="cecard-meta"><span class="sr-only">${p.dowLong}, ${p.monLong} ${p.dom}, </span>${date === today ? html`<span class="cecard-today">${ctx.t("schedule.today")}</span>` : ""}${when}${e.place ? html` · ${e.place}` : ""}</p>
       ${e.organizer ? html`<p class="cecard-org">${e.organizer}</p>` : ""}
       ${e.blurb ? html`<p class="cecard-blurb">${e.blurb}</p>` : ""}
       ${e.cost ? html`<p class="cecard-cost">${e.cost}</p>` : ""}
@@ -71,7 +78,7 @@ export default {
     </div>
     <fieldset class="ce-interests">
       <legend>${ctx.t("explore.events.interests")}</legend>
-      <div class="ce-chips">${(interests.interests || []).map((i) => html`<button type="button" class="ce-chip${i.id === "people" ? " ce-chip--people" : ""}" aria-pressed="false" data-ce-interest="${i.id}">${i.label}</button>`)}</div>
+      <div class="ce-chips">${(interests.interests || []).map((i) => html`<button type="button" class="ce-chip" aria-pressed="false" data-ce-interest="${i.id}">${i.label}</button>`)}</div>
     </fieldset>
     <div class="ce-row">
       <div class="ce-field">
@@ -82,6 +89,7 @@ export default {
         <label for="${b.id}-src">${ctx.t("explore.events.source")}</label>
         <select id="${b.id}-src" data-ce-src><option value="">${ctx.t("explore.events.sourceAll")}</option><option value="uw">${ctx.t("explore.events.name.uw")}</option><option value="union">${ctx.t("explore.events.name.union")}</option><option value="badger">${ctx.t("explore.events.name.badger")}</option></select>
       </div>
+      <button type="button" class="ce-badger-toggle" aria-pressed="false" data-ce-badger>${ctx.t("explore.events.onlyBadger")}</button>
       <div class="ce-field">
         <label for="${b.id}-from">${ctx.t("explore.events.from")}</label>
         <input id="${b.id}-from" type="date" data-ce-from>
@@ -106,6 +114,7 @@ export default {
   </div>
   <p class="ce-retry" data-ce-retry hidden><button type="button" class="btn btn--quiet" data-ce-retrybtn>${ctx.t("explore.events.retry")}</button></p>
   <ol class="cecards" data-ce-list>${shown.map((e) => eventCard(ctx, e, ctx.today))}</ol>
+  <p class="ce-more-row" data-ce-more-row hidden><button type="button" class="btn ce-more-btn" data-ce-more>${ctx.t("explore.events.showMore")}</button></p>
   <div class="cecal" data-ce-cal hidden></div>
   <div class="ce-none" data-ce-none ${shown.length ? "hidden" : ""}>
     <h3>${ctx.t("explore.events.none.title")}</h3>

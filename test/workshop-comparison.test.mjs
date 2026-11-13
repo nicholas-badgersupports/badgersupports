@@ -45,7 +45,7 @@ test('Workshop comparison has equal native topic jumps and preserves original ta
 
 test('Workshop activity previews use native disclosures with distinct editable audience and sample content',()=>{
  const p=catalogue();
- const samples={'b-rw-networks':/emotional, academic, practical, and professional/,'b-rw-selfcare':/bingo/,'b-rw-advocacy':/written agendas/,'b-rw-housing':/floor plan/};
+ const samples={'b-rw-networks':/emotional, academic, practical, and professional/,'b-rw-selfcare':/bingo/,'b-rw-advocacy':/copying the diagrams/,'b-rw-housing':/floor plan/};
  for(const id of Object.keys(TOPICS)){
   const b=p.blocks.find(b=>b.id===id);assert.ok(b.audience);assert.ok(b.disclosure);assert.equal(b.preview.length,2);
   const out=String(renderBlock(b,ctx()));

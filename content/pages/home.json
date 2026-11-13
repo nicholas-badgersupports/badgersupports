@@ -273,27 +273,26 @@
           ],
           "activity": {
             "kind": "choose",
-            "scenario": "Devon has just started a summer internship. Team meetings move fast, and she follows best with written notes, so she keeps missing key details. She sets up a meeting with her supervisor.",
-            "question": "What should Devon say?",
+            "scenario": "Sam sits near the back of a 300-person lecture. The professor moves through the diagrams fast, and the slides don’t go up on Canvas until the end of the week. Sam copies what they can but keeps missing half of what’s on them. After class, they go up to the professor.",
+            "question": "What should Sam say?",
             "options": [
               {
                 "id": "o-soft",
                 "tone": "soft",
-                "text": "“I’m not sure if this is really important, but the meetings go kind of quickly for me. It’s probably me not keeping up, but is there anything I could do to follow along better? If not, that’s totally fine.”",
-                "verdict": "Too soft."
+                "text": "“Sorry, this might be a dumb question, but could you possibly post the slides before class? No worries if that’s too much to ask.”",
+                "verdict": "They apologize for a reasonable request and minimize its importance before the professor can respond."
               },
               {
                 "id": "o-clear",
                 "tone": "clear",
-                "text": "“I want to make sure I’m doing my best work. Written agendas and key takeaways shared after meetings would help me stay on track with the team’s goals.”",
-                "verdict": "Clear and respectful.",
-                "why": "Use “I” statements. Be assertive."
+                "text": "“I have trouble copying the diagrams before the slides change. If they were posted before class, I could print them and take notes directly on them. Would that be possible?”",
+                "verdict": "They explain the challenge, identify a practical solution, and make a clear, respectful request."
               },
               {
                 "id": "o-harsh",
                 "tone": "harsh",
-                "text": "“These meetings are impossible to follow, and I can’t do my job if no one slows down. You all need to start providing written notes or change how you run the meetings.”",
-                "verdict": "Too harsh."
+                "text": "“A lot of us can’t keep up with the diagrams. You really need to post the slides earlier.”",
+                "verdict": "They assume others share their experience and make a demand rather than inviting a conversation."
               }
             ]
           },

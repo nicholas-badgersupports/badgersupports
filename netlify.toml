@@ -25,6 +25,16 @@
 [context.production]
   command = "node ops/build.mjs --production --fetch-media"
 
+# The production build — and only it — is given the organisation's Google Analytics
+# measurement id (owner's ruling, 12 Nov 2026: GA on every page, enhanced measurement on;
+# the id was supplied by the owner that day). ops/build.mjs reads GA_MEASUREMENT_ID and,
+# only when it is set, bakes the bss-analytics configuration into the pages and widens
+# the Content Security Policy by Google's own host list for the tag. The id is not a
+# secret: it is printed in every measured page. Prototype and preview builds are given
+# no id, so they still measure nothing (docs/ANALYTICS.md).
+[context.production.environment]
+  GA_MEASUREMENT_ID = "G-XVT9XWRVQ5"
+
 [build.environment]
   NODE_VERSION = "22"
 

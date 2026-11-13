@@ -10,7 +10,7 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - A site-wide search page at `/search/` searches the public pages in the visitor's own browser against an index the build writes; staff pages, form previews and form answers are never indexed (Slice 39-A). By the owner's ruling of November 11, 2026 the menu carries no Search entry; the page answers at its address.
 
-- A Google Analytics forwarder is built into the pages but ships unconfigured: it sends nothing until a publish build is given a verified property id, and it loads with no consent step, matching the existing Google site (item 22).
+- A Google Analytics forwarder is built into the pages: it loads with no consent step, matching the existing Google site, and the production publish build now carries the owner's verified property id, so the published site is measured while prototype and preview builds still send nothing (item 22).
 
 - Forms gained setup guides, and hiring forms can retain a recommendation across the hiring cycle; that retention depends on the paired Connect receiver. The resource directory gained Cost, Location and Access filters, presented as chips.
 

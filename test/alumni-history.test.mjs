@@ -54,7 +54,7 @@ test('approved history is read from Connect on each draw, stays runtime-only and
  server.render.alumniSource.enabled=true;useContent(server);useConnect(cfg);useDist(out);useStore(memoryStore());
  alumniReply={ok:true,...prepareHistory(review()).result};
  const get=()=>handlePage(new Request('https://site.test/join/alumni/'),{today:'2026-11-03'});
- let r=await get();assert.equal(r.status,200);let body=await r.text();assert.match(body,/<details open>/);assert.match(body,/Within 2021–2023/);assert.match(body,/Badger Support Network/);assert.match(body,/River Example/);assert.doesNotMatch(body,/PRIVATE-RESEARCH|example@example/);assert.match(body,/href="\/forms\/email-list\/"/);
+ let r=await get();assert.equal(r.status,200);let body=await r.text();assert.match(body,/<details open>/);assert.match(body,/Within 2021–2023/);assert.match(body,/Badger Support Network/);assert.match(body,/River Example/);assert.doesNotMatch(body,/PRIVATE-RESEARCH|example@example/);assert.match(body,/href="\/forms\/alumni-updates\/"/);
  r=await previewResponse('pg-alumni',{edits:{},structure:null,today:'2026-11-03'});assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store');assert.match(await r.text(),/River Example/);
  alumniReply={ok:true,...fixture(),groups:[]};body=await(await get()).text();assert.match(body,/No alumni history is published here yet/);assert.doesNotMatch(body,/River Example/);
  down=true;const old=console.error;console.error=()=>{};try{r=await get();body=await r.text();assert.match(body,/Alumni history could not be loaded/);assert.doesNotMatch(body,/River Example/);assert.equal(r.headers.get('cache-control'),'no-store');}finally{console.error=old;useConnect(null);}

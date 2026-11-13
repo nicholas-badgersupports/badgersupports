@@ -2892,6 +2892,7 @@ await part("mood check-in editor", async () => {
   const MOODS = JSON.parse(fs.readFileSync(path.join(ROOT, "content/widgets/mood.json"), "utf8")).moods;
   const { ctx, page } = await openStaff({ session: ["site.edit", "site.publish"] });
   try {
+    await goStaff(page, "staff.settings.title");
     const form = page.locator("form.staff-mood");
     await form.waitFor({ timeout: 5000 });
     const labels = await form.evaluate((f) => [...f.querySelectorAll(".staff-mood-row")].map((r) => r.querySelectorAll("input")[1].value));

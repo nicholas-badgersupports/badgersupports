@@ -97,3 +97,15 @@ test("a configured build carries the id and the closed lists, and its policy all
   const staff = read(path.join("staff", "index.html"));
   assert.match(staff, /data-analytics="none"/, "the staff page's label still refuses measurement");
 });
+test("the publish build is given the owner's measurement id, and no other build is", () => {
+  // The hand-off that switches measurement on (owner's decision, 13 Nov 2026): the publish
+  // file deploys through Netlify's command line with --context production, which applies
+  // this table's environment to the build it runs. The id is the owner's own, supplied
+  // 12 Nov 2026; it is printed in every measured page, so it is configuration, not a secret.
+  const toml = fs.readFileSync(path.join(ROOT, "netlify.toml"), "utf8");
+  const section = toml.match(/\[context\.production\.environment\]\s*\n([^[]*)/);
+  assert.ok(section, "netlify.toml carries a production environment table");
+  assert.match(section[1], /GA_MEASUREMENT_ID = "G-XVT9XWRVQ5"/);
+  assert.equal((toml.match(/GA_MEASUREMENT_ID\s*=\s*"/g) || []).length, 1,
+    "only the production build is given an id; prototype and preview builds stay unconfigured");
+});

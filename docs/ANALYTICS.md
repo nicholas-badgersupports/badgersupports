@@ -1,10 +1,12 @@
 # Analytics
 
-**Nothing is measured yet, and the forwarder is built.** The owner decided on 11 Nov 2026 that the site
-carries Google Analytics (queue item 22; `DECISIONS.md`). The forwarder below is built and tested
-(`src/client/analytics.js`, `test/analytics.test.mjs`): a build measures only when it is given the verified
-property's measurement id (`GA_MEASUREMENT_ID`), and no build has been given one, so the site still sends
-nothing to Google or anyone else. There is **no consent step**: on a public page the tag loads as the page
+**The forwarder is built, and the production build now carries the id.** The owner decided on 11 Nov 2026
+that the site carries Google Analytics (queue item 22; `DECISIONS.md`), and on 13 Nov 2026 that it is let
+through (the morning review's C-21). The forwarder below is built and tested (`src/client/analytics.js`,
+`test/analytics.test.mjs`): a build measures only when it is given the verified property's measurement id
+(`GA_MEASUREMENT_ID`). The production publish build is given it in `netlify.toml` (the production context's
+environment), so the published site measures; prototype and preview builds are given none and still send
+nothing to Google or anyone else. Until that change is published, the live site still sends nothing. There is **no consent step**: on a public page the tag loads as the page
 loads, as it does on the organisation's existing Google site (owner, 11 Nov 2026). This corrects the
 consent-first wording recorded earlier the same day, in this project and in the Session 12 handoff.
 
@@ -24,8 +26,8 @@ unknown.
 
 ## What the rebuild does today
 
-**No tag loads.** The forwarder rides on every page and does nothing without its configuration island
-(below). The Content Security Policy allows Google's hosts only in a configured build (`ops/build.mjs`
+**The tag loads on a configured build's public pages.** The forwarder rides on every page and does
+nothing without its configuration island (below); the production build carries one. The Content Security Policy allows Google's hosts only in a configured build (`ops/build.mjs`
 `cspHeader`): an unconfigured build allows scripts from this site only, so a page cannot load Google's tag
 even by mistake.
 
@@ -102,13 +104,17 @@ announce an event today — `form.js` announces on the document, not from inside
 
 ### What switching it on takes
 
-- **A verified property.** The id a build carries must be the organisation's own GA4 property. The
-  Analytics connector needs the owner's reauthentication before the property can be checked; the id on
-  the live home page (`G-XVT9XWRVQ5`) is **not** verified, and no build has carried it.
-- **Enhanced measurement off** in the GA4 data stream. It collects form interactions, site search terms and
-  outbound clicks on its own, and those would bypass every rule above. This is a property setting; whether it
-  is on today is not verified. The owner confirms it in the GA console when he verifies the property.
-- **The id reaches the publish build** as `GA_MEASUREMENT_ID`. With it set, the build also widens the CSP
+- **A verified property.** The id a build carries must be the organisation's own GA4 property. The owner
+  supplied `G-XVT9XWRVQ5` directly on 12 Nov 2026; his supplying it is the verification the build relies
+  on. Reading the property's settings and figures through the Analytics connector still needs the owner's
+  reauthentication.
+- **Enhanced measurement on** in the GA4 data stream (owner's ruling, 12 Nov 2026, superseding the earlier
+  off position recorded here). It collects form interactions, site search terms and outbound clicks on its
+  own, beyond the forwarder's dictionary below. This is a property setting in the GA console; the build
+  does not control it.
+- **The id reaches the publish build** as `GA_MEASUREMENT_ID`, set in `netlify.toml` for the production
+  context (13 Nov 2026); the publish file's Netlify CLI deploy applies that context's environment to the
+  build it runs. With it set, the build also widens the CSP
   by Google's own list for the GA4 tag (its CSP guide): `script-src` gains `https://*.googletagmanager.com`;
   `img-src` gains `https://*.google-analytics.com` and `https://*.googletagmanager.com`; `connect-src` gains
   those two and `https://*.analytics.google.com`. Without it, none of those hosts is allowed.
@@ -134,8 +140,8 @@ From `../../MASTER-PROMPT.md` §9, and where each one is held:
 
 ## Not checked
 
-- Whether the GA4 property collects anything today, and its settings. The connector needs reauthentication.
-- Whether enhanced measurement is on.
+- Whether the GA4 property collects anything today. Reading it through the connector needs the owner's
+  reauthentication.
 - What, if anything, the old site's tag recorded beyond page views.
 - The cost of any analytics product. None is proposed here beyond the existing GA4 property.
 

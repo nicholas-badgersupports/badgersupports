@@ -75,7 +75,7 @@ test("each resource's Additional Details reports a problem with it or suggests a
     assert.match(links[0][1], new RegExp(`^<a href="/forms/resource-problem/\\?resource=${q}">Report a Problem<span class="sr-only">: ${name}</span></a><a href="/forms/resource-update/\\?resource=${q}">Suggest an Update<span class="sr-only">: ${name}</span></a>$`), r.id);
   }
   assert.equal([...page.matchAll(/href="\/forms\/resource-suggestion\/"/g)].length, 1, "one Suggest a Resource, under the list");
-  assert.match(page, /<p class="res-suggest"><a href="\/forms\/resource-suggestion\/" class="go"><span class="go-label">Suggest a Resource<\/span>/);
+  assert.match(page, /<p class="res-suggest"><a href="\/forms\/resource-suggestion\/" class="btn">Suggest a Resource<\/a>/);
   for (const key of ["resource-problem", "resource-update", "resource-suggestion"]) {
     const form = read(`forms/${key}/index.html`);
     assert.match(form, /<meta name="robots" content="noindex">/, key);

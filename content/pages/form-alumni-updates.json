@@ -1,0 +1,16 @@
+{
+    "analytics": "none",
+    "blocks": [
+        {
+            "form": "alumni-updates",
+            "id": "b-form-alumni-updates",
+            "title": "Alumni Email Updates",
+            "type": "form"
+        }
+    ],
+    "description": "Ask for Badger Supports updates by email, for alumni of Badger Supports, Badger Support Network, and Badger SPILL.",
+    "id": "pg-form-alumni-updates",
+    "path": "/forms/alumni-updates/",
+    "schema": "bss.page/1",
+    "title": "Alumni Email Updates"
+}

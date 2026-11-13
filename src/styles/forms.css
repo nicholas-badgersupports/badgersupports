@@ -22,7 +22,7 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .form-head { background: var(--tex-wash); background-blend-mode: normal, multiply; padding: var(--s5); container-type: inline-size; }
 /* the longest word of a form's name, RECOMMENDATION, is 10.4em wide in capitals, so the name is sized
    to the sheet (9.4% of its width) and that word fits whole on a 320px phone as on a desk */
-.form-head h1 { font-size: min(var(--fs-page), 9.4cqi); line-height: 1; color: var(--accent); margin-bottom: var(--s3); }
+.form-head h1, .form-head .form-title { font-size: min(var(--fs-page), 9.4cqi); line-height: 1; color: var(--accent); margin-bottom: var(--s3); }
 .form-head p { line-height: var(--lh-body); margin-bottom: var(--s3); }
 .form-head p:last-child { margin-bottom: 0; }
 /* An intro written as prose (src/render/form.mjs prose): its headings and lists keep to the rules. */
@@ -49,10 +49,11 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .bss-form fieldset.section { border: 0; margin: 0; padding: var(--s5) 0 var(--s2); min-width: 0; }
 .bss-form fieldset.section[hidden] { display: none; }
 .bss-form legend { padding: 0; margin-bottom: var(--s2); }
-/* A section's title is its heading (h2 inside the legend); a section of words only is not a fieldset. */
-.bss-form .section h2 { font: 700 var(--fs-h3)/1.25 var(--font-body); letter-spacing: 0; color: var(--ink); }
+/* A section's title is its heading (h2 inside the legend, h3 when the form sits inside a page
+   under that page's h1); a section of words only is not a fieldset. */
+.bss-form .section h2, .bss-form .section h3 { font: 700 var(--fs-h3)/1.25 var(--font-body); letter-spacing: 0; color: var(--ink); }
 .bss-form .section.is-words { padding: var(--s5) 0 var(--s3); }
-.bss-form .section.is-words > h2 { margin-bottom: var(--s2); }
+.bss-form .section.is-words > h2, .bss-form .section.is-words > h3 { margin-bottom: var(--s2); }
 .bss-form .section.is-words[hidden] { display: none; }
 /* On a form read whole, a hairline parts one section from the next; a stepped form shows one
    section at a time, so it needs none. */
@@ -168,12 +169,12 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 
 .error-summary { margin: var(--s4) 0; padding: var(--s4); background: var(--danger-tint); border: 2px solid var(--danger); border-radius: var(--r-card); }
 .error-summary:focus { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
-.error-summary h2 { font: 700 1.25rem/1.3 var(--font-body); color: var(--danger); margin-bottom: var(--s2); }
+.error-summary h2, .error-summary h3 { font: 700 1.25rem/1.3 var(--font-body); color: var(--danger); margin-bottom: var(--s2); }
 .error-summary ul { padding-left: 1.2rem; display: grid; gap: .2rem; }
 .error-summary a { color: var(--danger); font-weight: 700; }
 
 .form-notice { margin: var(--s4) 0; padding: var(--s4); border-radius: var(--r-card); background: var(--cream-soft); border: 2px solid var(--line); }
-.form-notice h2 { font: 700 1.25rem/1.3 var(--font-body); margin-bottom: var(--s2); }
+.form-notice h2, .form-notice h3 { font: 700 1.25rem/1.3 var(--font-body); margin-bottom: var(--s2); }
 .form-notice[hidden] { display: none; }
 
 .bss-form > .form-rule { margin-top: var(--s4); }
@@ -181,7 +182,7 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 /* The review: every answer the form will send, each with its way back to its question. */
 .form-review { padding: var(--s5) 0 var(--s2); }
 .form-review[hidden] { display: none; }
-.form-review > h2 { font: 700 var(--fs-h3)/1.25 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
+.form-review > h2, .form-review > h3 { font: 700 var(--fs-h3)/1.25 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
 .review-item { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); align-items: start; justify-content: space-between; padding-block: var(--s3); border-top: var(--hairline); }
 .review-item:first-child { border-top: 0; padding-top: var(--s1); }
 .review-text { min-width: 0; flex: 1 1 16rem; }
@@ -207,10 +208,10 @@ html:not(.js) .bss-form.has-uploads { display: none; }
   .closed-panel, .done-panel { margin: var(--s3); }
   .closed-panel.is-elsewhere .btn { width: 100%; justify-content: center; }
 }
-.closed-panel h2, .done-panel h2 { font-size: clamp(1.9rem, 1.5rem + 1.5vw, 2.6rem); color: var(--accent); margin-bottom: var(--s3); }
+.closed-panel h2, .closed-panel h3, .done-panel h2, .done-panel h3 { font-size: clamp(1.9rem, 1.5rem + 1.5vw, 2.6rem); color: var(--accent); margin-bottom: var(--s3); }
 .done-panel .ref { display: inline-block; margin: var(--s2) 0 var(--s3); padding: .35rem .8rem; border-radius: var(--r-card); background: var(--cream); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
 .done-panel:focus { outline: none; }
-.done-panel h2:focus { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+.done-panel h2:focus, .done-panel h3:focus { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
 .kept-answers { margin: var(--s3) 0 0; display: grid; gap: var(--s1) var(--s3); }
 .kept-answers dt { font-weight: 700; }
 .kept-answers dd { margin: 0 0 var(--s2); white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -242,9 +242,14 @@ function makeStepper(form, def) {
   return stepper;
 }
 
+/* The heading a panel this script builds takes: a form rendered inside a page, under that
+   page's own h1, carries data-level="2" and its panels head at h3, as its server-rendered
+   headings do (src/render/form.mjs). */
+const headTag = (form) => (form.dataset.level === "2" ? "h3" : "h2");
+
 function notice(form, title, ...lines) {
   const n = form.querySelector("[data-form-notice]");
-  n.replaceChildren(Object.assign(document.createElement("h2"), { textContent: title }), ...lines.filter(Boolean).map((l) => Object.assign(document.createElement("p"), { textContent: l })));
+  n.replaceChildren(Object.assign(document.createElement(headTag(form)), { textContent: title }), ...lines.filter(Boolean).map((l) => Object.assign(document.createElement("p"), { textContent: l })));
   n.hidden = false;
 }
 
@@ -252,7 +257,7 @@ function done(form, def, ref) {
   const panel = document.createElement("div");
   panel.className = "done-panel";
   panel.dataset.formDone = "";
-  const h = Object.assign(document.createElement("h2"), { textContent: def.confirmation?.title || t("form.done.title"), tabIndex: -1 });
+  const h = Object.assign(document.createElement(headTag(form)), { textContent: def.confirmation?.title || t("form.done.title"), tabIndex: -1 });
   const p = document.createElement("p");
   const [before, after = ""] = t("form.done.ref").split("{{ref}}");
   p.append(before, Object.assign(document.createElement("span"), { className: "ref", textContent: ref }), after);

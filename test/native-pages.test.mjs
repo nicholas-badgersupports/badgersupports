@@ -26,7 +26,7 @@ async function fresh(){process.env.LOCAL_DB='pglite';useAdapter(await freshPglit
 const get=p=>handlePage(new Request('http://site.test'+p),{today:DAY,now:Date.parse('2026-11-05T12:00:00-06:00')});
 test.after(()=>useConnect(null));
 test('every definition has a production form page and reply metadata, with no production preview route',async()=>{
- assert.equal(Object.keys(SERVER.formPages).length,13);
+ assert.equal(Object.keys(SERVER.formPages).length,14);
  for(const key of Object.keys(SERVER.forms)){
   assert.equal(SERVER.formPages[key].path,`/forms/${key}/`,key);
   assert.ok(fs.existsSync(path.join(OUT,'forms',key,'index.html')),key);
@@ -128,5 +128,5 @@ test('settings save preserves grants, detects stale versions, and records only s
  assert.equal((await currentForm(key)).manualState,'closed');
  const html=await(await get('/forms/staff-application/')).text();assert.match(html,/<h1[^>]*>Fictional Title<\/h1>/);assert.match(html,/<title>Fictional Title/);assert.match(html,/Fictional introduction/);assert.match(html,/Fictional closed message/);assert.match(html,/Priority Deadline/);assert.doesNotMatch(html,/April 3|April 26/);
  const posted=await handle(post(`/api/forms/${key}/submit`,{_version:'3'},{json:false}),{ip:'192.0.2.46'});assert.match(await posted.text(),/<h1[^>]*>Fictional Title/);
- const cards=(await formsFor({scopes:['site.edit']})).forms;assert.equal(cards.length,13);assert.ok(cards.every(f=>!f.canRead&&f.total===0&&f.latest===null));
+ const cards=(await formsFor({scopes:['site.edit']})).forms;assert.equal(cards.length,14);assert.ok(cards.every(f=>!f.canRead&&f.total===0&&f.latest===null));
 });

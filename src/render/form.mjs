@@ -9,6 +9,8 @@
  * are a fieldset with a legend; optional questions say "(optional)" and required ones carry the
  * required attribute. Each section's title is a heading, so the page reads h1 form, h2 section,
  * h3 heading inside a section's words. A section with no questions is words only, not a fieldset.
+ * A form placed inside another page, under that page's own h1, is rendered with `level: 2`: its
+ * title (render/blocks/form.mjs) is an h2 and every heading in here steps down one, to h3.
  */
 
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
@@ -139,14 +141,15 @@ function field(def, q, values, errors, t, ctx) {
   return html`<div${attrs(common)}><label for="${fid(q)}">${label}</label>${help}${err}${input}</div>`;
 }
 
-function section(def, s, values, errors, t, ctx) {
+function section(def, s, values, errors, t, ctx, inner = 2) {
   const qs = s.questions || [];
   const showIf = s.showIf ? JSON.stringify(s.showIf) : null;
   const only = s.showIf ? html`<p class="section-intro" data-only-if>${t("form.onlyIf", { options: optionLabelFor(def, s.showIf, t) })}</p>` : "";
   const intro = s.intro ? html`<div class="section-intro">${prose(s.intro, { ctx })}</div>` : "";
-  if (qs.length === 0) return html`<div${attrs({ class: "section is-words", "data-section": s.id, "data-show-if": showIf })}><h2>${s.title}</h2>${only}${intro}</div>`;
+  const title = inner === 3 ? html`<h3>${s.title}</h3>` : html`<h2>${s.title}</h2>`;
+  if (qs.length === 0) return html`<div${attrs({ class: "section is-words", "data-section": s.id, "data-show-if": showIf })}>${title}${only}${intro}</div>`;
   return html`<fieldset${attrs({ class: "section", "data-section": s.id, "data-show-if": showIf })}>
-    <legend><h2>${s.title}</h2></legend>
+    <legend>${title}</legend>
     ${only}${intro}
     ${qs.map((q) => field(def, q, values, errors, t, ctx))}
   </fieldset>`;
@@ -157,36 +160,37 @@ function section(def, s, values, errors, t, ctx) {
    given back rather than sent. idemKey: carried through a no-JS correction so a resend is the
    same submission. ctx: the render context, for links inside the form's words. preview: the form
    shown for review while it is closed (prototype builds only); the browser sends nothing. */
-export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false, submissionContext = {} }) {
+export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false, submissionContext = {}, level = 1 }) {
   const stepped = steppedForm(def);
+  const inner = level + 1;
   const anyErrors = Object.keys(errors).length > 0;
   const anyRequired = allQuestions(def).some(({ q }) => q.required);
   const needsUpload = !preview && allQuestions(def).some(({ q }) => q.type === "file");
   const ordered = allQuestions(def).filter(({ q }) => errors[q.id]);
   const shown = notice || (preview ? { title: t("form.preview.title"), text: t("form.preview.body") } : null);
   const alternate = needsUpload ? html`<noscript><div class="closed-panel upload-alternative" data-upload-alternative>
-    <h2>${t("form.upload.alternativeTitle")}</h2><p>${t("form.upload.alternativeBody")}</p>
+    ${inner === 3 ? html`<h3>${t("form.upload.alternativeTitle")}</h3>` : html`<h2>${t("form.upload.alternativeTitle")}</h2>`}<p>${t("form.upload.alternativeBody")}</p>
     ${ctx ? go(ctx, def.workflow?.connectQueue?.startsWith("hiring.") ? "mailto:hiring@badgersupports.org" : "mailto:directors@badgersupports.org", t("form.upload.alternativeContact"), "mail") : html`<a href="mailto:directors@badgersupports.org">${t("form.upload.alternativeContact")}</a>`}
   </div></noscript>` : "";
   /* A long form's steps, named across the top, and its last step, which lists the answers before
      they are sent. Both are hidden until the browser walks them (src/client/form.js); without
      JavaScript the form is the one scroll it has always been, and neither is shown. */
   const stepNav = stepped ? html`<nav class="form-steps" data-step-nav hidden aria-label="${t("form.steps.label")}"><ol>${def.sections.map((s, i) => html`<li data-step-item="${s.id}"><button type="button" class="step-link" data-step-link="${s.id}"><span class="step-dot" aria-hidden="true">${i + 1}</span><span class="step-name">${s.title}</span></button></li>`)}<li data-step-item="__review"><button type="button" class="step-link" data-step-link="__review"><span class="step-dot" aria-hidden="true">${def.sections.length + 1}</span><span class="step-name">${t("form.review.title")}</span></button></li></ol></nav>` : "";
-  const review = stepped ? html`<div class="form-review" data-review hidden><h2>${t("form.review.title")}</h2><p>${t("form.review.intro")}</p><div data-review-list></div></div>` : "";
+  const review = stepped ? html`<div class="form-review" data-review hidden>${inner === 3 ? html`<h3>${t("form.review.title")}</h3>` : html`<h2>${t("form.review.title")}</h2>`}<p>${t("form.review.intro")}</p><div data-review-list></div></div>` : "";
   // Server validation chooses applicable conditional questions with and without client scripting.
-  return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-preview": preview ? "" : null, "data-stepped": stepped ? "" : null })}>
+  return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-level": level > 1 ? String(level) : null, "data-preview": preview ? "" : null, "data-stepped": stepped ? "" : null })}>
   <input type="hidden" name="_form" value="${def.key}"><input type="hidden" name="_version" value="${def.version}"><input type="hidden" name="_key" value="${idemKey}" data-idem>
   ${def.key === "recommendation-letter" && Object.hasOwn(submissionContext, "hiringCycleId") ? html`<input type="hidden" name="_cycle" value="${hiringContext(def.key, { _cycle: submissionContext.hiringCycleId }).hiringCycleId}">` : ""}
   <div class="hp" aria-hidden="true"><label>${t("form.trap")} <input type="text" name="_website" tabindex="-1" autocomplete="off" value=""></label></div>
   <div${attrs({ class: "error-summary", tabindex: "-1", "data-error-summary": "", hidden: !anyErrors, role: anyErrors ? "alert" : null })}>
-    <h2>${t("form.errors.title")}</h2>
+    ${inner === 3 ? html`<h3>${t("form.errors.title")}</h3>` : html`<h2>${t("form.errors.title")}</h2>`}
     <p>${ordered.length === 1 ? t("form.errors.one") : t("form.errors.many", { n: ordered.length })}</p>
     <ul data-error-list>${ordered.map(({ q }) => html`<li><a href="#${fid(q)}">${errorText(errors[q.id], q, t)}</a></li>`)}</ul>
   </div>
-  <div${attrs({ class: "form-notice", "data-form-notice": "", hidden: !shown })}>${shown ? html`<h2>${shown.title}</h2><p>${shown.text}</p>${shown.kept?.length ? html`<p>${shown.keptText}</p><dl class="kept-answers">${shown.kept.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}` : ""}</div>
+  <div${attrs({ class: "form-notice", "data-form-notice": "", hidden: !shown })}>${shown ? html`${inner === 3 ? html`<h3>${shown.title}</h3>` : html`<h2>${shown.title}</h2>`}<p>${shown.text}</p>${shown.kept?.length ? html`<p>${shown.keptText}</p><dl class="kept-answers">${shown.kept.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}` : ""}</div>
   ${anyRequired && t("form.rule") ? html`<p class="form-rule">${t("form.rule")}</p>` : ""}
   ${stepNav}
-  ${def.sections.map((s) => section(def, s, values, errors, t, ctx))}
+  ${def.sections.map((s) => section(def, s, values, errors, t, ctx, inner))}
   ${review}
   <div class="form-actions">${stepped ? html`<button type="button" class="btn btn--quiet" data-step-back hidden>${t("form.step.back")}</button><button type="button" class="btn" data-step-next hidden>${t("form.step.continue")}</button>` : ""}<button type="submit" class="btn" data-submit>${def.submitLabel || t("form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
   ${jsonIsland(`form-def-${def.key}`, publicDefinition(def))}
@@ -195,10 +199,10 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
 
 /* A form that is switched off. One whose definition names an `elsewhere` address shows only the way to its Google Form, as the page's one big button under its own
    title and intro; the closing message is for a form that is off, not one that has moved. */
-export function renderClosed(def, t, { title = null, answers = null, elsewhere = def.elsewhere, note = null } = {}) {
+export function renderClosed(def, t, { title = null, answers = null, elsewhere = def.elsewhere, note = null, level = 1 } = {}) {
   const away = elsewhere ? html`<p><a class="btn btn--big" href="${elsewhere}" data-form-elsewhere><span class="go-label">${t("form.elsewhere.go")}</span>${icon("out", "go-ic")}</a></p>` : "";
   if (away && !answers) return html`<div class="closed-panel is-elsewhere" data-form-closed="${def.key}">${away}${note}</div>`;
-  return html`<div class="closed-panel" data-form-closed="${def.key}"><h2>${title || t("form.closed.title")}</h2><p>${breakAtSign(def.closedMessage)}</p>${away}${answers ? html`<p>${t("form.closedNow.copy")}</p><dl class="kept-answers">${answers.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}</div>`;
+  return html`<div class="closed-panel" data-form-closed="${def.key}">${level === 2 ? html`<h3>${title || t("form.closed.title")}</h3>` : html`<h2>${title || t("form.closed.title")}</h2>`}<p>${breakAtSign(def.closedMessage)}</p>${away}${answers ? html`<p>${t("form.closedNow.copy")}</p><dl class="kept-answers">${answers.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}</div>`;
 }
 
 /* "Your reference is {{ref}}" with the reference in its own span, wherever the editor puts it. */
@@ -207,8 +211,8 @@ export function refLine(t, ref) {
   return html`<p>${before}<span class="ref">${ref}</span>${after}</p>`;
 }
 
-export function renderDone(def, ref, t) {
-  return html`<div class="done-panel" data-form-done><h2 tabindex="-1">${def.confirmation?.title || t("form.done.title")}</h2>
+export function renderDone(def, ref, t, { level = 1 } = {}) {
+  return html`<div class="done-panel" data-form-done>${level === 2 ? html`<h3 tabindex="-1">${def.confirmation?.title || t("form.done.title")}</h3>` : html`<h2 tabindex="-1">${def.confirmation?.title || t("form.done.title")}</h2>`}
   ${refLine(t, ref)}
   ${(def.confirmation?.body || []).map((p) => html`<p>${breakAtSign(p)}</p>`)}
 </div>`;

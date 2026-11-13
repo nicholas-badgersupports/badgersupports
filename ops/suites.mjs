@@ -4,13 +4,32 @@
  * "<tag>: F of N failed". check.mjs fails the suite under its own name, whatever its exit status, when the report
  * has no tally line (cut, or the suite stopped early), when the tally's N differs from the result lines that
  * arrived, or when the exit status disagrees with the tally.
+ *
+ * The behaviour suite is twelve files, not one (13 November 2026, proposal C-40; audit item P1):
+ * ops/interact.mjs had never completed a run — it stalled idle three times and printed nothing
+ * until the end — so its part-groups are the ops/interact-*.mjs files below, over the shared
+ * ops/interact-harness.mjs, each printing its results as they happen and tallying under its own
+ * tag. A group that stalls now fails under its own name here and leaves the other groups' reports
+ * standing; the order below is the original file's order.
  */
 import { spawn } from "node:child_process";
 
+const INTERACT_RESULT = /^ {2}(?:ok {2}|FAIL) /;
 export const SUITES = [
   { name: "screenshots and page weight", script: "ops/shots.mjs", tag: "shots", result: /^\/\S*\s+\d+px\s+\d+ KB loaded/ },
-  { name: "accessibility and the real forms", script: "ops/a11y.mjs", tag: "a11y", result: /^ {2}(?:ok {2}|FAIL) / },
-  { name: "menus and uploads, pressed and timed", script: "ops/interact.mjs", tag: "interact", result: /^ {2}(?:ok {2}|FAIL) / },
+  { name: "accessibility and the real forms", script: "ops/a11y.mjs", tag: "a11y", result: INTERACT_RESULT },
+  { name: "interact: the phone menu", script: "ops/interact-menu.mjs", tag: "interact-menu", result: INTERACT_RESULT },
+  { name: "interact: uploads, still going", script: "ops/interact-uploads.mjs", tag: "interact-uploads", result: INTERACT_RESULT },
+  { name: "interact: the workshop form, changed under it", script: "ops/interact-workshop.mjs", tag: "interact-workshop", result: INTERACT_RESULT },
+  { name: "interact: the staff page and the edit button", script: "ops/interact-staff.mjs", tag: "interact-staff", result: INTERACT_RESULT },
+  { name: "interact: the events between publishes", script: "ops/interact-events.mjs", tag: "interact-events", result: INTERACT_RESULT },
+  { name: "interact: resources and the staff pages", script: "ops/interact-resources.mjs", tag: "interact-resources", result: INTERACT_RESULT },
+  { name: "interact: pages — FAQ, workshops, craft, rooms, team, history", script: "ops/interact-pages.mjs", tag: "interact-pages", result: INTERACT_RESULT },
+  { name: "interact: the native forms", script: "ops/interact-forms.mjs", tag: "interact-forms", result: INTERACT_RESULT },
+  { name: "interact: site search", script: "ops/interact-search.mjs", tag: "interact-search", result: INTERACT_RESULT },
+  { name: "interact: email links", script: "ops/interact-email.mjs", tag: "interact-email", result: INTERACT_RESULT },
+  { name: "interact: the safety exit", script: "ops/interact-safety.mjs", tag: "interact-safety", result: INTERACT_RESULT },
+  { name: "interact: the mood check-in", script: "ops/interact-mood.mjs", tag: "interact-mood", result: INTERACT_RESULT },
 ];
 
 const FAILURE = /FAIL|ERROR|SCROLLS|Error/;

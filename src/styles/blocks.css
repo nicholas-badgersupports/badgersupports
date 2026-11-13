@@ -1792,6 +1792,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
 .res-closing { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--lift); padding: var(--s5); margin-top: var(--s6); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); justify-items: start; }
 .res-closing p { margin: 0; }
+.res-closing .btn { white-space: normal; overflow-wrap: anywhere; }
 .res-suggest { margin: 0; }
 .res-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); max-height: min(40rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
 .res-dialog::backdrop { background: var(--scrim); }

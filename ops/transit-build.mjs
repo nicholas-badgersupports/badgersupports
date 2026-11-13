@@ -14,6 +14,7 @@ import path from "node:path";
 import url from "node:url";
 import zlib from "node:zlib";
 import { buildTopology } from "./transit.mjs";
+import { isDirect } from "./direct.mjs";
 
 const ROOT = path.join(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const GTFS_URL = "https://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip";
@@ -65,7 +66,10 @@ export async function refreshTopology({ fetchImpl = fetch, out = path.join(ROOT,
   return out_data;
 }
 
-if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+/* isDirect compares real paths: compared as written, an invocation through a link (a worktree alias,
+   macOS's temporary folder) never matched the module's own address, and the command silently did
+   nothing — the failure ops/deps-match.mjs's note records for its own check. */
+if (isDirect(import.meta.url)) {
   const t = await refreshTopology();
   console.log(`topology: ${t.routes.length} routes, ${t.stops.length} stops, feed ${t.feed.version} (${t.feed.start} to ${t.feed.end})`);
 }

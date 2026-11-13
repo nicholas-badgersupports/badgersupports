@@ -19,6 +19,12 @@
  * thirty. A send whose outcome is unknown (no answer) is sent again later with the same dedupe key, which
  * Connect keeps once: it is never stored or mailed twice.
  *
+ * Trying on its own ends at MAX_ATTEMPTS failures (the ceiling SPILL's mail queue settled on): the row
+ * parks in 'stuck' (migration 011), out of the claim and out of the count of rows still being tried, and
+ * keeps its last error so the staff page can say why it stopped. Nothing wakes the schedule for a stuck
+ * row. A person can still send it: Try again on the staff page is a forced run, and a forced run claims
+ * stuck rows with the rest — if it fails again it parks again, one attempt the wiser.
+ *
  * With Connect not set up (connect.mjs), nothing is sent and every row stays pending: a submission is never
  * lost for want of a connection.
  */
@@ -32,6 +38,7 @@ import { backupConfig, writeBackup } from "./backup.mjs";
 import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES, hiringContext } from "../../src/shared/forms.mjs";
 
 export const MAX_WAIT_MINUTES = 15;
+export const MAX_ATTEMPTS = 5;
 export const CLAIM_SECONDS = 120;
 let inflight = Promise.resolve();
 
@@ -84,14 +91,15 @@ export function ingestPayload(sub, def) {
 
 /* Take up to `limit` due rows of one kind for this worker: one statement, skipping rows another worker holds
    (FOR UPDATE SKIP LOCKED) or claimed in the last CLAIM_SECONDS. force takes failed rows before their wait is
-   over (Try again); forms limits it to those form keys. Returns the rows with their submissions. */
+   over, and stuck rows at all (Try again is a person deciding to try once more); forms limits it to those
+   form keys. Returns the rows with their submissions. */
 async function claim(kind, { limit, force = false, forms = null }) {
   const token = crypto.randomBytes(12).toString("base64url");
   const ids = await many(
     `UPDATE outbox SET claim_until = now() + ($5::int * interval '1 second'), claim_token = $4
       WHERE id IN (
         SELECT o.id FROM outbox o JOIN submissions s ON s.id = o.submission_id
-         WHERE o.kind = $1 AND o.state IN ('pending', 'failed') AND ($2::boolean OR o.next_at <= now())
+         WHERE o.kind = $1 AND (o.state IN ('pending', 'failed') OR ($2::boolean AND o.state = 'stuck')) AND ($2::boolean OR o.next_at <= now())
            AND (o.claim_until IS NULL OR o.claim_until < now())
            AND ($3::jsonb IS NULL OR s.form_key IN (SELECT jsonb_array_elements_text($3::jsonb)))
          ORDER BY o.next_at, o.id LIMIT $6 FOR UPDATE SKIP LOCKED)
@@ -114,11 +122,14 @@ async function sent(row, token, detail, files = []) {
     return true;
   });
 }
+/* A row failed: it waits longer and tries again — unless this failure reaches MAX_ATTEMPTS, when the
+   row parks in 'stuck' in the same statement that counts the attempt, and only a forced run claims
+   it again. The last error is kept either way, so the staff page can say why it stopped. */
 async function failed(row, token, e) {
   const wait = Math.min(2 ** (row.attempts + 1), MAX_WAIT_MINUTES);
-  await q(`UPDATE outbox SET state = 'failed', attempts = attempts + 1, last_error = $3, claim_until = NULL, claim_token = NULL,
+  await q(`UPDATE outbox SET state = CASE WHEN attempts + 1 >= $5 THEN 'stuck' ELSE 'failed' END, attempts = attempts + 1, last_error = $3, claim_until = NULL, claim_token = NULL,
            next_at = now() + ($4::int * interval '1 minute') WHERE id = $1 AND claim_token = $2`,
-    [row.outbox_id, token, String(e?.code || "send.failed").slice(0, 60), wait]);
+    [row.outbox_id, token, String(e?.code || "send.failed").slice(0, 60), wait, MAX_ATTEMPTS]);
 }
 
 async function ingest(cfg, opts) {
@@ -270,7 +281,7 @@ export async function runOutbox({ now = Date.now(), limit = 20 } = {}) {
 /* Tests wait for the run a submission kicked off. */
 export const deliveriesSettled = () => inflight;
 
-/* Per form: how many rows are waiting, sent and failing. */
+/* Per form: how many rows are waiting, sent, failing and parked (stuck). */
 export async function deliveryCounts() {
   const rows = await many(
     `SELECT s.form_key, CASE WHEN o.state = 'sent' AND EXISTS
@@ -280,7 +291,7 @@ export async function deliveryCounts() {
       WHERE o.kind = 'connect.ingest' GROUP BY s.form_key, 2`);
   const out = {};
   for (const r of rows) {
-    const f = (out[r.form_key] ||= { pending: 0, sent: 0, failed: 0, held: 0, cancelled: 0, lastError: null });
+    const f = (out[r.form_key] ||= { pending: 0, sent: 0, failed: 0, held: 0, cancelled: 0, stuck: 0, lastError: null });
     f[r.state] = r.n;
     if (r.state === "failed") f.lastError = r.last_error;
   }

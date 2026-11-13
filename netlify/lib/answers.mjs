@@ -15,7 +15,7 @@ import { can } from "./staff.mjs";
 import { answerColumns, proseText } from "../../src/shared/forms.mjs";
 
 const LATEST = 50;
-const NONE = { pending: 0, sent: 0, failed: 0, held: 0, cancelled: 0, lastError: null };
+const NONE = { pending: 0, sent: 0, failed: 0, held: 0, cancelled: 0, stuck: 0, lastError: null };
 
 const formOrNull = (key) => currentForm(key).catch(() => null);
 

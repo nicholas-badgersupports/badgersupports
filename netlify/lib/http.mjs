@@ -8,8 +8,15 @@ export const MAX_BODY = 64 * 1024;
 
 const NO_STORE = { "cache-control": "no-store", "x-content-type-options": "nosniff" };
 
+/* The hardened headers the pages get (ops/build.mjs, siteHeaders), in the only form a JSON answer
+   allows. The pages' Content-Security-Policy names this site's own scripts and styles; a JSON answer
+   loads nothing and is never a page, so its policy is that nothing may load from it or render it as
+   one if a browser is ever pointed at it directly. The Referrer-Policy is the pages' own value.
+   (The build owns the pages' policy string; this is a constant of the format, like the content type.) */
+const JSON_HARDENED = { "content-security-policy": "default-src 'none'; sandbox", "referrer-policy": "strict-origin-when-cross-origin" };
+
 export const json = (status, body, headers = {}) =>
-  new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...NO_STORE, ...headers } });
+  new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...NO_STORE, ...JSON_HARDENED, ...headers } });
 
 export const htmlResponse = (status, text, headers = {}) =>
   new Response(text, { status, headers: { "content-type": "text/html; charset=utf-8", ...NO_STORE, ...headers } });

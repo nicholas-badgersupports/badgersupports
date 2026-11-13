@@ -9,7 +9,7 @@ import { handle } from "../netlify/lib/router.mjs";
 import { useConnect } from "../netlify/lib/connect.mjs";
 import { serverContent, useContent } from "../netlify/lib/content.mjs";
 import { useAdapter, many, q, one } from "../netlify/lib/db.mjs";
-import { deliverOnce, deliveriesSettled, runOutbox, MAX_WAIT_MINUTES } from "../netlify/lib/deliver.mjs";
+import { deliverOnce, deliverDue, deliveriesSettled, runOutbox, deliveryCounts, MAX_WAIT_MINUTES, MAX_ATTEMPTS } from "../netlify/lib/deliver.mjs";
 import { useBackup, workbookPlan, COLOURS } from "../netlify/lib/backup.mjs";
 import { noteSet } from "../netlify/lib/published.mjs";
 
@@ -105,16 +105,46 @@ test("two workers at once send each row once: a claimed row is skipped, and a st
 test("a failed row waits two, four, eight, then fifteen minutes at most, so a run every fifteen retries within thirty", async () => {
   await waiting(1, { connect: fakeConnect({ fail: () => "down" }) });
   const waits = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 4; i++) {
     await deliverOnce({ force: true });
     const r = await one("SELECT extract(epoch FROM next_at - now()) / 60 AS m, attempts, state, last_error FROM outbox WHERE kind = 'connect.ingest'");
     waits.push(Math.round(Number(r.m)));
     assert.equal(r.state, "failed");
     assert.equal(r.last_error, "connect.unreachable");
   }
-  assert.deepEqual(waits, [2, 4, 8, 15, 15, 15]);
+  // The fifth failure is not a wait at all: the row parks (the ceiling test below).
+  assert.deepEqual(waits, [2, 4, 8, 15]);
   assert.equal(MAX_WAIT_MINUTES, 15);
   assert.ok(MAX_WAIT_MINUTES + 15 <= 30, "the longest wait plus one schedule period is within thirty minutes");
+});
+
+/* The ceiling (audit F-REL-1): a delivery that can never succeed was retried forever. At MAX_ATTEMPTS
+   failures the row parks in 'stuck'; nothing claims it on its own again, the counts a director reads
+   say parked rather than still failing, and a person's Try again — a forced run — is what sends it. */
+test("a row that can never be sent stops at the attempts ceiling, waits for a person, and goes when one sends it", async () => {
+  const down = fakeConnect({ fail: () => "down" });
+  await waiting(1, { connect: down });
+  for (let i = 0; i < MAX_ATTEMPTS - 1; i++) await deliverOnce({ force: true });
+  let row = (await rows("connect.ingest"))[0];
+  assert.equal(row.state, "failed");
+  assert.equal(row.attempts, MAX_ATTEMPTS - 1);
+  await deliverOnce({ force: true });
+  row = (await rows("connect.ingest"))[0];
+  assert.equal(row.state, "stuck", "the failure that reaches the ceiling parks the row");
+  assert.equal(row.attempts, MAX_ATTEMPTS);
+  assert.equal(row.last_error, "connect.unreachable", "and the reason it stopped is kept on the row");
+  const calls = down.calls.length;
+  assert.equal((await deliverOnce()).failed, 0, "a due run does not take it");
+  await wake();
+  await runOutbox({ now: Date.now() + 60 * 60_000 });
+  assert.equal(down.calls.length, calls, "a woken scheduled run does not ask Connect again");
+  assert.equal((await rows("connect.ingest"))[0].state, "stuck");
+  const counts = await deliveryCounts();
+  assert.equal(counts["workshop-request"].stuck, 1, "the counts say parked");
+  assert.equal(counts["workshop-request"].failed, 0, "not still failing");
+  useConnect(fakeConnect().cfg);
+  assert.equal((await deliverDue({ force: true })).sent, 1, "Try again claims a stuck row, as a person asked");
+  assert.equal((await rows("connect.ingest"))[0].state, "sent");
 });
 
 test("an answer lost on the way back is sent again with the same reference and kept once", async () => {

@@ -1181,13 +1181,33 @@ function showTools(me) {
   overview = overviewSection(me, (id) => show(id, true), views.map(([id, , titleKey]) => [id, titleKey]), !views.length);
   const all = [["overview", overview.part], ...views.map(([id, node]) => [id, node])];
   const links = {};
-  const nav = el("nav", { className: "secnav staff-nav", ariaLabel: t("staff.nav.label") },
-    el("ul", {}, ...[["overview", t("staff.nav.overview")], ...views.map(([id, , titleKey]) => [id, t(titleKey)])].map(([id, label]) => {
-      const a = el("a", { className: "secnav-item", href: `#${id}`, textContent: label });
-      a.addEventListener("click", (e) => { e.preventDefault(); show(id, true); });
-      links[id] = a;
-      return el("li", {}, a);
-    })));
+  const list = el("ul", {}, ...[["overview", t("staff.nav.overview")], ...views.map(([id, , titleKey]) => [id, t(titleKey)])].map(([id, label]) => {
+    const a = el("a", { className: "secnav-item", href: `#${id}`, textContent: label });
+    a.addEventListener("click", (e) => { e.preventDefault(); show(id, true); });
+    links[id] = a;
+    return el("li", {}, a);
+  }));
+  /* The menu scrolls sideways when its words run wider than the bar — on a phone the last views
+     sit off the right edge with nothing to say they are there. A button stands at each end while
+     the menu can scroll that way, and a press scrolls one comfortable step; at an end, and
+     whenever the whole menu fits, that button is not there, so a wide screen's bar is unchanged. */
+  const scrollBtn = (words, dir) => {
+    const b = el("button", { type: "button", className: "btn staff-nav-scroll", ariaLabel: words },
+      el("span", { ariaHidden: "true", textContent: dir < 0 ? "‹" : "›" }));
+    b.addEventListener("click", () => list.scrollBy({ left: dir * Math.max(list.clientWidth * 0.8, 160), behavior: "smooth" }));
+    return b;
+  };
+  const backBtn = scrollBtn(t("staff.nav.scrollBack"), -1);
+  const fwdBtn = scrollBtn(t("staff.nav.scrollForward"), 1);
+  const nav = el("nav", { className: "secnav staff-nav", ariaLabel: t("staff.nav.label") }, backBtn, list, fwdBtn);
+  const fitScrollBtns = () => {
+    const max = list.scrollWidth - list.clientWidth;
+    backBtn.hidden = !(max > 1 && list.scrollLeft > 1);
+    fwdBtn.hidden = !(max > 1 && list.scrollLeft < max - 1);
+  };
+  list.addEventListener("scroll", fitScrollBtns, { passive: true });
+  new ResizeObserver(fitScrollBtns).observe(list);
+  document.fonts?.ready.then(fitScrollBtns);
   function show(id, focus = false) {
     const current = id === "overview" || views.some(([v]) => v === id) ? id : "overview";
     for (const [v, node] of all) node.hidden = v !== current;
@@ -1198,6 +1218,7 @@ function showTools(me) {
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
   app.replaceChildren(...[onward, whoBar(me), nav, ...all.map(([, node]) => node)].filter(Boolean));
   show(location.hash.slice(1));
+  requestAnimationFrame(fitScrollBtns);
   app.hidden = false;
   say(me.name ? t("staff.signedInAs", { name: me.name }) : t("staff.signedIn"));
 }

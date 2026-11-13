@@ -4086,6 +4086,16 @@
       "text": "Overview",
       "where": "Staff page, signed in: the first menu item, and the landing view's heading."
     },
+    "staff.nav.scrollBack": {
+      "group": "staff",
+      "text": "Scroll the menu back",
+      "where": "Staff page, signed in: the button at the left end of the menu of views, read aloud by screen readers; it stands there only while the menu can scroll back."
+    },
+    "staff.nav.scrollForward": {
+      "group": "staff",
+      "text": "Scroll the menu forward",
+      "where": "Staff page, signed in: the button at the right end of the menu of views, read aloud by screen readers; it stands there only while more of the menu is off its right edge."
+    },
     "staff.overview.how": {
       "group": "staff",
       "text": "What needs attention on the site, and the tool for each job.",

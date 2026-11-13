@@ -224,6 +224,12 @@
 .place span { display: block; color: var(--muted); font-size: var(--fs-small); }
 .place a { font-weight: 700; font-size: var(--fs-small); }
 
+/* The Find Us pill breathes: the shared .go geometry leaves its 2rem badge 4px from the pill's
+   top, bottom and right edges, which reads cramped on the pale card. In this card the badge gets
+   .5rem of air on every side and a wider gap from the words; the pill grows a little taller and
+   wider to pay for it, and still sits well inside the column. */
+.place .go { padding: .5rem .5rem .5rem 1.05rem; gap: .75rem; }
+
 /* With the week's photos under it, the Hub card and the carousel are one element:
    one 2px line (the house card's edge) runs around the pair, rounded at the very
    top and the very bottom only. At the seam both halves are square and neither

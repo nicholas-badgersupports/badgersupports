@@ -1572,15 +1572,17 @@ await part("staff page: a menu entry taken off and put back", async () => {
   await ctx.close();
 });
 
-/* Site Settings (item 15): a publisher's part, after the menu. Tab goes name, description, email, Save Settings; a refused
-   address keeps all three typed values and says why; a stale tab keeps them too and shows, under each field, the value
-   someone else saved since; Save Settings again replaces theirs and clears those lines; site.edit alone does not see it. */
+/* Site Settings (item 15): a publisher's part, after the menu. Tab goes name, description, email, Safety Exit
+   destination, photo count, gallery layout, Save Settings (the Safety Exit and Craft Nights fields joined the
+   form with their own branches); a refused address keeps every typed value and says why; a stale tab keeps them
+   too and shows, under each field, the value someone else saved since; Save Settings again replaces theirs and
+   clears those lines; site.edit alone does not see it. */
 await part("staff page: Site Settings", async () => {
   await freshServer();
   const { useContent } = await import("../netlify/lib/content.mjs");
   const { structureNow } = await import("../netlify/lib/structure.mjs");
   useContent(JSON.parse(fs.readFileSync(path.join(ROOT, ".build", "server.json"), "utf8")));
-  const label = { name: words("staff.settings.field.name"), description: words("staff.settings.field.description"), email: words("staff.settings.field.email") };
+  const label = { name: words("staff.settings.field.name"), description: words("staff.settings.field.description"), email: words("staff.settings.field.email"), safety: words("staff.settings.field.safetyExit"), count: words("staff.settings.field.craftCount"), layout: words("staff.settings.field.craftLayout") };
   let { ctx, page, errors } = await openStaff({ session: ["site.edit", "site.publish"] });
   await goStaff(page, "staff.settings.title");
   const form = page.locator("form.staff-settings");
@@ -1593,12 +1595,12 @@ await part("staff page: Site Settings", async () => {
 
   await page.getByLabel(label.name, { exact: true }).focus();
   const order = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 7; i++) {
     order.push(await page.evaluate(() => { const a = document.activeElement; return a.labels?.[0]?.textContent || a.textContent; }));
     await page.keyboard.press("Tab");
   }
-  check(order.join("|") === [label.name, label.description, label.email, words("staff.settings.save")].join("|"),
-    `settings: a publisher sees Site Settings, and Tab goes name, description, email, Save Settings (${JSON.stringify(order)})`);
+  check(order.join("|") === [label.name, label.description, label.email, label.safety, label.count, label.layout, words("staff.settings.save")].join("|"),
+    `settings: a publisher sees Site Settings, and Tab goes name, description, email, Safety Exit, photo count, gallery layout, Save Settings (${JSON.stringify(order)})`);
 
   const typed = ["Sifting Badgers Test", "A made-up search description typed in the harness.", "not an address"];
   await page.getByLabel(label.name, { exact: true }).fill(typed[0]);
@@ -1607,7 +1609,7 @@ await part("staff page: Site Settings", async () => {
   await save();
   const refused = await noteIs("staff.pages.error.email");
   const keptAfter422 = await values();
-  check(refused && keptAfter422.join("|") === typed.join("|"), `settings: a refused address says why and keeps all three typed values (${JSON.stringify({ note: await note(), kept: keptAfter422 })})`);
+  check(refused && keptAfter422.join("|") === [...typed, "https://www.google.com/", "6"].join("|"), `settings: a refused address says why and keeps every typed value (${JSON.stringify({ note: await note(), kept: keptAfter422 })})`);
 
   // Someone else saves a name and an empty description after this page was opened.
   const theirs = await staffSession(["site.publish"]);
@@ -1620,8 +1622,8 @@ await part("staff page: Site Settings", async () => {
   await sleep(300);
   const keptAfter409 = await values();
   const lines = await since();
-  const want = [words("staff.settings.since").replace("{{value}}", "Their Harness Name"), words("staff.settings.since").replace("{{value}}", words("staff.settings.none")), ""];
-  check(other.status === 200 && conflict && keptAfter409.join("|") === typed.join("|") && lines.join("|") === want.join("|"),
+  const want = [words("staff.settings.since").replace("{{value}}", "Their Harness Name"), words("staff.settings.since").replace("{{value}}", words("staff.settings.none")), "", "", "", ""];
+  check(other.status === 200 && conflict && keptAfter409.join("|") === [...typed, "https://www.google.com/", "6"].join("|") && lines.join("|") === want.join("|"),
     `settings: a stale tab keeps the typed values and shows under each changed field the value saved since (${JSON.stringify({ other: other.status, note: await note(), kept: keptAfter409, lines })})`);
   await form.scrollIntoViewIfNeeded();
   await form.screenshot({ path: path.join(ROOT, "local", "staff-settings-conflict-390.png") });

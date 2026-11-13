@@ -1462,6 +1462,17 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 [data-page="pg-about-team"] [data-block="b-team-head"] h1 { font-size: clamp(2rem, 1.3rem + 2.1vw, 3rem); }
 [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-photos { grid-template-rows: repeat(2, 8rem); }
 [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-actions { margin-top: var(--s4); }
+/* the team opening's words and buttons are one short stack at the top of the left column: the
+   general pagehead puts its actions on a row of their own under both columns, which on this
+   page stretched the column to the photographs' height and pinned the buttons to the band's
+   foot. Here the buttons sit under the headline at the usual spacing and the empty room falls
+   below them; the photographs keep the band's height on the right. */
+@media (min-width: 861px) {
+  [data-page="pg-about-team"] [data-block="b-team-head"] .wrap { grid-template-areas: "words photos" "actions photos"; grid-template-rows: auto 1fr; }
+  [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-words { grid-area: words; }
+  [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-actions { grid-area: actions; align-self: start; }
+  [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-photos { grid-area: photos; }
+}
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */
 @supports (grid-template-rows: subgrid) {

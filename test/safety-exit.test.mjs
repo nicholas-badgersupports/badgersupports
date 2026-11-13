@@ -70,7 +70,7 @@ test("every built page carries one Safety Exit pill, a plain link to Google", ()
     assert.equal(pills.length, 1, `${path.relative(OUT, p)}: one pill`);
     assert.ok(page.includes(`>${TEXT["header.safetyExit"].text}</span></a>`), `${path.relative(OUT, p)}: the label`);
     const header = page.slice(page.indexOf('<header class="site-header">'), page.indexOf("</header>"));
-    assert.ok(header.includes("data-safety-exit"), `${path.relative(OUT, p)}: the pill sits in the header`);
+    assert.ok(!header.includes("data-safety-exit"), `${path.relative(OUT, p)}: the pill floats outside the header`);
   }
 });
 
@@ -99,4 +99,7 @@ test("the pill is styled as a pill in the brand red, at least 44px tall", () => 
   assert.match(rule, /border-radius: var\(--r-chip\)/);
   assert.match(rule, /background: var\(--red\)/);
   assert.match(rule, /min-height: 44px/);
+  assert.match(rule, /position: fixed/);
+  assert.match(rule, /right: 1rem/);
+  assert.match(rule, /bottom: 1rem/);
 });

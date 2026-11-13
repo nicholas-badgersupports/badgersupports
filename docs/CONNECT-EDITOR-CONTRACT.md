@@ -323,6 +323,7 @@ Reads: `events` · analytics: `page` · photos load lazy
 | `links` | several links, in order |  |
 | `source` | a named data source (events, wall notes, team, resources) |  |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
+| `craftGallery` | on or off |  |
 
 ### Word cloud — `words`
 
@@ -476,7 +477,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `copy`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `copy`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `face`, `face2`, `face3`, `face4`, `face5`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 
@@ -594,7 +595,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-822 keys. Keys are permanent. Required text cannot be published empty and must keep each
+863 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -626,7 +627,7 @@ the site adds the markup.
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 
-### Homepage sections (38)
+### Homepage sections (40)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -634,6 +635,8 @@ the site adds the markup.
 | `hero.photosLabel` | Photos from Badger Supports programs | The hero photos' name, read by screen readers. |  |
 | `hero.pause` | Pause the Moving Photos | Name and tooltip of the round button among the white dots of the hero's photo circles; it stops them drifting. Screen readers read it; it is not shown as text. |  |
 | `hero.play` | Play the Moving Photos | The same round button once the circles are paused; it starts them drifting again. Screen readers read it; it is not shown as text. |  |
+| `hero.youFace` | Show the Smiley Face | Name of the hero's middle circle while it shows its word; pressing it turns the circle over to a smiley face. Screen readers read it; it is not shown as text. |  |
+| `hero.youWord` | Show the Word in the Middle | The same middle circle while it shows the smiley face; pressing it turns the circle back to its word. Screen readers read it; it is not shown as text. |  |
 | `schedule.today` | Today | Tag on today's date in the timetable. |  |
 | `schedule.nextUp` | Next Up | Tag on the next peer support group day or visit that is not today, so a visitor can spot the soonest one. |  |
 | `schedule.todayPrefix` | Today, | Read before today's date by screen readers. |  |
@@ -859,14 +862,22 @@ the site adds the markup.
 | `form.window.zone` | Central Time | Editable form settings and intake window information. |  |
 | `form.programType` | Request: {{topic}} | Selected program type carried from a native request link, also preserved in the original Google fallback. | `{{topic}}` |
 
-### Team and profiles (13)
+### Team and profiles (21)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
+| `team.aboutFirst` | About {{first}} | Heading over the rest of a person's bio on their profile page, below the facts band, when Connect synced more than one paragraph. | `{{first}}` |
 | `team.all` | Our Team | Link back to the team page at the top of each person's profile page. |  |
 | `team.classOf` | Class of {{year}} | After a student's pronouns on their profile page, from the class year in their Connect profile. | `{{year}}` |
 | `team.connectWith` | Connect with {{first}} | The email link on a profile page, shown only when the person chose to publish a contact. | `{{first}}` |
+| `team.factClass` | Class | Label in the facts band on a profile page, over the class year from the person's Connect profile. |  |
+| `team.factPronouns` | Pronouns | Label in the facts band on a profile page, over the pronouns from the person's Connect profile. |  |
+| `team.factTitle` | Title | Label in the facts band on a profile page, over the title from the person's Connect profile. |  |
 | `team.more` | More of Our Team | Heading over the other people in the same group, at the foot of a profile page. |  |
+| `team.nextGroups` | Come to a peer support group | A way forward at the foot of a profile page, linking to the Peer Support Groups page. |  |
+| `team.nextHeading` | Get Involved | Heading over the ways forward at the foot of a profile page, below the person's card. |  |
+| `team.nextJoin` | Join or volunteer | A way forward at the foot of a profile page, linking to the Get Involved page. |  |
+| `team.nextWorkshop` | Request a workshop | A way forward at the foot of a profile page, linking to the Request a Workshop page. |  |
 | `team.pageTitle` | {{name}}, {{title}} | Browser tab and search result title of a profile page; the site's name is added after it. | `{{name}}` `{{title}}` |
 | `team.pageDescription` | {{name}} is {{title}} at Badger Supports. | Search result description of a profile page. | `{{name}}` `{{title}}` |
 | `team.none` | Profiles of our directors, staff and volunteers will appear here. | Under Our Team when nobody has published a profile on Connect yet; the advisors' heading is left out until one does. |  |
@@ -884,7 +895,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (417)
+### Staff page and edit button (454)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1034,6 +1045,7 @@ the site adds the markup.
 | `staff.pages.error.retireTo` | Choose a page that is on the site. | Staff page, a refused destination for a retired page. |  |
 | `staff.pages.error.menu` | The menu changed in a way it cannot take. Reload this page and try again. | Staff page, a refused menu. |  |
 | `staff.pages.error.failed` | That did not save. What you typed is still here; try again. | Staff page, a change that failed. |  |
+| `staff.pages.error.mood` | Check the feelings: each one needs an emoji, a word, a colour and at least one reply line, and there can be no more than eight. | Staff page, a refused Feeling Check-In save. |  |
 | `staff.pages.menu.title` | The Menu | Staff page, heading of the menu tools. |  |
 | `staff.pages.menu.how` | Move entries up or down, take one off or put one back, then save. Each entry keeps its saved name. | Staff page, how to change the menu. |  |
 | `staff.pages.menu.up` | Move {{label}} up | Staff page, button name for screen readers. | `{{label}}` |
@@ -1048,6 +1060,8 @@ the site adds the markup.
 | `staff.pages.error.siteName` | Give the site a name of up to 60 characters, without a long dash (—). | Under Site Settings on the staff page, when the site name is empty, too long or holds the dash that joins it to page titles. |  |
 | `staff.pages.error.email` | Use one email address, like name@example.org. | Under Site Settings on the staff page, when the accessibility email is not one address. |  |
 | `staff.pages.error.safetyExit` | Use one web address starting with https://, like https://www.google.com/. | Under Site Settings on the staff page, when the Safety Exit destination is not one https address. |  |
+| `staff.pages.error.craftCount` | Use a whole number of photos from 1 to 12. | Under Site Settings on the staff page, when the Craft Nights photo count is not a whole number in range. |  |
+| `staff.pages.error.craftLayout` | Choose One Row or Grid. | Under Site Settings on the staff page, when the Craft Nights gallery layout is not one of its two choices. |  |
 | `staff.settings.title` | Site Settings | Heading of the part of the staff page, for a publisher, that changes the site's name, search description, accessibility email and Safety Exit destination. |  |
 | `staff.settings.field.name` | Site Name | Label of the site name field under Site Settings. |  |
 | `staff.settings.help.name` | Added to the title of every page. | Under the Site Name label: what the name changes. |  |
@@ -1057,11 +1071,27 @@ the site adds the markup.
 | `staff.settings.help.email` | Linked in the accessibility line at the foot of every page. | Under the Accessibility Email label: where the address shows. |  |
 | `staff.settings.field.safetyExit` | Safety Exit destination | Label of the Safety Exit destination field under Site Settings. |  |
 | `staff.settings.help.safetyExit` | Where the Safety Exit button in the header of every page takes people. It must be one https address; if the saved value is ever empty or not a valid address, the button uses Google instead. A change takes effect on the next publish. | Under the Safety Exit destination label: what the address changes, and the fallback. |  |
+| `staff.settings.field.craftCount` | Craft Nights Photos to Show | Label of the Craft Nights photo count field under Site Settings. |  |
+| `staff.settings.help.craftCount` | How many photos the Made at Past Craft Nights gallery shows, from 1 to 12. It starts at six. A change takes effect on the next publish. | Under the Craft Nights Photos to Show label: what the count changes, its range, and when it applies. |  |
+| `staff.settings.field.craftLayout` | Craft Nights Gallery Layout | Label of the Craft Nights gallery layout field under Site Settings. |  |
+| `staff.settings.help.craftLayout` | One Row: the gallery's photos in a single row of smaller pictures; on a phone the row scrolls sideways. Grid: the photos in rows of two, each at its own shape. A change takes effect on the next publish. | Under the Craft Nights Gallery Layout label: what each layout looks like, and when a change applies. |  |
+| `staff.settings.layout.row` | One Row | The One Row choice in the Craft Nights Gallery Layout field under Site Settings. |  |
+| `staff.settings.layout.grid` | Grid | The Grid choice in the Craft Nights Gallery Layout field under Site Settings. |  |
 | `staff.settings.save` | Save Settings | Button under Site Settings: saves the four settings as one change, which publishes. |  |
 | `staff.settings.done` | Settings saved. | Read out once Site Settings are saved and published. |  |
 | `staff.settings.conflict` | Someone saved settings since you opened this page. Their values are under each field. Save Settings again to replace them with yours. | Under Site Settings, when someone else saved settings after this page was opened; the fields keep what was typed. |  |
 | `staff.settings.since` | Saved since you opened this page: {{value}} | Under a Site Settings field whose saved value changed after this page was opened, with that value. | `{{value}}` |
 | `staff.settings.none` | (none) | Shown as the value saved since when that value is empty (a search description left blank). |  |
+| `staff.mood.title` | Feeling Check-In | Heading of the part of the staff page, for a publisher, that changes the feelings on the home page check-in. |  |
+| `staff.mood.help` | The feelings on the home page check-in, in the order they show. A tap adds one to that feeling's count for the day and answers with one of its reply lines, picked at random. Saving publishes with the site; the day's counts belong to each feeling itself, so renaming a feeling keeps its counts. | Under the Feeling Check-In heading: what the feelings do and what saving changes. |  |
+| `staff.mood.field.emoji` | Emoji | Label of a feeling's emoji field under Feeling Check-In: the picture shown over the word. |  |
+| `staff.mood.field.label` | Feeling | Label of a feeling's word field under Feeling Check-In: the word shown under its emoji, and the name its count is read out with. |  |
+| `staff.mood.field.color` | Colour | Label of a feeling's colour field under Feeling Check-In: the colour of its button and its bar in the day's counts. |  |
+| `staff.mood.field.messages` | Reply lines (one per line) | Label of a feeling's reply lines field under Feeling Check-In: a tap answers with one of them. |  |
+| `staff.mood.remove` | Remove | Button on a feeling under Feeling Check-In: takes it off the list when the feelings are saved. |  |
+| `staff.mood.add` | Add a Feeling | Button under Feeling Check-In: adds one more feeling to the list, up to eight. |  |
+| `staff.mood.save` | Save Feelings | Button under Feeling Check-In: saves the feelings as one change, which publishes. |  |
+| `staff.mood.done` | Feelings saved. | Read out once the Feeling Check-In feelings are saved and published. |  |
 | `staff.rooms.title` | Rooms | Heading of the Rooms part of the staff page, for someone who may publish: each room's words and its steps' words and photos. |  |
 | `staff.rooms.how` | A saved room shows on its own page, the list of rooms and every event held there. | Under the Rooms heading on the staff page: where a room's saved words show. |  |
 | `staff.rooms.open` | Change Room | Button on each room under Rooms: opens its words and photos. |  |
@@ -1305,6 +1335,24 @@ the site adds the markup.
 | `staff.setup.conflict` | These settings changed while you were working. Your entries are kept. Reload the current settings, review them and save again. | Guided form setup on the staff page. |  |
 | `staff.setup.reload` | Reload Current Settings | Guided form setup on the staff page. |  |
 | `staff.setup.reloaded` | Current settings reloaded. Your edited fields are kept; review the changes before saving. | Guided form setup on the staff page. |  |
+| `staff.nav.label` | Staff tools | Staff page, signed in: the name of the menu of views, read aloud by screen readers. |  |
+| `staff.nav.overview` | Overview | Staff page, signed in: the first menu item, and the landing view's heading. |  |
+| `staff.nav.scrollBack` | Scroll the menu back | Staff page, signed in: the button at the left end of the menu of views, read aloud by screen readers; it stands there only while the menu can scroll back. |  |
+| `staff.nav.scrollForward` | Scroll the menu forward | Staff page, signed in: the button at the right end of the menu of views, read aloud by screen readers; it stands there only while more of the menu is off its right edge. |  |
+| `staff.overview.how` | What needs attention on the site, and the tool for each job. | Staff page, the Overview: the line under the heading. |  |
+| `staff.overview.clear` | Nothing needs attention right now. | Staff page, the Overview: shown when no tool is waiting on anything. |  |
+| `staff.overview.failedSend.one` | {{n}} answer could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
+| `staff.overview.failedSend.other` | {{n}} answers could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
+| `staff.overview.waitingSend.one` | {{n}} answer is waiting to send to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
+| `staff.overview.waitingSend.other` | {{n}} answers are waiting to send to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
+| `staff.overview.drafts.one` | {{n}} draft page is not on the site yet. | Staff page, the Overview: a line under Needs attention; the whole line leads to Pages on the Site. | `{{n}}` |
+| `staff.overview.drafts.other` | {{n}} draft pages are not on the site yet. | Staff page, the Overview: a line under Needs attention; the whole line leads to Pages on the Site. | `{{n}}` |
+| `staff.overview.tool.forms` | Answers to the site's forms, and opening and closing each one. | Staff page, the Overview: the Website Forms card. |  |
+| `staff.overview.tool.words` | Saved word changes, when the site last updated, and the edits file. | Staff page, the Overview: the Words on the Site card. |  |
+| `staff.overview.tool.pages` | The site's pages and drafts, their sections, and the menu. | Staff page, the Overview: the Pages on the Site card. |  |
+| `staff.overview.tool.rooms` | Each room's words, its steps and their photos. | Staff page, the Overview: the Rooms card. |  |
+| `staff.overview.tool.versions` | The versions the site has published, and bringing one back. | Staff page, the Overview: the Earlier Versions card. |  |
+| `staff.overview.tool.settings` | The site's name, its search description and its accessibility email. | Staff page, the Overview: the Site Settings card. |  |
 
 ### Resource list (56)
 
@@ -1388,7 +1436,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (54)
+### Explore Campus (56)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1423,6 +1471,8 @@ the site adds the markup.
 | `explore.events.name.union` | Wisconsin Union | On the Campus Events Explorer: the source menu's name for the Union calendar, and the name on its cards. |  |
 | `explore.events.name.badger` | Badger Supports | On the Campus Events Explorer: the source menu's name for our own programs, and the name on their cards. |  |
 | `explore.events.more` | +{{n}} more | On the Campus Events Explorer's calendar: how many more events a day holds beyond the three named. | `{{n}}` |
+| `explore.events.showMore` | Show More | On the Campus Events Explorer: the button under the list that reveals more of the events that match the current search and filters. |  |
+| `explore.events.onlyBadger` | All Badger Supports events | On the Campus Events Explorer: the toggle beside the source menu that limits the list to Badger Supports' own programs, the events from Badger Supports Connect. |  |
 | `explore.bus.address` | Address {{n}} | On the Bus Route Explorer: the label over each address box. | `{{n}}` |
 | `explore.bus.addressesHeader` | Address | On the Bus Route Explorer: the results table's first column heading. |  |
 | `explore.bus.addAddress` | Add another address | On the Bus Route Explorer: the button that adds an address box. |  |

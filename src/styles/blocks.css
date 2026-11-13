@@ -70,6 +70,7 @@
   font: 800 clamp(1.15rem, .8rem + 1.3vw, 1.9rem)/1 var(--font-display); text-transform: uppercase; letter-spacing: -.01em; pointer-events: none;
   animation: you-in .9s ease .55s both;
 }
+.hub-you .you-face { width: 86%; height: 86%; stroke-width: 2.1; }
 .bubble { position: absolute; aspect-ratio: 1; border-radius: 50%; animation: hub-in .6s cubic-bezier(.3, 1.45, .5, 1) .6s both, float-a 9s ease-in-out 1.2s infinite; animation-play-state: running, paused; }
 .network.is-moving .hub, .network.is-moving .bubble { animation-play-state: running; }
 .bubble-3 { animation-name: hub-in, float-b; animation-duration: .6s, 11s; animation-delay: .7s, 1.6s; }

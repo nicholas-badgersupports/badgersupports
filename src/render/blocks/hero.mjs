@@ -12,6 +12,11 @@
  * Under the buttons, Badger SPILL: its own logo, which tips and spills when it comes into view and
  * glugs when pointed at (src/client/spill-logo.js), beside a line and a way to write a SPILL (owner,
  * 20 Oct 2026: "Badger SPILL represented ... in the hero element on the front page").
+ *
+ * Experiment (12 Nov 2026, branch hero-smiley-2026-11-12, unmerged): the centre circle draws a
+ * smiley face (the "face" icon) instead of the centre word. The word itself is untouched — it is
+ * still this block's `centre` text field, set in the page's content ("you" in
+ * content/pages/home.json) — so taking the icon back out of the render restores it exactly.
  */
 
 import { html, attrs } from "../html.mjs";
@@ -40,7 +45,7 @@ export default {
   </div>
   ${circles.length ? html`<div class="network" data-network>
     <ul class="network-list" aria-label="${ctx.t("hero.photosLabel")}">${circles.map((c, i) => html`<li${attrs({ class: `hub hub-${i + 1}`, "data-program": ctx.programOf(c.href) })}>${link(ctx, c.href, html`<span class="hub-photo">${picture(ctx, c.media, { sizes: i === 0 ? "(max-width: 860px) 52vw, 19rem" : "(max-width: 860px) 44vw, 16rem", eager: true, priority: i === 0 ? "high" : null, alt: "" })}</span><span class="hub-tag"><span>${c.label}</span>${icon(c.icon || "arrow", "go-ic")}</span>`, { class: "hub-link" })}</li>`)}</ul>
-    ${b.centre ? html`<p class="hub-you" aria-hidden="true">${b.centre}</p>` : ""}
+    ${b.centre ? html`<p class="hub-you" aria-hidden="true">${icon("face", "you-face")}</p>` : ""}
     <span class="bubble bubble-1" aria-hidden="true"></span><span class="bubble bubble-3" aria-hidden="true"></span><span class="bubble bubble-4" aria-hidden="true"></span><span class="bubble bubble-5" aria-hidden="true"></span>
     <button type="button" class="still" data-still hidden>${icon("pause", "still-pause")}${icon("play", "still-play")}<span class="sr-only">${ctx.t("hero.pause")}</span></button>
   </div>` : ""}

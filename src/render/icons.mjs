@@ -28,6 +28,7 @@ const PARTS = {
   house: `<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5v10h13v-10"/><path d="M10 19.5v-5h4v5"/>`,
   badge: `<path d="M8 2.5l4 6 4-6"/><rect x="5.5" y="8.5" width="13" height="13" rx="1.5"/><circle cx="12" cy="13.5" r="2"/><path d="M9.3 18h5.4"/>`,
   question: `<circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.3-.9.8-.9 1.4v.5"/><path d="M12 16.9v.1"/>`,
+  face: `<path d="M8.2 8.6v2.2"/><path d="M15.8 8.6v2.2"/><path d="M6.4 13.5c1.5 2.4 3.4 3.6 5.6 3.6s4.1-1.2 5.6-3.6"/>`,
   plus: `<path d="M12 5v14"/><path d="M5 12h14"/>`,
   star: `<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>`,
   check: `<path d="m5 12.5 4.5 4.5L19 7.5"/>`,

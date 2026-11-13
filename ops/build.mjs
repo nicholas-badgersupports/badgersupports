@@ -120,6 +120,9 @@ async function minifiers() {
 /* What may ship in dist/, and nothing else (X2). A file outside this list stops the build. */
 export const SHIPS = [
   /^(?:[a-z0-9-]+\/)*index\.html$/, /^404\.html$/, /^_headers$/, /^_redirects$/, /^robots\.txt$/, /^sitemap\.xml$/, /^search-index\.json$/,
+  /* A catalogue page's held-back data, written beside the page for its script to fetch on first
+     use (C-23): courses-data.json, resources-data.json, events-data.json. */
+  /^(?:[a-z0-9-]+\/)*[a-z0-9-]+-data\.json$/,
   /^assets\/css\/site\.[0-9a-f]{10}\.css$/, /^assets\/js\/[0-9a-f]{10}\/[a-z0-9-]+\.(?:js|mjs)$/,
   /^assets\/fonts\/[A-Za-z0-9-]+\.woff2$/, /^assets\/fonts\/[A-Za-z0-9-]+\.txt$/,
   /^assets\/brand\/[a-z0-9-]+\.(?:png|jpg|webp|svg)$/, /^assets\/brand\/[A-Z-]+\.txt$/, /^assets\/icons\/[a-z0-9-]+\.svg$/,
@@ -442,7 +445,7 @@ export function siteHeaders({ prototype, ga = false }) {
   ];
 }
 
-function headersFile({ prototype, ga = false }) {
+function headersFile({ prototype, ga = false, dataFiles = [] }) {
   const all = siteHeaders({ prototype, ga });
   return [
     "/*", ...all.map((h) => `  ${h}`), "",
@@ -457,6 +460,8 @@ function headersFile({ prototype, ga = false }) {
     "/calendar/*", "  Content-Type: text/calendar; charset=utf-8", "  Cache-Control: public, max-age=3600", "",
     // The search index is rebuilt at every publish, like the sitemap; an hour's grace, as a calendar file.
     "/search-index.json", "  Cache-Control: public, max-age=3600", "",
+    // A catalogue page's held-back data is rebuilt at every publish too, so it takes the same grace.
+    ...dataFiles.flatMap((f) => [f, "  Cache-Control: public, max-age=3600", ""]),
   ].join("\n");
 }
 
@@ -659,12 +664,20 @@ export async function build({ production = false, launch = production, today = n
   const programs = pagePrograms(content.pages);
   const pending = new Map();
   const pageReport = [];
+  const dataFiles = [];
   for (const page of content.pages) {
     const ctx = makeContext({ site: content.site, media: allMedia, builtPaths, programs: new Map([...programs, ...sectionPrograms(page)]), routes: content.routes, data, text: content.text, today: day, prototype, assets, liveEvents: !!feed, path: page.path || null });
     const html = String(renderPage(ctx, page));
     const file = page.file ? path.join(out, page.file) : path.join(out, page.path, "index.html");
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, html);
+    /* What a block on this page held back for its script to fetch on first use (ctx.defer):
+       written beside the page, under the address the page names for it. */
+    for (const d of ctx.deferred) {
+      if (!page.path) throw new Error(`page ${page.id}: a block held data back (${d.file}) on a page with no address to keep it beside`);
+      fs.writeFileSync(path.join(out, page.path, d.file), d.body);
+      dataFiles.push(`${page.path}${d.file}`);
+    }
     for (const p of ctx.pendingLinks) pending.set(p, [...(pending.get(p) || []), page.path || page.file]);
     pageReport.push({ id: page.id, path: page.path || `/${page.file}`, bytes: Buffer.byteLength(html) });
   }
@@ -686,7 +699,7 @@ export async function build({ production = false, launch = production, today = n
     if (left.length) throw Object.assign(new Error(`The site still leans on the live one in ${left.length} place(s):\n  ${left.join("\n  ")}`), { problems: left });
   }
 
-  fs.writeFileSync(path.join(out, "_headers"), headersFile({ prototype, ga: !!ga }));
+  fs.writeFileSync(path.join(out, "_headers"), headersFile({ prototype, ga: !!ga, dataFiles }));
   const redirects = redirectsFile(content.routes, content.pages, new Set(builtPaths));
   const teamCatchalls = new Set(teamRedirects());
   const staticRedirects = production && feed?.team ? redirects.text.split("\n").filter(line => !teamCatchalls.has(line)).join("\n") : redirects.text;

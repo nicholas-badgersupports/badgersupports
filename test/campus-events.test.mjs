@@ -168,3 +168,26 @@ test("the date block is a calendar square; today is a filled block plus a label 
   assert.match(rule, /border-radius: var\(--r-card\)/, "the block wears the card radius");
   assert.ok(!rule.includes("--r-chip"), "the stadium pill shape does not come back");
 });
+
+test("first use (C-23): the explorer's whole set rides in a data file beside the page, not an island in it", () => {
+  const ctx = makeContext({
+    site: {}, media: { items: [] }, today: "2026-11-11", path: "/explore/events/",
+    text: resolveText(registry),
+    data: {
+      campusEvents: { events: fixtureCampusEvents("2026-11-11"), updated: null, stale: false },
+      campusInterests: interestsFile,
+    },
+  });
+  const out = String(renderBlock({ id: "b-ce-explorer", type: "exploreevents", title: "What is on", count: 40 }, ctx));
+  assert.match(out, /data-ce-data="\/explore\/events\/events-data\.json"/, "the section names the file beside the page");
+  assert.ok(!out.includes("b-ce-explorer-data"), "no JSON island rides in the page");
+  assert.equal(ctx.deferred.length, 1, "one file is held back");
+  assert.equal(ctx.deferred[0].file, "events-data.json");
+  const payload = JSON.parse(ctx.deferred[0].body);
+  assert.equal(payload.schema, "bss.events-data/1");
+  assert.deepEqual(payload.events, fixtureCampusEvents("2026-11-11"), "the file carries the whole set the island carried");
+  assert.deepEqual(payload.interests, interestsFile.interests);
+  assert.equal(payload.updated, null);
+  assert.equal(payload.stale, false);
+  assert.equal(payload.today, "2026-11-11");
+});

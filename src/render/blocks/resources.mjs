@@ -11,11 +11,16 @@
    number or address stays in the card. A record with no https address gets no button. There is
    never a call button.
 
-   Without JavaScript every card shows, in order, and Additional Details opens in place. The search
-   and the topic row under it (Connect's order) appear only when src/client/resources.js runs; it
-   also turns Additional Details into a dialog. The records come from a named source:
-   content/fixtures/resources.json until Connect publishes a list a director has approved for the
-   public site.
+   The page carries the first set of cards — the set the script's reveal shows first, safety
+   resources never held back — and Additional Details opens in place on them. The whole list
+   rides in a data file the build writes beside the page (resources-data.json, registered with
+   ctx.defer), and the script fetches it when the visitor first opens, scrolls to, searches or
+   filters the list — the site search's pattern (src/render/blocks/sitesearch.mjs); the cards in
+   the file are drawn by the same resourceCard as the ones on the page, so a card is written
+   once. The search and the topic row under it (Connect's order) appear only when
+   src/client/resources.js runs; it also turns Additional Details into a dialog. The records
+   come from a named source: content/fixtures/resources.json until Connect publishes a list a
+   director has approved for the public site.
 
    A record may name where it comes from (EXPLORE-C-RESOURCE-FINDER): `source` holds a `kind`
    ("kb" for a UW–Madison KnowledgeBase article, "badger-supports" for one of the organisation's
@@ -51,6 +56,10 @@ const FILTERS = [
   { id: "how", label: "resources.filters.how", options: ["person", "online", "phone", "text", "email"], key: (o) => `resources.how.${o}` },
 ];
 const valuesOf = (r) => ({ cost: [COST[r.cost?.code]].filter(Boolean), where: [WHERE[r.location?.campus]].filter(Boolean), how: [...new Set([].concat(r.modality || []).map((m) => HOW[m]).filter(Boolean))] });
+
+/* How many cards the page itself carries; the rest ride in the data file. The script's
+   reveal page (src/client/resources.js, PAGE), so the first view is one set on both sides. */
+const PAGE = 12;
 
 const KEYPAD = { A: 2, B: 2, C: 2, D: 3, E: 3, F: 3, G: 4, H: 4, I: 4, J: 5, K: 5, L: 5, M: 6, N: 6, O: 6, P: 7, Q: 7, R: 7, S: 7, T: 8, U: 8, V: 8, W: 9, X: 9, Y: 9, Z: 9 };
 
@@ -173,10 +182,24 @@ export default {
     const rank = (r) => { const i = CAMPUS.indexOf(r.location?.campus); return i < 0 ? CAMPUS.length : i; };
     const list = all.slice().sort((a, z) => rank(a) - rank(z) || a.name.localeCompare(z.name, "en"));
     const n = list.length;
+    /* The first set the page itself carries: the set the script's reveal (src/client/
+       resources.js, PAGE) shows first — the first PAGE in order, a safety resource never
+       held back by the count. The whole list is held back for the script to fetch on first
+       use, its cards drawn by the same resourceCard. */
+    let seen = 0;
+    const first = list.filter((r) => {
+      if ((r.categories || []).includes("safety_survivor_support")) return true;
+      seen++;
+      return seen <= PAGE;
+    });
+    ctx.defer({
+      file: "resources-data.json",
+      body: JSON.stringify({ schema: "bss.resources-data/1", cards: list.map((r) => String(resourceCard(r, ctx, topicOf))) }) + "\n",
+    });
     const updated = ctx.data.resourcesUpdated;
     const carried = Object.fromEntries(FILTERS.map((g) => [g.id, new Set(list.flatMap((r) => valuesOf(r)[g.id]))]));
     const groups = FILTERS.map((g) => ({ ...g, options: g.options.filter((o) => carried[g.id].has(o)) })).filter((g) => g.options.length);
-    return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources><div class="wrap">
+    return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources data-res-src="${ctx.path || ""}resources-data.json"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${ctx.data.resourcesState?.stale ? html`<p class="sample-note">${ctx.t("resources.stale")}</p>` : ""}
@@ -200,7 +223,8 @@ export default {
     <div class="res-active" data-res-active hidden><p class="res-active-label">${ctx.t("resources.active")}</p><ul class="res-chips" data-res-chips><li aria-hidden="true"><span class="res-chip res-chip-ph">&nbsp;</span></li></ul><button type="button" class="btn btn--quiet res-clearall" data-res-clearall>${ctx.t("resources.clearAll")}</button></div>
   </div>
   <div class="res-status" aria-live="polite"><p class="res-count" data-res-count tabindex="-1">${n === 1 ? ctx.t("resources.count.one") : ctx.t("resources.count.all", { n })}</p><p class="res-relaxed" data-res-relaxed hidden>${ctx.t("resources.relaxed")}</p></div>
-  <ul class="res-list">${list.map((r) => resourceCard(r, ctx, topicOf))}</ul>
+  <p class="res-again" data-res-again hidden><button type="button" class="btn btn--quiet" data-res-retry>${ctx.t("resources.retry")}</button></p>
+  <ul class="res-list">${first.map((r) => resourceCard(r, ctx, topicOf))}</ul>
   <p class="res-more-row" data-res-more-row hidden><button type="button" class="btn res-more-btn" data-res-more>${ctx.t("resources.showMore")}</button></p>
   <div class="res-none" data-res-none hidden>
     <h3>${ctx.t("resources.none.title")}</h3>

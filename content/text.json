@@ -3328,6 +3328,21 @@
       "text": "No courses are listed right now. Please check UW Course Search for the current listings.",
       "where": "On the classes page: shown when the course data holds no courses."
     },
+    "classes.loading": {
+      "group": "classes",
+      "text": "Loading the courses…",
+      "where": "On the classes page: the count line while the full course list is on its way."
+    },
+    "classes.failed": {
+      "group": "classes",
+      "text": "The courses could not be loaded. The first courses are listed below.",
+      "where": "On the classes page: the count line when the full course list does not arrive."
+    },
+    "classes.retry": {
+      "group": "classes",
+      "text": "Try Again",
+      "where": "On the classes page: the button under the count line when the full course list does not arrive."
+    },
     "navigator.back": {
       "group": "navigator",
       "text": "Back",
@@ -3387,6 +3402,21 @@
       "group": "resources",
       "text": "Email Us",
       "where": "Resource catalogue state or recovery action."
+    },
+    "resources.loading": {
+      "group": "resources",
+      "text": "Loading the resources…",
+      "where": "On the resource list: the count line while the full resource list is on its way."
+    },
+    "resources.failed": {
+      "group": "resources",
+      "text": "The resources could not be loaded. The first resources are listed below.",
+      "where": "On the resource list: the count line when the full resource list does not arrive."
+    },
+    "resources.retry": {
+      "group": "resources",
+      "text": "Try Again",
+      "where": "On the resource list: the button under the count line when the full resource list does not arrive."
     },
     "search.label": {
       "group": "search",
@@ -3477,6 +3507,11 @@
       "group": "explore",
       "text": "Interests",
       "where": "On the Campus Events Explorer: the heading over the interest buttons."
+    },
+    "explore.events.loading": {
+      "group": "explore",
+      "text": "Loading the events…",
+      "where": "On the Campus Events Explorer: the count line while the full event list is on its way."
     },
     "explore.events.category": {
       "group": "explore",

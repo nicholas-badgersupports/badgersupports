@@ -1,9 +1,11 @@
 /* The Campus Events Explorer (WORK item 41, EXPLORE-A-EVENTS): UW–Madison Events, the Wisconsin
  * Union calendar and Badger Supports programs in one searchable, filterable list, with a calendar
- * view of the same set. The build's read of the feeds is rendered here and carried in a JSON
- * island; src/client/campus-events.js refreshes it from /api/campus-events (the feeds are read
- * again at most every few minutes there, and a failed read keeps the last good list) and runs the
- * filters. Without a script, the build's list stays on the page.
+ * view of the same set. The build's read of the feeds is rendered here as the first cards; the
+ * same data rides in a file beside the page (events-data.json) that src/client/campus-events.js
+ * fetches the first time the visitor opens, searches or filters the explorer, and refreshes from
+ * /api/campus-events (the feeds are read again at most every few minutes there, and a failed read
+ * keeps the last good list) before it runs the filters. Without a script, the build's list stays
+ * on the page.
  *
  * An external listing is distinct from a Badger Supports program by words, not colour alone: a
  * program card says so, and every card names its source. Cost and "Sold out" appear only when the
@@ -16,7 +18,7 @@
  * only for those. No interest chip is styled apart from the others: a chip reads as chosen only
  * while it is pressed. */
 
-import { html, jsonIsland } from "../html.mjs";
+import { html } from "../html.mjs";
 import { go, link } from "../context.mjs";
 import { icon } from "../icons.mjs";
 import { dateParts, timeRange } from "../events.mjs";
@@ -67,10 +69,12 @@ export default {
     const total = (data.events || []).length;
     const categories = [...new Set((data.events || []).flatMap((e) => e.categories))].sort();
     const payload = { events: data.events || [], interests: interests.interests || [], updated: data.updated || null, stale: !!data.stale, today: ctx.today };
-    return html`<section class="exploreevents band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-campus-events><div class="wrap">
+    /* The explorer's whole set, in a file beside the page for the client to fetch on first
+       use — the payload the page used to carry in a JSON island. */
+    ctx.defer({ file: "events-data.json", body: JSON.stringify({ schema: "bss.events-data/1", ...payload }) });
+    return html`<section class="exploreevents band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-campus-events data-ce-data="${ctx.path || ""}events-data.json"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
-  ${jsonIsland(`${b.id}-data`, payload)}
   <div class="ce-tools" data-ce-tools hidden>
     <div class="ce-field ce-field--search">
       <label for="${b.id}-q">${ctx.t("explore.events.search")}</label>

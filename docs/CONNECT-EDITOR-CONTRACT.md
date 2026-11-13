@@ -132,6 +132,7 @@ Reads: `forms` · analytics: `page` · photos load eager · browser module `form
 |---|---|---|
 | `form` | form | **required** |
 | `title` | one line of text |  |
+| `heading` | one of `h1`, `h2` |  |
 | `closedIntro` | one line of text |  |
 
 ### Text — `text`

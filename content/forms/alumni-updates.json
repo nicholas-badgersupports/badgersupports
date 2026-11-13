@@ -1,0 +1,52 @@
+{
+  "anonymous": false,
+  "audience": "Alumni of Badger Supports, Badger Support Network, and Badger SPILL",
+  "closedMessage": "Alumni email update requests are closed. For help joining or leaving the alumni list, email hello@badgersupports.org.",
+  "confirmation": {
+    "body": [
+      "Thank you. Your request for alumni email updates has been received.",
+      "This page does not show whether you are on the alumni list. To change the address held for you, or to stop the updates, write to hello@badgersupports.org."
+    ],
+    "title": "Request Received"
+  },
+  "intro": [
+    "Alumni of Badger Supports, Badger Support Network, and Badger SPILL can ask for Badger Supports updates by email here. The updates are occasional: news from the organisation, and events alumni are invited to."
+  ],
+  "key": "alumni-updates",
+  "review": "Built 13 November 2026 at Nicholas's direction: a subscribe form for alumni email updates, shown on the Alumni page only. It follows the email-list form's pattern end to end — the same intake, the same submissions store, the same Connect queue shape — under its own form key, so alumni requests are held apart from the general email list and can be pulled on their own. It asks for a name as well as the address, which the general list does not. How a mailing-list request reaches the Google Group is still the open owner action 7 in WORK.md; this form follows the live pattern and adds no new route. The connectQueue value is a proposal, as the email-list form's own is: Connect does not yet hold a queue of that name.",
+  "schema": "bss.form/1",
+  "sections": [
+    {
+      "id": "details",
+      "questions": [
+        {
+          "autocomplete": "name",
+          "id": "name",
+          "label": "Your Name",
+          "maxLength": 120,
+          "required": true,
+          "type": "short"
+        },
+        {
+          "autocomplete": "email",
+          "help": "Use an email address you plan to keep, including a personal email address.",
+          "id": "email",
+          "label": "Email Address",
+          "required": true,
+          "review": "The help is the email-list form's, kept word for word: an alumni address has to outlast a university one.",
+          "type": "email"
+        }
+      ],
+      "title": "Your Name and Email"
+    }
+  ],
+  "state": "open",
+  "title": "Alumni Email Updates",
+  "version": 1,
+  "workflow": {
+    "backup": "proposed",
+    "connectQueue": "executive.alumni-updates",
+    "owner": "Executive",
+    "receipt": "none"
+  }
+}

@@ -1,0 +1,47 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {ROOT,build} from '../ops/build.mjs';
+import {definitionProblems,allQuestions} from '../src/shared/forms.mjs';
+import {freshServer,post} from './helpers.mjs';
+import {handle} from '../netlify/lib/router.mjs';
+import {one} from '../netlify/lib/db.mjs';
+import {ingestPayload} from '../netlify/lib/deliver.mjs';
+const load=()=>JSON.parse(fs.readFileSync(path.join(ROOT,'content/forms/alumni-updates.json')));
+test('the alumni updates form asks name and email, both required, and never promises the list',()=>{
+ const def=load();assert.equal(def.state,'open');assert.equal(def.anonymous,false);assert.equal(def.workflow.receipt,'none');
+ assert.deepEqual(allQuestions(def).map(({q})=>q.id),['name','email']);assert.ok(allQuestions(def).every(({q})=>q.required));
+ assert.deepEqual(definitionProblems(def),[]);
+ assert.doesNotMatch(JSON.stringify(def.confirmation),/you are (now )?subscribed|you are on the list/i);
+});
+test('a bad address and a missing name are refused; a good request is stored under its own form key',async()=>{
+ await freshServer();
+ const send=(body,json=true)=>handle(post('/api/forms/alumni-updates/submit',{_form:'alumni-updates',_version:'1',_key:'alumni-example-reference',...body},{json}),{ip:'198.51.100.25'});
+ assert.equal((await send({name:'River Example',email:'not-an-address'})).status,422);
+ assert.equal((await send({email:'river@example.org'})).status,422);
+ assert.equal((await one('SELECT count(*)::int AS n FROM submissions')).n,0);
+ const r=await send({name:'River Example',email:'river@example.org'});assert.equal(r.status,200);const a=await r.json();assert.match(a.ref,/^AU-/);
+ const row=await one('SELECT * FROM submissions WHERE ref=$1',[a.ref]);assert.equal(row.form_key,'alumni-updates');assert.deepEqual(row.answers,{name:'River Example',email:'river@example.org'});
+ assert.equal((await one("SELECT count(*)::int AS n FROM outbox WHERE kind='connect.ingest'")).n,1);
+ assert.equal((await one("SELECT count(*)::int AS n FROM outbox WHERE kind='sheets.backup'")).n,1);
+ assert.equal((await one("SELECT count(*)::int AS n FROM outbox WHERE kind='mail.receipt'")).n,0);
+ const payload=ingestPayload(row,load());assert.equal(payload.form,'alumni-updates');assert.deepEqual(payload.columns.map(c=>c.id),['name','email']);assert.deepEqual(payload.answers,{name:'River Example',email:'river@example.org'});
+ const page=await send({name:'River Example',email:'river@example.org'},false);const body=await page.text();assert.match(body,/Request Received/);assert.match(body,/does not show whether you are on the alumni list/);
+});
+test('the alumni page carries the form under the page heading, with one h1 on the page',async()=>{
+ const resources=JSON.parse(fs.readFileSync(path.join(ROOT,'content/fixtures/resources.json'))).resources;
+ const cfg={url:'https://home.badgersupports.org',keyId:'fixture',secret:'x'.repeat(40),fetch:async(url,init)=>({json:async()=>({publicAlumniHistory:{ok:true,schema:'bss.alumni-history/1',groups:[]},publicEvents:{ok:true,schema:1,events:[],weekly:[]},publicResourceExport:{ok:true,schema:1,resources},publicTeam:{ok:true,schema:'bss.team/1',people:[]},publicWallNotes:{ok:true,schema:'bss.wall/1',notes:[]}}[JSON.parse(init.body).action])})};
+ const out=path.join(ROOT,'local/test-alumni-subscribe');await build({production:true,connectConfig:cfg,out,serverDir:path.join(out,'_server'),media:false,today:'2026-11-13'});
+ const page=fs.readFileSync(path.join(out,'join/alumni/index.html'),'utf8');
+ assert.equal((page.match(/<h1[\s>]/g)||[]).length,1);
+ assert.match(page,/<h2 class="form-title" id="b-alumni-updates-h">Alumni Email Updates<\/h2>/);
+ assert.match(page,/action="\/api\/forms\/alumni-updates\/submit"/);assert.match(page,/data-form="alumni-updates" data-version="1" data-level="2"/);
+ assert.match(page,/name="name"/);assert.match(page,/name="email"/);assert.match(page,/id="form-def-alumni-updates"/);assert.match(page,/Request Received/);
+ assert.ok(page.indexOf('data-block="b-alumni-history"')<page.indexOf('data-block="b-alumni-updates"'),'the form follows the Alumni History section');
+ const own=fs.readFileSync(path.join(out,'forms/alumni-updates/index.html'),'utf8');
+ assert.equal((own.match(/<h1[\s>]/g)||[]).length,1);
+ assert.match(own,/<h1 id="b-form-alumni-updates-h">Alumni Email Updates<\/h1>/,'the form also has its own page at /forms/alumni-updates/, where it is the heading');
+ const list=fs.readFileSync(path.join(out,'forms/email-list/index.html'),'utf8');
+ assert.match(list,/<h1 id="b-form-email-list-h">Request Email Updates<\/h1>/,'a form that is the page keeps its h1');
+});

@@ -30,6 +30,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The site's version history became a tracked record with a review gate: this file is the canonical history, and a release candidate is checked against it before publication (items 46 and 47).
 
+- Alumni can subscribe to email updates on the Alumni page, under the Alumni History: a short form asks for a name and an email address, held apart from the general email list under its own form name, and the form also stands on its own page at `/forms/alumni-updates/` (item 52). A form placed inside a page now heads under that page's heading instead of adding a second one.
+
 ### Changed
 
 - The Peer Support Groups page: its Instagram reel now loads without a click and without the midterms caption; the header, join steps and expectations were reworked, and the peer and Hub photos come from the organisation's Drive library. The home hero leads with the peer circle, its pause control is a dot icon, and headings and cards keep whole words.

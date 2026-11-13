@@ -22,7 +22,7 @@ const bodyFor=async(key,more={})=>{const f=await currentForm(key);return {settin
 
 test('every current form is configurable and can open through the atomic setup operation',async()=>{
  await freshServer();const cookie=await session(['site.edit','forms.switch:*']);
- const forms=(await formsFor({scopes:['site.edit','forms.switch:*']})).forms;assert.equal(forms.length,13);
+ const forms=(await formsFor({scopes:['site.edit','forms.switch:*']})).forms;assert.equal(forms.length,14);
  for(const form of forms){
   assert.ok(form.settings);assert.ok(form.definitionVersion);assert.ok(form.workflow.destination);
   await setSwitch(form.key,'closed','fixture');const body=await bodyFor(form.key,{state:'open',confirm:form.key});
@@ -32,7 +32,7 @@ test('every current form is configurable and can open through the atomic setup o
   assert.equal(saved.manualState,'open',form.key);assert.equal(saved.title,body.settings.title,form.key);
   assert.equal((await readFormSettings(form.key)).version,1);
  }
- assert.equal((await many('SELECT * FROM form_settings_history')).length,13);
+ assert.equal((await many('SELECT * FROM form_settings_history')).length,14);
  assert.equal((await one('SELECT count(*)::int AS n FROM submissions')).n,0);
 });
 

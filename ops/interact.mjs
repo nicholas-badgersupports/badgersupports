@@ -2357,7 +2357,7 @@ await part("form setup wizard", async () => {
       await goStaff(page, "staff.forms.title");
       await page.getByRole("button", { name: "Set Up Forms", exact: true }).click();
       let wizard = page.locator("[data-form-setup]"); await wizard.locator("#setup-form").waitFor({ state: "visible" });
-      check(await wizard.locator("#setup-form option").count() === 14, `setup ${width}px: every one of the thirteen forms is selectable`);
+      check(await wizard.locator("#setup-form option").count() === 15, `setup ${width}px: every one of the fourteen forms is selectable`);
       await wizard.locator("#setup-form").selectOption("email-list"); await wizard.getByRole("button", { name: "Next", exact: true }).click();
       await wizard.locator('input[id$="-title"]').fill("Fictional Email Setup");
       await wizard.getByRole("button", { name: "Next", exact: true }).click();

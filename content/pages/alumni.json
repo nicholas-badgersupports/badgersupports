@@ -45,6 +45,13 @@
         "href": "mailto:directors@badgersupports.org",
         "icon": "mail"
       }
+    },
+    {
+      "id": "b-alumni-updates",
+      "type": "form",
+      "form": "alumni-updates",
+      "heading": "h2",
+      "title": "Alumni Email Updates"
     }
   ]
 }

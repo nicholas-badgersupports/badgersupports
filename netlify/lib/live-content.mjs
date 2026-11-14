@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 import { call, serviceConfigNow } from './connect.mjs';
 import { noteGet, noteSet } from './published.mjs';
 import { mapResources, mapWall, WALL_EXPORT } from '../../ops/connect-feed.mjs';
+import { wallWithDefaults } from '../../ops/wall-defaults.mjs';
 import { serverContent } from './content.mjs';
 import { teamNow, teamPhoto } from "./live-team.mjs";
 import { alumniNow } from "./alumni-history.mjs";
@@ -50,7 +51,10 @@ async function oneCatalogue(snap, kind, now, token) {
       if (!cfg) throw Object.assign(new Error('Connect is not configured'), { code: 'connect.missing' });
       const reply = await call(cfg, { action: spec.action });
       if (reply.schema !== spec.schema || !Array.isArray(reply[spec.field])) throw Object.assign(new Error('Unexpected public catalogue'), { code: 'connect.bad-reply' });
-      const value = spec.map(reply);
+      /* The wall is settled through the same defaults floor the build applies: an empty approved
+         list is a successful read of no notes, not a reason to serve a blank wall. */
+      const mapped = spec.map(reply);
+      const value = kind === 'wall' ? wallWithDefaults(mapped) : mapped;
       const record = { source, at: now, value };
       // Storage failure must not turn a successful public read into an unavailable service.
       await noteSet(storeKey, record).catch(() => {});
@@ -64,7 +68,11 @@ async function oneCatalogue(snap, kind, now, token) {
         ? previous : { at, value: built(snap, kind) };
       // Personal recognition and moderated notes are not held indefinitely after withdrawal could have occurred.
       const expired = kind !== 'resources' && (!Number.isFinite(record.at) || now - record.at > WALL_FALLBACK_MS);
-      return { value: expired ? empty(kind) : record.value || empty(kind), stale: true, unavailable: expired || !record.value, ...(kind !== "resources" ? { expiresAt: record.at + WALL_FALLBACK_MS } : {}) };
+      /* The fallback value is settled through the same floor; the expiry above still stands, so a
+         record outside its window reports unavailable with no notes rather than holding even the
+         defaults indefinitely. */
+      const fallback = record.value || empty(kind);
+      return { value: expired ? empty(kind) : kind === 'wall' ? wallWithDefaults(fallback) : fallback, stale: true, unavailable: expired || !record.value, ...(kind !== "resources" ? { expiresAt: record.at + WALL_FALLBACK_MS } : {}) };
     }
   })();
   held.set(key, { until: now + SHARED_FRESH_MS, promise, token });

@@ -134,6 +134,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The Wall of Support on the home page is never blank: when Connect's list of approved notes is empty, six notes stand in their place — the six the owner approved on November 13, 2026, carried word for word from the wall's own sheet. When Connect holds even one approved note, the stand-ins do not appear.
 
+- The Wall of Support's stand-in notes now stand in on the home page as it is served to each visitor, not only in the copy built when the site is published: the page is drawn afresh for every request, and that path now settles the wall through the same stand-ins while Connect's list of approved notes is empty. Before, the serving path accepted Connect's empty list as the whole answer, so the live wall stood empty even though the built copy carried the notes.
+
 - The short address /classes now leads to Discover Classes by Interest under Explore; before, it landed on a page that does not exist, while the classes page itself stood at its Explore address.
 
 

@@ -360,7 +360,6 @@
           "type": "checkboxes",
           "label": "My preferred workflow is:",
           "required": true,
-          "help": "Select all that apply.",
           "options": [
             {
               "id": "long_term",
@@ -421,8 +420,7 @@
           "label": "Wellness & Support",
           "required": false,
           "help": [
-            "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed.",
-            "Check all that apply."
+            "The Wellness & Support Directorate develops and implements comprehensive wellness and support programs within Badger Supports. They focus on promoting mental health, well-being, and resilience among students, ensure the delivery of effective peer-support services, and manage crisis intervention as needed."
           ],
           "options": [
             {
@@ -449,8 +447,7 @@
           "label": "Programs",
           "required": false,
           "help": [
-            "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another.",
-            "Check all that apply."
+            "The Directorate of Programs designs and delivers peer led programs that foster connection, learning, and well being through shared activity. The directorate organizes craft nights and workshops that lower barriers to participation and use hands-on engagement as an entry point for peer to peer support. Programs integrate educational components that build practical skills, normalize uncertainty, and encourage conversation, creating welcoming spaces where students learn with and from one another."
           ],
           "options": [
             {
@@ -481,8 +478,7 @@
           "label": "Engagement - Outreach",
           "required": false,
           "help": [
-            "The Directorate of Engagement, the second largest directorate at Badger Supports, advances the organization’s mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care.",
-            "Check all that apply."
+            "The Directorate of Engagement, the second largest directorate at Badger Supports, advances the organization’s mission through clear, accessible, and values driven communication. The directorate leads outreach, messaging, and visual storytelling that support peer to peer engagement and promote programs and services. The directorate emphasizes leadership development in social and relational contexts, building student capacity in collaboration, audience awareness, and responsible public communication in support of a campus culture of care."
           ],
           "options": [
             {
@@ -504,7 +500,6 @@
           "type": "checkboxes",
           "label": "Engagement - Marketing",
           "required": false,
-          "help": "Check all that apply.",
           "options": [
             {
               "id": "design_apparel",
@@ -537,7 +532,6 @@
           "type": "checkboxes",
           "label": "Engagement - Campus Relations",
           "required": false,
-          "help": "Check all that apply.",
           "options": [
             {
               "id": "partnerships",
@@ -558,7 +552,6 @@
           "type": "checkboxes",
           "label": "Engagement - Data",
           "required": false,
-          "help": "Check all that apply.",
           "options": [
             {
               "id": "analyze_performance",
@@ -579,7 +572,6 @@
           "type": "checkboxes",
           "label": "Operations",
           "required": false,
-          "help": "Check all that apply.",
           "options": [
             {
               "id": "event_logistics",
@@ -604,7 +596,6 @@
           "type": "checkboxes",
           "label": "Operations - Technical",
           "required": false,
-          "help": "Check all that apply.",
           "options": [
             {
               "id": "websites",
@@ -626,8 +617,7 @@
           "label": "Business Development",
           "required": false,
           "help": [
-            "The mission of the Directorate of Business Development advances Badger Supports’ long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources.",
-            "Check all that apply."
+            "The mission of the Directorate of Business Development advances Badger Supports’ long term sustainability by securing funding, building campus and community partnerships, and strengthening revenue aligned with peer support and wellness programming. The directorate supports responsible operations through clear processes, compliance minded decision making, and transparent stewardship of resources."
           ],
           "options": [
             {

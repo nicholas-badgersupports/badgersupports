@@ -105,7 +105,6 @@
       "craftGallery": true,
       "anchor": "b-cn-past-work",
       "title": "Made at Past Craft Nights",
-      "lead": "Students and their creations from past Craft Nights.",
       "items": [
         {
           "id": "craft-nostalgic",
@@ -168,8 +167,7 @@
       ],
       "photos": [
         "m-people-bedazzle-table"
-      ],
-      "body": "Share an idea for a future Craft Night with our student team."
+      ]
     },
     {
       "id": "b-cn-access",

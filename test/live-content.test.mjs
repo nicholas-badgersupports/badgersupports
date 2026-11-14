@@ -10,6 +10,7 @@ import { useConnect } from '../netlify/lib/connect.mjs';
 import { useStore, memoryStore } from '../netlify/lib/published.mjs';
 import { handlePage, useDist } from '../netlify/lib/pages.mjs';
 import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
+import { WALL_DEFAULT_NOTES } from '../ops/wall-defaults.mjs';
 import { publicUpload } from '../netlify/lib/live-team.mjs';
 
 const OUT = path.join(ROOT, 'local/test-build-shared');
@@ -162,6 +163,40 @@ test('the frozen fictional producer fixture renders incomplete profiles and vers
   const p = PRODUCER.people.find(p => p.photo), version = new URL(p.photo.url).searchParams.get('v');
   assert.ok(list.includes(`/api/team-photo/${p.id}?v=${version}`));
   const res = await teamPhotoResponse(new Request(`https://site.test/api/team-photo/${p.id}?v=${version}`), p.id); assert.equal(res.status, 200);
+});
+test('an empty approved Wall list settles to the approved defaults at runtime', async () => {
+  reply.publicWallNotes.notes = [];
+  const shared = await sharedNow(SERVER.render);
+  assert.equal(shared.wall.stale, false); assert.equal(shared.wall.unavailable, false);
+  assert.deepEqual(shared.wall.value.notes, [...WALL_DEFAULT_NOTES]); assert.equal(shared.wall.value.source, 'defaults');
+  assert.ok(JSON.stringify(writes).includes('You belong here'), 'the settled defaults are what the last-good store keeps');
+  const home = await (await get('/')).text();
+  assert.match(home, /You belong here/); assert.equal((home.match(/<li class="note">/g) || []).length, WALL_DEFAULT_NOTES.length);
+});
+test('a non-empty approved Wall list passes through untouched, with no defaults mixed in', async () => {
+  reply.publicWallNotes.notes = [{ id: 'w9', text: 'One real approved note.' }];
+  const shared = await sharedNow(SERVER.render);
+  assert.deepEqual(shared.wall.value.notes, ['One real approved note.']); assert.equal(shared.wall.value.source, 'connect');
+  const home = await (await get('/')).text();
+  assert.match(home, /One real approved note\./); assert.doesNotMatch(home, /You belong here/);
+});
+test('a failed Wall read falls back to the settled defaults, then still expires', async () => {
+  reply.publicWallNotes.notes = [];
+  await sharedNow(SERVER.render);
+  offline = true; clock += SHARED_FRESH_MS + 1; forgetShared();
+  const old = await quietly(() => sharedNow(SERVER.render));
+  assert.equal(old.wall.stale, true); assert.equal(old.wall.unavailable, false);
+  assert.deepEqual(old.wall.value.notes, [...WALL_DEFAULT_NOTES]);
+  clock += WALL_FALLBACK_MS + 1; forgetShared();
+  const expired = await quietly(() => sharedNow(SERVER.render));
+  assert.equal(expired.wall.unavailable, true); assert.deepEqual(expired.wall.value.notes, []);
+});
+test('a failed Wall read with no stored record serves the defaults from the built snapshot floor', async () => {
+  offline = true;
+  const snap = { ...SERVER.render, data: { ...SERVER.render.data, wallNotes: [] } };
+  const shared = await quietly(() => sharedNow(snap));
+  assert.equal(shared.wall.stale, true); assert.equal(shared.wall.unavailable, false);
+  assert.deepEqual(shared.wall.value.notes, [...WALL_DEFAULT_NOTES]);
 });
 test('untrusted or repeated photo parameters and mismatched profile photos cannot reach a fetch', async () => {
   const before = calls.length;

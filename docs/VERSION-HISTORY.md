@@ -136,6 +136,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The Wall of Support's stand-in notes now stand in on the home page as it is served to each visitor, not only in the copy built when the site is published: the page is drawn afresh for every request, and that path now settles the wall through the same stand-ins while Connect's list of approved notes is empty. Before, the serving path accepted Connect's empty list as the whole answer, so the live wall stood empty even though the built copy carried the notes.
 
+- The Campus Events Explorer, Discover Classes by Interest and the resource list load their full lists again: the data file each one fetches when a visitor first opens, searches or filters into it is now served as written, where before the site's page machinery claimed those addresses and answered with its not-found page, so each explorer stopped at the first view it carried and offered Try Again.
+
 - The short address /classes now leads to Discover Classes by Interest under Explore; before, it landed on a page that does not exist, while the classes page itself stood at its Explore address.
 
 

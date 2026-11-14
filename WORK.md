@@ -87,8 +87,6 @@ full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
 1. **Review the design**: `local/shots/`, or `npm run dev` and open the site. Say what to change.
 2. ~~Photos: confirm the release~~ **closed** 10 Nov 2026: every Badger Supports Drive photo is approved, faces
    included (Nicholas; `docs/DESIGN.md`, Photos). Still yours: the 10 live images and the SAC ribbon heap (`docs/research/LIVE-IMAGES-2026-10-20.md`).
-4. ~~Confirm the receipt sender~~ **confirmed** 11 Nov 2026: `directors@badgersupports.org`.
-5. ~~Backup spreadsheet account~~ **confirmed** 11 Nov 2026: the workbook lives in `directors@badgersupports.org`.
 7. Say how a mailing-list request reaches the Google Group today.
 8. Reauthenticate the Analytics connector to read the GA4 property's figures. (The property itself was verified by the owner's direct supply of its id, 12 Nov 2026, and enhanced measurement is ruled **on**, 12 Nov 2026 — the earlier “confirm it is off” step is superseded.)
 9. **Publish**: open `../PUBLISH-WEBSITE-2026-10-23.command`, type `publish`. Who may see it is yours: team-only now.

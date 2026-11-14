@@ -740,6 +740,7 @@ export async function build({ production = false, launch = production, today = n
     connect: feed ? { events: feed.events.dated.length, weekly: feed.events.recurring.length, resources: feed.resources.resources.length, unnamed: feed.unnamed || [], ...(feed.team ? { team: publicPeople(feed.team).length } : {}), ...(feed.wall ? { wall: feed.wall.notes.length } : {}), dropped: feed.dropped, version: feed.version } : null,
     edits: content.edits,
     pages: pageReport,
+    dataFiles,
     search: data.searchIndex.length,
     campus: campusData.report,
     calendar: calendar.map((r) => icsPath(r.event)),

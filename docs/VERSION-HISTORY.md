@@ -39,6 +39,12 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The edit tool gained Notes mode. An editor turns it on in the edit bar and clicks anywhere on a page to pin a numbered note to what was clicked; Copy notes in the bar copies every open note on the site, with its page and exact location, as one plain-text block. When the words, links or styling a note is pinned to have changed, the note marks itself cleared the next time an editor opens that page with the mode on: its pin leaves the page and it leaves the copied list, but it is not deleted. A note whose words are no longer on the page waits in the notes list to be removed by hand. Notes are shared by every editor, are kept apart from the published revision, and are never shown to visitors.
 
+- The staff page's form cards gained a “Work in Connect” link, which opens that form's queue in Connect, and a “Failed or stuck only” tick above the list, which narrows it to the forms carrying a failed or stuck delivery; the tick stands only while some form does.
+
+- The edit bar now carries Refresh Now while saved changes wait, putting them on the site at once instead of within thirty minutes; the staff page's Words view carries the same button beside its waiting line.
+
+- The staff page gained a find box above its tools: typing part of a setting's name, or words from its description, jumps to that setting or section.
+
 
 ### Changed
 
@@ -89,6 +95,24 @@ Development from November 5 to November 12, 2026, checked into the repository an
 - The footer’s Director Sign-In now opens a pop-up carrying the site’s white lockup on a red band, and the move to Connect begins on its own about a second later. Closing the pop-up calls the move off; the link inside it goes to the sign-in start at once.
 
 - The Explore page’s byline now reads “Find Current Events on Campus”, and the helper text below it — the pagehead paragraph and the four tool-card descriptions — is removed.
+
+- Site Search now searches the resource catalogue as well as the site's pages — its index holds the pages and all 86 resources — and both Site Search and the Resources search order their results by relevance, a word standing in a title counting most.
+
+- Searches now match the words students use: every resource carries its alternate words, word forms match by light stemming, and a short word must stand as a whole word, so “car” no longer matches “care”.
+
+- In Site Search, a search using crisis words brings the crisis help forward ahead of the matches.
+
+- A search with no matches no longer ends there: Site Search offers the pages that come closest and a way onward.
+
+- Discover Classes by Interest gained a text search over its course catalogue: typing a name, a number or a word narrows the cards to the courses that match.
+
+- The Bus Route Explorer now names the address it could not place instead of failing in silence, tidies the address labels it resolves, and names a match outside the Madison area instead of comparing against it; while it places several addresses it counts them as it goes.
+
+- On the workshop request form, three answers a group may not have are now optional — access needs, anything we should know about your group, and the third choice of date, which may be left blank; the first and second choices of date stay required.
+
+- A form's open and close dates now show on the face of its card on the staff page.
+
+- The mood check-in now waits visibly while it saves and marks the save only once it has gone through, and the Form Setup save uses the staff page's usual saving words.
 
 ### Removed
 

@@ -22,8 +22,9 @@
  *     page, reorder the menu, and change the site's name, search description and accessibility email (one save for
  *     the three); for a publisher, each room's words and its steps' words and photos; and the published versions, with
  *     Bring back for a publisher, asked twice.
- * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
- * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
+ * Only what the account may use is drawn. Reading answers lasts the whole session, as the rest
+ * does (netlify/lib/staff.mjs, sessionFrom); the forms part keeps its fresh sign-in note for a
+ * refusal the server marks auth.again, which nothing now produces.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools
  * off it, so a page a browser keeps for Back holds no answers; coming back to it checks again.
  * Nothing here is counted, and nothing is kept in the browser.
@@ -214,7 +215,15 @@ function formSettingsControl(f, saved) {
   box.append(form); return box;
 }
 
-function formCard(f, connect) {
+/* A form's saved dates are Chicago wall times (netlify/lib/form-settings.mjs), not instants:
+   they are shown as written, so the line reads the same in any browser. */
+const whenLocal = (v) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(v || "");
+  if (!m) return v || "";
+  return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5])).toLocaleString("en-US", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" });
+};
+
+function formCard(f, connect, connectUrl) {
   const panel = el("div", { className: "staff-answers", id: `answers-${f.key}`, hidden: true });
   const toggle = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.answers.show") });
   toggle.setAttribute("aria-expanded", "false");
@@ -248,14 +257,23 @@ function formCard(f, connect) {
   const state = el("span", { className: `staff-chip is-${f.state}`, textContent: t(`staff.forms.state.${f.state}`) });
   // A form someone may switch but not read shows its title and switch only: no counts, no answers.
   const read = f.canRead !== false;
+  /* This form's queue in Connect (its Website Forms pane, scoped to the form), in a new tab so
+     the console keeps its place. The section's own link at the foot stays for the whole queue. */
+  const inConnect = read && connectUrl ? el("a", { className: "btn btn--quiet", href: `${connectUrl}/#/admin/webforms/${encodeURIComponent(f.key)}`, target: "_blank", rel: "noopener", textContent: t("staff.answers.inConnect") }) : null;
+  /* The saved start and stop on the card's face, beside the switch they govern, so neither has
+     to be opened out of the fold to be checked. Only for a form whose dates are set. */
+  const dates = f.settings && (f.settings.opensAt || f.settings.closesAt)
+    ? el("p", { className: "staff-form-dates", textContent: [f.settings.opensAt && `${t("staff.formSettings.opensAt")}: ${whenLocal(f.settings.opensAt)}`, f.settings.closesAt && `${t("staff.formSettings.closesAt")}: ${whenLocal(f.settings.closesAt)}`].filter(Boolean).join(" · ") })
+    : null;
   const card = el("li", { className: "staff-form" },
     el("h3", {}, el("span", { textContent: f.title }), " ", state),
     read ? el("p", { textContent: f.total ? `${t(f.total === 1 ? "staff.forms.count.one" : "staff.forms.count.other", { n: f.total })} · ${t("staff.forms.latest", { when: when(f.latest) })}` : t("staff.forms.none") }) : null,
     read ? deliveryLine(f, connect) : null,
-    read && f.total ? toggle : null,
+    read && (f.total || inConnect) ? el("div", { className: "staff-actions" }, f.total ? toggle : null, inConnect) : null,
     read ? panel : null,
+    dates,
     f.canSwitch ? switchControl(f, state) : null,
-    formSettingsControl(f, updated => { const next = formCard(updated, connect); card.replaceWith(next); next.querySelector("summary")?.focus(); }));
+    formSettingsControl(f, updated => { const next = formCard(updated, connect, connectUrl); card.replaceWith(next); next.querySelector("summary")?.focus(); }));
   card.dataset.formCard = f.key;
   return card;
 }
@@ -272,9 +290,22 @@ function formsSection(me, onData) {
     if (r.status !== 200) { const [why, words] = refused(r); setupPlace.replaceChildren(why); say(words); return; }
     setup.hidden = true; list.hidden = true;
     setupPlace.replaceChildren(formSetupWizard({ forms: r.body.forms, connectUrl: me.connectUrl, call, say,
-      onSaved: updated => { const old = list.querySelector(`[data-form-card="${updated.key}"]`); old?.replaceWith(formCard(updated, r.body.connect)); },
+      onSaved: updated => { const old = list.querySelector(`[data-form-card="${updated.key}"]`); old?.replaceWith(formCard(updated, r.body.connect, me.connectUrl)); },
       onClose: key => { setupPlace.replaceChildren(); list.hidden = false; setup.hidden = false; const card = key ? list.querySelector(`[data-form-card="${key}"]`) : null; const target = card?.querySelector("summary"); if (target) { target.parentElement.open = true; target.focus(); } else setup.focus(); }
     }));
+  });
+  /* Show only the forms carrying a failed or stuck delivery. The tick stands only while some
+     form does, and a list drawn again with none left clears it, so the filter never hides the
+     whole list behind a problem that has gone. */
+  let onlyProblems = false;
+  const problems = new Map();
+  const problemsTick = el("input", { type: "checkbox" });
+  const problemsWrap = el("div", { className: "staff-actions", hidden: true },
+    el("label", {}, problemsTick, " ", t("staff.forms.problemsOnly")));
+  problemsTick.addEventListener("change", () => {
+    onlyProblems = problemsTick.checked;
+    for (const card of list.querySelectorAll("[data-form-card]")) card.hidden = onlyProblems && !problems.get(card.dataset.formCard);
+    say(t("staff.forms.problemsOnly"));
   });
   const off = el("p", { className: "staff-note", textContent: t("staff.delivery.off"), hidden: true });
   const retry = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.retry"), hidden: true });
@@ -283,7 +314,12 @@ function formsSection(me, onData) {
   const work = me.connectUrl ? el("a", { href: `${me.connectUrl}/`, textContent: t("staff.answers.openConnect") }) : null;
 
   function draw(r) {
-    list.replaceChildren(...r.forms.map((f) => formCard(f, r.connect)));
+    problems.clear();
+    for (const f of r.forms) problems.set(f.key, !!(f.delivery?.failed || f.delivery?.stuck));
+    problemsWrap.hidden = !r.forms.some((f) => problems.get(f.key));
+    if (problemsWrap.hidden) onlyProblems = false;
+    problemsTick.checked = onlyProblems;
+    list.replaceChildren(...r.forms.map((f) => { const card = formCard(f, r.connect, me.connectUrl); card.hidden = onlyProblems && !problems.get(f.key); return card; }));
     setup.hidden = !r.forms.some(f => f.settings && (f.canEdit || f.canSwitch));
     if (!r.forms.length) list.replaceChildren(el("li", { textContent: t("staff.forms.empty") }));
     off.hidden = r.connect;
@@ -327,7 +363,7 @@ function formsSection(me, onData) {
   again.addEventListener("click", () => { if (!isBusy(again)) load(); });
 
   const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }),
-    el("p", { textContent: t("staff.forms.how") }), me.readAgain ? readAgain() : null, off, el("div", { className: "staff-actions staff-setup-launch" }, setup), setupPlace, list, retryProblem,
+    el("p", { textContent: t("staff.forms.how") }), me.readAgain ? readAgain() : null, off, el("div", { className: "staff-actions staff-setup-launch" }, setup), setupPlace, problemsWrap, list, retryProblem,
     el("div", { className: "staff-actions" }, retry, ...(work ? [work] : [])));
   section.setAttribute("aria-labelledby", "staff-forms-h");
   load();
@@ -372,9 +408,9 @@ function editSection(me) {
   const section = el("section", { className: "staff-part" },
     el("h2", { id: "staff-edit-h", textContent: t("staff.edit.title") }),
     me.canEdit && el("p", { textContent: t("staff.edit.how") }),
-    line,
+    /* Refresh Now stands with the waiting line it answers, not a line below it. */
+    el("div", { className: "staff-actions" }, line, refresh),
     update,
-    el("div", { className: "staff-actions" }, refresh),
     problem,
     download && el("p", {}, download),
     download && el("p", { className: "staff-note", textContent: t("staff.edit.publish") }));
@@ -1289,6 +1325,65 @@ function showTools(me) {
   add("rooms", me.canPublish && roomsSection(), "staff.rooms.title");
   add("versions", pages && versionsSection(me), "staff.versions.title");
   add("settings", me.canPublish && settingsSection(me), "staff.settings.title");
+  /* Find a setting: one box over every view's own words — the labels of its fields, its folds
+     named by the card they sit on, and its headings — that takes the editor to the one they
+     named: its view opens, a fold holding it opens, and the place is ringed and focused. The
+     index is read from the page as it stands when the box is used, so a part that has not
+     loaded yet is simply not in it. */
+  const words = (s) => String(s || "").replace(/\s+/g, " ").trim();
+  const findInput = el("input", { type: "search", id: "staff-find" });
+  const findResults = el("div", { className: "staff-find-results" });
+  const findBox = el("div", { className: "staff-find" },
+    el("label", { htmlFor: "staff-find", textContent: t("staff.find.label") }), findInput, findResults);
+  const viewTitles = () => Object.fromEntries([["overview", t("staff.nav.overview")], ...views.map(([id, , k]) => [id, t(k)])]);
+  function findIndex() {
+    const out = [];
+    const seen = new Set();
+    const add = (name, target, view) => {
+      const n = words(name);
+      if (!n || seen.has(target)) return;
+      seen.add(target);
+      out.push({ name: n, target, view });
+    };
+    for (const [id, node] of [["overview", overview.part], ...views]) {
+      for (const lab of node.querySelectorAll("label[for]")) {
+        const control = document.getElementById(lab.getAttribute("for"));
+        if (control) add(lab.textContent, control, id);
+      }
+      for (const sum of node.querySelectorAll("summary")) {
+        const title = sum.closest(".staff-form")?.querySelector("h3")?.textContent || "";
+        add(`${words(title)} — ${words(sum.textContent)}`, sum, id);
+      }
+      for (const h of node.querySelectorAll("h2, h3")) add(h.textContent, h, id);
+    }
+    return out;
+  }
+  function findJump(hit) {
+    for (const n of document.querySelectorAll(".staff-found")) n.classList.remove("staff-found");
+    show(hit.view, false);
+    for (let n = hit.target; n; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
+    findResults.replaceChildren();
+    findInput.value = "";
+    hit.target.scrollIntoView({ block: "center" });
+    hit.target.classList.add("staff-found");
+    setTimeout(() => hit.target.classList.remove("staff-found"), 3000);
+    if (!/^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY)$/.test(hit.target.tagName)) hit.target.tabIndex = -1;
+    hit.target.focus?.({ preventScroll: true });
+    say(hit.name);
+  }
+  findInput.addEventListener("input", () => {
+    const q = words(findInput.value).toLowerCase();
+    if (q.length < 2) { findResults.replaceChildren(); return; }
+    const hits = findIndex().filter((h) => h.name.toLowerCase().includes(q)).slice(0, 8);
+    const titles = viewTitles();
+    findResults.replaceChildren(...(hits.length
+      ? hits.map((h) => {
+          const b = el("button", { type: "button", className: "btn btn--quiet" }, el("span", { textContent: h.name }), " ", el("span", { className: "staff-find-view", textContent: titles[h.view] || "" }));
+          b.addEventListener("click", () => findJump(h));
+          return b;
+        })
+      : [el("p", { textContent: t("staff.find.none") })]));
+  });
   overview = overviewSection(me, (id) => show(id, true), views.map(([id, , titleKey]) => [id, titleKey]), !views.length);
   const all = [["overview", overview.part], ...views.map(([id, node]) => [id, node])];
   const links = {};
@@ -1327,7 +1422,7 @@ function showTools(me) {
     if (focus) { const h = all.find(([v]) => v === current)[1].querySelector("h2"); if (h) { h.tabIndex = -1; h.focus(); } }
   }
   const onward = back !== "/staff/" && el("p", {}, el("a", { className: "btn", href: back, textContent: t("staff.returnTo") }));
-  app.replaceChildren(...[onward, whoBar(me), nav, ...all.map(([, node]) => node)].filter(Boolean));
+  app.replaceChildren(...[onward, whoBar(me), views.length ? findBox : null, nav, ...all.map(([, node]) => node)].filter(Boolean));
   show(location.hash.slice(1));
   requestAnimationFrame(fitScrollBtns);
   app.hidden = false;

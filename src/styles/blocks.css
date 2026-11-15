@@ -1613,6 +1613,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-form .field + .field { margin-top: var(--s3); }
 .staff-form-settings { margin-top: var(--s3); }
 .staff-form-settings form { display: grid; gap: var(--s3); margin-top: var(--s3); }
+.staff-form-dates { color: var(--muted); }
+/* Find a setting: the box above the tools, its results, and the ring it leaves on what it found. */
+.staff-find { margin-top: var(--s5); display: grid; gap: var(--s2); justify-items: start; }
+.staff-find input { width: min(24rem, 100%); }
+.staff-find-results { display: grid; gap: var(--s2); justify-items: start; }
+.staff-find-results p { margin: 0; }
+.staff-find-view { color: var(--muted); font-weight: 400; }
+.staff-found { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 .staff-settings { margin-top: var(--s4); }
 /* A refused settings save says why above the fields it kept. */
 .staff-settings .staff-note { margin-bottom: var(--s4); }

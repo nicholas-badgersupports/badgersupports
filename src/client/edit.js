@@ -854,6 +854,7 @@ function drawBar() {
   ui.notesListButton.hidden = !(editing && notesOn);
   ui.notesListButton.textContent = clearedUnseen > 0 ? t("edit.notes.cleared", { n: clearedUnseen }) : missingHere().length ? t("edit.notes.notOnPage") : t("edit.notes.list");
   ui.notesListButton.setAttribute("aria-expanded", String(!ui.noteList.hidden));
+  ui.refresh.hidden = !(me.waiting > 0);
 }
 
 function build() {
@@ -937,7 +938,25 @@ function build() {
   window.addEventListener("scroll", placePins, { capture: true, passive: true });
   window.addEventListener("resize", placePins);
 
-  const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, notesPill, notesCopy, notesListButton, toggle);
+  const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, notesPill, notesCopy, notesListButton, refresh, toggle);
+  /* Refresh Now, in the bar while saved changes wait: the save's own next step, instead of a
+     trip to the staff page's Words view to find the same button. The server checks the scope
+     again (netlify/lib/router.mjs, refresh). */
+  const refresh = el("button", { type: "button", className: "btn btn--quiet edit-refresh", textContent: t("edit.refresh"), hidden: true });
+  refresh.addEventListener("click", async () => {
+    if (refresh.getAttribute("aria-busy") === "true") return;
+    refresh.setAttribute("aria-busy", "true");
+    const label = refresh.textContent;
+    refresh.textContent = t("edit.refreshing");
+    const r = await call("/api/staff/refresh", {}).catch(() => ({ status: 0, body: {} }));
+    refresh.removeAttribute("aria-busy");
+    refresh.textContent = label;
+    if (r.status === 200) { me.waiting = 0; drawBar(); say(t("edit.refreshed")); return; }
+    if (r.status === 429) { say(t("edit.refreshSoon")); return; }
+    if (r.status === 401) { say(t("edit.error.ended"), " ", signInAgain(false)); return; }
+    say(t("edit.error.failed"));
+  });
+
   /* The Safety Exit keeps the corner: the bar takes the pill in as its last seat, so the edit
      button rests at its left with their bottoms on one line and neither covers the other
      (owner, 13 Nov 2026). The pill's own words, link and destination are untouched, and the
@@ -980,7 +999,7 @@ function build() {
   const root = el("div", { className: "edit-ui" }, more, noteList, bar, box, noteBox);
   root.setAttribute("data-edit-ui", "");
   document.body.append(root);
-  ui = { toggle, more, moreButton, moreList: moreList_, find, notesPill, notesCopy, notesListButton, noteList, noteListGroups, clearAll, noteDialog: { box: noteBox, heading: noteHeading, where: noteWhere, value: noteValue, status: noteStatus, save: noteSave, remove: noteRemove }, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList, link, linkTo: null, section, sectionTitle, sectionList } };
+  ui = { toggle, more, moreButton, moreList: moreList_, find, refresh, notesPill, notesCopy, notesListButton, noteList, noteListGroups, clearAll, noteDialog: { box: noteBox, heading: noteHeading, where: noteWhere, value: noteValue, status: noteStatus, save: noteSave, remove: noteRemove }, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList, link, linkTo: null, section, sectionTitle, sectionList } };
   drawBar();
 }
 

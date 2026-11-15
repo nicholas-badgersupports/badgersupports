@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-877 keys. Keys are permanent. Required text cannot be published empty and must keep each
+882 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -900,7 +900,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (458)
+### Staff page and edit button (466)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -917,6 +917,8 @@ the site adds the markup.
 | `staff.nothing` | Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms. | Staff page, for someone signed in whose role reaches neither forms nor words. |  |
 | `staff.readAgain` | For the privacy of the people who wrote in, answers can be read for an hour after signing in. Sign in again to keep reading. | Staff page, in place of the forms, or of one form's answers, once reading needs a fresh sign-in. |  |
 | `staff.signInAgain` | Sign In Again | Staff page, button under the note that reading answers needs a fresh sign-in. |  |
+| `staff.find.label` | Find a setting | Staff page, the find box above the tools: jumps to the named setting or section. |  |
+| `staff.find.none` | No setting matches that. | Staff page, under the find box when nothing matches. |  |
 | `staff.forms.title` | Website Forms | Staff page, heading above the list of forms. |  |
 | `staff.forms.how` | Working through answers — replying, assigning, closing — happens in Connect, under Website Forms. | Staff page, under Website Forms, for someone who may read answers. |  |
 | `staff.forms.empty` | No forms to show. | Staff page, when there are no forms your role can read. |  |
@@ -924,6 +926,7 @@ the site adds the markup.
 | `staff.forms.count.one` | {{n}} answer | Staff page, under a form with one answer. | `{{n}}` |
 | `staff.forms.count.other` | {{n}} answers | Staff page, under a form with several answers. | `{{n}}` |
 | `staff.forms.latest` | latest {{when}} | Staff page, after the count: when the newest answer came in. | `{{when}}` |
+| `staff.forms.problemsOnly` | Failed or stuck only | Staff page, above the forms: a tick that shows only the forms with failed or stuck deliveries. |  |
 | `staff.forms.state.open` | Open | Staff page, label beside a form that takes answers. |  |
 | `staff.forms.state.closed` | Closed | Staff page, label beside a form that is closed. |  |
 | `staff.switch.open` | Open This Form | Staff page, button under a closed form, for someone Connect lets open and close it. |  |
@@ -955,6 +958,7 @@ the site adds the markup.
 | `staff.answers.delivery` | Connect | Staff page, column for whether an answer reached Connect. |  |
 | `staff.answers.none` | No answers yet. | Staff page, when a form's answers are opened and there are none. |  |
 | `staff.answers.openConnect` | Work Through Answers in Connect | Staff page, link under the forms. |  |
+| `staff.answers.inConnect` | Work in Connect | Staff page, on a form's card: opens that form's queue in Connect. |  |
 | `staff.row.sent` | In Connect | Staff page, answers table: this answer reached Connect. |  |
 | `staff.row.pending` | Waiting | Staff page, answers table: not sent yet. |  |
 | `staff.row.failed` | Not Sent Yet | Staff page, answers table: sending failed and will be tried again. |  |
@@ -1211,6 +1215,10 @@ the site adds the markup.
 | `edit.saving` | Saving… | Edit box, while a change is being saved. |  |
 | `edit.saved` | Saved. Visitors see it now. | After saving, when the page already shows the change. |  |
 | `edit.savedWaiting` | Saved, but not on the site yet. | After saving, when the change waits for a publish. |  |
+| `edit.refresh` | Refresh Now | Edit bar, while saved changes wait: puts them on the site now instead of within 30 minutes. |  |
+| `edit.refreshing` | Refreshing… | The Refresh Now button in the edit bar while it works. |  |
+| `edit.refreshed` | Refreshed. Every page shows the newest words. | Read aloud after Refresh Now in the edit bar worked. |  |
+| `edit.refreshSoon` | The site was refreshed a moment ago. Try again in a minute. | Read aloud when Refresh Now in the edit bar was pressed too often. |  |
 | `edit.waitingNote` | Saved, but not on the site yet. | Edit box, when the words have a change waiting. |  |
 | `edit.conflict` | Someone else changed these words while you were editing. Their words are in the box now; change them again if you need to. | Edit box, when two people edit the same words. |  |
 | `edit.error.empty` | These words cannot be empty. | Edit box, when the box is empty. |  |
@@ -1448,7 +1456,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (60)
+### Explore Campus (57)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1496,9 +1504,6 @@ the site adds the markup.
 | `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
 | `explore.bus.notFound` | No match near Madison for “{{q}}”. Check the address and try again. | On the Bus Route Explorer: when an address cannot be placed. | `{{q}}` |
 | `explore.bus.failed` | The comparison could not be made just now. Try again. | On the Bus Route Explorer: when the comparison itself fails. |  |
-| `explore.bus.lookupFailed` | The address lookup is not answering just now, so “{{q}}” could not be placed. Try again. | On the Bus Route Explorer: when the address lookup service itself fails while placing an address — the address the visitor typed is not the problem. | `{{q}}` |
-| `explore.bus.outsideArea` | “{{q}}” matched {{place}}, which is outside the Madison area this explorer covers. Check the address and try again. | On the Bus Route Explorer: when an address resolves to a place outside the area the comparison covers, so no comparison is run for it. | `{{q}}` `{{place}}` |
-| `explore.bus.elsewhere` | This matched an address in {{city}}, not Madison. If you meant a Madison address, check it and try again. | On the Bus Route Explorer: the line under a results row's address when the match is in another town or city, so the row is not read as a Madison answer. | `{{city}}` |
 | `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
 | `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
 | `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |

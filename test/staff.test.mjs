@@ -454,7 +454,7 @@ const answersFor = (cookie, key = "workshop-request") => handle(get(`/api/staff/
 const refusal = async (res) => [res.status, (await res.json()).error];
 const SKIP = { target: "text:page.skip", expected: "Skip to Content", value: "Skip ahead" };
 
-test("with no status check from Connect, reading answers needs a sign-in within the hour, and words last the working day", async () => {
+test("with no status check from Connect, reading answers lasts the whole session, as words do", async () => {
   await freshServer();
   const fake = fakeConnect();
   useConnect(fake.cfg);
@@ -465,30 +465,29 @@ test("with no status check from Connect, reading answers needs a sign-in within 
 
   await age(2);
   const later = await meFor(cookie);
-  assert.deepEqual([later.canRead, later.readAgain, later.canEdit, later.canPublish], [false, true, true, true], "an hour on, reading stops and the page says to sign in again");
-  assert.deepEqual(await refusal(await answersFor(cookie)), [403, "auth.again"], "a direct request for answers is refused");
-  assert.deepEqual(await refusal(await handle(staffPost("/api/staff/outbox/retry", {}, cookie), ip())), [403, "auth.again"]);
-  const wordingOnly = (await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms;
-  assert.ok(wordingOnly.length === 14 && wordingOnly.every(f => !f.canRead && f.canEdit && f.total === 0 && f.latest === null), "wording settings remain available without answer access");
+  assert.deepEqual([later.canRead, later.readAgain, later.canEdit, later.canPublish], [true, false, true, true], "an hour on, reading lasts with the rest of the session (owner ruling, 15 Nov 2026)");
+  assert.equal((await answersFor(cookie)).status, 200, "a direct request for answers is answered");
+  assert.equal((await handle(staffPost("/api/staff/outbox/retry", {}, cookie), ip())).status, 200, "and so is Try again");
+  const forms = (await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms;
+  assert.ok(forms.some(f => f.canRead), "the forms list still offers the answers");
   assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 200, "changing words still works");
   assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200, "and so does the publish file");
   assert.equal(fake.statusCalls, 0, "nothing asked Connect");
 
-  const again = await signIn(fake);
-  assert.equal((await meFor(again.cookie)).canRead, true, "signing in again gives reading back");
-  assert.equal((await answersFor(again.cookie)).status, 200);
+  await age(240);
+  assert.equal((await meFor(cookie)).canRead, true, "five hours on, reading still lasts");
 
-  // A reader of one form is told to sign in again for that form, and never for another.
+  // A reader of one form keeps that form for the session, and never gains another.
   const reader = fakeConnect({ scopes: ["forms.read:workshop-request"] });
   useConnect(reader.cfg);
   const r = await signIn(reader);
   await age(61);
   const rm = await meFor(r.cookie);
-  assert.deepEqual([rm.canRead, rm.readAgain, rm.canEdit], [false, true, false]);
-  assert.deepEqual(await refusal(await answersFor(r.cookie)), [403, "auth.again"]);
+  assert.deepEqual([rm.canRead, rm.readAgain, rm.canEdit], [true, false, false]);
+  assert.equal((await answersFor(r.cookie)).status, 200);
   assert.deepEqual(await refusal(await answersFor(r.cookie, "programming-feedback")), [403, "staff.forbidden"]);
 
-  // Someone who never read answers is not asked to sign in again to read them.
+  // Someone who never read answers is not given them by waiting.
   const editor = fakeConnect({ scopes: ["site.edit"] });
   useConnect(editor.cfg);
   const e = await signIn(editor);

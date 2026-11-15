@@ -600,10 +600,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-878 keys. Keys are permanent. Required text cannot be published empty and must keep each
+887 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (24)
+### Every page (29)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -625,6 +625,11 @@ the site adds the markup.
 | `announce.label` | Announcement | The announcement strip's name, read by screen readers. |  |
 | `proto.title` | Prototype for review — not the live site. | Strip at the top of the prototype only. Never shown on the published site. |  |
 | `proto.body` | Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Anything sent through a form here is a test: nothing is emailed, and nothing reaches the team's real inbox. | Second sentence of the prototype strip. | optional |
+| `devNotice.title` | This Site Is Still in Development | The development pop-up, on every page of the new site but the staff page: its heading. |  |
+| `devNotice.body` | This new Badger Supports site is still being built. For everything today, use the live site. | The development pop-up: the sentence under its heading. |  |
+| `devNotice.link` | Go to the Live Site | The development pop-up: the button that opens badgersupports.org. |  |
+| `devNotice.dismiss` | Got It | The development pop-up: the button that closes it and stays on this site. |  |
+| `devNotice.close` | Close | The development pop-up: the button at its top right that closes it. |  |
 | `embed.play` | Play the Reel | Button on an Instagram video; pressing it loads Instagram’s player. |  |
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
@@ -900,7 +905,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (462)
+### Staff page and edit button (466)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1351,6 +1356,10 @@ the site adds the markup.
 | `staff.nav.scrollBack` | Scroll the menu back | Staff page, signed in: the button at the left end of the menu of views, read aloud by screen readers; it stands there only while the menu can scroll back. |  |
 | `staff.nav.scrollForward` | Scroll the menu forward | Staff page, signed in: the button at the right end of the menu of views, read aloud by screen readers; it stands there only while more of the menu is off its right edge. |  |
 | `staff.overview.how` | What needs attention on the site, and the tool for each job. | Staff page, the Overview: the line under the heading. |  |
+| `staff.overview.hidden.title` | Not on the public site | Staff page, the Overview: the heading over the links to what visitors cannot see. |  |
+| `staff.overview.hidden.events` | Find Your People — Campus Events Explorer | Staff page, the Overview: the link that opens the Campus Events Explorer, whose home-page section is switched off. |  |
+| `staff.overview.hidden.explore` | Explore Campus | Staff page, the Overview: the link that opens Explore Campus, the switched-off home-page section's second door. |  |
+| `staff.overview.hidden.open` | Open | Staff page, the Overview: the word at the right of each not-on-the-public-site link. |  |
 | `staff.overview.clear` | Nothing needs attention right now. | Staff page, the Overview: shown when no tool is waiting on anything. |  |
 | `staff.overview.failedSend.one` | {{n}} answer could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.failedSend.other` | {{n}} answers could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |

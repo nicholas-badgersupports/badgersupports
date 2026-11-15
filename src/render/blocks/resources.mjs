@@ -126,6 +126,23 @@ export const resourceVisible = (r) => {
   return s.kind == null || s.kind === "badger-supports";
 };
 
+/* The crisis line as the page band prints it (src/render/layout.mjs, supportLine): the
+   Site settings sentence with its numbers linked. Empty when the band is off. */
+function crisisLine(ctx) {
+  const sl = ctx.site?.supportLine;
+  if (!sl?.enabled || !sl.text) return "";
+  let parts = [sl.text];
+  for (const l of sl.links || []) {
+    parts = parts.flatMap((p) => {
+      if (typeof p !== "string") return [p];
+      const i = p.indexOf(l.label);
+      if (i < 0) return [p];
+      return [p.slice(0, i), html`<a href="${l.href}">${l.label}</a>`, p.slice(i + l.label.length)];
+    });
+  }
+  return parts;
+}
+
 const SOURCE_NAMES = { kb: "resources.source.kb", "badger-supports": "resources.source.badger" };
 
 /* The source line on a card whose record names one: the source, the publisher when it adds
@@ -229,7 +246,10 @@ export default {
   <div class="res-none" data-res-none hidden>
     <h3>${ctx.t("resources.none.title")}</h3>
     <p>${ctx.t("resources.none.body")}</p>
-    <button type="button" class="btn btn--quiet" data-res-reset>${ctx.t("resources.none.reset")}</button>
+    ${topics.length ? html`<p class="res-none-topics-label">${ctx.t("resources.none.topics")}</p>
+    <div class="res-none-topics">${topics.map((tp) => html`<button type="button" class="res-topic-btn" data-res-none-topic="${tp.id}">${tp.label}</button>`)}</div>` : ""}
+    <p class="res-none-actions">${link(ctx, "/search/", ctx.t("resources.none.sitesearch"), { class: "btn btn--quiet", attrs: { "data-res-none-search": "" } })}<button type="button" class="btn btn--quiet" data-res-reset>${ctx.t("resources.none.reset")}</button></p>
+    <p class="res-crisis-line">${crisisLine(ctx)}</p>
   </div>
   <div class="res-closing">
     <p class="res-scope">${ctx.t("resources.scope")}${updated ? html` <span class="res-updated">${ctx.t("resources.updated", dateParts(updated, ctx.t))}</span>` : ""}</p>

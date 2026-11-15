@@ -1809,6 +1809,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-none { padding: var(--s4); background: var(--accent-tint); border-radius: var(--r-card); max-width: var(--measure); }
 .res-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
 .res-none p { margin: 0 0 var(--s2); }
+.res-none-topics-label { font-weight: 700; }
+.res-none-topics { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0 0 var(--s3); }
+.res-none-actions { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
 .res-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
 .res-closing { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--lift); padding: var(--s5); margin-top: var(--s6); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); justify-items: start; }
 .res-closing p { margin: 0; }

@@ -49,6 +49,9 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   const ftoggle = box.querySelector("[data-res-ftoggle]"), fpanel = box.querySelector("[data-res-fpanel]"), fcount = box.querySelector("[data-res-fcount]");
   const labelOf = new Map(buttons.filter((b) => b.dataset.category).map((b) => [b.dataset.category, b.textContent]));
   const again = box.querySelector("[data-res-again]");
+  /* The no-matches block's way into the site search: it carries the words typed, as the
+     address does (?q=), so the other search opens on the same words. */
+  const noneSearch = box.querySelector("[data-res-none-search]");
   /* The cards the search, topics and filters work on. The page carries only the first set,
      so this is built when the whole list has been fetched and swapped in (buildItems,
      below); until then it is null and apply() keeps only the tools' own state. An address
@@ -187,6 +190,7 @@ for (const box of document.querySelectorAll("[data-resources]")) {
     if (moreRow) moreRow.hidden = !(shown.length > 0 && held > limit);
     if (relaxed) relaxed.hidden = !loose;
     if (none) none.hidden = shown.length > 0;
+    if (noneSearch) noneSearch.href = "/search/" + (input.value.trim() ? `?q=${encodeURIComponent(input.value.trim())}` : "");
     list.hidden = !shown.length;
     count.textContent = visible === items.length
       ? (items.length === 1 ? t("resources.count.one") : t("resources.count.all", { n: items.length }))
@@ -220,6 +224,16 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   const poke = () => { if (!items && !asking) asking = load(); };
 
   for (const b of buttons) b.addEventListener("click", () => { topic = b.dataset.topic; apply(); poke(); });
+  /* The no-matches block's topic buttons: pressing one clears the search and the filters
+     and opens that topic, as the topic row itself would. */
+  for (const b of box.querySelectorAll("[data-res-none-topic]")) b.addEventListener("click", () => {
+    topic = b.dataset.resNoneTopic;
+    input.value = "";
+    for (const g of GROUPS) pressed[g].clear();
+    apply();
+    poke();
+    buttons.find((x) => x.dataset.topic === topic)?.focus();
+  });
   box.querySelector("[data-res-more]")?.addEventListener("click", () => {
     limit += PAGE;
     apply();

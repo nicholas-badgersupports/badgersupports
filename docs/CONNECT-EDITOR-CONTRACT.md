@@ -409,7 +409,7 @@ Reads: `courses`, `courseInterests`, `coursesSample`, `coursesUpdated` · analyt
 
 ### Site search — `sitesearch`
 
-Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module `search.js`
+Reads: `searchIndex`, `resources` · analytics: `none` · photos load lazy · browser module `search.js`
 
 | Field | Type | |
 |---|---|---|
@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-874 keys. Keys are permanent. Required text cannot be published empty and must keep each
+878 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -1363,7 +1363,7 @@ the site adds the markup.
 | `staff.overview.tool.versions` | The versions the site has published, and bringing one back. | Staff page, the Overview: the Earlier Versions card. |  |
 | `staff.overview.tool.settings` | The site's name, its search description and its accessibility email. | Staff page, the Overview: the Site Settings card. |  |
 
-### Resource list (59)
+### Resource list (61)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1378,6 +1378,8 @@ the site adds the markup.
 | `resources.none.title` | No Resources Match Your Search. | On the resource list: the heading when a search finds nothing. |  |
 | `resources.none.body` | Try another search term or browse by topic. | On the resource list: the line under that heading. |  |
 | `resources.none.reset` | Start Over | On the resource list: the button that clears the search and the topic. |  |
+| `resources.none.topics` | Browse by Topic: | On the resource list: the line over the topic buttons in the no-matches block, which offer the list's topics as a next step. |  |
+| `resources.none.sitesearch` | Try Site Search | On the resource list: the link in the no-matches block to the site search, carrying the words that were typed. |  |
 | `resources.cost.free` | Free | On the resource list: the cost chip on a card. |  |
 | `resources.cost.covered` | Free for Students | On the resource list: the cost chip on a card. |  |
 | `resources.cost.reduced` | Reduced Cost | On the resource list: the cost chip on a card. |  |
@@ -1427,7 +1429,7 @@ the site adds the markup.
 | `resources.retry` | Try Again | On the resource list: the button under the count line when the full resource list does not arrive. |  |
 | `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
-### Site search (16)
+### Site search (18)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1445,6 +1447,8 @@ the site adds the markup.
 | `search.none.title` | No Pages Match Your Search. | On the search page: the heading when no page matches. |  |
 | `search.none.body` | Try another word, or start over and browse the list. | On the search page: the line under the no-matches heading. |  |
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
+| `search.none.closest` | Closest Matches: | On the search page: the line over the suggested pages in the no-matches block, the pages whose words begin the same way as the words typed. |  |
+| `search.none.resources` | Try Resource Search | On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed. |  |
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 

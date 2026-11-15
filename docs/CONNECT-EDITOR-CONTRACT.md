@@ -409,7 +409,7 @@ Reads: `courses`, `courseInterests`, `coursesSample`, `coursesUpdated` · analyt
 
 ### Site search — `sitesearch`
 
-Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module `search.js`
+Reads: `searchIndex`, `resources` · analytics: `none` · photos load lazy · browser module `search.js`
 
 | Field | Type | |
 |---|---|---|
@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-908 keys. Keys are permanent. Required text cannot be published empty and must keep each
+878 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -900,7 +900,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (492)
+### Staff page and edit button (458)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1224,40 +1224,6 @@ the site adds the markup.
 | `edit.error.number` | Give a whole number from 0 to 99. | Edit box, when a number cannot be saved as written. |  |
 | `edit.error.date` | Give a date such as 2026-11-01. | Edit box, when a date cannot be saved as written. |  |
 | `edit.error.video` | A video is the address of an Instagram post or reel. | Edit box, when a video address cannot be saved as written. |  |
-| `edit.notes` | Notes ({{n}}) | Edit bar, the Notes mode button beside the pencil, shown while editing: the number is the site's open notes. | `{{n}}` |
-| `edit.notes.list` | Notes | Edit bar, the button that opens the list of notes while Notes mode is on; also that list's heading. |  |
-| `edit.notes.copy` | Copy notes | Edit bar and the notes list, while Notes mode is on: copies every open note on the site as one plain-text block. |  |
-| `edit.notes.title` | Note {{n}} | Heading of the note box, and the name of a note's pin and of its line in the notes list. | `{{n}}` |
-| `edit.notes.on` | On: | Note box, before the words the note is pinned to. |  |
-| `edit.notes.done` | Done | Note box, the button that closes it; with nothing typed it keeps no note. |  |
-| `edit.notes.remove` | Remove | Note box, the button that takes the note off the list. |  |
-| `edit.notes.clearAll` | Clear all | Notes list, the button that takes every note off the list; it is pressed twice. |  |
-| `edit.notes.clearAll.armed` | Clear all? | Notes list, the Clear all button once pressed, asking for the second press. |  |
-| `edit.notes.cleared` | {{n}} cleared | Edit bar and the notes list: notes whose pinned words have changed, counted until the list is opened or the notes are copied. | `{{n}}` |
-| `edit.notes.notOnPage` | Not on this page | Notes list, the group of notes whose pinned words are not on the page any more. |  |
-| `edit.notes.notFound` | Location: not found on the page any more | The copied notes, under a note whose pinned words are not on its page any more. |  |
-| `edit.notes.copyHead` | NOTES — Badger Supports (public site) — {{n}} open notes | First line of the copied notes. | `{{n}}` |
-| `edit.notes.copiedBy` | Copied {{when}} by {{name}} | Second line of the copied notes. | `{{when}}` `{{name}}` |
-| `edit.notes.copyIntro` | Fix each note at the location given, then the note clears itself. | Third line of the copied notes. |  |
-| `edit.notes.pageLine` | {{n}}. Page: {{name}} — {{url}} | The copied notes, the line that opens each note: its number, its page and that page's address. | `{{n}}` `{{name}}` `{{url}}` |
-| `edit.notes.whereLine` | Where: {{snippet}} [{{kind}}: {{id}}] | The copied notes, under the page line: the pinned words and the edit target they belong to. | `{{snippet}}` `{{kind}}` `{{id}}` |
-| `edit.notes.whereSelector` | Where: {{snippet}} [selector: {{selector}}] | The copied notes, under the page line of a note pinned to words with no edit target: the pinned words and the way to find them. | `{{snippet}}` `{{selector}}` |
-| `edit.notes.positionLine` | Position: {{position}} | The copied notes, under the Where line: where in the pinned words the note was made. | `{{position}}` |
-| `edit.notes.noteLine` | Note: {{text}} | The copied notes, the note itself. | `{{text}}` |
-| `edit.notes.position` | On {{what}}, {{where}} | The copied notes, the position sentence: what was pinned, and where in it the note was made. | `{{what}}` `{{where}}` |
-| `edit.notes.what.pageHeading` | the page heading | The copied notes, in the position sentence: the page's own heading was pinned. |  |
-| `edit.notes.what.heading` | the heading | The copied notes, in the position sentence: a heading was pinned. |  |
-| `edit.notes.what.link` | the link | The copied notes, in the position sentence: a link was pinned. |  |
-| `edit.notes.what.button` | the button | The copied notes, in the position sentence: a button was pinned. |  |
-| `edit.notes.what.photo` | the photo | The copied notes, in the position sentence: a photo was pinned. |  |
-| `edit.notes.what.list` | the list | The copied notes, in the position sentence: a list was pinned. |  |
-| `edit.notes.what.paragraph` | the paragraph | The copied notes, in the position sentence: a paragraph was pinned. |  |
-| `edit.notes.what.text` | the text | The copied notes, in the position sentence: words that are none of the named kinds were pinned. |  |
-| `edit.notes.pos.upper` | upper | The copied notes, in the position sentence: the note was made in the top third of what was pinned. |  |
-| `edit.notes.pos.lower` | lower | The copied notes, in the position sentence: the note was made in the bottom third of what was pinned. |  |
-| `edit.notes.pos.left` | left | The copied notes, in the position sentence: the note was made in the left third of what was pinned. |  |
-| `edit.notes.pos.right` | right | The copied notes, in the position sentence: the note was made in the right third of what was pinned. |  |
-| `edit.notes.pos.centre` | centre | The copied notes, in the position sentence: the note was made in the middle of what was pinned. |  |
 | `edit.on` | On | Edit box option for a section switched on. |  |
 | `edit.off` | Off | Edit box option for a section switched off. |  |
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
@@ -1397,7 +1363,7 @@ the site adds the markup.
 | `staff.overview.tool.versions` | The versions the site has published, and bringing one back. | Staff page, the Overview: the Earlier Versions card. |  |
 | `staff.overview.tool.settings` | The site's name, its search description and its accessibility email. | Staff page, the Overview: the Site Settings card. |  |
 
-### Resource list (59)
+### Resource list (61)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1412,6 +1378,8 @@ the site adds the markup.
 | `resources.none.title` | No Resources Match Your Search. | On the resource list: the heading when a search finds nothing. |  |
 | `resources.none.body` | Try another search term or browse by topic. | On the resource list: the line under that heading. |  |
 | `resources.none.reset` | Start Over | On the resource list: the button that clears the search and the topic. |  |
+| `resources.none.topics` | Browse by Topic: | On the resource list: the line over the topic buttons in the no-matches block, which offer the list's topics as a next step. |  |
+| `resources.none.sitesearch` | Try Site Search | On the resource list: the link in the no-matches block to the site search, carrying the words that were typed. |  |
 | `resources.cost.free` | Free | On the resource list: the cost chip on a card. |  |
 | `resources.cost.covered` | Free for Students | On the resource list: the cost chip on a card. |  |
 | `resources.cost.reduced` | Reduced Cost | On the resource list: the cost chip on a card. |  |
@@ -1461,7 +1429,7 @@ the site adds the markup.
 | `resources.retry` | Try Again | On the resource list: the button under the count line when the full resource list does not arrive. |  |
 | `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
-### Site search (16)
+### Site search (18)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1479,6 +1447,8 @@ the site adds the markup.
 | `search.none.title` | No Pages Match Your Search. | On the search page: the heading when no page matches. |  |
 | `search.none.body` | Try another word, or start over and browse the list. | On the search page: the line under the no-matches heading. |  |
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
+| `search.none.closest` | Closest Matches: | On the search page: the line over the suggested pages in the no-matches block, the pages whose words begin the same way as the words typed. |  |
+| `search.none.resources` | Try Resource Search | On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed. |  |
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 

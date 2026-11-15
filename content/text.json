@@ -3283,6 +3283,16 @@
       "text": "Start Over",
       "where": "On the resource list: the button that clears the search and the topic."
     },
+    "resources.none.topics": {
+      "group": "resources",
+      "text": "Browse by Topic:",
+      "where": "On the resource list: the line over the topic buttons in the no-matches block, which offer the list's topics as a next step."
+    },
+    "resources.none.sitesearch": {
+      "group": "resources",
+      "text": "Try Site Search",
+      "where": "On the resource list: the link in the no-matches block to the site search, carrying the words that were typed."
+    },
     "resources.cost.free": {
       "group": "resources",
       "text": "Free",
@@ -3712,6 +3722,16 @@
       "group": "search",
       "text": "Start Over",
       "where": "On the search page: the button when no page matches, which clears the search box."
+    },
+    "search.none.closest": {
+      "group": "search",
+      "text": "Closest Matches:",
+      "where": "On the search page: the line over the suggested pages in the no-matches block, the pages whose words begin the same way as the words typed."
+    },
+    "search.none.resources": {
+      "group": "search",
+      "text": "Try Resource Search",
+      "where": "On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed."
     },
     "search.browse": {
       "group": "search",

@@ -38,6 +38,13 @@ const hitsWord = (w, hay, set) => (w.length <= 4 ? set.has(w) : hay.includes(w))
 const looseHit = (w, page) => page.stems.has(stemOf(w)) || (w.length >= 4 && page.hayWords.some((h) => h.startsWith(stem(w))));
 const ELLIPSIS = "…";
 
+/* The 988 record's own crisis words (its aka list in the resource catalogue): when the
+   visitor's words are among them, the crisis block stands above the results, as the
+   resource list's safety cards are never held back. */
+const CRISIS_WORDS = new Set(["suicide", "suicidal", "988"]);
+const CRISIS_PHRASES = ["kill myself", "hurt myself", "self harm"];
+const isCrisis = (q) => q.some((w) => CRISIS_WORDS.has(w)) || CRISIS_PHRASES.some((p) => q.join(" ").includes(p));
+
 /* A short piece of a page's words around the first typed word, so a result shows why it
    matched. With no word typed (the whole list), the start of the page's words. */
 function excerpt(text, q) {
@@ -74,6 +81,10 @@ for (const box of document.querySelectorAll("[data-search]")) {
   const count = box.querySelector("[data-srch-count]");
   const relaxed = box.querySelector("[data-srch-relaxed]");
   const none = box.querySelector("[data-srch-none]");
+  const crisisEl = box.querySelector("[data-srch-crisis]");
+  const closestWrap = box.querySelector("[data-srch-closest-wrap]");
+  const closestList = box.querySelector("[data-srch-closest]");
+  const resourcesLink = box.querySelector("[data-srch-resources]");
   const list = box.querySelector("[data-srch-list]");
   const all = box.querySelector("[data-srch-all]");
   if (!tools || !input || !list || !count) continue;
@@ -86,10 +97,26 @@ for (const box of document.querySelectorAll("[data-search]")) {
      inside a text word. Equal scores keep the index's order, so the order is steady. */
   const score = (p, q) => q.reduce((n, w) => n
     + (p.titleSet.has(w) ? 8 : w.length > 4 && p.titleHay.includes(w) ? 4 : p.textSet.has(w) ? 2 : w.length > 4 && p.textHay.includes(w) ? 1 : 0), 0);
+  /* The no-matches block's suggestions: the pages that come closest — a page scores for
+     each typed word it carries whole, and half as much for a word that begins the same
+     way (the second try's rule). Index order breaks ties; at most three are offered. */
+  const closest = (q) => {
+    const scored = [];
+    for (const p of pages) {
+      let score = 0;
+      for (const w of q) {
+        if (p.hayWords.includes(w)) score += 2;
+        else { const s = stem(w); if (p.hayWords.some((h) => h.startsWith(s))) score += 1; }
+      }
+      if (score) scored.push({ p, score });
+    }
+    return scored.sort((a, z) => z.score - a.score).slice(0, 3).map((x) => x.p);
+  };
 
   const apply = () => {
     const q = words(input.value).split(" ").filter(Boolean);
     if (clear) clear.hidden = !input.value;
+    if (crisisEl) crisisEl.hidden = !isCrisis(q);
     if (!pages) { count.textContent = t("search.loading"); return; }
     let shown = q.length ? pages.filter((p) => q.every((w) => hitsWord(w, p.hay, p.haySet))) : pages;
     let loose = false;
@@ -119,6 +146,21 @@ for (const box of document.querySelectorAll("[data-search]")) {
     list.hidden = !shown.length;
     if (all) all.hidden = true;
     if (none) none.hidden = shown.length > 0;
+    if (!shown.length && q.length) {
+      if (closestWrap && closestList) {
+        const near = closest(q);
+        closestList.replaceChildren(...near.map((p) => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = p.path;
+          a.textContent = p.title;
+          li.append(a);
+          return li;
+        }));
+        closestWrap.hidden = !near.length;
+      }
+      if (resourcesLink) resourcesLink.href = `/resources/?q=${encodeURIComponent(input.value.trim())}`;
+    }
     if (relaxed) relaxed.hidden = !loose;
     count.textContent = shown.length === pages.length
       ? (pages.length === 1 ? t("search.count.one") : t("search.count.all", { n: pages.length }))

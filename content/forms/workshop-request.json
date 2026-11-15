@@ -161,7 +161,7 @@
           "id": "access_needs",
           "type": "long",
           "label": "Access needs or accommodations for your group",
-          "required": true,
+          "required": false,
           "maxLength": 2000,
           "rows": 3,
           "review": "Required in the Google Form; respondents with none must type something."

@@ -32,6 +32,10 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - Alumni can subscribe to email updates on the Alumni page, under the Alumni History: a short form asks for a name and an email address, held apart from the general email list under its own form name, and the form also stands on its own page at `/forms/alumni-updates/` (item 53). The Alumni page's top “Request Email Updates” button leads to that form's page; before, it led to the general email list. A form placed inside a page now heads under that page's heading instead of adding a second one.
 
+- A development notice now opens on each public page a moment after it arrives, once on each arrival or reload: it states that this site is still being built, offers a button to the live site, and closes by its own buttons. It is not a modal, so the Safety Exit pill stays pressable while it is up; it never opens on the staff page or inside the staff page’s previews.
+
+- The staff Overview now carries a “Not on the public site” block linking to the two Explore pages the home page no longer shows, so staff can still reach them.
+
 ### Changed
 
 - The Peer Support Groups page: its Instagram reel now loads without a click and without the midterms caption; the header, join steps and expectations were reworked, and the peer and Hub photos come from the organisation's Drive library. The home hero leads with the peer circle, its pause control is a dot icon, and headings and cards keep whole words.
@@ -70,9 +74,25 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The three catalogue pages — Discover Classes, the resource list and the Campus Events Explorer — now carry their first view in the page and load the rest of the catalogue from a data file beside the page when a visitor first opens, searches or filters into it, so the pages arrive lighter (the classes page was about 1.6 MB of HTML). Search, filters and addressed links work as before once the file lands; if it does not arrive, the first view stays and the page offers Try Again.
 
+- The Request a Workshop page opens with the settled lead: “Badger Supports provides free workshops on mental health, conflict resolution, allyship, and other topics.”
+
+- The home page no longer shows its Find Your People section. The Explore pages themselves stay live at their addresses, in no menu.
+
+- The footer’s Contact column now writes to hello@badgersupports.org, and directors@badgersupports.org no longer appears in the footer.
+
+- On the Resources page opening, the 608-265-5600 (option 9) button now sits directly under the words in the left column instead of at the foot of the band.
+
+- The footer’s Director Sign-In now opens a pop-up carrying the site’s white lockup on a red band, and the move to Connect begins on its own about a second later. Closing the pop-up calls the move off; the link inside it goes to the sign-in start at once.
+
 ### Removed
 
 - The Meet the Dogs section is removed from Dogs on Call.
+
+- Helper text was cut across the public pages and forms: leads that restated their pages on Navigating Housing, Stress Management & Self-Care, Support Networks, the Campus Events explorer, Peer Support Groups, Request a Program, Housing, the Email List page, Get Involved, Craft Nights and Alumni, and the “Check all that apply.” and “Select all that apply.” narration on the staff and volunteer applications (21 occurrences).
+
+- The Form Setup progress bar is removed; the “Step n of 4” line above it already carries the same information in words.
+
+- The SPILL pill’s raised ledge is removed, and the person cards’ title stripe is now the title in the accent colour, with no gradient bar.
 
 ### Fixed
 
@@ -140,6 +160,10 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The short address /classes now leads to Discover Classes by Interest under Explore; before, it landed on a page that does not exist, while the classes page itself stood at its Explore address.
 
+
+- The site header no longer overflows at narrow widths.
+
+- The room ticket stub now sits on a pale tint with its pin and Directions in the deep accent colour, so its words stay readable, and on phones the selected workshop tab is carried by its red fill alone.
 
 ## 2026-11-04 to 2026-11-05 — Development period — Form setup, file delivery and visitor pages
 

@@ -125,3 +125,9 @@ export async function purgeTags(tags) {
    nothing to do never wakes the database. */
 export const noteGet = (key) => current().get(`notes/${key}`);
 export const noteSet = (key, value) => current().set(`notes/${key}`, value);
+
+/* The editors' notes document (lib/notes.mjs): a work record kept beside the revision in the same
+   store, never part of one — no note can change what a visitor sees, and publishing neither reads
+   nor carries it. */
+export const editorNotesGet = () => current().get("editor-notes");
+export const editorNotesSet = (doc) => current().set("editor-notes", doc);

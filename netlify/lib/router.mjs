@@ -27,6 +27,7 @@ import { deliverDue } from "./deliver.mjs";
 import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
+import { listNotes, saveNote, removeNote, clearNotes } from "./notes.mjs";
 import { forgetSharedEverywhere, teamPhotoResponse } from "./live-content.mjs";
 import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
 import { campusEventsNow } from "./campus-events.mjs";
@@ -486,6 +487,35 @@ async function restoreRoute(req, [n], context, who) {
   return json(200, { ok: true, ...r, ...(await publishAll(who, context)) });
 }
 
+/* Notes mode (lib/notes.mjs): the notes editors pin to pages, behind the same scope as the edit
+   button itself. A note is read and written only by someone who may edit; nothing here is served
+   to a visitor, and no note is part of a page, an edit or a publish. */
+async function notesListRoute(req, _m, _c, who) {
+  need(who, "site.edit");
+  return json(200, { ok: true, ...(await listNotes()) });
+}
+
+async function notesSaveRoute(req, _m, _c, who) {
+  need(who, "site.edit");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  return json(200, { ok: true, ...(await saveNote(who, body)) });
+}
+
+async function notesRemoveRoute(req, _m, _c, who) {
+  need(who, "site.edit");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  return json(200, { ok: true, ...(await removeNote(who, body)) });
+}
+
+async function notesClearRoute(req, _m, _c, who) {
+  need(who, "site.edit");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  return json(200, { ok: true, ...(await clearNotes(who, body)) });
+}
+
 /* ?download=1 is the file a publish lays over the site: saved as content/edits.json. Changing words
    and handing them to a publish are separate permissions, so this needs site.publish. */
 async function editsFileRoute(req, _m, _c, who) {
@@ -577,6 +607,10 @@ export const ROUTES = [
   { name: "editHistory", method: "GET", pattern: /^\/api\/staff\/edit\/history$/, tier: "director", run: editHistoryRoute },
   { name: "editSave", method: "POST", pattern: /^\/api\/staff\/edit\/save$/, tier: "director", run: editSave },
   { name: "editsFile", method: "GET", pattern: /^\/api\/staff\/edits$/, tier: "director", run: editsFileRoute },
+  { name: "notesList", method: "GET", pattern: /^\/api\/staff\/notes$/, tier: "director", run: notesListRoute },
+  { name: "notesSave", method: "POST", pattern: /^\/api\/staff\/notes\/save$/, tier: "director", run: notesSaveRoute },
+  { name: "notesRemove", method: "POST", pattern: /^\/api\/staff\/notes\/remove$/, tier: "director", run: notesRemoveRoute },
+  { name: "notesClear", method: "POST", pattern: /^\/api\/staff\/notes\/clear$/, tier: "director", run: notesClearRoute },
   { name: "refresh", method: "POST", pattern: /^\/api\/staff\/refresh$/, tier: "director", run: refreshRoute },
   { name: "pages", method: "GET", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesRoute },
   { name: "pagesChange", method: "POST", pattern: /^\/api\/staff\/pages$/, tier: "director", run: pagesChangeRoute },

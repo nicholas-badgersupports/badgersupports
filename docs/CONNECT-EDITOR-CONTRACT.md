@@ -600,10 +600,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-887 keys. Keys are permanent. Required text cannot be published empty and must keep each
+908 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (29)
+### Every page (24)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -625,11 +625,6 @@ the site adds the markup.
 | `announce.label` | Announcement | The announcement strip's name, read by screen readers. |  |
 | `proto.title` | Prototype for review — not the live site. | Strip at the top of the prototype only. Never shown on the published site. |  |
 | `proto.body` | Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Anything sent through a form here is a test: nothing is emailed, and nothing reaches the team's real inbox. | Second sentence of the prototype strip. | optional |
-| `devNotice.title` | This Site Is Still in Development | The development pop-up, on every page of the new site but the staff page: its heading. |  |
-| `devNotice.body` | This new Badger Supports site is still being built. For everything today, use the live site. | The development pop-up: the sentence under its heading. |  |
-| `devNotice.link` | Go to the Live Site | The development pop-up: the button that opens badgersupports.org. |  |
-| `devNotice.dismiss` | Got It | The development pop-up: the button that closes it and stays on this site. |  |
-| `devNotice.close` | Close | The development pop-up: the button at its top right that closes it. |  |
 | `embed.play` | Play the Reel | Button on an Instagram video; pressing it loads Instagram’s player. |  |
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
@@ -905,18 +900,14 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (466)
+### Staff page and edit button (492)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `staff.signedInAs` | Signed in as {{name}} | Staff page, top of the tools: who is signed in. | `{{name}}` |
 | `staff.signedIn` | Signed in | Staff page, top of the tools, when Connect is set not to share first names. |  |
 | `staff.signOut` | Sign Out | Staff page, button beside the name. |  |
-| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. The Director Sign-In pop-up says the same while it moves the director to Connect. |  |
-| `staff.popTitle` | Staff Sign-In | Director Sign-In pop-up, on every page: its heading. The staff page's own heading is the same words, held in that page's content. |  |
-| `staff.popLine` | For Badger Supports directors and admins, with your Badger Supports Connect account. | Director Sign-In pop-up: the line under its heading. The staff page carries the same line in its own content. |  |
-| `staff.popGo` | Sign in with Connect | Director Sign-In pop-up: the link pressed if the automatic move to Connect stalls. The staff page's button is the same words, held in that page's content. |  |
-| `staff.popClose` | Close | Director Sign-In pop-up: the name of the × button in its band, read by screen readers. |  |
+| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. |  |
 | `staff.ended` | Your sign-in has ended. Sign in again to carry on. | Staff page, above the Sign in button, when this browser was signed in before and is not now. |  |
 | `staff.returnTo` | Back to the Page You Were On | Staff page, for someone already signed in who was sent here from another page. |  |
 | `staff.notConfigured` | Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first. | Staff page, in place of the Sign in button when Connect is not set up. |  |
@@ -1233,6 +1224,40 @@ the site adds the markup.
 | `edit.error.number` | Give a whole number from 0 to 99. | Edit box, when a number cannot be saved as written. |  |
 | `edit.error.date` | Give a date such as 2026-11-01. | Edit box, when a date cannot be saved as written. |  |
 | `edit.error.video` | A video is the address of an Instagram post or reel. | Edit box, when a video address cannot be saved as written. |  |
+| `edit.notes` | Notes ({{n}}) | Edit bar, the Notes mode button beside the pencil, shown while editing: the number is the site's open notes. | `{{n}}` |
+| `edit.notes.list` | Notes | Edit bar, the button that opens the list of notes while Notes mode is on; also that list's heading. |  |
+| `edit.notes.copy` | Copy notes | Edit bar and the notes list, while Notes mode is on: copies every open note on the site as one plain-text block. |  |
+| `edit.notes.title` | Note {{n}} | Heading of the note box, and the name of a note's pin and of its line in the notes list. | `{{n}}` |
+| `edit.notes.on` | On: | Note box, before the words the note is pinned to. |  |
+| `edit.notes.done` | Done | Note box, the button that closes it; with nothing typed it keeps no note. |  |
+| `edit.notes.remove` | Remove | Note box, the button that takes the note off the list. |  |
+| `edit.notes.clearAll` | Clear all | Notes list, the button that takes every note off the list; it is pressed twice. |  |
+| `edit.notes.clearAll.armed` | Clear all? | Notes list, the Clear all button once pressed, asking for the second press. |  |
+| `edit.notes.cleared` | {{n}} cleared | Edit bar and the notes list: notes whose pinned words have changed, counted until the list is opened or the notes are copied. | `{{n}}` |
+| `edit.notes.notOnPage` | Not on this page | Notes list, the group of notes whose pinned words are not on the page any more. |  |
+| `edit.notes.notFound` | Location: not found on the page any more | The copied notes, under a note whose pinned words are not on its page any more. |  |
+| `edit.notes.copyHead` | NOTES — Badger Supports (public site) — {{n}} open notes | First line of the copied notes. | `{{n}}` |
+| `edit.notes.copiedBy` | Copied {{when}} by {{name}} | Second line of the copied notes. | `{{when}}` `{{name}}` |
+| `edit.notes.copyIntro` | Fix each note at the location given, then the note clears itself. | Third line of the copied notes. |  |
+| `edit.notes.pageLine` | {{n}}. Page: {{name}} — {{url}} | The copied notes, the line that opens each note: its number, its page and that page's address. | `{{n}}` `{{name}}` `{{url}}` |
+| `edit.notes.whereLine` | Where: {{snippet}} [{{kind}}: {{id}}] | The copied notes, under the page line: the pinned words and the edit target they belong to. | `{{snippet}}` `{{kind}}` `{{id}}` |
+| `edit.notes.whereSelector` | Where: {{snippet}} [selector: {{selector}}] | The copied notes, under the page line of a note pinned to words with no edit target: the pinned words and the way to find them. | `{{snippet}}` `{{selector}}` |
+| `edit.notes.positionLine` | Position: {{position}} | The copied notes, under the Where line: where in the pinned words the note was made. | `{{position}}` |
+| `edit.notes.noteLine` | Note: {{text}} | The copied notes, the note itself. | `{{text}}` |
+| `edit.notes.position` | On {{what}}, {{where}} | The copied notes, the position sentence: what was pinned, and where in it the note was made. | `{{what}}` `{{where}}` |
+| `edit.notes.what.pageHeading` | the page heading | The copied notes, in the position sentence: the page's own heading was pinned. |  |
+| `edit.notes.what.heading` | the heading | The copied notes, in the position sentence: a heading was pinned. |  |
+| `edit.notes.what.link` | the link | The copied notes, in the position sentence: a link was pinned. |  |
+| `edit.notes.what.button` | the button | The copied notes, in the position sentence: a button was pinned. |  |
+| `edit.notes.what.photo` | the photo | The copied notes, in the position sentence: a photo was pinned. |  |
+| `edit.notes.what.list` | the list | The copied notes, in the position sentence: a list was pinned. |  |
+| `edit.notes.what.paragraph` | the paragraph | The copied notes, in the position sentence: a paragraph was pinned. |  |
+| `edit.notes.what.text` | the text | The copied notes, in the position sentence: words that are none of the named kinds were pinned. |  |
+| `edit.notes.pos.upper` | upper | The copied notes, in the position sentence: the note was made in the top third of what was pinned. |  |
+| `edit.notes.pos.lower` | lower | The copied notes, in the position sentence: the note was made in the bottom third of what was pinned. |  |
+| `edit.notes.pos.left` | left | The copied notes, in the position sentence: the note was made in the left third of what was pinned. |  |
+| `edit.notes.pos.right` | right | The copied notes, in the position sentence: the note was made in the right third of what was pinned. |  |
+| `edit.notes.pos.centre` | centre | The copied notes, in the position sentence: the note was made in the middle of what was pinned. |  |
 | `edit.on` | On | Edit box option for a section switched on. |  |
 | `edit.off` | Off | Edit box option for a section switched off. |  |
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
@@ -1356,10 +1381,6 @@ the site adds the markup.
 | `staff.nav.scrollBack` | Scroll the menu back | Staff page, signed in: the button at the left end of the menu of views, read aloud by screen readers; it stands there only while the menu can scroll back. |  |
 | `staff.nav.scrollForward` | Scroll the menu forward | Staff page, signed in: the button at the right end of the menu of views, read aloud by screen readers; it stands there only while more of the menu is off its right edge. |  |
 | `staff.overview.how` | What needs attention on the site, and the tool for each job. | Staff page, the Overview: the line under the heading. |  |
-| `staff.overview.hidden.title` | Not on the public site | Staff page, the Overview: the heading over the links to what visitors cannot see. |  |
-| `staff.overview.hidden.events` | Find Your People — Campus Events Explorer | Staff page, the Overview: the link that opens the Campus Events Explorer, whose home-page section is switched off. |  |
-| `staff.overview.hidden.explore` | Explore Campus | Staff page, the Overview: the link that opens Explore Campus, the switched-off home-page section's second door. |  |
-| `staff.overview.hidden.open` | Open | Staff page, the Overview: the word at the right of each not-on-the-public-site link. |  |
 | `staff.overview.clear` | Nothing needs attention right now. | Staff page, the Overview: shown when no tool is waiting on anything. |  |
 | `staff.overview.failedSend.one` | {{n}} answer could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.failedSend.other` | {{n}} answers could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |

@@ -24,7 +24,7 @@ test.before(async () => {
 test("Director Sign-In sits in the footer's legal row as a labelled text link, on every page", () => {
   for (const p of ["index.html", "404.html"]) {
     const page = read(p);
-    assert.match(page, /<a href="\/staff\/" class="staff-in">/, p);
+    assert.match(page, /<a href="\/staff\/" class="staff-in" data-signin-open="">/, p);
     assert.match(page, /class="staff-in"[\s\S]{0,400}<span>Director Sign-In<\/span>/, p);
     assert.doesNotMatch(page, /class="staff-signin"/, p);
   }

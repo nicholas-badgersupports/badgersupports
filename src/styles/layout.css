@@ -170,6 +170,68 @@
 .social { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); list-style: none; }
 .staff-link { opacity: .9; }
 
+/* ---------- Director Sign-In: the pop-up (src/render/layout.mjs) ---------- */
+/* Badger SPILL's solo sign-in card, translated: a narrow centred card, a brand band, the wave
+   at the band's foot, a centred body, and SPILL's hard offset shadow in this site's ink. The
+   band is the brand's red and the lockup on it is the white one, as the picked variant was
+   mocked (owner redo, 14 Nov 2026: an earlier cut inverted the pair — red lockup on the cream
+   paper — and a grid stood where the variant's soft bubbles were; both are superseded). The
+   wave is the body's paper in front, rising in one smooth curve, with the band's lighter red
+   as a fringe on the same line just above it (owner fix, 14 Nov 2026). */
+.signin-pop {
+  width: min(26rem, calc(100vw - 2 * var(--s4)));
+  max-height: calc(100dvh - 2 * var(--s4));
+  padding: 0; border: 0; border-radius: var(--r-card);
+  background: var(--paper); color: var(--ink);
+  box-shadow: .625rem .625rem 0 var(--ink-deep);
+  overflow-y: auto;
+}
+.signin-pop::backdrop { background: var(--scrim); }
+.signin-pop-band {
+  position: relative;
+  padding: var(--s5) var(--s5) 0;
+  background: var(--red);
+  text-align: center;
+}
+/* centred with margin-inline: the base sheet makes images block-level, so the band's
+   text-align alone left the lockup sitting at the band's left edge (owner fix, 14 Nov 2026). */
+.signin-pop-lockup { position: relative; z-index: 1; width: min(13.5rem, 72%); height: auto; margin-inline: auto; }
+/* the bubbles: a handful of soft pale circles of differing sizes, scattered over the red as
+   the picked variant was mocked — sparse, translucent, none touching the lockup (owner redo,
+   14 Nov 2026; the even dot grid that briefly stood here is superseded). */
+.signin-pop-dots { position: absolute; inset: 0; }
+.signin-pop-dots i { position: absolute; border-radius: 50%; background: var(--paper); }
+.signin-pop-dots i:nth-child(1) { width: 1.6rem; height: 1.6rem; left: 9%; top: 33%; opacity: .55; }
+.signin-pop-dots i:nth-child(2) { width: .85rem; height: .85rem; right: 14%; top: 15%; opacity: .5; }
+.signin-pop-dots i:nth-child(3) { width: 1.1rem; height: 1.1rem; right: 7%; top: 58%; opacity: .45; }
+.signin-pop-dots i:nth-child(4) { width: .65rem; height: .65rem; left: 29%; top: 74%; opacity: .55; }
+.signin-pop-dots i:nth-child(5) { width: .9rem; height: .9rem; left: 16%; top: 68%; opacity: .38; }
+.signin-pop-close {
+  position: absolute; top: var(--s2); right: var(--s2); z-index: 2;
+  width: 44px; height: 44px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; background: none; color: var(--paper); cursor: pointer;
+}
+.signin-pop-close-ic { width: 1.2rem; height: 1.2rem; }
+/* the wave's top margin matches the band's top padding, so the lockup sits centred in the
+   red above the wave instead of riding high over it (owner fix, 14 Nov 2026). One curve,
+   drawn twice: the fringe path is the front path shifted up, so the lighter red follows the
+   wave as an even fringe instead of breaking into separate lens shapes (owner fix, 14 Nov
+   2026). The single path stretches with the band, so the edge stays unbroken at any width. */
+.signin-pop-band .signin-pop-wave { display: block; width: calc(100% + 2 * var(--s5)); height: 34px; margin: var(--s5) calc(-1 * var(--s5)) 0; }
+.signin-pop-wave-back { fill: var(--red-light); }
+.signin-pop-wave-fill { fill: var(--paper); }
+.signin-pop-body { display: grid; gap: var(--s3); justify-items: center; padding: var(--s4) var(--s5) var(--s5); text-align: center; }
+.signin-pop-body h2 { margin: 0; font: 800 var(--fs-h3)/1.1 var(--font-display); letter-spacing: .01em; text-transform: uppercase; }
+.signin-pop-line { margin: 0; }
+.signin-pop-status { display: inline-flex; align-items: center; gap: var(--s2); margin: 0; color: var(--muted); font-weight: 600; }
+.signin-pop-spin { width: 1.05rem; height: 1.05rem; flex: none; animation: signin-spin .9s linear infinite; }
+.signin-pop-spin-track { fill: none; stroke: var(--red-tint); stroke-width: 3; }
+.signin-pop-spin-arc { fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; }
+@keyframes signin-spin { to { transform: rotate(360deg); } }
+.signin-pop-retry { margin: 0; }
+.signin-pop-retry a { color: var(--link); font-weight: 700; text-decoration: underline; text-underline-offset: .18em; }
+
 @media (max-width: 900px) {
   .footer-top { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }

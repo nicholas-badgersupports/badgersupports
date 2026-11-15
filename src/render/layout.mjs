@@ -131,9 +131,32 @@ function footer(ctx) {
   <div class="footer-bottom">
     <p>${accessibility(ctx)}</p>
     <ul class="social" aria-label="${ctx.t("footer.socialLabel")}">${f.social.map((l) => html`<li>${link(ctx, l.href, html`${icon(l.icon || "out", "social-ic")}<span class="sr-only">${l.label}</span>`, { class: "social-link", attrs: { title: l.label } })}</li>`)}</ul>
-    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span>${f.staffSignIn.label}</span>`, { class: "staff-in" })}</li>` : ""}</ul>
+    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span>${f.staffSignIn.label}</span>`, { class: "staff-in", attrs: { "data-signin-open": "" } })}</li>` : ""}</ul>
   </div>
 </div></footer>`;
+}
+
+/* The Director Sign-In pop-up (owner's pick, 14 Nov 2026): Badger SPILL's solo sign-in card
+   translated — a narrow centred card, a brand band with soft bubbles holding the lockup, a
+   wave at the band's foot, a centred body, and a hard offset shadow. The band is the brand's
+   red and the lockup on it is the white one with the brand red heart in the palm
+   (bss-lockup-white-redheart.png; the all-white asset loses the heart - owner, 14 Nov 2026),
+   as the variant was mocked (owner redo, 14 Nov
+   2026: an earlier cut inverted the pair — red lockup on a cream band — and is superseded);
+   the wave at the band's foot is the pop-up's own: one smooth curve drawn twice — the body's
+   paper in front, the band's lighter red as a fringe on the same line just above it (owner fix,
+   14 Nov 2026: the borrowed SPILL wave's two mismatched curves left the fringe showing as
+   separate flat lens shapes, and is superseded).
+   Opening the pop-up starts the move to Connect on its own (site.js): the pop-up is the
+   signing-in state, not another button — its one link is there if that move stalls: it points
+   at the staff page in the markup, and site.js upgrades it to the button's own address when it
+   wires the pop-up, so no page carries the API's address as a link. Its words are the staff
+   page's words. Without JavaScript
+   the footer's link still goes to the staff page, whose own button signs in as it always has. */
+function signinPop(ctx) {
+  const f = ctx.site.footer;
+  if (!f.staffSignIn) return "";
+  return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-white-redheart.png" width="700" height="415" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button><svg class="signin-pop-wave" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="signin-pop-wave-back" d="M0 17C33 17 67 8 100 8C133 8 167 22 200 22C233 22 267 9 300 9C333 9 367 16 400 16L400 40L0 40Z"/><path class="signin-pop-wave-fill" d="M0 22C33 22 67 13 100 13C133 13 167 27 200 27C233 27 267 14 300 14C333 14 367 21 400 21L400 40L0 40Z"/></svg></div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
 }
 
 function protoNotice(ctx) {
@@ -210,6 +233,7 @@ ${body ?? main.map((b) => renderBlock(b, ctx))}
 </main>
 ${supportLine(ctx)}
 ${footer(ctx)}
+${signinPop(ctx)}
 ${safetyExit(ctx)}
 ${devNotice(ctx, page)}
 </body>

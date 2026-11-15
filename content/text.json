@@ -1191,7 +1191,27 @@
     "staff.checking": {
       "group": "staff",
       "text": "Checking your sign-in…",
-      "where": "Staff page, in place of the Sign in button while the page checks whether this browser is still signed in."
+      "where": "Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. The Director Sign-In pop-up says the same while it moves the director to Connect."
+    },
+    "staff.popTitle": {
+      "group": "staff",
+      "text": "Staff Sign-In",
+      "where": "Director Sign-In pop-up, on every page: its heading. The staff page's own heading is the same words, held in that page's content."
+    },
+    "staff.popLine": {
+      "group": "staff",
+      "text": "For Badger Supports directors and admins, with your Badger Supports Connect account.",
+      "where": "Director Sign-In pop-up: the line under its heading. The staff page carries the same line in its own content."
+    },
+    "staff.popGo": {
+      "group": "staff",
+      "text": "Sign in with Connect",
+      "where": "Director Sign-In pop-up: the link pressed if the automatic move to Connect stalls. The staff page's button is the same words, held in that page's content."
+    },
+    "staff.popClose": {
+      "group": "staff",
+      "text": "Close",
+      "where": "Director Sign-In pop-up: the name of the × button in its band, read by screen readers."
     },
     "staff.ended": {
       "group": "staff",

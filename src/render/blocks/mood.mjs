@@ -2,7 +2,7 @@
    It posts to /api/mood (a plain form, so it works without JavaScript) and is never sent to
    analytics: the block declares analytics "none" and the client sends nothing but the tap.
    As on the live check-in, each feeling is its emoji over its word; the client adds a confetti
-   burst on a tap. The feelings are the build's (content/widgets/mood.json) unless a publisher
+   burst once a tap has been saved. The feelings are the build's (content/widgets/mood.json) unless a publisher
    saved their own set in Site Settings (structure.mjs, layMood). Each button names its colour
    in data-color and the client lays it on as the button's --mood: the generated sheet colours
    the build's feelings on its own, and a saved set's colours follow without it knowing their

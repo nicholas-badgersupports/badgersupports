@@ -289,7 +289,7 @@ function formsSection(me, onData) {
     if (!setup.isConnected) return;
     if (r.status !== 200) { const [why, words] = refused(r); setupPlace.replaceChildren(why); say(words); return; }
     setup.hidden = true; list.hidden = true;
-    setupPlace.replaceChildren(formSetupWizard({ forms: r.body.forms, connectUrl: me.connectUrl, call, say,
+    setupPlace.replaceChildren(formSetupWizard({ forms: r.body.forms, connectUrl: me.connectUrl, call, say, busy,
       onSaved: updated => { const old = list.querySelector(`[data-form-card="${updated.key}"]`); old?.replaceWith(formCard(updated, r.body.connect, me.connectUrl)); },
       onClose: key => { setupPlace.replaceChildren(); list.hidden = false; setup.hidden = false; const card = key ? list.querySelector(`[data-form-card="${key}"]`) : null; const target = card?.querySelector("summary"); if (target) { target.parentElement.open = true; target.focus(); } else setup.focus(); }
     }));

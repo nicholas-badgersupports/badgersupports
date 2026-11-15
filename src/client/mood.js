@@ -1,6 +1,6 @@
 /* The mood check-in, sent with fetch so the page stays put. Sends only the mood id. The answer
    shows one supportive line and how Badgers are doing today, as counts with words, never colour
-   alone. Nothing here talks to analytics. A tap also bursts a little confetti from the feeling,
+   alone. Nothing here talks to analytics. A saved tap also bursts a little confetti from the feeling,
    as the live check-in does — decoration only, drawn here, and never for a visitor who asked
    their device to reduce motion. */
 
@@ -16,9 +16,9 @@ if (form && out) {
   for (const b of form.querySelectorAll(".mood-btn")) if (b.dataset.color) b.style.setProperty("--mood", b.dataset.color);
 
   /* A short burst of confetti from the tapped feeling, on a canvas laid over the section and
-     taken away when it settles. It starts before the answer is asked for and never waits for
-     it, so a slow answer never delays it and it never delays the answer. Reduced motion: no
-     canvas is made at all — the tap, the count and the reply work exactly the same. */
+     taken away when it settles. It fires only once the tap has been saved, so the celebration
+     never runs ahead of the answer it celebrates, and a save that fails gets no confetti.
+     Reduced motion: no canvas is made at all — the tap, the count and the reply work exactly the same. */
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   function confettiBurst(btn) {
     if (reduceMotion.matches) return;
@@ -67,12 +67,22 @@ if (form && out) {
     setTimeout(() => canvas.remove(), LIFE + 500); // a hidden tab pauses the frames; never leave the canvas behind
   }
 
+  /* While the tap is being saved, the buttons rest disabled under a "Sending…" line in the
+     result's own place: a second tap cannot send twice, and the wait is never silent. The
+     confetti waits for the saved answer. A failure leaves the error line there, and the
+     buttons free up to try again. */
+  let sending = false;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = e.submitter;
-    if (!btn) return;
-    for (const b of form.querySelectorAll(".mood-btn")) b.setAttribute("aria-pressed", String(b === btn));
-    confettiBurst(btn);
+    if (!btn || sending) return;
+    sending = true;
+    const buttons = form.querySelectorAll(".mood-btn");
+    for (const b of buttons) { b.setAttribute("aria-pressed", String(b === btn)); b.disabled = true; }
+    form.setAttribute("aria-busy", "true");
+    const finish = () => { sending = false; for (const b of buttons) b.disabled = false; form.removeAttribute("aria-busy"); };
+    out.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mood.sending") }));
+    out.hidden = false;
     let body;
     try {
       const res = await fetch("/api/mood", { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify({ mood: btn.value }) });
@@ -82,8 +92,10 @@ if (form && out) {
       out.hidden = false;
       out.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mood.error") }));
       out.focus();
+      finish();
       return;
     }
+    confettiBurst(btn);
     const total = body.counts.reduce((s, c) => s + c.n, 0) || 1;
     const msg = Object.assign(document.createElement("p"), { className: "msg", textContent: body.message });
     const head = Object.assign(document.createElement("p"), { textContent: t(body.total === 1 ? "mood.count.one" : "mood.count.other", { n: body.total }) });
@@ -106,5 +118,6 @@ if (form && out) {
     out.replaceChildren(msg, head, ul, after);
     out.hidden = false;
     out.focus();
+    finish();
   });
 }

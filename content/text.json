@@ -370,6 +370,11 @@
       "text": "Unable to record that just now. Try again in a minute — nothing was saved.",
       "where": "When a mood tap could not be saved."
     },
+    "mood.sending": {
+      "group": "home",
+      "text": "Sending…",
+      "where": "While a mood tap is being saved."
+    },
     "mood.count.one": {
       "group": "home",
       "text": "{{n}} Badger has checked in today:",
@@ -4018,6 +4023,11 @@
       "text": "Looking up the addresses…",
       "where": "On the Bus Route Explorer: the status while addresses are being placed."
     },
+    "explore.bus.lookingCount": {
+      "group": "explore",
+      "text": "Looking up address {{n}} of {{total}}…",
+      "where": "On the Bus Route Explorer: the status while each address is being placed, when more than one address was given."
+    },
     "explore.bus.working": {
       "group": "explore",
       "text": "Working out the bus routes…",
@@ -4439,6 +4449,11 @@
     "staff.setup.loading": {
       "group": "staff",
       "text": "Loading Forms…",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.saving": {
+      "group": "staff",
+      "text": "Saving…",
       "where": "Guided form setup on the staff page."
     },
     "staff.setup.title": {

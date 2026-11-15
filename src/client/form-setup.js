@@ -10,7 +10,7 @@ const dates = new Set(["opensAt", "deadline", "closesAt"]);
 const labelKey = (key, form) => key === "deadline" && form.key === "staff-application" ? "priority" : key === "title" ? "titleLabel" : key;
 
 /* The draft lives only in this component. Back preserves it; Cancel writes nothing. */
-export function formSetupWizard({ forms, connectUrl, call, say, onSaved, onClose, initialKey = "" }) {
+export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, onClose, initialKey = "" }) {
   const allowed = forms.filter(f => f.settings && (f.canEdit || f.canSwitch));
   const box = el("div", { className: "staff-setup", tabIndex: -1 }); box.dataset.formSetup = "";
   const title = el("h3", { id: "form-setup-title", tabIndex: -1, textContent: t("staff.setup.title") });
@@ -37,7 +37,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, onSaved, onClose
   };
   const button = (key, run, quiet = false) => {
     const b = el("button", { type: "button", className: quiet ? "btn btn--quiet" : "btn", textContent: t(key), disabled: pending });
-    b.addEventListener("click", () => { if (!pending) run(); }); return b;
+    b.addEventListener("click", () => { if (!pending) run(b); }); return b;
   };
   const addField = key => {
     const date = dates.has(key), input = el(date || key === "title" ? "input" : "textarea", {
@@ -95,7 +95,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, onSaved, onClose
     }
     actions.append(button("staff.setup.cancel", () => onClose(), true));
     if (index > 0) actions.append(button("staff.setup.back", () => { capture(); index--; render(); }, true));
-    actions.append(button(index === 3 ? availability === "open" ? "staff.setup.applyOpen" : availability === "closed" ? "staff.setup.applyClose" : "staff.setup.apply" : "staff.setup.next", () => index === 3 ? save() : next()));
+    actions.append(button(index === 3 ? availability === "open" ? "staff.setup.applyOpen" : availability === "closed" ? "staff.setup.applyClose" : "staff.setup.apply" : "staff.setup.next", (btn) => index === 3 ? save(btn) : next()));
     if (focus) title.focus();
   }
   function next() {
@@ -121,10 +121,11 @@ export function formSetupWizard({ forms, connectUrl, call, say, onSaved, onClose
     if (conflict) actions.append(button("staff.setup.reload", reload, true));
     say(error.textContent); error.tabIndex = -1; error.focus();
   }
-  async function save() {
+  async function save(applyBtn) {
     if (pending) return; pending = true; actions.querySelectorAll("button").forEach(b => { b.disabled = true; }); box.setAttribute("aria-busy", "true");
+    const done = busy(applyBtn, t("staff.setup.saving"));
     const response = await call(`/api/staff/forms/${encodeURIComponent(form.key)}/setup`, { method: "POST", body: { settings: draft, state: availability, expectedState: form.manualState || form.state, formVersion: form.definitionVersion, ...(availability === "open" ? { confirm: form.key } : {}) } }).catch(() => ({ status: 0, body: {} }));
-    pending = false; box.removeAttribute("aria-busy");
+    done(); pending = false; box.removeAttribute("aria-busy");
     if (!box.isConnected) return;
     if (response.status !== 200) { if (["settings.date", "settings.order"].includes(response.body.error)) index = 2; else if (response.body.error === "settings.words") index = 1; render(false); showError(response); return; }
     form = response.body.forms.find(f => f.key === form.key); allowed[allowed.findIndex(f => f.key === form.key)] = form; onSaved(form); index = 4; render();

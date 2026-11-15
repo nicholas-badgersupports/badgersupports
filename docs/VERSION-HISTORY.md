@@ -32,6 +32,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - Alumni can subscribe to email updates on the Alumni page, under the Alumni History: a short form asks for a name and an email address, held apart from the general email list under its own form name, and the form also stands on its own page at `/forms/alumni-updates/` (item 53). The Alumni page's top “Request Email Updates” button leads to that form's page; before, it led to the general email list. A form placed inside a page now heads under that page's heading instead of adding a second one.
 
+- The edit tool gained Notes mode. An editor turns it on in the edit bar and clicks anywhere on a page to pin a numbered note to what was clicked; Copy notes in the bar copies every open note on the site, with its page and exact location, as one plain-text block. When the words, links or styling a note is pinned to have changed, the note marks itself cleared the next time an editor opens that page with the mode on: its pin leaves the page and it leaves the copied list, but it is not deleted. A note whose words are no longer on the page waits in the notes list to be removed by hand. Notes are shared by every editor, are kept apart from the published revision, and are never shown to visitors.
+
 ### Changed
 
 - The Peer Support Groups page: its Instagram reel now loads without a click and without the midterms caption; the header, join steps and expectations were reworked, and the peer and Hub photos come from the organisation's Drive library. The home hero leads with the peer circle, its pause control is a dot icon, and headings and cards keep whole words.

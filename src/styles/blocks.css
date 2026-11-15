@@ -1667,6 +1667,16 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    editing, it keeps the fixed seat layout.css gives it. */
 .edit-bar .safety-exit { position: static; flex: none; }
 .edit-more-button { background: var(--paper); }
+/* Notes mode (edit.js): the pill pressed while the mode is on, and the pins — a numbered disc in
+   the site's red ringed in paper, so it reads on the red bands too, one on each note's words, in
+   a layer of the tool's own that takes no clicks but the pins'. The layer is placed over the
+   page's own box, so a pin's left and top are page coordinates its words were measured at;
+   edit.js places them again as the page moves. */
+.edit-notes-pill[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.note-pins { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.note-pin { position: absolute; transform: translate(-50%, -50%); display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; min-width: 28px; padding: 0; border: 2px solid var(--paper); border-radius: 50%; background: var(--red); color: var(--paper); font-family: var(--font-body); font-size: 14px; font-weight: 600; line-height: 1; cursor: pointer; pointer-events: auto; box-shadow: var(--menu-shadow); }
+.note-pin:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.edit-notes-list .btn { margin-right: var(--s2); }
 .edit-live { margin: 0; padding: var(--s2) var(--s3); border-radius: var(--r-card); background: var(--ink); color: var(--cream); font-size: var(--fs-small); max-width: 26rem; }
 .edit-live:empty { display: none; }
 .edit-more { width: min(26rem, calc(100vw - 2 * var(--s4))); max-height: min(60vh, 32rem); overflow-y: auto; padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); box-shadow: var(--menu-shadow); }

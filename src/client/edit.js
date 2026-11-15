@@ -184,14 +184,16 @@ function leave() {
   document.documentElement.classList.remove("is-editing");
   markAll(false);
   ui.more.hidden = true;
+  notesOff();
   drawBar();
   ui.toggle.focus();
 }
 
 /* A click on marked words, or Enter or Space on them — or on the link or button they sit in —
-   opens the box instead of doing what the page would. */
+   opens the box instead of doing what the page would. While Notes mode is on, clicks are the
+   notes' (noteClick, below), and this stands aside. */
 function pick(e) {
-  if (!editing || e.target.closest?.("[data-edit-ui]")) return;
+  if (!editing || notesOn || e.target.closest?.("[data-edit-ui]")) return;
   if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
   const inside = e.type === "keydown" && e.target.matches?.("a, button, summary") ? e.target.querySelector("[data-edit-target]") : null;
   const node = e.target.closest?.("[data-edit-target]") || inside;
@@ -377,6 +379,393 @@ function pencil() {
   return svg;
 }
 
+/* ---------- notes mode ---------- */
+
+/* Notes mode is a mode of this edit tool, nothing more: while it is on, a click anywhere pins a
+ * note to what was clicked, and the notes live server-side (netlify/lib/notes.mjs) where every
+ * editor sees them. They are never part of a page: the pin layer is this tool's own, drawn only
+ * for someone who may edit, and leaving edit mode turns the mode off. A note carries a
+ * fingerprint of what it was pinned to; when the editor comes back and that fingerprint no
+ * longer matches, the note is marked cleared — it leaves the page and the copied list, and is
+ * counted here until the list is opened or the notes are copied. It is not deleted. A note whose
+ * pinned words are not on the page any more is not cleared: nothing about a missing element
+ * proves the fix was made, so it waits in the list to be removed by hand. */
+
+let notesOn = false;
+let notesDoc = null;          // { version, notes } as the server last answered, or null
+let clearedUnseen = 0;        // notes this visit's checks have cleared, not yet seen in the list or a copy
+let noteOpened = null;        // { note } for a saved note, { draft, pin } for one not yet saved
+let pinLayer = null;
+
+const here = () => location.pathname;
+const openNotes = () => (notesDoc ? notesDoc.notes.filter((n) => n.state === "open") : []);
+
+/* A note's number: open notes grouped by page, pages in the order they were first noted, notes
+   in the order they were made, numbered through — the order Copy notes prints, so a pin's
+   number is its number in the copied list. */
+function noteNumbers(list = openNotes()) {
+  const pages = [];
+  for (const n of list) if (!pages.includes(n.page.route)) pages.push(n.page.route);
+  const map = new Map();
+  let i = 0;
+  for (const route of pages) for (const n of list.filter((x) => x.page.route === route)) map.set(n.id, ++i);
+  return map;
+}
+
+/* The elements a note could be pinned to on this page: its edit target's marked elements first,
+   then whatever its selector finds. */
+function candidatesOf(note) {
+  const out = [];
+  if (note.anchor.kind === "edit-target" && marks.has(note.anchor.id)) out.push(...marks.get(note.anchor.id).filter((n) => n.isConnected));
+  if (note.selector) {
+    try { const n = document.querySelector(note.selector); if (n && !out.includes(n)) out.push(n); } catch { /* a selector the page no longer matches is no candidate */ }
+  }
+  return out;
+}
+
+const resolveAnchor = (note) => candidatesOf(note)[0] || null;
+
+/* Open notes that belong to this page but are not on it any more. */
+const missingHere = () => openNotes().filter((n) => n.page.route === here() && !candidatesOf(n).length);
+
+/* The way back to an element: a path of tags and classes from the nearest ancestor with an id,
+   with a position among its same-tag siblings where the tag alone is not enough. */
+function selectorOf(elm) {
+  const parts = [];
+  let n = elm;
+  while (n && n !== document.body && parts.length < 8) {
+    if (n.id) { parts.unshift(`#${CSS.escape(n.id)}`); break; }
+    let seg = n.tagName.toLowerCase();
+    const cls = [...n.classList].filter((c) => !c.startsWith("note-")).slice(0, 2);
+    if (cls.length) seg += `.${cls.map((c) => CSS.escape(c)).join(".")}`;
+    const parent = n.parentElement;
+    if (parent) {
+      const same = [...parent.children].filter((c) => c.tagName === n.tagName);
+      if (same.length > 1) seg += `:nth-of-type(${same.indexOf(n) + 1})`;
+    }
+    parts.unshift(seg);
+    n = parent;
+  }
+  return parts.join(" > ");
+}
+
+/* What a note is pinned to, in words: its text; every link destination in it, in order; every
+   photo's source and alt text, in order; and its own styling — its class and inline style, and
+   the computed style a stylesheet change would move. A fix that changes only the styling, a
+ * link's destination or a photo therefore changes the fingerprint, as one that changes the
+   words does. Without a digest to take (no crypto.subtle), the fingerprint is empty and the
+   note is never cleared by a check: a note is not cleared on a guess. */
+const FP_STYLES = ["color", "background-color", "font-family", "font-size", "font-weight", "font-style", "line-height", "letter-spacing", "text-decoration-line", "text-align", "display", "visibility", "opacity",
+  "border-top-width", "border-right-width", "border-bottom-width", "border-left-width", "border-top-color", "border-right-color", "border-bottom-color", "border-left-color", "border-top-style", "border-right-style", "border-bottom-style", "border-left-style",
+  "padding-top", "padding-right", "padding-bottom", "padding-left", "margin-top", "margin-right", "margin-bottom", "margin-left"];
+async function fingerprintOf(elm) {
+  if (!crypto?.subtle) return "";
+  const links = [...(elm.matches?.("a[href]") ? [elm] : []), ...elm.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") || "");
+  const imgs = [...(elm.matches?.("img") ? [elm] : []), ...elm.querySelectorAll("img")].map((i) => `${i.getAttribute("src") || ""}|${i.getAttribute("alt") || ""}`);
+  const cs = getComputedStyle(elm);
+  const parts = [
+    `text:${norm(elm.textContent || "")}`,
+    `href:${links.join("\n")}`,
+    `img:${imgs.join("\n")}`,
+    `class:${elm.getAttribute("class") || ""}`,
+    `style:${elm.getAttribute("style") || ""}`,
+    `computed:${FP_STYLES.map((p) => cs.getPropertyValue(p)).join("|")}`,
+  ].join("\n");
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(parts));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+}
+
+async function loadNotes() {
+  const r = await call("/api/staff/notes").catch(() => ({ status: 0, body: {} }));
+  if (r.status === 401) { say(t("edit.error.ended"), " ", signInAgain(false)); return false; }
+  if (r.status !== 200 || !r.body.ok) { say(t("edit.error.failed")); return false; }
+  notesDoc = { version: r.body.version, notes: r.body.notes };
+  return true;
+}
+
+/* A write the server refused as stale is retried once against the document as it now stands;
+   the second refusal is the editor's to see. Returns the call's answer. */
+async function notesWrite(url, body) {
+  let r = await call(url, { ...body, version: notesDoc.version }).catch(() => ({ status: 0, body: {} }));
+  if (r.status === 409 && await loadNotes()) r = await call(url, { ...body, version: notesDoc.version }).catch(() => ({ status: 0, body: {} }));
+  if (r.status === 200 && r.body.ok) notesDoc = { version: r.body.version, notes: r.body.notes };
+  return r;
+}
+
+/* On entering the mode: every open note on this page is checked against what it was pinned to.
+   One whose fingerprint no longer matches is marked cleared on the server; one whose element is
+   gone is left open, for the list. */
+async function checkNotes() {
+  const ids = openNotes().filter((n) => n.page.route === here()).map((n) => n.id);
+  for (const id of ids) {
+    const note = notesDoc.notes.find((n) => n.id === id && n.state === "open");
+    if (!note || !note.fingerprint) continue;
+    const cands = candidatesOf(note);
+    if (!cands.length) continue;
+    let same = false;
+    for (const c of cands) { if (await fingerprintOf(c) === note.fingerprint) { same = true; break; } }
+    if (same) continue;
+    const r = await notesWrite("/api/staff/notes/save", { id: note.id, state: "cleared" });
+    if (r.status === 200) clearedUnseen++;
+  }
+}
+
+async function toggleNotes() {
+  if (notesOn) { notesOff(); drawBar(); return; }
+  if (!await loadNotes()) return;
+  notesOn = true;
+  drawPins();
+  drawBar();
+  await checkNotes();
+  drawPins();
+  drawBar();
+}
+
+function notesOff() {
+  notesOn = false;
+  if (pinLayer) pinLayer.replaceChildren();
+  if (ui) { ui.noteList.hidden = true; if (ui.noteDialog.box.open) ui.noteDialog.box.close(); }
+}
+
+/* ---------- pins ---------- */
+
+function placePin(pin, elm, pos) {
+  const r = elm.getBoundingClientRect();
+  pin.style.left = `${window.scrollX + r.left + pos.dx * r.width}px`;
+  pin.style.top = `${window.scrollY + r.top + pos.dy * r.height}px`;
+}
+
+function drawPins() {
+  if (!pinLayer) return;
+  pinLayer.replaceChildren();
+  if (!notesOn || !notesDoc) return;
+  const numbers = noteNumbers();
+  for (const note of openNotes().filter((n) => n.page.route === here())) {
+    const elm = resolveAnchor(note);
+    if (!elm) continue;
+    const pin = el("button", { type: "button", className: "note-pin", textContent: String(numbers.get(note.id) || "") });
+    pin.setAttribute("aria-label", t("edit.notes.title", { n: numbers.get(note.id) || "" }));
+    pin.dataset.noteId = note.id;
+    pin.addEventListener("click", (e) => { e.stopPropagation(); openNote({ note }, pin); });
+    pinLayer.append(pin);
+    placePin(pin, elm, note.pos);
+  }
+}
+
+/* Pins sit on their elements, so they are placed again whenever the page moves under them. */
+function placePins() {
+  if (!notesOn || !notesDoc || !pinLayer) return;
+  for (const pin of [...pinLayer.children]) {
+    if (!pin.dataset.noteId) continue;
+    const note = notesDoc.notes.find((n) => n.id === pin.dataset.noteId);
+    const elm = note && resolveAnchor(note);
+    if (elm) placePin(pin, elm, note.pos);
+  }
+}
+
+/* A click while the mode is on pins a note where it fell, before the page or the word editor can
+   take it. The Safety Exit is never taken: it leaves the page, notes or not. */
+async function noteClick(e) {
+  if (!notesOn || !editing || e.target.closest?.("[data-edit-ui]") || e.target.closest?.("[data-safety-exit]")) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const marked = e.target.closest?.("[data-edit-target]");
+  const elm = marked || e.target;
+  if (!(elm instanceof Element)) return;
+  const r = elm.getBoundingClientRect();
+  const pos = { dx: r.width ? Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) : 0, dy: r.height ? Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) : 0 };
+  const draft = {
+    page: { name: pageName(), route: here() },
+    anchor: { kind: marked ? "edit-target" : "selector", id: marked ? marked.getAttribute("data-edit-target") : "", text: short(norm(elm.textContent || "")) },
+    selector: selectorOf(elm),
+    pos,
+    fingerprint: await fingerprintOf(elm),
+  };
+  const pin = el("button", { type: "button", className: "note-pin", textContent: String(prospectiveNumber(draft)) });
+  pinLayer.append(pin);
+  placePin(pin, elm, pos);
+  openNote({ draft, pin }, pin);
+}
+
+/* The page's name for a note and the copied list: its title, without the site's name after it. */
+function pageName() {
+  const title = document.title.split("—")[0].trim();
+  return title || here();
+}
+
+/* The number a note being made will carry, from the list as it will stand with it in. */
+function prospectiveNumber(draft) {
+  const ghost = { id: "draft", page: draft.page, state: "open" };
+  return noteNumbers([...openNotes(), ghost]).get("draft") || "";
+}
+
+/* ---------- the note box ---------- */
+
+function openNote(opening, from) {
+  noteOpened = { ...opening, from };
+  const d = ui.noteDialog;
+  const note = opening.note;
+  const numbers = noteNumbers();
+  const n = note ? numbers.get(note.id) : prospectiveNumber(opening.draft);
+  d.heading.textContent = t("edit.notes.title", { n: n || "" }).trim();
+  d.value.setAttribute("aria-label", d.heading.textContent);
+  d.where.textContent = `${t("edit.notes.on")} ${note ? note.anchor.text : opening.draft.anchor.text}`;
+  d.value.value = note ? note.text : "";
+  d.status.textContent = "";
+  d.save.disabled = false;
+  d.remove.hidden = !note;
+  if (!d.box.open) d.box.showModal();
+  d.value.focus();
+}
+
+async function saveNote() {
+  const mine = noteOpened;
+  if (!mine) return;
+  const d = ui.noteDialog;
+  const text = d.value.value.trim();
+  if (!text) { d.status.textContent = t("edit.error.empty"); return; }
+  d.save.disabled = true;
+  d.status.textContent = t("edit.saving");
+  const body = mine.draft
+    ? { page: mine.draft.page, anchor: mine.draft.anchor, selector: mine.draft.selector, pos: mine.draft.pos, fingerprint: mine.draft.fingerprint, text }
+    : { id: mine.note.id, text };
+  const r = await notesWrite("/api/staff/notes/save", body);
+  if (r.status === 200 && r.body.ok) {
+    if (mine.pin) mine.pin.remove();
+    noteOpened = null;
+    d.box.close();
+    drawPins();
+    drawBar();
+    return;
+  }
+  d.save.disabled = false;
+  if (r.status === 401) { d.status.replaceChildren(t("edit.error.signedOut"), " ", signInAgain(true)); return; }
+  d.status.textContent = t("edit.error.failed");
+}
+
+async function removeNote() {
+  const mine = noteOpened;
+  if (!mine?.note) return;
+  const d = ui.noteDialog;
+  d.save.disabled = true;
+  const r = await notesWrite("/api/staff/notes/remove", { id: mine.note.id });
+  if (r.status === 200 && r.body.ok) {
+    noteOpened = null;
+    d.box.close();
+    drawPins();
+    drawBar();
+    return;
+  }
+  d.save.disabled = false;
+  d.status.textContent = r.status === 401 ? t("edit.error.ended") : t("edit.error.failed");
+}
+
+/* ---------- the notes list and Copy notes ---------- */
+
+function noteItem(note, n) {
+  const label = n ? t("edit.notes.title", { n }) : short(note.anchor.text);
+  const b = el("button", { type: "button", className: "edit-pick" },
+    el("span", { textContent: label }),
+    el("span", { className: "edit-pick-where", textContent: short(note.text) }));
+  b.addEventListener("click", () => {
+    ui.noteList.hidden = true;
+    drawBar();
+    const elm = note.page.route === here() ? resolveAnchor(note) : null;
+    if (elm) elm.scrollIntoView({ block: "center" });
+    openNote({ note }, b);
+  });
+  return b;
+}
+
+function notesList() {
+  const numbers = noteNumbers();
+  const missing = missingHere();
+  const groups = [];
+  const pages = [];
+  for (const n of openNotes()) if (!pages.includes(n.page.route)) pages.push(n.page.route);
+  for (const route of pages) {
+    const list = openNotes().filter((n) => n.page.route === route && !missing.includes(n));
+    if (list.length) groups.push([list[0].page.name, list.map((n) => noteItem(n, numbers.get(n.id)))]);
+  }
+  const cleared = notesDoc.notes.filter((n) => n.state === "cleared");
+  if (cleared.length) groups.push([t("edit.notes.cleared", { n: cleared.length }), cleared.map((n) => noteItem(n, null))]);
+  if (missing.length) groups.push([t("edit.notes.notOnPage"), missing.map((n) => noteItem(n, numbers.get(n.id)))]);
+  ui.noteListGroups.replaceChildren(...groups.flatMap(([title, items]) => [el("h3", { textContent: title }), el("ul", { className: "edit-more-list" }, ...items.map((b) => el("li", {}, b)))]));
+  ui.clearAll.textContent = t("edit.notes.clearAll");
+  delete ui.clearAll.dataset.armed;
+}
+
+async function clearAllNotes() {
+  const b = ui.clearAll;
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = t("edit.notes.clearAll.armed"); return; }
+  const r = await notesWrite("/api/staff/notes/clear", { scope: "all" });
+  if (r.status === 200 && r.body.ok) { clearedUnseen = 0; notesList(); drawPins(); drawBar(); }
+}
+
+/* What was pinned, in words an agent can act on without seeing the page. Off this page, or with
+   the element gone, the words are the text itself. */
+function positionOf(note) {
+  const elm = note.page.route === here() ? resolveAnchor(note) : null;
+  let what = "text";
+  if (elm) {
+    const tag = elm.tagName.toLowerCase();
+    if (tag === "h1") what = "pageHeading";
+    else if (/^h[2-6]$/.test(tag)) what = "heading";
+    else if (tag === "a") what = "link";
+    else if (tag === "button" || elm.getAttribute("role") === "button") what = "button";
+    else if (tag === "img" || tag === "picture") what = "photo";
+    else if (tag === "ul" || tag === "ol") what = "list";
+    else if (tag === "p") what = "paragraph";
+  }
+  const v = note.pos.dy < 1 / 3 ? t("edit.notes.pos.upper") : note.pos.dy > 2 / 3 ? t("edit.notes.pos.lower") : "";
+  const h = note.pos.dx < 1 / 3 ? t("edit.notes.pos.left") : note.pos.dx > 2 / 3 ? t("edit.notes.pos.right") : "";
+  const where = [v, h].filter(Boolean).join(" ") || t("edit.notes.pos.centre");
+  const WHAT = { pageHeading: () => t("edit.notes.what.pageHeading"), heading: () => t("edit.notes.what.heading"), link: () => t("edit.notes.what.link"), button: () => t("edit.notes.what.button"), photo: () => t("edit.notes.what.photo"), list: () => t("edit.notes.what.list"), paragraph: () => t("edit.notes.what.paragraph"), text: () => t("edit.notes.what.text") };
+  return t("edit.notes.position", { what: WHAT[what](), where });
+}
+
+function copyText() {
+  const numbers = noteNumbers();
+  const open = openNotes();
+  const lines = [
+    t("edit.notes.copyHead", { n: open.length }),
+    t("edit.notes.copiedBy", { when: when(new Date().toISOString()), name: me.name || "" }),
+    t("edit.notes.copyIntro"),
+    "",
+  ];
+  const pages = [];
+  for (const n of open) if (!pages.includes(n.page.route)) pages.push(n.page.route);
+  let first = true;
+  for (const route of pages) {
+    for (const note of open.filter((x) => x.page.route === route)) {
+      if (!first) lines.push("");
+      first = false;
+      lines.push(t("edit.notes.pageLine", { n: numbers.get(note.id), name: note.page.name, url: `${location.origin}${note.page.route}` }));
+      const missing = note.page.route === here() && !candidatesOf(note).length;
+      if (missing) lines.push(t("edit.notes.notFound"));
+      else if (note.anchor.kind === "edit-target") lines.push(t("edit.notes.whereLine", { snippet: `"${note.anchor.text}"`, kind: note.anchor.kind, id: note.anchor.id }));
+      else lines.push(t("edit.notes.whereSelector", { snippet: `"${note.anchor.text}"`, selector: note.selector }));
+      if (!missing) lines.push(t("edit.notes.positionLine", { position: positionOf(note) }));
+      lines.push(t("edit.notes.noteLine", { text: note.text }));
+    }
+  }
+  return lines.join("\n");
+}
+
+async function copyNotes() {
+  const text = copyText();
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const area = el("textarea", { value: text });
+    document.body.append(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+  clearedUnseen = 0;
+  drawBar();
+}
+
 /* ---------- the bar ---------- */
 
 let liveLine;
@@ -401,6 +790,14 @@ function drawBar() {
   ui.toggle.setAttribute("aria-pressed", String(editing));
   ui.moreButton.hidden = !editing;
   ui.moreButton.setAttribute("aria-expanded", String(!ui.more.hidden));
+  const open = notesDoc ? notesDoc.notes.filter((n) => n.state === "open").length : 0;
+  ui.notesPill.hidden = !editing;
+  ui.notesPill.textContent = t("edit.notes", { n: open });
+  ui.notesPill.setAttribute("aria-pressed", String(notesOn));
+  ui.notesCopy.hidden = !(editing && notesOn);
+  ui.notesListButton.hidden = !(editing && notesOn);
+  ui.notesListButton.textContent = clearedUnseen > 0 ? t("edit.notes.cleared", { n: clearedUnseen }) : missingHere().length ? t("edit.notes.notOnPage") : t("edit.notes.list");
+  ui.notesListButton.setAttribute("aria-expanded", String(!ui.noteList.hidden));
 }
 
 function build() {
@@ -423,7 +820,60 @@ function build() {
   close.addEventListener("click", () => { more.hidden = true; drawBar(); moreButton.focus(); });
   find.addEventListener("input", moreList);
 
-  const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, toggle);
+  /* Notes mode's seats in the bar: the pill beside the pencil, and while the mode is on, Copy
+     notes and the button that opens the list. The list is the More words panel's shape; the note
+     box is the word box's. The pins live on the page itself, in a layer of this tool's own. */
+  const notesPill = el("button", { type: "button", className: "btn btn--quiet edit-notes-pill", hidden: true });
+  notesPill.addEventListener("click", toggleNotes);
+  const notesCopy = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.copy"), hidden: true });
+  notesCopy.addEventListener("click", copyNotes);
+  const notesListButton = el("button", { type: "button", className: "btn btn--quiet", hidden: true });
+  notesListButton.setAttribute("aria-controls", "edit-notes-list");
+  const noteListGroups = el("div", {});
+  const listCopy = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.copy") });
+  listCopy.addEventListener("click", copyNotes);
+  const clearAll = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.clearAll") });
+  clearAll.addEventListener("click", clearAllNotes);
+  const listClose = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.close") });
+  const noteList = el("div", { className: "edit-more edit-notes-list", id: "edit-notes-list", hidden: true },
+    el("h2", { textContent: t("edit.notes.list") }), noteListGroups, listCopy, clearAll, listClose);
+  notesListButton.addEventListener("click", () => {
+    noteList.hidden = !noteList.hidden;
+    if (!noteList.hidden) { notesList(); clearedUnseen = 0; }
+    drawBar();
+  });
+  listClose.addEventListener("click", () => { noteList.hidden = true; drawBar(); notesListButton.focus(); });
+
+  const noteBox = el("dialog", { className: "edit-dialog" });
+  noteBox.setAttribute("aria-labelledby", "note-d-h");
+  const noteHeading = el("h2", { id: "note-d-h" });
+  const noteWhere = el("p", { className: "edit-where" });
+  const noteValue = el("textarea", { id: "note-d-v", rows: 4, maxLength: 2000 });
+  const noteStatus = el("p", { className: "edit-status" });
+  noteStatus.setAttribute("role", "status");
+  const noteSave = el("button", { type: "submit", className: "btn", textContent: t("edit.save") });
+  const noteRemove = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.remove") });
+  const noteDone = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.done") });
+  const noteForm = el("form", { className: "edit-form" },
+    noteHeading, noteWhere, noteValue, noteStatus,
+    el("div", { className: "edit-actions" }, noteSave, noteRemove, noteDone));
+  noteForm.addEventListener("submit", (e) => { e.preventDefault(); saveNote(); });
+  noteRemove.addEventListener("click", removeNote);
+  noteDone.addEventListener("click", () => noteBox.close());
+  noteBox.addEventListener("close", () => {
+    if (noteOpened?.pin) noteOpened.pin.remove();
+    if (noteOpened?.from?.isConnected) noteOpened.from.focus();
+    noteOpened = null;
+  });
+  noteBox.append(noteForm);
+
+  pinLayer = el("div", { className: "note-pins" });
+  pinLayer.setAttribute("data-edit-ui", "");
+  document.body.append(pinLayer);
+  window.addEventListener("scroll", placePins, { capture: true, passive: true });
+  window.addEventListener("resize", placePins);
+
+  const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, notesPill, notesCopy, notesListButton, toggle);
   /* The Safety Exit keeps the corner: the bar takes the pill in as its last seat, so the edit
      button rests at its left with their bottoms on one line and neither covers the other
      (owner, 13 Nov 2026). The pill's own words, link and destination are untouched, and the
@@ -463,10 +913,10 @@ function build() {
   box.addEventListener("close", () => { if (opened?.from?.isConnected) opened.from.focus(); });
   box.append(form);
 
-  const root = el("div", { className: "edit-ui" }, more, bar, box);
+  const root = el("div", { className: "edit-ui" }, more, noteList, bar, box, noteBox);
   root.setAttribute("data-edit-ui", "");
   document.body.append(root);
-  ui = { toggle, more, moreButton, moreList: moreList_, find, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList, link, linkTo: null, section, sectionTitle, sectionList } };
+  ui = { toggle, more, moreButton, moreList: moreList_, find, notesPill, notesCopy, notesListButton, noteList, noteListGroups, clearAll, noteDialog: { box: noteBox, heading: noteHeading, where: noteWhere, value: noteValue, status: noteStatus, save: noteSave, remove: noteRemove }, dialog: { box, where, key, value, original, by, status, save: saveB, revert, history: earlier, versions: versionList, link, linkTo: null, section, sectionTitle, sectionList } };
   drawBar();
 }
 
@@ -480,6 +930,7 @@ async function start() {
   build();
   document.addEventListener("click", pick, true);
   document.addEventListener("keydown", pick, true);
+  document.addEventListener("click", noteClick, true);
 }
 
 start();

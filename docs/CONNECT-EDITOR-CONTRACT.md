@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-874 keys. Keys are permanent. Required text cannot be published empty and must keep each
+908 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -900,7 +900,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (458)
+### Staff page and edit button (492)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1224,6 +1224,40 @@ the site adds the markup.
 | `edit.error.number` | Give a whole number from 0 to 99. | Edit box, when a number cannot be saved as written. |  |
 | `edit.error.date` | Give a date such as 2026-11-01. | Edit box, when a date cannot be saved as written. |  |
 | `edit.error.video` | A video is the address of an Instagram post or reel. | Edit box, when a video address cannot be saved as written. |  |
+| `edit.notes` | Notes ({{n}}) | Edit bar, the Notes mode button beside the pencil, shown while editing: the number is the site's open notes. | `{{n}}` |
+| `edit.notes.list` | Notes | Edit bar, the button that opens the list of notes while Notes mode is on; also that list's heading. |  |
+| `edit.notes.copy` | Copy notes | Edit bar and the notes list, while Notes mode is on: copies every open note on the site as one plain-text block. |  |
+| `edit.notes.title` | Note {{n}} | Heading of the note box, and the name of a note's pin and of its line in the notes list. | `{{n}}` |
+| `edit.notes.on` | On: | Note box, before the words the note is pinned to. |  |
+| `edit.notes.done` | Done | Note box, the button that closes it; with nothing typed it keeps no note. |  |
+| `edit.notes.remove` | Remove | Note box, the button that takes the note off the list. |  |
+| `edit.notes.clearAll` | Clear all | Notes list, the button that takes every note off the list; it is pressed twice. |  |
+| `edit.notes.clearAll.armed` | Clear all? | Notes list, the Clear all button once pressed, asking for the second press. |  |
+| `edit.notes.cleared` | {{n}} cleared | Edit bar and the notes list: notes whose pinned words have changed, counted until the list is opened or the notes are copied. | `{{n}}` |
+| `edit.notes.notOnPage` | Not on this page | Notes list, the group of notes whose pinned words are not on the page any more. |  |
+| `edit.notes.notFound` | Location: not found on the page any more | The copied notes, under a note whose pinned words are not on its page any more. |  |
+| `edit.notes.copyHead` | NOTES — Badger Supports (public site) — {{n}} open notes | First line of the copied notes. | `{{n}}` |
+| `edit.notes.copiedBy` | Copied {{when}} by {{name}} | Second line of the copied notes. | `{{when}}` `{{name}}` |
+| `edit.notes.copyIntro` | Fix each note at the location given, then the note clears itself. | Third line of the copied notes. |  |
+| `edit.notes.pageLine` | {{n}}. Page: {{name}} — {{url}} | The copied notes, the line that opens each note: its number, its page and that page's address. | `{{n}}` `{{name}}` `{{url}}` |
+| `edit.notes.whereLine` | Where: {{snippet}} [{{kind}}: {{id}}] | The copied notes, under the page line: the pinned words and the edit target they belong to. | `{{snippet}}` `{{kind}}` `{{id}}` |
+| `edit.notes.whereSelector` | Where: {{snippet}} [selector: {{selector}}] | The copied notes, under the page line of a note pinned to words with no edit target: the pinned words and the way to find them. | `{{snippet}}` `{{selector}}` |
+| `edit.notes.positionLine` | Position: {{position}} | The copied notes, under the Where line: where in the pinned words the note was made. | `{{position}}` |
+| `edit.notes.noteLine` | Note: {{text}} | The copied notes, the note itself. | `{{text}}` |
+| `edit.notes.position` | On {{what}}, {{where}} | The copied notes, the position sentence: what was pinned, and where in it the note was made. | `{{what}}` `{{where}}` |
+| `edit.notes.what.pageHeading` | the page heading | The copied notes, in the position sentence: the page's own heading was pinned. |  |
+| `edit.notes.what.heading` | the heading | The copied notes, in the position sentence: a heading was pinned. |  |
+| `edit.notes.what.link` | the link | The copied notes, in the position sentence: a link was pinned. |  |
+| `edit.notes.what.button` | the button | The copied notes, in the position sentence: a button was pinned. |  |
+| `edit.notes.what.photo` | the photo | The copied notes, in the position sentence: a photo was pinned. |  |
+| `edit.notes.what.list` | the list | The copied notes, in the position sentence: a list was pinned. |  |
+| `edit.notes.what.paragraph` | the paragraph | The copied notes, in the position sentence: a paragraph was pinned. |  |
+| `edit.notes.what.text` | the text | The copied notes, in the position sentence: words that are none of the named kinds were pinned. |  |
+| `edit.notes.pos.upper` | upper | The copied notes, in the position sentence: the note was made in the top third of what was pinned. |  |
+| `edit.notes.pos.lower` | lower | The copied notes, in the position sentence: the note was made in the bottom third of what was pinned. |  |
+| `edit.notes.pos.left` | left | The copied notes, in the position sentence: the note was made in the left third of what was pinned. |  |
+| `edit.notes.pos.right` | right | The copied notes, in the position sentence: the note was made in the right third of what was pinned. |  |
+| `edit.notes.pos.centre` | centre | The copied notes, in the position sentence: the note was made in the middle of what was pinned. |  |
 | `edit.on` | On | Edit box option for a section switched on. |  |
 | `edit.off` | Off | Edit box option for a section switched off. |  |
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |

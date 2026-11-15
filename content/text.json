@@ -2748,6 +2748,176 @@
       "text": "A video is the address of an Instagram post or reel.",
       "where": "Edit box, when a video address cannot be saved as written."
     },
+    "edit.notes": {
+      "group": "staff",
+      "text": "Notes ({{n}})",
+      "where": "Edit bar, the Notes mode button beside the pencil, shown while editing: the number is the site's open notes."
+    },
+    "edit.notes.list": {
+      "group": "staff",
+      "text": "Notes",
+      "where": "Edit bar, the button that opens the list of notes while Notes mode is on; also that list's heading."
+    },
+    "edit.notes.copy": {
+      "group": "staff",
+      "text": "Copy notes",
+      "where": "Edit bar and the notes list, while Notes mode is on: copies every open note on the site as one plain-text block."
+    },
+    "edit.notes.title": {
+      "group": "staff",
+      "text": "Note {{n}}",
+      "where": "Heading of the note box, and the name of a note's pin and of its line in the notes list."
+    },
+    "edit.notes.on": {
+      "group": "staff",
+      "text": "On:",
+      "where": "Note box, before the words the note is pinned to."
+    },
+    "edit.notes.done": {
+      "group": "staff",
+      "text": "Done",
+      "where": "Note box, the button that closes it; with nothing typed it keeps no note."
+    },
+    "edit.notes.remove": {
+      "group": "staff",
+      "text": "Remove",
+      "where": "Note box, the button that takes the note off the list."
+    },
+    "edit.notes.clearAll": {
+      "group": "staff",
+      "text": "Clear all",
+      "where": "Notes list, the button that takes every note off the list; it is pressed twice."
+    },
+    "edit.notes.clearAll.armed": {
+      "group": "staff",
+      "text": "Clear all?",
+      "where": "Notes list, the Clear all button once pressed, asking for the second press."
+    },
+    "edit.notes.cleared": {
+      "group": "staff",
+      "text": "{{n}} cleared",
+      "where": "Edit bar and the notes list: notes whose pinned words have changed, counted until the list is opened or the notes are copied."
+    },
+    "edit.notes.notOnPage": {
+      "group": "staff",
+      "text": "Not on this page",
+      "where": "Notes list, the group of notes whose pinned words are not on the page any more."
+    },
+    "edit.notes.notFound": {
+      "group": "staff",
+      "text": "Location: not found on the page any more",
+      "where": "The copied notes, under a note whose pinned words are not on its page any more."
+    },
+    "edit.notes.copyHead": {
+      "group": "staff",
+      "text": "NOTES — Badger Supports (public site) — {{n}} open notes",
+      "where": "First line of the copied notes."
+    },
+    "edit.notes.copiedBy": {
+      "group": "staff",
+      "text": "Copied {{when}} by {{name}}",
+      "where": "Second line of the copied notes."
+    },
+    "edit.notes.copyIntro": {
+      "group": "staff",
+      "text": "Fix each note at the location given, then the note clears itself.",
+      "where": "Third line of the copied notes."
+    },
+    "edit.notes.pageLine": {
+      "group": "staff",
+      "text": "{{n}}. Page: {{name}} — {{url}}",
+      "where": "The copied notes, the line that opens each note: its number, its page and that page's address."
+    },
+    "edit.notes.whereLine": {
+      "group": "staff",
+      "text": "Where: {{snippet}} [{{kind}}: {{id}}]",
+      "where": "The copied notes, under the page line: the pinned words and the edit target they belong to."
+    },
+    "edit.notes.whereSelector": {
+      "group": "staff",
+      "text": "Where: {{snippet}} [selector: {{selector}}]",
+      "where": "The copied notes, under the page line of a note pinned to words with no edit target: the pinned words and the way to find them."
+    },
+    "edit.notes.positionLine": {
+      "group": "staff",
+      "text": "Position: {{position}}",
+      "where": "The copied notes, under the Where line: where in the pinned words the note was made."
+    },
+    "edit.notes.noteLine": {
+      "group": "staff",
+      "text": "Note: {{text}}",
+      "where": "The copied notes, the note itself."
+    },
+    "edit.notes.position": {
+      "group": "staff",
+      "text": "On {{what}}, {{where}}",
+      "where": "The copied notes, the position sentence: what was pinned, and where in it the note was made."
+    },
+    "edit.notes.what.pageHeading": {
+      "group": "staff",
+      "text": "the page heading",
+      "where": "The copied notes, in the position sentence: the page's own heading was pinned."
+    },
+    "edit.notes.what.heading": {
+      "group": "staff",
+      "text": "the heading",
+      "where": "The copied notes, in the position sentence: a heading was pinned."
+    },
+    "edit.notes.what.link": {
+      "group": "staff",
+      "text": "the link",
+      "where": "The copied notes, in the position sentence: a link was pinned."
+    },
+    "edit.notes.what.button": {
+      "group": "staff",
+      "text": "the button",
+      "where": "The copied notes, in the position sentence: a button was pinned."
+    },
+    "edit.notes.what.photo": {
+      "group": "staff",
+      "text": "the photo",
+      "where": "The copied notes, in the position sentence: a photo was pinned."
+    },
+    "edit.notes.what.list": {
+      "group": "staff",
+      "text": "the list",
+      "where": "The copied notes, in the position sentence: a list was pinned."
+    },
+    "edit.notes.what.paragraph": {
+      "group": "staff",
+      "text": "the paragraph",
+      "where": "The copied notes, in the position sentence: a paragraph was pinned."
+    },
+    "edit.notes.what.text": {
+      "group": "staff",
+      "text": "the text",
+      "where": "The copied notes, in the position sentence: words that are none of the named kinds were pinned."
+    },
+    "edit.notes.pos.upper": {
+      "group": "staff",
+      "text": "upper",
+      "where": "The copied notes, in the position sentence: the note was made in the top third of what was pinned."
+    },
+    "edit.notes.pos.lower": {
+      "group": "staff",
+      "text": "lower",
+      "where": "The copied notes, in the position sentence: the note was made in the bottom third of what was pinned."
+    },
+    "edit.notes.pos.left": {
+      "group": "staff",
+      "text": "left",
+      "where": "The copied notes, in the position sentence: the note was made in the left third of what was pinned."
+    },
+    "edit.notes.pos.right": {
+      "group": "staff",
+      "text": "right",
+      "where": "The copied notes, in the position sentence: the note was made in the right third of what was pinned."
+    },
+    "edit.notes.pos.centre": {
+      "group": "staff",
+      "text": "centre",
+      "where": "The copied notes, in the position sentence: the note was made in the middle of what was pinned."
+    },
     "edit.on": {
       "group": "staff",
       "text": "On",

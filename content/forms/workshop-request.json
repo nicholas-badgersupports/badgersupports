@@ -111,7 +111,7 @@
           "id": "option_3",
           "type": "datetime",
           "label": "Third choice",
-          "required": true
+          "required": false
         },
         {
           "id": "location",
@@ -152,7 +152,7 @@
           "id": "group_notes",
           "type": "long",
           "label": "Anything we should know about your group?",
-          "required": true,
+          "required": false,
           "maxLength": 4000,
           "rows": 4,
           "review": "Required in the Google Form."

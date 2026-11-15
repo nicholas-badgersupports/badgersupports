@@ -150,7 +150,8 @@
    band is the brand's red and the lockup on it is the white one, as the picked variant was
    mocked (owner redo, 14 Nov 2026: an earlier cut inverted the pair — red lockup on the cream
    paper — and a grid stood where the variant's soft bubbles were; both are superseded). The
-   wave is the band's red in front and its lighter shade behind it, over the body's white. */
+   wave is the body's paper in front, rising in one smooth curve, with the band's lighter red
+   as a fringe on the same line just above it (owner fix, 14 Nov 2026). */
 .signin-pop {
   width: min(26rem, calc(100vw - 2 * var(--s4)));
   max-height: calc(100dvh - 2 * var(--s4));
@@ -187,10 +188,13 @@
 }
 .signin-pop-close-ic { width: 1.2rem; height: 1.2rem; }
 /* the wave's top margin matches the band's top padding, so the lockup sits centred in the
-   red above the wave instead of riding high over it (owner fix, 14 Nov 2026). */
-.signin-pop-band .wave { display: block; width: calc(100% + 2 * var(--s5)); height: 32px; margin: var(--s5) calc(-1 * var(--s5)) 0; }
-.signin-pop .wave-back { fill: var(--red-light); }
-.signin-pop .wave-fill { fill: var(--red); }
+   red above the wave instead of riding high over it (owner fix, 14 Nov 2026). One curve,
+   drawn twice: the fringe path is the front path shifted up, so the lighter red follows the
+   wave as an even fringe instead of breaking into separate lens shapes (owner fix, 14 Nov
+   2026). The single path stretches with the band, so the edge stays unbroken at any width. */
+.signin-pop-band .signin-pop-wave { display: block; width: calc(100% + 2 * var(--s5)); height: 34px; margin: var(--s5) calc(-1 * var(--s5)) 0; }
+.signin-pop-wave-back { fill: var(--red-light); }
+.signin-pop-wave-fill { fill: var(--paper); }
 .signin-pop-body { display: grid; gap: var(--s3); justify-items: center; padding: var(--s4) var(--s5) var(--s5); text-align: center; }
 .signin-pop-body h2 { margin: 0; font: 800 var(--fs-h3)/1.1 var(--font-display); letter-spacing: .01em; text-transform: uppercase; }
 .signin-pop-line { margin: 0; }

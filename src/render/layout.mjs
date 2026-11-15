@@ -11,7 +11,6 @@ import { html, raw, attrs, jsonIsland } from "./html.mjs";
 import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { icon } from "./icons.mjs";
-import { wave } from "./wave.mjs";
 import { openingPortraits } from "./team.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
@@ -128,14 +127,16 @@ function footer(ctx) {
 }
 
 /* The Director Sign-In pop-up (owner's pick, 14 Nov 2026): Badger SPILL's solo sign-in card
-   translated — a narrow centred card, a brand band with soft bubbles holding the lockup, SPILL's
+   translated — a narrow centred card, a brand band with soft bubbles holding the lockup, a
    wave at the band's foot, a centred body, and a hard offset shadow. The band is the brand's
    red and the lockup on it is the white one with the brand red heart in the palm
    (bss-lockup-white-redheart.png; the all-white asset loses the heart - owner, 14 Nov 2026),
    as the variant was mocked (owner redo, 14 Nov
    2026: an earlier cut inverted the pair — red lockup on a cream band — and is superseded);
-   the wave is SPILL's mark, retired from these pages on
-   23 Oct 2026, and lives in this pop-up only because the owner chose this design knowing that.
+   the wave at the band's foot is the pop-up's own: one smooth curve drawn twice — the body's
+   paper in front, the band's lighter red as a fringe on the same line just above it (owner fix,
+   14 Nov 2026: the borrowed SPILL wave's two mismatched curves left the fringe showing as
+   separate flat lens shapes, and is superseded).
    Opening the pop-up starts the move to Connect on its own (site.js): the pop-up is the
    signing-in state, not another button — its one link is there if that move stalls: it points
    at the staff page in the markup, and site.js upgrades it to the button's own address when it
@@ -145,7 +146,7 @@ function footer(ctx) {
 function signinPop(ctx) {
   const f = ctx.site.footer;
   if (!f.staffSignIn) return "";
-  return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-white-redheart.png" width="700" height="415" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button>${wave()}</div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
+  return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-white-redheart.png" width="700" height="415" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button><svg class="signin-pop-wave" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="signin-pop-wave-back" d="M0 17C33 17 67 8 100 8C133 8 167 22 200 22C233 22 267 9 300 9C333 9 367 16 400 16L400 40L0 40Z"/><path class="signin-pop-wave-fill" d="M0 22C33 22 67 13 100 13C133 13 167 27 200 27C233 27 267 14 300 14C333 14 367 21 400 21L400 40L0 40Z"/></svg></div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
 }
 
 function protoNotice(ctx) {

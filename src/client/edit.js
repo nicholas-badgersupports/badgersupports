@@ -379,6 +379,24 @@ function pencil() {
   return svg;
 }
 
+/* The copy icon the render side draws (src/render/icons.mjs), built here as nodes, the way
+   pencil() above is: two overlapping pages. */
+function copyIcon() {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "ic");
+  svg.setAttribute("data-i", "copy");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  const rect = document.createElementNS(NS, "rect");
+  for (const [k, v] of Object.entries({ x: "9", y: "9", width: "11.5", height: "11.5", rx: "1.5" })) rect.setAttribute(k, v);
+  const p = document.createElementNS(NS, "path");
+  p.setAttribute("d", "M15.5 9V5.5a1 1 0 0 0-1-1h-10a1 1 0 0 0 1 1v10a1 1 0 0 0 1 1H9");
+  svg.append(rect, p);
+  return svg;
+}
+
 /* ---------- notes mode ---------- */
 
 /* Notes mode is a mode of this edit tool, nothing more: while it is on, a click anywhere pins a
@@ -863,18 +881,26 @@ function build() {
      box is the word box's. The pins live on the page itself, in a layer of this tool's own. */
   const notesPill = el("button", { type: "button", className: "btn btn--quiet edit-notes-pill", hidden: true });
   notesPill.addEventListener("click", toggleNotes);
-  const notesCopy = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.copy"), hidden: true });
-  notesCopy.addEventListener("click", copyNotes);
+  /* Copy notes is the icon alone wherever it sits (owner, 15 Nov 2026): its words ride as its
+     label and its tooltip, the way the edit button's do. In the bar it shares the pill's line;
+     in the list it shares the heading's. */
+  const copyButton = (props = {}) => {
+    const b = el("button", { type: "button", className: "btn btn--quiet edit-copy-notes", title: t("edit.notes.copy"), ...props }, copyIcon());
+    b.setAttribute("aria-label", t("edit.notes.copy"));
+    b.addEventListener("click", copyNotes);
+    return b;
+  };
+  const notesCopy = copyButton({ hidden: true });
   const notesListButton = el("button", { type: "button", className: "btn btn--quiet", hidden: true });
   notesListButton.setAttribute("aria-controls", "edit-notes-list");
   const noteListGroups = el("div", {});
-  const listCopy = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.copy") });
-  listCopy.addEventListener("click", copyNotes);
+  const listCopy = copyButton();
   const clearAll = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.notes.clearAll") });
   clearAll.addEventListener("click", clearAllNotes);
   const listClose = el("button", { type: "button", className: "btn btn--quiet", textContent: t("edit.close") });
   const noteList = el("div", { className: "edit-more edit-notes-list", id: "edit-notes-list", hidden: true },
-    el("h2", { textContent: t("edit.notes.list") }), noteListGroups, listCopy, clearAll, listClose);
+    el("div", { className: "edit-notes-head" }, el("h2", { textContent: t("edit.notes.list") }), listCopy),
+    noteListGroups, clearAll, listClose);
   notesListButton.addEventListener("click", () => {
     noteList.hidden = !noteList.hidden;
     if (!noteList.hidden) { notesList(); clearedUnseen = 0; }

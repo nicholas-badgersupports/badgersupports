@@ -46,7 +46,7 @@ import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
 import { wordProblems } from "../src/render/blocks/words.mjs";
 import { ribbonProblems } from "../src/render/blocks/ribbons.mjs";
-import { resourceProblems } from "../src/render/blocks/resources.mjs";
+import { resourceProblems, resourceVisible } from "../src/render/blocks/resources.mjs";
 import { navigatorProblems, navigatorResourceProblems } from "../src/render/blocks/navigator.mjs";
 import { directoryProblems } from "../src/render/blocks/directory.mjs";
 import { questionProblems } from "../src/render/blocks/questions.mjs";
@@ -511,7 +511,13 @@ export function cutoverProblems({ routes, pages, builtPaths, pendingLinks }) {
    carries its room record's words and a person's page their public profile's, because those
    pages are made from the records, not from blocks of their own. Only the blocks a visitor
    would see today are read, so a hidden or out-of-season section is not found before its page
-   shows it. Rebuilt at every build, so a new page is findable from the next publish. */
+   shows it. Rebuilt at every build, so a new page is findable from the next publish.
+   The resource catalogue rides in the same index (QOL proposal 1, 15 November 2026): one entry
+   per resource the Resources page shows, titled with the resource's name and worded with what
+   it is, who it suits, the words it is also known by (its aka) and its categories. Its address
+   is the Resources page with the resource's name as the search there (?q=, the address scheme
+   the list itself keeps), so the result lands on the resource on that page. The Resources
+   page's own entry above stays: it is the page; these are what is on it. */
 export function searchIndex(content, { today } = {}) {
   const words = (page) => pageStrings({ ...page, blocks: liveBlocks(page, today) }).map((s) => s.value);
   const out = [];
@@ -530,6 +536,16 @@ export function searchIndex(content, { today } = {}) {
     }
     const text = parts.join(" ").replace(/\s+/g, " ").trim().slice(0, 6000);
     out.push({ path: page.path, title: bareTitle(page.title, [content.site.name], { first: page.id === "pg-home" }), text });
+  }
+  const resPage = content.pages.find((p) => (p.blocks || []).some((b) => b.type === "resources"));
+  const records = content.resources?.resources;
+  if (resPage && Array.isArray(records)) {
+    for (const r of records) {
+      if (!r?.id || !r?.name || !resourceVisible(r)) continue;
+      const cats = (r.categories || []).map((c) => String(c).replace(/_/g, " ")).join(" ");
+      const text = [r.summary || "", r.bestFor || "", r.aka || "", cats].join(" ").replace(/\s+/g, " ").trim().slice(0, 6000);
+      out.push({ path: `${resPage.path}?q=${encodeURIComponent(r.name).replace(/'/g, "%27")}`, title: r.name, text });
+    }
   }
   return out.sort((a, z) => a.title.localeCompare(z.title, "en") || a.path.localeCompare(z.path, "en"));
 }

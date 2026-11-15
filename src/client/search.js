@@ -1,16 +1,41 @@
 /* Site-wide search (src/render/blocks/sitesearch.mjs). The visitor's words are matched against
-   the build's index of the site's public pages (/search-index.json), here in the browser, so
-   nothing typed is sent anywhere. Every word typed must appear in a page's title or its words;
-   when nothing matches, it tries words that begin the same way ("psychologist" finds
-   "psychology") and says so, as the resource list's search does. The words stay in the address
-   (?q=), so a link opens the same results. Until the index arrives, and if it never arrives,
-   the page's own list of every page stays in place. */
+   the build's index of the site's public pages and its resources (/search-index.json), here in
+   the browser, so nothing typed is sent anywhere. Every word typed must appear in an entry's
+   title or its words; results are ordered by where the words matched, a title match ahead of
+   a match in the words (QOL proposal 2). A short word (four letters or fewer) must appear as
+   a word of its own, so "rent" does not find "parent" (QOL proposal 5). When nothing matches,
+   it tries words from the same root ("anxious" finds "anxiety", "psychologist" finds
+   "psychology") and words that begin the same way, and says so, as the resource list's search
+   does. The words stay in the address (?q=), so a link opens the same results. Until the index
+   arrives, and if it never arrives, the page's own list of every page stays in place. */
 
 import { t } from "./text.js";
 
 const words = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 /* "psychologist" -> "psycholog": the start a word must share with a page's word on the second try. */
 const stem = (w) => w.slice(0, Math.min(w.length, Math.max(5, w.length - 3)));
+/* A word's root, by the endings English words trade among themselves: "anxious" and "anxiety"
+   both come to "anxi", "psychologist" and "psychology" to "psycholog", "depressed" and
+   "depression" to "depress". Endings are stripped one at a time, in this order, from the word
+   as the ones before it leave it. Short words keep themselves, and no ending whose loss would
+   leave less than the word's own start. */
+const stemOf = (w) => {
+  if (w.length <= 3) return w;
+  let s = w;
+  for (const [end, put] of [["ies", "i"], ["iety", "i"], ["ious", "i"], ["ness", ""], ["ology", "olog"], ["ical", ""], ["ing", ""], ["edly", ""], ["ed", ""], ["ist", ""], ["ion", ""], ["ment", ""], ["ous", ""], ["ly", ""], ["y", "i"], ["es", ""], ["s", ""]]) {
+    if (s.length > end.length && s.endsWith(end)) s = s.slice(0, s.length - end.length) + put;
+  }
+  return s;
+};
+/* Whether one typed word hits a field: a short word must stand as a word of its own in the
+   field's word set; a longer one may sit inside a longer word ("counsel" in "counseling"). */
+const hitsWord = (w, hay, set) => (w.length <= 4 ? set.has(w) : hay.includes(w));
+/* The second try: a page word from the same root, or one that begins the way the typed word
+   begins. A word of three letters or fewer gets no shared-beginning try — its beginning is
+   too little to go on — so "car" cannot reach "care" here either; at four letters the shared
+   beginning is the word itself ("exam" finds "example"), and longer words share a shortened
+   start ("psychologist" finds "psychology"). */
+const looseHit = (w, page) => page.stems.has(stemOf(w)) || (w.length >= 4 && page.hayWords.some((h) => h.startsWith(stem(w))));
 const ELLIPSIS = "…";
 
 /* A short piece of a page's words around the first typed word, so a result shows why it
@@ -56,16 +81,23 @@ for (const box of document.querySelectorAll("[data-search]")) {
   /* The index, once it has arrived: each page with the words it is matched by. */
   let pages = null;
 
+  /* Where the words matched decides the order: a word standing as its own word in the title
+     first, then a word inside a title word, then a word of its own in the text, then a word
+     inside a text word. Equal scores keep the index's order, so the order is steady. */
+  const score = (p, q) => q.reduce((n, w) => n
+    + (p.titleSet.has(w) ? 8 : w.length > 4 && p.titleHay.includes(w) ? 4 : p.textSet.has(w) ? 2 : w.length > 4 && p.textHay.includes(w) ? 1 : 0), 0);
+
   const apply = () => {
     const q = words(input.value).split(" ").filter(Boolean);
     if (clear) clear.hidden = !input.value;
     if (!pages) { count.textContent = t("search.loading"); return; }
-    let shown = q.length ? pages.filter((p) => q.every((w) => p.hay.includes(w))) : pages;
+    let shown = q.length ? pages.filter((p) => q.every((w) => hitsWord(w, p.hay, p.haySet))) : pages;
     let loose = false;
     if (q.length && !shown.length) {
-      shown = pages.filter((p) => q.every((w) => { const s = stem(w); return p.hayWords.some((h) => h.startsWith(s)); }));
+      shown = pages.filter((p) => q.every((w) => looseHit(w, p)));
       loose = shown.length > 0;
     }
+    if (q.length) shown = shown.slice().sort((a, z) => score(z, q) - score(a, q));
     list.replaceChildren(...shown.map((p) => {
       const li = document.createElement("li");
       li.className = "srch-card";
@@ -104,8 +136,16 @@ for (const box of document.querySelectorAll("[data-search]")) {
       if (!r.ok) throw new Error(String(r.status));
       const got = await r.json();
       pages = (got.pages || []).filter((p) => p && p.path && p.title).map((p) => {
+        const titleHay = words(p.title);
+        const textHay = words(p.text || "");
         const hay = words(`${p.title} ${p.text || ""}`);
-        return { ...p, hay, hayWords: hay.split(" ") };
+        const hayWords = hay.split(" ").filter(Boolean);
+        return {
+          ...p, hay, hayWords, haySet: new Set(hayWords),
+          titleHay, titleSet: new Set(titleHay.split(" ").filter(Boolean)),
+          textHay, textSet: new Set(textHay.split(" ").filter(Boolean)),
+          stems: new Set(hayWords.map(stemOf)),
+        };
       });
       apply();
     } catch {

@@ -84,6 +84,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The footer’s Director Sign-In now opens a pop-up carrying the site’s white lockup on a red band, and the move to Connect begins on its own about a second later. Closing the pop-up calls the move off; the link inside it goes to the sign-in start at once.
 
+- The Explore page’s byline now reads “Find Current Events on Campus”, and the helper text below it — the pagehead paragraph and the four tool-card descriptions — is removed.
+
 ### Removed
 
 - The Meet the Dogs section is removed from Dogs on Call.
@@ -93,6 +95,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 - The Form Setup progress bar is removed; the “Step n of 4” line above it already carries the same information in words.
 
 - The SPILL pill’s raised ledge is removed, and the person cards’ title stripe is now the title in the accent colour, with no gradient bar.
+
+- The staff tools menu pill’s inset red bottom bar is removed.
 
 ### Fixed
 
@@ -161,7 +165,7 @@ Development from November 5 to November 12, 2026, checked into the repository an
 - The short address /classes now leads to Discover Classes by Interest under Explore; before, it landed on a page that does not exist, while the classes page itself stood at its Explore address.
 
 
-- The site header no longer overflows at narrow widths.
+- Between 961 and 1049 pixels wide, the header’s Get Involved button no longer overflows off the page.
 
 - The room ticket stub now sits on a pale tint with its pin and Directions in the deep accent colour, so its words stay readable, and on phones the selected workshop tab is carried by its red fill alone.
 

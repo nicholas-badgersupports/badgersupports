@@ -432,12 +432,11 @@ ahead, an `iat` no more than a minute ahead, a `name`, a `scopes` list and `acti
 - No answer, or one that does not check out (signature, `sub`, nonce, audience, time): the session stays as it was
   until 30 minutes after Connect's last good answer. After that every staff call is answered as signed out, until
   Connect answers again. Nothing is let through on a guess.
-- Flag off (today): no call. Every scope lasts the eight hours, `forms.read:` included (owner ruling,
-  15 Nov 2026: the answers lapse was aligned with the session; before that, `forms.read:` scopes alone lapsed
-  an hour after sign-in and the router answered `auth.again`).
+- Flag off (today): no call. `forms.read:` scopes lapse an hour after sign-in; the router answers `auth.again` and
+  the staff page offers a fresh sign-in. `site.edit` and `site.publish` last the eight hours.
 
 **What this does not solve.** Until Connect ships the action and the owner sets the flag, someone switched off in
-Connect keeps every scope here for the session's eight hours, reading answers included. With the
+Connect keeps reading answers here for up to an hour, and editing and publishing words for up to eight. With the
 flag on and no action in Connect, every session stops working half an hour after sign-in, so the flag goes on only
 after Connect's half is published.
 

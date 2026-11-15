@@ -22,11 +22,10 @@
  * script could use, and every staff call checks the real session.
  *
  * Signing out here ends this site's session only. How long Connect's note holds (sessionFrom):
- *   - Until CONNECT_SESSION_STATUS=on turns on Connect's publicSsoStatus check, every scope
- *     lasts the working day, reading answers included (owner ruling, 15 Nov 2026: the answers
- *     lapse was aligned with the session; before that, reading answers alone stopped an hour
- *     after signing in, and the router answered auth.again for it). Someone switched off in
- *     Connect cannot sign in again, but a session already open keeps its scopes until it ends.
+ *   - Until CONNECT_SESSION_STATUS=on turns on Connect's publicSsoStatus check, reading
+ *     answers lasts an hour from signing in; after that the page asks for a fresh sign-in, while
+ *     editing and publishing words last the working day. Someone switched off in Connect cannot sign
+ *     in again, and so loses the answers within the hour.
  *   - With it on, a session is checked again ten minutes after Connect last vouched for it. Fewer
  *     scopes take effect at once, more never do (sign in again for those), and switched off ends the
  *     session. Connect not answering, or answering with anything that does not check out, keeps the
@@ -41,6 +40,7 @@ import { connectConfig, tradeCode, sessionStatus, randomB64u, sha256Hex, sha256B
 
 const SESSION_HOURS = 8;
 const START_MINUTES = 10;
+const READ_MINUTES = 60;    // status check off: reading answers, from signing in
 const CHECK_MINUTES = 10;   // status check on: ask Connect again this long after its last answer
 const GRACE_MINUTES = 30;   // status check on: Connect silent this long after its last answer, and nothing works
 export const HINT = "bss_staff_hint";
@@ -138,9 +138,8 @@ export async function finishSignIn(req) {
   ]);
 }
 
-/* The signed-in person, or null. With the status check off, the note stands for the whole
-   session, reading answers included; with it on, the recheck below governs. Nothing now sets
-   `lapsed`; the router and the staff page keep their auth.again answer for it, unused. */
+/* The signed-in person, or null. With the status check off, an hour on, reading answers moves to
+   `lapsed`: the router answers auth.again for it, and the staff page offers a fresh sign-in. */
 export async function sessionFrom(req) {
   const id = readCookies(req)[names(req).session];
   if (!id || !/^[A-Za-z0-9_-]{43}$/.test(id)) return null;
@@ -150,7 +149,11 @@ export async function sessionFrom(req) {
   if (!row) return null;
   const who = { sub: row.sub, name: row.name, scopes: row.scopes };
   const cfg = connectConfig();
-  if (!cfg?.statusCheck) return who;
+  if (!cfg?.statusCheck) {
+    if (row.minutes < READ_MINUTES) return who;
+    const reads = (s) => s.startsWith("forms.read:");
+    return { ...who, scopes: who.scopes.filter((s) => !reads(s)), lapsed: who.scopes.filter(reads) };
+  }
   if (row.minutes < CHECK_MINUTES) return who;
   let note;
   try { note = await sessionStatus(cfg, row.sub, row.method); } catch { return row.minutes < GRACE_MINUTES ? who : null; }

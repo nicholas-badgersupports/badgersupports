@@ -22,9 +22,8 @@
  *     page, reorder the menu, and change the site's name, search description and accessibility email (one save for
  *     the three); for a publisher, each room's words and its steps' words and photos; and the published versions, with
  *     Bring back for a publisher, asked twice.
- * Only what the account may use is drawn. Reading answers lasts the whole session, as the rest
- * does (netlify/lib/staff.mjs, sessionFrom); the forms part keeps its fresh sign-in note for a
- * refusal the server marks auth.again, which nothing now produces.
+ * Only what the account may use is drawn. Reading answers ends sooner than the rest of a session
+ * (netlify/lib/staff.mjs, sessionFrom); after that the forms part asks for a fresh sign-in instead.
  * A check that is run again wins over one still on its way, and leaving the page takes the tools
  * off it, so a page a browser keeps for Back holds no answers; coming back to it checks again.
  * Nothing here is counted, and nothing is kept in the browser.

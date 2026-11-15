@@ -535,6 +535,39 @@ function placePin(pin, elm, pos) {
   pin.style.top = `${window.scrollY + r.top + pos.dy * r.height}px`;
 }
 
+/* Two pins pinned near each other land on top of one another: a pin is a 28px disc seated where
+   its click fell, and nothing in the stored position keeps two discs apart. After every
+   placement this walks the page's pins in reading order and moves any pin that would touch an
+   earlier one straight down, a step at a time, until it is clear — or up, when the foot of the
+   window is in the way. Only the drawing moves: the stored position still names the same point
+   of the same element, the number still matches the list, and the pin still opens its own note.
+   The same pass SPILL's editor runs (its 26px disc steps 30; this 28px disc steps 32). */
+const PIN_STEP = 32;   // a disc's 28px plus a 4px gap
+function separatePins() {
+  if (!pinLayer) return;
+  const pins = [...pinLayer.querySelectorAll(".note-pin")];
+  pins.sort((a, b) => (parseFloat(a.style.top) - parseFloat(b.style.top)) || (parseFloat(a.style.left) - parseFloat(b.style.left)));
+  const placed = [];
+  for (const pin of pins) {
+    const x = parseFloat(pin.style.left);
+    let y = parseFloat(pin.style.top);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+    const touches = (cy) => placed.some((p) => Math.abs(p.x - x) < PIN_STEP && Math.abs(p.y - cy) < PIN_STEP);
+    if (touches(y)) {
+      let moved = y;
+      for (let i = 0; i < 8 && touches(moved); i++) moved += PIN_STEP;
+      if (touches(moved) || moved + 14 > window.scrollY + window.innerHeight) {
+        moved = y;
+        for (let i = 0; i < 8 && touches(moved); i++) moved -= PIN_STEP;
+        moved = Math.max(window.scrollY + 14, moved);
+      }
+      pin.style.top = `${moved}px`;
+      y = moved;
+    }
+    placed.push({ x, y });
+  }
+}
+
 function drawPins() {
   if (!pinLayer) return;
   pinLayer.replaceChildren();
@@ -546,10 +579,12 @@ function drawPins() {
     const pin = el("button", { type: "button", className: "note-pin", textContent: String(numbers.get(note.id) || "") });
     pin.setAttribute("aria-label", t("edit.notes.title", { n: numbers.get(note.id) || "" }));
     pin.dataset.noteId = note.id;
+    pin.style.zIndex = String(numbers.get(note.id) || "");
     pin.addEventListener("click", (e) => { e.stopPropagation(); openNote({ note }, pin); });
     pinLayer.append(pin);
     placePin(pin, elm, note.pos);
   }
+  separatePins();
 }
 
 /* Pins sit on their elements, so they are placed again whenever the page moves under them. */
@@ -561,6 +596,7 @@ function placePins() {
     const elm = note && resolveAnchor(note);
     if (elm) placePin(pin, elm, note.pos);
   }
+  separatePins();
 }
 
 /* A click while the mode is on pins a note where it fell, before the page or the word editor can
@@ -582,8 +618,10 @@ async function noteClick(e) {
     fingerprint: await fingerprintOf(elm),
   };
   const pin = el("button", { type: "button", className: "note-pin", textContent: String(prospectiveNumber(draft)) });
+  pin.style.zIndex = String(prospectiveNumber(draft));
   pinLayer.append(pin);
   placePin(pin, elm, pos);
+  separatePins();
   openNote({ draft, pin }, pin);
 }
 

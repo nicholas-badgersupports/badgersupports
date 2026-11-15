@@ -155,3 +155,26 @@ openTarget();
 /* Someone signed in to the staff page on this browser: load the edit button. It asks the server
    who that is, and draws nothing for anyone who may not change words (edit.js). */
 if (/(?:^|;\s*)bss_staff_hint=1(?:;|$)/.test(document.cookie)) import("./edit.js");
+
+/* The development notice (layout.mjs draws it; its words are text keys): Badger SPILL's
+   announcement pop-up is the model — it opens a moment after the page arrives, and shows once
+   on each arrival or reload, not while clicking through the site: this tab remembers in
+   sessionStorage, and a reload clears the memory, so it shows again. Not inside a frame (the
+   staff page's previews frame pages), and never a modal: it is shown without showModal, so
+   the Safety Exit pill stays pressable while it is up, and Escape pressed three times still
+   leaves. Nothing about the visitor is sent anywhere. */
+const devNotice = document.querySelector("[data-dev-notice]");
+if (devNotice && window.self === window.top && typeof devNotice.show === "function") {
+  const KEY = "bss-dev-notice";
+  let seen = false;
+  try {
+    if (performance.getEntriesByType("navigation")[0]?.type === "reload") sessionStorage.removeItem(KEY);
+    seen = sessionStorage.getItem(KEY) === "1";
+  } catch { /* storage off: it may show again */ }
+  for (const b of devNotice.querySelectorAll("[data-dev-close]")) b.addEventListener("click", () => devNotice.close());
+  devNotice.addEventListener("keydown", (e) => { if (e.key === "Escape") devNotice.close(); });
+  if (!seen) setTimeout(() => {
+    try { sessionStorage.setItem(KEY, "1"); } catch { /* storage off: it may show again */ }
+    if (!devNotice.open) { devNotice.show(); devNotice.querySelector("[data-dev-close]")?.focus(); }
+  }, 700);
+}

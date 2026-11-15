@@ -155,6 +155,31 @@
       "where": "Second sentence of the prototype strip.",
       "optional": true
     },
+    "devNotice.title": {
+      "group": "page",
+      "text": "This Site Is Still in Development",
+      "where": "The development pop-up, on every page of the new site but the staff page: its heading."
+    },
+    "devNotice.body": {
+      "group": "page",
+      "text": "This new Badger Supports site is still being built. For everything today, use the live site.",
+      "where": "The development pop-up: the sentence under its heading."
+    },
+    "devNotice.link": {
+      "group": "page",
+      "text": "Go to the Live Site",
+      "where": "The development pop-up: the button that opens badgersupports.org."
+    },
+    "devNotice.dismiss": {
+      "group": "page",
+      "text": "Got It",
+      "where": "The development pop-up: the button that closes it and stays on this site."
+    },
+    "devNotice.close": {
+      "group": "page",
+      "text": "Close",
+      "where": "The development pop-up: the button at its top right that closes it."
+    },
     "embed.play": {
       "group": "page",
       "text": "Play the Reel",
@@ -4365,6 +4390,26 @@
       "group": "staff",
       "text": "What needs attention on the site, and the tool for each job.",
       "where": "Staff page, the Overview: the line under the heading."
+    },
+    "staff.overview.hidden.title": {
+      "group": "staff",
+      "text": "Not on the public site",
+      "where": "Staff page, the Overview: the heading over the links to what visitors cannot see."
+    },
+    "staff.overview.hidden.events": {
+      "group": "staff",
+      "text": "Find Your People \u2014 Campus Events Explorer",
+      "where": "Staff page, the Overview: the link that opens the Campus Events Explorer, whose home-page section is switched off."
+    },
+    "staff.overview.hidden.explore": {
+      "group": "staff",
+      "text": "Explore Campus",
+      "where": "Staff page, the Overview: the link that opens Explore Campus, the switched-off home-page section's second door."
+    },
+    "staff.overview.hidden.open": {
+      "group": "staff",
+      "text": "Open",
+      "where": "Staff page, the Overview: the word at the right of each not-on-the-public-site link."
     },
     "staff.overview.clear": {
       "group": "staff",

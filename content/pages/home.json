@@ -491,6 +491,7 @@
     {
       "id": "b-home-explore",
       "type": "text",
+      "enabled": false,
       "title": "Find your people",
       "body": [
         "Campus events from UW-Madison Events and the Wisconsin Union, gathered with Badger Supports programs in one explorer — including Find Your People, a collection of clubs, communities and social gatherings."

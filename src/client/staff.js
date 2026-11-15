@@ -1247,9 +1247,20 @@ function overviewSection(me, go, offered, bare) {
     a.addEventListener("click", (e) => { e.preventDefault(); go(id); });
     return a;
   }));
+  /* What visitors cannot see, one click away: the Find Your People section is switched off on
+     the home page (content/pages/home.json, b-home-explore) until it is ready for release, so
+     its two doors stand here instead, where anyone signed in can open them. */
+  const hiddenLink = (href, words) => el("a", { className: "staff-need", href },
+    el("span", { textContent: words }),
+    el("span", { className: "staff-need-go", textContent: t("staff.overview.hidden.open") }));
+  const hidden = el("div", { className: "staff-hidden" },
+    el("h3", { textContent: t("staff.overview.hidden.title") }),
+    el("div", { className: "staff-needs" },
+      hiddenLink("/explore/events/", t("staff.overview.hidden.events")),
+      hiddenLink("/explore/", t("staff.overview.hidden.explore"))));
   const part = el("section", { className: "staff-part" },
     el("h2", { id: "staff-overview-h", textContent: t("staff.nav.overview") }),
-    el("p", { textContent: t("staff.overview.how") }), needs, cards);
+    el("p", { textContent: t("staff.overview.how") }), needs, cards, hidden);
   part.setAttribute("aria-labelledby", "staff-overview-h");
   draw();
   return { part, noteForms: (d) => { found.deliveries = d; draw(); }, notePages: (d) => { found.drafts = d.drafts; draw(); } };

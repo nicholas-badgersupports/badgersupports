@@ -194,8 +194,8 @@
         "title": "Contact",
         "links": [
           {
-            "label": "directors@badgersupports.org",
-            "href": "mailto:directors@badgersupports.org"
+            "label": "hello@badgersupports.org",
+            "href": "mailto:hello@badgersupports.org"
           },
           {
             "label": "Email List",
@@ -226,10 +226,6 @@
         "icon": "win"
       }
     ],
-    "email": {
-      "label": "hello@badgersupports.org",
-      "href": "mailto:hello@badgersupports.org"
-    },
     "address": "Student Activity Center, 333 East Campus Mall, Suite 3203, Madison, WI 53715",
     "affiliation": "Badger Supports is an independent, dual-registered student organization with University Health Services \u2013 Prevention.",
     "funding": "Funded in part by the Associated Students of Madison.",

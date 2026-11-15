@@ -4461,11 +4461,6 @@
       "text": "Form Setup",
       "where": "Guided form setup on the staff page."
     },
-    "staff.setup.progress": {
-      "group": "staff",
-      "text": "Form setup progress",
-      "where": "Guided form setup on the staff page."
-    },
     "staff.setup.step": {
       "group": "staff",
       "text": "Step {{n}} of {{total}} — {{step}}",

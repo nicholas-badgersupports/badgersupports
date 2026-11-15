@@ -130,7 +130,9 @@ function footer(ctx) {
 /* The Director Sign-In pop-up (owner's pick, 14 Nov 2026): Badger SPILL's solo sign-in card
    translated — a narrow centred card, a brand band with soft bubbles holding the lockup, SPILL's
    wave at the band's foot, a centred body, and a hard offset shadow. The band is the brand's
-   red and the lockup on it is the white one, as the variant was mocked (owner redo, 14 Nov
+   red and the lockup on it is the white one with the brand red heart in the palm
+   (bss-lockup-white-redheart.png; the all-white asset loses the heart - owner, 14 Nov 2026),
+   as the variant was mocked (owner redo, 14 Nov
    2026: an earlier cut inverted the pair — red lockup on a cream band — and is superseded);
    the wave is SPILL's mark, retired from these pages on
    23 Oct 2026, and lives in this pop-up only because the owner chose this design knowing that.
@@ -143,7 +145,7 @@ function footer(ctx) {
 function signinPop(ctx) {
   const f = ctx.site.footer;
   if (!f.staffSignIn) return "";
-  return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-white.png" width="700" height="415" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button>${wave()}</div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
+  return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-white-redheart.png" width="700" height="415" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button>${wave()}</div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
 }
 
 function protoNotice(ctx) {

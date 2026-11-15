@@ -15,10 +15,9 @@ export function formSetupWizard({ forms, connectUrl, call, say, onSaved, onClose
   const box = el("div", { className: "staff-setup", tabIndex: -1 }); box.dataset.formSetup = "";
   const title = el("h3", { id: "form-setup-title", tabIndex: -1, textContent: t("staff.setup.title") });
   box.setAttribute("aria-labelledby", title.id);
-  const progress = el("progress", { max: 4, value: 1 }); progress.setAttribute("aria-label", t("staff.setup.progress"));
   const stepLine = el("p", { className: "staff-setup-step" }); stepLine.setAttribute("aria-live", "polite");
   const content = el("div"), error = el("p", { role: "alert", hidden: true }), actions = el("div", { className: "staff-actions" });
-  box.append(title, stepLine, progress, content, error, actions);
+  box.append(title, stepLine, content, error, actions);
   let index = 0, chosen = initialKey, form = null, draft = null, availability = "keep", pending = false;
   let controls = {}, baseline = {}, touched = new Set(), conflict = false;
   const choose = key => {
@@ -54,7 +53,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, onSaved, onClose
   const desiredValue = key => (dates.has(key) ? draft[key] : draft[key] ?? form.defaults[key]) || "";
   function render(focus = true) {
     controls = {}; error.hidden = true; error.textContent = ""; conflict = false;
-    title.textContent = t("staff.setup.title"); progress.hidden = index === 4; progress.value = Math.min(index + 1, 4);
+    title.textContent = t("staff.setup.title");
     stepLine.textContent = index === 4 ? t("staff.setup.complete") : t("staff.setup.step", { n: index + 1, total: 4, step: t(`staff.setup.step${index}`) });
     content.replaceChildren(); actions.replaceChildren();
     if (index === 0) {

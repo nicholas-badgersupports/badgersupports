@@ -167,13 +167,14 @@
 .logo-ripple { position: absolute; left: 79.28%; top: 86.43%; width: 22%; aspect-ratio: 4 / 1; border: 2px solid var(--spill-ripple); border-radius: 50%; pointer-events: none; }
 .logo-drop { position: absolute; top: 83%; width: 3.4%; aspect-ratio: 3 / 4; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--spill-drop); pointer-events: none; }
 
-/* SPILL's own way in, in its colours: a milk-blue pill with an ink edge and ledge, as on its site. The
-   ledge is SPILL's, a sub-brand's own mark, so it stays where SPILL is named and nowhere else. */
-.hero-spill .go, .spill-band .go { background: var(--spill-panel); border-color: var(--spill-ink); color: var(--spill-ink); box-shadow: 0 3px 0 var(--spill-ink); }
+/* SPILL's own way in, in its colours: a milk-blue pill with an ink edge, as on its site. The pill used
+   to sit on a 3px ink ledge that grew and shrank as it was pressed; the ledge went on 14 Nov 2026,
+   one of the curved-bar cases — the pill keeps SPILL's colours and its ink outline, and still lifts
+   when pointed at. (SPILL's own site keeps its ledge; the two doors differ by this much now.) */
+.hero-spill .go, .spill-band .go { background: var(--spill-panel); border-color: var(--spill-ink); color: var(--spill-ink); }
 .hero-spill .go .go-ic, .spill-band .go .go-ic { background: var(--spill-ink); color: var(--spill-panel); }
-.spill-band .go:hover { color: var(--spill-ink); background: var(--spill-panel); border-color: var(--spill-ink); box-shadow: 0 5px 0 var(--spill-ink); }
+.spill-band .go:hover { color: var(--spill-ink); background: var(--spill-panel); border-color: var(--spill-ink); }
 .spill-band .go:hover .go-ic, .hero-spill .go:hover .go-ic { background: var(--spill-ink); }
-.spill-band .go:active { box-shadow: 0 1px 0 var(--spill-ink); }
 
 /* In the hero: a card under the buttons, straight and flat on the red (the design system's Sticker).
    The whole card is one link to SPILL's writing page; pointing at it turns it SPILL's pale blue and the
@@ -191,7 +192,7 @@
 .hero-spill-title { font: 800 1.45rem/1 var(--font-display); text-transform: uppercase; padding-top: .2rem; }
 .hero-spill-text { font-weight: 600; line-height: 1.35; }
 .hero-spill .go { margin-top: var(--s1); }
-.hero-spill:hover .go, .hero-spill .go:hover { translate: 0 -2px; color: var(--spill-ink); background: var(--spill-panel); border-color: var(--spill-ink); box-shadow: 0 5px 0 var(--spill-ink); }
+.hero-spill:hover .go, .hero-spill .go:hover { translate: 0 -2px; color: var(--spill-ink); background: var(--spill-panel); border-color: var(--spill-ink); }
 
 /* A band of its own, on the page's ground: SPILL's panel with its logo, which plays a move each
    time it is pressed. */
@@ -801,16 +802,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .ticket-name { font: 800 1.6rem/1.05 var(--font-display); text-transform: uppercase; color: var(--accent); }
 .ticket-addr { color: var(--muted); }
 /* the perforation is punched in the colour behind the ticket (the page), so it reads as holes */
+/* The stub is the ticket's tinted end, not a saturated colour block: the accent's pale tint with the
+   pin and word in the deep shade, the treatment the Explore events date blocks use (14 Nov 2026 —
+   the full-colour stub was one of the curved-bar cases). The deep shade on the tint measures
+   6.9-9.5 to 1 (the header-buttons table). */
 .ticket-stub {
   position: relative; display: grid; place-items: center; align-content: center; gap: .4rem; padding: var(--s3) var(--s2);
-  background-color: var(--accent); color: var(--cream); font-weight: 700; text-align: center; border-radius: 0 var(--r-card) var(--r-card) 0;
+  background-color: var(--accent-tint); color: var(--accent-deep); font-weight: 700; text-align: center; border-radius: 0 var(--r-card) var(--r-card) 0;
 }
 .ticket-stub::before {
   content: ""; position: absolute; left: -8px; top: 0; bottom: 0; width: 16px;
   background: radial-gradient(circle at 50% 9px, var(--ground) 5px, transparent 5.5px) 0 0 / 16px 18px repeat-y;
 }
 .ticket-stub .ic { width: 2.2rem; height: 2.2rem; }
-.ticket-link:hover .ticket-stub { background-color: var(--accent-deep); }
+.ticket-link:hover .ticket-stub { background-color: color-mix(in srgb, var(--accent) 18%, var(--accent-tint)); }
 /* on a phone the stub is as wide as its word, so "Directions" never runs past the card's edge */
 @media (max-width: 480px) { .ticket-link { grid-template-columns: minmax(0, 1fr) max-content; } .ticket-stub { padding-inline: var(--s2); } .ticket-name { font-size: 1.5rem; } }
 /* too narrow for a side stub beside a long room name: the stub tears off along the bottom instead */
@@ -1064,7 +1069,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 }
 @media (max-width: 640px) {
   .ws-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ws-tab { border-radius: var(--r-card); border-bottom: 3px solid var(--ws-tint); gap: .4rem; padding-inline: .6rem; font-size: .9375rem; hyphens: none; }
+  /* No bottom border on the phone cards (14 Nov 2026 — a curved-bar case): the selected tab's full
+     red fill and the unselected tabs' tint fill already carry the state. */
+  .ws-tab { border-radius: var(--r-card); gap: .4rem; padding-inline: .6rem; font-size: .9375rem; hyphens: none; }
   .ws-num { font-size: 1.25rem; }
   .ws.is-tabbed .ws-tabs { margin-bottom: var(--s2); }
   .ws-panel { padding: var(--s4) var(--s3); border-radius: var(--r-card); }
@@ -1507,7 +1514,9 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .person.is-role .person-name { grid-row: 3; }
 }
 .person-title { font-size: var(--fs-small); font-weight: 600; line-height: 1.5; }
-.person-title > span { padding-inline: .3em; background: linear-gradient(transparent 38%, var(--accent-tint) 38%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* The title is set in the deep shade, the eyebrow treatment used above headings across the site;
+   the pale stripe that used to sit behind its lower half went on 14 Nov 2026 (a curved-bar case). */
+.person-title > span { color: var(--accent-deep); }
 .sample-note { display: inline-block; margin-top: var(--s3); padding: var(--s1) var(--s3); border: var(--rule-line); border-radius: var(--r-card); font-size: var(--fs-small); color: var(--muted); }
 
 /* one person's page: a card that leads with the photo, the words beside it, the synced facts in
@@ -1891,7 +1900,6 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-setup h3 { margin-bottom: var(--s2); }
 .staff-setup h3:focus { outline: none; }
 .staff-setup-step { font-weight: 600; }
-.staff-setup progress { display: block; width: 100%; height: 1rem; margin-block: var(--s3) var(--s4); accent-color: var(--accent); }
 .staff-setup .field { margin-block: var(--s4); }
 .staff-setup .field input, .staff-setup .field textarea, .staff-setup .field select { max-width: 100%; min-width: 0; }
 .staff-setup .staff-actions { margin-top: var(--s4); }
@@ -1902,10 +1910,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-setup [role="alert"] { margin-top: var(--s3); }
 .staff-forms[hidden] { display: none; }
 /* The tools menu: the site's section menu (secnav, above) under the who bar, the view in use filled
-   in and underlined, as the header marks the page in use. */
+   in behind a plain outline, as the header marks the page in use. (The red bar the current pill used
+   to carry along its bottom inside edge went on 14 Nov 2026 — a curved coloured bar.) */
 .staff-nav { margin-top: var(--s5); display: flex; align-items: center; gap: var(--s1); }
 .staff-nav ul { flex: 1 1 auto; min-width: 0; }
-.staff-nav .secnav-item[aria-current="page"] { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line), inset 0 -3px 0 var(--accent); }
+.staff-nav .secnav-item[aria-current="page"] { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
 /* The menu's scroll buttons (client/staff.js): the site's button made square, one at each end of
    the bar, standing there only while the menu can scroll their way ([hidden] takes them out). */
 .staff-nav-scroll { flex: none; width: 44px; padding: 0; font-size: 1.5rem; line-height: 1; }

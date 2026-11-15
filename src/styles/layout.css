@@ -145,11 +145,12 @@
 .staff-link { opacity: .9; }
 
 /* ---------- Director Sign-In: the pop-up (src/render/layout.mjs) ---------- */
-/* Badger SPILL's solo sign-in card, translated: a narrow centred card, a dotted band, the wave
+/* Badger SPILL's solo sign-in card, translated: a narrow centred card, a brand band, the wave
    at the band's foot, a centred body, and SPILL's hard offset shadow in this site's ink. The
-   lockup is the brand's red one (owner, 14 Nov 2026), so the band wears the cream paper the
-   header stands on and its dots are the red tints; the wave is the band's cream in front and
-   the red tint behind it. */
+   band is the brand's red and the lockup on it is the white one, as the picked variant was
+   mocked (owner redo, 14 Nov 2026: an earlier cut inverted the pair — red lockup on the cream
+   paper — and a grid stood where the variant's soft bubbles were; both are superseded). The
+   wave is the band's red in front and its lighter shade behind it, over the body's white. */
 .signin-pop {
   width: min(26rem, calc(100vw - 2 * var(--s4)));
   max-height: calc(100dvh - 2 * var(--s4));
@@ -162,32 +163,34 @@
 .signin-pop-band {
   position: relative;
   padding: var(--s5) var(--s5) 0;
-  background: var(--tex-ground); background-blend-mode: normal, multiply;
+  background: var(--red);
   text-align: center;
 }
 /* centred with margin-inline: the base sheet makes images block-level, so the band's
    text-align alone left the lockup sitting at the band's left edge (owner fix, 14 Nov 2026). */
 .signin-pop-lockup { position: relative; z-index: 1; width: min(13.5rem, 72%); height: auto; margin-inline: auto; }
-/* the dots are a plain grid — one size, one spacing, one tint (owner fix, 14 Nov 2026: the
-   first cut scattered five hand-placed bubbles of different sizes, which read messy). */
-.signin-pop-dots {
-  position: absolute; inset: 0;
-  background-image: radial-gradient(circle, var(--red-tint) 3px, transparent 3.8px);
-  background-size: 26px 26px;
-  background-position: center top;
-}
+/* the bubbles: a handful of soft pale circles of differing sizes, scattered over the red as
+   the picked variant was mocked — sparse, translucent, none touching the lockup (owner redo,
+   14 Nov 2026; the even dot grid that briefly stood here is superseded). */
+.signin-pop-dots { position: absolute; inset: 0; }
+.signin-pop-dots i { position: absolute; border-radius: 50%; background: var(--paper); }
+.signin-pop-dots i:nth-child(1) { width: 1.6rem; height: 1.6rem; left: 9%; top: 33%; opacity: .55; }
+.signin-pop-dots i:nth-child(2) { width: .85rem; height: .85rem; right: 14%; top: 15%; opacity: .5; }
+.signin-pop-dots i:nth-child(3) { width: 1.1rem; height: 1.1rem; right: 7%; top: 58%; opacity: .45; }
+.signin-pop-dots i:nth-child(4) { width: .65rem; height: .65rem; left: 29%; top: 74%; opacity: .55; }
+.signin-pop-dots i:nth-child(5) { width: .9rem; height: .9rem; left: 16%; top: 68%; opacity: .38; }
 .signin-pop-close {
   position: absolute; top: var(--s2); right: var(--s2); z-index: 2;
   width: 44px; height: 44px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer;
+  border: 0; border-radius: 50%; background: none; color: var(--paper); cursor: pointer;
 }
 .signin-pop-close-ic { width: 1.2rem; height: 1.2rem; }
 /* the wave's top margin matches the band's top padding, so the lockup sits centred in the
-   cream above the wave instead of riding high over it (same owner fix). */
+   red above the wave instead of riding high over it (owner fix, 14 Nov 2026). */
 .signin-pop-band .wave { display: block; width: calc(100% + 2 * var(--s5)); height: 32px; margin: var(--s5) calc(-1 * var(--s5)) 0; }
-.signin-pop .wave-back { fill: var(--red-light); opacity: .45; }
-.signin-pop .wave-fill { fill: var(--ground); }
+.signin-pop .wave-back { fill: var(--red-light); }
+.signin-pop .wave-fill { fill: var(--red); }
 .signin-pop-body { display: grid; gap: var(--s3); justify-items: center; padding: var(--s4) var(--s5) var(--s5); text-align: center; }
 .signin-pop-body h2 { margin: 0; font: 800 var(--fs-h3)/1.1 var(--font-display); letter-spacing: .01em; text-transform: uppercase; }
 .signin-pop-line { margin: 0; }

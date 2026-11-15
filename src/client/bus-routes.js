@@ -111,7 +111,8 @@ for (const box of document.querySelectorAll("[data-bus-routes]")) {
     resultsBox.hidden = true;
     try {
       const places = [];
-      for (const q of inputs) {
+      for (const [i, q] of inputs.entries()) {
+        if (inputs.length > 1) status.textContent = t("explore.bus.lookingCount", { n: i + 1, total: inputs.length });
         const found = await geocode(q);
         if (!found.length) { status.textContent = t("explore.bus.notFound", { q }); return; }
         places.push({ ...found[0], typed: q });

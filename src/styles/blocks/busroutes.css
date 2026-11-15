@@ -33,6 +33,7 @@
 .bus-kind { font-weight: 800; }
 .bus-route { font-weight: 700; }
 .bus-walk { color: var(--muted); }
+.bus-elsewhere { margin: var(--s1) 0 0; font-weight: 400; color: var(--muted); }
 .bus-map { background: var(--paper); border: var(--hairline); border-radius: var(--r-card); padding: var(--s2); }
 .bus-svg { width: 100%; height: auto; display: block; }
 .bus-line { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .55; }

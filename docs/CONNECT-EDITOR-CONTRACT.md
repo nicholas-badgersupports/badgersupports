@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-874 keys. Keys are permanent. Required text cannot be published empty and must keep each
+877 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -1448,7 +1448,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (57)
+### Explore Campus (60)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1496,6 +1496,9 @@ the site adds the markup.
 | `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
 | `explore.bus.notFound` | No match near Madison for “{{q}}”. Check the address and try again. | On the Bus Route Explorer: when an address cannot be placed. | `{{q}}` |
 | `explore.bus.failed` | The comparison could not be made just now. Try again. | On the Bus Route Explorer: when the comparison itself fails. |  |
+| `explore.bus.lookupFailed` | The address lookup is not answering just now, so “{{q}}” could not be placed. Try again. | On the Bus Route Explorer: when the address lookup service itself fails while placing an address — the address the visitor typed is not the problem. | `{{q}}` |
+| `explore.bus.outsideArea` | “{{q}}” matched {{place}}, which is outside the Madison area this explorer covers. Check the address and try again. | On the Bus Route Explorer: when an address resolves to a place outside the area the comparison covers, so no comparison is run for it. | `{{q}}` `{{place}}` |
+| `explore.bus.elsewhere` | This matched an address in {{city}}, not Madison. If you meant a Madison address, check it and try again. | On the Bus Route Explorer: the line under a results row's address when the match is in another town or city, so the row is not read as a Madison answer. | `{{city}}` |
 | `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
 | `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
 | `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |

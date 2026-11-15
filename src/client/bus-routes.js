@@ -112,12 +112,18 @@ for (const box of document.querySelectorAll("[data-bus-routes]")) {
     try {
       const places = [];
       for (const q of inputs) {
-        const found = await geocode(q);
+        let found;
+        try { found = await geocode(q); } catch { status.textContent = t("explore.bus.lookupFailed", { q }); return; }
         if (!found.length) { status.textContent = t("explore.bus.notFound", { q }); return; }
-        places.push({ ...found[0], typed: q });
+        /* The first answer is not trusted on its own: a Madison match further down
+         * the list beats one in another town, and a match the comparison cannot
+         * cover is named here instead of failing the whole comparison in silence. */
+        const pick = found.find((f) => f.city === "Madison") || found.find((f) => f.inArea) || found[0];
+        if (!pick.inArea) { status.textContent = t("explore.bus.outsideArea", { q, place: pick.state && pick.state !== "Wisconsin" ? `${pick.label}, ${pick.state}` : pick.label }); return; }
+        places.push({ ...pick, typed: q });
       }
       status.textContent = t("explore.bus.working");
-      const res = await fetch("/api/bus-routes", { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify({ points: places.map(({ label, typed, ...p }) => p), buildings: chosen }) });
+      const res = await fetch("/api/bus-routes", { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify({ points: places.map(({ label, typed, city, state, inArea, ...p }) => p), buildings: chosen }) });
       if (!res.ok) throw new Error("classify");
       const got = await res.json();
       const table = el("table", "bus-table");
@@ -128,7 +134,9 @@ for (const box of document.querySelectorAll("[data-bus-routes]")) {
       const tbody = el("tbody");
       got.results.forEach((row, i) => {
         const tr = el("tr");
-        tr.append(el("th", null, `${i + 1}. ${places[i].label}`));
+        const th = el("th", null, `${i + 1}. ${places[i].label}`);
+        if (places[i].city && places[i].city !== "Madison") th.append(el("p", "bus-elsewhere", t("explore.bus.elsewhere", { city: places[i].city })));
+        tr.append(th);
         for (const cell of row.cells) { const td = el("td"); td.append(cellWords(cell)); tr.append(td); }
         tbody.append(tr);
       });

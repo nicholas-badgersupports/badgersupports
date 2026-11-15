@@ -1,7 +1,10 @@
 /* The resource list's topics, search and Additional Details (src/render/blocks/resources.mjs).
-   The search is Connect's Find a Resource search: every word typed must appear on the card. When
-   nothing matches, it tries words that begin the same way ("psychologist" finds "psychology") and
-   says so. The topic, the search and the filters stay in the address (?topic=, ?q=, ?cost=, ?where=,
+   The search is Connect's Find a Resource search: every word typed must appear on the card, and
+   the matches are ordered by where the words matched — the card's name first, then the words
+   it is also known by, its topics, what it is, and its details (QOL proposal 2). A short word
+   must appear as a word of its own (QOL proposal 5). When nothing matches, it tries words from
+   the same root ("anxious" finds "anxiety") and words that begin the same way ("psychologist"
+   finds "psychology") and says so. The topic, the search and the filters stay in the address (?topic=, ?q=, ?cost=, ?where=,
    ?how=), so a link opens the same list; an old address word for a topic (?topic=health) opens that
    topic, and an unknown one shows everything. Within a filter group any pressed option matches; across
    groups every group must. What is in use shows as chips that each remove themselves, beside Clear All.
@@ -30,6 +33,30 @@ const own = (el) => {
 };
 /* "psychologist" -> "psycholog": the start a word must share with a card's word on the second try. */
 const stem = (w) => w.slice(0, Math.min(w.length, Math.max(5, w.length - 3)));
+/* A word's root, by the endings English words trade among themselves: "anxious" and "anxiety"
+   both come to "anxi", "psychologist" and "psychology" to "psycholog", "depressed" and
+   "depression" to "depress". Endings are stripped one at a time, in this order, from the word
+   as the ones before it leave it. Short words keep themselves. The site search's own copy of
+   this (src/client/search.js) is the same list, so the two searches hear words alike. */
+const stemOf = (w) => {
+  if (w.length <= 3) return w;
+  let s = w;
+  for (const [end, put] of [["ies", "i"], ["iety", "i"], ["ious", "i"], ["ness", ""], ["ology", "olog"], ["ical", ""], ["ing", ""], ["edly", ""], ["ed", ""], ["ist", ""], ["ion", ""], ["ment", ""], ["ous", ""], ["ly", ""], ["y", "i"], ["es", ""], ["s", ""]]) {
+    if (s.length > end.length && s.endsWith(end)) s = s.slice(0, s.length - end.length) + put;
+  }
+  return s;
+};
+/* Whether one typed word hits a field: a short word (four letters or fewer) must stand as a
+   word of its own in the field's word set, so "rent" does not find "parent" and "car" does
+   not find "care" (QOL proposal 5); a longer one may sit inside a longer word ("counsel" in
+   "counseling"). */
+const hitsWord = (w, hay, set) => (w.length <= 4 ? set.has(w) : hay.includes(w));
+/* The second try: a card word from the same root, or one that begins the way the typed word
+   begins. A word of three letters or fewer gets no shared-beginning try — its beginning is
+   too little to go on — so "car" cannot reach "care" here either; at four letters the shared
+   beginning is the word itself ("exam" finds "example"), and longer words share a shortened
+   start ("psychologist" finds "psychology"). */
+const looseHit = (w, it) => it.stems.has(stemOf(w)) || (w.length >= 4 && it.hayWords.some((h) => h.startsWith(stem(w))));
 
 for (const box of document.querySelectorAll("[data-resources]")) {
   const tools = box.querySelector("[data-res-tools]");
@@ -73,9 +100,21 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   function buildItems() {
     items = [...list.querySelectorAll("[data-res]")].map((li) => {
       const cats = (li.dataset.cats || "").split(" ").filter(Boolean);
+      /* The card's words by where they stand on it, so a match can be weighed (below): the
+         name, the words it is also known by, its topics, what it is and who it suits, and
+         its details. The whole hay is the same words joined, as the search has always read. */
+      const field = (s) => { const hay = words(s); return { hay, set: new Set(hay.split(" ").filter(Boolean)) }; };
+      const fields = {
+        name: field(own(li.querySelector("h3"))),
+        aka: field(li.dataset.aka || ""),
+        cats: field(cats.map((c) => labelOf.get(c) || "").join(" ")),
+        main: field([li.querySelector(".res-what"), li.querySelector(".res-fit"), li.querySelector(".res-tags")].map(own).join(" ")),
+        body: field(own(li.querySelector(".res-more-body"))),
+      };
       const hay = words([li.querySelector("h3"), li.querySelector(".res-what"), li.querySelector(".res-fit"), li.querySelector(".res-tags"), li.querySelector(".res-more-body")].map(own).concat(li.dataset.aka || "", cats.map((c) => labelOf.get(c) || "")).join(" "));
+      const hayWords = hay.split(" ").filter(Boolean);
       const vals = Object.fromEntries(GROUPS.map((g) => [g, (li.dataset[g] || "").split(" ").filter(Boolean)]));
-      return { li, cats, hay, hayWords: hay.split(" "), vals };
+      return { li, cats, hay, hayWords, haySet: new Set(hayWords), stems: new Set(hayWords.map(stemOf)), fields, vals };
     });
     wireDialog();
   }
@@ -161,28 +200,44 @@ for (const box of document.querySelectorAll("[data-resources]")) {
     if (items) applyList();
   };
 
+  /* Where the words matched decides a card's place (QOL proposal 2): per typed word, the best
+     field it hits — the name ahead of the words the card is also known by, those ahead of its
+     topics, then what it is and who it suits, then its details; a word standing as its own
+     word ahead of the same word inside a longer one. Equal scores keep the catalogue's order,
+     so the order is steady. */
+  const WEIGH = [["name", 16, 8], ["aka", 12, 6], ["cats", 10, 5], ["main", 6, 3], ["body", 4, 2]];
+  const scoreOf = (it, q) => q.reduce((n, w) => n + (WEIGH.map(([f, whole, inside]) => {
+    const fld = it.fields[f];
+    return fld.set.has(w) ? whole : w.length > 4 && fld.hay.includes(w) ? inside : 0;
+  }).reduce((a, b) => Math.max(a, b), 0)), 0);
+
   /* The list itself: what matches, the reveal over it, and the count of what is showing. */
   const applyList = () => {
     const q = words(input.value).split(" ").filter(Boolean);
     const cat = buttons.find((b) => b.dataset.topic === topic)?.dataset.category || "";
     const pool = items.filter((it) => (!cat || it.cats.includes(cat)) && GROUPS.every((g) => !pressed[g].size || it.vals[g].some((v) => pressed[g].has(v))));
-    let shown = q.length ? pool.filter((it) => q.every((w) => it.hay.includes(w))) : pool;
+    let shown = q.length ? pool.filter((it) => q.every((w) => hitsWord(w, it.hay, it.haySet))) : pool;
     let loose = false;
     if (q.length && !shown.length) {
-      shown = pool.filter((it) => q.every((w) => { const s = stem(w); return it.hayWords.some((h) => h.startsWith(s)); }));
+      shown = pool.filter((it) => q.every((w) => looseHit(w, it)));
       loose = shown.length > 0;
     }
+    if (q.length) shown = shown.slice().sort((a, z) => scoreOf(z, q) - scoreOf(a, q));
     const on = new Set(shown);
     const sig = [topic, q.join(" "), GROUPS.map((g) => [...pressed[g]].sort().join(",")).join("|"), shown.map((it) => it.li.dataset.res).join(",")].join("§");
     if (sig !== lastSig) { lastSig = sig; limit = PAGE; }
     let seen = 0, visible = 0;
-    for (const it of items) {
-      if (!on.has(it)) { it.li.hidden = true; continue; }
+    for (const it of items) if (!on.has(it)) it.li.hidden = true;
+    /* The reveal walks the matches in their ranked order, and the cards are laid in that
+       order too, so what is read first is what matched best; with no words typed the order
+       is the catalogue's own, restored the same way. A safety resource is never held back. */
+    for (const it of shown) {
       const exempt = it.cats.includes("safety_survivor_support");
       if (!exempt) seen++;
       it.li.hidden = !exempt && seen > limit;
       if (!it.li.hidden) visible++;
     }
+    for (const it of shown) list.append(it.li);
     const held = shown.filter((it) => !it.cats.includes("safety_survivor_support")).length;
     if (moreRow) moreRow.hidden = !(shown.length > 0 && held > limit);
     if (relaxed) relaxed.hidden = !loose;

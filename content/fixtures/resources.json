@@ -56,7 +56,7 @@
     {
       "id": "access-community-health-centers",
       "name": "Access Community Health Centers",
-      "aka": null,
+      "aka": "community clinic;medical care;dental care;pharmacy",
       "summary": "Get medical, dental, behavioral health, and pharmacy care at community clinics in the Madison area.",
       "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
       "nextStep": "Call 608-443-5480; medical and behavioral health appointments.",
@@ -152,7 +152,7 @@
     {
       "id": "allied-food-pantry",
       "name": "Allied Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Allied Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -195,7 +195,7 @@
     {
       "id": "asian-pacific-islander-desi-american-student-cen",
       "name": "Asian Pacific Islander Desi American Student Center",
-      "aka": null,
+      "aka": "APIDA",
       "summary": "Find community, programs, and support for Asian Pacific Islander Desi American students.",
       "bestFor": "Community, identity-based support, peer connection, or belonging.",
       "nextStep": "Call 608-262-4503.",
@@ -247,7 +247,7 @@
     {
       "id": "badger-recovery",
       "name": "Badger Recovery",
-      "aka": null,
+      "aka": "addiction;substance use;sobriety;recovery",
       "summary": "Badger Recovery is a program for students in or considering recovery from substance use.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Email recovery@uhs.wisc.edu to ask about access and next steps.",
@@ -296,7 +296,7 @@
     {
       "id": "badgerfare",
       "name": "Badger FARE Program",
-      "aka": "BadgerFare",
+      "aka": "BadgerFare;food assistance",
       "summary": "Get campus and community food support through the Badger FARE Program.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -342,7 +342,7 @@
     {
       "id": "basic-needs-resources",
       "name": "Basic Needs Student Support",
-      "aka": "Basic Needs Resources;basic needs navigator;food housing money help;not sure where to start;emergency needs;legal help",
+      "aka": "Basic Needs Resources;basic needs navigator;food housing money help;not sure where to start;emergency needs;legal help;emergency funds;financial aid",
       "summary": "Connect with campus support for food, housing, health coverage, finances, and other basic needs.",
       "bestFor": "Finding the right campus or community resource when you are unsure where to begin.",
       "nextStep": "Email basic.needs@finaid.wisc.edu to ask about access and next steps.",
@@ -393,7 +393,7 @@
     {
       "id": "bayview-food-pantry",
       "name": "Bayview Food Pantry",
-      "aka": null,
+      "aka": "groceries;free groceries",
       "summary": "Get free groceries through Bayview Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -438,7 +438,7 @@
     {
       "id": "bethel-food-pantry",
       "name": "Bethel Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Bethel Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-257-3577.",
@@ -481,7 +481,7 @@
     {
       "id": "bipoc-mental-health-resource-guide",
       "name": "BIPOC Mental Health Resource Guide",
-      "aka": null,
+      "aka": "people of color;mental health resources",
       "summary": "Find mental health information and resources created with Black, Indigenous, and people of color in mind.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -527,7 +527,7 @@
     {
       "id": "black-cultural-center",
       "name": "Black Cultural Center",
-      "aka": null,
+      "aka": "BCC",
       "summary": "Find community, programs, and academic and social support for Black students at UW–Madison.",
       "bestFor": "Community, identity-based support, peer connection, or belonging.",
       "nextStep": "Call 608-262-4503.",
@@ -628,7 +628,7 @@
     {
       "id": "counseling-psychology-training-clinic",
       "name": "Counseling Psychology Training Clinic",
-      "aka": null,
+      "aka": "CPTC;psychologist;psychological services",
       "summary": "CPTC provides high-quality, cost-efficient, and multiculturally competent psychological and mental health services.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-265-8779.",
@@ -678,7 +678,7 @@
     {
       "id": "couple-partner-counseling",
       "name": "Couple/Partner Counseling",
-      "aka": null,
+      "aka": "couples therapy;relationship problems",
       "summary": "Couples and partners can attend therapy at UHS in a confidential setting to address relationship challenges, improve communication, and understand interpersonal dynamics.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-265-5600; use option 2.",
@@ -971,7 +971,7 @@
     {
       "id": "emergency-support",
       "name": "Emergency Support",
-      "aka": null,
+      "aka": "emergency funds;emergency money;financial emergency;unexpected expenses",
       "summary": "Get emergency financial support options for enrolled UW–Madison students facing unexpected essential expenses.",
       "bestFor": "Paying for school or handling an unexpected expense.",
       "nextStep": "Open the official page for current access details.",
@@ -1019,7 +1019,7 @@
     {
       "id": "extended-hands-pantry",
       "name": "Extended Hands Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Extended Hands Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-219-2985.",
@@ -1111,7 +1111,7 @@
     {
       "id": "food-recovery-network",
       "name": "Food Recovery Network",
-      "aka": null,
+      "aka": "free meals;community meals;recovered food",
       "summary": "Find free community meals made with recovered food through the Food Recovery Network.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -1156,7 +1156,7 @@
     {
       "id": "foodshare",
       "name": "FoodShare",
-      "aka": null,
+      "aka": "food stamps;SNAP;EBT card",
       "summary": "FoodShare is a government program that gives cash benefits on a card that can be used for groceries.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -1204,7 +1204,7 @@
     {
       "id": "free-food-alert",
       "name": "Free Food Alert",
-      "aka": null,
+      "aka": "free food alerts;leftover food;food waste",
       "summary": "Free Food Alert is a voluntary program that helps feed hungry people and takes action against food waste.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the online tool and follow the published instructions.",
@@ -1251,7 +1251,7 @@
     {
       "id": "free-meditation-and-mindfulness-sessions",
       "name": "Free meditation and mindfulness sessions",
-      "aka": "Runs during term only; check in ten minutes early.",
+      "aka": "meditation;mindfulness;guided meditation",
       "summary": "Free half-hour guided meditation sessions on campus with nothing to prepare and no experience required.",
       "bestFor": "a short reset in the middle of a hard day",
       "nextStep": "Register online, or simply turn up to the next session.",
@@ -1299,7 +1299,7 @@
     {
       "id": "fritz-food-pantry-goodman-community-center",
       "name": "Fritz Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Fritz Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-241-1574.",
@@ -1393,7 +1393,7 @@
     {
       "id": "good-shepherd-food-pantry",
       "name": "Good Shepherd Lutheran Church Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Good Shepherd Lutheran Church Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-271-6633.",
@@ -1436,7 +1436,7 @@
     {
       "id": "grace-episcopal-church-food-pantry",
       "name": "Grace Food Pantry",
-      "aka": null,
+      "aka": "groceries;Grace Episcopal Church",
       "summary": "Get groceries through Grace Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-255-5147.",
@@ -1525,7 +1525,7 @@
     {
       "id": "gynecology",
       "name": "Gynecology",
-      "aka": null,
+      "aka": "birth control;contraception;pregnancy counseling;STI screening",
       "summary": "UHS offers a range of gynecology services, including contraception, pregnancy counseling and referrals, STI screenings, and abortion follow-up.",
       "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
       "nextStep": "Call 608-265-5600.",
@@ -1575,7 +1575,7 @@
     {
       "id": "hiv-post-exposure-prevention",
       "name": "HIV Post-Exposure Prevention",
-      "aka": null,
+      "aka": "PEP;post exposure prophylaxis;HIV exposure",
       "summary": "UHS identifies high-risk situations for HIV/STI infection and emphasizes the importance of starting antiviral medication within 72 hours post-exposure.",
       "bestFor": "Medical, sexual-health, injury, nutrition, or wellness care.",
       "nextStep": "Call 608-265-5600; same-day appointment or after-hours advice.",
@@ -1623,7 +1623,7 @@
     {
       "id": "inclusive-therapists",
       "name": "Inclusive Therapists",
-      "aka": null,
+      "aka": "find a therapist;therapist directory",
       "summary": "Search a mental health directory centered on social justice, identity, and culturally responsive care.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -1670,7 +1670,7 @@
     {
       "id": "indigenous-student-center",
       "name": "Indigenous Student Center",
-      "aka": null,
+      "aka": "ISC",
       "summary": "Find community, programs, and academic, professional, and social support for Indigenous students.",
       "bestFor": "Community, identity-based support, peer connection, or belonging.",
       "nextStep": "Call 608-262-4503.",
@@ -1721,7 +1721,7 @@
     {
       "id": "international-student-services",
       "name": "International Student Services",
-      "aka": "ISS",
+      "aka": "ISS;homesick",
       "summary": "Get immigration advising, programs, and support for navigating life as an international student at UW–Madison.",
       "bestFor": "Community, identity-based support, peer connection, or belonging.",
       "nextStep": "Call 608-262-2044.",
@@ -1771,7 +1771,7 @@
     {
       "id": "islamic-center-of-madison",
       "name": "Islamic Center of Madison Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Islamic Center of Madison Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-395-7706.",
@@ -1814,7 +1814,7 @@
     {
       "id": "journey-mental-health",
       "name": "Journey Mental Health Center",
-      "aka": null,
+      "aka": "addiction treatment;substance use services",
       "summary": "Journey Mental Health Center is a nonprofit agency providing mental health and substance use disorder services in Dane and Columbia Counties.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-280-2700; 608-280-2600 for 24/7 crisis support.",
@@ -1861,7 +1861,7 @@
     {
       "id": "kennedy-heights-community-center-food-pantry",
       "name": "Kennedy Heights Community Center Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Kennedy Heights Community Center Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-244-0767.",
@@ -1906,7 +1906,7 @@
     {
       "id": "lakeview-lutheran-church-food-pantry",
       "name": "Lakeview Lutheran Church Food Pantry",
-      "aka": null,
+      "aka": "groceries;Lakeview Lutheran Church",
       "summary": "Get groceries through Lakeview Lutheran Church Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-244-6181.",
@@ -1949,7 +1949,7 @@
     {
       "id": "latinx-cultural-center",
       "name": "Latine Cultural Center",
-      "aka": null,
+      "aka": "Latinx Cultural Center;LCC",
       "summary": "Find community, programs, and academic, professional, and social support for Latine students.",
       "bestFor": "Community, identity-based support, peer connection, or belonging.",
       "nextStep": "Call 608-262-4503.",
@@ -1999,7 +1999,7 @@
     {
       "id": "law-for-learners",
       "name": "Law For Learners",
-      "aka": null,
+      "aka": "legal help;legal advice;free lawyer",
       "summary": "Law For Learners is a free, confidential legal support service for all Universities of Wisconsin students.",
       "bestFor": "Legal, immigration, tenant, conduct, or rights questions.",
       "nextStep": "Open the official page for current access details.",
@@ -2047,7 +2047,7 @@
     {
       "id": "lgbt-national-help-center",
       "name": "LGBT National Help Center",
-      "aka": null,
+      "aka": "LGBTQ hotline;hotline",
       "summary": "Connect with LGBTQ+ peer support through national hotlines and online groups.",
       "bestFor": "Community, identity-based support, peer connection, or belonging.",
       "nextStep": "Call 888-843-4564.",
@@ -2094,7 +2094,7 @@
     {
       "id": "lussier-community-education-center",
       "name": "Lussier Community Education Center Food Pantry",
-      "aka": null,
+      "aka": "groceries;free groceries;Lussier Community Education Center",
       "summary": "Get free groceries through Lussier Community Education Center Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-833-4979.",
@@ -2139,7 +2139,7 @@
     {
       "id": "mcburney-disability-resource-center",
       "name": "McBurney Disability Resource Center",
-      "aka": "disability accommodations;McBurney",
+      "aka": "disability accommodations;McBurney;adhd;autism;neurodivergent",
       "summary": "Request disability-related academic accommodations and access support at UW–Madison.",
       "bestFor": "Academic accommodations or disability access support.",
       "nextStep": "Call 608-263-2741.",
@@ -2190,7 +2190,7 @@
     {
       "id": "meadowwood-neighborhood-center",
       "name": "Meadowood Neighborhood Center Food Pantry",
-      "aka": null,
+      "aka": "groceries",
       "summary": "Get groceries through Meadowood Neighborhood Center Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-467-8360.",
@@ -2235,7 +2235,7 @@
     {
       "id": "mental-health-services",
       "name": "Mental Health Services",
-      "aka": "therapy;therapist;counselor;counselling;someone to talk to;mental health appointment",
+      "aka": "therapy;therapist;counselor;counselling;someone to talk to;mental health appointment;panic attack;overwhelmed;grief;homesick;adhd",
       "summary": "Find UHS counseling, psychiatry, groups, workshops, and 24/7 crisis support for UW–Madison students.",
       "bestFor": "Ongoing counseling, psychiatry, groups, workshops, or crisis support.",
       "nextStep": "Call 608-265-5600; use option 2 for appointments; option 9 for 24/7 crisis support.",
@@ -2288,7 +2288,7 @@
     {
       "id": "mhs-let-s-talk",
       "name": "Drop-in Support at Let’s Talk",
-      "aka": "MHS: Let's Talk!;Let’s Talk;talk to someone today;same day support;brief counseling;drop in counselor;let's talk",
+      "aka": "MHS: Let's Talk!;Let\u2019s Talk;talk to someone today;same day support;brief counseling;drop in counselor;let's talk;overwhelmed;homesick;lonely;grief",
       "summary": "Talk with a UHS provider in a no-cost, 20–25 minute drop-in session about stress, relationships, school, or other concerns.",
       "bestFor": "A brief conversation with a mental health provider without starting ongoing counseling.",
       "nextStep": "Open the official page for current access details.",
@@ -2384,7 +2384,7 @@
     {
       "id": "nami-dane-county-support-groups",
       "name": "NAMI Dane County Support Groups",
-      "aka": null,
+      "aka": "NAMI",
       "summary": "Find free mental health support groups for people living in Dane County.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -2478,7 +2478,7 @@
     {
       "id": "neighborhood-house-food-pantry",
       "name": "Neighborhood House Community Center Food Pantry",
-      "aka": null,
+      "aka": "groceries;free groceries;Neighborhood House",
       "summary": "Get free groceries through Neighborhood House Community Center Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-255-5337.",
@@ -2523,7 +2523,7 @@
     {
       "id": "nutrition-access-program",
       "name": "Nutrition Access Program",
-      "aka": null,
+      "aka": "UW Frozen Meals Program;frozen meals",
       "summary": "Find housing Dining’s Nutrition Access Program (formerly known as UW Frozen Meals Program) diverts unserved food from our dining locations and turn them into frozen.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -2569,7 +2569,7 @@
     {
       "id": "off-campus-mental-health-care",
       "name": "Off-Campus Mental Health Care",
-      "aka": null,
+      "aka": "long-term treatment;off-campus therapy",
       "summary": "UHS provides off-campus mental health care support for UW–Madison students needing long-term, frequent, or specialized treatment.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-265-5600; use option 2.",
@@ -2615,7 +2615,7 @@
     {
       "id": "phamily-dinner-at-pres-house",
       "name": "PHamily Dinner",
-      "aka": null,
+      "aka": "free dinner;community dinner;Pres House",
       "summary": "Find free community dinner for UW–Madison students at Pres House.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -2661,7 +2661,7 @@
     {
       "id": "prevention-services",
       "name": "Prevention Services",
-      "aka": null,
+      "aka": "suicide prevention",
       "summary": "Find UHS training, consultation, and campus resources for suicide prevention and student mental health.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-265-5600; use option 9 for 24/7 mental health crisis support.",
@@ -2708,7 +2708,7 @@
     {
       "id": "psychiatric-and-primary-care-services",
       "name": "Psychiatric Services",
-      "aka": "Psychiatric and Primary Care Services",
+      "aka": "Psychiatric and Primary Care Services;psychiatrist;medication management;adhd",
       "summary": "UHS offers outpatient psychiatric care focused on evaluation and medication management.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-265-5600; use option 2.",
@@ -2759,7 +2759,7 @@
     {
       "id": "psychiatric-services",
       "name": "Psychiatric Services, S.C.",
-      "aka": null,
+      "aka": "psychiatrist;medication management",
       "summary": "Get counseling, psychiatric evaluation, medication management, and other mental health care in the Madison area.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-238-9354.",
@@ -2806,7 +2806,7 @@
     {
       "id": "psychology-research-and-training-clinic",
       "name": "Psychology Research and Training Clinic",
-      "aka": null,
+      "aka": "PRTC;psychologist;psychology clinic",
       "summary": "Get outpatient therapy for concerns such as anxiety, depression, stress, relationships, eating, or substance use.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-262-5925.",
@@ -2852,7 +2852,7 @@
     {
       "id": "psychology-today",
       "name": "Psychology Today",
-      "aka": null,
+      "aka": "therapist directory;find a therapist",
       "summary": "Search Psychology Today’s therapist directory by location, specialty, insurance, identity, and service format.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -2948,7 +2948,7 @@
     {
       "id": "recwell-wellbeing-workshops",
       "name": "Wellbeing Workshops",
-      "aka": null,
+      "aka": "healthy habits;burnout;sleep;overwhelmed",
       "summary": "Get rec Well workshops on practical wellbeing topics and healthy habits for UW–Madison students.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-262-8244.",
@@ -2994,7 +2994,7 @@
     {
       "id": "recwell-wellness-coaching",
       "name": "Wellness Coaching",
-      "aka": null,
+      "aka": "wellbeing coach;sleep;burnout;healthy habits",
       "summary": "Get peer-to-peer coaching to reflect on wellbeing, set goals, build self-awareness, and develop skills across eight dimensions of wellbeing.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Call 608-262-8244.",
@@ -3042,7 +3042,7 @@
     {
       "id": "saint-marks-food-pantry",
       "name": "St. Mark’s Food Pantry",
-      "aka": null,
+      "aka": "groceries;St. Mark's",
       "summary": "Get groceries through St. Mark’s Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-256-8463.",
@@ -3085,7 +3085,7 @@
     {
       "id": "saint-vincents-food-pantry",
       "name": "St. Vincent de Paul Food Pantry",
-      "aka": null,
+      "aka": "groceries;St. Vincent de Paul",
       "summary": "Get groceries through St. Vincent de Paul Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-257-0919.",
@@ -3128,7 +3128,7 @@
     {
       "id": "slow-food-uw",
       "name": "Slow Food UW",
-      "aka": null,
+      "aka": "community meals;sustainable food",
       "summary": "Find community meals and sustainable-food programs through Slow Food UW.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Email slowfooduw@gmail.com to ask about access and next steps.",
@@ -3174,7 +3174,7 @@
     {
       "id": "social-justice-center-willy-street-pantr",
       "name": "Willy Street Pantry",
-      "aka": null,
+      "aka": "groceries;free groceries;Social Justice Center",
       "summary": "Get free groceries through Willy Street Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-227-0206.",
@@ -3219,7 +3219,7 @@
     {
       "id": "solomons-food-pantry",
       "name": "Solomon’s Food Pantry",
-      "aka": null,
+      "aka": "groceries;Solomon's",
       "summary": "Get groceries through Solomon’s Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-249-4555.",
@@ -3262,7 +3262,7 @@
     {
       "id": "space-to-heal",
       "name": "Space To Heal",
-      "aka": null,
+      "aka": "therapy for students",
       "summary": "Find therapy focused on the mental health needs and experiences of college students.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the booking page to make an appointment.",
@@ -3407,7 +3407,7 @@
     {
       "id": "the-keep-food-pantry",
       "name": "The Keep Food Pantry",
-      "aka": null,
+      "aka": "groceries;free groceries;The Keep",
       "summary": "Get free groceries through The Keep Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-258-3160.",
@@ -3498,7 +3498,7 @@
     {
       "id": "the-people-s-farm",
       "name": "The People's Farm",
-      "aka": null,
+      "aka": "sustainable agriculture;student farm",
       "summary": "The People's Farm is a student organization focused on sustainable agriculture.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Open the official page for current access details.",
@@ -3587,7 +3587,7 @@
     {
       "id": "the-trans-lifeline",
       "name": "The Trans Lifeline",
-      "aka": null,
+      "aka": "trans hotline",
       "summary": "Call a peer-support hotline run by and for trans people seeking connection or crisis support.",
       "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
       "nextStep": "Call 877-565-8860.",
@@ -3636,7 +3636,7 @@
     {
       "id": "the-trevor-project",
       "name": "The Trevor Project",
-      "aka": null,
+      "aka": "Trevor;LGBTQ crisis line",
       "summary": "The Trevor Project offers 24/7 crisis support and information for LGBTQ young people.",
       "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
       "nextStep": "Text START to 678678 for support.",
@@ -3685,7 +3685,7 @@
     {
       "id": "therapy-for-black-girls",
       "name": "Therapy for Black Girls",
-      "aka": null,
+      "aka": "Black women;find a therapist",
       "summary": "Therapy for Black Girls presents mental health topics in a way that feels accessible and relevant to help Black women take the step to see a therapist.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -3730,7 +3730,7 @@
     {
       "id": "therapy-for-black-men",
       "name": "Therapy for Black Men",
-      "aka": null,
+      "aka": "Black men;men of color",
       "summary": "Therapy for Black Men provides proactive, multiculturally competent care to men of color.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -3774,7 +3774,7 @@
     {
       "id": "uhs-24-7-mental-health-crisis-support-line",
       "name": "24/7 Mental Health Crisis Support Line",
-      "aka": null,
+      "aka": "crisis line;crisis support;UHS crisis line",
       "summary": "Get licensed mental health professionals provide immediate crisis support and consultation by phone, 24 hours a day.",
       "bestFor": "Immediate safety, survivor support, crisis help, or reporting options.",
       "nextStep": "Call 608-265-5600; use option 9.",
@@ -3821,7 +3821,7 @@
     {
       "id": "uhs-mhs-workshops",
       "name": "Wellness Workshops",
-      "aka": null,
+      "aka": "loneliness;test anxiety;procrastination;stress management;lonely",
       "summary": "Get UHS wellness workshops help students build skills for wellbeing, including topics such as procrastination, test anxiety, loneliness, mindfulness, and stress.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the official page for current access details.",
@@ -3969,7 +3969,7 @@
     {
       "id": "uwill-individual-counseling",
       "name": "Uwill",
-      "aka": "Uwill / Individual Counseling",
+      "aka": "Uwill / Individual Counseling;virtual counseling;panic attack;grief",
       "summary": "Get no-cost virtual counseling by video, phone, chat, or message, including night and weekend appointments.",
       "bestFor": "Stress, anxiety, depression, recovery, counseling, or emotional support.",
       "nextStep": "Open the booking page to make an appointment.",
@@ -4018,7 +4018,7 @@
     {
       "id": "wil-mar-neighborhood-center",
       "name": "Wil-Mar Neighborhood Center Food Pantry",
-      "aka": null,
+      "aka": "groceries;Wil-Mar",
       "summary": "Get groceries through Wil-Mar Neighborhood Center Food Pantry.",
       "bestFor": "Food, clothing, hygiene items, or other basic supplies.",
       "nextStep": "Call 608-257-4576.",

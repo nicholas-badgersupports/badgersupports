@@ -21,10 +21,22 @@ test("the index covers the public pages, home and a room's own page among them",
   assert.ok(byPath.has("/directions/lcm/"), "a room's page is indexed");
   assert.ok(index.length >= 40, `the index holds the site (got ${index.length})`);
   for (const p of index) {
-    assert.ok(p.path.startsWith("/") && p.path.endsWith("/"), `${p.path}: a page address`);
+    assert.ok(p.path.startsWith("/"), `${p.path}: an address on this site`);
+    /* A page's own address ends at its directory; a resource's address is the Resources
+       page with the resource's name as the search there (QOL proposal 1). */
+    assert.ok(p.path.endsWith("/") || p.path.startsWith("/resources/?q="), `${p.path}: a page address, or a resource's`);
     assert.ok(p.title.trim(), `${p.path}: a title`);
     assert.equal(typeof p.text, "string", `${p.path}: words`);
   }
+});
+
+test("the index carries the resources as their own results (QOL proposal 1)", () => {
+  const found = index.filter((p) => p.path.startsWith("/resources/?q="));
+  assert.ok(found.length >= 40, `the resources are indexed (got ${found.length})`);
+  const pantry = found.find((p) => p.title === "Fritz Food Pantry");
+  assert.ok(pantry, "a named resource is its own result");
+  assert.equal(pantry.path, `/resources/?q=${encodeURIComponent("Fritz Food Pantry")}`, "the result lands on the resource on the Resources page");
+  assert.ok(pantry.text.includes("groceries"), "the result carries what the resource is");
 });
 
 test("a phrase that is only in one room's directions finds that room and nothing else", () => {

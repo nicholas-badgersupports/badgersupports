@@ -79,7 +79,7 @@ full text of both paragraphs in `docs/QUEUE-HISTORY-2026-11-10.md`.
    and the synced `dist/` holds conflict copies that cannot be deleted here (`docs/DESIGN.md`).
 5. **Connect** reports exports/resource ingestion published in its 2 Nov handoff; website verification/consumer completion is still owed (priority item 19; item 21). Exports remain off and forms closed in this tree.
 6. **Cost**: prices read 23 Oct (`docs/ARCHITECTURE.md`, "Cost"); what each database used is in Billing → Usage only.
-7. **The privacy policy** page still names Google Sites, Analytics and Forms. The draft of what the site does now, `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (`2bab970`), waits for the owner's and a legal review.
+7. **The privacy policy** page still names Google Sites, Analytics and Forms. The draft of what the site does now, `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (`2bab970`), has had the owner's review: his reviewed text stands at `docs/PRIVACY-POLICY-OWNER-REVIEWED-2026-11-14.md` (owner review done 14 Nov 2026). A legal review is still outstanding.
 8. **Analytics is live.** GA4 (`G-XVT9XWRVQ5`) has measured the live site since the 13 Nov 2026 publish, and GA4 Realtime confirmed collection the same day; Enhanced Measurement is on (owner's ruling, 12 Nov 2026). Reading the property's figures still needs the connector reauthenticated (owner action 8).
 
 ## Owner actions
@@ -168,8 +168,8 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov:** 40–47 — built, 
 publishes, with `../PUBLISH-WEBSITE-2026-10-23.command`, which first makes `node_modules` match `package-lock.json` (`ops/deps-match.mjs`, then `npm ci` when they differ). A session reads git with `git --no-optional-locks`.
 The laptop's shell cannot push: a cloud clone pushes, then the laptop's `site/` is brought up to it (`git fetch`, `git merge --ff-only`). The 25 Oct cloud run's patch was published as `9bf0ed5`. Never link it to Netlify: a Netlify build creates a database.
 On 12 Nov 2026 the owner approved merging `checks-2026-11-11` into `main` (the three post-publish defect fixes and two stale suite expectations); it merged the same day, and the owner publishes the merged head with the `../PUBLISH-MERGED-2026-11-12-NEXT/` file after he pushes `main`.
-Event type names (12 Nov 2026): branch `event-type-names-2026-11-12` names the five Connect types the merged publish found unnamed (`dogsoncall`, `navigatinghousing`, `outreach`, `spill`, `tabling`) in `content/connect-feed.json`; built and tested, unmerged, and the names reach the live site at the next publish.
-On 12 Nov 2026 the owner ruled that underlines are only for tappable links; branch link-underline-2026-11-12 removed the hover underlines from non-link controls (the resource and prose more summaries, and form step names) and from the unused ribbon-source style. Real links keep their underlines unchanged.
+Event type names (12 Nov 2026): branch `event-type-names-2026-11-12` names the five Connect types the merged publish found unnamed (`dogsoncall`, `navigatinghousing`, `outreach`, `spill`, `tabling`) in `content/connect-feed.json`; built and tested; merged to main 12 Nov 2026 (merge `145918f`, merge pass), and the names reach the live site at the next publish.
+On 12 Nov 2026 the owner ruled that underlines are only for tappable links; branch link-underline-2026-11-12 removed the hover underlines from non-link controls (the resource and prose more summaries, and form step names) and from the unused ribbon-source style. Real links keep their underlines unchanged. Merged to main 12 Nov 2026 (merge `1700cc0`, merge pass).
 
 ## Exchange
 `../../Admin/Handoffs/Exchange/`. **This session's inbox is `to-public/`** (item 36): list it at the start and before finishing. Answered (`done/`): the eight `PUBLIC-*` of 20 Oct, the invites; 24 Oct `PUBLIC-EVENTS-RECENT`,

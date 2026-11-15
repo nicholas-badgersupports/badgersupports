@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-880 keys. Keys are permanent. Required text cannot be published empty and must keep each
+877 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -1448,7 +1448,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (57)
+### Explore Campus (60)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1496,6 +1496,9 @@ the site adds the markup.
 | `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
 | `explore.bus.notFound` | No match near Madison for “{{q}}”. Check the address and try again. | On the Bus Route Explorer: when an address cannot be placed. | `{{q}}` |
 | `explore.bus.failed` | The comparison could not be made just now. Try again. | On the Bus Route Explorer: when the comparison itself fails. |  |
+| `explore.bus.lookupFailed` | The address lookup is not answering just now, so “{{q}}” could not be placed. Try again. | On the Bus Route Explorer: when the address lookup service itself fails while placing an address — the address the visitor typed is not the problem. | `{{q}}` |
+| `explore.bus.outsideArea` | “{{q}}” matched {{place}}, which is outside the Madison area this explorer covers. Check the address and try again. | On the Bus Route Explorer: when an address resolves to a place outside the area the comparison covers, so no comparison is run for it. | `{{q}}` `{{place}}` |
+| `explore.bus.elsewhere` | This matched an address in {{city}}, not Madison. If you meant a Madison address, check it and try again. | On the Bus Route Explorer: the line under a results row's address when the match is in another town or city, so the row is not read as a Madison answer. | `{{city}}` |
 | `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
 | `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
 | `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |
@@ -1521,7 +1524,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (23)
+### Discover Classes by Interest (17)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1529,9 +1532,9 @@ the site adds the markup.
 | `classes.offered` | Offered {{term}} | On the classes page: the label on a course last offered in a past term; {{term}} is the most recent verified term, such as Summer 2026. | `{{term}}` |
 | `classes.group.available` | Available | On the classes page: the heading over the courses with published sections in a current or upcoming term. |  |
 | `classes.group.recent` | Recently Offered | On the classes page: the heading over the courses whose most recent verified offering is in a past term. |  |
-| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen and nothing is searched. | `{{n}}` |
+| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen. | `{{n}}` |
 | `classes.count.one` | 1 Course | On the classes page: the count when the list holds one course. |  |
-| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest or a search narrows the list. | `{{shown}}` `{{total}}` |
+| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest narrows the list. | `{{shown}}` `{{total}}` |
 | `classes.interests.all` | All Interests | On the classes page: the first interest button, which shows every course. |  |
 | `classes.credit.one` | 1 Credit | On the classes page: the credits on a course worth one credit. |  |
 | `classes.credits` | {{n}} Credits | On the classes page: the credits on a course card; {{n}} is the credit value or range the course carries. | `{{n}}` |
@@ -1542,12 +1545,6 @@ the site adds the markup.
 | `classes.loading` | Loading the courses… | On the classes page: the count line while the full course list is on its way. |  |
 | `classes.failed` | The courses could not be loaded. The first courses are listed below. | On the classes page: the count line when the full course list does not arrive. |  |
 | `classes.retry` | Try Again | On the classes page: the button under the count line when the full course list does not arrive. |  |
-| `classes.search.label` | Course Search | On the classes page: the label over the search box. |  |
-| `classes.search.hint` | Search by course name, subject or number, such as fungi, Botany, or 333. | On the classes page: the line under the search label. |  |
-| `classes.search.clear` | Clear Search | On the classes page: the button in the search box once something is typed. |  |
-| `classes.none.title` | No Courses Match Your Search. | On the classes page: the heading when a search finds nothing. |  |
-| `classes.none.body` | Try another search term or browse by interest. | On the classes page: the line under that heading. |  |
-| `classes.none.reset` | Start Over | On the classes page: the button that clears the search and the interest. |  |
 
 ### Academic Support Navigator (4)
 

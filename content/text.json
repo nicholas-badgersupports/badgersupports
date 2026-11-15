@@ -3993,6 +3993,21 @@
       "text": "The comparison could not be made just now. Try again.",
       "where": "On the Bus Route Explorer: when the comparison itself fails."
     },
+    "explore.bus.lookupFailed": {
+      "group": "explore",
+      "text": "The address lookup is not answering just now, so “{{q}}” could not be placed. Try again.",
+      "where": "On the Bus Route Explorer: when the address lookup service itself fails while placing an address — the address the visitor typed is not the problem."
+    },
+    "explore.bus.outsideArea": {
+      "group": "explore",
+      "text": "“{{q}}” matched {{place}}, which is outside the Madison area this explorer covers. Check the address and try again.",
+      "where": "On the Bus Route Explorer: when an address resolves to a place outside the area the comparison covers, so no comparison is run for it."
+    },
+    "explore.bus.elsewhere": {
+      "group": "explore",
+      "text": "This matched an address in {{city}}, not Madison. If you meant a Madison address, check it and try again.",
+      "where": "On the Bus Route Explorer: the line under a results row's address when the match is in another town or city, so the row is not read as a Madison answer."
+    },
     "explore.bus.needAddress": {
       "group": "explore",
       "text": "Add at least one address.",

@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-874 keys. Keys are permanent. Required text cannot be published empty and must keep each
+878 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -900,14 +900,18 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (458)
+### Staff page and edit button (462)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `staff.signedInAs` | Signed in as {{name}} | Staff page, top of the tools: who is signed in. | `{{name}}` |
 | `staff.signedIn` | Signed in | Staff page, top of the tools, when Connect is set not to share first names. |  |
 | `staff.signOut` | Sign Out | Staff page, button beside the name. |  |
-| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. |  |
+| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. The Director Sign-In pop-up says the same while it moves the director to Connect. |  |
+| `staff.popTitle` | Staff Sign-In | Director Sign-In pop-up, on every page: its heading. The staff page's own heading is the same words, held in that page's content. |  |
+| `staff.popLine` | For Badger Supports directors and admins, with your Badger Supports Connect account. | Director Sign-In pop-up: the line under its heading. The staff page carries the same line in its own content. |  |
+| `staff.popGo` | Sign in with Connect | Director Sign-In pop-up: the link pressed if the automatic move to Connect stalls. The staff page's button is the same words, held in that page's content. |  |
+| `staff.popClose` | Close | Director Sign-In pop-up: the name of the × button in its band, read by screen readers. |  |
 | `staff.ended` | Your sign-in has ended. Sign in again to carry on. | Staff page, above the Sign in button, when this browser was signed in before and is not now. |  |
 | `staff.returnTo` | Back to the Page You Were On | Staff page, for someone already signed in who was sent here from another page. |  |
 | `staff.notConfigured` | Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first. | Staff page, in place of the Sign in button when Connect is not set up. |  |

@@ -144,6 +144,55 @@
 .social { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); list-style: none; }
 .staff-link { opacity: .9; }
 
+/* ---------- Director Sign-In: the pop-up (src/render/layout.mjs) ---------- */
+/* Badger SPILL's solo sign-in card, translated: a narrow centred card, a dotted band, the wave
+   at the band's foot, a centred body, and SPILL's hard offset shadow in this site's ink. The
+   lockup is the brand's red one (owner, 14 Nov 2026), so the band wears the cream paper the
+   header stands on and its dots are the red tints; the wave is the band's cream in front and
+   the red tint behind it. */
+.signin-pop {
+  width: min(26rem, calc(100vw - 2 * var(--s4)));
+  max-height: calc(100dvh - 2 * var(--s4));
+  padding: 0; border: 0; border-radius: var(--r-card);
+  background: var(--paper); color: var(--ink);
+  box-shadow: .625rem .625rem 0 var(--ink-deep);
+  overflow-y: auto;
+}
+.signin-pop::backdrop { background: var(--scrim); }
+.signin-pop-band {
+  position: relative;
+  padding: var(--s5) var(--s5) 0;
+  background: var(--tex-ground); background-blend-mode: normal, multiply;
+  text-align: center;
+}
+.signin-pop-lockup { position: relative; z-index: 1; width: min(13.5rem, 72%); height: auto; }
+.signin-pop-dots i { position: absolute; border-radius: 50%; background: var(--red-tint); }
+.signin-pop-dots i:nth-child(1) { width: 1.6rem; height: 1.6rem; top: 16%; left: 7%; }
+.signin-pop-dots i:nth-child(2) { width: .8rem; height: .8rem; top: 60%; left: 15%; background: var(--red-light); opacity: .5; }
+.signin-pop-dots i:nth-child(3) { width: 1.1rem; height: 1.1rem; top: 22%; right: 9%; }
+.signin-pop-dots i:nth-child(4) { width: .65rem; height: .65rem; top: 62%; right: 17%; background: var(--red-light); opacity: .5; }
+.signin-pop-dots i:nth-child(5) { width: .9rem; height: .9rem; top: 8%; left: 44%; }
+.signin-pop-close {
+  position: absolute; top: var(--s2); right: var(--s2); z-index: 2;
+  width: 44px; height: 44px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer;
+}
+.signin-pop-close-ic { width: 1.2rem; height: 1.2rem; }
+.signin-pop-band .wave { display: block; width: calc(100% + 2 * var(--s5)); height: 32px; margin: var(--s3) calc(-1 * var(--s5)) 0; }
+.signin-pop .wave-back { fill: var(--red-light); opacity: .45; }
+.signin-pop .wave-fill { fill: var(--ground); }
+.signin-pop-body { display: grid; gap: var(--s3); justify-items: center; padding: var(--s4) var(--s5) var(--s5); text-align: center; }
+.signin-pop-body h2 { margin: 0; font: 800 var(--fs-h3)/1.1 var(--font-display); letter-spacing: .01em; text-transform: uppercase; }
+.signin-pop-line { margin: 0; }
+.signin-pop-status { display: inline-flex; align-items: center; gap: var(--s2); margin: 0; color: var(--muted); font-weight: 600; }
+.signin-pop-spin { width: 1.05rem; height: 1.05rem; flex: none; animation: signin-spin .9s linear infinite; }
+.signin-pop-spin-track { fill: none; stroke: var(--red-tint); stroke-width: 3; }
+.signin-pop-spin-arc { fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; }
+@keyframes signin-spin { to { transform: rotate(360deg); } }
+.signin-pop-retry { margin: 0; }
+.signin-pop-retry a { color: var(--link); font-weight: 700; text-decoration: underline; text-underline-offset: .18em; }
+
 @media (max-width: 900px) {
   .footer-top { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }

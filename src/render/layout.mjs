@@ -11,6 +11,7 @@ import { html, raw, attrs, jsonIsland } from "./html.mjs";
 import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { icon } from "./icons.mjs";
+import { wave } from "./wave.mjs";
 import { openingPortraits } from "./team.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
@@ -121,9 +122,27 @@ function footer(ctx) {
   <div class="footer-bottom">
     <p>${accessibility(ctx)}</p>
     <ul class="social" aria-label="${ctx.t("footer.socialLabel")}">${f.social.map((l) => html`<li>${link(ctx, l.href, html`${icon(l.icon || "out", "social-ic")}<span class="sr-only">${l.label}</span>`, { class: "social-link", attrs: { title: l.label } })}</li>`)}</ul>
-    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span>${f.staffSignIn.label}</span>`, { class: "staff-in" })}</li>` : ""}</ul>
+    <ul aria-label="${ctx.t("footer.legalLabel")}">${f.legal.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}${f.staffSignIn ? html`<li class="staff-link">${link(ctx, f.staffSignIn.href, html`${icon("account", "staff-ic")}<span>${f.staffSignIn.label}</span>`, { class: "staff-in", attrs: { "data-signin-open": "" } })}</li>` : ""}</ul>
   </div>
 </div></footer>`;
+}
+
+/* The Director Sign-In pop-up (owner's pick, 14 Nov 2026): Badger SPILL's solo sign-in card
+   translated — a narrow centred card, a brand band with soft dots holding the lockup, SPILL's
+   wave at the band's foot, a centred body, and a hard offset shadow. The lockup is the brand's
+   red one (owner, 14 Nov 2026), so the band wears the site's cream ground the header stands on
+   and the dots are the red tints; the wave is SPILL's mark, retired from these pages on
+   23 Oct 2026, and lives in this pop-up only because the owner chose this design knowing that.
+   Opening the pop-up starts the move to Connect on its own (site.js): the pop-up is the
+   signing-in state, not another button — its one link is there if that move stalls: it points
+   at the staff page in the markup, and site.js upgrades it to the button's own address when it
+   wires the pop-up, so no page carries the API's address as a link. Its words are the staff
+   page's words. Without JavaScript
+   the footer's link still goes to the staff page, whose own button signs in as it always has. */
+function signinPop(ctx) {
+  const f = ctx.site.footer;
+  if (!f.staffSignIn) return "";
+  return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-red.png" width="700" height="414" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button>${wave()}</div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
 }
 
 function protoNotice(ctx) {
@@ -200,6 +219,7 @@ ${body ?? main.map((b) => renderBlock(b, ctx))}
 </main>
 ${supportLine(ctx)}
 ${footer(ctx)}
+${signinPop(ctx)}
 ${safetyExit(ctx)}
 </body>
 </html>

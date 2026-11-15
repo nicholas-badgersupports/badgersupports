@@ -155,3 +155,33 @@ openTarget();
 /* Someone signed in to the staff page on this browser: load the edit button. It asks the server
    who that is, and draws nothing for anyone who may not change words (edit.js). */
 if (/(?:^|;\s*)bss_staff_hint=1(?:;|$)/.test(document.cookie)) import("./edit.js");
+
+/* The Director Sign-In pop-up (layout.mjs): pressing the footer's link opens it and starts the
+   move to Connect on its own — the pop-up is the signing-in state, so there is no second press.
+   A director Connect already knows is brought straight back to the staff page; anyone else
+   lands on Connect's sign-in page. Closing the pop-up — its ×, Escape, or a press on the scrim
+   behind it — calls the move off, and the link inside it goes to the same place at once if the
+   automatic move stalls. Without a working dialog the link is left alone: it goes to the staff
+   page, whose own button signs in as it always has. Coming Back to a page the browser kept
+   closes a pop-up left open, so nobody returns to a move already made. */
+const signinLink = document.querySelector("[data-signin-open]");
+const signinPop = document.querySelector("[data-signin-pop]");
+if (signinLink && signinPop && typeof signinPop.showModal === "function") {
+  const START = "/api/auth/start?return=/staff/";
+  /* The retry link points at the staff page in the markup; with the script running it goes
+     straight to the sign-in start, like the staff page's own button. */
+  const retry = signinPop.querySelector(".signin-pop-retry a");
+  if (retry) retry.href = START;
+  let timer = null;
+  const callOff = () => { if (timer !== null) { clearTimeout(timer); timer = null; } };
+  signinLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (signinPop.open) return;
+    signinPop.showModal();
+    timer = setTimeout(() => { timer = null; location.assign(START); }, 800);
+  });
+  signinPop.addEventListener("close", callOff);
+  signinPop.querySelector("[data-signin-close]")?.addEventListener("click", () => signinPop.close());
+  signinPop.addEventListener("click", (e) => { if (e.target === signinPop) signinPop.close(); });
+  window.addEventListener("pageshow", (e) => { if (e.persisted && signinPop.open) signinPop.close(); });
+}

@@ -409,7 +409,7 @@ Reads: `courses`, `courseInterests`, `coursesSample`, `coursesUpdated` · analyt
 
 ### Site search — `sitesearch`
 
-Reads: `searchIndex` · analytics: `none` · photos load lazy · browser module `search.js`
+Reads: `searchIndex`, `resources` · analytics: `none` · photos load lazy · browser module `search.js`
 
 | Field | Type | |
 |---|---|---|
@@ -600,10 +600,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-877 keys. Keys are permanent. Required text cannot be published empty and must keep each
+944 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (24)
+### Every page (29)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -625,6 +625,11 @@ the site adds the markup.
 | `announce.label` | Announcement | The announcement strip's name, read by screen readers. |  |
 | `proto.title` | Prototype for review — not the live site. | Strip at the top of the prototype only. Never shown on the published site. |  |
 | `proto.body` | Event times were copied from badgersupports.org on 19 October 2026 and are not live data. Anything sent through a form here is a test: nothing is emailed, and nothing reaches the team's real inbox. | Second sentence of the prototype strip. | optional |
+| `devNotice.title` | This Site Is Still in Development | The development pop-up, on every page of the new site but the staff page: its heading. |  |
+| `devNotice.body` | This new Badger Supports site is still being built. For everything today, use the live site. | The development pop-up: the sentence under its heading. |  |
+| `devNotice.link` | Go to the Live Site | The development pop-up: the button that opens badgersupports.org. |  |
+| `devNotice.dismiss` | Got It | The development pop-up: the button that closes it and stays on this site. |  |
+| `devNotice.close` | Close | The development pop-up: the button at its top right that closes it. |  |
 | `embed.play` | Play the Reel | Button on an Instagram video; pressing it loads Instagram’s player. |  |
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
@@ -901,14 +906,18 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (459)
+### Staff page and edit button (508)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
 | `staff.signedInAs` | Signed in as {{name}} | Staff page, top of the tools: who is signed in. | `{{name}}` |
 | `staff.signedIn` | Signed in | Staff page, top of the tools, when Connect is set not to share first names. |  |
 | `staff.signOut` | Sign Out | Staff page, button beside the name. |  |
-| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. |  |
+| `staff.checking` | Checking your sign-in… | Staff page, in place of the Sign in button while the page checks whether this browser is still signed in. The Director Sign-In pop-up says the same while it moves the director to Connect. |  |
+| `staff.popTitle` | Staff Sign-In | Director Sign-In pop-up, on every page: its heading. The staff page's own heading is the same words, held in that page's content. |  |
+| `staff.popLine` | For Badger Supports directors and admins, with your Badger Supports Connect account. | Director Sign-In pop-up: the line under its heading. The staff page carries the same line in its own content. |  |
+| `staff.popGo` | Sign in with Connect | Director Sign-In pop-up: the link pressed if the automatic move to Connect stalls. The staff page's button is the same words, held in that page's content. |  |
+| `staff.popClose` | Close | Director Sign-In pop-up: the name of the × button in its band, read by screen readers. |  |
 | `staff.ended` | Your sign-in has ended. Sign in again to carry on. | Staff page, above the Sign in button, when this browser was signed in before and is not now. |  |
 | `staff.returnTo` | Back to the Page You Were On | Staff page, for someone already signed in who was sent here from another page. |  |
 | `staff.notConfigured` | Staff sign-in is not switched on for this copy of the site yet. It needs Badger Supports Connect to be set up first. | Staff page, in place of the Sign in button when Connect is not set up. |  |
@@ -918,6 +927,8 @@ the site adds the markup.
 | `staff.nothing` | Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms. | Staff page, for someone signed in whose role reaches neither forms nor words. |  |
 | `staff.readAgain` | For the privacy of the people who wrote in, answers can be read for an hour after signing in. Sign in again to keep reading. | Staff page, in place of the forms, or of one form's answers, once reading needs a fresh sign-in. |  |
 | `staff.signInAgain` | Sign In Again | Staff page, button under the note that reading answers needs a fresh sign-in. |  |
+| `staff.find.label` | Find a setting | Staff page, the find box above the tools: jumps to the named setting or section. |  |
+| `staff.find.none` | No setting matches that. | Staff page, under the find box when nothing matches. |  |
 | `staff.forms.title` | Website Forms | Staff page, heading above the list of forms. |  |
 | `staff.forms.how` | Working through answers — replying, assigning, closing — happens in Connect, under Website Forms. | Staff page, under Website Forms, for someone who may read answers. |  |
 | `staff.forms.empty` | No forms to show. | Staff page, when there are no forms your role can read. |  |
@@ -925,6 +936,7 @@ the site adds the markup.
 | `staff.forms.count.one` | {{n}} answer | Staff page, under a form with one answer. | `{{n}}` |
 | `staff.forms.count.other` | {{n}} answers | Staff page, under a form with several answers. | `{{n}}` |
 | `staff.forms.latest` | latest {{when}} | Staff page, after the count: when the newest answer came in. | `{{when}}` |
+| `staff.forms.problemsOnly` | Failed or stuck only | Staff page, above the forms: a tick that shows only the forms with failed or stuck deliveries. |  |
 | `staff.forms.state.open` | Open | Staff page, label beside a form that takes answers. |  |
 | `staff.forms.state.closed` | Closed | Staff page, label beside a form that is closed. |  |
 | `staff.switch.open` | Open This Form | Staff page, button under a closed form, for someone Connect lets open and close it. |  |
@@ -956,6 +968,7 @@ the site adds the markup.
 | `staff.answers.delivery` | Connect | Staff page, column for whether an answer reached Connect. |  |
 | `staff.answers.none` | No answers yet. | Staff page, when a form's answers are opened and there are none. |  |
 | `staff.answers.openConnect` | Work Through Answers in Connect | Staff page, link under the forms. |  |
+| `staff.answers.inConnect` | Work in Connect | Staff page, on a form's card: opens that form's queue in Connect. |  |
 | `staff.row.sent` | In Connect | Staff page, answers table: this answer reached Connect. |  |
 | `staff.row.pending` | Waiting | Staff page, answers table: not sent yet. |  |
 | `staff.row.failed` | Not Sent Yet | Staff page, answers table: sending failed and will be tried again. |  |
@@ -1212,6 +1225,10 @@ the site adds the markup.
 | `edit.saving` | Saving… | Edit box, while a change is being saved. |  |
 | `edit.saved` | Saved. Visitors see it now. | After saving, when the page already shows the change. |  |
 | `edit.savedWaiting` | Saved, but not on the site yet. | After saving, when the change waits for a publish. |  |
+| `edit.refresh` | Refresh Now | Edit bar, while saved changes wait: puts them on the site now instead of within 30 minutes. |  |
+| `edit.refreshing` | Refreshing… | The Refresh Now button in the edit bar while it works. |  |
+| `edit.refreshed` | Refreshed. Every page shows the newest words. | Read aloud after Refresh Now in the edit bar worked. |  |
+| `edit.refreshSoon` | The site was refreshed a moment ago. Try again in a minute. | Read aloud when Refresh Now in the edit bar was pressed too often. |  |
 | `edit.waitingNote` | Saved, but not on the site yet. | Edit box, when the words have a change waiting. |  |
 | `edit.conflict` | Someone else changed these words while you were editing. Their words are in the box now; change them again if you need to. | Edit box, when two people edit the same words. |  |
 | `edit.error.empty` | These words cannot be empty. | Edit box, when the box is empty. |  |
@@ -1225,6 +1242,40 @@ the site adds the markup.
 | `edit.error.number` | Give a whole number from 0 to 99. | Edit box, when a number cannot be saved as written. |  |
 | `edit.error.date` | Give a date such as 2026-11-01. | Edit box, when a date cannot be saved as written. |  |
 | `edit.error.video` | A video is the address of an Instagram post or reel. | Edit box, when a video address cannot be saved as written. |  |
+| `edit.notes` | Notes ({{n}}) | Edit bar, the Notes mode button beside the pencil, shown while editing: the number is the site's open notes. | `{{n}}` |
+| `edit.notes.list` | Notes | Edit bar, the button that opens the list of notes while Notes mode is on; also that list's heading. |  |
+| `edit.notes.copy` | Copy notes | Edit bar and the notes list, while Notes mode is on: copies every open note on the site as one plain-text block. |  |
+| `edit.notes.title` | Note {{n}} | Heading of the note box, and the name of a note's pin and of its line in the notes list. | `{{n}}` |
+| `edit.notes.on` | On: | Note box, before the words the note is pinned to. |  |
+| `edit.notes.done` | Done | Note box, the button that closes it; with nothing typed it keeps no note. |  |
+| `edit.notes.remove` | Remove | Note box, the button that takes the note off the list. |  |
+| `edit.notes.clearAll` | Clear all | Notes list, the button that takes every note off the list; it is pressed twice. |  |
+| `edit.notes.clearAll.armed` | Clear all? | Notes list, the Clear all button once pressed, asking for the second press. |  |
+| `edit.notes.cleared` | {{n}} cleared | Edit bar and the notes list: notes whose pinned words have changed, counted until the list is opened or the notes are copied. | `{{n}}` |
+| `edit.notes.notOnPage` | Not on this page | Notes list, the group of notes whose pinned words are not on the page any more. |  |
+| `edit.notes.notFound` | Location: not found on the page any more | The copied notes, under a note whose pinned words are not on its page any more. |  |
+| `edit.notes.copyHead` | NOTES — Badger Supports (public site) — {{n}} open notes | First line of the copied notes. | `{{n}}` |
+| `edit.notes.copiedBy` | Copied {{when}} by {{name}} | Second line of the copied notes. | `{{when}}` `{{name}}` |
+| `edit.notes.copyIntro` | Fix each note at the location given, then the note clears itself. | Third line of the copied notes. |  |
+| `edit.notes.pageLine` | {{n}}. Page: {{name}} — {{url}} | The copied notes, the line that opens each note: its number, its page and that page's address. | `{{n}}` `{{name}}` `{{url}}` |
+| `edit.notes.whereLine` | Where: {{snippet}} [{{kind}}: {{id}}] | The copied notes, under the page line: the pinned words and the edit target they belong to. | `{{snippet}}` `{{kind}}` `{{id}}` |
+| `edit.notes.whereSelector` | Where: {{snippet}} [selector: {{selector}}] | The copied notes, under the page line of a note pinned to words with no edit target: the pinned words and the way to find them. | `{{snippet}}` `{{selector}}` |
+| `edit.notes.positionLine` | Position: {{position}} | The copied notes, under the Where line: where in the pinned words the note was made. | `{{position}}` |
+| `edit.notes.noteLine` | Note: {{text}} | The copied notes, the note itself. | `{{text}}` |
+| `edit.notes.position` | On {{what}}, {{where}} | The copied notes, the position sentence: what was pinned, and where in it the note was made. | `{{what}}` `{{where}}` |
+| `edit.notes.what.pageHeading` | the page heading | The copied notes, in the position sentence: the page's own heading was pinned. |  |
+| `edit.notes.what.heading` | the heading | The copied notes, in the position sentence: a heading was pinned. |  |
+| `edit.notes.what.link` | the link | The copied notes, in the position sentence: a link was pinned. |  |
+| `edit.notes.what.button` | the button | The copied notes, in the position sentence: a button was pinned. |  |
+| `edit.notes.what.photo` | the photo | The copied notes, in the position sentence: a photo was pinned. |  |
+| `edit.notes.what.list` | the list | The copied notes, in the position sentence: a list was pinned. |  |
+| `edit.notes.what.paragraph` | the paragraph | The copied notes, in the position sentence: a paragraph was pinned. |  |
+| `edit.notes.what.text` | the text | The copied notes, in the position sentence: words that are none of the named kinds were pinned. |  |
+| `edit.notes.pos.upper` | upper | The copied notes, in the position sentence: the note was made in the top third of what was pinned. |  |
+| `edit.notes.pos.lower` | lower | The copied notes, in the position sentence: the note was made in the bottom third of what was pinned. |  |
+| `edit.notes.pos.left` | left | The copied notes, in the position sentence: the note was made in the left third of what was pinned. |  |
+| `edit.notes.pos.right` | right | The copied notes, in the position sentence: the note was made in the right third of what was pinned. |  |
+| `edit.notes.pos.centre` | centre | The copied notes, in the position sentence: the note was made in the middle of what was pinned. |  |
 | `edit.on` | On | Edit box option for a section switched on. |  |
 | `edit.off` | Off | Edit box option for a section switched off. |  |
 | `edit.error.target` | These words cannot be changed here. | Edit box, when the words are not editable. |  |
@@ -1301,7 +1352,6 @@ the site adds the markup.
 | `staff.setup.loading` | Loading Forms… | Guided form setup on the staff page. |  |
 | `staff.setup.saving` | Saving… | Guided form setup on the staff page. |  |
 | `staff.setup.title` | Form Setup | Guided form setup on the staff page. |  |
-| `staff.setup.progress` | Form setup progress | Guided form setup on the staff page. |  |
 | `staff.setup.step` | Step {{n}} of {{total}} — {{step}} | Guided form setup on the staff page. | `{{n}}` `{{total}}` `{{step}}` |
 | `staff.setup.step0` | Choose a Form | Guided form setup on the staff page. |  |
 | `staff.setup.step1` | Wording | Guided form setup on the staff page. |  |
@@ -1349,6 +1399,10 @@ the site adds the markup.
 | `staff.nav.scrollBack` | Scroll the menu back | Staff page, signed in: the button at the left end of the menu of views, read aloud by screen readers; it stands there only while the menu can scroll back. |  |
 | `staff.nav.scrollForward` | Scroll the menu forward | Staff page, signed in: the button at the right end of the menu of views, read aloud by screen readers; it stands there only while more of the menu is off its right edge. |  |
 | `staff.overview.how` | What needs attention on the site, and the tool for each job. | Staff page, the Overview: the line under the heading. |  |
+| `staff.overview.hidden.title` | Not on the public site | Staff page, the Overview: the heading over the links to what visitors cannot see. |  |
+| `staff.overview.hidden.events` | Find Your People — Campus Events Explorer | Staff page, the Overview: the link that opens the Campus Events Explorer, whose home-page section is switched off. |  |
+| `staff.overview.hidden.explore` | Explore Campus | Staff page, the Overview: the link that opens Explore Campus, the switched-off home-page section's second door. |  |
+| `staff.overview.hidden.open` | Open | Staff page, the Overview: the word at the right of each not-on-the-public-site link. |  |
 | `staff.overview.clear` | Nothing needs attention right now. | Staff page, the Overview: shown when no tool is waiting on anything. |  |
 | `staff.overview.failedSend.one` | {{n}} answer could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
 | `staff.overview.failedSend.other` | {{n}} answers could not be sent to Connect. | Staff page, the Overview: a line under Needs attention; the whole line leads to Website Forms. | `{{n}}` |
@@ -1365,7 +1419,7 @@ the site adds the markup.
 | `staff.overview.tool.versions` | The versions the site has published, and bringing one back. | Staff page, the Overview: the Earlier Versions card. |  |
 | `staff.overview.tool.settings` | The site's name, its search description and its accessibility email. | Staff page, the Overview: the Site Settings card. |  |
 
-### Resource list (59)
+### Resource list (61)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1380,6 +1434,8 @@ the site adds the markup.
 | `resources.none.title` | No Resources Match Your Search. | On the resource list: the heading when a search finds nothing. |  |
 | `resources.none.body` | Try another search term or browse by topic. | On the resource list: the line under that heading. |  |
 | `resources.none.reset` | Start Over | On the resource list: the button that clears the search and the topic. |  |
+| `resources.none.topics` | Browse by Topic: | On the resource list: the line over the topic buttons in the no-matches block, which offer the list's topics as a next step. |  |
+| `resources.none.sitesearch` | Try Site Search | On the resource list: the link in the no-matches block to the site search, carrying the words that were typed. |  |
 | `resources.cost.free` | Free | On the resource list: the cost chip on a card. |  |
 | `resources.cost.covered` | Free for Students | On the resource list: the cost chip on a card. |  |
 | `resources.cost.reduced` | Reduced Cost | On the resource list: the cost chip on a card. |  |
@@ -1429,7 +1485,7 @@ the site adds the markup.
 | `resources.retry` | Try Again | On the resource list: the button under the count line when the full resource list does not arrive. |  |
 | `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
-### Site search (16)
+### Site search (18)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1447,10 +1503,12 @@ the site adds the markup.
 | `search.none.title` | No Pages Match Your Search. | On the search page: the heading when no page matches. |  |
 | `search.none.body` | Try another word, or start over and browse the list. | On the search page: the line under the no-matches heading. |  |
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
+| `search.none.closest` | Closest Matches: | On the search page: the line over the suggested pages in the no-matches block, the pages whose words begin the same way as the words typed. |  |
+| `search.none.resources` | Try Resource Search | On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed. |  |
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (58)
+### Explore Campus (61)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1499,6 +1557,9 @@ the site adds the markup.
 | `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
 | `explore.bus.notFound` | No match near Madison for “{{q}}”. Check the address and try again. | On the Bus Route Explorer: when an address cannot be placed. | `{{q}}` |
 | `explore.bus.failed` | The comparison could not be made just now. Try again. | On the Bus Route Explorer: when the comparison itself fails. |  |
+| `explore.bus.lookupFailed` | The address lookup is not answering just now, so “{{q}}” could not be placed. Try again. | On the Bus Route Explorer: when the address lookup service itself fails while placing an address — the address the visitor typed is not the problem. | `{{q}}` |
+| `explore.bus.outsideArea` | “{{q}}” matched {{place}}, which is outside the Madison area this explorer covers. Check the address and try again. | On the Bus Route Explorer: when an address resolves to a place outside the area the comparison covers, so no comparison is run for it. | `{{q}}` `{{place}}` |
+| `explore.bus.elsewhere` | This matched an address in {{city}}, not Madison. If you meant a Madison address, check it and try again. | On the Bus Route Explorer: the line under a results row's address when the match is in another town or city, so the row is not read as a Madison answer. | `{{city}}` |
 | `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
 | `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
 | `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |
@@ -1524,7 +1585,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (17)
+### Discover Classes by Interest (23)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1532,9 +1593,9 @@ the site adds the markup.
 | `classes.offered` | Offered {{term}} | On the classes page: the label on a course last offered in a past term; {{term}} is the most recent verified term, such as Summer 2026. | `{{term}}` |
 | `classes.group.available` | Available | On the classes page: the heading over the courses with published sections in a current or upcoming term. |  |
 | `classes.group.recent` | Recently Offered | On the classes page: the heading over the courses whose most recent verified offering is in a past term. |  |
-| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen. | `{{n}}` |
+| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen and nothing is searched. | `{{n}}` |
 | `classes.count.one` | 1 Course | On the classes page: the count when the list holds one course. |  |
-| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest narrows the list. | `{{shown}}` `{{total}}` |
+| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest or a search narrows the list. | `{{shown}}` `{{total}}` |
 | `classes.interests.all` | All Interests | On the classes page: the first interest button, which shows every course. |  |
 | `classes.credit.one` | 1 Credit | On the classes page: the credits on a course worth one credit. |  |
 | `classes.credits` | {{n}} Credits | On the classes page: the credits on a course card; {{n}} is the credit value or range the course carries. | `{{n}}` |
@@ -1545,6 +1606,12 @@ the site adds the markup.
 | `classes.loading` | Loading the courses… | On the classes page: the count line while the full course list is on its way. |  |
 | `classes.failed` | The courses could not be loaded. The first courses are listed below. | On the classes page: the count line when the full course list does not arrive. |  |
 | `classes.retry` | Try Again | On the classes page: the button under the count line when the full course list does not arrive. |  |
+| `classes.search.label` | Course Search | On the classes page: the label over the search box. |  |
+| `classes.search.hint` | Search by course name, subject or number, such as fungi, Botany, or 333. | On the classes page: the line under the search label. |  |
+| `classes.search.clear` | Clear Search | On the classes page: the button in the search box once something is typed. |  |
+| `classes.none.title` | No Courses Match Your Search. | On the classes page: the heading when a search finds nothing. |  |
+| `classes.none.body` | Try another search term or browse by interest. | On the classes page: the line under that heading. |  |
+| `classes.none.reset` | Start Over | On the classes page: the button that clears the search and the interest. |  |
 
 ### Academic Support Navigator (4)
 

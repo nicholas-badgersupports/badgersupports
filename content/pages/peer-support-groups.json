@@ -94,7 +94,6 @@
       "variant": "topics",
       "program": "peer",
       "title": "What a Group Is Like",
-      "lead": "Free, student-led peer support for enrolled UW–Madison students.",
       "topics": [
         {
           "term": "Why",
@@ -220,7 +219,6 @@
       "id": "b-pg-request",
       "type": "cta",
       "title": "Request a Peer Support Group",
-      "body": "For your student organization, campus unit, or yourself!",
       "primary": {
         "label": "Request a Peer Support Group",
         "href": "/request-a-program/"

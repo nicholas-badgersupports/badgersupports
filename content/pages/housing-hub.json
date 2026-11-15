@@ -213,14 +213,12 @@
       ],
       "photos": [
         "m-housing-audience"
-      ],
-      "lead": "Tools to plan, budget and get help, from Badger Supports and our partners."
+      ]
     },
     {
       "id": "b-hh-more",
       "type": "cta",
       "title": "Have more questions or want extra guidance?",
-      "body": "Drop in to a Peer Support Group to connect with other Badgers and hear about their off-campus housing experiences. Request a tailored Navigating Housing workshop for your RSO, department, or yourself!",
       "primary": {
         "label": "Request a Workshop",
         "href": "/forms/workshop-request/?topic=housing"

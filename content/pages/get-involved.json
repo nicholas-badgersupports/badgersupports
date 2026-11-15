@@ -92,7 +92,6 @@
         {
           "id": "inv-list",
           "title": "Email List",
-          "text": "Stay up-to-date on our latest updates, events, and more.",
           "link": {
             "label": "Join Our Email List",
             "href": "/join/email-list"

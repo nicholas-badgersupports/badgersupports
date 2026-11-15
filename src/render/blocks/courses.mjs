@@ -22,6 +22,7 @@
 import { html, attrs } from "../html.mjs";
 import { link } from "../context.mjs";
 import { dateParts } from "../events.mjs";
+import { icon } from "../icons.mjs";
 
 /* The official listings, and the address the queue entry names for them. The app is a
    stateful search with no published per-course address, so a card links here and names its
@@ -32,7 +33,7 @@ function courseCard(c, ctx) {
   const desig = `${c.subject} ${c.number}`;
   const label = c.open ? ctx.t("classes.open", { term: c.open }) : ctx.t("classes.offered", { term: c.offered });
   const credits = c.credits === "1" ? ctx.t("classes.credit.one") : ctx.t("classes.credits", { n: c.credits });
-  return html`<li${attrs({ class: "cls-card", "data-cls": "", "data-interests": (c.interests || []).join(" ") })}>
+  return html`<li${attrs({ class: "cls-card", "data-cls": "", "data-interests": (c.interests || []).join(" "), "data-search": `${c.subject} ${c.number} ${c.title}` })}>
     <h4 class="cls-title"><span class="cls-desig">${desig}</span> ${c.title}</h4>
     <p class="cls-meta"><span class="cls-credits">${credits}</span> <span class="cls-tag">${label}</span></p>
     <p class="cls-go">${link(ctx, COURSE_SEARCH_URL, html`${ctx.t("classes.view")}<span class="sr-only">: ${desig}</span>`, { class: "btn cls-btn", icon: "out" })}</p>
@@ -81,6 +82,11 @@ export default {
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${ctx.data.coursesSample ? html`<p class="sample-note">${ctx.data.coursesSample}</p>` : ""}
   <div class="cls-tools" data-cls-tools hidden>
+    <div class="cls-search">
+      <label for="${b.id}-q">${ctx.t("classes.search.label")}</label>
+      <p class="cls-hint" id="${b.id}-qh">${ctx.t("classes.search.hint")}</p>
+      <div class="cls-field">${icon("search", "cls-field-ic")}<input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" aria-describedby="${b.id}-qh" data-cls-q><button type="button" class="cls-qclear" aria-label="${ctx.t("classes.search.clear")}" title="${ctx.t("classes.search.clear")}" data-cls-clear hidden>${icon("close")}</button></div>
+    </div>
     <div class="cls-interests" role="group" aria-labelledby="${b.id}-h">
       <button type="button" class="cls-chip" aria-pressed="true" data-interest="">${ctx.t("classes.interests.all")}</button>
       ${interests.map((i) => html`<button${attrs({ type: "button", class: "cls-chip", "aria-pressed": "false", "data-interest": i.id })}>${i.label}</button>`)}
@@ -90,6 +96,11 @@ export default {
   <p class="cls-again" data-cls-again hidden><button type="button" class="btn btn--quiet" data-cls-retry>${ctx.t("classes.retry")}</button></p>
   ${group("available", ctx.t("classes.group.available"), available)}
   ${group("recent", ctx.t("classes.group.recent"), recent)}
+  <div class="cls-none" data-cls-none hidden>
+    <h3>${ctx.t("classes.none.title")}</h3>
+    <p>${ctx.t("classes.none.body")}</p>
+    <button type="button" class="btn btn--quiet" data-cls-reset>${ctx.t("classes.none.reset")}</button>
+  </div>
   <p class="cls-scope">${ctx.t("classes.source")}${updated ? html` <span class="cls-updated">${ctx.t("classes.updated", dateParts(updated, ctx.t))}</span>` : ""}</p>
 </div></section>`;
   },

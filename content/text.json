@@ -3291,7 +3291,7 @@
     "classes.count.all": {
       "group": "classes",
       "text": "{{n}} Courses",
-      "where": "On the classes page: how many courses there are, when no interest is chosen."
+      "where": "On the classes page: how many courses there are, when no interest is chosen and nothing is searched."
     },
     "classes.count.one": {
       "group": "classes",
@@ -3301,7 +3301,7 @@
     "classes.count.some": {
       "group": "classes",
       "text": "Showing {{shown}} of {{total}} Courses",
-      "where": "On the classes page: the count after an interest narrows the list."
+      "where": "On the classes page: the count after an interest or a search narrows the list."
     },
     "classes.interests.all": {
       "group": "classes",
@@ -3352,6 +3352,36 @@
       "group": "classes",
       "text": "Try Again",
       "where": "On the classes page: the button under the count line when the full course list does not arrive."
+    },
+    "classes.search.label": {
+      "group": "classes",
+      "text": "Course Search",
+      "where": "On the classes page: the label over the search box."
+    },
+    "classes.search.hint": {
+      "group": "classes",
+      "text": "Search by course name, subject or number, such as fungi, Botany, or 333.",
+      "where": "On the classes page: the line under the search label."
+    },
+    "classes.search.clear": {
+      "group": "classes",
+      "text": "Clear Search",
+      "where": "On the classes page: the button in the search box once something is typed."
+    },
+    "classes.none.title": {
+      "group": "classes",
+      "text": "No Courses Match Your Search.",
+      "where": "On the classes page: the heading when a search finds nothing."
+    },
+    "classes.none.body": {
+      "group": "classes",
+      "text": "Try another search term or browse by interest.",
+      "where": "On the classes page: the line under that heading."
+    },
+    "classes.none.reset": {
+      "group": "classes",
+      "text": "Start Over",
+      "where": "On the classes page: the button that clears the search and the interest."
     },
     "navigator.back": {
       "group": "navigator",

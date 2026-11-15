@@ -1,6 +1,8 @@
 /* Discover Classes by Interest (src/render/blocks/courses.mjs): the interest buttons narrow
-   the course list in the visitor's own browser. Nothing chosen here is stored or sent
-   anywhere.
+   the course list in the visitor's own browser, and the search box narrows it further —
+   every word typed must be a word of the course's subject, number or name, or the start
+   of one ("fung" finds "Fungi"). The two compose: a course shows when it fits the chosen
+   interest and the search. Nothing chosen or typed here is stored or sent anywhere.
 
    The page arrives with the first courses of each group. The whole catalogue rides in a
    data file beside the page (courses-data.json, named by the section's data-courses-src),
@@ -12,29 +14,49 @@
 
 import { t } from "./text.js";
 
+/* A search's words, and a card's: lower case, a space where a letter meets a digit (so
+   "botany333" reads as "botany 333"), and nothing kept but letters and digits. */
+const words = (s) => String(s || "").toLowerCase().replace(/([a-z])([0-9])/g, "$1 $2").replace(/([0-9])([a-z])/g, "$1 $2").replace(/[^a-z0-9]+/g, " ").trim();
+/* Every word typed must be a card's word, or — at three letters or more — the start of
+   one, so a short word never matches inside a longer one ("30" does not find "300"). */
+const matches = (cardWords, q) => q.every((w) => cardWords.some((h) => h === w || (w.length >= 3 && h.startsWith(w))));
+
 for (const box of document.querySelectorAll("[data-courses]")) {
   const tools = box.querySelector("[data-cls-tools]");
+  const input = box.querySelector("[data-cls-q]");
+  const clear = box.querySelector("[data-cls-clear]");
+  const none = box.querySelector("[data-cls-none]");
+  const reset = box.querySelector("[data-cls-reset]");
   const count = box.querySelector("[data-cls-count]");
   const again = box.querySelector("[data-cls-again]");
   const buttons = [...box.querySelectorAll("[data-interest]")];
-  if (!tools || !count) continue;
+  if (!tools || !input || !count) continue;
   let cards = [...box.querySelectorAll("[data-cls]")];
   let groups = [...box.querySelectorAll("[data-cls-group]")];
   let interest = "";
+  /* Each card's searchable words, from the subject, number and name the renderer wrote
+     on it (data-search); rebuilt whenever the card set is. */
+  let index = new Map();
+  const reindex = () => { index = new Map(cards.map((c) => [c, words(c.dataset.search).split(" ").filter(Boolean)])); };
+  reindex();
   /* Whether the whole catalogue is on the page yet, and the fetch under way, if any. */
   let full = false;
   let asking = null;
 
   const apply = () => {
     for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset.interest === interest));
+    if (clear) clear.hidden = !input.value;
     if (!full) return;
+    const q = words(input.value).split(" ").filter(Boolean);
     let shown = 0;
     for (const card of cards) {
-      const on = !interest || (card.dataset.interests || "").split(" ").includes(interest);
+      const on = (!interest || (card.dataset.interests || "").split(" ").includes(interest))
+        && (!q.length || matches(index.get(card) || [], q));
       card.hidden = !on;
       if (on) shown++;
     }
     for (const g of groups) g.hidden = ![...g.querySelectorAll("[data-cls]")].some((c) => !c.hidden);
+    if (none) none.hidden = shown > 0;
     count.textContent = shown === cards.length
       ? (cards.length === 1 ? t("classes.count.one") : t("classes.count.all", { n: cards.length }))
       : t("classes.count.some", { shown, total: cards.length });
@@ -70,6 +92,7 @@ for (const box of document.querySelectorAll("[data-courses]")) {
       for (const div of built) wrap.insertBefore(div, scope);
       cards = [...box.querySelectorAll("[data-cls]")];
       groups = built;
+      reindex();
       full = true;
       apply();
     } catch {
@@ -80,6 +103,9 @@ for (const box of document.querySelectorAll("[data-courses]")) {
   const poke = () => { if (!full && !asking) asking = load(); };
 
   for (const b of buttons) b.addEventListener("click", () => { interest = b.dataset.interest; apply(); poke(); });
+  input.addEventListener("input", () => { apply(); poke(); });
+  clear?.addEventListener("click", () => { input.value = ""; apply(); poke(); input.focus(); });
+  reset?.addEventListener("click", () => { input.value = ""; interest = ""; apply(); poke(); input.focus(); });
   box.querySelector("[data-cls-retry]")?.addEventListener("click", poke);
   box.addEventListener("pointerdown", poke);
   box.addEventListener("focusin", poke);

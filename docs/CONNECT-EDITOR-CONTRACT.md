@@ -600,7 +600,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-874 keys. Keys are permanent. Required text cannot be published empty and must keep each
+880 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (24)
@@ -1521,7 +1521,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (17)
+### Discover Classes by Interest (23)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1529,9 +1529,9 @@ the site adds the markup.
 | `classes.offered` | Offered {{term}} | On the classes page: the label on a course last offered in a past term; {{term}} is the most recent verified term, such as Summer 2026. | `{{term}}` |
 | `classes.group.available` | Available | On the classes page: the heading over the courses with published sections in a current or upcoming term. |  |
 | `classes.group.recent` | Recently Offered | On the classes page: the heading over the courses whose most recent verified offering is in a past term. |  |
-| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen. | `{{n}}` |
+| `classes.count.all` | {{n}} Courses | On the classes page: how many courses there are, when no interest is chosen and nothing is searched. | `{{n}}` |
 | `classes.count.one` | 1 Course | On the classes page: the count when the list holds one course. |  |
-| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest narrows the list. | `{{shown}}` `{{total}}` |
+| `classes.count.some` | Showing {{shown}} of {{total}} Courses | On the classes page: the count after an interest or a search narrows the list. | `{{shown}}` `{{total}}` |
 | `classes.interests.all` | All Interests | On the classes page: the first interest button, which shows every course. |  |
 | `classes.credit.one` | 1 Credit | On the classes page: the credits on a course worth one credit. |  |
 | `classes.credits` | {{n}} Credits | On the classes page: the credits on a course card; {{n}} is the credit value or range the course carries. | `{{n}}` |
@@ -1542,6 +1542,12 @@ the site adds the markup.
 | `classes.loading` | Loading the courses… | On the classes page: the count line while the full course list is on its way. |  |
 | `classes.failed` | The courses could not be loaded. The first courses are listed below. | On the classes page: the count line when the full course list does not arrive. |  |
 | `classes.retry` | Try Again | On the classes page: the button under the count line when the full course list does not arrive. |  |
+| `classes.search.label` | Course Search | On the classes page: the label over the search box. |  |
+| `classes.search.hint` | Search by course name, subject or number, such as fungi, Botany, or 333. | On the classes page: the line under the search label. |  |
+| `classes.search.clear` | Clear Search | On the classes page: the button in the search box once something is typed. |  |
+| `classes.none.title` | No Courses Match Your Search. | On the classes page: the heading when a search finds nothing. |  |
+| `classes.none.body` | Try another search term or browse by interest. | On the classes page: the line under that heading. |  |
+| `classes.none.reset` | Start Over | On the classes page: the button that clears the search and the interest. |  |
 
 ### Academic Support Navigator (4)
 

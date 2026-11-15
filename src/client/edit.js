@@ -938,7 +938,6 @@ function build() {
   window.addEventListener("scroll", placePins, { capture: true, passive: true });
   window.addEventListener("resize", placePins);
 
-  const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, notesPill, notesCopy, notesListButton, refresh, toggle);
   /* Refresh Now, in the bar while saved changes wait: the save's own next step, instead of a
      trip to the staff page's Words view to find the same button. The server checks the scope
      again (netlify/lib/router.mjs, refresh). */
@@ -957,6 +956,7 @@ function build() {
     say(t("edit.error.failed"));
   });
 
+  const bar = el("div", { className: "edit-bar" }, liveLine, moreButton, notesPill, notesCopy, notesListButton, refresh, toggle);
   /* The Safety Exit keeps the corner: the bar takes the pill in as its last seat, so the edit
      button rests at its left with their bottoms on one line and neither covers the other
      (owner, 13 Nov 2026). The pill's own words, link and destination are untouched, and the

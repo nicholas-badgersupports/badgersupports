@@ -74,6 +74,16 @@ function safetyExit(ctx) {
   return html`<a class="safety-exit" href="${safetyExitHref(s)}" data-safety-exit>${icon("out", "safety-exit-ic")}<span>${ctx.t("header.safetyExit")}</span></a>`;
 }
 
+/* The development notice: while this site is being built, a visitor arriving at it gets one
+   pop-up saying so, with the way to the live site — Badger SPILL's announcement pop-up is the
+   model (its "in development" announcement). Drawn here on every page but the staff page and
+   the prototype, whose strip already says the copy is not live; site.js opens it. It is never
+   a modal: the Safety Exit pill stays pressable while it is up. */
+function devNotice(ctx, page) {
+  if (ctx.prototype || page.id === "pg-staff") return "";
+  return html`<dialog class="dev-notice" data-dev-notice aria-labelledby="dev-notice-h"><div class="dev-notice-head"><h2 id="dev-notice-h">${ctx.t("devNotice.title")}</h2><button type="button" class="btn btn--quiet" data-dev-close>${ctx.t("devNotice.close")}</button></div><p>${ctx.t("devNotice.body")}</p><div class="dev-notice-actions">${link(ctx, "https://badgersupports.org", ctx.t("devNotice.link"), { class: "btn btn--big", icon: "arrow" })}<button type="button" class="btn" data-dev-close>${ctx.t("devNotice.dismiss")}</button></div></dialog>`;
+}
+
 function supportLine(ctx) {
   const sl = ctx.site.supportLine;
   if (!sl?.enabled) return "";
@@ -201,6 +211,7 @@ ${body ?? main.map((b) => renderBlock(b, ctx))}
 ${supportLine(ctx)}
 ${footer(ctx)}
 ${safetyExit(ctx)}
+${devNotice(ctx, page)}
 </body>
 </html>
 `;

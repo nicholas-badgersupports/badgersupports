@@ -78,7 +78,7 @@ test("a built page carries the popup's words and the email script", async () => 
   const out = path.join(ROOT, "local", "test-build-email-copy");
   await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-11-12", edits: {} });
   const home = fs.readFileSync(path.join(out, "index.html"), "utf8");
-  assert.match(home, /<a href="mailto:directors@badgersupports\.org">/, "the footer link keeps its mailto: href");
+  assert.match(home, /<a href="mailto:hello@badgersupports\.org">/, "the footer link keeps its mailto: href");
   const island = /<script type="application\/json" id="bss-text">([\s\S]*?)<\/script>/.exec(home);
   assert.ok(island, "the page carries the words island");
   const words = JSON.parse(island[1]);

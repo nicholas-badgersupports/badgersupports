@@ -1485,6 +1485,18 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-actions { grid-area: actions; align-self: start; }
   [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-photos { grid-area: photos; }
 }
+[data-page="pg-resources"] [data-block="b-res-head"] .pagehead-actions { margin-top: var(--s4); }
+/* the resources opening's words and its one button are one short stack at the top of the left
+   column, as the team opening's are: the general pagehead puts its actions on a row of their
+   own under both columns, which pinned the crisis line's button to the band's foot, far under
+   "You Are Not Alone." Here the button sits under the words at the usual spacing and the
+   photographs keep the band's height on the right (owner, 14 Nov 2026). */
+@media (min-width: 861px) {
+  [data-page="pg-resources"] [data-block="b-res-head"] .wrap { grid-template-areas: "words photos" "actions photos"; grid-template-rows: auto 1fr; }
+  [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-words { grid-area: words; }
+  [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-actions { grid-area: actions; align-self: start; }
+  [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-photos { grid-area: photos; }
+}
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */
 @supports (grid-template-rows: subgrid) {
@@ -1904,6 +1916,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-need-go { font-weight: 700; color: var(--accent-deep); white-space: nowrap; }
 .staff-clear { display: grid; gap: var(--s2); }
 .staff-clear p { margin: 0; }
+/* The overview's links to what visitors cannot see (client/staff.js): under the tool cards,
+   in the needs rows' shape, each the whole way into the page it names. */
+.staff-hidden { margin-top: var(--s6); }
+.staff-hidden h3 { margin: 0 0 var(--s3); }
+
 /* The overview's tool cards: one per view, its name and what the job is. */
 .staff-tools { display: grid; gap: var(--s3); margin-top: var(--s5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
 .staff-tool { display: grid; gap: var(--s1); align-content: start; padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-card); background: var(--paper); color: var(--ink); text-decoration: none; }

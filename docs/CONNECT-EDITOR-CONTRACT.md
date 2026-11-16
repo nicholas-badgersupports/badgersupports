@@ -314,7 +314,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 
 ### Photo cards — `cards`
 
-Reads: `events` · analytics: `page` · photos load lazy
+Reads: `events`, `resources` · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|
@@ -602,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-962 keys. Keys are permanent. Required text cannot be published empty and must keep each
+965 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1604,7 +1604,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (23)
+### Discover Classes by Interest (26)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1631,6 +1631,9 @@ the site adds the markup.
 | `classes.none.title` | No Courses Match Your Search. | On the classes page: the heading when a search finds nothing. |  |
 | `classes.none.body` | Try another search term or browse by interest. | On the classes page: the line under that heading. |  |
 | `classes.none.reset` | Start Over | On the classes page: the button that clears the search and the interest. |  |
+| `classes.browse` | Browse {{label}} | On the classes page: on an interest tile, the way into that interest's courses. | `{{label}}` |
+| `classes.group.all` | All | On the classes page: the availability button that shows an interest's courses whether or not they are offered now. |  |
+| `classes.availability` | Availability | On the classes page: the spoken name of the availability buttons. |  |
 
 ### Academic Support Navigator (5)
 

@@ -45,6 +45,8 @@ Development from November 5 to November 12, 2026, checked into the repository an
 
 - The staff page gained a find box above its tools: typing part of a setting's name, or words from its description, jumps to that setting or section.
 
+- The Explore Campus tools were rebuilt to the design the owner approved on November 15, 2026. The bus page now leads with departures: live times from Madison Metro's GTFS-Realtime feeds merged server-side with the published schedule — a time with no live prediction is labelled Scheduled — service alerts beside the departures, one route at a time on a Leaflet map over OpenStreetMap tiles with the route's published shape, its stops and its buses' live positions, and the address comparison kept for the housing decision. Campus Events opens on Tonight with Badger Supports programs first. Discover Classes by Interest opens on interest tiles — a name, a course count, and the way in — with availability and search narrowing inside the open interest. The Academic Support Navigator now stands inside Resources and its old address redirects there; a resource card no longer repeats its phone number or cost note inside its details. The Explore hub names its five tools and carries one credit line for its listings.
+
 
 ### Changed
 

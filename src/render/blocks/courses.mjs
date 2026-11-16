@@ -17,7 +17,15 @@
    and the script fetches it when the visitor first opens, scrolls to or filters the list —
    the site search's pattern (src/render/blocks/sitesearch.mjs). The cards in the file are
    drawn by the same courseCard as the ones on the page, so a card is written once. Without
-   a script the first courses of each group show, under the count of the whole catalogue. */
+   a script the first courses of each group show, under the count of the whole catalogue.
+
+   The redesign (approved 15 Nov 2026) turns the interests into the page's front door:
+   one tile per interest — its name, how many courses it holds, and the way in — with the
+   first interest open beneath them. Availability (all, available, recently offered) and
+   the search narrow inside the open interest, so the two old standing groups became a
+   filter over one list, and the data file's groups are the interests themselves
+   (bss.courses-data/2). A card carries data-open when its course has a published term,
+   which is all the availability filter reads. */
 
 import { html, attrs } from "../html.mjs";
 import { link } from "../context.mjs";
@@ -33,7 +41,7 @@ function courseCard(c, ctx) {
   const desig = `${c.subject} ${c.number}`;
   const label = c.open ? ctx.t("classes.open", { term: c.open }) : ctx.t("classes.offered", { term: c.offered });
   const credits = c.credits === "1" ? ctx.t("classes.credit.one") : ctx.t("classes.credits", { n: c.credits });
-  return html`<li${attrs({ class: "cls-card", "data-cls": "", "data-interests": (c.interests || []).join(" "), "data-search": `${c.subject} ${c.number} ${c.title}` })}>
+  return html`<li${attrs({ class: "cls-card", "data-cls": "", "data-open": c.open ? "" : null, "data-interests": (c.interests || []).join(" "), "data-search": `${c.subject} ${c.number} ${c.title}` })}>
     <h4 class="cls-title"><span class="cls-desig">${desig}</span> ${c.title}</h4>
     <p class="cls-meta"><span class="cls-credits">${credits}</span> <span class="cls-tag">${label}</span></p>
     <p class="cls-go">${link(ctx, COURSE_SEARCH_URL, html`${ctx.t("classes.view")}<span class="sr-only">: ${desig}</span>`, { class: "btn cls-btn", icon: "out" })}</p>
@@ -59,22 +67,17 @@ export default {
       <h2 id="${b.id}-h">${b.title}</h2>
       <p>${ctx.t("classes.empty")}</p>
     </div></section>`;
-    const interests = (ctx.data.courseInterests || []).filter((i) => all.some((c) => (c.interests || []).includes(i.id)));
-    const available = all.filter((c) => c.open);
-    const recent = all.filter((c) => !c.open);
-    const group = (id, heading, list) => list.length ? html`<div class="cls-group" data-cls-group="${id}">
-      <h3>${heading}</h3>
-      <ul class="cls-list">${list.slice(0, FIRST).map((c) => courseCard(c, ctx))}</ul>
-    </div>` : "";
-    /* The whole catalogue, held back for the script to fetch on first use: both groups in
-       full, their cards drawn by the same hand as the page's. */
-    const groups = [
-      { id: "available", heading: ctx.t("classes.group.available"), list: available },
-      { id: "recent", heading: ctx.t("classes.group.recent"), list: recent },
-    ].filter((g) => g.list.length);
+    const interests = (ctx.data.courseInterests || [])
+      .map((i) => ({ ...i, list: all.filter((c) => (c.interests || []).includes(i.id)) }))
+      .filter((i) => i.list.length);
+    const first = interests[0];
+    const countWords = (n) => (n === 1 ? ctx.t("classes.count.one") : ctx.t("classes.count.all", { n }));
+    /* The whole catalogue, held back for the script to fetch on first use: one group per
+       interest, its cards drawn by the same hand as the page's. A course under two
+       interests rides in both groups — the union of the groups is the catalogue. */
     ctx.defer({
       file: "courses-data.json",
-      body: JSON.stringify({ schema: "bss.courses-data/1", groups: groups.map((g) => ({ id: g.id, heading: g.heading, cards: g.list.map((c) => String(courseCard(c, ctx))) })) }) + "\n",
+      body: JSON.stringify({ schema: "bss.courses-data/2", total: all.length, groups: interests.map((i) => ({ id: i.id, label: i.label, count: i.list.length, cards: i.list.map((c) => String(courseCard(c, ctx))) })) }) + "\n",
     });
     const updated = ctx.data.coursesUpdated;
     return html`<section class="courses band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-courses data-courses-src="${ctx.path || ""}courses-data.json"><div class="wrap">
@@ -82,20 +85,26 @@ export default {
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${ctx.data.coursesSample ? html`<p class="sample-note">${ctx.data.coursesSample}</p>` : ""}
   <div class="cls-tools" data-cls-tools hidden>
+    <div class="cls-tiles" role="group" aria-labelledby="${b.id}-h">
+      ${interests.map((i, ix) => html`<button${attrs({ type: "button", class: "cls-tile", "aria-pressed": ix === 0 ? "true" : "false", "data-interest": i.id })}><span class="cls-tile-label">${i.label}</span><span class="cls-tile-count">${countWords(i.list.length)}</span><span class="cls-tile-go">${ctx.t("classes.browse", { label: i.label })}</span></button>`)}
+    </div>
     <div class="cls-search">
       <label for="${b.id}-q">${ctx.t("classes.search.label")}</label>
       <p class="cls-hint" id="${b.id}-qh">${ctx.t("classes.search.hint")}</p>
       <div class="cls-field">${icon("search", "cls-field-ic")}<input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" aria-describedby="${b.id}-qh" data-cls-q><button type="button" class="cls-qclear" aria-label="${ctx.t("classes.search.clear")}" title="${ctx.t("classes.search.clear")}" data-cls-clear hidden>${icon("close")}</button></div>
     </div>
-    <div class="cls-interests" role="group" aria-labelledby="${b.id}-h">
-      <button type="button" class="cls-chip" aria-pressed="true" data-interest="">${ctx.t("classes.interests.all")}</button>
-      ${interests.map((i) => html`<button${attrs({ type: "button", class: "cls-chip", "aria-pressed": "false", "data-interest": i.id })}>${i.label}</button>`)}
+    <div class="cls-avail" role="group" aria-label="${ctx.t("classes.availability")}">
+      <button type="button" class="cls-chip" aria-pressed="true" data-avail="all">${ctx.t("classes.group.all")}</button>
+      <button type="button" class="cls-chip" aria-pressed="false" data-avail="open">${ctx.t("classes.group.available")}</button>
+      <button type="button" class="cls-chip" aria-pressed="false" data-avail="recent">${ctx.t("classes.group.recent")}</button>
     </div>
   </div>
-  <div class="cls-status" aria-live="polite"><p class="cls-count" data-cls-count>${all.length === 1 ? ctx.t("classes.count.one") : ctx.t("classes.count.all", { n: all.length })}</p></div>
+  <div class="cls-status" aria-live="polite"><p class="cls-count" data-cls-count>${countWords(all.length)}</p></div>
   <p class="cls-again" data-cls-again hidden><button type="button" class="btn btn--quiet" data-cls-retry>${ctx.t("classes.retry")}</button></p>
-  ${group("available", ctx.t("classes.group.available"), available)}
-  ${group("recent", ctx.t("classes.group.recent"), recent)}
+  <div class="cls-group" data-cls-group="${first.id}">
+    <h3 data-cls-grouphead>${first.label} — ${countWords(first.list.length)}</h3>
+    <ul class="cls-list">${first.list.slice(0, FIRST).map((c) => courseCard(c, ctx))}</ul>
+  </div>
   <div class="cls-none" data-cls-none hidden>
     <h3>${ctx.t("classes.none.title")}</h3>
     <p>${ctx.t("classes.none.body")}</p>

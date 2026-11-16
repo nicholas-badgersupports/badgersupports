@@ -13,12 +13,12 @@
       "id": "b-cls-head",
       "type": "pagehead",
       "title": "Discover Classes by Interest",
-      "lead": "Find courses by what interests you, from the listings in UW Course Search, the university's official course listings."
+      "lead": "Courses gathered by what you enjoy — across every department, not one subject at a time."
     },
     {
       "id": "b-cls",
       "type": "courses",
-      "title": "Courses by Interest"
+      "title": "Pick an Interest"
     },
     {
       "id": "b-cls-hub",

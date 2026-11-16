@@ -164,14 +164,18 @@ test("EXPLORE-F: the built page shows the pulled courses with their terms and th
   const section = page.slice(page.indexOf("data-courses"), page.indexOf("</section>", page.indexOf("data-courses")));
   if (data.fixture) assert.ok(section.includes(data.label), "a sample pull says what it is until the owner accepts the verification note");
   else assert.doesNotMatch(section, /Sample data/, "the production pull carries no sample note (switch on: the owner's ruling of 12 Nov 2026)");
-  /* First use (C-23): the page carries the first courses of each group and names the data
-     file beside it; the file carries every pulled course as a card. */
+  /* First use (C-23) after the redesign (15 Nov 2026): the data file's groups are the
+     interests (bss.courses-data/2) — a course under two interests rides in both, and the
+     union of the groups is the whole catalogue. The page carries the first interest's
+     first courses, and a tile per interest with its count. */
   const payload = JSON.parse(fs.readFileSync(path.join(OUT, "explore/classes/courses-data.json"), "utf8"));
   const cards = payload.groups.flatMap((g) => g.cards);
-  assert.equal(payload.schema, "bss.courses-data/1");
-  assert.equal(cards.length, data.courses.length, "every pulled course is a card in the data file");
+  assert.equal(payload.schema, "bss.courses-data/2");
+  for (const c of data.courses) assert.ok(cards.some((x) => x.includes(`${c.subject} ${c.number}`.replace(/&/g, "&amp;"))), `course ${c.subject} ${c.number} is a card in at least one interest`);
+  assert.equal(payload.total, data.courses.length, "the file names the whole catalogue's size");
   assert.match(section, /data-courses-src="\/explore\/classes\/courses-data\.json"/, "the page names its data file");
-  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, payload.groups.reduce((n, g) => n + Math.min(12, g.cards.length), 0), "the page carries the first courses of each group");
+  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, Math.min(12, payload.groups[0].cards.length), "the page carries the first interest's first courses");
+  for (const g of payload.groups) assert.ok(section.includes(`data-interest="${g.id}"`), `a tile opens ${g.id}`);
   const all = cards.join("");
   const card = (desig) => { const a = all.indexOf(desig); return a < 0 ? "" : all.slice(a, all.indexOf("</li>", a)); };
   assert.match(card("SCAND ST 101"), /Open for Fall 2026/, "the fall-only Norwegian course is open for the fall term it is published in");

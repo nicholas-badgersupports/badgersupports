@@ -4880,6 +4880,21 @@
       "group": "navigator",
       "text": "Start the two questions",
       "where": "On the Academic Support Navigator: the button on the opening panel that begins the questions."
+    },
+    "classes.browse": {
+      "group": "classes",
+      "text": "Browse {{label}}",
+      "where": "On the classes page: on an interest tile, the way into that interest's courses."
+    },
+    "classes.group.all": {
+      "group": "classes",
+      "text": "All",
+      "where": "On the classes page: the availability button that shows an interest's courses whether or not they are offered now."
+    },
+    "classes.availability": {
+      "group": "classes",
+      "text": "Availability",
+      "where": "On the classes page: the spoken name of the availability buttons."
     }
   }
 }

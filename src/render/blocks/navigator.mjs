@@ -1,21 +1,41 @@
 /* The Academic Support Navigator (EXPLORE-G-ACADEMIC-NAV): a few choice questions that end on
-   approved resources from the shared library — the same records the Resource Finder shows,
-   drawn with its card (src/render/blocks/resources.mjs), so a student meets one card in both
-   places. The tree is this block's own content, edited like any other block's words.
-
+   approved resources from the shared library — the same records the Resource Finder shows.
+   The tree is this block's own content, edited like any other block's words.
+ *
+   The redesign (approved 15 Nov 2026) folded the navigator into the Resource Finder page,
+   over the list it points to: its old page (/explore/academic-support/) redirects to the
+   questions here. An opening panel carries the not-advising note and the Start button, and
+   a walk ends on short cards — the record's name, its one-line summary, its phone number
+   and a View Details button to its official page — not the finder's full card, so the
+   finder's own list below stays the one full telling of each record. "See All Resources"
+   at every step scrolls to that list when the navigator stands on its page, and goes to
+   the page when it does not.
+ *
    Answers are choices only. Nothing is typed, nothing is stored and nothing is sent anywhere:
    the walk lives in the page (src/client/navigator.js). Without a script every question and
    every result is on the page in order, and each choice is an anchor to the step or the results
    it opens. The full Resource Finder is linked at every step.
-
+ *
    The build refuses a tree that does not join up (navigatorProblems) and a leaf that names a
    resource the library does not hold (navigatorResourceProblems, checked where the library is
    loaded). The navigator finds resources; it is not academic advising, and its words are held
    to that in review. */
 
 import { html, attrs } from "../html.mjs";
-import { go } from "../context.mjs";
-import { resourceCard, resourceVisible } from "./resources.mjs";
+import { go, link } from "../context.mjs";
+import { resourceVisible, tel } from "./resources.mjs";
+
+/* A walk's end, in short: the name, what it is, the phone number to ring, and the way to
+   the record's official page. Deliberately not the finder's card — see the note above. */
+function navCard(r, ctx) {
+  const href = r.source?.url || r.action?.url || r.url;
+  const phone = r.contact?.phone;
+  return html`<li class="nav-card" data-nav-res="${r.id}">
+    <h4>${r.name}</h4>
+    ${r.summary ? html`<p>${r.summary}</p>` : ""}
+    <p class="nav-card-links">${phone ? html`<a href="${tel(phone)}">${phone}</a>` : ""}${href ? link(ctx, href, ctx.t("resources.view"), { class: "btn btn--quiet" }) : ""}</p>
+  </li>`;
+}
 
 const ID = /^[a-z][a-z0-9-]{1,40}$/;
 const nonempty = (v) => typeof v === "string" && !!v.trim();
@@ -72,7 +92,7 @@ export function navigatorResourceProblems(b, resources) {
 export default {
   type: "navigator",
   label: "Academic Support Navigator",
-  fields: { title: "text!", lead: "text", steps: "navsteps!" },
+  fields: { title: "text!", lead: "text", note: "text", steps: "navsteps!" },
   data: ["resources"],
   client: "navigator.js",
   styles: "navigator.css",
@@ -80,23 +100,34 @@ export default {
   loading: "lazy",
   render(b, ctx) {
     const byId = new Map((ctx.data.resources || []).filter((r) => r && r.id && resourceVisible(r)).map((r) => [r.id, r]));
-    const noTopics = new Map();
     const controls = () => html`<p class="nav-controls" data-nav-controls hidden><button type="button" class="btn btn--quiet" data-nav-back>${ctx.t("navigator.back")}</button><button type="button" class="btn btn--quiet" data-nav-restart>${ctx.t("navigator.startOver")}</button></p>`;
-    const finder = () => html`<p class="nav-all">${go(ctx, "/resources/", ctx.t("navigator.all"), "arrow")}</p>`;
+    const finder = () => html`<p class="nav-all">${go(ctx, ctx.path === "/resources/" ? "#b-res-list" : "/resources/", ctx.t("navigator.all"), "arrow")}</p>`;
     const panel = (attrsObj, inner) => html`<div${attrs(attrsObj)}>${inner}</div>`;
-    const steps = (b.steps || []).map((s) => panel({ class: "nav-step", id: `${b.id}-step-${s.id}`, "data-nav-panel": "", "data-nav-step": s.id }, html`
+    const firstStep = (b.steps || [])[0];
+    const intro = firstStep ? panel({ class: "nav-step nav-intro", id: `${b.id}-intro`, "data-nav-panel": "", "data-nav-intro": "" }, html`
+      ${b.note ? html`<p class="nav-note">${b.note}</p>` : ""}
+      <p><a${attrs({ class: "btn", href: `#${b.id}-step-${firstStep.id}`, "data-nav-go": `${b.id}-step-${firstStep.id}` })}>${ctx.t("navigator.start")}</a></p>
+      ${finder()}`) : "";
+    /* Panels after the first carry data-nav-later: the stylesheet hides them
+       when the page's inline script has marked a script present, so the walk
+       stands at its first panel from the first paint and the page below never
+       jumps when the walk's script arrives; the script clears the mark and
+       switches the panels itself. Without a script every panel stands open
+       and the choices' own anchors walk them, as they always have. */
+    const steps = (b.steps || []).map((s, si) => panel({ class: "nav-step", id: `${b.id}-step-${s.id}`, "data-nav-panel": "", "data-nav-step": s.id, "data-nav-later": intro || si > 0 ? "" : null }, html`
       <h3 class="nav-prompt" id="${b.id}-step-${s.id}-h" tabindex="-1" data-nav-heading>${s.prompt}</h3>
       <ul class="nav-options">${s.options.map((o) => html`<li><a${attrs({ class: "btn nav-opt", href: `#${b.id}-${o.next != null ? `step-${o.next}` : `r-${s.id}-${o.id}`}`, "data-nav-go": o.next != null ? `${b.id}-step-${o.next}` : `${b.id}-r-${s.id}-${o.id}` })}>${o.label}</a></li>`)}</ul>
       ${controls()}
       ${finder()}`));
-    const results = (b.steps || []).flatMap((s) => (s.options || []).filter((o) => o.results != null).map((o) => panel({ class: "nav-results", id: `${b.id}-r-${s.id}-${o.id}`, "data-nav-panel": "", "data-nav-results-panel": "" }, html`
+    const results = (b.steps || []).flatMap((s) => (s.options || []).filter((o) => o.results != null).map((o) => panel({ class: "nav-results", id: `${b.id}-r-${s.id}-${o.id}`, "data-nav-panel": "", "data-nav-results-panel": "", "data-nav-later": "" }, html`
       <h3 class="nav-prompt" id="${b.id}-r-${s.id}-${o.id}-h" tabindex="-1" data-nav-heading>${ctx.t("navigator.results")}</h3>
-      <ul class="res-list">${o.results.map((id) => byId.get(id)).filter(Boolean).map((r) => resourceCard(r, ctx, noTopics))}</ul>
+      <ul class="nav-cards">${o.results.map((id) => byId.get(id)).filter(Boolean).map((r) => navCard(r, ctx))}</ul>
       ${controls()}
       ${finder()}`)));
-    return html`<section class="navigator band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-navigator><div class="wrap">
+    return html`<section class="navigator band" id="${b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-navigator><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
+  ${intro}
   ${steps}
   ${results}
 </div></section>`;

@@ -31,7 +31,8 @@ import { listNotes, saveNote, removeNote, clearNotes } from "./notes.mjs";
 import { forgetSharedEverywhere, teamPhotoResponse } from "./live-content.mjs";
 import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
 import { campusEventsNow } from "./campus-events.mjs";
-import { geocodeAddress, busRoutesAnswer } from "./transit.mjs";
+import { geocodeAddress } from "./transit.mjs";
+import { transitDepartures, transitVehicles } from "./transit-live.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
 import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList } from "./structure.mjs";
@@ -570,12 +571,18 @@ async function geocodeRoute(req) {
   return json(200, { ok: true, results }, { "cache-control": "no-store" });
 }
 
-async function busRoutesRoute(req) {
-  let body;
-  try { body = await req.json(); } catch { throw new HttpError(400, "bus.bad-request"); }
-  const r = busRoutesAnswer(body);
-  if (!r) throw new HttpError(400, "bus.bad-request");
-  return json(200, { ok: true, ...r }, { "cache-control": "no-store" });
+/* The bus page's live answers: the static timetable merged with Metro's
+ * GTFS-RT feeds inside transit-live.mjs, which holds the one shared read of
+ * each feed. no-store on purpose — times are only useful current, and the
+ * sharing already happened in the function. */
+async function transitDeparturesRoute(req) {
+  const r = await transitDepartures(new URL(req.url).searchParams);
+  return json(200, r, { "cache-control": "no-store" });
+}
+
+async function transitVehiclesRoute(req) {
+  const r = await transitVehicles(new URL(req.url).searchParams);
+  return json(200, r, { "cache-control": "no-store" });
 }
 
 export const ROUTES = [
@@ -588,7 +595,8 @@ export const ROUTES = [
   { name: "eventCalendar", method: "GET", pattern: /^\/api\/calendar\/([A-Za-z0-9_-]{1,120})\.ics$/, tier: "public", run: eventCalendar },
   { name: "campusEvents", method: "GET", pattern: /^\/api\/campus-events$/, tier: "public", run: campusEventsRoute },
   { name: "geocode", method: "GET", pattern: /^\/api\/geocode$/, tier: "public", run: geocodeRoute },
-  { name: "busRoutes", method: "POST", pattern: /^\/api\/bus-routes$/, tier: "public", run: busRoutesRoute },
+  { name: "transitDepartures", method: "GET", pattern: /^\/api\/transit\/departures$/, tier: "public", run: transitDeparturesRoute },
+  { name: "transitVehicles", method: "GET", pattern: /^\/api\/transit\/vehicles$/, tier: "public", run: transitVehiclesRoute },
   { name: "moodRead", method: "GET", pattern: /^\/api\/mood$/, tier: "public", run: moodRead },
   { name: "moodTap", method: "POST", pattern: /^\/api\/mood$/, tier: "public", run: moodTap },
   { name: "authStart", method: "GET", pattern: /^\/api\/auth\/start$/, tier: "public", run: authStart },

@@ -178,6 +178,11 @@ export function renderPage(ctx, page, { body = null, status = null, clients: ext
   // decides from the page's own label whether this page is measured at all (docs/ANALYTICS.md).
   const clients = [...new Set(["analytics.js", ...blocks.flatMap((b) => [].concat(BLOCKS[b.type].client || [])), ...(eventClock ? ["schedule.js"] : []), ...extra, ...(ctx.site.footer.spill ? [SPILL_CLIENT] : [])])];
   const a = ctx.assets;
+  /* A block may name a vendored library (its `vendor` list — the bus map's Leaflet): the
+     library's own stylesheet loads with the page, after the site's, from the build's
+     hash-named copy. Its script is the block script's to load, from the address the
+     block itself stamps into the page. */
+  const vendorCss = [...new Set(blocks.flatMap((b) => [].concat(BLOCKS[b.type].vendor || [])))].map((name) => a.vendor?.[name]?.css).filter(Boolean);
   const canonical = ctx.site.origin + page.path;
   const title = pageTitle(page, ctx.site);
   const description = pageDescription(page, ctx.site);
@@ -217,6 +222,7 @@ ${description ? html`<meta name="twitter:description" content="${description}">`
 ${preload}
 ${portraits.map(photo => html`<link${attrs({ rel: "preload", as: "image", href: photo.href, imagesrcset: photo.srcset || null, imagesizes: photo.sizes || null, media: photo.media })}>`)}
 <link rel="stylesheet" href="${a.css}">
+${vendorCss.map((href) => html`<link rel="stylesheet" href="${href}">`)}
 <script>${raw(INLINE_JS)}</script>
 <script type="module" src="${a.js["site.js"]}"></script>
 ${clients.map((c) => html`<script type="module" src="${a.js[c]}"></script>`)}

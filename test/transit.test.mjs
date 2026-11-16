@@ -1,80 +1,129 @@
-/* EXPLORE-I-BUS-ROUTES (WORK item 45): the classification is read off route topology alone —
- * a pair served by one route is direct, a pair needing two routes is a transfer, an unserved
- * pair has no suitable connection — and nothing in the data or the answer is a time. The fixture
- * is a hand-built miniature GTFS; the real feed's topology was checked against known pairs on
- * 11 Nov 2026 (docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md). */
+/* The bus page's data (Explore redesign, 15 Nov 2026): one GTFS download becomes the
+ * browser's route-and-shape data and the function's pattern timetable. The fixture is a
+ * hand-built miniature GTFS: two trips on one pattern (same stops, same offsets) must
+ * collapse to one pattern with two starts; a loop shape that ends where it began must
+ * survive thinning; headsigns print in title case. The real feed's build was checked
+ * against the published counts when the artifacts were generated (876 patterns,
+ * 14,199 trips, 19 campus routes on feed S072). */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
 
-import { buildTopology, indexTopology, classifyPair, classifyMatrix, stopsNear } from "../ops/transit.mjs";
+import { buildTransitData, simplifyShape, displayHeadsign, gtfsSeconds } from "../ops/transit.mjs";
 
 const stopsTxt = [
-  "stop_id,stop_name,stop_lat,stop_lon",
-  "a1,Alpha West,43.0700,-89.4100",
-  "a2,Alpha Mid,43.0750,-89.4050",
-  "a3,Alpha East,43.0752,-89.4000",
-  "b1,Beta South,43.0600,-89.4050",
-  "b2,Beta Mid,43.0750,-89.4050",
-  "b3,Beta West,43.0755,-89.4200",
-  "z1,Far Away,43.2000,-89.6000",
+  "stop_id,stop_code,stop_name,stop_lat,stop_lon",
+  "a1,0001,Alpha West,43.0700,-89.4100",
+  "a2,0002,Alpha Mid,43.0750,-89.4050",
+  "a3,0003,Alpha East,43.0752,-89.4000",
+  "b1,0004,Beta South,43.0600,-89.4050",
 ].join("\n");
-const routesTxt = ["route_id,route_short_name,route_long_name", "RA,A,Alpha", "RB,B,Beta", "RZ,Z,Far"].join("\n");
-const tripsTxt = ["trip_id,route_id", "t1,RA", "t2,RB", "t3,RZ"].join("\n");
+const routesTxt = [
+  "route_id,route_short_name,route_long_name,route_color,route_text_color,route_sort_order",
+  "RA,A,Alpha Line,FF0000,FFFFFF,1",
+  "RB,B,Beta Line,00FF00,000000,2",
+].join("\n");
+const tripsTxt = [
+  "trip_id,route_id,service_id,trip_headsign,direction_id,shape_id",
+  "t1,RA,wd,ALPHA EAST,0,shp-a",
+  "t2,RA,wd,ALPHA EAST,0,shp-a",
+  "t3,RA,wd,ALPHA EAST,0,shp-a",
+  "t4,RB,sat,BETA SOUTH,1,shp-b",
+].join("\n");
 const stopTimesTxt = [
-  "trip_id,arrival_time,departure_time,stop_id",
-  "t1,08:00:00,08:00:00,a1", "t1,08:05:00,08:05:00,a2", "t1,08:09:00,08:09:00,a3",
-  "t2,09:00:00,09:00:00,b1", "t2,09:06:00,09:06:00,a2", "t2,09:12:00,09:12:00,b3",
-  "t3,10:00:00,10:00:00,z1",
+  "trip_id,arrival_time,departure_time,stop_id,stop_sequence",
+  "t1,08:00:00,08:00:00,a1,1", "t1,08:05:00,08:05:00,a2,2", "t1,08:09:00,08:09:00,a3,3",
+  "t2,09:00:00,09:00:00,a1,1", "t2,09:05:00,09:05:00,a2,2", "t2,09:09:00,09:09:00,a3,3",
+  "t3,10:00:00,10:00:00,a1,1", "t3,10:07:00,10:07:00,a2,2", "t3,10:11:00,10:11:00,a3,3",
+  "t4,11:00:00,11:00:00,b1,1", "t4,11:06:00,11:06:00,a2,2",
+].join("\n");
+const shapesTxt = [
+  "shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence",
+  "shp-a,43.0700,-89.4100,1", "shp-a,43.0730,-89.4060,2", "shp-a,43.0750,-89.4050,3", "shp-a,43.0752,-89.4000,4",
+  "shp-b,43.0600,-89.4050,1", "shp-b,43.0750,-89.4050,2",
+].join("\n");
+const calendarTxt = [
+  "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date",
+  "wd,1,1,1,1,1,0,0,20260101,20261231",
+  "sat,0,0,0,0,0,1,0,20260101,20261231",
+].join("\n");
+const calendarDatesTxt = [
+  "service_id,date,exception_type",
+  "wd,20260703,2",
+  "sat,20260703,1",
 ].join("\n");
 const feedInfoTxt = ["feed_publisher_name,feed_version,feed_start_date,feed_end_date", "Metro Transit-City of Madison,FIX,20260101,20261231"].join("\n");
 
-const topology = buildTopology({ stopsTxt, routesTxt, tripsTxt, stopTimesTxt, feedInfoTxt });
-const index = indexTopology(topology);
-
-const near = (lat, lon) => ({ lat, lon });
-
-test("the topology keeps routes and stops, and no times", () => {
-  assert.equal(topology.routes.length, 3);
-  assert.equal(topology.stops.length, 7);
-  assert.equal(topology.feed.version, "FIX");
-  assert.ok(!JSON.stringify(topology).match(/arrival_time|departure_time|08:00/), "no time field survives into the topology");
-  assert.deepEqual(topology.routes.find((r) => r.name === "A").stops.sort(), ["a1", "a2", "a3"]);
+const { client, schedule } = buildTransitData({
+  stopsTxt, routesTxt, tripsTxt, stopTimesTxt, shapesTxt, calendarTxt, calendarDatesTxt, feedInfoTxt,
+  panels: [{ id: "mid", label: "Alpha Mid", stops: ["a2"] }],
 });
 
-test("a pair served by one route reads direct", () => {
-  const r = classifyPair(index, near(43.0701, -89.4101), near(43.0753, -89.4001));
-  assert.equal(r.kind, "direct");
-  assert.deepEqual(r.routes, ["A"]);
-  assert.equal(r.board.name, "Alpha West");
-  assert.equal(r.alight.name, "Alpha East");
-  assert.ok(r.board.walkM < 30 && r.alight.walkM < 30);
+test("the two artifacts name the feed and carry its credit", () => {
+  assert.equal(client.feed.version, "FIX");
+  assert.equal(client.feed.start, "2026-01-01");
+  assert.equal(schedule.feed.end, "2026-12-31");
+  assert.match(client.credit, /license granted by City of Madison/);
 });
 
-test("a pair needing two routes reads transfer, with the change stop named", () => {
-  const r = classifyPair(index, near(43.0701, -89.4101), near(43.0601, -89.4051));
-  assert.equal(r.kind, "transfer");
-  assert.deepEqual(r.routes, ["A", "B"]);
-  assert.equal(r.via.name, "Alpha Mid", "route A and route B share the Alpha Mid stop");
-  assert.equal(r.board.name, "Alpha West");
-  assert.equal(r.alight.name, "Beta South");
+test("trips on one pattern collapse; a different timing is its own pattern", () => {
+  assert.equal(schedule.patterns.length, 3, "t1+t2 share a pattern; t3's offsets differ; t4 is its own");
+  const a = schedule.patterns.filter((p) => p.route === "RA");
+  assert.equal(a.length, 2);
+  const shared = a.find((p) => p.offsets === "0/300/540");
+  assert.ok(shared, "the shared pattern keeps the offsets from its start, slash-joined as the schedule file carries them");
+  assert.equal(shared.stops, "0/1/2", "pattern stops are indices into the shared stop list, slash-joined the same way");
+  const starts = schedule.trips.filter((t) => t.pattern === schedule.patterns.indexOf(shared)).map((t) => t.start).sort((x, y) => x - y);
+  assert.deepEqual(starts, [28800, 32400], "both trips ride the pattern at their own starts");
 });
 
-test("an unserved pair reads no suitable connection", () => {
-  const r = classifyPair(index, near(43.2001, -89.6001), near(43.0300, -89.3000));
-  assert.equal(r.kind, "none");
-  assert.equal(r.routes, undefined);
+test("services carry their week and their dated exceptions", () => {
+  const wd = schedule.services.find((s) => s.id === "wd");
+  assert.deepEqual(wd.days, [1, 1, 1, 1, 1, 0, 0]);
+  const ex = schedule.exceptions["2026-07-03"];
+  assert.ok(ex, "the exception date is carried");
+  assert.deepEqual(ex.find(([si]) => si === schedule.services.indexOf(wd)), [schedule.services.indexOf(wd), 2], "wd is removed that day");
 });
 
-test("the matrix answers every address × building pair", () => {
-  const out = classifyMatrix(index, [near(43.0701, -89.4101)], [{ id: "x", ...near(43.0753, -89.4001) }, { id: "y", ...near(43.03, -89.3) }]);
-  assert.equal(out.length, 1);
-  assert.deepEqual(out[0].cells.map((c) => [c.building, c.kind]), [["x", "direct"], ["y", "none"]]);
+test("the browser's routes carry colours, headsigns in title case, stop order and shape", () => {
+  const ai = client.routes.findIndex((r) => r.name === "A");
+  const a = client.routes[ai];
+  assert.equal(a.color, "ff0000");
+  assert.equal(client.schema, "bss.transit-data/2");
+  const vs = client.variants[ai];
+  assert.equal(vs.length, 1, "the variants list stands parallel to the routes");
+  assert.equal(vs[0].headsign, "Alpha East");
+  assert.equal(vs[0].stops, "0/1/2", "a variant's stops ride slash-joined");
+  assert.ok(vs[0].trips >= 1, "a variant carries its trip count");
+  assert.ok(client.shapes[vs[0].shape].length >= 3, "the shape the variant names survives thinning");
+  assert.equal(client.panels[0].stops, "1", "a panel's stops resolve to indices, slash-joined");
 });
 
-test("stops near a point come with walking distances, nearest first", () => {
-  const nearList = stopsNear(index, near(43.0750, -89.4050), 600);
-  assert.ok(nearList.length >= 2);
-  assert.ok(nearList[0].walkM <= nearList[1].walkM);
+test("a panel naming a stop the feed does not hold is refused", () => {
+  assert.throws(() => buildTransitData({
+    stopsTxt, routesTxt, tripsTxt, stopTimesTxt, shapesTxt, calendarTxt, calendarDatesTxt, feedInfoTxt,
+    panels: [{ id: "x", label: "X", stops: ["nope"] }],
+  }), /does not hold/);
+});
+
+test("a shape that ends where it began keeps its middle", () => {
+  const loop = [
+    { lat: 43.070, lon: -89.410 }, { lat: 43.080, lon: -89.410 }, { lat: 43.080, lon: -89.390 },
+    { lat: 43.070, lon: -89.390 }, { lat: 43.070, lon: -89.410 },
+  ];
+  const out = simplifyShape(loop, 15);
+  assert.ok(out.length >= 4, `a loop thins to its corners, not its endpoints (got ${out.length})`);
+  assert.deepEqual(out[0], loop[0]);
+});
+
+test("headsigns print as the preview prints them", () => {
+  assert.equal(displayHeadsign("MEMORIAL UNION VIA EAGLE HEIGHTS"), "Memorial Union Via Eagle Heights");
+  assert.equal(displayHeadsign("U.W. HOSPITAL VIA EAGLE HEIGHTS"), "U.W. Hospital Via Eagle Heights");
+  assert.equal(displayHeadsign("1-SUN PRAIRIE"), "1-Sun Prairie");
+});
+
+test("GTFS times past midnight are seconds on the same service day", () => {
+  assert.equal(gtfsSeconds("25:10:00"), 25 * 3600 + 600);
+  assert.equal(gtfsSeconds("08:05:00"), 8 * 3600 + 300);
+  assert.equal(gtfsSeconds(""), null);
 });

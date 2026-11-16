@@ -1,10 +1,75 @@
-/* Bus Route Explorer (src/render/blocks/busroutes.mjs): address rows, a building checklist, and
-   the comparison table. The map is a schematic drawn from the same numbers as the table; the
-   table is the answer and works without it. */
+/* Bus Routes (src/render/blocks/busroutes.mjs): the next buses at three stop panels,
+   one route at a time with its stop strip and map, and the buses from an address.
+   A route's own colour comes from Metro's published table and is generated into the
+   bundle by the build (the .bus-badge--r… and .bus-strip--r… rules); everything else
+   here draws in the site's tokens. The map is Leaflet's own stylesheet, loaded by the
+   page beside this one; only the bus marker and the map's frame are styled here. */
 .busroutes h2 { color: var(--accent); margin-bottom: var(--s3); }
-.busroutes .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
-/* The one column is capped at the form's own width: a row's widest unbreakable
-   line must not be able to widen the column, and every row with it, past the screen. */
+.busroutes .bus-h2 { margin-top: var(--s5); }
+.bus-status { margin: 0 0 var(--s3); font-weight: 700; color: var(--muted); }
+.bus-loading, .bus-none { color: var(--muted); margin: 0; padding: var(--s2) 0; }
+
+/* the panels */
+.bus-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--s3); }
+.bus-panel { background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-card); padding: var(--s3) var(--s4); }
+.bus-panel h3 { margin: 0 0 var(--s2); font-size: var(--fs-h3); }
+.bus-panel-foot { margin: var(--s3) 0 0; font-size: var(--fs-small); }
+.bus-alerts { display: grid; gap: var(--s2); margin-bottom: var(--s3); }
+.bus-alert { background: var(--accent-tint); border: var(--hairline); border-radius: var(--r-chip); padding: var(--s2) var(--s3); }
+.bus-alert-head { margin: 0; font-weight: 800; }
+.bus-alert-body { margin: var(--s1) 0 0; }
+
+/* one departure row: badge, direction, and the time with what follows it */
+.bus-row { display: flex; align-items: center; gap: var(--s2); padding: var(--s2) 0; border-top: var(--hairline); }
+.bus-row:first-child { border-top: 0; }
+.bus-badge { display: inline-block; flex: none; min-width: 2rem; text-align: center; border-radius: 8px; font-weight: 800; padding: .14rem .45rem; font-size: var(--fs-lead); background: var(--muted); color: var(--paper); }
+.bus-badge--big { min-width: 3.4rem; border-radius: var(--r-chip); padding: .3rem .6rem; font-size: 1.6rem; }
+/* The direction claims its content width first (flex-basis auto): with a
+   zero basis it was left whatever the time cell did not take, and a long
+   "then" line squeezed it to a letter a line. Both cells may shrink from
+   there, and the time cell's second line wraps. */
+.bus-dir { flex: 1 1 auto; min-width: 0; }
+.bus-free { display: inline-block; margin-left: var(--s2); font-weight: 800; color: var(--accent); font-size: var(--fs-small); text-transform: uppercase; letter-spacing: .04em; }
+.bus-eta { text-align: right; flex: 0 1 auto; max-width: 11rem; }
+.bus-big { display: block; font-weight: 800; font-size: var(--fs-lead); white-space: nowrap; }
+.bus-cancelled { color: var(--accent); }
+.bus-more { display: block; color: var(--muted); font-size: var(--fs-small); }
+.bus-walk { display: block; color: var(--muted); font-size: var(--fs-small); }
+.bus-retryline { margin: var(--s2) 0 0; }
+
+/* one route at a time */
+.bus-chips { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s4); }
+.bus-chip { display: inline-flex; align-items: center; gap: var(--s2); min-height: 44px; padding: var(--s1) var(--s3) var(--s1) var(--s1); border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.bus-chip:hover { border-color: var(--accent); }
+.bus-chip.is-on { border-color: var(--accent); background: var(--accent-tint); }
+.bus-chip .bus-badge { font-size: var(--fs-body); }
+.bus-chip-name { font-weight: 700; }
+.bus-route { background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-card); padding: var(--s4); }
+.bus-routehead { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.bus-routename { margin: 0; font-weight: 800; font-size: var(--fs-h3); }
+.bus-variant-label { display: flex; align-items: center; gap: var(--s2); font-weight: 700; margin-top: var(--s1); flex-wrap: wrap; max-width: 100%; }
+/* A select sizes itself to its longest headsign; the head may not push the
+   page sideways for it, so the select gives first. */
+.bus-routehead-main { flex: 1 1 auto; min-width: 0; }
+.bus-variant-label select { min-height: 44px; max-width: 100%; min-width: 0; padding: .4rem .8rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
+.bus-from { margin: var(--s3) 0 0; color: var(--muted); font-weight: 700; }
+.bus-routegrid { display: grid; grid-template-columns: minmax(15rem, 21rem) 1fr; gap: var(--s4); margin-top: var(--s3); }
+@media (max-width: 720px) { .bus-routegrid { grid-template-columns: 1fr; } }
+/* the stop strip: a spine in the route's colour (generated), a dot at each stop */
+.bus-strip { list-style: none; margin: 0; padding: 0; position: relative; }
+.bus-strip::before { content: ""; position: absolute; left: 7px; top: 12px; bottom: 12px; width: 5px; border-radius: 3px; background: var(--muted); }
+.bus-strip li { position: relative; }
+.bus-strip li::before { content: ""; position: absolute; left: 2px; top: 1.05rem; width: 9px; height: 9px; border-radius: 50%; background: var(--paper); border: 3.5px solid var(--muted); z-index: 1; }
+.bus-strip li.key { font-weight: 800; }
+.bus-stopbtn { display: block; width: 100%; text-align: left; background: none; border: 0; font: inherit; color: inherit; padding: .45rem 0 .45rem 1.7rem; min-height: 44px; cursor: pointer; border-radius: var(--r-chip); }
+.bus-stopbtn:hover { background: var(--cream-soft); }
+.bus-stopbtn.is-here { font-weight: 800; }
+.bus-map { height: 26rem; border: var(--hairline); border-radius: var(--r-card); background: var(--cream-soft); }
+.bus-mapnote { color: var(--muted); font-size: var(--fs-small); }
+.bus-vehwrap { background: none; border: 0; }
+.bus-veh { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--red); border: 3px solid var(--paper); box-shadow: 0 0 0 1px var(--line); }
+
+/* from your address (the form rules carried over from the explorer this page replaces) */
 .bus-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
 .bus-address label { display: block; font-weight: 700; margin-bottom: var(--s1); }
 .bus-address-line { display: flex; gap: var(--s2); align-items: center; }
@@ -13,34 +78,8 @@
 .bus-remove { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
 .bus-remove:hover { background: var(--cream); color: var(--ink); }
 .bus-addrow { margin: 0; }
-/* min-width: 0 — a fieldset otherwise refuses to shrink below its contents'
-   widest line, which held the whole form open past a narrow screen. The building
-   list then takes the form's width and its labels wrap inside it. */
-.bus-buildings { border: 0; margin: 0; padding: 0; min-width: 0; }
-.bus-buildings legend { font-weight: 700; margin-bottom: var(--s2); }
-.bus-building-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--s1) var(--s3); }
-.bus-building { display: flex; gap: var(--s2); align-items: center; min-height: 44px; cursor: pointer; }
-.bus-building input { width: 1.3rem; height: 1.3rem; accent-color: var(--accent); }
 .bus-privacy { margin: 0; color: var(--muted); max-width: var(--measure); }
 .bus-go { margin: 0; }
-.bus-status p { margin: 0 0 var(--s3); font-weight: 700; }
-.bus-results h3 { font-size: var(--fs-h3); margin: var(--s4) 0 var(--s2); }
-.bus-tablewrap { overflow-x: auto; }
-.bus-table { border-collapse: collapse; width: 100%; background: var(--paper); }
-.bus-table th, .bus-table td { border: var(--hairline); padding: var(--s2); text-align: left; vertical-align: top; min-width: 11rem; }
-.bus-table thead th { background: var(--accent-tint); }
-.bus-cell p { margin: 0 0 var(--s1); }
-.bus-kind { font-weight: 800; }
-.bus-route { font-weight: 700; }
-.bus-walk { color: var(--muted); }
-.bus-elsewhere { margin: var(--s1) 0 0; font-weight: 400; color: var(--muted); }
-.bus-map { background: var(--paper); border: var(--hairline); border-radius: var(--r-card); padding: var(--s2); }
-.bus-svg { width: 100%; height: auto; display: block; }
-.bus-line { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .55; }
-.bus-sq { fill: var(--ink); }
-.bus-dot { fill: var(--accent); }
-.bus-dot--addr { fill: var(--accent); stroke: var(--paper); stroke-width: 2; }
-.bus-pt-num { fill: var(--paper); font-weight: 800; text-anchor: middle; }
-.bus-pt-label { fill: var(--ink); font-size: 15px; }
-.bus-maplegend { color: var(--muted); font-size: var(--fs-small); }
+.bus-addrcard { margin-bottom: var(--s3); }
+.bus-door { margin-top: var(--s3); }
 .bus-credit { color: var(--muted); font-size: var(--fs-small); margin-top: var(--s4); }

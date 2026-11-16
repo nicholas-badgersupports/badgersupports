@@ -314,7 +314,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 
 ### Photo cards — `cards`
 
-Reads: `events` · analytics: `page` · photos load lazy
+Reads: `events`, `resources` · analytics: `page` · photos load lazy
 
 | Field | Type | |
 |---|---|---|
@@ -396,6 +396,7 @@ Reads: `resources` · analytics: `none` · photos load lazy · browser module `n
 |---|---|---|
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
+| `note` | one line of text |  |
 | `steps` | the navigator's steps, in order; the first is where the walk starts. Each step has an `id`, its question (`prompt`) and its choices (`options`); each choice has an `id`, its words (`label`), and goes to one place: a next step (`next`, another step's id) or a set of resources (`results`, ids from the resource library). Every step must be reachable from the first and able to reach a set of resources | **required** |
 
 ### Discover Classes by Interest — `courses`
@@ -426,14 +427,15 @@ Reads: `campusEvents`, `campusInterests` · analytics: `none` · photos load laz
 | `lead` | one line of text |  |
 | `count` | a whole number |  |
 
-### Bus Route Explorer — `busroutes`
+### Bus Routes — `busroutes`
 
-Reads: `transitBuildings` · analytics: `none` · photos load lazy · browser module `bus-routes.js`
+Reads: `transitData`, `transitPanels` · analytics: `none` · photos load lazy · browser module `bus-routes.js`
 
 | Field | Type | |
 |---|---|---|
-| `title` | one line of text | **required** |
-| `lead` | one line of text |  |
+| `nextTitle` | one line of text | **required** |
+| `routeTitle` | one line of text | **required** |
+| `addressTitle` | one line of text | **required** |
 | `privacy` | one line of text |  |
 | `credit` | one line of text |  |
 
@@ -600,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-944 keys. Keys are permanent. Required text cannot be published empty and must keep each
+965 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1508,7 +1510,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (61)
+### Explore Campus (78)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1547,11 +1549,9 @@ the site adds the markup.
 | `explore.events.showMore` | Show More | On the Campus Events Explorer: the button under the list that reveals more of the events that match the current search and filters. |  |
 | `explore.events.onlyBadger` | All Badger Supports events | On the Campus Events Explorer: the toggle beside the source menu that limits the list to Badger Supports' own programs, the events from Badger Supports Connect. |  |
 | `explore.bus.address` | Address {{n}} | On the Bus Route Explorer: the label over each address box. | `{{n}}` |
-| `explore.bus.addressesHeader` | Address | On the Bus Route Explorer: the results table's first column heading. |  |
 | `explore.bus.addAddress` | Add another address | On the Bus Route Explorer: the button that adds an address box. |  |
 | `explore.bus.remove` | Remove address {{n}} | On the Bus Route Explorer: the spoken name of an address box's remove button. | `{{n}}` |
-| `explore.bus.buildings` | Campus buildings | On the Bus Route Explorer: the heading over the building checklist. |  |
-| `explore.bus.compare` | Compare bus routes | On the Bus Route Explorer: the button that runs the comparison. |  |
+| `explore.bus.compare` | Show My Buses | On the Bus Routes page: the button that reads the addresses and shows each one's next buses. |  |
 | `explore.bus.looking` | Looking up the addresses… | On the Bus Route Explorer: the status while addresses are being placed. |  |
 | `explore.bus.lookingCount` | Looking up address {{n}} of {{total}}… | On the Bus Route Explorer: the status while each address is being placed, when more than one address was given. | `{{n}}` `{{total}}` |
 | `explore.bus.working` | Working out the bus routes… | On the Bus Route Explorer: the status while the comparison runs. |  |
@@ -1561,18 +1561,37 @@ the site adds the markup.
 | `explore.bus.outsideArea` | “{{q}}” matched {{place}}, which is outside the Madison area this explorer covers. Check the address and try again. | On the Bus Route Explorer: when an address resolves to a place outside the area the comparison covers, so no comparison is run for it. | `{{q}}` `{{place}}` |
 | `explore.bus.elsewhere` | This matched an address in {{city}}, not Madison. If you meant a Madison address, check it and try again. | On the Bus Route Explorer: the line under a results row's address when the match is in another town or city, so the row is not read as a Madison answer. | `{{city}}` |
 | `explore.bus.needAddress` | Add at least one address. | On the Bus Route Explorer: when Compare is pressed with every address box empty. |  |
-| `explore.bus.needBuilding` | Choose at least one campus building. | On the Bus Route Explorer: when Compare is pressed with no building ticked. |  |
-| `explore.bus.results` | Bus connections | On the Bus Route Explorer: the heading over the results table. |  |
-| `explore.bus.direct` | Direct bus | On the Bus Route Explorer: a pair one route serves, in the results table. |  |
-| `explore.bus.transfer` | One transfer | On the Bus Route Explorer: a pair needing two routes, in the results table. |  |
-| `explore.bus.none` | No suitable connection | On the Bus Route Explorer: a pair no route serves within the walking distance, in the results table. |  |
-| `explore.bus.routeOne` | Route {{routes}} | On the Bus Route Explorer: the one route of a direct pair. | `{{routes}}` |
-| `explore.bus.routeTwo` | Routes {{a}} then {{b}} | On the Bus Route Explorer: the two routes of a transfer pair, in order. | `{{a}}` `{{b}}` |
-| `explore.bus.walkTo` | About {{m}} m walk to {{stop}} | On the Bus Route Explorer: the walk from the address to the stop where the bus is caught. | `{{m}}` `{{stop}}` |
-| `explore.bus.walkFrom` | About {{m}} m walk from {{stop}} to the building | On the Bus Route Explorer: the walk from the stop where the bus is left to the building. | `{{m}}` `{{stop}}` |
-| `explore.bus.changeAt` | Change at {{stop}} | On the Bus Route Explorer: the stop where a transfer pair changes buses. | `{{stop}}` |
-| `explore.bus.mapTitle` | Map | On the Bus Route Explorer: the heading over the schematic map. |  |
-| `explore.bus.mapLegend` | Numbered markers are your addresses, squares are the buildings, and dots are the stops used. The table above is the same answer in words. | On the Bus Route Explorer: the line under the schematic map. |  |
+| `explore.bus.loading` | Loading the next buses… | On the Bus Routes page: the status over the panels and in each empty panel while the first departures are read. |  |
+| `explore.bus.statusLive` | Live times from Madison Metro, with the published timetable underneath. | On the Bus Routes page: the status line when the live feed answered. |  |
+| `explore.bus.statusScheduled` | Scheduled times from Metro's published timetable. Live times are not answering right now. | On the Bus Routes page: the status line when the live feed did not answer and the timetable stands alone. |  |
+| `explore.bus.statusDown` | Bus times could not be loaded just now. | On the Bus Routes page: the status line when neither the live feed nor a first answer arrived. |  |
+| `explore.bus.retry` | Try Again | On the Bus Routes page: the button under a panel or the route departures when a load failed. |  |
+| `explore.bus.to` | To | On the Bus Routes page: before a bus's destination, in a departure row and in the route's direction menu. |  |
+| `explore.bus.then` | then | On the Bus Routes page: before the departures that follow the next one, in a departure row. |  |
+| `explore.bus.free` | Free | On the Bus Routes page: the tag on the campus routes that cost nothing to ride. |  |
+| `explore.bus.due` | Due | On the Bus Routes page: in place of a countdown, when a live bus is at the stop. |  |
+| `explore.bus.min` | {{n}} min | On the Bus Routes page: a live countdown under an hour, in a departure row. | `{{n}}` |
+| `explore.bus.late` | {{n}} min late | On the Bus Routes page: after a live time, when the bus is running late. | `{{n}}` |
+| `explore.bus.early` | {{n}} min early | On the Bus Routes page: after a live time, when the bus is running early. | `{{n}}` |
+| `explore.bus.cancelled` | Cancelled | On the Bus Routes page: in place of a time, when Metro reports the trip or the stop cancelled. |  |
+| `explore.bus.scheduledTag` | Scheduled | On the Bus Routes page: after a time that comes from the published timetable rather than the live feed. |  |
+| `explore.bus.noneToday` | No more buses in the next few hours. | On the Bus Routes page: in a panel, the route box, or an address card when nothing is due. |  |
+| `explore.bus.noStop` | No stop within a short walk of this address. | On the Bus Routes page: in an address card when no stop is close enough. |  |
+| `explore.bus.tracker` | Live times at Metro Bus Tracker | On the Bus Routes page: the link under each stop panel to Metro's own tracker. |  |
+| `explore.bus.routeLabel` | Routes | On the Bus Routes page: the spoken name of the row of route buttons. |  |
+| `explore.bus.variantLabel` | Direction | On the Bus Routes page: the spoken name of the route's direction menu. |  |
+| `explore.bus.fromStop` | From {{stop}} | On the Bus Routes page: the line naming the stop the route's next departures leave from. | `{{stop}}` |
+| `explore.bus.mapLabel` | Map of the route | On the Bus Routes page: the spoken name of the route map. |  |
+| `explore.bus.walkMin` | {{stop}} · {{n}} min walk | On the Bus Routes page: in an address card's departure row, the stop and the walk to it. | `{{stop}}` `{{n}}` |
+| `explore.bus.door` | Door-to-door directions: | On the Bus Routes page: the line before the links to the two trip planners. |  |
+| `explore.bus.transitApp` | Transit app | On the Bus Routes page: the link to the Transit app for door-to-door directions. |  |
+| `explore.bus.googleMaps` | Google Maps | On the Bus Routes page: the link to Google Maps for door-to-door directions. |  |
+| `explore.events.when` | When | On the Campus Events Explorer: the heading over the date-window buttons. |  |
+| `explore.events.window.tonight` | Tonight | On the Campus Events Explorer: the window button, group heading and count line for today's events running at or across 5 PM. |  |
+| `explore.events.window.today` | Today | On the Campus Events Explorer: the window button, group heading and count line for today's events. |  |
+| `explore.events.window.weekend` | This Weekend | On the Campus Events Explorer: the window button, group heading and count line for the coming Saturday and Sunday. |  |
+| `explore.events.window.all` | All Dates | On the Campus Events Explorer: the window button, group heading and count line for every listed date. |  |
+| `explore.events.countOurs` | {{n}} from Badger Supports | On the Campus Events Explorer: in the count line, how many of the events shown are Badger Supports' own programs. | `{{n}}` |
 
 ### Alumni History (6)
 
@@ -1585,7 +1604,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (23)
+### Discover Classes by Interest (26)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1612,8 +1631,11 @@ the site adds the markup.
 | `classes.none.title` | No Courses Match Your Search. | On the classes page: the heading when a search finds nothing. |  |
 | `classes.none.body` | Try another search term or browse by interest. | On the classes page: the line under that heading. |  |
 | `classes.none.reset` | Start Over | On the classes page: the button that clears the search and the interest. |  |
+| `classes.browse` | Browse {{label}} | On the classes page: on an interest tile, the way into that interest's courses. | `{{label}}` |
+| `classes.group.all` | All | On the classes page: the availability button that shows an interest's courses whether or not they are offered now. |  |
+| `classes.availability` | Availability | On the classes page: the spoken name of the availability buttons. |  |
 
-### Academic Support Navigator (4)
+### Academic Support Navigator (5)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1621,6 +1643,7 @@ the site adds the markup.
 | `navigator.startOver` | Start Over | On the Academic Support Navigator: the button that returns to the first question. |  |
 | `navigator.all` | See All Resources | On the Academic Support Navigator: the link to the full Resource Finder, present at every step. |  |
 | `navigator.results` | Resources That Fit | On the Academic Support Navigator: the heading over the resources a finished path leads to. |  |
+| `navigator.start` | Start the two questions | On the Academic Support Navigator: the button on the opening panel that begins the questions. |  |
 
 ## Also edited in Connect
 

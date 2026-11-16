@@ -123,9 +123,9 @@ import { resolveText } from "../src/shared/text.mjs";
 
 const registry = JSON.parse(fs.readFileSync(new URL("../content/text.json", import.meta.url), "utf8"));
 const interestsFile = JSON.parse(fs.readFileSync(new URL("../content/explore/interests.json", import.meta.url), "utf8"));
-const explorerHtml = () => {
+const explorerHtml = (today = "2026-11-11") => {
   const ctx = makeContext({
-    site: {}, media: { items: [] }, today: "2026-11-11",
+    site: {}, media: { items: [] }, today,
     text: resolveText(registry),
     data: {
       campusEvents: { events: fixtureCampusEvents("2026-11-11"), updated: null, stale: false },
@@ -151,11 +151,24 @@ test("Find Your People renders as a plain chip, styled no differently from its s
 });
 
 test("the events the Badger Supports toggle gathers are the ones the feed marks as ours", () => {
-  const out = explorerHtml();
+  /* The fixture's own program runs five days out, 16:30–18:00 — across 5 PM, so on its
+   * own date it stands in the Tonight window the page opens on (redesign, 15 Nov 2026),
+   * grouped ahead of the window's other events. Rendered on that date: */
+  const out = explorerHtml("2026-11-16");
   assert.equal((out.match(/cecard is-badger/g) || []).length, 1, "exactly the Connect-fed program renders as a Badger Supports card");
   assert.match(out, /Badger Supports program/);
+  assert.match(out, /<h3 class="ce-grouphead">Badger Supports Tonight<\/h3>/, "our programs in the window stand under their own heading, first");
   const own = fixtureCampusEvents("2026-11-11").filter((e) => e.badger);
   assert.deepEqual(own.map((e) => e.sources[0].source), ["badger"], "the toggle's set is the badger:true, source badger set");
+});
+
+test("the window chips open on Tonight, and the first paint is the Tonight window", () => {
+  const out = explorerHtml();
+  assert.match(out, /<button type="button" class="ce-chip" aria-pressed="true" data-ce-window="tonight">Tonight<\/button>/);
+  assert.match(out, /<button type="button" class="ce-chip" aria-pressed="false" data-ce-window="weekend">This Weekend<\/button>/);
+  assert.match(out, /<h3 class="ce-grouphead">Tonight<\/h3>/, "the window's other events stand under the window's name");
+  assert.ok(out.includes("Arboretum Night Walk"), "the fixture's 17:00 event is in Tonight");
+  assert.ok(!out.includes("WUD Film Presents"), "tomorrow evening's film is not in Tonight");
 });
 
 test("the date block is a calendar square; today is a filled block plus a label in the meta line", () => {

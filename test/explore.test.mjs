@@ -20,6 +20,24 @@ test.before(async () => { await build({ out: OUT, serverDir: path.join(OUT, "_se
 const builtPage = (p) => fs.readFileSync(path.join(OUT, p, "index.html"), "utf8");
 
 const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
+
+/* The bus page against the real timetable data (regression, 16 Nov 2026): the
+   route panel's server-drawn stop strip and variant choices must stand on the
+   page before any script runs — the data contract behind them once changed
+   shape under the page (dirs for variants) and every gate passed over an
+   empty strip, because no test had ever counted the buttons. */
+test("EXPLORE-BUS: the built bus page carries the 80's stop strip and variant choices", () => {
+  const page = builtPage("explore/bus-routes");
+  const stops = [...page.matchAll(/data-bus-stop="/g)].length;
+  assert.ok(stops > 10, `the server draws the home route's stops (found ${stops})`);
+  const options = [...page.matchAll(/<option value="\d+"/g)].length;
+  assert.ok(options >= 1, "the variant select names at least one direction");
+  const island = page.match(/<script type="application\/json" id="b-br-tool-data">([\s\S]*?)<\/script>/);
+  assert.ok(island, "the page carries its data island");
+  const data = JSON.parse(island[1]);
+  assert.ok(data.variants?.[data.home]?.length >= 1, "the island's home route has variants");
+  assert.ok(data.shapes?.length >= 1, "the island carries the shapes the variants name");
+});
 const fixtureResources = read("content/fixtures/resources.json").resources;
 const own = fixtureResources.find((r) => r.id === "greater-university-tutoring-service");
 
@@ -67,7 +85,9 @@ test("EXPLORE-C: a fixture export shows the own record and the approved KB artic
 
 /* ---------- EXPLORE-G: the Academic Support Navigator ---------- */
 
-const navBlock = read("content/pages/explore-academic-support.json").blocks.find((b) => b.type === "navigator");
+/* The redesign folded the navigator into the Resource Finder page (15 Nov 2026): the
+ * block lives at the head of /resources/ now, and its old page is gone. */
+const navBlock = read("content/pages/resources.json").blocks.find((b) => b.type === "navigator");
 const clone = (x) => structuredClone(x);
 
 test("EXPLORE-G: the shipped tree joins up, and every leaf names a resource the library holds", () => {
@@ -93,14 +113,21 @@ test("EXPLORE-G: a tree that does not join up, or names an unknown resource, is 
 
 test("EXPLORE-G: the built page walks to real cards, and the full finder is linked at every step", () => {
   assert.ok(built);
-  const page = builtPage("explore/academic-support");
+  /* The walk stands on /resources/ now, over the list it points to; its old page is not
+   * built, and its old address redirects to the questions (redesign, 15 Nov 2026). */
+  assert.ok(!fs.existsSync(path.join(OUT, "explore/academic-support/index.html")), "the navigator's old page is not built");
+  const redirects = fs.readFileSync(path.join(OUT, "_redirects"), "utf8");
+  assert.match(redirects, /^\/explore\/academic-support {2}\/resources\/#b-res-nav {2}301$/m, "the old address lands on the questions");
+  const page = builtPage("resources");
   const section = page.slice(page.indexOf("data-navigator"), page.indexOf("</section>", page.indexOf("data-navigator")));
   const panels = [...section.matchAll(/data-nav-panel/g)].length;
-  assert.equal(panels, 10, "two questions and eight sets of results");
-  assert.equal([...section.matchAll(/href="\/resources\/"/g)].length, panels, "See All Resources is present at every step");
-  assert.equal([...section.matchAll(/data-res="greater-university-tutoring-service"/g)].length, 3, "tutoring ends on the tutoring service from three paths");
-  assert.match(section, /data-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
-  assert.match(section, /data-nav-go="b-nav-step-course"/, "the course choice goes to the second question");
+  assert.equal(panels, 11, "the opening panel, two questions and eight sets of results");
+  assert.match(section, /data-nav-intro/, "the walk opens on its introduction");
+  assert.match(section, /This tool points you to resources and their official contacts; it is not academic advising\./, "the not-advising note rides on the opening panel, word for word");
+  assert.equal([...section.matchAll(/href="#b-res-list"/g)].length, panels, "See All Resources is present at every step, and on this page it scrolls to the list");
+  assert.equal([...section.matchAll(/data-nav-res="greater-university-tutoring-service"/g)].length, 3, "tutoring ends on the tutoring service from three paths");
+  assert.match(section, /data-nav-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
+  assert.match(section, /data-nav-go="b-res-nav-step-course"/, "the course choice goes to the second question");
   assert.doesNotMatch(section, /<input|<textarea|<select/, "no free-text personal data is asked for");
 });
 
@@ -155,14 +182,18 @@ test("EXPLORE-F: the built page shows the pulled courses with their terms and th
   const section = page.slice(page.indexOf("data-courses"), page.indexOf("</section>", page.indexOf("data-courses")));
   if (data.fixture) assert.ok(section.includes(data.label), "a sample pull says what it is until the owner accepts the verification note");
   else assert.doesNotMatch(section, /Sample data/, "the production pull carries no sample note (switch on: the owner's ruling of 12 Nov 2026)");
-  /* First use (C-23): the page carries the first courses of each group and names the data
-     file beside it; the file carries every pulled course as a card. */
+  /* First use (C-23) after the redesign (15 Nov 2026): the data file's groups are the
+     interests (bss.courses-data/2) — a course under two interests rides in both, and the
+     union of the groups is the whole catalogue. The page carries the first interest's
+     first courses, and a tile per interest with its count. */
   const payload = JSON.parse(fs.readFileSync(path.join(OUT, "explore/classes/courses-data.json"), "utf8"));
   const cards = payload.groups.flatMap((g) => g.cards);
-  assert.equal(payload.schema, "bss.courses-data/1");
-  assert.equal(cards.length, data.courses.length, "every pulled course is a card in the data file");
+  assert.equal(payload.schema, "bss.courses-data/2");
+  for (const c of data.courses) assert.ok(cards.some((x) => x.includes(`${c.subject} ${c.number}`.replace(/&/g, "&amp;"))), `course ${c.subject} ${c.number} is a card in at least one interest`);
+  assert.equal(payload.total, data.courses.length, "the file names the whole catalogue's size");
   assert.match(section, /data-courses-src="\/explore\/classes\/courses-data\.json"/, "the page names its data file");
-  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, payload.groups.reduce((n, g) => n + Math.min(12, g.cards.length), 0), "the page carries the first courses of each group");
+  assert.equal([...section.matchAll(/<li class="cls-card"/g)].length, Math.min(12, payload.groups[0].cards.length), "the page carries the first interest's first courses");
+  for (const g of payload.groups) assert.ok(section.includes(`data-interest="${g.id}"`), `a tile opens ${g.id}`);
   const all = cards.join("");
   const card = (desig) => { const a = all.indexOf(desig); return a < 0 ? "" : all.slice(a, all.indexOf("</li>", a)); };
   assert.match(card("SCAND ST 101"), /Open for Fall 2026/, "the fall-only Norwegian course is open for the fall term it is published in");

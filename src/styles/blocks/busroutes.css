@@ -24,10 +24,14 @@
 .bus-row:first-child { border-top: 0; }
 .bus-badge { display: inline-block; flex: none; min-width: 2rem; text-align: center; border-radius: 8px; font-weight: 800; padding: .14rem .45rem; font-size: var(--fs-lead); background: var(--muted); color: var(--paper); }
 .bus-badge--big { min-width: 3.4rem; border-radius: var(--r-chip); padding: .3rem .6rem; font-size: 1.6rem; }
-.bus-dir { flex: 1; min-width: 0; }
+/* The direction claims its content width first (flex-basis auto): with a
+   zero basis it was left whatever the time cell did not take, and a long
+   "then" line squeezed it to a letter a line. Both cells may shrink from
+   there, and the time cell's second line wraps. */
+.bus-dir { flex: 1 1 auto; min-width: 0; }
 .bus-free { display: inline-block; margin-left: var(--s2); font-weight: 800; color: var(--accent); font-size: var(--fs-small); text-transform: uppercase; letter-spacing: .04em; }
-.bus-eta { text-align: right; flex: 0 1 auto; min-width: 0; }
-.bus-big { display: block; font-weight: 800; font-size: var(--fs-lead); }
+.bus-eta { text-align: right; flex: 0 1 auto; max-width: 11rem; }
+.bus-big { display: block; font-weight: 800; font-size: var(--fs-lead); white-space: nowrap; }
 .bus-cancelled { color: var(--accent); }
 .bus-more { display: block; color: var(--muted); font-size: var(--fs-small); }
 .bus-walk { display: block; color: var(--muted); font-size: var(--fs-small); }

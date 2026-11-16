@@ -256,9 +256,14 @@ if (root) {
        controls all are), which also keeps the zoom buttons out of a nested
        focusable container for the accessibility check. */
     map = L.map(root.querySelector("[data-bus-map]"), { scrollWheelZoom: false, keyboard: false });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: "abcd", maxZoom: 19,
+    /* The tiles are Esri's World Street Map service: a proper tile provider,
+       no key, OpenStreetMap among its credited sources. CARTO's basemaps —
+       the first choice — now answer keyless requests with an "API KEY
+       REQUIRED" tile (checked 16 Nov 2026), which would ship a watermarked
+       map; Esri's service answers with the map itself. */
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · Esri, HERE, Garmin, and the GIS user community',
+      maxZoom: 18,
     }).addTo(map);
     routeLayer = L.layerGroup().addTo(map);
     busLayer = L.layerGroup().addTo(map);

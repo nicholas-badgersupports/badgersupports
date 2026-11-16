@@ -12,7 +12,7 @@
  * rides to the script in the island; the panels' stop sets are content
  * (content/transit/panels.json). Live times come from the site's own function
  * (netlify/lib/transit-live.mjs merging the timetable with Metro's GTFS-RT);
- * the map is Leaflet over CARTO's OpenStreetMap tiles, vendored by the build —
+ * the map is Leaflet over Esri's street tiles, vendored by the build —
  * no hand-drawn diagram anywhere. Addresses are looked up by /api/geocode and
  * are not kept; the words above the button say so before anyone types. */
 

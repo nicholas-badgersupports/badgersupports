@@ -450,7 +450,7 @@ export function cspHeader(ga = false) {
     "style-src 'self'",
     /* The bus map's tiles come from CARTO's basemap service (OpenStreetMap data), named here
        whether or not analytics is configured: they are the one outside image the site loads. */
-    `img-src 'self' data: https://*.basemaps.cartocdn.com${ga ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
+    `img-src 'self' data: https://server.arcgisonline.com${ga ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
     "font-src 'self'",
     `connect-src 'self'${ga ? " https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com" : ""}`,
     // An Instagram reel shows in Instagram's own frame (blocks/embed.mjs); the staff page's preview

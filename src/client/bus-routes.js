@@ -1,167 +1,407 @@
-/* The Bus Route Explorer's page work (src/render/blocks/busroutes.mjs). The addresses a visitor
- * types go to this site's own /api/geocode — which places them with OpenStreetMap and keeps
- * nothing — and only their coordinates go on to /api/bus-routes, which classifies each
- * address × building pair from Madison Metro's route topology. No address is stored, in the
- * browser or on the server. The results table is the answer; the map under it is an aid drawn
- * from the same numbers. */
+/* The Bus Routes page's script (Explore redesign, approved 15 Nov 2026).
+ *
+ * Three jobs, in the page's own order. Next Buses: the three stop panels are
+ * filled from /api/transit/departures — the site's function merges Metro's
+ * static timetable with Metro's live GTFS-RT — and re-read every half minute;
+ * a departure the live feed speaks for counts down, one it does not keeps its
+ * clock time and says Scheduled, and the line over the panels says which state
+ * the page is in, so a dead feed is announced, never hidden. One Route at a
+ * Time: the chosen route's variants, its stop strip, the next departures at the
+ * chosen stop, and its true shape on a Leaflet map (loaded only when the map
+ * is first drawn) with the route's buses from the Vehicle Positions feed.
+ * From Your Address: each address is placed by /api/geocode — looked up, never
+ * kept — and the stops within a short walk are read from the timetable data the
+ * page already holds, with their next departures from the same live answer.
+ *
+ * Nothing here writes a word of its own: every label comes from the page's
+ * text table, and rows are built node by node. */
 
 import { t } from "./text.js";
 
-for (const box of document.querySelectorAll("[data-bus-routes]")) {
-  const island = box.querySelector("script[type=\"application/json\"]");
-  let buildings = [];
-  try { buildings = JSON.parse(island.textContent).buildings || []; } catch { /* the checkboxes still name them */ }
-  const byId = new Map(buildings.map((b) => [b.id, b]));
-  const form = box.querySelector("[data-bus-form]");
-  const rows = box.querySelector("[data-bus-addresses]");
-  const addBtn = box.querySelector("[data-bus-add]");
-  const status = box.querySelector("[data-bus-status]");
-  const resultsBox = box.querySelector("[data-bus-results]");
-  const tableWrap = box.querySelector("[data-bus-table]");
-  const mapBox = box.querySelector("[data-bus-map]");
+const root = document.querySelector("[data-bus-routes]");
+if (root) {
+  const data = JSON.parse(document.getElementById(`${root.getAttribute("data-block")}-data`).textContent);
+  const routeByName = new Map((data.routes || []).map((r) => [r.name, r]));
+  const timeFmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" });
+  const REFRESH_MS = 30_000;
+  const WALK_M = 500, WALK_PER_MIN = 80;
 
-  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const fmtTime = (iso) => timeFmt.format(new Date(iso));
+  const badgeEl = (name) => el("span", `bus-badge bus-badge--r${name}`, name);
+  const freeEl = () => el("span", "bus-free", t("explore.bus.free"));
 
-  function renumber() {
-    [...rows.querySelectorAll("[data-bus-row]")].forEach((row, i) => {
-      const input = row.querySelector("[data-bus-address]");
-      const label = row.querySelector("label");
-      const remove = row.querySelector("[data-bus-remove]");
-      input.id = `${form.id || "bus"}-addr-${i + 1}`;
-      label.htmlFor = input.id;
-      label.textContent = t("explore.bus.address", { n: i + 1 });
-      remove.setAttribute("aria-label", t("explore.bus.remove", { n: i + 1 }));
-      remove.hidden = rows.children.length <= 1;
-    });
-    addBtn.hidden = rows.children.length >= 5;
+  function bigText(d) {
+    if (!d.live) return fmtTime(d.time);
+    const mins = Math.round((Date.parse(d.time) - Date.now()) / 60_000);
+    if (mins <= 0) return t("explore.bus.due");
+    if (mins < 60) return t("explore.bus.min", { n: mins });
+    return fmtTime(d.time);
   }
-  rows.addEventListener("click", (e) => {
-    const remove = e.target.closest("[data-bus-remove]");
-    if (remove) { remove.closest("[data-bus-row]").remove(); renumber(); }
+  function delayText(d) {
+    if (d.delaySec == null || Math.abs(d.delaySec) < 60) return "";
+    const n = Math.round(Math.abs(d.delaySec) / 60);
+    return d.delaySec > 0 ? t("explore.bus.late", { n }) : t("explore.bus.early", { n });
+  }
+  function depRow(d, next) {
+    const row = el("div", "bus-row");
+    row.append(badgeEl(d.route));
+    const mid = el("span", "bus-dir", `${t("explore.bus.to")} ${d.headsign}`);
+    const route = routeByName.get(d.route);
+    if (route && route.free) mid.append(freeEl());
+    row.append(mid);
+    const eta = el("span", "bus-eta");
+    if (d.cancelled) {
+      eta.append(el("span", "bus-big bus-cancelled", t("explore.bus.cancelled")));
+    } else {
+      eta.append(el("span", "bus-big", bigText(d)));
+      const bits = [];
+      if (next && next.length) bits.push(`${t("explore.bus.then")} ${next.map((x) => fmtTime(x.time)).join(" · ")}`);
+      const delay = delayText(d);
+      if (delay) bits.push(delay);
+      if (!d.live) bits.push(t("explore.bus.scheduledTag"));
+      if (bits.length) eta.append(el("span", "bus-more", bits.join(" · ")));
+    }
+    row.append(eta);
+    return row;
+  }
+  /* One stop set's departures, one row per route and direction: the soonest
+   * bus is the row, the two after it ride along as "then" times. A trip that
+   * serves two stops of the set counts once, at its earliest time. */
+  function groupsFor(body, stopIds) {
+    const byTrip = new Map();
+    for (const gid of stopIds) for (const d of body.stops?.[gid] || []) {
+      const cur = byTrip.get(d.trip);
+      if (!cur || d.time < cur.time) byTrip.set(d.trip, d);
+    }
+    const groups = new Map();
+    for (const d of byTrip.values()) {
+      const key = `${d.route}|${d.headsign}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(d);
+    }
+    return [...groups.values()]
+      .map((list) => list.sort((a, b) => Date.parse(a.time) - Date.parse(b.time)))
+      .sort((a, b) => Date.parse(a[0].time) - Date.parse(b[0].time));
+  }
+  async function fetchDeps(stopIds, routeName) {
+    const q = new URLSearchParams({ stops: stopIds.join(",") });
+    if (routeName) q.set("route", routeName);
+    const res = await fetch(`/api/transit/departures?${q}`, { headers: { accept: "application/json" } });
+    if (!res.ok) throw new Error("departures");
+    return res.json();
+  }
+  function retryButton(onClick) {
+    const p = el("p", "bus-retryline");
+    const btn = el("button", "btn btn--quiet", t("explore.bus.retry"));
+    btn.type = "button";
+    btn.addEventListener("click", onClick);
+    p.append(btn);
+    return p;
+  }
+
+  /* — the panels — */
+  const statusLine = root.querySelector("[data-bus-status]");
+  const alertsBox = root.querySelector("[data-bus-alerts]");
+  const panelRows = [...root.querySelectorAll("[data-bus-panel-rows]")];
+  let panelBody = null;
+  function renderAlerts(alerts) {
+    alertsBox.replaceChildren();
+    if (!alerts || !alerts.length) { alertsBox.hidden = true; return; }
+    for (const a of alerts) {
+      const box = el("div", "bus-alert");
+      const head = el("p", "bus-alert-head");
+      if (a.url) { const link = el("a", "", a.header || ""); link.href = a.url; head.append(link); }
+      else head.textContent = a.header || "";
+      box.append(head);
+      if (a.description) box.append(el("p", "bus-alert-body", a.description));
+      alertsBox.append(box);
+    }
+    alertsBox.hidden = false;
+  }
+  function renderPanels() {
+    if (!panelBody) return;
+    data.panels.forEach((panel, i) => {
+      const box = panelRows[i];
+      if (!box) return;
+      box.replaceChildren();
+      const groups = groupsFor(panelBody, panel.stops).slice(0, 8);
+      if (!groups.length) { box.append(el("p", "bus-none", t("explore.bus.noneToday"))); return; }
+      for (const list of groups) box.append(depRow(list[0], list.slice(1, 3)));
+    });
+    renderAlerts(panelBody.alerts);
+  }
+  async function loadPanels() {
+    const stopIds = [...new Set(data.panels.flatMap((p) => p.stops))];
+    try {
+      panelBody = await fetchDeps(stopIds);
+      statusLine.textContent = panelBody.live ? t("explore.bus.statusLive") : t("explore.bus.statusScheduled");
+      renderPanels();
+    } catch {
+      if (panelBody) { renderPanels(); return; }
+      statusLine.textContent = t("explore.bus.statusDown");
+      panelRows.forEach((box) => {
+        box.replaceChildren(el("p", "bus-none", t("explore.bus.failed")));
+        box.append(retryButton(() => { box.replaceChildren(el("p", "bus-loading", t("explore.bus.loading"))); loadPanels(); }));
+      });
+    }
+  }
+
+  /* — one route at a time — */
+  const state = { route: data.home || 0, variant: data.homeVariant || 0, stop: null };
+  const chips = [...root.querySelectorAll("[data-bus-chip]")];
+  const variantSel = root.querySelector("[data-bus-variant]");
+  const routeRows = root.querySelector("[data-bus-route-rows]");
+  const fromLine = root.querySelector("[data-bus-from]");
+  const strip = root.querySelector("[data-bus-strip]");
+  const routeHead = root.querySelector(".bus-routehead");
+  const mapNote = root.querySelector("[data-bus-mapnote]");
+  const variant = () => (data.variants?.[state.route] || [])[state.variant] || null;
+  let routeBody = null;
+
+  function selectStop(si) {
+    state.stop = si;
+    renderStrip(); renderFrom(); loadRouteDeps(); drawRoute();
+  }
+  function renderStrip() {
+    const v = variant();
+    const route = data.routes[state.route];
+    strip.className = `bus-strip bus-strip--r${route.name}`;
+    strip.replaceChildren();
+    if (!v) return;
+    if (state.stop == null || !v.stops.includes(state.stop)) state.stop = v.stops[0];
+    v.stops.forEach((si, i) => {
+      const li = el("li", i === 0 || i === v.stops.length - 1 ? "key" : "");
+      const btn = el("button", `bus-stopbtn${si === state.stop ? " is-here" : ""}`, data.stops[si]?.name || "");
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", String(si === state.stop));
+      btn.addEventListener("click", () => selectStop(si));
+      li.append(btn);
+      strip.append(li);
+    });
+  }
+  function renderFrom() {
+    const s = data.stops[state.stop];
+    fromLine.textContent = s ? t("explore.bus.fromStop", { stop: s.name }) : "";
+  }
+  function renderRouteHead() {
+    const route = data.routes[state.route];
+    const big = badgeEl(route.name);
+    big.classList.add("bus-badge--big");
+    routeHead.querySelector(".bus-badge")?.replaceWith(big);
+    const name = routeHead.querySelector(".bus-routename");
+    name.replaceChildren(document.createTextNode(route.long));
+    if (route.free) name.append(freeEl());
+    variantSel.replaceChildren();
+    (data.variants?.[state.route] || []).forEach((v, i) => {
+      const opt = el("option", "", `${t("explore.bus.to")} ${v.headsign}`);
+      opt.value = String(i);
+      opt.selected = i === state.variant;
+      variantSel.append(opt);
+    });
+  }
+  function renderRouteRows() {
+    routeRows.replaceChildren();
+    if (!routeBody) { routeRows.append(el("p", "bus-loading", t("explore.bus.loading"))); return; }
+    const s = data.stops[state.stop];
+    const groups = s ? groupsFor(routeBody, [s.id]) : [];
+    if (!groups.length) { routeRows.append(el("p", "bus-none", t("explore.bus.noneToday"))); return; }
+    for (const list of groups.slice(0, 4)) routeRows.append(depRow(list[0], list.slice(1, 3)));
+  }
+  async function loadRouteDeps() {
+    const s = data.stops[state.stop];
+    if (!s) return;
+    try {
+      routeBody = await fetchDeps([s.id], data.routes[state.route].name);
+      renderRouteRows();
+    } catch {
+      if (routeBody) { renderRouteRows(); return; }
+      routeRows.replaceChildren(el("p", "bus-none", t("explore.bus.failed")));
+      routeRows.append(retryButton(() => { routeBody = null; renderRouteRows(); loadRouteDeps(); }));
+    }
+  }
+  chips.forEach((chip) => chip.addEventListener("click", () => {
+    state.route = Number(chip.getAttribute("data-bus-chip"));
+    state.variant = 0;
+    const vs = data.variants?.[state.route] || [];
+    vs.forEach((v, i) => { if (v.trips > (vs[state.variant]?.trips || 0)) state.variant = i; });
+    state.stop = null;
+    chips.forEach((c) => { const on = c === chip; c.classList.toggle("is-on", on); c.setAttribute("aria-pressed", String(on)); });
+    renderRouteHead(); renderStrip(); renderFrom(); routeBody = null; renderRouteRows(); loadRouteDeps(); drawRoute();
+  }));
+  variantSel.addEventListener("change", () => {
+    state.variant = Number(variantSel.value);
+    state.stop = null;
+    renderStrip(); renderFrom(); routeBody = null; renderRouteRows(); loadRouteDeps(); drawRoute();
   });
+
+  /* — the map: Leaflet, loaded on first draw; the route's shape and stops,
+   * then its buses. A map that cannot load leaves a note, never a hole. — */
+  let L = null, map = null, routeLayer = null, busLayer = null;
+  async function ensureMap() {
+    if (map) return true;
+    if (!data.vendorJs) { mapNote.textContent = t("explore.bus.failed"); return false; }
+    try { await import(data.vendorJs); } catch { mapNote.textContent = t("explore.bus.failed"); return false; }
+    L = window.L;
+    if (!L) { mapNote.textContent = t("explore.bus.failed"); return false; }
+    map = L.map(root.querySelector("[data-bus-map]"), { scrollWheelZoom: false });
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: "abcd", maxZoom: 19,
+    }).addTo(map);
+    routeLayer = L.layerGroup().addTo(map);
+    busLayer = L.layerGroup().addTo(map);
+    mapNote.hidden = true;
+    return true;
+  }
+  async function drawRoute() {
+    if (!await ensureMap()) return;
+    const v = variant();
+    const route = data.routes[state.route];
+    routeLayer.clearLayers();
+    if (!v) return;
+    const pts = (data.shapes?.[v.shape] || []).map(([la, lo]) => [la, lo]);
+    if (pts.length) L.polyline(pts, { color: `#${route.color}`, weight: 5, opacity: 0.9 }).addTo(routeLayer);
+    for (const si of v.stops) {
+      const s = data.stops[si];
+      if (!s) continue;
+      const sel = si === state.stop;
+      L.circleMarker([s.lat, s.lon], { radius: sel ? 8 : 5, color: `#${route.color}`, weight: 3, fillColor: sel ? `#${route.color}` : "#FFFFFF", fillOpacity: 1 })
+        .addTo(routeLayer).bindTooltip(s.name);
+    }
+    if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.05));
+    loadBuses();
+  }
+  async function loadBuses() {
+    if (!map) return;
+    try {
+      const res = await fetch(`/api/transit/vehicles?route=${encodeURIComponent(data.routes[state.route].name)}`, { headers: { accept: "application/json" } });
+      if (!res.ok) return;
+      const body = await res.json();
+      busLayer.clearLayers();
+      for (const veh of body.vehicles || []) {
+        L.marker([veh.lat, veh.lon], { icon: L.divIcon({ className: "bus-vehwrap", html: '<span class="bus-veh"></span>', iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(busLayer);
+      }
+    } catch { /* the buses are an aid; the departures stand without them */ }
+  }
+
+  /* — from your address — */
+  const form = root.querySelector("[data-bus-form]");
+  const rowsBox = root.querySelector("[data-bus-addresses]");
+  const addBtn = root.querySelector("[data-bus-add]");
+  const addrStatus = root.querySelector("[data-bus-addr-status]");
+  const addrResults = root.querySelector("[data-bus-address-results]");
+  const MAX = 5;
+  const rows = () => [...rowsBox.querySelectorAll("[data-bus-row]")];
+  function renumber() {
+    rows().forEach((row, i) => {
+      row.querySelector("label").textContent = t("explore.bus.address", { n: i + 1 });
+      row.querySelector("[data-bus-remove]").setAttribute("aria-label", t("explore.bus.remove", { n: i + 1 }));
+    });
+    addBtn.hidden = rows().length >= MAX;
+  }
+  function wireRow(row) {
+    row.querySelector("[data-bus-remove]").addEventListener("click", () => { row.remove(); renumber(); });
+  }
+  rows().forEach(wireRow);
   addBtn.addEventListener("click", () => {
-    const row = rows.children[0].cloneNode(true);
-    row.querySelector("[data-bus-address]").value = "";
-    rows.append(row);
+    if (rows().length >= MAX) return;
+    const first = rows()[0];
+    const row = first.cloneNode(true);
+    const input = row.querySelector("[data-bus-address]");
+    input.value = "";
+    input.id = "";
+    row.querySelector("label").htmlFor = "";
+    rowsBox.append(row);
+    wireRow(row);
     renumber();
     row.querySelector("[data-bus-address]").focus();
   });
-  renumber();
-
+  const haversineM = (la1, lo1, la2, lo2) => {
+    const R = 6_371_000, rad = Math.PI / 180;
+    const dla = (la2 - la1) * rad, dlo = (lo2 - lo1) * rad;
+    const a = Math.sin(dla / 2) ** 2 + Math.cos(la1 * rad) * Math.cos(la2 * rad) * Math.sin(dlo / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  };
   async function geocode(q) {
     const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`, { headers: { accept: "application/json" } });
     if (!res.ok) throw new Error("geocode");
-    const got = await res.json();
-    return got.results || [];
+    const body = await res.json();
+    return body.results || { ok: false };
   }
-
-  function cellWords(cell) {
-    const wrap = el("div", "bus-cell");
-    const kind = cell.kind === "direct" ? t("explore.bus.direct") : cell.kind === "transfer" ? t("explore.bus.transfer") : t("explore.bus.none");
-    wrap.append(el("p", "bus-kind", kind));
-    if (cell.kind !== "none") {
-      wrap.append(el("p", "bus-route", cell.routes.length === 2 ? t("explore.bus.routeTwo", { a: cell.routes[0], b: cell.routes[1] }) : t("explore.bus.routeOne", { routes: cell.routes[0] })));
-      wrap.append(el("p", "bus-walk", t("explore.bus.walkTo", { m: cell.board.walkM, stop: cell.board.name })));
-      if (cell.kind === "transfer") wrap.append(el("p", "bus-walk", t("explore.bus.changeAt", { stop: cell.via.name })));
-      wrap.append(el("p", "bus-walk", t("explore.bus.walkFrom", { m: cell.alight.walkM, stop: cell.alight.name })));
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const inputs = rows().map((r) => r.querySelector("[data-bus-address]")).filter((i) => i.value.trim());
+    addrResults.replaceChildren();
+    if (!inputs.length) { addrStatus.textContent = t("explore.bus.needAddress"); return; }
+    const placed = [];
+    for (let i = 0; i < inputs.length; i++) {
+      const q = inputs[i].value.trim();
+      addrStatus.textContent = inputs.length > 1 ? t("explore.bus.lookingCount", { n: i + 1, total: inputs.length }) : t("explore.bus.looking");
+      let r;
+      try { r = await geocode(q); } catch { addrStatus.textContent = t("explore.bus.lookupFailed", { q }); return; }
+      if (!r.ok || typeof r.lat !== "number") { addrStatus.textContent = t("explore.bus.notFound", { q }); return; }
+      if (r.state && r.state !== "WI") { addrStatus.textContent = t("explore.bus.outsideArea", { q, place: r.label || q }); return; }
+      if (r.city && !/madison/i.test(r.city)) { addrStatus.textContent = t("explore.bus.elsewhere", { city: r.city }); return; }
+      if (r.lat < 42.9 || r.lat > 43.25 || r.lon < -89.75 || r.lon > -89.15) { addrStatus.textContent = t("explore.bus.outsideArea", { q, place: r.label || q }); return; }
+      placed.push({ label: r.label || q, lat: r.lat, lon: r.lon });
     }
-    return wrap;
-  }
-
-  function drawMap(places, legs) {
-    mapBox.replaceChildren();
-    if (!places.length) return;
-    const NS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(NS, "svg");
-    const kx = Math.cos((43.07 * Math.PI) / 180);
-    const xs = places.map((p) => p.lon * kx), ys = places.map((p) => p.lat);
-    const pad = 0.004;
-    const minX = Math.min(...xs) - pad * kx, maxX = Math.max(...xs) + pad * kx;
-    const minY = Math.min(...ys) - pad, maxY = Math.max(...ys) + pad;
-    const W = 800, H = Math.max(300, Math.min(560, (W * (maxY - minY)) / (maxX - minX || 1)));
-    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-    svg.setAttribute("class", "bus-svg");
-    svg.setAttribute("role", "img");
-    const X = (lon) => ((lon * kx - minX) / (maxX - minX)) * W;
-    const Y = (lat) => H - ((lat - minY) / (maxY - minY)) * H;
-    const node = (tag, attrs, text) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (text != null) n.textContent = text; return n; };
-    for (const leg of legs) {
-      const pts = leg.map((p) => `${X(p.lon).toFixed(1)},${Y(p.lat).toFixed(1)}`).join(" ");
-      svg.append(node("polyline", { points: pts, class: "bus-line" }));
-    }
-    for (const p of places) {
-      const g = node("g", { class: `bus-pt bus-pt--${p.kind}` });
-      g.append(node("title", {}, p.label));
-      if (p.kind === "building") g.append(node("rect", { x: X(p.lon) - 7, y: Y(p.lat) - 7, width: 14, height: 14, class: "bus-sq" }));
-      else g.append(node("circle", { cx: X(p.lon), cy: Y(p.lat), r: p.kind === "address" ? 9 : 5, class: p.kind === "address" ? "bus-dot--addr" : "bus-dot" }));
-      if (p.kind === "address") g.append(node("text", { x: X(p.lon), y: Y(p.lat) + 4, class: "bus-pt-num" }, String(p.n)));
-      if (p.kind !== "stop") g.append(node("text", { x: X(p.lon) + 11, y: Y(p.lat) + 4, class: "bus-pt-label" }, p.label));
-      svg.append(g);
-    }
-    mapBox.append(svg);
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const inputs = [...rows.querySelectorAll("[data-bus-address]")].map((i) => i.value.trim()).filter(Boolean);
-    const chosen = [...box.querySelectorAll("[data-bus-building]:checked")].map((c) => c.value);
-    if (!inputs.length) { status.textContent = t("explore.bus.needAddress"); return; }
-    if (!chosen.length) { status.textContent = t("explore.bus.needBuilding"); return; }
-    status.textContent = t("explore.bus.looking");
-    resultsBox.hidden = true;
-    try {
-      const places = [];
-      for (const [i, q] of inputs.entries()) {
-        if (inputs.length > 1) status.textContent = t("explore.bus.lookingCount", { n: i + 1, total: inputs.length });
-        let found;
-        try { found = await geocode(q); } catch { status.textContent = t("explore.bus.lookupFailed", { q }); return; }
-        if (!found.length) { status.textContent = t("explore.bus.notFound", { q }); return; }
-        /* The first answer is not trusted on its own: a Madison match further down
-         * the list beats one in another town, and a match the comparison cannot
-         * cover is named here instead of failing the whole comparison in silence. */
-        const pick = found.find((f) => f.city === "Madison") || found.find((f) => f.inArea) || found[0];
-        if (!pick.inArea) { status.textContent = t("explore.bus.outsideArea", { q, place: pick.state && pick.state !== "Wisconsin" ? `${pick.label}, ${pick.state}` : pick.label }); return; }
-        places.push({ ...pick, typed: q });
-      }
-      status.textContent = t("explore.bus.working");
-      const res = await fetch("/api/bus-routes", { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify({ points: places.map(({ label, typed, city, state, inArea, ...p }) => p), buildings: chosen }) });
-      if (!res.ok) throw new Error("classify");
-      const got = await res.json();
-      const table = el("table", "bus-table");
-      const thead = el("thead"); const hr = el("tr");
-      hr.append(el("th", null, t("explore.bus.addressesHeader")));
-      for (const id of chosen) hr.append(el("th", null, byId.get(id)?.name || id));
-      thead.append(hr); table.append(thead);
-      const tbody = el("tbody");
-      got.results.forEach((row, i) => {
-        const tr = el("tr");
-        const th = el("th", null, `${i + 1}. ${places[i].label}`);
-        if (places[i].city && places[i].city !== "Madison") th.append(el("p", "bus-elsewhere", t("explore.bus.elsewhere", { city: places[i].city })));
-        tr.append(th);
-        for (const cell of row.cells) { const td = el("td"); td.append(cellWords(cell)); tr.append(td); }
-        tbody.append(tr);
+    /* The stops within a short walk of each address, from the page's own
+     * timetable data; their departures come from the one live answer. */
+    const near = placed.map((p) => {
+      const list = [];
+      (data.stops || []).forEach((s, si) => {
+        const m = haversineM(p.lat, p.lon, s.lat, s.lon);
+        if (m <= WALK_M) list.push({ si, m });
       });
-      table.append(tbody);
-      tableWrap.replaceChildren(table);
-      const mapPlaces = [];
-      const legs = [];
-      places.forEach((p, i) => mapPlaces.push({ kind: "address", n: i + 1, label: p.label, lat: p.lat, lon: p.lon }));
-      for (const id of chosen) { const b = byId.get(id); if (b) mapPlaces.push({ kind: "building", label: b.name, lat: b.lat, lon: b.lon }); }
-      got.results.forEach((row, i) => {
-        for (const cell of row.cells) {
-          if (cell.kind === "none") continue;
-          const b = byId.get(cell.building);
-          const stops = [cell.board, ...(cell.via ? [cell.via] : []), cell.alight];
-          for (const s of stops) if (!mapPlaces.some((p) => p.kind === "stop" && p.label === s.name)) mapPlaces.push({ kind: "stop", label: s.name, lat: s.lat, lon: s.lon });
-          legs.push([places[i], cell.board, ...(cell.via ? [cell.via] : []), cell.alight, b]);
+      return list.sort((a, b) => a.m - b.m).slice(0, 6);
+    });
+    const allIds = [...new Set(near.flatMap((list) => list.map((x) => data.stops[x.si].id)))];
+    addrStatus.textContent = t("explore.bus.working");
+    let body = null;
+    try { body = await fetchDeps(allIds); } catch { body = null; }
+    addrStatus.textContent = "";
+    placed.forEach((p, i) => {
+      const card = el("div", "bus-panel bus-addrcard");
+      card.append(el("h3", "", p.label));
+      const list = near[i];
+      if (!list.length || !body) { card.append(el("p", "bus-none", t("explore.bus.noStop"))); addrResults.append(card); return; }
+      let shown = 0;
+      for (const { si, m } of list) {
+        const s = data.stops[si];
+        const groups = groupsFor(body, [s.id]);
+        for (const g of groups) {
+          if (shown >= 6) break;
+          const row = depRow(g[0], g.slice(1, 3));
+          const walk = el("span", "bus-walk", t("explore.bus.walkMin", { stop: s.name, n: Math.max(1, Math.round(m / WALK_PER_MIN)) }));
+          row.querySelector(".bus-dir").append(walk);
+          card.append(row);
+          shown++;
         }
-      });
-      drawMap(mapPlaces, legs);
-      status.textContent = "";
-      resultsBox.hidden = false;
-      resultsBox.scrollIntoView({ block: "nearest" });
-    } catch {
-      status.textContent = t("explore.bus.failed");
-    }
+        if (shown >= 6) break;
+      }
+      if (!shown) card.append(el("p", "bus-none", t("explore.bus.noneToday")));
+      addrResults.append(card);
+    });
+    addrResults.scrollIntoView({ block: "nearest" });
   });
+
+  /* — start, and keep the times honest — */
+  if (state.stop == null) { const v = variant(); if (v) state.stop = v.stops[0]; }
+  strip.querySelectorAll("[data-bus-stop]").forEach((btn) => btn.addEventListener("click", () => selectStop(Number(btn.getAttribute("data-bus-stop")))));
+  renderFrom();
+  loadPanels();
+  loadRouteDeps();
+  drawRoute();
+  setInterval(() => {
+    if (document.hidden) return;
+    loadPanels();
+    loadRouteDeps();
+    loadBuses();
+  }, REFRESH_MS);
 }

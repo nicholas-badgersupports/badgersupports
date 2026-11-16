@@ -2760,7 +2760,7 @@
     },
     "edit.refreshing": {
       "group": "staff",
-      "text": "Refreshing\u2026",
+      "text": "Refreshing…",
       "where": "The Refresh Now button in the edit bar while it works."
     },
     "edit.refreshed": {
@@ -3993,11 +3993,6 @@
       "text": "Address {{n}}",
       "where": "On the Bus Route Explorer: the label over each address box."
     },
-    "explore.bus.addressesHeader": {
-      "group": "explore",
-      "text": "Address",
-      "where": "On the Bus Route Explorer: the results table's first column heading."
-    },
     "explore.bus.addAddress": {
       "group": "explore",
       "text": "Add another address",
@@ -4008,15 +4003,10 @@
       "text": "Remove address {{n}}",
       "where": "On the Bus Route Explorer: the spoken name of an address box's remove button."
     },
-    "explore.bus.buildings": {
-      "group": "explore",
-      "text": "Campus buildings",
-      "where": "On the Bus Route Explorer: the heading over the building checklist."
-    },
     "explore.bus.compare": {
       "group": "explore",
-      "text": "Compare bus routes",
-      "where": "On the Bus Route Explorer: the button that runs the comparison."
+      "text": "Show My Buses",
+      "where": "On the Bus Routes page: the button that reads the addresses and shows each one's next buses."
     },
     "explore.bus.looking": {
       "group": "explore",
@@ -4062,66 +4052,6 @@
       "group": "explore",
       "text": "Add at least one address.",
       "where": "On the Bus Route Explorer: when Compare is pressed with every address box empty."
-    },
-    "explore.bus.needBuilding": {
-      "group": "explore",
-      "text": "Choose at least one campus building.",
-      "where": "On the Bus Route Explorer: when Compare is pressed with no building ticked."
-    },
-    "explore.bus.results": {
-      "group": "explore",
-      "text": "Bus connections",
-      "where": "On the Bus Route Explorer: the heading over the results table."
-    },
-    "explore.bus.direct": {
-      "group": "explore",
-      "text": "Direct bus",
-      "where": "On the Bus Route Explorer: a pair one route serves, in the results table."
-    },
-    "explore.bus.transfer": {
-      "group": "explore",
-      "text": "One transfer",
-      "where": "On the Bus Route Explorer: a pair needing two routes, in the results table."
-    },
-    "explore.bus.none": {
-      "group": "explore",
-      "text": "No suitable connection",
-      "where": "On the Bus Route Explorer: a pair no route serves within the walking distance, in the results table."
-    },
-    "explore.bus.routeOne": {
-      "group": "explore",
-      "text": "Route {{routes}}",
-      "where": "On the Bus Route Explorer: the one route of a direct pair."
-    },
-    "explore.bus.routeTwo": {
-      "group": "explore",
-      "text": "Routes {{a}} then {{b}}",
-      "where": "On the Bus Route Explorer: the two routes of a transfer pair, in order."
-    },
-    "explore.bus.walkTo": {
-      "group": "explore",
-      "text": "About {{m}} m walk to {{stop}}",
-      "where": "On the Bus Route Explorer: the walk from the address to the stop where the bus is caught."
-    },
-    "explore.bus.walkFrom": {
-      "group": "explore",
-      "text": "About {{m}} m walk from {{stop}} to the building",
-      "where": "On the Bus Route Explorer: the walk from the stop where the bus is left to the building."
-    },
-    "explore.bus.changeAt": {
-      "group": "explore",
-      "text": "Change at {{stop}}",
-      "where": "On the Bus Route Explorer: the stop where a transfer pair changes buses."
-    },
-    "explore.bus.mapTitle": {
-      "group": "explore",
-      "text": "Map",
-      "where": "On the Bus Route Explorer: the heading over the schematic map."
-    },
-    "explore.bus.mapLegend": {
-      "group": "explore",
-      "text": "Numbered markers are your addresses, squares are the buildings, and dots are the stops used. The table above is the same answer in words.",
-      "where": "On the Bus Route Explorer: the line under the schematic map."
     },
     "schedule.directions": {
       "group": "events",
@@ -4703,7 +4633,7 @@
     },
     "staff.overview.hidden.events": {
       "group": "staff",
-      "text": "Find Your People \u2014 Campus Events Explorer",
+      "text": "Find Your People — Campus Events Explorer",
       "where": "Staff page, the Overview: the link that opens the Campus Events Explorer, whose home-page section is switched off."
     },
     "staff.overview.hidden.explore": {
@@ -4790,6 +4720,131 @@
       "group": "staff",
       "text": "The site's name, its search description and its accessibility email.",
       "where": "Staff page, the Overview: the Site Settings card."
+    },
+    "explore.bus.loading": {
+      "group": "explore",
+      "text": "Loading the next buses…",
+      "where": "On the Bus Routes page: the status over the panels and in each empty panel while the first departures are read."
+    },
+    "explore.bus.statusLive": {
+      "group": "explore",
+      "text": "Live times from Madison Metro, with the published timetable underneath.",
+      "where": "On the Bus Routes page: the status line when the live feed answered."
+    },
+    "explore.bus.statusScheduled": {
+      "group": "explore",
+      "text": "Scheduled times from Metro's published timetable. Live times are not answering right now.",
+      "where": "On the Bus Routes page: the status line when the live feed did not answer and the timetable stands alone."
+    },
+    "explore.bus.statusDown": {
+      "group": "explore",
+      "text": "Bus times could not be loaded just now.",
+      "where": "On the Bus Routes page: the status line when neither the live feed nor a first answer arrived."
+    },
+    "explore.bus.retry": {
+      "group": "explore",
+      "text": "Try Again",
+      "where": "On the Bus Routes page: the button under a panel or the route departures when a load failed."
+    },
+    "explore.bus.to": {
+      "group": "explore",
+      "text": "To",
+      "where": "On the Bus Routes page: before a bus's destination, in a departure row and in the route's direction menu."
+    },
+    "explore.bus.then": {
+      "group": "explore",
+      "text": "then",
+      "where": "On the Bus Routes page: before the departures that follow the next one, in a departure row."
+    },
+    "explore.bus.free": {
+      "group": "explore",
+      "text": "Free",
+      "where": "On the Bus Routes page: the tag on the campus routes that cost nothing to ride."
+    },
+    "explore.bus.due": {
+      "group": "explore",
+      "text": "Due",
+      "where": "On the Bus Routes page: in place of a countdown, when a live bus is at the stop."
+    },
+    "explore.bus.min": {
+      "group": "explore",
+      "text": "{{n}} min",
+      "where": "On the Bus Routes page: a live countdown under an hour, in a departure row."
+    },
+    "explore.bus.late": {
+      "group": "explore",
+      "text": "{{n}} min late",
+      "where": "On the Bus Routes page: after a live time, when the bus is running late."
+    },
+    "explore.bus.early": {
+      "group": "explore",
+      "text": "{{n}} min early",
+      "where": "On the Bus Routes page: after a live time, when the bus is running early."
+    },
+    "explore.bus.cancelled": {
+      "group": "explore",
+      "text": "Cancelled",
+      "where": "On the Bus Routes page: in place of a time, when Metro reports the trip or the stop cancelled."
+    },
+    "explore.bus.scheduledTag": {
+      "group": "explore",
+      "text": "Scheduled",
+      "where": "On the Bus Routes page: after a time that comes from the published timetable rather than the live feed."
+    },
+    "explore.bus.noneToday": {
+      "group": "explore",
+      "text": "No more buses in the next few hours.",
+      "where": "On the Bus Routes page: in a panel, the route box, or an address card when nothing is due."
+    },
+    "explore.bus.noStop": {
+      "group": "explore",
+      "text": "No stop within a short walk of this address.",
+      "where": "On the Bus Routes page: in an address card when no stop is close enough."
+    },
+    "explore.bus.tracker": {
+      "group": "explore",
+      "text": "Live times at Metro Bus Tracker",
+      "where": "On the Bus Routes page: the link under each stop panel to Metro's own tracker."
+    },
+    "explore.bus.routeLabel": {
+      "group": "explore",
+      "text": "Routes",
+      "where": "On the Bus Routes page: the spoken name of the row of route buttons."
+    },
+    "explore.bus.variantLabel": {
+      "group": "explore",
+      "text": "Direction",
+      "where": "On the Bus Routes page: the spoken name of the route's direction menu."
+    },
+    "explore.bus.fromStop": {
+      "group": "explore",
+      "text": "From {{stop}}",
+      "where": "On the Bus Routes page: the line naming the stop the route's next departures leave from."
+    },
+    "explore.bus.mapLabel": {
+      "group": "explore",
+      "text": "Map of the route",
+      "where": "On the Bus Routes page: the spoken name of the route map."
+    },
+    "explore.bus.walkMin": {
+      "group": "explore",
+      "text": "{{stop}} · {{n}} min walk",
+      "where": "On the Bus Routes page: in an address card's departure row, the stop and the walk to it."
+    },
+    "explore.bus.door": {
+      "group": "explore",
+      "text": "Door-to-door directions:",
+      "where": "On the Bus Routes page: the line before the links to the two trip planners."
+    },
+    "explore.bus.transitApp": {
+      "group": "explore",
+      "text": "Transit app",
+      "where": "On the Bus Routes page: the link to the Transit app for door-to-door directions."
+    },
+    "explore.bus.googleMaps": {
+      "group": "explore",
+      "text": "Google Maps",
+      "where": "On the Bus Routes page: the link to Google Maps for door-to-door directions."
     }
   }
 }

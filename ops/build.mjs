@@ -404,6 +404,18 @@ function moodCss(mood) {
   return mood.moods.map((m) => `.mood-${m.id}{--mood:${m.color}}`).join("\n") + "\n";
 }
 
+/* The bus page's route colours are Metro's own, from the timetable data the same
+ * build reads (content/transit/transit-data.json): a badge wears its route's
+ * published colour, and the stop strip's spine and dots match. Generated like the
+ * mood colours — the only colour literals a build may add, and they come from the
+ * feed, never from a hand. */
+function routeCss(routes) {
+  return (routes || []).map((r) => {
+    const cls = String(r.name).replace(/[^A-Za-z0-9-]/g, "-");
+    return `.bus-badge--r${cls}{background:#${r.color};color:#${r.text}}\n.bus-strip--r${cls}::before{background:#${r.color}}\n.bus-strip--r${cls} li::before{border-color:#${r.color}}`;
+  }).join("\n") + "\n";
+}
+
 /* Queue item 22: the Google Analytics configuration a build carries, or null. Configuration is
    environment only, as for the forms and the Connect feed: GA_MEASUREMENT_ID names the property.
    The id is carried only when it has a measurement id's shape, so an unverified or mistyped value
@@ -639,7 +651,8 @@ export async function build({ production = false, launch = production, today = n
   // shared blocks.css, in the library's order. The notes come out before the name is taken from the bytes.
   const source = CSS_ORDER.flatMap((f) => (f === "blocks.css" ? [f, ...blockStyles()] : [f])).map((f) => fs.readFileSync(path.join(ROOT, "src/styles", f), "utf8")).join("\n")
     + "\n/* generated: photo focal points */\n" + mediaCss(allMedia.items)
-    + "/* generated: mood colours (content/widgets/mood.json) */\n" + moodCss(content.mood);
+    + "/* generated: mood colours (content/widgets/mood.json) */\n" + moodCss(content.mood)
+    + routeCss(readJson("content/transit/transit-data.json").routes);
   const css = min.css(source);
   const cssName = `site.${hash(css)}.css`;
   fs.mkdirSync(path.join(out, "assets/css"), { recursive: true });

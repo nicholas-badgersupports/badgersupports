@@ -54,6 +54,9 @@ export default {
     let homeVariant = 0;
     homeVariants.forEach((v, i) => { if (v.trips > (homeVariants[homeVariant]?.trips || 0)) homeVariant = i; });
     const hv = homeVariants[homeVariant];
+    /* A variant's stops ride slash-joined in the data file (the builder's
+       note in ops/transit.mjs says why); the strip reads them as numbers. */
+    const hvStops = hv ? String(hv.stops).split("/").filter((x) => x !== "").map(Number) : [];
     const island = {
       feed: data.feed, stops: data.stops, routes, shapes: data.shapes, variants: data.variants,
       panels, home, homeVariant, vendorJs: ctx.assets.vendor?.leaflet?.js || null,
@@ -91,7 +94,7 @@ export default {
     <div data-bus-route-rows><p class="bus-loading">${ctx.t("explore.bus.loading")}</p></div>
     <div class="bus-routegrid">
       <ol class="bus-strip bus-strip--r${routes[home]?.name || ""}" data-bus-strip>
-        ${hv ? hv.stops.map((si, i) => html`<li${i === 0 || i === hv.stops.length - 1 ? ` class="key"` : ""}><button type="button" class="bus-stopbtn${i === 0 ? " is-here" : ""}" data-bus-stop="${si}" aria-pressed="${i === 0 ? "true" : "false"}">${data.stops[si]?.name || ""}</button></li>`) : ""}
+        ${hv ? hvStops.map((si, i) => html`<li${i === 0 || i === hvStops.length - 1 ? ` class="key"` : ""}><button type="button" class="bus-stopbtn${i === 0 ? " is-here" : ""}" data-bus-stop="${si}" aria-pressed="${i === 0 ? "true" : "false"}">${data.stops[si]?.name || ""}</button></li>`) : ""}
       </ol>
       <div class="bus-mapwrap">
         <div class="bus-map" data-bus-map role="img" aria-label="${ctx.t("explore.bus.mapLabel")}"></div>

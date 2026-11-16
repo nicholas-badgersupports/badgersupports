@@ -20,6 +20,24 @@ test.before(async () => { await build({ out: OUT, serverDir: path.join(OUT, "_se
 const builtPage = (p) => fs.readFileSync(path.join(OUT, p, "index.html"), "utf8");
 
 const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
+
+/* The bus page against the real timetable data (regression, 16 Nov 2026): the
+   route panel's server-drawn stop strip and variant choices must stand on the
+   page before any script runs — the data contract behind them once changed
+   shape under the page (dirs for variants) and every gate passed over an
+   empty strip, because no test had ever counted the buttons. */
+test("EXPLORE-BUS: the built bus page carries the 80's stop strip and variant choices", () => {
+  const page = builtPage("explore/bus-routes");
+  const stops = [...page.matchAll(/data-bus-stop="/g)].length;
+  assert.ok(stops > 10, `the server draws the home route's stops (found ${stops})`);
+  const options = [...page.matchAll(/<option value="\d+"/g)].length;
+  assert.ok(options >= 1, "the variant select names at least one direction");
+  const island = page.match(/<script type="application\/json" id="b-br-tool-data">([\s\S]*?)<\/script>/);
+  assert.ok(island, "the page carries its data island");
+  const data = JSON.parse(island[1]);
+  assert.ok(data.variants?.[data.home]?.length >= 1, "the island's home route has variants");
+  assert.ok(data.shapes?.length >= 1, "the island carries the shapes the variants name");
+});
 const fixtureResources = read("content/fixtures/resources.json").resources;
 const own = fixtureResources.find((r) => r.id === "greater-university-tutoring-service");
 

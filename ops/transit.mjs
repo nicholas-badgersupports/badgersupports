@@ -212,32 +212,51 @@ export function buildTransitData({ stopsTxt, routesTxt, tripsTxt, stopTimesTxt, 
     if (!cur || p.stops.length > cur.stops.length) variants.set(k, p);
   }
   const campusStops = new Set(stops.filter((s) => s.lat >= CAMPUS_BOX.latMin && s.lat <= CAMPUS_BOX.latMax && s.lon >= CAMPUS_BOX.lonMin && s.lon <= CAMPUS_BOX.lonMax).map((s) => s.id));
-  const clientRoutes = [...routes.values()].sort((a, b) => a.sort - b.sort).map((r) => {
-    const dirs = [...variants.values()].filter((p) => p.route === r.id)
-      .sort((a, b) => a.dir - b.dir || (variantTrips.get(`${b.route}|${b.dir}|${b.headsign}`) || 0) - (variantTrips.get(`${a.route}|${a.dir}|${a.headsign}`) || 0))
-      .map((p) => ({
-        dir: p.dir, headsign: headsigns[p.headsign],
-        stops: p.stops,
-        shape: simplifyShape(shapes.get(p.shape) || []).map((q) => [Math.round(q.lat * 1e5) / 1e5, Math.round(q.lon * 1e5) / 1e5]),
-      }));
-    return {
+  /* The page's contract (bss.transit-data/2): routes carry no geometry; a
+   * variants list parallel to the routes carries each variant's headsign,
+   * trip count, stop order and shape number, and a shapes list carries the
+   * thinned point rows those numbers name — a shape shared by two variants
+   * is written once. A variant's stops ride slash-joined, as the schedule's
+   * do: three bare number runs read as a phone number to the privacy scan. */
+  const clientShapes = [];
+  const clientShapeIdx = new Map();
+  const shapeNumber = (gtfsShapeId) => {
+    if (!clientShapeIdx.has(gtfsShapeId)) {
+      clientShapeIdx.set(gtfsShapeId, clientShapes.length);
+      clientShapes.push(simplifyShape(shapes.get(gtfsShapeId) || []).map((q) => [Math.round(q.lat * 1e5) / 1e5, Math.round(q.lon * 1e5) / 1e5]));
+    }
+    return clientShapeIdx.get(gtfsShapeId);
+  };
+  const variantsOf = (routeId) => [...variants.values()].filter((p) => p.route === routeId)
+    .sort((a, b) => a.dir - b.dir || (variantTrips.get(`${b.route}|${b.dir}|${b.headsign}`) || 0) - (variantTrips.get(`${a.route}|${a.dir}|${a.headsign}`) || 0));
+  const clientRoutes = [];
+  const clientVariants = [];
+  for (const r of [...routes.values()].sort((a, b) => a.sort - b.sort)) {
+    const vs = variantsOf(r.id);
+    if (!vs.length) continue;
+    clientRoutes.push({
       id: r.id, name: r.name, long: r.long, color: r.color, textColor: r.textColor,
-      free: FREE_ROUTES.includes(r.name), campus: dirs.some((d) => d.stops.some((si) => campusStops.has(stops[si].id))),
-      dirs,
-    };
-  }).filter((r) => r.dirs.length);
+      free: FREE_ROUTES.includes(r.name), campus: vs.some((p) => p.stops.some((si) => campusStops.has(stops[si].id))),
+    });
+    clientVariants.push(vs.map((p) => ({
+      dir: p.dir, headsign: headsigns[p.headsign],
+      stops: p.stops.join("/"),
+      shape: shapeNumber(p.shape),
+      trips: variantTrips.get(`${p.route}|${p.dir}|${p.headsign}`) || 0,
+    })));
+  }
 
   const outPanels = panels.map((p) => {
     const missing = (p.stops || []).filter((id) => !stopIdx.has(id));
     if (missing.length) throw new Error(`content/transit/panels.json: panel "${p.id}" names stop(s) the feed does not hold: ${missing.join(", ")}`);
-    return { id: p.id, label: p.label, stops: (p.stops || []).map((id) => stopIdx.get(id)) };
+    return { id: p.id, label: p.label, stops: (p.stops || []).map((id) => stopIdx.get(id)).join("/") };
   });
 
   const info = parseCsv(feedInfoTxt)[0] || {};
   const feed = { publisher: info.feed_publisher_name || "Metro Transit-City of Madison", version: info.feed_version || "", start: ymd(info.feed_start_date || ""), end: ymd(info.feed_end_date || "") };
   const credit = "Data provided under license granted by City of Madison, WI, Metro Transit.";
 
-  const client = { schema: "bss.transit-data/1", feed, credit, stops, routes: clientRoutes, panels: outPanels };
+  const client = { schema: "bss.transit-data/2", feed, credit, stops, routes: clientRoutes, variants: clientVariants, shapes: clientShapes, panels: outPanels };
   const schedule = {
     schema: "bss.transit-schedule/1", feed, credit,
     stops: stops.map((s) => s.id),

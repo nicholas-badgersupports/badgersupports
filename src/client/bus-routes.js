@@ -21,6 +21,9 @@ import { t } from "./text.js";
 const root = document.querySelector("[data-bus-routes]");
 if (root) {
   const data = JSON.parse(document.getElementById(`${root.getAttribute("data-block")}-data`).textContent);
+  /* A variant's stops ride slash-joined in the data file (the builder's note
+     in ops/transit.mjs says why); the page reads them as numbers from here. */
+  for (const list of data.variants || []) for (const v of list) v.stops = String(v.stops ?? "").split("/").filter((x) => x !== "").map(Number);
   const routeByName = new Map((data.routes || []).map((r) => [r.name, r]));
   const timeFmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" });
   const REFRESH_MS = 30_000;

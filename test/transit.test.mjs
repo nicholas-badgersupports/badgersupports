@@ -86,13 +86,17 @@ test("services carry their week and their dated exceptions", () => {
 });
 
 test("the browser's routes carry colours, headsigns in title case, stop order and shape", () => {
-  const a = client.routes.find((r) => r.name === "A");
+  const ai = client.routes.findIndex((r) => r.name === "A");
+  const a = client.routes[ai];
   assert.equal(a.color, "ff0000");
-  assert.equal(a.dirs.length, 1);
-  assert.equal(a.dirs[0].headsign, "Alpha East");
-  assert.deepEqual(a.dirs[0].stops, [0, 1, 2]);
-  assert.ok(a.dirs[0].shape.length >= 3, "the shape survives thinning");
-  assert.equal(client.panels[0].stops[0], 1, "a panel's stops resolve to indices");
+  assert.equal(client.schema, "bss.transit-data/2");
+  const vs = client.variants[ai];
+  assert.equal(vs.length, 1, "the variants list stands parallel to the routes");
+  assert.equal(vs[0].headsign, "Alpha East");
+  assert.equal(vs[0].stops, "0/1/2", "a variant's stops ride slash-joined");
+  assert.ok(vs[0].trips >= 1, "a variant carries its trip count");
+  assert.ok(client.shapes[vs[0].shape].length >= 3, "the shape the variant names survives thinning");
+  assert.equal(client.panels[0].stops, "1", "a panel's stops resolve to indices, slash-joined");
 });
 
 test("a panel naming a stop the feed does not hold is refused", () => {

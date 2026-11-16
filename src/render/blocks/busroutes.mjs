@@ -96,8 +96,8 @@ export default {
       <ol class="bus-strip bus-strip--r${routes[home]?.name || ""}" data-bus-strip>
         ${hv ? hvStops.map((si, i) => html`<li${i === 0 || i === hvStops.length - 1 ? ` class="key"` : ""}><button type="button" class="bus-stopbtn${i === 0 ? " is-here" : ""}" data-bus-stop="${si}" aria-pressed="${i === 0 ? "true" : "false"}">${data.stops[si]?.name || ""}</button></li>`) : ""}
       </ol>
-      <div class="bus-mapwrap">
-        <div class="bus-map" data-bus-map role="img" aria-label="${ctx.t("explore.bus.mapLabel")}"></div>
+      <div class="bus-mapwrap" role="region" aria-label="${ctx.t("explore.bus.mapLabel")}">
+        <div class="bus-map" data-bus-map></div>
         <p class="bus-mapnote" data-bus-mapnote>${ctx.t("explore.bus.loading")}</p>
       </div>
     </div>

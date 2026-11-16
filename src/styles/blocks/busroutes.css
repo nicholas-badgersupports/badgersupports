@@ -43,8 +43,11 @@
 .bus-route { background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-card); padding: var(--s4); }
 .bus-routehead { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
 .bus-routename { margin: 0; font-weight: 800; font-size: var(--fs-h3); }
-.bus-variant-label { display: flex; align-items: center; gap: var(--s2); font-weight: 700; margin-top: var(--s1); }
-.bus-variant-label select { min-height: 44px; padding: .4rem .8rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
+.bus-variant-label { display: flex; align-items: center; gap: var(--s2); font-weight: 700; margin-top: var(--s1); flex-wrap: wrap; max-width: 100%; }
+/* A select sizes itself to its longest headsign; the head may not push the
+   page sideways for it, so the select gives first. */
+.bus-routehead-main { flex: 1 1 auto; min-width: 0; }
+.bus-variant-label select { min-height: 44px; max-width: 100%; min-width: 0; padding: .4rem .8rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
 .bus-from { margin: var(--s3) 0 0; color: var(--muted); font-weight: 700; }
 .bus-routegrid { display: grid; grid-template-columns: minmax(15rem, 21rem) 1fr; gap: var(--s4); margin-top: var(--s3); }
 @media (max-width: 720px) { .bus-routegrid { grid-template-columns: 1fr; } }

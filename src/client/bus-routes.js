@@ -291,7 +291,10 @@ if (root) {
       const body = await res.json();
       busLayer.clearLayers();
       for (const veh of body.vehicles || []) {
-        L.marker([veh.lat, veh.lon], { icon: L.divIcon({ className: "bus-vehwrap", html: '<span class="bus-veh"></span>', iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(busLayer);
+        /* A bus dot is a sighting, not a control: interactive: false keeps it
+           out of the keyboard order and off the accessibility tree's list of
+           unnamed buttons. The departures carry the same news in words. */
+        L.marker([veh.lat, veh.lon], { interactive: false, icon: L.divIcon({ className: "bus-vehwrap", html: '<span class="bus-veh"></span>', iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(busLayer);
       }
     } catch { /* the buses are an aid; the departures stand without them */ }
   }

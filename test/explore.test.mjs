@@ -67,7 +67,9 @@ test("EXPLORE-C: a fixture export shows the own record and the approved KB artic
 
 /* ---------- EXPLORE-G: the Academic Support Navigator ---------- */
 
-const navBlock = read("content/pages/explore-academic-support.json").blocks.find((b) => b.type === "navigator");
+/* The redesign folded the navigator into the Resource Finder page (15 Nov 2026): the
+ * block lives at the head of /resources/ now, and its old page is gone. */
+const navBlock = read("content/pages/resources.json").blocks.find((b) => b.type === "navigator");
 const clone = (x) => structuredClone(x);
 
 test("EXPLORE-G: the shipped tree joins up, and every leaf names a resource the library holds", () => {
@@ -93,14 +95,21 @@ test("EXPLORE-G: a tree that does not join up, or names an unknown resource, is 
 
 test("EXPLORE-G: the built page walks to real cards, and the full finder is linked at every step", () => {
   assert.ok(built);
-  const page = builtPage("explore/academic-support");
+  /* The walk stands on /resources/ now, over the list it points to; its old page is not
+   * built, and its old address redirects to the questions (redesign, 15 Nov 2026). */
+  assert.ok(!fs.existsSync(path.join(OUT, "explore/academic-support/index.html")), "the navigator's old page is not built");
+  const redirects = fs.readFileSync(path.join(OUT, "_redirects"), "utf8");
+  assert.match(redirects, /^\/explore\/academic-support {2}\/resources\/#b-res-nav {2}301$/m, "the old address lands on the questions");
+  const page = builtPage("resources");
   const section = page.slice(page.indexOf("data-navigator"), page.indexOf("</section>", page.indexOf("data-navigator")));
   const panels = [...section.matchAll(/data-nav-panel/g)].length;
-  assert.equal(panels, 10, "two questions and eight sets of results");
-  assert.equal([...section.matchAll(/href="\/resources\/"/g)].length, panels, "See All Resources is present at every step");
-  assert.equal([...section.matchAll(/data-res="greater-university-tutoring-service"/g)].length, 3, "tutoring ends on the tutoring service from three paths");
-  assert.match(section, /data-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
-  assert.match(section, /data-nav-go="b-nav-step-course"/, "the course choice goes to the second question");
+  assert.equal(panels, 11, "the opening panel, two questions and eight sets of results");
+  assert.match(section, /data-nav-intro/, "the walk opens on its introduction");
+  assert.match(section, /This tool points you to resources and their official contacts; it is not academic advising\./, "the not-advising note rides on the opening panel, word for word");
+  assert.equal([...section.matchAll(/href="#b-res-list"/g)].length, panels, "See All Resources is present at every step, and on this page it scrolls to the list");
+  assert.equal([...section.matchAll(/data-nav-res="greater-university-tutoring-service"/g)].length, 3, "tutoring ends on the tutoring service from three paths");
+  assert.match(section, /data-nav-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
+  assert.match(section, /data-nav-go="b-res-nav-step-course"/, "the course choice goes to the second question");
   assert.doesNotMatch(section, /<input|<textarea|<select/, "no free-text personal data is asked for");
 });
 

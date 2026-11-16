@@ -502,6 +502,9 @@ export function redirectsFile(routes, pages, built) {
     }
   }
   for (const p of pages) for (const a of p.aliases || []) if (!lines.some((l) => l.startsWith(`${a} `))) lines.push(`${a}  ${p.path}  301`);
+  /* The Academic Support Navigator folded into the Resource Finder (Explore redesign,
+   * 15 Nov 2026): its old address lands on the questions at the head of /resources/. */
+  if (built.has("/resources/")) lines.push("/explore/academic-support  /resources/#b-res-nav  301");
   // Last, so a person's own old address (an alias above) wins over the catch-all for their group.
   if (built.has(TEAM_PATH)) lines.push(...teamRedirects());
   return { text: lines.join("\n") + "\n", waiting };

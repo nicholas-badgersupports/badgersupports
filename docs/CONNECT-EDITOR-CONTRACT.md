@@ -396,6 +396,7 @@ Reads: `resources` · analytics: `none` · photos load lazy · browser module `n
 |---|---|---|
 | `title` | one line of text | **required** |
 | `lead` | one line of text |  |
+| `note` | one line of text |  |
 | `steps` | the navigator's steps, in order; the first is where the walk starts. Each step has an `id`, its question (`prompt`) and its choices (`options`); each choice has an `id`, its words (`label`), and goes to one place: a next step (`next`, another step's id) or a set of resources (`results`, ids from the resource library). Every step must be reachable from the first and able to reach a set of resources | **required** |
 
 ### Discover Classes by Interest — `courses`
@@ -601,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-955 keys. Keys are permanent. Required text cannot be published empty and must keep each
+962 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1509,7 +1510,7 @@ the site adds the markup.
 | `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (72)
+### Explore Campus (78)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1585,6 +1586,12 @@ the site adds the markup.
 | `explore.bus.door` | Door-to-door directions: | On the Bus Routes page: the line before the links to the two trip planners. |  |
 | `explore.bus.transitApp` | Transit app | On the Bus Routes page: the link to the Transit app for door-to-door directions. |  |
 | `explore.bus.googleMaps` | Google Maps | On the Bus Routes page: the link to Google Maps for door-to-door directions. |  |
+| `explore.events.when` | When | On the Campus Events Explorer: the heading over the date-window buttons. |  |
+| `explore.events.window.tonight` | Tonight | On the Campus Events Explorer: the window button, group heading and count line for today's events running at or across 5 PM. |  |
+| `explore.events.window.today` | Today | On the Campus Events Explorer: the window button, group heading and count line for today's events. |  |
+| `explore.events.window.weekend` | This Weekend | On the Campus Events Explorer: the window button, group heading and count line for the coming Saturday and Sunday. |  |
+| `explore.events.window.all` | All Dates | On the Campus Events Explorer: the window button, group heading and count line for every listed date. |  |
+| `explore.events.countOurs` | {{n}} from Badger Supports | On the Campus Events Explorer: in the count line, how many of the events shown are Badger Supports' own programs. | `{{n}}` |
 
 ### Alumni History (6)
 
@@ -1625,7 +1632,7 @@ the site adds the markup.
 | `classes.none.body` | Try another search term or browse by interest. | On the classes page: the line under that heading. |  |
 | `classes.none.reset` | Start Over | On the classes page: the button that clears the search and the interest. |  |
 
-### Academic Support Navigator (4)
+### Academic Support Navigator (5)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1633,6 +1640,7 @@ the site adds the markup.
 | `navigator.startOver` | Start Over | On the Academic Support Navigator: the button that returns to the first question. |  |
 | `navigator.all` | See All Resources | On the Academic Support Navigator: the link to the full Resource Finder, present at every step. |  |
 | `navigator.results` | Resources That Fit | On the Academic Support Navigator: the heading over the resources a finished path leads to. |  |
+| `navigator.start` | Start the two questions | On the Academic Support Navigator: the button on the opening panel that begins the questions. |  |
 
 ## Also edited in Connect
 

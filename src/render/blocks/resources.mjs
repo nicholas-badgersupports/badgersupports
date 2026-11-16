@@ -64,8 +64,8 @@ const PAGE = 12;
 const KEYPAD = { A: 2, B: 2, C: 2, D: 3, E: 3, F: 3, G: 4, H: 4, I: 4, J: 5, K: 5, L: 5, M: 6, N: 6, O: 6, P: 7, Q: 7, R: 7, S: 7, T: 8, U: 8, V: 8, W: 9, X: 9, Y: 9, Z: 9 };
 
 /* A number spelt in letters ("414-939-HOPE") dials each letter as its key; Connect's digits-only
-   rule would dial six digits. */
-const tel = (phone) => "tel:" + String(phone).toUpperCase().replace(/[A-Z]/g, (c) => KEYPAD[c]).replace(/[^0-9+]/g, "");
+   rule would dial six digits. The navigator's short cards dial by the same rule. */
+export const tel = (phone) => "tel:" + String(phone).toUpperCase().replace(/[A-Z]/g, (c) => KEYPAD[c]).replace(/[^0-9+]/g, "");
 
 function buttonLabel(action, ctx) {
   const l = String(action?.label || "").trim();
@@ -75,7 +75,10 @@ function buttonLabel(action, ctx) {
 }
 
 /* Additional Details, as Connect builds it: no fact twice. A line is left out when, with case,
-   punctuation and a leading "Label:" removed, it repeats or begins one already shown. */
+   punctuation and a leading "Label:" removed, it repeats or begins one already shown. Two of
+   Connect's rows stay out for the same reason (Explore redesign, 15 Nov 2026): the phone
+   number already stands on the card as its footnote, and the cost note repeats the card's
+   cost tag or restates it — the details hold what the card does not already say. */
 function details(r, ctx) {
   const seen = [];
   const norm = (s) => String(s || "").toLowerCase().replace(/^[a-z][a-z ]{0,18}:\s*/, "").replace(/[^a-z0-9]+/g, " ").trim();
@@ -89,16 +92,13 @@ function details(r, ctx) {
   fresh(r.summary);
   fresh(r.bestFor);
   const out = [];
-  const phone = r.contact?.phone;
   const email = r.contact?.email;
   if (r.nextStep && fresh(r.nextStep)) out.push(html`<p>${r.nextStep}</p>`);
-  if (phone) out.push(row("phone", html`<a href="${tel(phone)}">${phone}</a>`));
   if (r.limitations && fresh(r.limitations)) out.push(html`<p>${r.limitations}</p>`);
   if (r.eligibility && fresh(r.eligibility)) out.push(row("who", r.eligibility));
   if (r.hours && fresh(r.hours)) out.push(row("hours", r.hours));
   if (r.location?.where && fresh(r.location.where)) out.push(row("where", r.location.where));
   if (email) out.push(row("email", html`<a href="mailto:${email}">${email}</a>`));
-  if (r.cost?.note && fresh(r.cost.note)) out.push(row("cost", r.cost.note));
   return out;
 }
 
@@ -189,7 +189,7 @@ export default {
   loading: "lazy",
   render(b, ctx) {
     const all = (ctx.data.resources || []).filter((r) => r && r.id && r.name && resourceVisible(r));
-    if (!all.length) return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    if (!all.length) return html`<section class="resources band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
       <h2 id="${b.id}-h">${b.title}</h2>
       <p>${ctx.t(ctx.data.resourcesState?.stale ? "resources.unavailable" : "resources.empty")}</p>
       <p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("resources.contact"))}</p>
@@ -216,7 +216,7 @@ export default {
     const updated = ctx.data.resourcesUpdated;
     const carried = Object.fromEntries(FILTERS.map((g) => [g.id, new Set(list.flatMap((r) => valuesOf(r)[g.id]))]));
     const groups = FILTERS.map((g) => ({ ...g, options: g.options.filter((o) => carried[g.id].has(o)) })).filter((g) => g.options.length);
-    return html`<section class="resources band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources data-res-src="${ctx.path || ""}resources-data.json"><div class="wrap">
+    return html`<section class="resources band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources data-res-src="${ctx.path || ""}resources-data.json"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${ctx.data.resourcesState?.stale ? html`<p class="sample-note">${ctx.t("resources.stale")}</p>` : ""}

@@ -4875,6 +4875,11 @@
       "group": "explore",
       "text": "{{n}} from Badger Supports",
       "where": "On the Campus Events Explorer: in the count line, how many of the events shown are Badger Supports' own programs."
+    },
+    "navigator.start": {
+      "group": "navigator",
+      "text": "Start the two questions",
+      "where": "On the Academic Support Navigator: the button on the opening panel that begins the questions."
     }
   }
 }

@@ -8,7 +8,10 @@
 for (const box of document.querySelectorAll("[data-navigator]")) {
   const panels = [...box.querySelectorAll("[data-nav-panel]")];
   if (panels.length < 2) continue;
-  const start = panels.find((p) => p.dataset.navStep) || panels[0];
+  /* The walk opens on the introduction panel when the block carries one (the redesign's
+     fold into the Resource Finder, 15 Nov 2026): Start begins the questions, Back from
+     the first question returns here, and Start Over lands here too. */
+  const start = panels.find((p) => p.hasAttribute("data-nav-intro")) || panels.find((p) => p.dataset.navStep) || panels[0];
   const stack = [];
   let current = start;
   const show = (panel) => {

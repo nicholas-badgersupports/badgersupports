@@ -6,4 +6,10 @@
 .nav-opt { text-decoration: none; }
 .nav-controls { display: flex; flex-wrap: wrap; gap: var(--s2); margin: var(--s4) 0 0; }
 .nav-all { margin: var(--s3) 0 0; }
-.nav-results .res-list { margin-top: var(--s3); }
+.nav-note { max-width: var(--measure); color: var(--muted); }
+/* A walk's end, in short (the redesign's fold, 15 Nov 2026): name, one line, phone, details. */
+.nav-cards { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
+.nav-card { background: var(--paper); border: var(--hairline); border-radius: var(--r-card); padding: var(--s3); }
+.nav-card h4 { margin: 0 0 var(--s1); font-size: var(--fs-h3); }
+.nav-card p { margin: 0 0 var(--s2); }
+.nav-card-links { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; margin: 0; }

@@ -249,7 +249,10 @@ if (root) {
     try { await import(data.vendorJs); } catch { mapNote.textContent = t("explore.bus.failed"); return false; }
     L = window.L;
     if (!L) { mapNote.textContent = t("explore.bus.failed"); return false; }
-    map = L.map(root.querySelector("[data-bus-map]"), { scrollWheelZoom: false });
+    /* keyboard: false — the map's own pane is not a keyboard stop (the page's
+       controls all are), which also keeps the zoom buttons out of a nested
+       focusable container for the accessibility check. */
+    map = L.map(root.querySelector("[data-bus-map]"), { scrollWheelZoom: false, keyboard: false });
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: "abcd", maxZoom: 19,

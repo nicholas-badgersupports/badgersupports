@@ -409,10 +409,21 @@ function moodCss(mood) {
  * published colour, and the stop strip's spine and dots match. Generated like the
  * mood colours — the only colour literals a build may add, and they come from the
  * feed, never from a hand. */
+/* A badge's words must read on the route's colour: Metro's published text
+ * colour stands where it contrasts enough (4.5:1, the accessibility check's
+ * line for text this size); where it does not, the badge takes whichever of
+ * black or white reads better. The background is always Metro's own. */
+const relLum = (hex) => {
+  const c = [0, 2, 4].map((i) => parseInt(String(hex).substr(i, 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+};
+const contrast = (a, b) => { const [hi, lo] = [relLum(a), relLum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
 function routeCss(routes) {
   return (routes || []).map((r) => {
     const cls = String(r.name).replace(/[^A-Za-z0-9-]/g, "-");
-    return `.bus-badge--r${cls}{background:#${r.color};color:#${r.text}}\n.bus-strip--r${cls}::before{background:#${r.color}}\n.bus-strip--r${cls} li::before{border-color:#${r.color}}`;
+    let text = r.textColor;
+    if (contrast(r.color, text) < 4.5) text = contrast(r.color, "000000") >= contrast(r.color, "FFFFFF") ? "000000" : "FFFFFF";
+    return `.bus-badge--r${cls}{background:#${r.color};color:#${text}}\n.bus-strip--r${cls}::before{background:#${r.color}}\n.bus-strip--r${cls} li::before{border-color:#${r.color}}`;
   }).join("\n") + "\n";
 }
 

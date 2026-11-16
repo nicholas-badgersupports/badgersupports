@@ -33,5 +33,9 @@ for (const box of document.querySelectorAll("[data-navigator]")) {
     p.querySelector("[data-nav-restart]")?.addEventListener("click", () => { stack.length = 0; show(start); });
   }
   for (const c of box.querySelectorAll("[data-nav-controls]")) c.hidden = false;
+  /* The later panels arrived marked data-nav-later, which the stylesheet hides
+     when a script is present; the walk switches panels by their hidden state
+     from here, so the marks come off as the first panel is set. */
+  for (const p of panels) p.removeAttribute("data-nav-later");
   show(start);
 }

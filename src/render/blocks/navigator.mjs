@@ -108,12 +108,18 @@ export default {
       ${b.note ? html`<p class="nav-note">${b.note}</p>` : ""}
       <p><a${attrs({ class: "btn", href: `#${b.id}-step-${firstStep.id}`, "data-nav-go": `${b.id}-step-${firstStep.id}` })}>${ctx.t("navigator.start")}</a></p>
       ${finder()}`) : "";
-    const steps = (b.steps || []).map((s) => panel({ class: "nav-step", id: `${b.id}-step-${s.id}`, "data-nav-panel": "", "data-nav-step": s.id }, html`
+    /* Panels after the first carry data-nav-later: the stylesheet hides them
+       when the page's inline script has marked a script present, so the walk
+       stands at its first panel from the first paint and the page below never
+       jumps when the walk's script arrives; the script clears the mark and
+       switches the panels itself. Without a script every panel stands open
+       and the choices' own anchors walk them, as they always have. */
+    const steps = (b.steps || []).map((s, si) => panel({ class: "nav-step", id: `${b.id}-step-${s.id}`, "data-nav-panel": "", "data-nav-step": s.id, "data-nav-later": intro || si > 0 ? "" : null }, html`
       <h3 class="nav-prompt" id="${b.id}-step-${s.id}-h" tabindex="-1" data-nav-heading>${s.prompt}</h3>
       <ul class="nav-options">${s.options.map((o) => html`<li><a${attrs({ class: "btn nav-opt", href: `#${b.id}-${o.next != null ? `step-${o.next}` : `r-${s.id}-${o.id}`}`, "data-nav-go": o.next != null ? `${b.id}-step-${o.next}` : `${b.id}-r-${s.id}-${o.id}` })}>${o.label}</a></li>`)}</ul>
       ${controls()}
       ${finder()}`));
-    const results = (b.steps || []).flatMap((s) => (s.options || []).filter((o) => o.results != null).map((o) => panel({ class: "nav-results", id: `${b.id}-r-${s.id}-${o.id}`, "data-nav-panel": "", "data-nav-results-panel": "" }, html`
+    const results = (b.steps || []).flatMap((s) => (s.options || []).filter((o) => o.results != null).map((o) => panel({ class: "nav-results", id: `${b.id}-r-${s.id}-${o.id}`, "data-nav-panel": "", "data-nav-results-panel": "", "data-nav-later": "" }, html`
       <h3 class="nav-prompt" id="${b.id}-r-${s.id}-${o.id}-h" tabindex="-1" data-nav-heading>${ctx.t("navigator.results")}</h3>
       <ul class="nav-cards">${o.results.map((id) => byId.get(id)).filter(Boolean).map((r) => navCard(r, ctx))}</ul>
       ${controls()}

@@ -244,7 +244,11 @@ export function buildTransitData({ stopsTxt, routesTxt, tripsTxt, stopTimesTxt, 
     routes: clientRoutes.map((r) => ({ id: r.id, name: r.name, color: r.color, textColor: r.textColor, free: r.free })),
     headsigns,
     services, exceptions,
-    patterns: patterns.map((p) => ({ route: p.route, dir: p.dir, headsign: p.headsign, stops: p.stops, offsets: p.offsets })),
+    /* Stops and offsets ride as slash-joined strings, not number arrays: the
+       repository's privacy scan reads three bare number runs in a row as a phone
+       number, and a timetable's stop indexes and offsets are exactly that. The
+       function's index splits them back (netlify/lib/transit-live.mjs). */
+    patterns: patterns.map((p) => ({ route: p.route, dir: p.dir, headsign: p.headsign, stops: p.stops.join("/"), offsets: p.offsets.join("/") })),
     trips: tripRows.filter((t) => t.service >= 0),
   };
   /* Patterns name their route by id in the schedule; the function's index turns

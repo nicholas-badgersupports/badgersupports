@@ -52,6 +52,11 @@ export function chicagoMidnightMs(dateStr) {
   return guess - (localAsUtc - guess);
 }
 
+/* A pattern's stops and offsets ride in the schedule file as slash-joined
+ * strings (the builder's note in ops/transit.mjs says why); an array is taken
+ * as it stands, so a schedule written either way reads the same. */
+const nums = (v) => (Array.isArray(v) ? v : String(v ?? "").split("/").filter((x) => x !== "").map(Number));
+
 /* The schedule with its lookups built once: every trip expanded onto its
  * pattern's stops, each stop holding its departures in time order. */
 let heldIndex = null;
@@ -67,9 +72,11 @@ export function scheduleIndex(schedule) {
   const byStop = new Map();
   trips.forEach((trip, ti) => {
     const p = schedule.patterns[trip.pattern];
-    p.stops.forEach((stopIdx, i) => {
+    const stops = nums(p.stops);
+    const offsets = nums(p.offsets);
+    stops.forEach((stopIdx, i) => {
       const list = byStop.get(stopIdx) || [];
-      list.push({ trip: ti, sec: trip.start + p.offsets[i] });
+      list.push({ trip: ti, sec: trip.start + offsets[i] });
       byStop.set(stopIdx, list);
     });
   });

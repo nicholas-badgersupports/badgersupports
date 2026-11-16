@@ -70,9 +70,9 @@ test("trips on one pattern collapse; a different timing is its own pattern", () 
   assert.equal(schedule.patterns.length, 3, "t1+t2 share a pattern; t3's offsets differ; t4 is its own");
   const a = schedule.patterns.filter((p) => p.route === "RA");
   assert.equal(a.length, 2);
-  const shared = a.find((p) => p.offsets.join() === "0,300,540");
-  assert.ok(shared, "the shared pattern keeps the offsets from its start");
-  assert.deepEqual(shared.stops, [0, 1, 2], "pattern stops are indices into the shared stop list");
+  const shared = a.find((p) => p.offsets === "0/300/540");
+  assert.ok(shared, "the shared pattern keeps the offsets from its start, slash-joined as the schedule file carries them");
+  assert.equal(shared.stops, "0/1/2", "pattern stops are indices into the shared stop list, slash-joined the same way");
   const starts = schedule.trips.filter((t) => t.pattern === schedule.patterns.indexOf(shared)).map((t) => t.start).sort((x, y) => x - y);
   assert.deepEqual(starts, [28800, 32400], "both trips ride the pattern at their own starts");
 });

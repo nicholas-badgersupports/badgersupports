@@ -26,7 +26,7 @@
 .bus-badge--big { min-width: 3.4rem; border-radius: var(--r-chip); padding: .3rem .6rem; font-size: 1.6rem; }
 .bus-dir { flex: 1; min-width: 0; }
 .bus-free { display: inline-block; margin-left: var(--s2); font-weight: 800; color: var(--accent); font-size: var(--fs-small); text-transform: uppercase; letter-spacing: .04em; }
-.bus-eta { text-align: right; flex: none; }
+.bus-eta { text-align: right; flex: 0 1 auto; min-width: 0; }
 .bus-big { display: block; font-weight: 800; font-size: var(--fs-lead); }
 .bus-cancelled { color: var(--accent); }
 .bus-more { display: block; color: var(--muted); font-size: var(--fs-small); }

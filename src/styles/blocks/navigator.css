@@ -1,5 +1,11 @@
 /* ============ navigator: the Academic Support Navigator (EXPLORE-G) ============ */
 .navigator [data-nav-panel][hidden] { display: none; }
+/* Later panels wait hidden from the first paint when a script is present (the
+   .js mark the page's inline script sets), so what stands below the walk never
+   jumps when the walk's script arrives; the script clears the mark and
+   switches panels by hidden state. Without a script no mark is set and every
+   panel stands open. */
+.js .navigator [data-nav-panel][data-nav-later] { display: none; }
 .nav-prompt { margin: var(--s4) 0 var(--s3); }
 .nav-prompt:focus { outline: none; }
 .nav-options { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s2); }

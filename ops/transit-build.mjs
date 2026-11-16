@@ -1,24 +1,26 @@
-/* Refresh the Bus Route Explorer's topology from Madison Metro's current GTFS.
+/* Refresh the bus page's data from Madison Metro's current GTFS.
  *
  *   node ops/transit-build.mjs
  *
- * Downloads the static feed (https://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip), reads the
- * four files the topology needs, and rewrites content/transit/topology.json. Run it each Metro
- * schedule period; the feed's own start and end dates are written into the file it produces, and
- * docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md records the licence it is used under.
- * Only route→stop membership and stop names/coordinates are kept: no times enter the site's data.
- */
+ * Downloads the static feed (https://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip)
+ * and rewrites the two artifacts ops/transit.mjs builds from it:
+ * content/transit/transit-data.json for the visitor's browser, and
+ * content/transit/schedule.json for the site's own function, which merges it
+ * with Metro's live GTFS-RT feeds. Run it each Metro schedule period — the
+ * feed's own start and end dates are written into both files, the page prints
+ * them in its credit line, and a feed whose end date has passed is the sign
+ * this run is owed. docs/research/EXPLORE-TRANSIT-VERIFICATION-2026-11-11.md
+ * records the licence the data is used under. */
 
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import zlib from "node:zlib";
-import { buildTopology } from "./transit.mjs";
+import { buildTransitData } from "./transit.mjs";
 import { isDirect } from "./direct.mjs";
 
 const ROOT = path.join(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const GTFS_URL = "https://transitdata.cityofmadison.com/GTFS/mmt_gtfs.zip";
-const WANT = ["stops.txt", "routes.txt", "trips.txt", "stop_times.txt", "feed_info.txt"];
 
 /* Just enough ZIP to read a GTFS copy: stored and deflated entries, found by the central
  * directory at the end of the file. */
@@ -53,23 +55,29 @@ export function unzipText(buf, name) {
   throw new Error(`zip has no ${name}`);
 }
 
-export async function refreshTopology({ fetchImpl = fetch, out = path.join(ROOT, "content/transit/topology.json") } = {}) {
+export async function refreshTransit({ fetchImpl = fetch, dir = path.join(ROOT, "content/transit") } = {}) {
   const res = await fetchImpl(GTFS_URL, { signal: AbortSignal.timeout(60_000) });
   if (!res.ok) throw new Error(`the GTFS download answered ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
-  const files = {};
-  for (const name of WANT) files[`${name.replace(".txt", "")}Txt`] = unzipText(buf, name);
-  const topology = buildTopology({ stopsTxt: files.stopsTxt, routesTxt: files.routesTxt, tripsTxt: files.tripsTxt, stopTimesTxt: files.stop_timesTxt, feedInfoTxt: files.feed_infoTxt });
-  const out_data = { schema: "bss.transit-topology/1", downloaded: new Date().toISOString().slice(0, 10), credit: "Data provided under license granted by City of Madison, WI, Metro Transit.", ...topology };
-  fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, JSON.stringify(out_data) + "\n");
-  return out_data;
+  const files = {
+    stopsTxt: unzipText(buf, "stops.txt"), routesTxt: unzipText(buf, "routes.txt"),
+    tripsTxt: unzipText(buf, "trips.txt"), stopTimesTxt: unzipText(buf, "stop_times.txt"),
+    shapesTxt: unzipText(buf, "shapes.txt"), calendarTxt: unzipText(buf, "calendar.txt"),
+    calendarDatesTxt: unzipText(buf, "calendar_dates.txt"), feedInfoTxt: unzipText(buf, "feed_info.txt"),
+  };
+  const panels = JSON.parse(fs.readFileSync(path.join(dir, "panels.json"), "utf8")).panels;
+  const { client, schedule } = buildTransitData({ ...files, panels });
+  const downloaded = new Date().toISOString().slice(0, 10);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "transit-data.json"), JSON.stringify({ downloaded, ...client }) + "\n");
+  fs.writeFileSync(path.join(dir, "schedule.json"), JSON.stringify({ downloaded, ...schedule }) + "\n");
+  return { client, schedule };
 }
 
 /* isDirect compares real paths: compared as written, an invocation through a link (a worktree alias,
    macOS's temporary folder) never matched the module's own address, and the command silently did
    nothing — the failure ops/deps-match.mjs's note records for its own check. */
 if (isDirect(import.meta.url)) {
-  const t = await refreshTopology();
-  console.log(`topology: ${t.routes.length} routes, ${t.stops.length} stops, feed ${t.feed.version} (${t.feed.start} to ${t.feed.end})`);
+  const { client, schedule } = await refreshTransit();
+  console.log(`transit: ${client.routes.length} routes (${client.routes.filter((r) => r.campus).length} campus), ${client.stops.length} stops, ${schedule.patterns.length} patterns, ${schedule.trips.length} trips, feed ${client.feed.version} (${client.feed.start} to ${client.feed.end})`);
 }

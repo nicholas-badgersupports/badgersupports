@@ -16,7 +16,14 @@
  * does. A toggle beside the source menu limits the list to Badger Supports' own programs — the
  * events the Connect feed marks as ours (badger: true, source "badger") — for a reader who came
  * only for those. No interest chip is styled apart from the others: a chip reads as chosen only
- * while it is pressed. */
+ * while it is pressed.
+ *
+ * The redesign (approved 15 Nov 2026) opens the explorer on a window — Tonight, Today, This
+ * Weekend, All Dates — with the interest chips under it, and groups the list: Badger Supports'
+ * own programs in the window first, under their own heading, then the window's other events.
+ * The build's first paint is the Tonight window read by date (the build knows the day, not the
+ * hour); the script re-windows with the real clock the moment the data lands, and refines
+ * Tonight to events not yet over. Picking a date range or the calendar sets the window aside. */
 
 import { html } from "../html.mjs";
 import { go, link } from "../context.mjs";
@@ -30,6 +37,17 @@ const hmFmt = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hour: "2-digit", 
 /* An instant on its Chicago day, and its Chicago HH:MM. */
 export const chicagoDay = (iso) => dayFmt.format(new Date(iso));
 const chicagoHm = (iso) => hmFmt.format(new Date(iso));
+
+export const WINDOWS = ["tonight", "today", "weekend", "all"];
+/* Tonight, read by date alone (the build's first paint; the script refines it with the
+ * clock): on today, not all-day, and running at or across 5 PM. */
+export const inTonight = (e, today) => {
+  const d = chicagoDay(e.start), dEnd = chicagoDay(e.end || e.start);
+  if (d > today || dEnd < today || e.allDay) return false;
+  if (d < today && dEnd > today) return true;
+  const s = chicagoHm(e.start), en = chicagoHm(e.end || e.start);
+  return s >= "17:00" || (s < "17:00" && en > "17:00" && dEnd === today);
+};
 const updatedFmt = new Intl.DateTimeFormat("en-US", { timeZone: TZ, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 export const updatedWords = (iso) => updatedFmt.format(new Date(iso));
 
@@ -65,17 +83,27 @@ export default {
   render(b, ctx) {
     const data = ctx.data.campusEvents || { events: [], updated: null, stale: false };
     const interests = ctx.data.campusInterests || { interests: [] };
-    const shown = (data.events || []).slice(0, b.count || 40);
-    const total = (data.events || []).length;
-    const categories = [...new Set((data.events || []).flatMap((e) => e.categories))].sort();
-    const payload = { events: data.events || [], interests: interests.interests || [], updated: data.updated || null, stale: !!data.stale, today: ctx.today };
+    const all = data.events || [];
+    const total = all.length;
+    const categories = [...new Set(all.flatMap((e) => e.categories))].sort();
+    const payload = { events: all, interests: interests.interests || [], updated: data.updated || null, stale: !!data.stale, today: ctx.today };
     /* The explorer's whole set, in a file beside the page for the client to fetch on first
        use — the payload the page used to carry in a JSON island. */
     ctx.defer({ file: "events-data.json", body: JSON.stringify({ schema: "bss.events-data/1", ...payload }) });
+    /* The first paint is the Tonight window, grouped: ours first, then the window's rest.
+       The script re-windows with the real clock as soon as the data file lands. */
+    const tonight = all.filter((e) => inTonight(e, ctx.today));
+    const badgerTonight = tonight.filter((e) => e.badger);
+    const restTonight = tonight.filter((e) => !e.badger).slice(0, 12);
+    const groupHead = (label) => html`<h3 class="ce-grouphead">${label}</h3>`;
     return html`<section class="exploreevents band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-campus-events data-ce-data="${ctx.path || ""}events-data.json"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   <div class="ce-tools" data-ce-tools hidden>
+    <fieldset class="ce-interests">
+      <legend>${ctx.t("explore.events.when")}</legend>
+      <div class="ce-chips">${WINDOWS.map((w) => html`<button type="button" class="ce-chip" aria-pressed="${w === "tonight" ? "true" : "false"}" data-ce-window="${w}">${ctx.t(`explore.events.window.${w}`)}</button>`)}</div>
+    </fieldset>
     <div class="ce-field ce-field--search">
       <label for="${b.id}-q">${ctx.t("explore.events.search")}</label>
       <div class="ce-searchbox">${icon("search", "ce-searchbox-ic")}<input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" data-ce-q></div>
@@ -117,10 +145,13 @@ export default {
     ${data.updated ? html`<p class="ce-updated" data-ce-updated>${ctx.t("explore.events.updated", { when: updatedWords(data.updated) })}</p>` : ""}
   </div>
   <p class="ce-retry" data-ce-retry hidden><button type="button" class="btn btn--quiet" data-ce-retrybtn>${ctx.t("explore.events.retry")}</button></p>
-  <ol class="cecards" data-ce-list>${shown.map((e) => eventCard(ctx, e, ctx.today))}</ol>
+  <div data-ce-list>
+    ${badgerTonight.length ? html`<div class="ce-group">${groupHead(`${ctx.t("explore.events.name.badger")} ${ctx.t("explore.events.window.tonight")}`)}<ol class="cecards">${badgerTonight.map((e) => eventCard(ctx, e, ctx.today))}</ol></div>` : ""}
+    ${restTonight.length ? html`<div class="ce-group">${groupHead(ctx.t("explore.events.window.tonight"))}<ol class="cecards">${restTonight.map((e) => eventCard(ctx, e, ctx.today))}</ol></div>` : ""}
+  </div>
   <p class="ce-more-row" data-ce-more-row hidden><button type="button" class="btn ce-more-btn" data-ce-more>${ctx.t("explore.events.showMore")}</button></p>
   <div class="cecal" data-ce-cal hidden></div>
-  <div class="ce-none" data-ce-none ${shown.length ? "hidden" : ""}>
+  <div class="ce-none" data-ce-none ${tonight.length ? "hidden" : ""}>
     <h3>${ctx.t("explore.events.none.title")}</h3>
     <p>${ctx.t("explore.events.none.body")}</p>
   </div>

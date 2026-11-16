@@ -73,7 +73,7 @@ export default {
   </div>
   <h2 class="bus-h2">${b.routeTitle}</h2>
   <div class="bus-chips" role="group" aria-label="${ctx.t("explore.bus.routeLabel")}" data-bus-chips>
-    ${routes.map((r, i) => html`<button type="button" class="bus-chip${i === home ? " is-on" : ""}" data-bus-chip="${i}" aria-pressed="${i === home}">${badge(r)}<span class="bus-chip-name">${r.long}</span></button>`)}
+    ${routes.map((r, i) => html`<button type="button" class="bus-chip${i === home ? " is-on" : ""}" data-bus-chip="${i}" aria-pressed="${i === home ? "true" : "false"}">${badge(r)}<span class="bus-chip-name">${r.long}</span></button>`)}
   </div>
   <div class="bus-route" data-bus-route>
     <div class="bus-routehead">
@@ -91,7 +91,7 @@ export default {
     <div data-bus-route-rows><p class="bus-loading">${ctx.t("explore.bus.loading")}</p></div>
     <div class="bus-routegrid">
       <ol class="bus-strip bus-strip--r${routes[home]?.name || ""}" data-bus-strip>
-        ${hv ? hv.stops.map((si, i) => html`<li${i === 0 || i === hv.stops.length - 1 ? ` class="key"` : ""}><button type="button" class="bus-stopbtn${i === 0 ? " is-here" : ""}" data-bus-stop="${si}" aria-pressed="${i === 0}">${data.stops[si]?.name || ""}</button></li>`) : ""}
+        ${hv ? hv.stops.map((si, i) => html`<li${i === 0 || i === hv.stops.length - 1 ? ` class="key"` : ""}><button type="button" class="bus-stopbtn${i === 0 ? " is-here" : ""}" data-bus-stop="${si}" aria-pressed="${i === 0 ? "true" : "false"}">${data.stops[si]?.name || ""}</button></li>`) : ""}
       </ol>
       <div class="bus-mapwrap">
         <div class="bus-map" data-bus-map role="img" aria-label="${ctx.t("explore.bus.mapLabel")}"></div>

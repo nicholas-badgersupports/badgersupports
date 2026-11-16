@@ -4845,6 +4845,36 @@
       "group": "explore",
       "text": "Google Maps",
       "where": "On the Bus Routes page: the link to Google Maps for door-to-door directions."
+    },
+    "explore.events.when": {
+      "group": "explore",
+      "text": "When",
+      "where": "On the Campus Events Explorer: the heading over the date-window buttons."
+    },
+    "explore.events.window.tonight": {
+      "group": "explore",
+      "text": "Tonight",
+      "where": "On the Campus Events Explorer: the window button, group heading and count line for today's events running at or across 5 PM."
+    },
+    "explore.events.window.today": {
+      "group": "explore",
+      "text": "Today",
+      "where": "On the Campus Events Explorer: the window button, group heading and count line for today's events."
+    },
+    "explore.events.window.weekend": {
+      "group": "explore",
+      "text": "This Weekend",
+      "where": "On the Campus Events Explorer: the window button, group heading and count line for the coming Saturday and Sunday."
+    },
+    "explore.events.window.all": {
+      "group": "explore",
+      "text": "All Dates",
+      "where": "On the Campus Events Explorer: the window button, group heading and count line for every listed date."
+    },
+    "explore.events.countOurs": {
+      "group": "explore",
+      "text": "{{n}} from Badger Supports",
+      "where": "On the Campus Events Explorer: in the count line, how many of the events shown are Badger Supports' own programs."
     }
   }
 }

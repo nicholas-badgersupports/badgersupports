@@ -14,6 +14,7 @@
 import { html, attrs } from "../html.mjs";
 import { go } from "../context.mjs";
 import { icon } from "../icons.mjs";
+import { resourceVisible } from "./resources.mjs";
 import { craftGallery } from "../../shared/structure.mjs";
 import { rowsBetween, groupByDate, dateParts, timeRange, weekday } from "../events.mjs";
 import { picture } from "../media.mjs";
@@ -22,11 +23,20 @@ import { eventClass, eventTags } from "../event-status.mjs";
 /* How to take part, in order, above the cards: a numbered strip, each step a short title and a line. */
 const steps = (b) => (b.steps?.length ? html`<ol class="card-steps">${b.steps.map((st) => html`<li><strong>${st.term}</strong>${st.text ? html`<span>${st.text}</span>` : ""}</li>`)}</ol>` : "");
 
+/* A card line may carry {resources}: the count of the resource library the finder shows,
+ * counted the finder's own way (Explore hub, redesign 15 Nov 2026). A line without the
+ * token passes through untouched; a count that cannot be had leaves the line without it. */
+const fillCounts = (line, ctx) => {
+  if (!line.includes("{resources}")) return line;
+  const n = (ctx.data.resources || []).filter((r) => r && r.id && r.name && resourceVisible(r)).length;
+  return line.replace("{resources}", n ? String(n) : "").replace(/\s{2,}/g, " ").trim();
+};
+
 export default {
   type: "cards",
   label: "Photo cards",
   fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", steps: "termlist", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other", craftGallery: "boolean" },
-  data: ["events"],
+  data: ["events", "resources"],
   refresh: b => b.variant === "days" && b.source === "events",
   analytics: "page",
   loading: "lazy",
@@ -72,7 +82,7 @@ export default {
     ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
     <div class="card-words">
       <h3>${it.title}</h3>
-      ${(it.lines || []).map((l) => html`<p class="card-line">${l}</p>`)}
+      ${(it.lines || []).map((l) => html`<p class="card-line">${fillCounts(l, ctx)}</p>`)}
       ${it.text ? html`<p class="card-text">${it.text}</p>` : ""}
       ${it.link ? go(ctx, it.link.href, it.link.label, it.link.icon || (ctx.link(it.link.href).external ? "out" : "arrow")) : ""}
     </div>

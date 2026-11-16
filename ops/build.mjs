@@ -125,6 +125,9 @@ export const SHIPS = [
      use (C-23): courses-data.json, resources-data.json, events-data.json. */
   /^(?:[a-z0-9-]+\/)*[a-z0-9-]+-data\.json$/,
   /^assets\/css\/site\.[0-9a-f]{10}\.css$/, /^assets\/js\/[0-9a-f]{10}\/[a-z0-9-]+\.(?:js|mjs)$/,
+  /* A vendored library the build minified and renamed by content (the bus map's Leaflet):
+     a library is not this site's code, so it ships from its own directory, still hash-named. */
+  /^assets\/vendor\/[a-z0-9-]+\.[0-9a-f]{10}\.(?:js|css)$/,
   /^assets\/fonts\/[A-Za-z0-9-]+\.woff2$/, /^assets\/fonts\/[A-Za-z0-9-]+\.txt$/,
   /^assets\/brand\/[a-z0-9-]+\.(?:png|jpg|webp|svg)$/, /^assets\/brand\/[A-Z-]+\.txt$/, /^assets\/icons\/[a-z0-9-]+\.svg$/,
   /^media\/[A-Za-z0-9._-]+\.(?:avif|webp|jpg|png)$/, /^calendar\/[A-Za-z0-9_-]+\.ics$/,
@@ -422,7 +425,9 @@ export function cspHeader(ga = false) {
     "default-src 'self'",
     `script-src 'self' 'sha256-${inline}'${ga ? " https://*.googletagmanager.com" : ""}`,
     "style-src 'self'",
-    `img-src 'self' data:${ga ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
+    /* The bus map's tiles come from CARTO's basemap service (OpenStreetMap data), named here
+       whether or not analytics is configured: they are the one outside image the site loads. */
+    `img-src 'self' data: https://*.basemaps.cartocdn.com${ga ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
     "font-src 'self'",
     `connect-src 'self'${ga ? " https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com" : ""}`,
     // An Instagram reel shows in Instagram's own frame (blocks/embed.mjs); the staff page's preview
@@ -455,6 +460,7 @@ function headersFile({ prototype, ga = false, dataFiles = [] }) {
     // File names carry a content hash: a change is a new URL, so the old one may be cached forever.
     "/assets/css/*", "  Cache-Control: public, max-age=31536000, immutable", "",
     "/assets/js/*", "  Cache-Control: public, max-age=31536000, immutable", "",
+    "/assets/vendor/*", "  Cache-Control: public, max-age=31536000, immutable", "",
     "/media/*", "  Cache-Control: public, max-age=31536000, immutable", "",
     // Fonts and brand files keep their names, so they are cached for a week, not forever.
     "/assets/fonts/*", "  Cache-Control: public, max-age=604800", "",
@@ -655,7 +661,30 @@ export async function build({ production = false, launch = production, today = n
   }
   for (const b of Object.values(BLOCKS)) for (const c of [].concat(b.client || [])) if (!js[c]) throw new Error(`block ${b.type} names client ${c}, which is not in src/client/`);
 
-  const assets = { css: `/assets/css/${cssName}`, js, ...(ga ? { ga } : {}) };
+  /* Vendored libraries (assets/vendor/, named in a block's `vendor` list): minified like the
+     site's own files and renamed by content, so a library upgrade is a new address. A block
+     that asks for a library the folder does not hold stops the build here, not at the page. */
+  const vendor = {};
+  const vendorDir = path.join(ROOT, "assets", "vendor");
+  const vendorWanted = new Set(Object.values(BLOCKS).flatMap((b) => [].concat(b.vendor || [])));
+  for (const name of vendorWanted) {
+    const jsPath = path.join(vendorDir, `${name}.js`);
+    const cssPath = path.join(vendorDir, `${name}.css`);
+    if (!fs.existsSync(jsPath)) throw new Error(`a block asks for the ${name} library, which is not in assets/vendor/`);
+    const vJs = await min.js(fs.readFileSync(jsPath, "utf8"), `${name}.js`);
+    const vJsName = `${name}.${hash(vJs)}.js`;
+    fs.mkdirSync(path.join(out, "assets/vendor"), { recursive: true });
+    fs.writeFileSync(path.join(out, "assets/vendor", vJsName), vJs);
+    vendor[name] = { js: `/assets/vendor/${vJsName}` };
+    if (fs.existsSync(cssPath)) {
+      const vCss = min.css(fs.readFileSync(cssPath, "utf8"));
+      const vCssName = `${name}.${hash(vCss)}.css`;
+      fs.writeFileSync(path.join(out, "assets/vendor", vCssName), vCss);
+      vendor[name].css = `/assets/vendor/${vCssName}`;
+    }
+  }
+
+  const assets = { css: `/assets/css/${cssName}`, js, vendor, ...(ga ? { ga } : {}) };
 
   const data = {
     alumni: content.alumni, alumniState: content.alumniState, legal: {},
@@ -677,7 +706,8 @@ export async function build({ production = false, launch = production, today = n
     searchIndex: searchIndex(content, { today: day }),
     campusEvents: campusData,
     campusInterests: readJson("content/explore/interests.json"),
-    transitBuildings: readJson("content/transit/buildings.json").buildings,
+    transitData: readJson("content/transit/transit-data.json"),
+    transitPanels: readJson("content/transit/panels.json"),
   };
   const builtPaths = content.pages.filter((p) => !p.file).map((p) => p.path);
   const programs = pagePrograms(content.pages);
@@ -737,7 +767,7 @@ export async function build({ production = false, launch = production, today = n
     forms: content.forms, mood: content.mood, media: allMedia, text: content.text, editable: content.editable,
     events: eventsForServer(content, { connect: !!feed }),
     campus: { source: production ? "live" : "fixture", built: campusData, interests: data.campusInterests },
-    transit: { topology: readJson("content/transit/topology.json"), buildings: data.transitBuildings },
+    transit: { schedule: readJson("content/transit/schedule.json") },
     headers: siteHeaders({ prototype, ga: !!ga }), redirects: redirects.text,
     // every page as the build rendered it, before the saved words: the page function draws pages from this
     render: siteSnapshot({

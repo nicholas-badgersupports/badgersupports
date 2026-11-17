@@ -198,6 +198,12 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .form-actions [hidden] { display: none; }
 .form-status { margin: 0; font-weight: 600; }
 
+/* The applications' on-device draft (src/client/form.js builds this row): the note and its
+   Clear, on a row of the foot bar, shown only while a draft is held on the device. */
+.form-draft { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s3); margin: 0; }
+.form-draft[hidden] { display: none; }
+.form-draft .btn { min-width: 0; }
+
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 /* A closed form's panel and the confirmation sit inside the sheet, under its head. */

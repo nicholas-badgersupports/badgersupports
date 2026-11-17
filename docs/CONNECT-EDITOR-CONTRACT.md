@@ -1479,8 +1479,8 @@ the site adds the markup.
 | `resources.source.kb` | UW–Madison KnowledgeBase | On the resource list: the source named on a card whose record comes from the UW–Madison KnowledgeBase. |  |
 | `resources.source.badger` | Badger Supports | On the resource list: the source named on a card whose record is one of Badger Supports' own resources. |  |
 | `resources.reviewed` | Last Reviewed {{monLong}} {{dom}}, {{year}} | On the resource list: the date a card's record was last reviewed, after its source. | `{{monLong}}` `{{dom}}` `{{year}}` |
-| `resources.report.problem` | Report a Problem | On the resource list: in each resource's Additional Details, the link to report a problem with it. |  |
-| `resources.report.update` | Suggest an Update | On the resource list: in each resource's Additional Details, the link to suggest a change to it. |  |
+| `resources.report.problem` | Report a Problem | On the resource list: at the foot of each resource's card, the link to report a problem with it. |  |
+| `resources.report.update` | Suggest an Update | On the resource list: at the foot of each resource's card, the link to suggest a change to it. |  |
 | `resources.report.suggest` | Suggest a Resource | On the resource list: the link under the list to suggest a resource it does not have. |  |
 | `resources.empty` | No resources are listed right now. Please contact us if you need help finding a resource. | Resource catalogue state or recovery action. |  |
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |

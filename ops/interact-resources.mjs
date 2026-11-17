@@ -418,6 +418,47 @@ await part("staff page: Rooms", async () => {
   await ctx.close();
 });
 
+await part("resources: the tools travel with the list, and a card's foot carries its report links in focus order", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(BASE + "/resources/", { waitUntil: "networkidle" });
+  await page.locator(".res-list").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => document.querySelectorAll(".res-card").length > 12, null, { timeout: 8000 }).catch(() => {});
+  /* Mid-list, the search and topics are still on screen, stuck directly under the header. */
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.3));
+  await page.waitForTimeout(350);
+  const stuck = await page.evaluate(() => {
+    const t = document.querySelector("[data-res-tools]");
+    const r = t.getBoundingClientRect();
+    const h = document.querySelector(".site-header").getBoundingClientRect();
+    return { pos: getComputedStyle(t).position, stuck: t.classList.contains("is-stuck"), top: Math.round(r.top), headerBottom: Math.round(h.bottom), height: Math.round(r.height) };
+  });
+  check(stuck.pos === "sticky" && stuck.stuck && Math.abs(stuck.top - stuck.headerBottom) <= 3 && stuck.height < 200,
+    `resources: mid-list the search and topics stick under the header, compact (${JSON.stringify(stuck)})`);
+  /* One card, walked by keyboard from its button: the phone, Additional Details, then the
+     report links at the card's foot — the order they are seen in, and the report links are
+     not inside the collapsed details. */
+  const first = page.locator(".res-card").first();
+  await first.locator(".res-go").focus();
+  const seen = [];
+  for (let i = 0; i < 4; i++) {
+    await page.keyboard.press("Tab");
+    seen.push(await page.evaluate(() => { const a = document.activeElement; return `${a.tagName}:${(a.textContent || "").trim().slice(0, 18)}`; }));
+  }
+  const foot = await first.evaluate((card) => {
+    const report = card.querySelector(".res-report");
+    const summary = card.querySelector(".res-more > summary");
+    return { inDetails: !!report.closest("details"), below: summary ? report.getBoundingClientRect().top > summary.getBoundingClientRect().top : null,
+      links: [...report.querySelectorAll("a")].map((a) => a.textContent.trim().slice(0, 18)) };
+  });
+  check(seen[0].startsWith("A:") && seen[1].startsWith("SUMMARY:") && seen[2].includes("Report a Problem") && seen[3].includes("Suggest an Update") && !foot.inDetails && foot.below,
+    `resources: a card's keyboard walk goes button, phone, Additional Details, Report a Problem, Suggest an Update — its visual order, the report row at its foot (${JSON.stringify({ seen, foot })})`);
+  check(!errors.length, `resources: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
+  await ctx.close();
+});
+
 await part("resources: Suggest an Update opens with its resource chosen", async () => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();

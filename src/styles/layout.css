@@ -92,20 +92,23 @@
 .dev-notice p { margin: var(--s3) 0 0; }
 .dev-notice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
 
-/* The Get Involved button leaves the header where the row cannot carry it: the tightened
-   row below fits whole, button and all, from 1140 up, so the button stays out below that.
-   The band was measured on the combined row of the 16 Nov 2026 round, and re-measured the
-   same evening after the owner took the Explore entry and the Need help now? link back out
-   and made Search a magnifier: the slimmer row still runs past the right edge under the
-   pre-round band (at 861 to about 1080), so the tightened band stays. */
-@media (max-width: 1139px) {
+/* The Get Involved button leaves the header where the row cannot carry it. The full row
+   at the original spacing — brand, five word items, the Search magnifier and the button —
+   fits the page column only from 1116 up (measured on the built home page at every width
+   855–1500: below 1116 the button runs past the column's right edge, and below 1085 the
+   page scrolls sideways), so below 1116 the tightened band below runs instead and the
+   button stays out of it. */
+@media (max-width: 1115px) {
   .header-action { display: none; }
 }
-/* From 861 up, the full row — brand, five word items, the Search magnifier and the Get
-   Involved button — is wider than the page column at full padding (the column caps at
-   76rem), so the row breathes tighter at every width from 861: smaller gaps, slimmer nav
-   padding and a step smaller nav type. Below 861 the wrapped phone layout takes over. */
-@media (min-width: 861px) {
+/* Two bands above the phone layout. From 1116 up the header stands at its original
+   spacing — the base rules above, untouched. Between 861 and 1115 the row breathes
+   tighter: smaller gaps, slimmer nav padding and a step smaller nav type. That band is
+   the 16 Nov 2026 round's, set when its wider row (the Explore entry and the Need help
+   now? link still in it) fit at full padding at no width; that row is gone, but the
+   magnifier keeps the slimmer row too wide for the original spacing below 1116. Below
+   861 the wrapped phone layout takes over. */
+@media (min-width: 861px) and (max-width: 1115px) {
   .site-header .wrap { gap: var(--s1); }
   .brand span { font-size: 1.5rem; }
   .nav > ul { gap: 0; }

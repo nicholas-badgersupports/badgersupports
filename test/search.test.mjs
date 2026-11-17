@@ -57,10 +57,14 @@ test("what stays out stays out: the staff page, the 404 page, previews and the s
   assert.ok(!index.some((p) => p.path.endsWith(".html")), "the 404 page is out");
 });
 
-test("the menu does not lead to the search page (owner ruling, 11 Nov 2026)", () => {
+test("the menu leads to the search page, last in the menu (owner ruling, 16 Nov 2026)", () => {
+  /* Supersedes the 11 Nov 2026 ruling this test pinned: the owner ruled on 16 Nov 2026
+     (quality-of-life audit, Public item 1) that Search joins the navigation. */
   const flat = content.site.nav.flatMap((i) => [i, ...(i.children || [])]);
-  assert.ok(!flat.some((i) => i.href === "/search/"), "no menu item points at /search/");
-  assert.ok(!flat.some((i) => i.label === "Search"), "no menu item is labelled Search");
+  assert.equal(flat.filter((i) => i.href === "/search/").length, 1, "one menu item points at /search/");
+  const last = content.site.nav[content.site.nav.length - 1];
+  assert.equal(last.label, "Search", "Search stands last in the menu");
+  assert.equal(last.href, "/search/", "the last menu item is the search page");
 });
 
 const OUT = path.join(ROOT, "local", "test-search");

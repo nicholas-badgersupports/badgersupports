@@ -98,17 +98,18 @@
 /* The Get Involved button leaves the header where the row cannot carry it. Three additions
    widened the row on 16 Nov 2026 — the Explore entry, the Search entry and the Need help
    now? link — and the branches that added them measured their own rows apart, which does
-   not describe the combined row, so the round assembly re-measured it: the button stays
-   out until the tighter row below fits whole (measured widths in the round handoff). */
-@media (max-width: 1209px) {
+   not describe the combined row, so the round assembly re-measured it (widths in the round
+   handoff): the tightened row below fits whole, button and all, from 1140 up, so the button
+   stays out below that. */
+@media (max-width: 1139px) {
   .header-action { display: none; }
 }
-/* Between 861 and 1329 the full row — brand, seven nav items, the Need help now? link and
-   the Get Involved button — is wider than the screen at full padding, so the last items run
-   off the right edge. In that band only, the row breathes tighter: smaller gaps, slimmer
-   nav padding and a step smaller nav and help-link type. Widths outside the band render
-   exactly as before. */
-@media (min-width: 861px) and (max-width: 1329px) {
+/* From 861 up, the full row — brand, seven nav items, the Need help now? link and the Get
+   Involved button — measures about 1,353px at full padding, wider than the page column at
+   every width (the column caps at 76rem), so the row breathes tighter at every width from
+   861: smaller gaps, slimmer nav padding and a step smaller nav and help-link type. Below
+   861 the wrapped phone layout takes over. */
+@media (min-width: 861px) {
   .site-header .wrap { gap: var(--s1); }
   .brand span { font-size: 1.5rem; }
   .nav > ul { gap: 0; }
@@ -116,6 +117,16 @@
   .nav summary { padding-right: .7rem; }
   .header-help { padding-inline: .4rem; font-size: .9rem; }
   .header-action .btn { padding-inline: 1rem; }
+}
+/* Between 861 and 1000 the column is narrower than the tightened row (about 957px), so the
+   row tightens one step further: a smaller wordmark and slimmer, smaller nav and help
+   items. Measured at 861: the row ends inside the column and the page does not scroll
+   sideways. */
+@media (min-width: 861px) and (max-width: 1000px) {
+  .brand span { font-size: 1.15rem; }
+  .nav a, .nav summary { padding-inline: .15rem; font-size: .84rem; }
+  .nav summary { padding-right: .45rem; }
+  .header-help { padding-inline: .15rem; font-size: .84rem; }
 }
 @media (max-width: 860px) {
   .site-header .wrap { flex-wrap: wrap; gap: 0 var(--s2); }

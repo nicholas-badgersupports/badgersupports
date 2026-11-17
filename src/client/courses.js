@@ -12,7 +12,14 @@
  * (src/client/search.js): while it is on its way the count line says so, and if it does
  * not arrive the count line says that instead and offers Try Again, with the first
  * courses still standing. A tile pressed before the list arrives is remembered and
- * opened when it lands. */
+ * opened when it lands.
+ *
+ * The open interest is revealed in steps, the way the Resources list is: the first
+ * PAGE matches show and Show More reveals the next PAGE of the same filtered set;
+ * any change to the interest, the availability or the search starts the reveal
+ * again, so a long interest never lands all at once. The search and availability
+ * bar above the list is sticky in the stylesheet; this script only has to unhide
+ * it with the rest of the tools. */
 
 import { t } from "./text.js";
 
@@ -25,6 +32,8 @@ const matches = (cardWords, q) => q.every((w) => cardWords.some((h) => h === w |
 
 for (const box of document.querySelectorAll("[data-courses]")) {
   const tools = box.querySelector("[data-cls-tools]");
+  const filterbar = box.querySelector("[data-cls-filterbar]");
+  const moreRow = box.querySelector("[data-cls-more-row]");
   const input = box.querySelector("[data-cls-q]");
   const clear = box.querySelector("[data-cls-clear]");
   const none = box.querySelector("[data-cls-none]");
@@ -52,6 +61,15 @@ for (const box of document.querySelectorAll("[data-courses]")) {
   let full = false;
   let asking = null;
 
+  /* Progressive reveal: the open interest opens with the first PAGE matches and a
+     Show More button reveals the next PAGE, so a long list never lands all at
+     once. The reveal is worked out inside apply(), so it follows the interest,
+     the availability and the search exactly: any change to what matches starts
+     the reveal again. Without the script the first set shows. */
+  const PAGE = 12;
+  let limit = PAGE;
+  let lastSig = null;
+
   const countWords = (n) => (n === 1 ? t("classes.count.one") : t("classes.count.all", { n }));
   function apply() {
     for (const b of tiles) b.setAttribute("aria-pressed", String(b.dataset.interest === interest));
@@ -59,18 +77,25 @@ for (const box of document.querySelectorAll("[data-courses]")) {
     if (clear) clear.hidden = !input.value;
     if (!full) return;
     const q = words(input.value).split(" ").filter(Boolean);
-    let shown = 0;
+    const sig = [interest, avail, q.join(" ")].join("§");
+    if (sig !== lastSig) { lastSig = sig; limit = PAGE; }
+    let matched = 0;
+    let visible = 0;
     for (const card of cards) {
       const open = card.hasAttribute("data-open");
       const on = (avail === "all" || (avail === "open" ? open : !open))
         && (!q.length || matches(index.get(card) || [], q));
-      card.hidden = !on;
-      if (on) shown++;
+      if (!on) { card.hidden = true; continue; }
+      matched++;
+      const reveal = matched <= limit;
+      card.hidden = !reveal;
+      if (reveal) visible++;
     }
-    if (none) none.hidden = shown > 0;
-    count.textContent = shown === cards.length
+    if (none) none.hidden = matched > 0;
+    if (moreRow) moreRow.hidden = !(matched > limit);
+    count.textContent = visible === cards.length
       ? countWords(cards.length)
-      : t("classes.count.some", { shown, total: cards.length });
+      : t("classes.count.some", { shown: visible, total: cards.length });
   }
   function openInterest(id) {
     interest = id;
@@ -117,6 +142,13 @@ for (const box of document.querySelectorAll("[data-courses]")) {
   clear?.addEventListener("click", () => { input.value = ""; apply(); poke(); input.focus(); });
   reset?.addEventListener("click", () => { input.value = ""; avail = "all"; apply(); poke(); input.focus(); });
   box.querySelector("[data-cls-retry]")?.addEventListener("click", poke);
+  box.querySelector("[data-cls-more]")?.addEventListener("click", () => {
+    limit += PAGE;
+    apply();
+    poke();
+    // The last reveal retires the button; keep the reader's place by moving focus to the count.
+    if (full && moreRow?.hidden) count.focus({ preventScroll: true });
+  });
   box.addEventListener("pointerdown", poke);
   box.addEventListener("focusin", poke);
   if ("IntersectionObserver" in window) {
@@ -124,5 +156,6 @@ for (const box of document.querySelectorAll("[data-courses]")) {
     io.observe(box);
   }
   tools.hidden = false;
+  if (filterbar) filterbar.hidden = false;
   apply();
 }

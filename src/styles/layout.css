@@ -85,14 +85,17 @@
 .dev-notice p { margin: var(--s3) 0 0; }
 .dev-notice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
 
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .header-action { display: none; }
 }
-/* Between 961 and 1049 the full row — brand, five nav items and the Get Involved button — is
-   wider than the screen, so the button runs off the right edge (measured 69px at 961 wide,
-   7px at 1024). In that band only, the row breathes tighter: smaller gaps and slimmer nav
-   padding. Widths outside the band render exactly as before. */
-@media (min-width: 961px) and (max-width: 1049px) {
+/* Between 861 and 1129 the full row — brand, six nav items and the Get Involved button — is
+   wider than the screen at full padding, so the button runs off the right edge (with Explore
+   added to the menu 16 Nov 2026 the row measures about 1122px at full padding and about
+   1025px at the tighter padding below, and the nav alone about 937px at full padding, so
+   the tighter padding runs from 861 and the button stays hidden until the tighter row
+   fits whole at 1025). In that band only, the row breathes tighter: smaller gaps and
+   slimmer nav padding. Widths outside the band render exactly as before. */
+@media (min-width: 861px) and (max-width: 1129px) {
   .site-header .wrap { gap: var(--s2); }
   .nav > ul { gap: 0; }
   .nav a, .nav summary { padding-inline: .5rem; }

@@ -907,6 +907,29 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .reel { max-width: 19rem; }
 }
 
+/* Peer Support Groups on a phone (UX placement audit finding 6, 16 Nov 2026): the week's schedule
+   stands immediately after the hero's words, before the hero's reel. At this width the hero stacks —
+   its words, then its reel — and the stacked reel pushed the schedule heading some 1,800px down the
+   page; on a desktop the words and the reel stand side by side and the order is unchanged. The hero
+   section and its wrap give up their own boxes here so the schedule section can be ordered between
+   the words and the reel, and the words and the reel each take the hero's wash, width and padding
+   for themselves. The DOM is untouched, so at this width the reel is met in focus and reading order
+   where it stands in the page: after the hero's words, before the schedule it follows on screen. */
+@media (max-width: 860px) {
+  body[data-page="pg-peer-groups"] main { display: flex; flex-direction: column; }
+  body[data-page="pg-peer-groups"] #b-pg-intro, body[data-page="pg-peer-groups"] #b-pg-intro .wrap { display: contents; }
+  body[data-page="pg-peer-groups"] #b-pg-intro .wrap > div:not(.program-reel) {
+    order: -3; width: 100%; max-width: var(--page); margin-inline: auto; padding-inline: var(--gutter);
+    padding-block: var(--s6); background: var(--tex-wash); background-blend-mode: normal, multiply;
+  }
+  body[data-page="pg-peer-groups"] #b-pg-days { order: -2; }
+  body[data-page="pg-peer-groups"] #b-pg-intro .program-reel {
+    order: -1; width: 100%; max-width: var(--page); margin-inline: auto; padding-inline: var(--gutter);
+    padding-bottom: var(--s6); background: var(--tex-wash); background-blend-mode: normal, multiply;
+  }
+  body[data-page="pg-peer-groups"] #b-pg-intro .program-reel .reel { margin-inline: auto; }
+}
+
 /* ============ workshop previews: tabs, and a small activity from each workshop ============ */
 .workshops { --ws: var(--accent); --ws-tint: var(--paper-deep); }
 .ws-head { display: grid; gap: var(--s4) var(--s6); margin-bottom: var(--s5); }

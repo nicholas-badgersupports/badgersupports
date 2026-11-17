@@ -131,8 +131,8 @@ function showErrors(form, def, errors) {
    review and the Back and Continue buttons are rendered by src/render/form.mjs, hidden until
    this runs). Stepping only ever shows and hides: which sections are live is applyVisibility's,
    by the hidden attribute, and the step being read is a class, so nothing here changes what is
-   asked, what is checked, or what is sent. Send stays in reach on every step and checks the
-   whole form, as it always has; Continue checks only the step being read. The last step lists
+   asked, what is checked, or what is sent. Send shows only on the last step and checks the
+   whole form; Continue checks only the step being read. The last step lists
    every answer the form will send, each with its way back to its question. */
 const REVIEW = "__review";
 function makeStepper(form, def) {
@@ -178,7 +178,8 @@ function makeStepper(form, def) {
     }
     back.hidden = at <= 0;
     next.hidden = id === REVIEW;
-    submit.className = id === REVIEW ? "btn" : "btn btn--quiet";
+    submit.hidden = id !== REVIEW;
+    submit.className = "btn";
     if (focus) {
       const h = id === REVIEW ? reviewBox.querySelector("h2") : sections.find((s) => s.id === id)?.el.querySelector("h2");
       if (h) { h.tabIndex = -1; h.focus(); }

@@ -180,6 +180,16 @@ const show = async (page, selector) => {
   }, selector).catch(() => {});
 };
 
+/* Send stands only on the Check your answers step (UX placement audit, finding 4,
+   16 Nov 2026): bring that step up, then press Send. */
+const pressSend = async (page) => {
+  await page.evaluate(() => {
+    const submit = document.querySelector("[data-submit]");
+    if (submit && submit.hidden) document.querySelector('[data-step-link="__review"]')?.click();
+  });
+  await page.click("[data-submit]");
+};
+
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
@@ -188,7 +198,7 @@ const show = async (page, selector) => {
   await page.goto(BASE + "/forms/workshop-request/", { waitUntil: "networkidle" });
   await page.fill("#f-name", "Avery Example");
   await page.fill("#f-email", "avery@example");
-  await page.click("[data-submit]");
+  await pressSend(page);
   const summaryFocused = await page.evaluate(() => document.activeElement?.matches("[data-error-summary]"));
   const emailError = await page.textContent("#e-email").catch(() => null);
   (summaryFocused && emailError ? pass : fail)(`a mistake is listed, focused and named beside its field ("${emailError}")`);
@@ -204,7 +214,7 @@ const show = async (page, selector) => {
   await show(page, "#f-group_notes");
   await page.fill("#f-group_notes", "First workshop for the group.");
   await page.fill("#f-access_needs", "None known.");
-  await page.click("[data-submit]");
+  await pressSend(page);
   await page.waitForSelector("[data-form-done]", { timeout: 5000 }).catch(() => {});
   const ref = await page.textContent("[data-form-done] .ref").catch(() => null);
   const focused = await page.evaluate(() => document.activeElement?.tagName);

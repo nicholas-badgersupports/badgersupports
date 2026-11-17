@@ -153,8 +153,17 @@ export const resume = (page) => page.evaluate(() => {
   return { id: box.querySelector("[data-file-id]").value, status: box.querySelector("[data-upload-status]").textContent };
 });
 
+/* Send stands only on a stepped form's Check your answers step (UX placement audit,
+   finding 4, 16 Nov 2026): bring that step up first when Send is not on screen. A short
+   form's Send is always on screen, so this is a no-op there. */
+export const toReview = (page) => page.evaluate(() => {
+  const submit = document.querySelector("[data-submit]");
+  if (submit && submit.hidden) document.querySelector('[data-step-link="__review"]')?.click();
+});
+
 /* Send pressed: either the wait message, or the form's own answer about the missing questions. */
 export async function pressSend(page) {
+  await toReview(page);
   await page.click("[data-submit]");
   await sleep(50);
   return page.evaluate(() => {
@@ -305,7 +314,7 @@ export const formState = (page) => page.evaluate(() => {
     ref: document.querySelector("[data-form-done] .ref")?.textContent || "",
   };
 });
-export const send = async (page) => { await page.click("[data-submit]"); await page.waitForTimeout(300); return formState(page); };
+export const send = async (page) => { await toReview(page); await page.click("[data-submit]"); await page.waitForTimeout(300); return formState(page); };
 
 
 

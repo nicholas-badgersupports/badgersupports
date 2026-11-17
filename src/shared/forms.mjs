@@ -119,6 +119,7 @@ export function definitionProblems(def) {
   if (!["open", "closed"].includes(def.state)) add("state-unknown", "state");
   if (def.state === "closed" && !String(def.closedMessage || "").trim()) add("closed-message-missing", "closedMessage");
   if (proseProblem(def.intro)) add("prose-shape", "intro");
+  if (proseProblem(def.after)) add("prose-shape", "after");
   if (!Array.isArray(def.sections)) { add("sections-missing", "sections"); return problems; }
 
   const seenSections = new Set();

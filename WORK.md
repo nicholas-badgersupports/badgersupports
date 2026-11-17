@@ -132,7 +132,10 @@ queued only:** 33–39 (briefs of 24 Oct). **Added 10 Nov:** 40–47 — built, 
     (Session 15): Slice 39-A, site-wide search — a `/search/` page that searches the public pages in the
     visitor's browser against the build's index (`search-index.json`); `/staff/`, `/api/` and form answers stay out. **Hidden from the
     navigation** (Session 16): the owner ruled on 11 Nov 2026 that Search does not appear in the menu; the page works at its address,
-    unlinked from the navigation. The rest of the map waits.
+    unlinked from the navigation. The rest of the map waits. **Superseded 16 Nov 2026:** in the quality-of-life ruling round the
+    owner ruled Search into the navigation, overruling the 11 Nov ruling above — a Search entry stands last in the header menu
+    and among the 404 page's links (branch `public-qol-search-entry-2026-11-16`, built 16 Nov 2026; reaches the live site at
+    the next publish).
 40. ~~Explore Campus hub~~ (`EXPLORE-HUB`) → **built and merged to main 11 Nov 2026** (merge pass): `/explore/` gathers the
     built explorers as cards in `content/pages/explore.json`, linked from Home, Resources, Get Involved, Support Networks,
     Navigating Housing and the Housing Hub. The classes and academic support cards were appended at merge, as the hub was

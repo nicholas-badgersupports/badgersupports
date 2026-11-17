@@ -128,6 +128,11 @@
           "href": "/join/alumni"
         }
       ]
+    },
+    {
+      "id": "nav-search",
+      "label": "Search",
+      "href": "/search/"
     }
   ],
   "headerAction": {

@@ -602,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-965 keys. Keys are permanent. Required text cannot be published empty and must keep each
+966 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1604,7 +1604,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (26)
+### Discover Classes by Interest (27)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1625,6 +1625,7 @@ the site adds the markup.
 | `classes.loading` | Loading the courses… | On the classes page: the count line while the full course list is on its way. |  |
 | `classes.failed` | The courses could not be loaded. The first courses are listed below. | On the classes page: the count line when the full course list does not arrive. |  |
 | `classes.retry` | Try Again | On the classes page: the button under the count line when the full course list does not arrive. |  |
+| `classes.showMore` | Show More | On the classes page: the button under the list that reveals more of the courses that match the current interest, availability and search. |  |
 | `classes.search.label` | Course Search | On the classes page: the label over the search box. |  |
 | `classes.search.hint` | Search by course name, subject or number, such as fungi, Botany, or 333. | On the classes page: the line under the search label. |  |
 | `classes.search.clear` | Clear Search | On the classes page: the button in the search box once something is typed. |  |

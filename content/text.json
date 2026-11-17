@@ -3623,6 +3623,11 @@
       "text": "Try Again",
       "where": "On the classes page: the button under the count line when the full course list does not arrive."
     },
+    "classes.showMore": {
+      "group": "classes",
+      "text": "Show More",
+      "where": "On the classes page: the button under the list that reveals more of the courses that match the current interest, availability and search."
+    },
     "classes.search.label": {
       "group": "classes",
       "text": "Course Search",

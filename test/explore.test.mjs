@@ -201,3 +201,27 @@ test("EXPLORE-F: the built page shows the pulled courses with their terms and th
   assert.match(section, /href="https:\/\/public\.enroll\.wisc\.edu\/search"/, "cards link to UW Course Search");
   assert.doesNotMatch(all, /guarantee|might|may not be offered|uncertain/i, "no card carries future-uncertainty helper text; the term label does the work");
 });
+
+test("EXPLORE-F: the search and availability bar stands outside the tiles box, and the list carries a Show More step", () => {
+  assert.ok(built);
+  const page = builtPage("explore/classes");
+  const section = page.slice(page.indexOf("data-courses"), page.indexOf("</section>", page.indexOf("data-courses")));
+  const toolsAt = section.indexOf("data-cls-tools");
+  const barAt = section.indexOf("data-cls-filterbar");
+  assert.ok(toolsAt >= 0 && barAt > toolsAt, "the filter bar follows the tiles box");
+  const tools = section.slice(toolsAt, barAt);
+  assert.doesNotMatch(tools, /data-cls-q|data-avail/, "the search and the availability chips are not inside the tiles box, whose end would stop a sticky bar");
+  const bar = section.slice(barAt, section.indexOf("data-cls-count"));
+  assert.match(bar, /data-cls-q/, "the bar carries the search box");
+  assert.match(bar, /data-avail="all"/, "the bar carries the All chip");
+  assert.match(bar, /data-avail="open"/, "the bar carries the Available chip");
+  assert.match(bar, /data-avail="recent"/, "the bar carries the Recently Offered chip");
+  assert.match(section, /data-cls-more-row[^>]*hidden><button[^>]*data-cls-more>Show More<\/button>/, "a hidden Show More step stands under the list for the script to reveal");
+  const css = fs.readFileSync(path.join(ROOT, "src/styles/blocks/courses.css"), "utf8");
+  const rule = css.match(/\.cls-filterbar \{([^}]*)\}/)?.[1] || "";
+  assert.match(rule, /position: sticky/, "the filter bar is sticky");
+  assert.match(rule, /top: calc\(var\(--header-h\)/, "the filter bar sticks directly under the site header");
+  const client = fs.readFileSync(path.join(ROOT, "src/client/courses.js"), "utf8");
+  assert.match(client, /data-cls-more/, "the script wires the Show More step");
+  assert.match(client, /matched > limit/, "the script holds back the matches past the current reveal step");
+});

@@ -25,7 +25,15 @@
    the search narrow inside the open interest, so the two old standing groups became a
    filter over one list, and the data file's groups are the interests themselves
    (bss.courses-data/2). A card carries data-open when its course has a published term,
-   which is all the availability filter reads. */
+   which is all the availability filter reads.
+
+   Only one interest is rendered at a time, in steps: the open interest shows its first
+   courses and a Show More step reveals the next set, so the whole catalogue never
+   lands in the page at once (src/client/courses.js holds the step). The search and the
+   availability chips sit in their own bar under the tiles, not inside the tiles' box:
+   the bar is sticky directly under the site header, and a sticky element only travels
+   within its parent, so the bar's parent is the section's wrap, which runs the length
+   of the list — a bar nested in the short tools box would stop where that box ends. */
 
 import { html, attrs } from "../html.mjs";
 import { link } from "../context.mjs";
@@ -88,6 +96,8 @@ export default {
     <div class="cls-tiles" role="group" aria-labelledby="${b.id}-h">
       ${interests.map((i, ix) => html`<button${attrs({ type: "button", class: "cls-tile", "aria-pressed": ix === 0 ? "true" : "false", "data-interest": i.id })}><span class="cls-tile-label">${i.label}</span><span class="cls-tile-count">${countWords(i.list.length)}</span><span class="cls-tile-go">${ctx.t("classes.browse", { label: i.label })}</span></button>`)}
     </div>
+  </div>
+  <div class="cls-filterbar" data-cls-filterbar hidden>
     <div class="cls-search">
       <label for="${b.id}-q">${ctx.t("classes.search.label")}</label>
       <p class="cls-hint" id="${b.id}-qh">${ctx.t("classes.search.hint")}</p>
@@ -99,12 +109,13 @@ export default {
       <button type="button" class="cls-chip" aria-pressed="false" data-avail="recent">${ctx.t("classes.group.recent")}</button>
     </div>
   </div>
-  <div class="cls-status" aria-live="polite"><p class="cls-count" data-cls-count>${countWords(all.length)}</p></div>
+  <div class="cls-status" aria-live="polite"><p class="cls-count" data-cls-count tabindex="-1">${countWords(all.length)}</p></div>
   <p class="cls-again" data-cls-again hidden><button type="button" class="btn btn--quiet" data-cls-retry>${ctx.t("classes.retry")}</button></p>
   <div class="cls-group" data-cls-group="${first.id}">
     <h3 data-cls-grouphead>${first.label} — ${countWords(first.list.length)}</h3>
     <ul class="cls-list">${first.list.slice(0, FIRST).map((c) => courseCard(c, ctx))}</ul>
   </div>
+  <p class="cls-more-row" data-cls-more-row hidden><button type="button" class="btn cls-more-btn" data-cls-more>${ctx.t("classes.showMore")}</button></p>
   <div class="cls-none" data-cls-none hidden>
     <h3>${ctx.t("classes.none.title")}</h3>
     <p>${ctx.t("classes.none.body")}</p>

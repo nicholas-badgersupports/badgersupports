@@ -114,11 +114,6 @@
       "text": "Main",
       "where": "The main menu's name, read by screen readers."
     },
-    "header.helpNow": {
-      "group": "page",
-      "text": "Need help now?",
-      "where": "The link in the header, on every page: it leads to the Resources page, which opens with crisis and urgent help."
-    },
     "header.safetyExit": {
       "group": "page",
       "text": "Safety Exit",

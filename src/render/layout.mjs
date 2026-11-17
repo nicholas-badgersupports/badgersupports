@@ -124,9 +124,13 @@ function footer(ctx) {
       ${f.email ? html`<p class="footer-mail">${icon("mail", "footer-mail-ic")}<a href="${f.email.href}">${f.email.label}</a></p>` : ""}
       <p>${f.affiliation}</p>
       <p>${f.funding}</p>
-      ${f.spill ? link(ctx, f.spill.href, html`${spillLogo("footer-spill-logo", "6rem")}<span>${f.spill.label}</span>`, { class: "footer-spill" }) : ""}
     </div>
     ${f.columns.map((c) => html`<div><h2>${c.title}</h2><ul>${c.links.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}</ul></div>`)}
+    ${/* The SPILL chip stands after the columns in the source, where it renders — at the foot of the
+         brand column, below the columns' links — so reading and focus order match the page as seen
+         (UX placement audit finding 7, 16 Nov 2026). The footer's grid places it back into the brand
+         column's cell (layout.css, footer); its words, link and styling are unchanged. */
+    f.spill ? link(ctx, f.spill.href, html`${spillLogo("footer-spill-logo", "6rem")}<span>${f.spill.label}</span>`, { class: "footer-spill" }) : ""}
   </div>
   <div class="footer-bottom">
     <p>${accessibility(ctx)}</p>

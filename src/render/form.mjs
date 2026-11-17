@@ -26,18 +26,23 @@ const hid = (q) => `h-${q.id}`;
 /* Prose (src/shared/forms.mjs proseProblem): a string is one paragraph; a list holds paragraphs,
    { heading }, { list, ordered }, { links } and { more, body }, which is a closed <details> under
    its label. `level` is the heading level its headings take.
+   A heading inside a { more } fold is not a heading element: while the fold is closed its words
+   are not rendered text, so it reads as an empty heading and drops in and out of the page's
+   heading order as the fold opens (UX placement audit, 16 Nov 2026, finding 8 — the volunteer
+   application's "Our Core Programs" and "Our Key Teams / Directorates"). It is drawn as a
+   styled paragraph (.prose-h, forms.css) with the heading's own look in each prose context.
    With ctx, links resolve the site's way and show as its pills; without, they are plain links. */
-export function prose(v, { level = 3, ctx = null } = {}) {
+export function prose(v, { level = 3, ctx = null, inFold = false } = {}) {
   if (v == null || v === "") return "";
   return (typeof v === "string" ? [v] : v).map((p) => {
     if (typeof p === "string") return html`<p>${breakAtSign(p)}</p>`;
-    if (p.heading) return level === 2 ? html`<h2>${p.heading}</h2>` : html`<h3>${p.heading}</h3>`;
+    if (p.heading) return inFold ? html`<p class="prose-h">${p.heading}</p>` : level === 2 ? html`<h2>${p.heading}</h2>` : html`<h3>${p.heading}</h3>`;
     if (p.list) {
       const items = p.list.map((x) => html`<li>${breakAtSign(x)}</li>`);
       return p.ordered ? html`<ol>${items}</ol>` : html`<ul>${items}</ul>`;
     }
     if (p.links) return html`<ul class="more-links">${p.links.map((l) => html`<li>${ctx ? go(ctx, l.href, l.label) : html`<a href="${l.href}">${l.label}</a>`}</li>`)}</ul>`;
-    if (p.more) return html`<details class="prose-more"><summary>${p.more}</summary><div class="prose-more-body">${prose(p.body, { level, ctx })}</div></details>`;
+    if (p.more) return html`<details class="prose-more"><summary>${p.more}</summary><div class="prose-more-body">${prose(p.body, { level, ctx, inFold: true })}</div></details>`;
     return "";
   });
 }

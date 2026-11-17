@@ -26,7 +26,7 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .form-head p { line-height: var(--lh-body); margin-bottom: var(--s3); }
 .form-head p:last-child { margin-bottom: 0; }
 /* An intro written as prose (src/render/form.mjs prose): its headings and lists keep to the rules. */
-.form-head h2 { font: 700 var(--fs-h3)/1.3 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
+.form-head h2, .form-head .prose-h { font: 700 var(--fs-h3)/1.3 var(--font-body); color: var(--ink); margin-bottom: var(--s2); }
 .form-head ul, .form-head ol { line-height: var(--lh-body); margin-bottom: var(--s3); padding-left: 1.4rem; }
 .form-head ul:last-child, .form-head ol:last-child { margin-bottom: 0; }
 .form-head .more-links { margin: 0 0 var(--s3); padding-left: 0; }
@@ -60,12 +60,14 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .bss-form:not(.is-stepped) > .section ~ .section { border-top: var(--hairline); }
 .section-intro { color: var(--muted); margin-bottom: var(--s3); }
 .is-words .section-intro { color: var(--ink); }
-.section-intro h3 { font: 700 var(--fs-body)/1.4 var(--font-body); color: var(--ink); margin: var(--s4) 0 var(--s1); }
-.section-intro h3:first-child { margin-top: 0; }
+.section-intro h3, .section-intro .prose-h { font: 700 var(--fs-body)/1.4 var(--font-body); color: var(--ink); margin: var(--s4) 0 var(--s1); }
+.section-intro h3:first-child, .section-intro .prose-h:first-child { margin-top: 0; }
 .section-intro ul, .section-intro ol, .field-help ul, .field-help ol { padding-left: 1.4rem; margin: 0 0 var(--s3); display: grid; gap: var(--s0); }
 .section-intro ul:last-child, .section-intro ol:last-child, .field-help ul:last-child, .field-help ol:last-child { margin-bottom: 0; }
 .section-intro .more-links, .field-help .more-links { padding-left: 0; margin-top: 0; display: flex; }
-/* Secondary help folded under its label (prose { more, body }), closed until asked for. */
+/* Secondary help folded under its label (prose { more, body }), closed until asked for.
+   A heading inside the fold is a .prose-h paragraph, not a heading element (src/render/form.mjs);
+   the rules above give it its context's heading look. */
 .prose-more { margin: 0 0 var(--s2); }
 .prose-more > summary { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; color: var(--accent); font-weight: 700; cursor: pointer; list-style: none; }
 .prose-more > summary::-webkit-details-marker { display: none; }
@@ -114,8 +116,8 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 /* A question's own instructions, between its label and its control. */
 .field-help { color: var(--muted); font-size: var(--fs-small); line-height: 1.5; }
 .field-help p { margin-bottom: var(--s1); }
-.field-help h3 { font: 700 var(--fs-small)/1.5 var(--font-body); color: var(--ink); margin: var(--s2) 0 var(--s0); }
-.field-help h3:first-child { margin-top: 0; }
+.field-help h3, .field-help .prose-h { font: 700 var(--fs-small)/1.5 var(--font-body); color: var(--ink); margin: var(--s2) 0 var(--s0); }
+.field-help h3:first-child, .field-help .prose-h:first-child { margin-top: 0; }
 .field input[type="text"], .field input[type="email"], .field input[type="url"], .field input[type="tel"], .field input[type="number"], .field input[type="date"],
 .field input[type="datetime-local"], .field textarea, .field select {
   width: 100%; min-height: 48px; padding: .65rem .8rem; font: 400 1.0625rem/1.4 var(--font-body); color: var(--ink);
@@ -197,6 +199,12 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .form-actions [data-step-back] { margin-right: auto; }
 .form-actions [hidden] { display: none; }
 .form-status { margin: 0; font-weight: 600; }
+
+/* The applications' on-device draft (src/client/form.js builds this row): the note and its
+   Clear, on a row of the foot bar, shown only while a draft is held on the device. */
+.form-draft { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s3); margin: 0; }
+.form-draft[hidden] { display: none; }
+.form-draft .btn { min-width: 0; }
 
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 

@@ -14,10 +14,15 @@
  */
 
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
-import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm } from "../shared/forms.mjs";
+import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm, draftForm } from "../shared/forms.mjs";
 import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
 import { legalParagraphs } from "./blocks/legal.mjs";
+
+/* The Send button's own words for the forms that name their action (UX placement audit,
+   finding 4, 16 Nov 2026): every other form keeps the general form.send. The words live in
+   the text registry, so they are edited the same way as every other button. */
+const SEND_KEYS = { "workshop-request": "form.send.workshopRequest", "volunteer-application": "form.send.application", "email-list": "form.send.emailList" };
 
 const fid = (q) => `f-${q.id}`;
 const eid = (q) => `e-${q.id}`;
@@ -26,18 +31,23 @@ const hid = (q) => `h-${q.id}`;
 /* Prose (src/shared/forms.mjs proseProblem): a string is one paragraph; a list holds paragraphs,
    { heading }, { list, ordered }, { links } and { more, body }, which is a closed <details> under
    its label. `level` is the heading level its headings take.
+   A heading inside a { more } fold is not a heading element: while the fold is closed its words
+   are not rendered text, so it reads as an empty heading and drops in and out of the page's
+   heading order as the fold opens (UX placement audit, 16 Nov 2026, finding 8 — the volunteer
+   application's "Our Core Programs" and "Our Key Teams / Directorates"). It is drawn as a
+   styled paragraph (.prose-h, forms.css) with the heading's own look in each prose context.
    With ctx, links resolve the site's way and show as its pills; without, they are plain links. */
-export function prose(v, { level = 3, ctx = null } = {}) {
+export function prose(v, { level = 3, ctx = null, inFold = false } = {}) {
   if (v == null || v === "") return "";
   return (typeof v === "string" ? [v] : v).map((p) => {
     if (typeof p === "string") return html`<p>${breakAtSign(p)}</p>`;
-    if (p.heading) return level === 2 ? html`<h2>${p.heading}</h2>` : html`<h3>${p.heading}</h3>`;
+    if (p.heading) return inFold ? html`<p class="prose-h">${p.heading}</p>` : level === 2 ? html`<h2>${p.heading}</h2>` : html`<h3>${p.heading}</h3>`;
     if (p.list) {
       const items = p.list.map((x) => html`<li>${breakAtSign(x)}</li>`);
       return p.ordered ? html`<ol>${items}</ol>` : html`<ul>${items}</ul>`;
     }
     if (p.links) return html`<ul class="more-links">${p.links.map((l) => html`<li>${ctx ? go(ctx, l.href, l.label) : html`<a href="${l.href}">${l.label}</a>`}</li>`)}</ul>`;
-    if (p.more) return html`<details class="prose-more"><summary>${p.more}</summary><div class="prose-more-body">${prose(p.body, { level, ctx })}</div></details>`;
+    if (p.more) return html`<details class="prose-more"><summary>${p.more}</summary><div class="prose-more-body">${prose(p.body, { level, ctx, inFold: true })}</div></details>`;
     return "";
   });
 }
@@ -192,7 +202,8 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
   ${stepNav}
   ${def.sections.map((s) => section(def, s, values, errors, t, ctx, inner))}
   ${review}
-  <div class="form-actions">${stepped ? html`<button type="button" class="btn btn--quiet" data-step-back hidden>${t("form.step.back")}</button><button type="button" class="btn" data-step-next hidden>${t("form.step.continue")}</button>` : ""}<button type="submit" class="btn" data-submit>${def.submitLabel || t("form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
+  <div class="form-actions">${stepped ? html`<button type="button" class="btn btn--quiet" data-step-back hidden>${t("form.step.back")}</button><button type="button" class="btn" data-step-next hidden>${t("form.step.continue")}</button>` : ""}<button type="submit" class="btn" data-submit>${def.submitLabel || t(SEND_KEYS[def.key] || "form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
+  ${def.after ? html`<div class="form-after">${prose(def.after, { level: inner, ctx })}</div>` : ""}
   ${jsonIsland(`form-def-${def.key}`, publicDefinition(def))}
 </form>`;
 }
@@ -224,7 +235,7 @@ export function renderDone(def, ref, t, { level = 1 } = {}) {
 const Q_KEYS = ["id", "type", "label", "required", "options", "resources", "allowOther", "showIf", "maxLength", "min", "max", "maxSelected", "maxLinks"];
 export function publicDefinition(def) {
   return {
-    schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state, stepped: steppedForm(def),
+    schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state, stepped: steppedForm(def), draft: draftForm(def),
     sections: def.sections.map((s) => ({
       id: s.id, title: s.title, showIf: s.showIf,
       questions: (s.questions || []).map((q) => Object.fromEntries(Q_KEYS.filter((k) => q[k] !== undefined).map((k) => [k, k === "options" ? q.options.map((o) => ({ id: o.id, label: o.label })) : k === "resources" ? q.resources.map((r) => ({ id: r.id, name: r.name })) : q[k]]))),

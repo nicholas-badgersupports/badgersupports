@@ -118,6 +118,22 @@ test("the peer support groups page leads with how to join: drop in, the week wit
   assert.doesNotMatch(block(page, "b-pg-note"), /Requests should be made \d+ days before/);
 });
 
+test("on a phone the peer page's week stands between the hero's words and its reel, and nowhere else changes order", () => {
+  const css = fs.readFileSync(path.join(ROOT, "src/styles/blocks.css"), "utf8");
+  // the reorder lives in one phone-width block of its own, scoped to this page alone
+  const scoped = [...css.matchAll(/body\[data-page="pg-peer-groups"\] [^{]+\{[^}]*\}/g)].map((m) => m[0]);
+  assert.equal(scoped.length, 6, "the six phone rules for this page");
+  assert.ok(css.indexOf('body[data-page="pg-peer-groups"]') > css.indexOf(".reel figcaption"), "the rules stand with the reel's own rules");
+  assert.match(css, /@media \(max-width: 860px\) \{\n  body\[data-page="pg-peer-groups"\] main \{ display: flex; flex-direction: column; \}/, "the page's sections order only at phone widths");
+  assert.match(css, /body\[data-page="pg-peer-groups"\] #b-pg-intro, body\[data-page="pg-peer-groups"\] #b-pg-intro \.wrap \{ display: contents; \}/, "the hero gives up its box so the week can stand inside its stack");
+  assert.match(css, /body\[data-page="pg-peer-groups"\] #b-pg-days \{ order: -2; \}/, "the week follows the hero's words");
+  assert.match(css, /body\[data-page="pg-peer-groups"\] #b-pg-intro \.program-reel \{\n    order: -1;/, "the reel follows the week");
+  // the hero keeps the anchor that lands on the week, and the week's own id is the one ordered
+  const page = read("join/peer-support-groups/index.html");
+  assert.match(block(page, "b-pg-intro"), /<a href="#b-pg-days" class="btn btn--big">/, "Find a Group This Week still points at the week");
+  assert.match(page, /<section class="cards cards--days band" id="b-pg-days"/, "the ordered section is the week's own");
+});
+
 test("a cards or words block that is missing a part fails the build instead of showing half a row", () => {
   const card = { id: "monday", title: "Monday", lines: ["5:00–6:00 PM"] };
   assert.deepEqual(cardProblems({ id: "b", items: [card] }), []);
@@ -327,7 +343,7 @@ test("Get involved keeps what the live page said: the hiring steps as a list, wh
 
 test("an email address in a pill or a closing notice is kept whole, may break before its @, and is still escaped", () => {
   const page = read("join/get-involved/index.html");
-  assert.match(page, /<span class="go-label">Email Us at <span class="addr">hello<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
+  assert.match(page, /<span class="go-label">Email Us at <span class="addr">hiring<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
   assert.doesNotMatch(page, /door-closed/, "the staff door is open, so it shows no closing notice");
   assert.equal(String(html`${breakAtSign("a<b@c")}`), '<span class="addr">a&lt;b<wbr>@c</span>');
   assert.equal(breakAtSign("no address"), "no address");

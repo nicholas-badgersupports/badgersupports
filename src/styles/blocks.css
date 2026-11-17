@@ -907,6 +907,29 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .reel { max-width: 19rem; }
 }
 
+/* Peer Support Groups on a phone (UX placement audit finding 6, 16 Nov 2026): the week's schedule
+   stands immediately after the hero's words, before the hero's reel. At this width the hero stacks —
+   its words, then its reel — and the stacked reel pushed the schedule heading some 1,800px down the
+   page; on a desktop the words and the reel stand side by side and the order is unchanged. The hero
+   section and its wrap give up their own boxes here so the schedule section can be ordered between
+   the words and the reel, and the words and the reel each take the hero's wash, width and padding
+   for themselves. The DOM is untouched, so at this width the reel is met in focus and reading order
+   where it stands in the page: after the hero's words, before the schedule it follows on screen. */
+@media (max-width: 860px) {
+  body[data-page="pg-peer-groups"] main { display: flex; flex-direction: column; }
+  body[data-page="pg-peer-groups"] #b-pg-intro, body[data-page="pg-peer-groups"] #b-pg-intro .wrap { display: contents; }
+  body[data-page="pg-peer-groups"] #b-pg-intro .wrap > div:not(.program-reel) {
+    order: -3; width: 100%; max-width: var(--page); margin-inline: auto; padding-inline: var(--gutter);
+    padding-block: var(--s6); background: var(--tex-wash); background-blend-mode: normal, multiply;
+  }
+  body[data-page="pg-peer-groups"] #b-pg-days { order: -2; }
+  body[data-page="pg-peer-groups"] #b-pg-intro .program-reel {
+    order: -1; width: 100%; max-width: var(--page); margin-inline: auto; padding-inline: var(--gutter);
+    padding-bottom: var(--s6); background: var(--tex-wash); background-blend-mode: normal, multiply;
+  }
+  body[data-page="pg-peer-groups"] #b-pg-intro .program-reel .reel { margin-inline: auto; }
+}
+
 /* ============ workshop previews: tabs, and a small activity from each workshop ============ */
 .workshops { --ws: var(--accent); --ws-tint: var(--paper-deep); }
 .ws-head { display: grid; gap: var(--s4) var(--s6); margin-bottom: var(--s5); }
@@ -1763,6 +1786,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* One search card, as Connect's Find a Resource draws it: the search field and Filters on one row, the topics
    under them, the Cost, Location and Access options only once Filters is pressed, and what is in use as chips. */
 .res-tools { --res-pad: var(--s4); display: grid; gap: var(--s3); margin-bottom: var(--s4); padding: var(--res-pad); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+/* The search, the Filters button and the topics travel with the list: the tools stick directly
+   under the site header (its height plus its 2px rule) for as long as the section's wrap runs,
+   which is the length of the list, so a visitor deep in the 321 cards can still re-filter or
+   search without scrolling back (UX placement audit Finding 2, 16 Nov 2026). The lift shadow
+   separates the stuck bar from the cards passing under it, as on the classes filter bar. */
+.resources .res-tools { position: sticky; top: calc(var(--header-h) + 2px); z-index: 15; box-shadow: var(--lift); }
+/* Stuck, the bar travels compact (resources.js adds .is-stuck when its sentinel passes):
+   the search label and hint stay in the tree for assistive tech but are not shown, and the
+   topics ride in one sliding row, as they already do on a phone, so the stuck bar stays
+   small. The Filters panel and the chips in use still open inside the bar when called for. */
+.res-tools.is-stuck { --res-pad: var(--s2); gap: var(--s2); }
+.res-tools.is-stuck .res-search label, .res-tools.is-stuck .res-hint { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.res-tools.is-stuck .res-topics { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * var(--res-pad)); padding: 4px var(--res-pad) var(--s2); scroll-padding-inline: var(--res-pad); scrollbar-width: thin; }
+.res-tools.is-stuck .res-topic-btn { flex: none; white-space: nowrap; }
 /* Reserve the controls' responsive space while their module loads; without JavaScript they stay hidden. */
 .js .res-tools[hidden] { display: grid !important; visibility: hidden; }
 .res-search label { display: block; font-weight: 700; }
@@ -1850,6 +1887,10 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-more-body { display: grid; gap: var(--s1); padding-top: var(--s2); font-size: var(--fs-small); }
 .res-more-body p, .res-dialog-body p { margin: 0; overflow-wrap: anywhere; }
 .res-report { display: flex; flex-wrap: wrap; gap: 0 var(--s4); }
+/* The report row stands at the foot of the card, below the details and under a rule, outside
+   the collapsed Additional Details it used to hide in — reporting a wrong fact on a card
+   takes no opening first. */
+.res-card > .res-report { margin: 0; padding-top: var(--s2); border-top: var(--hairline); }
 .res-report a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; }
 .res-report a:hover { color: var(--accent-deep); }
 .res-none { padding: var(--s4); background: var(--accent-tint); border-radius: var(--r-card); max-width: var(--measure); }

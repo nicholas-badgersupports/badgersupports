@@ -447,5 +447,5 @@ test("a mailing-list request says it was received, never that the person is on t
   assert.match(list.elsewhere, /^https:\/\/docs\.google\.com\/forms\//, "the original enrollment handoff remains available until a native switch");
   const words = list.sections.find((s) => s.questions.length === 0);
   assert.ok(words, "the add-yourself steps are words, not a question");
-  assert.ok(words.intro.some((p) => p.links?.some((l) => l.href === "mailto:badgersupports+subscribe@g-groups.wisc.edu")), "and the address is a link");
+  assert.ok((list.after || []).some((p) => p.links?.some((l) => l.href === "mailto:badgersupports+subscribe@g-groups.wisc.edu")), "and the address is a link below Send (UX placement audit, finding 4)");
 });

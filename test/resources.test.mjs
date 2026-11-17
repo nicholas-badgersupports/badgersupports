@@ -47,6 +47,14 @@ test("every record in the source is a card, on campus first, and the list works 
   assert.match(page, /Last Updated [A-Z][a-z]+ \d{1,2}, \d{4}/);
 });
 
+test("the search and topics stick under the site header while the list scrolls", () => {
+  const css = fs.readFileSync(path.join(ROOT, "src", "styles", "blocks.css"), "utf8");
+  assert.match(css, /\.resources \.res-tools \{ position: sticky; top: calc\(var\(--header-h\) \+ 2px\);/, "the tools stick directly under the header");
+  assert.match(css, /\.res-tools\.is-stuck \.res-topics \{ flex-wrap: nowrap;/, "stuck, the topics ride in one row so the bar stays small");
+  const client = fs.readFileSync(path.join(ROOT, "src", "client", "resources.js"), "utf8");
+  assert.match(client, /classList\.toggle\("is-stuck"/, "the script marks the tools stuck");
+});
+
 test("only topics a resource carries are offered, and the old resource pages open theirs", () => {
   const topics = [...page.matchAll(/data-topic="([a-z-]*)"/g)].map((m) => m[1]);
   const carried = pageJson.blocks.find((b) => b.type === "resources").topics
@@ -74,11 +82,38 @@ test("no button calls, texts or emails: those say View Details, and the number s
   assert.match(card("space-to-heal"), /<p class="res-tel"><a href="tel:4149394673">414-939-HOPE<\/a><\/p>/, "letters dial as their keys");
 });
 
-test("each resource's Additional Details reports a problem with it or suggests an update, and the list asks for new resources", () => {
+test("a phone line's number stands on its card's face as a tap-to-call link, and no card invents one (QOL 2026-11-16, item 4)", () => {
+  /* Ruled by Nicholas 16 Nov 2026: a resource reached by phone shows its number on the
+     card's face as a tel: link, so nobody opens Additional Details to find the number to
+     call. The number is the record's own: a phone-reached record whose data carries no
+     number shows none, and no card gains a number its record does not carry. */
+  const KEYPAD = { A: 2, B: 2, C: 2, D: 3, E: 3, F: 3, G: 4, H: 4, I: 4, J: 5, K: 5, L: 5, M: 6, N: 6, O: 6, P: 7, Q: 7, R: 7, S: 7, T: 8, U: 8, V: 8, W: 9, X: 9, Y: 9, Z: 9 };
+  const dial = (phone) => "tel:" + String(phone).toUpperCase().replace(/[A-Z]/g, (c) => KEYPAD[c]).replace(/[^0-9+]/g, "");
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   for (const r of fixture.resources) {
-    const more = card(r.id).match(/<div class="res-more-body">([\s\S]*)<\/div><\/details>/)?.[1] || "";
-    const links = [...more.matchAll(/<p class="res-report">([\s\S]*?)<\/p>/g)];
+    const c = card(r.id);
+    const phone = r.contact?.phone;
+    if ((r.modality || []).includes("phone") && phone) {
+      assert.match(c, new RegExp(`<p class="res-tel"><a href="${esc(dial(phone))}">${esc(phone)}</a></p>`), `${r.id}: its number on the face`);
+      assert.ok(c.indexOf("res-tel") < c.indexOf("<details"), `${r.id}: the number stands on the face, before the details`);
+    }
+    if (!phone) assert.doesNotMatch(c, /res-tel/, `${r.id}: no number in its data, none on its card`);
+  }
+});
+
+test("each resource's card foot reports a problem with it or suggests an update, outside its Additional Details, and the list asks for new resources", () => {
+  for (const r of fixture.resources) {
+    const c = card(r.id);
+    const links = [...c.matchAll(/<p class="res-report">([\s\S]*?)<\/p>/g)];
     assert.equal(links.length, 1, `${r.id}: one row of reports`);
+    const more = c.match(/<div class="res-more-body">([\s\S]*)<\/div><\/details>/)?.[1] || "";
+    assert.ok(!more.includes("res-report"), `${r.id}: the report row is not inside Additional Details`);
+    /* The card's controls stand in the order they are seen — the button, then Additional
+       Details, then the report row at the foot — so DOM order is the visual order and
+       keyboard focus walks them the same way (UX placement audit Finding 2). */
+    const at = (s) => c.indexOf(s);
+    if (c.includes("res-go")) assert.ok(at("res-go") < at('<p class="res-report">'), `${r.id}: the button before the report row`);
+    if (c.includes("res-more")) assert.ok(at("res-go") < at("res-more") && at("res-more") < at('<p class="res-report">'), `${r.id}: button, details, report row, in that order`);
     const q = encodeURIComponent(r.id).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const name = r.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     assert.match(links[0][1], new RegExp(`^<a href="/forms/resource-problem/\\?resource=${q}">Report a Problem<span class="sr-only">: ${name}</span></a><a href="/forms/resource-update/\\?resource=${q}">Suggest an Update<span class="sr-only">: ${name}</span></a>$`), r.id);

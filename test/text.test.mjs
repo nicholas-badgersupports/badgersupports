@@ -50,10 +50,10 @@ test("an attribute is not a word, and a word beside one is still caught (calibra
 
 test("a published text edit reaches the built page", async () => {
   const out = path.join(ROOT, "local", "test-build-text");
-  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", textEdits: { "form.send": "Send my request", "header.menu": "Browse" } });
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20", textEdits: { "form.send.workshopRequest": "Send my request", "header.menu": "Browse" } });
   const form = fs.readFileSync(path.join(out, "forms/workshop-request/index.html"), "utf8");
   assert.match(form, />Send my request</);
   assert.match(form, />Browse</);
   const server = JSON.parse(fs.readFileSync(path.join(out, "_server/server.json"), "utf8"));
-  assert.equal(server.text["form.send"], "Send my request", "the API renders with the same words");
+  assert.equal(server.text["form.send.workshopRequest"], "Send my request", "the API renders with the same words");
 });

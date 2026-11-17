@@ -104,6 +104,11 @@
       "href": "/resources"
     },
     {
+      "id": "nav-explore",
+      "label": "Explore",
+      "href": "/explore/"
+    },
+    {
       "id": "nav-involved",
       "label": "Join",
       "children": [
@@ -123,6 +128,11 @@
           "href": "/join/alumni"
         }
       ]
+    },
+    {
+      "id": "nav-search",
+      "label": "Search",
+      "href": "/search/"
     }
   ],
   "headerAction": {

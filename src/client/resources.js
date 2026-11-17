@@ -18,7 +18,13 @@
    the address itself carries list state — the site search's way of working (src/client/search.js).
    While it is on its way the count line says so; if it does not arrive the count line says that instead
    and offers Try Again, with the first set still standing and its details still opening in place.
-   Choices made before the list lands live in the tools' own state and are applied when it does. */
+   Choices made before the list lands live in the tools' own state and are applied when it does.
+
+   The tools card sticks under the site header for the length of the list, so the search,
+   the Filters button and the topics stay reachable mid-list (UX placement audit Finding 2,
+   16 Nov 2026); a sentinel below marks it stuck so it can travel compact. Each card's
+   report links stand at its foot, outside Additional Details, in the same order they are
+   seen — they are part of no card's searchable words, as before. */
 
 import { t } from "./text.js";
 
@@ -312,6 +318,22 @@ for (const box of document.querySelectorAll("[data-resources]")) {
   for (const g of GROUPS) for (const v of (params.get(g) || "").split(",")) if (fbuttons.some((b) => b.dataset.fgroup === g && b.dataset.fopt === v)) pressed[g].add(v);
   tools.hidden = false;
   apply();
+  /* The tools stick under the site header while the list scrolls (the stylesheet holds
+     the sticking). A sentinel just above them marks when they are stuck, so the stuck
+     bar travels compact: the search label and hint are kept for assistive tech but not
+     shown, and the topics ride in one sliding row, as they already do on a phone. The
+     mark is read from the sentinel's place on every scroll, not from an intersection
+     observer: a jump scroll (a scrollbar drag, an anchor) can carry the sentinel from
+     below the screen to above it without it ever intersecting, and the observer would
+     never fire. */
+  const sentinel = document.createElement("div");
+  sentinel.setAttribute("aria-hidden", "true");
+  tools.before(sentinel);
+  const header = document.querySelector(".site-header");
+  const markStuck = () => tools.classList.toggle("is-stuck", sentinel.getBoundingClientRect().top <= (header ? header.getBoundingClientRect().bottom : 0) + 2);
+  addEventListener("scroll", markStuck, { passive: true });
+  addEventListener("resize", markStuck);
+  markStuck();
   /* An address that carries list state opens that list: the whole catalogue is fetched at
      once, and the state applies when it lands. A plain arrival leaves the first set
      standing until a first use — a press, a keystroke, the list scrolling into view. */

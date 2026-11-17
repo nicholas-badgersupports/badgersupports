@@ -28,36 +28,13 @@
     {
       "id": "b-el-add",
       "type": "expect",
-      "title": "Add Yourself (Optional)",
-      "items": [
-        {
-          "icon": "mail",
-          "text": "Send an email to badgersupports+subscribe@g-groups.wisc.edu."
-        },
-        {
-          "icon": "calendar",
-          "text": "Look for a confirmation email from Google Groups."
-        },
-        {
-          "icon": "pencil",
-          "text": "To complete your subscription to the email list, reply to the email you received and send a blank email. Do not use the option of clicking the ‘Join This Group’ button."
-        },
-        {
-          "icon": "check",
-          "text": "For help joining or leaving the list, email hello@badgersupports.org."
-        }
-      ],
-      "links": [
-        {
-          "label": "Email badgersupports+subscribe@g-groups.wisc.edu",
-          "href": "mailto:badgersupports+subscribe@g-groups.wisc.edu",
-          "icon": "mail"
-        },
-        {
-          "label": "Help Joining or Leaving",
-          "href": "mailto:hello@badgersupports.org",
-          "icon": "mail"
-        }
+      "title": "Join or Leave in Google Groups",
+      "disclosure": "Help Joining or Leaving",
+      "preview": [
+        "Send an email to badgersupports+subscribe@g-groups.wisc.edu.",
+        "Look for a confirmation email from Google Groups.",
+        "To complete your subscription to the email list, reply to the email you received and send a blank email. Do not use the option of clicking the ‘Join This Group’ button.",
+        "For help joining or leaving the list, email hello@badgersupports.org."
       ],
       "photos": [
         "m-people-visionboards-room"

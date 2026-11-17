@@ -2,7 +2,12 @@
    above them. The card is Connect's own Find a Resource card (repo/assets/js/app.js findCardHTML
    and findMoreHTML) drawn in this site's colours, so a student who has used one can use the other:
    the name, what it is, who it is for, a topic and two plain chips, one button, the phone number
-   as a footnote, and Additional Details.
+   as a footnote, and Additional Details. At the foot of every card, outside the collapsed
+   details, stand its two report links (Report a Problem, Suggest an Update), so a wrong
+   fact on a card can be reported without opening anything first (UX placement audit
+   Finding 2, 16 Nov 2026). The card's controls stand in the order they are seen — the
+   button, the phone number, Additional Details, then the report links — so keyboard
+   focus walks them in that same order.
 
    The button follows Connect's rules. Its label is the record's own unless that label is a phone
    number, starts with "Call", is longer than eighteen characters or is missing; then it says View
@@ -18,7 +23,11 @@
    filters the list — the site search's pattern (src/render/blocks/sitesearch.mjs); the cards in
    the file are drawn by the same resourceCard as the ones on the page, so a card is written
    once. The search and the topic row under it (Connect's order) appear only when
-   src/client/resources.js runs; it also turns Additional Details into a dialog. The records
+   src/client/resources.js runs; it also turns Additional Details into a dialog. The tools
+   card sticks under the site header while the list scrolls (the stylesheet holds the
+   sticking; the script marks it stuck so it can travel compact), because the list runs
+   to hundreds of cards and its controls must stay reachable (UX placement audit
+   Finding 2, 16 Nov 2026). The records
    come from a named source: content/fixtures/resources.json until Connect publishes a list a
    director has approved for the public site.
 
@@ -162,7 +171,7 @@ export function resourceCard(r, ctx, topicOf) {
   const phone = r.contact?.phone;
   const topic = topicOf.get(r.primaryCategory);
   const where = WHERE[r.location?.campus];
-  const more = [...details(r, ctx), html`<p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"))}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"))}</p>`];
+  const detailRows = details(r, ctx);
   const v = valuesOf(r);
   return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null, "data-cost": v.cost.join(" ") || null, "data-where": v.where.join(" ") || null, "data-how": v.how.join(" ") || null })}>
     ${r.photo && ctx.media.has(r.photo) ? html`<div class="photo res-photo">${picture(ctx, r.photo, { sizes: "(max-width: 560px) calc(100vw - 2rem), 23rem" })}</div>` : ""}
@@ -174,8 +183,9 @@ export function resourceCard(r, ctx, topicOf) {
     <div class="res-foot">
       ${href ? link(ctx, href, button(r, ctx), { class: "btn res-go", icon: "out" }) : ""}
       ${phone ? html`<p class="res-tel"><a href="${tel(phone)}">${phone}</a></p>` : ""}
-      ${more.length ? html`<details class="res-more"><summary>${ctx.t("resources.more")}</summary><div class="res-more-body">${more}</div></details>` : ""}
+      ${detailRows.length ? html`<details class="res-more"><summary>${ctx.t("resources.more")}</summary><div class="res-more-body">${detailRows}</div></details>` : ""}
     </div>
+    <p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"))}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"))}</p>
   </li>`;
 }
 

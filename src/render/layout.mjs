@@ -61,6 +61,7 @@ function header(ctx, path) {
   <a class="brand" href="/"><img src="/assets/brand/bss-hand-red.png" width="301" height="440" alt=""><span>${ctx.t("header.wordmark")}</span><span class="sr-only"> ${ctx.t("header.homeSuffix")}</span></a>
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>${ctx.t("header.menu")}</button>
   <nav class="nav" id="site-nav" aria-label="${ctx.t("header.navLabel")}"><ul>${s.nav.map((i) => navItem(ctx, i, path))}</ul></nav>
+  <a class="header-help" href="/resources/">${ctx.t("header.helpNow")}</a>
   ${s.headerAction ? html`<div class="header-action">${link(ctx, s.headerAction.href, s.headerAction.label, { class: "btn btn--quiet" })}</div>` : ""}
 </div></header>`;
 }
@@ -124,9 +125,13 @@ function footer(ctx) {
       ${f.email ? html`<p class="footer-mail">${icon("mail", "footer-mail-ic")}<a href="${f.email.href}">${f.email.label}</a></p>` : ""}
       <p>${f.affiliation}</p>
       <p>${f.funding}</p>
-      ${f.spill ? link(ctx, f.spill.href, html`${spillLogo("footer-spill-logo", "6rem")}<span>${f.spill.label}</span>`, { class: "footer-spill" }) : ""}
     </div>
     ${f.columns.map((c) => html`<div><h2>${c.title}</h2><ul>${c.links.map((l) => html`<li>${link(ctx, l.href, l.label)}</li>`)}</ul></div>`)}
+    ${/* The SPILL chip stands after the columns in the source, where it renders — at the foot of the
+         brand column, below the columns' links — so reading and focus order match the page as seen
+         (UX placement audit finding 7, 16 Nov 2026). The footer's grid places it back into the brand
+         column's cell (layout.css, footer); its words, link and styling are unchanged. */
+    f.spill ? link(ctx, f.spill.href, html`${spillLogo("footer-spill-logo", "6rem")}<span>${f.spill.label}</span>`, { class: "footer-spill" }) : ""}
   </div>
   <div class="footer-bottom">
     <p>${accessibility(ctx)}</p>

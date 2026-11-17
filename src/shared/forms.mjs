@@ -119,6 +119,7 @@ export function definitionProblems(def) {
   if (!["open", "closed"].includes(def.state)) add("state-unknown", "state");
   if (def.state === "closed" && !String(def.closedMessage || "").trim()) add("closed-message-missing", "closedMessage");
   if (proseProblem(def.intro)) add("prose-shape", "intro");
+  if (proseProblem(def.after)) add("prose-shape", "after");
   if (!Array.isArray(def.sections)) { add("sections-missing", "sections"); return problems; }
 
   const seenSections = new Set();
@@ -291,6 +292,14 @@ export function steppedForm(def) {
   const sections = def.sections || [];
   const questions = sections.reduce((n, s) => n + (s.questions || []).length, 0);
   return sections.length >= 2 && questions >= 10;
+}
+
+/* The applications keep a draft of their text answers on the visitor's own device
+   (src/client/form.js): they are the longest forms on the site and are most often filled in
+   more than one sitting. Named here so the render and the browser agree on which forms they
+   are. A draft never holds a file or a confirmation — form.js keeps those out. */
+export function draftForm(def) {
+  return def.key === "staff-application" || def.key === "volunteer-application";
 }
 
 /* ------------------------------------------------------------------ reading raw input */

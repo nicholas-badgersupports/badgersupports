@@ -114,6 +114,11 @@
       "text": "Main",
       "where": "The main menu's name, read by screen readers."
     },
+    "header.helpNow": {
+      "group": "page",
+      "text": "Need help now?",
+      "where": "The link in the header, on every page: it leads to the Resources page, which opens with crisis and urgent help."
+    },
     "header.safetyExit": {
       "group": "page",
       "text": "Safety Exit",
@@ -636,6 +641,21 @@
       "text": "Send",
       "where": "The button at the end of a form, unless the form names its own."
     },
+    "form.send.workshopRequest": {
+      "group": "forms",
+      "text": "Send workshop request",
+      "where": "The Send button on the workshop request form, on its Check your answers step."
+    },
+    "form.send.application": {
+      "group": "forms",
+      "text": "Send application",
+      "where": "The Send button on the volunteer application form, on its Check your answers step."
+    },
+    "form.send.emailList": {
+      "group": "forms",
+      "text": "Sign me up",
+      "where": "The Send button on the email updates form."
+    },
     "form.trap": {
       "group": "forms",
       "text": "Leave this empty",
@@ -732,6 +752,21 @@
       "group": "forms",
       "text": "Your reference is {{ref}}",
       "where": "After sending. {{ref}} is the submission's reference."
+    },
+    "form.draft.note": {
+      "group": "forms",
+      "text": "Answers are saved on this device as you type. Files are not saved — attach them again if you return.",
+      "where": "The applications, in the bar with Send, while a draft of the answers is held on the device."
+    },
+    "form.draft.clear": {
+      "group": "forms",
+      "text": "Clear saved answers",
+      "where": "The applications, the button beside the draft note: it removes the saved answers and empties the form."
+    },
+    "form.draft.cleared": {
+      "group": "forms",
+      "text": "Saved answers cleared.",
+      "where": "The applications, the form's status line after Clear saved answers is pressed."
     },
     "form.error.thisQuestion": {
       "group": "forms",
@@ -3526,12 +3561,12 @@
     "resources.report.problem": {
       "group": "resources",
       "text": "Report a Problem",
-      "where": "On the resource list: in each resource's Additional Details, the link to report a problem with it."
+      "where": "On the resource list: at the foot of each resource's card, the link to report a problem with it."
     },
     "resources.report.update": {
       "group": "resources",
       "text": "Suggest an Update",
-      "where": "On the resource list: in each resource's Additional Details, the link to suggest a change to it."
+      "where": "On the resource list: at the foot of each resource's card, the link to suggest a change to it."
     },
     "resources.report.suggest": {
       "group": "resources",
@@ -3622,6 +3657,11 @@
       "group": "classes",
       "text": "Try Again",
       "where": "On the classes page: the button under the count line when the full course list does not arrive."
+    },
+    "classes.showMore": {
+      "group": "classes",
+      "text": "Show More",
+      "where": "On the classes page: the button under the list that reveals more of the courses that match the current interest, availability and search."
     },
     "classes.search.label": {
       "group": "classes",
@@ -3750,12 +3790,12 @@
     },
     "search.nojs": {
       "group": "search",
-      "text": "Search runs in your browser and needs JavaScript. Every page is listed below.",
+      "text": "Search runs in your browser and needs JavaScript.",
       "where": "On the search page: the count line before the script runs, and for a browser without JavaScript."
     },
     "search.failed": {
       "group": "search",
-      "text": "The list of pages could not be loaded. Every page is listed below.",
+      "text": "The list of pages could not be loaded.",
       "where": "On the search page: the count line when the list of pages does not arrive."
     },
     "search.retry": {
@@ -3766,7 +3806,7 @@
     "search.count.all": {
       "group": "search",
       "text": "{{n}} Pages",
-      "where": "On the search page: how many pages the search covers, when nothing is typed."
+      "where": "On the search page: how many pages the search covers, shown when nothing is typed and no results stand on the page."
     },
     "search.count.one": {
       "group": "search",
@@ -3790,7 +3830,7 @@
     },
     "search.none.body": {
       "group": "search",
-      "text": "Try another word, or start over and browse the list.",
+      "text": "Try another word, or start over.",
       "where": "On the search page: the line under the no-matches heading."
     },
     "search.none.reset": {
@@ -3807,11 +3847,6 @@
       "group": "search",
       "text": "Try Resource Search",
       "where": "On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed."
-    },
-    "search.browse": {
-      "group": "search",
-      "text": "Every Page",
-      "where": "On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive."
     },
     "search.scope": {
       "group": "search",

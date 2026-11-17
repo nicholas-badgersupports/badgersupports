@@ -105,12 +105,12 @@
       "type": "text",
       "title": "Questions About Volunteering",
       "body": [
-        "For questions about volunteer opportunities, training or the application, email directors@badgersupports.org."
+        "For questions about volunteer opportunities, training or the application, email hiring@badgersupports.org."
       ],
       "links": [
         {
           "label": "Email About Volunteering",
-          "href": "mailto:directors@badgersupports.org",
+          "href": "mailto:hiring@badgersupports.org",
           "icon": "mail"
         }
       ]
@@ -175,8 +175,8 @@
         }
       ],
       "ask": {
-        "label": "Email Us at hello@badgersupports.org",
-        "href": "mailto:hello@badgersupports.org"
+        "label": "Email Us at hiring@badgersupports.org",
+        "href": "mailto:hiring@badgersupports.org"
       },
       "note": "Badger Supports values diversity and is an Equal Opportunity Employer. Accommodations can be requested at accessibility@badgersupports.org."
     },

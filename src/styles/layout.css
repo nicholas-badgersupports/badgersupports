@@ -52,6 +52,16 @@
 }
 .nav .sub a { display: flex; width: 100%; font-weight: 600; }
 .header-action { flex: none; }
+/* the way to crisis help, in the header on every page (owner's ruling, 16 Nov 2026): one compact
+   link beside the menu, never a second button — the Get Involved pill stays the header's one
+   button. It keeps the nav links' shape and touch height, in the deep red, so a visitor in
+   distress can find it at a glance. */
+.header-help {
+  flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 .65rem;
+  color: var(--red-deep); font-weight: 700; font-size: .975rem; text-decoration: none;
+  border-radius: var(--r-card); white-space: nowrap;
+}
+.header-help:hover { background: var(--cream); color: var(--red-deep); }
 .menu-toggle { display: none; }
 
 /* ---------- safety exit ---------- */
@@ -85,18 +95,38 @@
 .dev-notice p { margin: var(--s3) 0 0; }
 .dev-notice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
 
-@media (max-width: 960px) {
+/* The Get Involved button leaves the header where the row cannot carry it. Three additions
+   widened the row on 16 Nov 2026 — the Explore entry, the Search entry and the Need help
+   now? link — and the branches that added them measured their own rows apart, which does
+   not describe the combined row, so the round assembly re-measured it (widths in the round
+   handoff): the tightened row below fits whole, button and all, from 1140 up, so the button
+   stays out below that. */
+@media (max-width: 1139px) {
   .header-action { display: none; }
 }
-/* Between 961 and 1049 the full row — brand, five nav items and the Get Involved button — is
-   wider than the screen, so the button runs off the right edge (measured 69px at 961 wide,
-   7px at 1024). In that band only, the row breathes tighter: smaller gaps and slimmer nav
-   padding. Widths outside the band render exactly as before. */
-@media (min-width: 961px) and (max-width: 1049px) {
-  .site-header .wrap { gap: var(--s2); }
+/* From 861 up, the full row — brand, seven nav items, the Need help now? link and the Get
+   Involved button — measures about 1,353px at full padding, wider than the page column at
+   every width (the column caps at 76rem), so the row breathes tighter at every width from
+   861: smaller gaps, slimmer nav padding and a step smaller nav and help-link type. Below
+   861 the wrapped phone layout takes over. */
+@media (min-width: 861px) {
+  .site-header .wrap { gap: var(--s1); }
+  .brand span { font-size: 1.5rem; }
   .nav > ul { gap: 0; }
-  .nav a, .nav summary { padding-inline: .5rem; }
-  .nav summary { padding-right: .8rem; }
+  .nav a, .nav summary { padding-inline: .4rem; font-size: .9rem; gap: .15rem; }
+  .nav summary { padding-right: .7rem; }
+  .header-help { padding-inline: .4rem; font-size: .9rem; }
+  .header-action .btn { padding-inline: 1rem; }
+}
+/* Between 861 and 1000 the column is narrower than the tightened row (about 957px), so the
+   row tightens one step further: a smaller wordmark and slimmer, smaller nav and help
+   items. Measured at 861: the row ends inside the column and the page does not scroll
+   sideways. */
+@media (min-width: 861px) and (max-width: 1000px) {
+  .brand span { font-size: 1.1rem; }
+  .nav a, .nav summary { padding-inline: .1rem; font-size: .875rem; }
+  .nav summary { padding-right: .4rem; }
+  .header-help { padding-inline: .1rem; font-size: .875rem; }
 }
 @media (max-width: 860px) {
   .site-header .wrap { flex-wrap: wrap; gap: 0 var(--s2); }
@@ -140,16 +170,23 @@
 .site-footer :focus-visible { outline-color: var(--focus-on-red); }
 .footer-top { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); gap: var(--s5) var(--s4); padding-block: var(--s6) var(--s5); }
 .footer-brand { display: flex; flex-direction: column; gap: var(--s3); }
+/* The brand and the SPILL chip share the first cell of the footer's grid: the chip's source stands
+   after the columns, where it renders, and the grid places it at the foot of this column, in the
+   cell the brand names here. The brand keeps the chip's space open — one gap (--s3) plus the chip
+   itself: its logo is 6rem wide at 164/240 (4.1rem) inside .35rem of padding above and below,
+   4.8rem in all — so the footer keeps its shape whether or not the chip is present. */
+.footer-brand { grid-column: 1; grid-row: 1; }
+.footer-top:has(> .footer-spill) .footer-brand { padding-bottom: calc(var(--s3) + 4.8rem); }
 .footer-brand .brand-row { display: flex; align-items: center; gap: .6rem; }
 .footer-brand img { width: 34px; }
 .footer-brand .wordmark { font: 800 1.75rem/1 var(--font-display); color: var(--cream); padding-top: .2rem; }
 .footer-brand p { margin: 0; line-height: 1.5; }
 /* Badger SPILL, a Badger Supports program: its logo on a cream chip, so its own colours read on the red */
-.footer-brand .footer-spill { display: inline-flex; align-items: center; gap: var(--s2); align-self: start; padding: .35rem 1rem .35rem .5rem;
+.footer-top .footer-spill { display: inline-flex; align-items: center; gap: var(--s2); grid-column: 1; grid-row: 1; align-self: end; justify-self: start; padding: .35rem 1rem .35rem .5rem;
   background: var(--spill-panel); color: var(--spill-ink); border-radius: var(--r-card); font-weight: 700; text-decoration: none; box-shadow: 0 3px 0 var(--ink);
   transition: translate var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
-.footer-brand .footer-spill:hover { color: var(--spill-ink); text-decoration: none; translate: 0 -2px; box-shadow: 0 5px 0 var(--ink); }
-.footer-brand .footer-spill-logo { width: 6rem; height: auto; }
+.footer-top .footer-spill:hover { color: var(--spill-ink); text-decoration: none; translate: 0 -2px; box-shadow: 0 5px 0 var(--ink); }
+.footer-top .footer-spill-logo { width: 6rem; height: auto; }
 .site-footer h2 { font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; margin-bottom: var(--s2); color: var(--cream); }
 .site-footer ul { list-style: none; display: grid; gap: .1rem; }
 .site-footer ul a { display: inline-flex; min-height: 44px; align-items: center; overflow-wrap: anywhere; }
@@ -235,6 +272,7 @@
 @media (max-width: 900px) {
   .footer-top { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
+  .footer-top .footer-spill { grid-column: 1 / -1; }
 }
 @media (max-width: 480px) {
   .footer-top { grid-template-columns: 1fr; }

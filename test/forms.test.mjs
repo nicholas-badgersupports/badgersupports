@@ -129,7 +129,8 @@ test("secondary help folds under its label: closed, never empty, never nested, s
   }
   assert.deepEqual(proseText(["First.", fold]), ["First.", "Our programs", "Programs", "Peer support"]);
   const out = String(html`${prose(["First.", fold])}`);
-  assert.match(out, /<details class="prose-more"><summary>Our programs<\/summary><div class="prose-more-body"><h3>Programs<\/h3><ol><li>Peer support<\/li><\/ol><\/div><\/details>/);
+  assert.match(out, /<details class="prose-more"><summary>Our programs<\/summary><div class="prose-more-body"><p class="prose-h">Programs<\/p><ol><li>Peer support<\/li><\/ol><\/div><\/details>/);
+  assert.match(String(html`${prose([{ heading: "Programs" }])}`), /<h3>Programs<\/h3>/, "a heading outside a fold stays a heading");
   assert.doesNotMatch(out, /<details[^>]* open/);
   assert.doesNotMatch(String(html`${prose(["First."])}`), /details/);
 });

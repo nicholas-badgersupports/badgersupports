@@ -105,12 +105,12 @@
       "type": "text",
       "title": "Questions About Volunteering",
       "body": [
-        "For questions about volunteer opportunities, training or the application, email directors@badgersupports.org."
+        "For questions about volunteer opportunities, training or the application, email hiring@badgersupports.org."
       ],
       "links": [
         {
           "label": "Email About Volunteering",
-          "href": "mailto:directors@badgersupports.org",
+          "href": "mailto:hiring@badgersupports.org",
           "icon": "mail"
         }
       ]

@@ -293,6 +293,14 @@ export function steppedForm(def) {
   return sections.length >= 2 && questions >= 10;
 }
 
+/* The applications keep a draft of their text answers on the visitor's own device
+   (src/client/form.js): they are the longest forms on the site and are most often filled in
+   more than one sitting. Named here so the render and the browser agree on which forms they
+   are. A draft never holds a file or a confirmation — form.js keeps those out. */
+export function draftForm(def) {
+  return def.key === "staff-application" || def.key === "volunteer-application";
+}
+
 /* ------------------------------------------------------------------ reading raw input */
 
 /* Turns what arrived — URLSearchParams-like pairs from a no-JS POST, or a JSON object from the

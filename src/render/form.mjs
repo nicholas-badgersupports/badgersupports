@@ -14,7 +14,7 @@
  */
 
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
-import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm } from "../shared/forms.mjs";
+import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm, draftForm } from "../shared/forms.mjs";
 import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
 import { legalParagraphs } from "./blocks/legal.mjs";
@@ -224,7 +224,7 @@ export function renderDone(def, ref, t, { level = 1 } = {}) {
 const Q_KEYS = ["id", "type", "label", "required", "options", "resources", "allowOther", "showIf", "maxLength", "min", "max", "maxSelected", "maxLinks"];
 export function publicDefinition(def) {
   return {
-    schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state, stepped: steppedForm(def),
+    schema: def.schema, key: def.key, version: def.version, title: def.title, state: def.state, stepped: steppedForm(def), draft: draftForm(def),
     sections: def.sections.map((s) => ({
       id: s.id, title: s.title, showIf: s.showIf,
       questions: (s.questions || []).map((q) => Object.fromEntries(Q_KEYS.filter((k) => q[k] !== undefined).map((k) => [k, k === "options" ? q.options.map((o) => ({ id: o.id, label: o.label })) : k === "resources" ? q.resources.map((r) => ({ id: r.id, name: r.name })) : q[k]]))),

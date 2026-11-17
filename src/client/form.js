@@ -4,6 +4,9 @@
  *   - answers are checked with the server's own rules before sending;
  *   - each form carries one idempotency key, so pressing Send twice, or again after a network
  *     failure, can never create a second submission;
+ *   - the applications keep a draft of their text answers on this device alone, so a reload
+ *     loses nothing typed; a successful send clears it, and Clear saved answers in the foot
+ *     bar removes it and empties the form;
  *   - a form closed while the tab was open says so before anyone types more, and again if they
  *     press Send — the server refuses either way;
  *   - a form whose questions changed while the tab was open says so, and at Send the server's
@@ -348,6 +351,108 @@ function swapForm(form, markup) {
   return true;
 }
 
+/* ------------------------------------------------------------------ the on-device draft */
+
+/* The applications (draftForm in src/shared/forms.mjs) keep their text answers on this device,
+   so a reload, a crash or a wrong turn costs nothing typed. The draft is written and read only
+   here — nothing in it is sent anywhere — and a successful send clears it. Two kinds of answer
+   are never part of it: a file (its id names an upload held for the sending in progress, not
+   for a later visit; the draft's note says a file is attached again) and a confirmation or an
+   agreement (affirmed again on the visit that sends). A draft saved under an older version of
+   the questions is dropped, not poured into questions that have changed. Storage that refuses
+   — a private window, a full disk — simply means no draft; the form works as it always has. */
+const NO_DRAFT = new Set(["file", "confirm", "agree"]);
+
+function draftStore(key) {
+  const name = `bss-form-draft:${key}`;
+  return {
+    read() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(name) || "null");
+        return saved && typeof saved === "object" && saved.answers && typeof saved.answers === "object" ? saved : null;
+      } catch { return null; }
+    },
+    write(record) { try { localStorage.setItem(name, JSON.stringify(record)); } catch { /* storage off: no draft */ } },
+    drop() { try { localStorage.removeItem(name); } catch { /* storage off: nothing to drop */ } },
+  };
+}
+
+/* The control names a question's answers travel under: its own, a ranking's one select per
+   option, and the Other box where the question has one. */
+const draftNames = (q) => (q.type === "rank" ? (q.options || []).map((o) => `${q.id}.${o.id}`) : [q.id]);
+
+/* Builds the draft's row in the form's foot bar — the note and Clear saved answers, shown only
+   while a draft is held — and returns its save, restore and drop. */
+function formDraft(form, def) {
+  const store = draftStore(def.key);
+  const status = form.querySelector("[data-form-status]");
+  const row = Object.assign(document.createElement("p"), { className: "form-draft", hidden: true });
+  row.dataset.formDraft = "";
+  const clear = Object.assign(document.createElement("button"), { type: "button", className: "btn btn--quiet", textContent: t("form.draft.clear") });
+  row.append(Object.assign(document.createElement("span"), { textContent: t("form.draft.note") }), clear);
+  form.querySelector(".form-actions")?.append(row);
+  let held = false;
+  const show = () => { row.hidden = !held; };
+
+  const controls = (name) => {
+    const found = form.elements.namedItem(name);
+    return found ? (found instanceof RadioNodeList ? [...found] : [found]) : [];
+  };
+  const put = (name, value) => {
+    for (const el of controls(name)) {
+      if (el.type === "radio") el.checked = el.value === value;
+      else if (el.type === "checkbox") el.checked = (Array.isArray(value) ? value : [value]).includes(el.value);
+      else el.value = Array.isArray(value) ? value[0] ?? "" : value ?? "";
+    }
+  };
+  const wipe = (name) => {
+    for (const el of controls(name)) {
+      if (el.type === "radio" || el.type === "checkbox") el.checked = false;
+      else {
+        el.value = "";
+        // A wiped long answer's counter reads the box again, as it does at a keystroke.
+        if (el.tagName === "TEXTAREA") el.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    }
+  };
+  const eachName = (fn) => {
+    for (const { q } of allQuestions(def)) {
+      if (NO_DRAFT.has(q.type)) continue;
+      for (const name of draftNames(q)) fn(name);
+      if (q.allowOther) fn(`${q.id}${OTHER}`);
+    }
+  };
+
+  const save = () => {
+    const fd = new FormData(form);
+    const answers = {};
+    eachName((name) => {
+      const all = fd.getAll(name).filter((v) => v !== "");
+      if (all.length) answers[name] = all.length > 1 ? all : all[0];
+    });
+    if (Object.keys(answers).length) { store.write({ version: def.version, answers }); held = true; }
+    else { store.drop(); held = false; }
+    show();
+  };
+  const restore = () => {
+    const saved = store.read();
+    if (!saved) return;
+    if (saved.version !== def.version) { store.drop(); return; }
+    eachName((name) => { if (Object.hasOwn(saved.answers, name)) put(name, saved.answers[name]); });
+    held = true;
+    show();
+  };
+  clear.addEventListener("click", () => {
+    eachName(wipe);
+    store.drop();
+    held = false;
+    show();
+    applyVisibility(form, def);
+    if (status) status.textContent = t("form.draft.cleared");
+  });
+  return { save, restore, drop: store.drop };
+}
+
 function enhance(form, { started = false } = {}) {
   const key = form.dataset.form;
   const def = JSON.parse(document.getElementById(`form-def-${key}`).textContent);
@@ -400,6 +505,12 @@ function enhance(form, { started = false } = {}) {
   // "Wait for your file" goes once nothing is going up, so it never outlasts the upload it meant.
   const settled = () => { if (!uploads.size && status.textContent === t("form.upload.wait")) status.textContent = ""; };
   for (const box of form.querySelectorAll("[data-upload]")) uploader(form, key, box, { preview, uploads, onClosed: close, onSettled: settled });
+  /* The on-device draft, restored before the counters, the branches and the steps read the
+     answers, so all of them see what came back. A form the server swapped in starts from the
+     answers it kept, so its draft is written from those instead. A preview keeps none. */
+  const draft = def.draft && !preview ? formDraft(form, def) : null;
+  if (draft && !started) draft.restore();
+  else if (draft) draft.save();
   counters(form);
   applyVisibility(form, def);
   if (def.stepped) makeStepper(form, def);
@@ -414,8 +525,9 @@ function enhance(form, { started = false } = {}) {
   form.addEventListener("input", () => {
     if (!started && !preview) { started = true; announce("form_start", { form: key }); }
     applyVisibility(form, def);
+    draft?.save();
   });
-  form.addEventListener("change", () => applyVisibility(form, def));
+  form.addEventListener("change", () => { applyVisibility(form, def); draft?.save(); });
 
   let sending = false;
   form.addEventListener("submit", async (e) => {
@@ -440,6 +552,7 @@ function enhance(form, { started = false } = {}) {
     }
     sending = false;
     if (res.ok && body.ok) {
+      draft?.drop();
       announce("form_submit_success", { form: key });
       done(form, def, body.ref);
       return;

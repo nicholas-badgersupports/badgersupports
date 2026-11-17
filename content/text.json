@@ -738,6 +738,21 @@
       "text": "Your reference is {{ref}}",
       "where": "After sending. {{ref}} is the submission's reference."
     },
+    "form.draft.note": {
+      "group": "forms",
+      "text": "Answers are saved on this device as you type. Files are not saved — attach them again if you return.",
+      "where": "The applications, in the bar with Send, while a draft of the answers is held on the device."
+    },
+    "form.draft.clear": {
+      "group": "forms",
+      "text": "Clear saved answers",
+      "where": "The applications, the button beside the draft note: it removes the saved answers and empties the form."
+    },
+    "form.draft.cleared": {
+      "group": "forms",
+      "text": "Saved answers cleared.",
+      "where": "The applications, the form's status line after Clear saved answers is pressed."
+    },
     "form.error.thisQuestion": {
       "group": "forms",
       "text": "this question",

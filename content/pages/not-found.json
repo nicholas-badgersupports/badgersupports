@@ -29,6 +29,10 @@
           "href": "/resources/"
         },
         {
+          "label": "Search",
+          "href": "/search/"
+        },
+        {
           "label": "Email Us",
           "href": "mailto:directors@badgersupports.org"
         }

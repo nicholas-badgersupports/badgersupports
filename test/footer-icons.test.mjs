@@ -21,6 +21,30 @@ test.before(async () => {
   await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: "2026-10-20" });
 });
 
+/* The SPILL chip's source order (UX placement audit finding 7, 16 Nov 2026): the chip renders at
+   the foot of the brand column, below the three columns' links, so its markup stands after the
+   columns — reading and focus order match the page as seen. The grid places it back into the
+   brand column's cell and the brand reserves its space, so nothing about its place or shape
+   changes: the built CSS carries both halves of that placement. */
+test("the footer's SPILL chip stands after the three columns in source order, and the grid places it at the foot of the brand column", () => {
+  for (const p of ["index.html", "404.html"]) {
+    const page = read(p);
+    const footer = page.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)[0];
+    const at = (needle) => footer.indexOf(needle);
+    assert.ok(at('class="footer-brand"') >= 0 && at('class="footer-brand"') < at("<h2>Organization</h2>"), p);
+    assert.ok(at("<h2>Organization</h2>") < at("<h2>Community</h2>") && at("<h2>Community</h2>") < at("<h2>Contact</h2>"), p);
+    assert.ok(at("<h2>Contact</h2>") < at('class="footer-spill"'), `${p}: the chip follows the columns`);
+    assert.ok(at('class="footer-spill"') < at('class="footer-bottom"'), p);
+    const brand = footer.slice(at('class="footer-brand"'), at("<h2>Organization</h2>"));
+    assert.doesNotMatch(brand, /footer-spill/, `${p}: the chip is no longer inside the brand column's markup`);
+    assert.match(footer, /class="footer-spill"[\s\S]*?class="spill-logo footer-spill-logo"[\s\S]*?<span>Ready to SPILL\?<\/span>/, p);
+  }
+  const styles = css();
+  assert.match(styles, /\.footer-top \.footer-spill\{[^}]*grid-column:1;grid-row:1;align-self:end/, "the chip is placed at the foot of the brand cell");
+  assert.match(styles, /\.footer-brand\{[^}]*grid-column:1;grid-row:1/, "the brand names the shared cell");
+  assert.match(styles, /\.footer-top:has\(> \.footer-spill\) \.footer-brand\{[^}]*padding-bottom:calc\(var\(--s3\) \+ 4\.8rem\)/, "the brand reserves the chip's space");
+});
+
 test("Director Sign-In sits in the footer's legal row as a labelled text link, on every page", () => {
   for (const p of ["index.html", "404.html"]) {
     const page = read(p);

@@ -602,10 +602,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-965 keys. Keys are permanent. Required text cannot be published empty and must keep each
+969 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (29)
+### Every page (30)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -619,6 +619,7 @@ the site adds the markup.
 | `header.homeSuffix` | — home | Read aloud after the name in the header link, so it says where the link goes. |  |
 | `header.menu` | Menu | The menu button on a phone. |  |
 | `header.navLabel` | Main | The main menu's name, read by screen readers. |  |
+| `header.helpNow` | Need help now? | The link in the header, on every page: it leads to the Resources page, which opens with crisis and urgent help. |  |
 | `header.safetyExit` | Safety Exit | The pill at the right of the header, on every page: one press opens Google in a new tab and replaces this page in the Back history. |  |
 | `link.toConnect` | (opens Badger Supports Connect) | Read aloud after every link that leaves for Connect. |  |
 | `support.label` | If you need help now | The crisis-line band's name, read by screen readers. The band's sentence is edited in Site settings. |  |
@@ -778,7 +779,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (92)
+### Forms (95)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -809,6 +810,9 @@ the site adds the markup.
 | `form.status.serverError` | Unable to send — something went wrong on our side. Press Send again in a minute; your answers are kept. | When the site failed. |  |
 | `form.done.title` | Received | Heading after sending, when the form gives none of its own. |  |
 | `form.done.ref` | Your reference is {{ref}} | After sending. {{ref}} is the submission's reference. | `{{ref}}` |
+| `form.draft.note` | Answers are saved on this device as you type. Files are not saved — attach them again if you return. | The applications, in the bar with Send, while a draft of the answers is held on the device. |  |
+| `form.draft.clear` | Clear saved answers | The applications, the button beside the draft note: it removes the saved answers and empties the form. |  |
+| `form.draft.cleared` | Saved answers cleared. | The applications, the form's status line after Clear saved answers is pressed. |  |
 | `form.error.thisQuestion` | this question | Stands in for a question's label in an error, if it has none. |  |
 | `form.error.required` | Fill in “{{label}}”. | A required question left empty. | `{{label}}` |
 | `form.error.requiredChoice` | Choose an answer for “{{label}}”. | A required choice left empty. | `{{label}}` |

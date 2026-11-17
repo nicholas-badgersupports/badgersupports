@@ -61,6 +61,7 @@ function header(ctx, path) {
   <a class="brand" href="/"><img src="/assets/brand/bss-hand-red.png" width="301" height="440" alt=""><span>${ctx.t("header.wordmark")}</span><span class="sr-only"> ${ctx.t("header.homeSuffix")}</span></a>
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>${ctx.t("header.menu")}</button>
   <nav class="nav" id="site-nav" aria-label="${ctx.t("header.navLabel")}"><ul>${s.nav.map((i) => navItem(ctx, i, path))}</ul></nav>
+  <a class="header-help" href="/resources/">${ctx.t("header.helpNow")}</a>
   ${s.headerAction ? html`<div class="header-action">${link(ctx, s.headerAction.href, s.headerAction.label, { class: "btn btn--quiet" })}</div>` : ""}
 </div></header>`;
 }

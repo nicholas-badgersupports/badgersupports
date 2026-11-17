@@ -52,6 +52,16 @@
 }
 .nav .sub a { display: flex; width: 100%; font-weight: 600; }
 .header-action { flex: none; }
+/* the way to crisis help, in the header on every page (owner's ruling, 16 Nov 2026): one compact
+   link beside the menu, never a second button — the Get Involved pill stays the header's one
+   button. It keeps the nav links' shape and touch height, in the deep red, so a visitor in
+   distress can find it at a glance. */
+.header-help {
+  flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 .65rem;
+  color: var(--red-deep); font-weight: 700; font-size: .975rem; text-decoration: none;
+  border-radius: var(--r-card); white-space: nowrap;
+}
+.header-help:hover { background: var(--cream); color: var(--red-deep); }
 .menu-toggle { display: none; }
 
 /* ---------- safety exit ---------- */
@@ -85,18 +95,24 @@
 .dev-notice p { margin: var(--s3) 0 0; }
 .dev-notice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
 
-@media (max-width: 960px) {
+/* the Get Involved button leaves the header where the row cannot carry it: the help link
+   widened the row, so the button now stays out until 1021 (measured, 16 Nov 2026). */
+@media (max-width: 1020px) {
   .header-action { display: none; }
 }
-/* Between 961 and 1049 the full row — brand, five nav items and the Get Involved button — is
-   wider than the screen, so the button runs off the right edge (measured 69px at 961 wide,
-   7px at 1024). In that band only, the row breathes tighter: smaller gaps and slimmer nav
-   padding. Widths outside the band render exactly as before. */
-@media (min-width: 961px) and (max-width: 1049px) {
-  .site-header .wrap { gap: var(--s2); }
+/* Between 861 and 1279 the full row — brand, five nav items, the Need help now? link and the
+   Get Involved button — is wider than the screen, so the last items run off the right edge
+   (measured 164px at 861 wide, 13px at 1200, before this band was widened for the help link,
+   16 Nov 2026). In that band only, the row breathes tighter: smaller gaps, slimmer nav padding
+   and a step smaller nav and help-link type. Widths outside the band render exactly as before. */
+@media (min-width: 861px) and (max-width: 1279px) {
+  .site-header .wrap { gap: var(--s1); }
+  .brand span { font-size: 1.5rem; }
   .nav > ul { gap: 0; }
-  .nav a, .nav summary { padding-inline: .5rem; }
-  .nav summary { padding-right: .8rem; }
+  .nav a, .nav summary { padding-inline: .4rem; font-size: .9rem; gap: .15rem; }
+  .nav summary { padding-right: .7rem; }
+  .header-help { padding-inline: .4rem; font-size: .9rem; }
+  .header-action .btn { padding-inline: 1rem; }
 }
 @media (max-width: 860px) {
   .site-header .wrap { flex-wrap: wrap; gap: 0 var(--s2); }

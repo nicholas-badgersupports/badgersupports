@@ -19,6 +19,11 @@ import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
 import { legalParagraphs } from "./blocks/legal.mjs";
 
+/* The Send button's own words for the forms that name their action (UX placement audit,
+   finding 4, 16 Nov 2026): every other form keeps the general form.send. The words live in
+   the text registry, so they are edited the same way as every other button. */
+const SEND_KEYS = { "workshop-request": "form.send.workshopRequest", "volunteer-application": "form.send.application", "email-list": "form.send.emailList" };
+
 const fid = (q) => `f-${q.id}`;
 const eid = (q) => `e-${q.id}`;
 const hid = (q) => `h-${q.id}`;
@@ -192,7 +197,8 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
   ${stepNav}
   ${def.sections.map((s) => section(def, s, values, errors, t, ctx, inner))}
   ${review}
-  <div class="form-actions">${stepped ? html`<button type="button" class="btn btn--quiet" data-step-back hidden>${t("form.step.back")}</button><button type="button" class="btn" data-step-next hidden>${t("form.step.continue")}</button>` : ""}<button type="submit" class="btn" data-submit>${def.submitLabel || t("form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
+  <div class="form-actions">${stepped ? html`<button type="button" class="btn btn--quiet" data-step-back hidden>${t("form.step.back")}</button><button type="button" class="btn" data-step-next hidden>${t("form.step.continue")}</button>` : ""}<button type="submit" class="btn" data-submit>${def.submitLabel || t(SEND_KEYS[def.key] || "form.send")}</button><p class="form-status" role="status" aria-live="polite" data-form-status></p></div>
+  ${def.after ? html`<div class="form-after">${prose(def.after, { level: inner, ctx })}</div>` : ""}
   ${jsonIsland(`form-def-${def.key}`, publicDefinition(def))}
 </form>`;
 }

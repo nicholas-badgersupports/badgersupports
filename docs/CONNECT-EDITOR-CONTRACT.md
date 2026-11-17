@@ -602,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-965 keys. Keys are permanent. Required text cannot be published empty and must keep each
+968 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -778,7 +778,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (92)
+### Forms (95)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -790,6 +790,9 @@ the site adds the markup.
 | `form.onlyIf` | Only if you chose {{options}} above. | Above a section that only applies after a certain answer. Hidden once JavaScript shows and hides sections itself. | `{{options}}` |
 | `form.or` | or | Between two answers in that line. |  |
 | `form.send` | Send | The button at the end of a form, unless the form names its own. |  |
+| `form.send.workshopRequest` | Send workshop request | The Send button on the workshop request form, on its Check your answers step. |  |
+| `form.send.application` | Send application | The Send button on the volunteer application form, on its Check your answers step. |  |
+| `form.send.emailList` | Sign me up | The Send button on the email updates form. |  |
 | `form.trap` | Leave this empty | A field only automated spam fills in. People never see it. |  |
 | `form.errors.title` | Unable to send yet | Heading of the box listing answers that need a look. |  |
 | `form.errors.one` | One answer needs a look. Your other answers are kept. | In that box, for one answer. |  |

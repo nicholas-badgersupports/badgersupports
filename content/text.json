@@ -636,6 +636,21 @@
       "text": "Send",
       "where": "The button at the end of a form, unless the form names its own."
     },
+    "form.send.workshopRequest": {
+      "group": "forms",
+      "text": "Send workshop request",
+      "where": "The Send button on the workshop request form, on its Check your answers step."
+    },
+    "form.send.application": {
+      "group": "forms",
+      "text": "Send application",
+      "where": "The Send button on the volunteer application form, on its Check your answers step."
+    },
+    "form.send.emailList": {
+      "group": "forms",
+      "text": "Sign me up",
+      "where": "The Send button on the email updates form."
+    },
     "form.trap": {
       "group": "forms",
       "text": "Leave this empty",

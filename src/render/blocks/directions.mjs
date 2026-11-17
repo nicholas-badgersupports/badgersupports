@@ -6,7 +6,13 @@ import { timeNotice, unavailableEvents } from "../event-status.mjs";
    record (content/places/) and the text registry hold every word; the build makes this page for every published room (src/render/places.mjs). Another page
    can carry the same directions as a section (heading h2, with its own title): the peer support
    groups page does, for the Hub. The next events sit in their own part (data-live), which schedule.js
-   swaps alone when Connect's list changes between publishes. */
+   swaps alone when Connect's list changes between publishes.
+   On a room's own page the route's title is not a heading: the route column stands level with
+   the sidebar card, so its title is the first words a visitor meets, ahead of the page's h1 in
+   visual order, and the page's headings must begin with that h1 (UX placement audit, 16 Nov
+   2026, finding 8). It keeps the dir-title styling and its anchor id, so the sidebar's jump
+   link and the scroll margin work as before. As a section of another page it stays a heading
+   (h3) under that section's own heading, where it follows it in every order. */
 
 import { html } from "../html.mjs";
 import { link, go } from "../context.mjs";
@@ -54,7 +60,7 @@ export default {
     ], "stack") : ""}
   </div>
   ${body ? html`<div class="dir-body">
-    ${steps.length ? html`${page ? html`<h2 class="dir-title" id="${b.id}-route">${ctx.t("directions.stepsTitle")}</h2>` : html`<h3 class="dir-title">${ctx.t("directions.stepsTitle")}</h3>`}
+    ${steps.length ? html`${page ? html`<p class="dir-title" id="${b.id}-route">${ctx.t("directions.stepsTitle")}</p>` : html`<h3 class="dir-title">${ctx.t("directions.stepsTitle")}</h3>`}
     <ol class="dir-steps">${steps.map((s) => html`<li><p>${s.text}</p>${s.photo ? html`<div class="photo">${picture(ctx, s.photo, { sizes: "(max-width: 860px) calc(100vw - 5rem), 26rem" })}</div>` : ""}</li>`)}</ol>
     <p class="dir-arrive">${icon("pin")}<span>${ctx.t("directions.arrive", { place: p.name })}</span></p>
     ${p.arrivePhoto ? html`<div class="dir-arrive-photo photo">${picture(ctx, p.arrivePhoto, { sizes: "(max-width: 860px) calc(100vw - 5rem), 26rem" })}</div>` : ""}` : ""}

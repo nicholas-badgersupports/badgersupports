@@ -3526,12 +3526,12 @@
     "resources.report.problem": {
       "group": "resources",
       "text": "Report a Problem",
-      "where": "On the resource list: in each resource's Additional Details, the link to report a problem with it."
+      "where": "On the resource list: at the foot of each resource's card, the link to report a problem with it."
     },
     "resources.report.update": {
       "group": "resources",
       "text": "Suggest an Update",
-      "where": "On the resource list: in each resource's Additional Details, the link to suggest a change to it."
+      "where": "On the resource list: at the foot of each resource's card, the link to suggest a change to it."
     },
     "resources.report.suggest": {
       "group": "resources",

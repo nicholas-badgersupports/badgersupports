@@ -74,6 +74,25 @@ test("no button calls, texts or emails: those say View Details, and the number s
   assert.match(card("space-to-heal"), /<p class="res-tel"><a href="tel:4149394673">414-939-HOPE<\/a><\/p>/, "letters dial as their keys");
 });
 
+test("a phone line's number stands on its card's face as a tap-to-call link, and no card invents one (QOL 2026-11-16, item 4)", () => {
+  /* Ruled by Nicholas 16 Nov 2026: a resource reached by phone shows its number on the
+     card's face as a tel: link, so nobody opens Additional Details to find the number to
+     call. The number is the record's own: a phone-reached record whose data carries no
+     number shows none, and no card gains a number its record does not carry. */
+  const KEYPAD = { A: 2, B: 2, C: 2, D: 3, E: 3, F: 3, G: 4, H: 4, I: 4, J: 5, K: 5, L: 5, M: 6, N: 6, O: 6, P: 7, Q: 7, R: 7, S: 7, T: 8, U: 8, V: 8, W: 9, X: 9, Y: 9, Z: 9 };
+  const dial = (phone) => "tel:" + String(phone).toUpperCase().replace(/[A-Z]/g, (c) => KEYPAD[c]).replace(/[^0-9+]/g, "");
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  for (const r of fixture.resources) {
+    const c = card(r.id);
+    const phone = r.contact?.phone;
+    if ((r.modality || []).includes("phone") && phone) {
+      assert.match(c, new RegExp(`<p class="res-tel"><a href="${esc(dial(phone))}">${esc(phone)}</a></p>`), `${r.id}: its number on the face`);
+      assert.ok(c.indexOf("res-tel") < c.indexOf("<details"), `${r.id}: the number stands on the face, before the details`);
+    }
+    if (!phone) assert.doesNotMatch(c, /res-tel/, `${r.id}: no number in its data, none on its card`);
+  }
+});
+
 test("each resource's Additional Details reports a problem with it or suggests an update, and the list asks for new resources", () => {
   for (const r of fixture.resources) {
     const more = card(r.id).match(/<div class="res-more-body">([\s\S]*)<\/div><\/details>/)?.[1] || "";

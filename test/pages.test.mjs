@@ -327,7 +327,7 @@ test("Get involved keeps what the live page said: the hiring steps as a list, wh
 
 test("an email address in a pill or a closing notice is kept whole, may break before its @, and is still escaped", () => {
   const page = read("join/get-involved/index.html");
-  assert.match(page, /<span class="go-label">Email Us at <span class="addr">hello<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
+  assert.match(page, /<span class="go-label">Email Us at <span class="addr">hiring<wbr>@badgersupports\.org<\/span><\/span>/, "the questions pill");
   assert.doesNotMatch(page, /door-closed/, "the staff door is open, so it shows no closing notice");
   assert.equal(String(html`${breakAtSign("a<b@c")}`), '<span class="addr">a&lt;b<wbr>@c</span>');
   assert.equal(breakAtSign("no address"), "no address");

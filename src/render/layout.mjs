@@ -52,6 +52,12 @@ function navItem(ctx, item, currentPath) {
 function navLink(ctx, item, currentPath) {
   const r = ctx.link(item.href);
   const current = !r.pending && !r.external && r.href === currentPath;
+  /* Search stands in the header as its magnifier, not its word (owner, 16 Nov 2026): the
+     word stays in the link, where the phone menu's list shows it and the icon steps aside
+     (layout.css), and the link's name carries the word at every width. */
+  if (item.id === "nav-search") {
+    return html`<a${attrs({ class: "nav-search", href: r.href, "aria-label": item.label, "aria-current": current ? "page" : null, "data-pending": r.pending ? "" : null })}>${icon("search", "nav-search-ic")}<span class="nav-search-word">${item.label}</span></a>`;
+  }
   return html`<a${attrs({ href: r.href, "aria-current": current ? "page" : null, "data-pending": r.pending ? "" : null })}>${item.label}</a>`;
 }
 
@@ -61,7 +67,6 @@ function header(ctx, path) {
   <a class="brand" href="/"><img src="/assets/brand/bss-hand-red.png" width="301" height="440" alt=""><span>${ctx.t("header.wordmark")}</span><span class="sr-only"> ${ctx.t("header.homeSuffix")}</span></a>
   <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>${ctx.t("header.menu")}</button>
   <nav class="nav" id="site-nav" aria-label="${ctx.t("header.navLabel")}"><ul>${s.nav.map((i) => navItem(ctx, i, path))}</ul></nav>
-  <a class="header-help" href="/resources/">${ctx.t("header.helpNow")}</a>
   ${s.headerAction ? html`<div class="header-action">${link(ctx, s.headerAction.href, s.headerAction.label, { class: "btn btn--quiet" })}</div>` : ""}
 </div></header>`;
 }

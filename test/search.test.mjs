@@ -1,8 +1,8 @@
 /* Site-wide search (queue item 39, slice 39-A): the build's index of the public pages and the
    search page it feeds. The matching itself runs in the visitor's browser
-   (src/client/search.js); the interact suite presses it there. The menu does not lead to the
-   page: the owner ruled on 11 Nov 2026 that search stays at its address, hidden from the
-   navigation, and the menu tests below hold that line. */
+   (src/client/search.js); the interact suite presses it there. The menu leads to the page
+   since the owner's ruling of 16 Nov 2026 (WORK.md item 57), and stands there as a
+   magnifier, its word kept for the phone menu (item 58); the menu tests below hold that. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -93,12 +93,29 @@ test("the build writes the index as its own file, and the search page renders no
   assert.match(html, /data-srch-again hidden/, "the Try Again row starts hidden");
 });
 
-test("every page's menu carries Search, and the search page itself still builds", () => {
+test("every page's menu carries Search as its magnifier, and the search page itself still builds", () => {
   /* The owner ruled on 16 Nov 2026 (quality-of-life audit, Public item 1) that Search joins
-     the navigation, superseding the earlier ruling this test pinned (WORK.md item 39). */
+     the navigation, superseding the earlier ruling this test pinned (WORK.md item 39); the
+     same evening he ruled it stands in the header as a magnifier, its word kept in the
+     link for the phone menu's list and as the link's name (WORK.md item 58). */
   const home = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
-  assert.match(home, /<a href="\/search\/">Search<\/a>/, "the home page's menu carries Search");
+  assert.match(home, /<a class="nav-search" href="\/search\/" aria-label="Search">/, "the home page's menu carries the search icon link");
+  assert.match(home, /data-i="search"/, "the home page's menu carries the magnifier");
+  assert.match(home, /<span class="nav-search-word">Search<\/span>/, "the word stands in the link for the phone menu");
   const room = fs.readFileSync(path.join(OUT, "directions", "lcm", "index.html"), "utf8");
-  assert.match(room, /<a href="\/search\/">Search<\/a>/, "a room page's menu carries Search");
+  assert.match(room, /<a class="nav-search" href="\/search\/" aria-label="Search">/, "a room page's menu carries the search icon link");
   assert.ok(fs.existsSync(path.join(OUT, "search", "index.html")), "the search page is still built at /search/");
+});
+
+test("the header carries no help link and no Explore entry (owner rulings, 16 Nov 2026)", () => {
+  /* The "Need help now?" header link and the Explore menu entry both arrived with item 57
+     and both came out on the owner's direct instruction the same evening (WORK.md item 58):
+     the Resources page and the Explore pages themselves are untouched. */
+  const flat = content.site.nav.flatMap((i) => [i, ...(i.children || [])]);
+  assert.ok(!flat.some((i) => i.href === "/explore/"), "no menu item points at /explore/");
+  const home = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
+  const header = home.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
+  assert.ok(!header.includes("header-help"), "no help link stands in the header");
+  assert.ok(!header.includes("Need help now?"), "the help link's words are gone from the header");
+  assert.ok(!header.includes(">Explore<"), "Explore is not in the header menu");
 });

@@ -123,10 +123,10 @@
    items. Measured at 861: the row ends inside the column and the page does not scroll
    sideways. */
 @media (min-width: 861px) and (max-width: 1000px) {
-  .brand span { font-size: 1.15rem; }
-  .nav a, .nav summary { padding-inline: .15rem; font-size: .84rem; }
-  .nav summary { padding-right: .45rem; }
-  .header-help { padding-inline: .15rem; font-size: .84rem; }
+  .brand span { font-size: 1.1rem; }
+  .nav a, .nav summary { padding-inline: .1rem; font-size: .875rem; }
+  .nav summary { padding-right: .4rem; }
+  .header-help { padding-inline: .1rem; font-size: .875rem; }
 }
 @media (max-width: 860px) {
   .site-header .wrap { flex-wrap: wrap; gap: 0 var(--s2); }

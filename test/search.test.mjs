@@ -80,10 +80,12 @@ test("the build writes the index as its own file, and the search page lists ever
   for (const p of written.pages) assert.ok(html.includes(`href="${p.path}"`), `the page lists ${p.path} before the script runs`);
 });
 
-test("no page's menu carries Search, while the search page itself still builds", () => {
+test("every page's menu carries Search, and the search page itself still builds", () => {
+  /* The owner ruled on 16 Nov 2026 (quality-of-life audit, Public item 1) that Search joins
+     the navigation, superseding the earlier ruling this test pinned (WORK.md item 39). */
   const home = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
-  assert.doesNotMatch(home, /<a href="\/search\/"[^>]*>Search<\/a>/, "the home page's menu has no Search");
+  assert.match(home, /<a href="\/search\/">Search<\/a>/, "the home page's menu carries Search");
   const room = fs.readFileSync(path.join(OUT, "directions", "lcm", "index.html"), "utf8");
-  assert.doesNotMatch(room, /<a href="\/search\/"[^>]*>Search<\/a>/, "a room page's menu has no Search");
+  assert.match(room, /<a href="\/search\/">Search<\/a>/, "a room page's menu carries Search");
   assert.ok(fs.existsSync(path.join(OUT, "search", "index.html")), "the search page is still built at /search/");
 });

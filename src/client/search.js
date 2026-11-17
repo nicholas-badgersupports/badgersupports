@@ -6,8 +6,10 @@
    a word of its own, so "rent" does not find "parent" (QOL proposal 5). When nothing matches,
    it tries words from the same root ("anxious" finds "anxiety", "psychologist" finds
    "psychology") and words that begin the same way, and says so, as the resource list's search
-   does. The words stay in the address (?q=), so a link opens the same results. Until the index
-   arrives, and if it never arrives, the page's own list of every page stays in place. */
+   does. The words stay in the address (?q=), so a link opens the same results. Results render
+   only in response to a query (UX placement audit finding 3, ruled 16 Nov 2026): with nothing
+   typed the page shows the search box and the count of pages the search covers, and no list.
+   The Try Again button appears only when the index load has actually failed. */
 
 import { t } from "./text.js";
 
@@ -46,7 +48,7 @@ const CRISIS_PHRASES = ["kill myself", "hurt myself", "self harm"];
 const isCrisis = (q) => q.some((w) => CRISIS_WORDS.has(w)) || CRISIS_PHRASES.some((p) => q.join(" ").includes(p));
 
 /* A short piece of a page's words around the first typed word, so a result shows why it
-   matched. With no word typed (the whole list), the start of the page's words. */
+   matched. */
 function excerpt(text, q) {
   const clean = String(text || "").replace(/\s+/g, " ").trim();
   if (!clean) return "";
@@ -86,7 +88,6 @@ for (const box of document.querySelectorAll("[data-search]")) {
   const closestList = box.querySelector("[data-srch-closest]");
   const resourcesLink = box.querySelector("[data-srch-resources]");
   const list = box.querySelector("[data-srch-list]");
-  const all = box.querySelector("[data-srch-all]");
   if (!tools || !input || !list || !count) continue;
 
   /* The index, once it has arrived: each page with the words it is matched by. */
@@ -118,7 +119,18 @@ for (const box of document.querySelectorAll("[data-search]")) {
     if (clear) clear.hidden = !input.value;
     if (crisisEl) crisisEl.hidden = !isCrisis(q);
     if (!pages) { count.textContent = t("search.loading"); return; }
-    let shown = q.length ? pages.filter((p) => q.every((w) => hitsWord(w, p.hay, p.haySet))) : pages;
+    if (!q.length) {
+      list.replaceChildren();
+      list.hidden = true;
+      if (none) none.hidden = true;
+      if (relaxed) relaxed.hidden = true;
+      count.textContent = pages.length === 1 ? t("search.count.one") : t("search.count.all", { n: pages.length });
+      const url = new URL(location.href);
+      url.searchParams.delete("q");
+      if (url.href !== location.href) history.replaceState(history.state, "", url);
+      return;
+    }
+    let shown = pages.filter((p) => q.every((w) => hitsWord(w, p.hay, p.haySet)));
     let loose = false;
     if (q.length && !shown.length) {
       shown = pages.filter((p) => q.every((w) => looseHit(w, p)));
@@ -144,7 +156,6 @@ for (const box of document.querySelectorAll("[data-search]")) {
       return li;
     }));
     list.hidden = !shown.length;
-    if (all) all.hidden = true;
     if (none) none.hidden = shown.length > 0;
     if (!shown.length && q.length) {
       if (closestWrap && closestList) {
@@ -192,6 +203,10 @@ for (const box of document.querySelectorAll("[data-search]")) {
       apply();
     } catch {
       pages = null;
+      list.replaceChildren();
+      list.hidden = true;
+      if (none) none.hidden = true;
+      if (relaxed) relaxed.hidden = true;
       count.textContent = t("search.failed");
       if (again) again.hidden = false;
     }

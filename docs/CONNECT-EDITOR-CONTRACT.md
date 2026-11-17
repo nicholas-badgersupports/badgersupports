@@ -602,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-965 keys. Keys are permanent. Required text cannot be published empty and must keep each
+964 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1487,7 +1487,7 @@ the site adds the markup.
 | `resources.retry` | Try Again | On the resource list: the button under the count line when the full resource list does not arrive. |  |
 | `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
-### Site search (18)
+### Site search (17)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1495,19 +1495,18 @@ the site adds the markup.
 | `search.hint` | Search by a word on the page, such as craft, housing, or a room's name. | On the search page: the line under the search label. |  |
 | `search.clear` | Clear Search | On the search page: the button beside the search box once something is typed. |  |
 | `search.loading` | Loading the list of pages… | On the search page: the count line while the list of pages is on its way. |  |
-| `search.nojs` | Search runs in your browser and needs JavaScript. Every page is listed below. | On the search page: the count line before the script runs, and for a browser without JavaScript. |  |
-| `search.failed` | The list of pages could not be loaded. Every page is listed below. | On the search page: the count line when the list of pages does not arrive. |  |
+| `search.nojs` | Search runs in your browser and needs JavaScript. | On the search page: the count line before the script runs, and for a browser without JavaScript. |  |
+| `search.failed` | The list of pages could not be loaded. | On the search page: the count line when the list of pages does not arrive. |  |
 | `search.retry` | Try Again | On the search page: the button under the count line when the list of pages does not arrive. |  |
-| `search.count.all` | {{n}} Pages | On the search page: how many pages the search covers, when nothing is typed. | `{{n}}` |
+| `search.count.all` | {{n}} Pages | On the search page: how many pages the search covers, shown when nothing is typed and no results stand on the page. | `{{n}}` |
 | `search.count.one` | 1 Page | On the search page: the count when the search covers one page. |  |
 | `search.count.some` | Showing {{shown}} of {{total}} Pages | On the search page: the count after words narrow the list. | `{{shown}}` `{{total}}` |
 | `search.relaxed` | No exact match. Showing pages that begin with your search words. | On the search page: the line under the count when no page carries every word typed. |  |
 | `search.none.title` | No Pages Match Your Search. | On the search page: the heading when no page matches. |  |
-| `search.none.body` | Try another word, or start over and browse the list. | On the search page: the line under the no-matches heading. |  |
+| `search.none.body` | Try another word, or start over. | On the search page: the line under the no-matches heading. |  |
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
 | `search.none.closest` | Closest Matches: | On the search page: the line over the suggested pages in the no-matches block, the pages whose words begin the same way as the words typed. |  |
 | `search.none.resources` | Try Resource Search | On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed. |  |
-| `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
 ### Explore Campus (78)

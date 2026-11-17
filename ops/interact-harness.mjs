@@ -607,9 +607,10 @@ export const searchState = (page) => page.evaluate(() => ({
   cards: [...document.querySelectorAll("[data-srch-list] .srch-card h3 a")].map((a) => a.getAttribute("href")),
   listShown: !document.querySelector("[data-srch-list]")?.hidden,
   none: !document.querySelector("[data-srch-none]")?.hidden,
-  all: !document.querySelector("[data-srch-all]")?.hidden,
+  all: !!document.querySelector("[data-srch-all]") && !document.querySelector("[data-srch-all]").hidden,
   allLinks: document.querySelectorAll("[data-srch-all] a").length,
   again: !document.querySelector("[data-srch-again]")?.hidden,
+  crisis: !!document.querySelector("[data-srch-crisis]") && !document.querySelector("[data-srch-crisis]").hidden,
 }));
 
 

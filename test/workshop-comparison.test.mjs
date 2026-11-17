@@ -21,6 +21,7 @@ test('Each existing workshop detail previews a specific activity without collect
   const activity=p.blocks.find(b=>b.id===`b-btw-${short}-activity`), closing=p.blocks.at(-1);
   assert.ok(activity,`${file} needs its specific activity`);assert.equal(activity.type,'expect');assert.ok(activity.disclosure);assert.match(activity.preview.join(' '),meaning);
   assert.equal(closing.whole,true);assert.equal(closing.photos.length,1);assert.equal(closing.primary.href,'/forms/workshop-request/?topic='+topic);
+  const top=p.blocks[0].links.find(l=>l.label==='Request a Workshop');assert.equal(top.href,'/forms/workshop-request/?topic='+topic,'the top Request a Workshop link goes straight to the preselected form, not back to the list');
   assert.ok(p.blocks.find(b=>b.id===`b-btw-${short}-quote`).body.length>2,'keep the original creator quotation');
   const out=markup(p);assert.match(out,new RegExp(`<details class="expect-preview" id="b-btw-${short}-activity-preview"><summary>`));
   assert.doesNotMatch(out,/<form|<input|<textarea|\bonclick=|<[^>]+\shidden(?:\s|=|>)/);
@@ -33,7 +34,8 @@ test('Each existing workshop detail previews a specific activity without collect
 
 test('Workshop comparison has equal native topic jumps and preserves original targets and people photos',()=>{
  const p=catalogue();assert.deepEqual(blockProblems(p),[]);const h=p.blocks[0],hrefs=h.links?.map(l=>l.href)||[];
- assert.deepEqual(hrefs,Object.keys(TOPICS).map(id=>'#'+id));
+ assert.deepEqual(hrefs,[...Object.keys(TOPICS),'b-rw-training'].map(id=>'#'+id));
+ assert.equal(h.links.at(-1).label,'Volunteer Training');
  assert.equal(h.primary.href,'/forms/workshop-request/');
  const targets=new Set([...pageStrings(p),...pageValues(p)].map(r=>r.target));
  for(const path of ['b-rw-head/title','b-rw-head/lead','b-rw-head/primary/href','b-rw-networks/body/0','b-rw-networks/items/0/text','b-rw-selfcare/body/0','b-rw-advocacy/items/0/text','b-rw-housing/items/0/text','b-rw-training/links/0/href','b-rw-faq/items/0/a/0','b-rw-access/body/0'])assert.ok(targets.has('page:'+p.id+':'+path),path);

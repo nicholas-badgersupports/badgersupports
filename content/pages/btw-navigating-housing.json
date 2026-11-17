@@ -21,7 +21,7 @@
         },
         {
           "label": "Request a Workshop",
-          "href": "/join/request-a-workshop/",
+          "href": "/forms/workshop-request/?topic=housing",
           "icon": "back"
         }
       ],

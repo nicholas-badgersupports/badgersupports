@@ -73,7 +73,7 @@ test.before(async () => {
   report = await build({ out: OUT, serverDir: path.join(OUT, "_server"), media: false, today: TODAY });
 });
 
-test("the build writes the index as its own file, and the search page lists every page in it", () => {
+test("the build writes the index as its own file, and the search page renders no results before a query", () => {
   const written = JSON.parse(fs.readFileSync(path.join(OUT, "search-index.json"), "utf8"));
   assert.equal(written.schema, "bss.search-index/1");
   assert.equal(written.pages.length, report.search, "the file holds what the report counts");
@@ -81,7 +81,16 @@ test("the build writes the index as its own file, and the search page lists ever
   const html = fs.readFileSync(path.join(OUT, "search", "index.html"), "utf8");
   assert.match(html, /Site Search/, "the search block is on the page");
   assert.match(html, /data-search/, "the page carries the search box's marker");
-  for (const p of written.pages) assert.ok(html.includes(`href="${p.path}"`), `the page lists ${p.path} before the script runs`);
+  /* The index stays data the search reads (search-index.json), not page content: no Every
+     Page list stands on the page, and the index's own addresses are not rendered as links
+     (the few that appear are the site's ordinary navigation and footer links). */
+  assert.ok(!html.includes("data-srch-all"), "no Every Page list is rendered");
+  assert.ok(!html.includes("Every Page"), "no Every Page heading is rendered");
+  const listed = written.pages.filter((p) => html.includes(`href="${p.path}"`));
+  assert.ok(listed.length < written.pages.length / 2, `the page does not render the index as links (${listed.length} of ${written.pages.length} addresses appear, from navigation and the footer)`);
+  assert.ok(!html.includes('href="/directions/lcm/"'), "a room's page is not listed before a query");
+  /* Try Again stands on the page only hidden, offered when a load has actually failed. */
+  assert.match(html, /data-srch-again hidden/, "the Try Again row starts hidden");
 });
 
 test("every page's menu carries Search, and the search page itself still builds", () => {

@@ -602,10 +602,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-970 keys. Keys are permanent. Required text cannot be published empty and must keep each
+964 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (30)
+### Every page (29)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -619,7 +619,6 @@ the site adds the markup.
 | `header.homeSuffix` | — home | Read aloud after the name in the header link, so it says where the link goes. |  |
 | `header.menu` | Menu | The menu button on a phone. |  |
 | `header.navLabel` | Main | The main menu's name, read by screen readers. |  |
-| `header.helpNow` | Need help now? | The link in the header, on every page: it leads to the Resources page, which opens with crisis and urgent help. |  |
 | `header.safetyExit` | Safety Exit | The pill at the right of the header, on every page: one press opens Google in a new tab and replaces this page in the Back history. |  |
 | `link.toConnect` | (opens Badger Supports Connect) | Read aloud after every link that leaves for Connect. |  |
 | `support.label` | If you need help now | The crisis-line band's name, read by screen readers. The band's sentence is edited in Site settings. |  |
@@ -779,7 +778,7 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (95)
+### Forms (92)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -810,9 +809,6 @@ the site adds the markup.
 | `form.status.serverError` | Unable to send — something went wrong on our side. Press Send again in a minute; your answers are kept. | When the site failed. |  |
 | `form.done.title` | Received | Heading after sending, when the form gives none of its own. |  |
 | `form.done.ref` | Your reference is {{ref}} | After sending. {{ref}} is the submission's reference. | `{{ref}}` |
-| `form.draft.note` | Answers are saved on this device as you type. Files are not saved — attach them again if you return. | The applications, in the bar with Send, while a draft of the answers is held on the device. |  |
-| `form.draft.clear` | Clear saved answers | The applications, the button beside the draft note: it removes the saved answers and empties the form. |  |
-| `form.draft.cleared` | Saved answers cleared. | The applications, the form's status line after Clear saved answers is pressed. |  |
 | `form.error.thisQuestion` | this question | Stands in for a question's label in an error, if it has none. |  |
 | `form.error.required` | Fill in “{{label}}”. | A required question left empty. | `{{label}}` |
 | `form.error.requiredChoice` | Choose an answer for “{{label}}”. | A required choice left empty. | `{{label}}` |
@@ -1479,8 +1475,8 @@ the site adds the markup.
 | `resources.source.kb` | UW–Madison KnowledgeBase | On the resource list: the source named on a card whose record comes from the UW–Madison KnowledgeBase. |  |
 | `resources.source.badger` | Badger Supports | On the resource list: the source named on a card whose record is one of Badger Supports' own resources. |  |
 | `resources.reviewed` | Last Reviewed {{monLong}} {{dom}}, {{year}} | On the resource list: the date a card's record was last reviewed, after its source. | `{{monLong}}` `{{dom}}` `{{year}}` |
-| `resources.report.problem` | Report a Problem | On the resource list: at the foot of each resource's card, the link to report a problem with it. |  |
-| `resources.report.update` | Suggest an Update | On the resource list: at the foot of each resource's card, the link to suggest a change to it. |  |
+| `resources.report.problem` | Report a Problem | On the resource list: in each resource's Additional Details, the link to report a problem with it. |  |
+| `resources.report.update` | Suggest an Update | On the resource list: in each resource's Additional Details, the link to suggest a change to it. |  |
 | `resources.report.suggest` | Suggest a Resource | On the resource list: the link under the list to suggest a resource it does not have. |  |
 | `resources.empty` | No resources are listed right now. Please contact us if you need help finding a resource. | Resource catalogue state or recovery action. |  |
 | `resources.unavailable` | The resource list is temporarily unavailable. Please try again later, or contact us. | Resource catalogue state or recovery action. |  |
@@ -1491,7 +1487,7 @@ the site adds the markup.
 | `resources.retry` | Try Again | On the resource list: the button under the count line when the full resource list does not arrive. |  |
 | `resources.showMore` | Show More | On the resource list: the button that reveals more of the resources that match the current search and filters. |  |
 
-### Site search (18)
+### Site search (17)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1499,19 +1495,18 @@ the site adds the markup.
 | `search.hint` | Search by a word on the page, such as craft, housing, or a room's name. | On the search page: the line under the search label. |  |
 | `search.clear` | Clear Search | On the search page: the button beside the search box once something is typed. |  |
 | `search.loading` | Loading the list of pages… | On the search page: the count line while the list of pages is on its way. |  |
-| `search.nojs` | Search runs in your browser and needs JavaScript. Every page is listed below. | On the search page: the count line before the script runs, and for a browser without JavaScript. |  |
-| `search.failed` | The list of pages could not be loaded. Every page is listed below. | On the search page: the count line when the list of pages does not arrive. |  |
+| `search.nojs` | Search runs in your browser and needs JavaScript. | On the search page: the count line before the script runs, and for a browser without JavaScript. |  |
+| `search.failed` | The list of pages could not be loaded. | On the search page: the count line when the list of pages does not arrive. |  |
 | `search.retry` | Try Again | On the search page: the button under the count line when the list of pages does not arrive. |  |
-| `search.count.all` | {{n}} Pages | On the search page: how many pages the search covers, when nothing is typed. | `{{n}}` |
+| `search.count.all` | {{n}} Pages | On the search page: how many pages the search covers, shown when nothing is typed and no results stand on the page. | `{{n}}` |
 | `search.count.one` | 1 Page | On the search page: the count when the search covers one page. |  |
 | `search.count.some` | Showing {{shown}} of {{total}} Pages | On the search page: the count after words narrow the list. | `{{shown}}` `{{total}}` |
 | `search.relaxed` | No exact match. Showing pages that begin with your search words. | On the search page: the line under the count when no page carries every word typed. |  |
 | `search.none.title` | No Pages Match Your Search. | On the search page: the heading when no page matches. |  |
-| `search.none.body` | Try another word, or start over and browse the list. | On the search page: the line under the no-matches heading. |  |
+| `search.none.body` | Try another word, or start over. | On the search page: the line under the no-matches heading. |  |
 | `search.none.reset` | Start Over | On the search page: the button when no page matches, which clears the search box. |  |
 | `search.none.closest` | Closest Matches: | On the search page: the line over the suggested pages in the no-matches block, the pages whose words begin the same way as the words typed. |  |
 | `search.none.resources` | Try Resource Search | On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed. |  |
-| `search.browse` | Every Page | On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
 ### Explore Campus (78)
@@ -1608,7 +1603,7 @@ the site adds the markup.
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
 
-### Discover Classes by Interest (27)
+### Discover Classes by Interest (26)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1629,7 +1624,6 @@ the site adds the markup.
 | `classes.loading` | Loading the courses… | On the classes page: the count line while the full course list is on its way. |  |
 | `classes.failed` | The courses could not be loaded. The first courses are listed below. | On the classes page: the count line when the full course list does not arrive. |  |
 | `classes.retry` | Try Again | On the classes page: the button under the count line when the full course list does not arrive. |  |
-| `classes.showMore` | Show More | On the classes page: the button under the list that reveals more of the courses that match the current interest, availability and search. |  |
 | `classes.search.label` | Course Search | On the classes page: the label over the search box. |  |
 | `classes.search.hint` | Search by course name, subject or number, such as fungi, Botany, or 333. | On the classes page: the line under the search label. |  |
 | `classes.search.clear` | Clear Search | On the classes page: the button in the search box once something is typed. |  |

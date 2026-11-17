@@ -6,9 +6,11 @@
 
    The index holds the public, indexable pages only. The staff page and the 404 page are
    noindex and stay out, form answers are never page content, and resource records keep their
-   own Resource Search on the Resources page. Without JavaScript the box stays hidden and
-   every indexed page is listed below as a plain link, so the page still works; the same list
-   stays when the index cannot be loaded. */
+   own Resource Search on the Resources page. The index is data the search reads, never page
+   content (UX placement audit finding 3, ruled 16 Nov 2026): the page renders no results
+   until the visitor types a query. Without JavaScript the box stays hidden and the count
+   line says search needs JavaScript; when the index cannot be loaded the count line says
+   so and the Try Again button is offered — that button appears only on a failed load. */
 
 import { html } from "../html.mjs";
 import { link } from "../context.mjs";
@@ -49,7 +51,6 @@ export default {
   analytics: "none",
   loading: "lazy",
   render(b, ctx) {
-    const all = ctx.data.searchIndex || [];
     const crisis = CRISIS_IDS.map((id) => (ctx.data.resources || []).find((r) => r && r.id === id)).filter((r) => r && resourceVisible(r));
     return html`<section class="sitesearch band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-search><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
@@ -79,10 +80,6 @@ export default {
     </div>
     <p class="srch-none-actions">${link(ctx, "/resources/", ctx.t("search.none.resources"), { class: "btn btn--quiet", attrs: { "data-srch-resources": "" } })}<button type="button" class="btn btn--quiet" data-srch-reset>${ctx.t("search.none.reset")}</button></p>
     <p class="srch-crisis-line">${crisisLine(ctx)}</p>
-  </div>
-  <div class="srch-all" data-srch-all>
-    <h3>${ctx.t("search.browse")}</h3>
-    <ul>${all.map((p) => html`<li>${link(ctx, p.path, p.title)}</li>`)}</ul>
   </div>
   <p class="srch-scope">${ctx.t("search.scope")}</p>
 </div></section>`;

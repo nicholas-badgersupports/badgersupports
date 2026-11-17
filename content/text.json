@@ -3775,12 +3775,12 @@
     },
     "search.nojs": {
       "group": "search",
-      "text": "Search runs in your browser and needs JavaScript. Every page is listed below.",
+      "text": "Search runs in your browser and needs JavaScript.",
       "where": "On the search page: the count line before the script runs, and for a browser without JavaScript."
     },
     "search.failed": {
       "group": "search",
-      "text": "The list of pages could not be loaded. Every page is listed below.",
+      "text": "The list of pages could not be loaded.",
       "where": "On the search page: the count line when the list of pages does not arrive."
     },
     "search.retry": {
@@ -3791,7 +3791,7 @@
     "search.count.all": {
       "group": "search",
       "text": "{{n}} Pages",
-      "where": "On the search page: how many pages the search covers, when nothing is typed."
+      "where": "On the search page: how many pages the search covers, shown when nothing is typed and no results stand on the page."
     },
     "search.count.one": {
       "group": "search",
@@ -3815,7 +3815,7 @@
     },
     "search.none.body": {
       "group": "search",
-      "text": "Try another word, or start over and browse the list.",
+      "text": "Try another word, or start over.",
       "where": "On the search page: the line under the no-matches heading."
     },
     "search.none.reset": {
@@ -3832,11 +3832,6 @@
       "group": "search",
       "text": "Try Resource Search",
       "where": "On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed."
-    },
-    "search.browse": {
-      "group": "search",
-      "text": "Every Page",
-      "where": "On the search page: the heading over the list of every page, shown before the script runs and when the list of pages does not arrive."
     },
     "search.scope": {
       "group": "search",

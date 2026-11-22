@@ -35,7 +35,8 @@ import { serverContent } from "./content.mjs";
 import { connectConfig, deliverForm, call, DELIVERY_BUDGET_MS } from "./connect.mjs";
 import { noteGet, noteSet } from "./published.mjs";
 import { backupConfig, writeBackup } from "./backup.mjs";
-import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES, hiringContext } from "../../src/shared/forms.mjs";
+import { answerColumns, answerWords, questionById, rankOrder, OTHER, QUESTION_TYPES } from "../../src/shared/forms.mjs";
+import { hiringContext } from "../../src/shared/identifiers.mjs";
 
 export const MAX_WAIT_MINUTES = 15;
 export const MAX_ATTEMPTS = 5;

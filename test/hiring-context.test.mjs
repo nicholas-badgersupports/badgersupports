@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { hiringContext, readRaw } from "../src/shared/forms.mjs";
+import { readRaw } from "../src/shared/forms.mjs";
+import { hiringContext } from "../src/shared/identifiers.mjs";
 import { renderForm, publicDefinition } from "../src/render/form.mjs";
 import { makeT, resolveText } from "../src/shared/text.mjs";
 import { freshServer, post, ORIGIN, workshopAnswers } from "./helpers.mjs";

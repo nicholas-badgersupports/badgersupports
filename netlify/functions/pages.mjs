@@ -1,7 +1,9 @@
 /* Every page address — drawn with the published revision of saved words (netlify/lib/pages.mjs). The files
    the build hashes or writes for download (assets, photos, calendar files, robots.txt, the sitemap), the
    API, and the data files the build holds back for an explorer's first use (the C-23 side files, named
-   below) are left to their own answers. */
+   below) are left to their own answers. One address is deliberately NOT excluded: /search-index.json,
+   which this function serves itself, rebuilt at every publish (netlify/lib/search-index.mjs; workflow
+   audit PF-1/PF-3) — the guard test names it in FUNCTION_SERVED (netlify/lib/pages.mjs) instead. */
 
 import { handlePage } from "../lib/pages.mjs";
 

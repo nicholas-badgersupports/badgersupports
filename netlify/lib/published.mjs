@@ -126,6 +126,14 @@ export async function purgeTags(tags) {
 export const noteGet = (key) => current().get(`notes/${key}`);
 export const noteSet = (key, value) => current().set(`notes/${key}`, value);
 
+/* The search index as last rebuilt at a publish (netlify/lib/search-index.mjs), kept beside the
+   revision in the same store: the pages function serves it at /search-index.json, so Search
+   follows what a publish changes instead of waiting for the next deploy (workflow audit PF-1,
+   PF-3). Nothing is here until the first publish after this arrived; the build's own index
+   stands in meanwhile. */
+export const searchIndexGet = () => current().get("search-index");
+export const searchIndexSet = (doc) => current().set("search-index", doc);
+
 /* The editors' notes document (lib/notes.mjs): a work record kept beside the revision in the same
    store, never part of one — no note can change what a visitor sees, and publishing neither reads
    nor carries it. */

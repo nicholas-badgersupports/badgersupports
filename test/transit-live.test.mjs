@@ -11,11 +11,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import path from "node:path";
+import { build, ROOT } from "../ops/build.mjs";
 
 import { useContent } from "../netlify/lib/content.mjs";
 import {
   scheduleIndex, activeServices, mergedDepartures, chicagoMidnightMs, chicagoDayOf,
-  transitDepartures, transitVehicles, forgetRt, RT_URLS,
+  transitDepartures, transitVehicles, forgetRt, RT_URLS, timetableEnd,
 } from "../netlify/lib/transit-live.mjs";
 
 const SCHEDULE = {
@@ -129,4 +131,31 @@ test("vehicles endpoint: the real capture, filtered by route", async () => {
   const only81 = await transitVehicles(new URLSearchParams("route=81"), { fetchImpl: feedFetch({ [RT_URLS.vehicles]: fixture("gtfsrt-vehicles.bin") }) });
   assert.ok(only81.vehicles.length >= 1);
   assert.ok(only81.vehicles.every((v) => v.route === "81"));
+});
+
+test("past the timetable's last day the answer says it has lapsed, and names the day and the last update (PF-6)", async () => {
+  useContent({ transit: { schedule: { ...SCHEDULE, downloaded: "2026-11-16" } } });
+  forgetRt();
+  const before = await transitDepartures(new URLSearchParams("stops=100"), { fetchImpl: feedFetch({}), now: at(MON, 7, 30) });
+  assert.equal(before.lapsed, false, "inside the timetable, no lapsed state");
+  assert.equal(before.feedEnd, "2026-12-31");
+  const after = await transitDepartures(new URLSearchParams("stops=100"), { fetchImpl: feedFetch({}), now: at(chicagoMidnightMs("2027-01-04"), 7, 30) });
+  assert.equal(after.lapsed, true, "after the last service day the answer says the timetable has ended");
+  assert.equal(after.feedEnd, "2026-12-31", "and names the day it ended");
+  assert.equal(after.updated, "2026-11-16", "and when the timetable was last updated");
+  assert.deepEqual(after.stops["100"], [], "no departures are invented for a timetable that has ended");
+  assert.equal(timetableEnd(SCHEDULE), "2026-12-31");
+  assert.equal(timetableEnd({ feed: { end: "2026-12-05" }, services: [{ end: "2026-12-05" }] }), "2026-12-05", "the shipped feed's shape reads the same way");
+});
+
+test("the bus page itself says the timetable has ended once its last day has passed (PF-6)", async () => {
+  const out = path.join(ROOT, "local/test-build-lapsed");
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-11-20" });
+  const during = fs.readFileSync(path.join(out, "explore/bus-routes/index.html"), "utf8");
+  assert.match(during, /Loading the next buses/, "inside the timetable the page loads as it always has");
+  assert.doesNotMatch(during, /ended on December 5, 2026/, "and the ended words, filled in, stand nowhere on it");
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-12-20" });
+  const after = fs.readFileSync(path.join(out, "explore/bus-routes/index.html"), "utf8");
+  assert.match(after, /The bus timetable on this page ended on December 5, 2026\. It was last updated on November 16, 2026/,
+    "past the last day the page states the fact, with both dates, where the loading words stood");
 });

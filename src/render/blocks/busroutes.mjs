@@ -46,6 +46,15 @@ export default {
   loading: "lazy",
   render(b, ctx) {
     const data = ctx.data.transitData || { stops: [], routes: [], shapes: [], variants: [], feed: null };
+    /* Past the timetable's last day (its feed's end), the page says so where the loading words
+       would stand (workflow audit PF-6): an ended timetable is a fact to state, not an empty
+       list to wonder at. The live answer carries the same state (transit-live.mjs), and the
+       script keeps the words standing when it reads it. */
+    const dayWords = (iso) => new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso}T12:00:00Z`));
+    const ended = data.feed?.end && ctx.today > data.feed.end
+      ? ctx.t("explore.bus.ended", { end: dayWords(data.feed.end), updated: dayWords(data.downloaded || data.feed.end) })
+      : null;
+    const waiting = ended ? html`<p class="bus-none">${ended}</p>` : html`<p class="bus-loading">${ctx.t("explore.bus.loading")}</p>`;
     const panels = (ctx.data.transitPanels?.panels || []).map((p) => ({ label: p.label, stops: p.stops }));
     const routes = data.routes || [];
     const routeIdx = new Map(routes.map((r, i) => [r.name, i]));
@@ -65,12 +74,12 @@ export default {
     return html`<section class="busroutes band" aria-labelledby="${b.id}-h" data-block="${b.id}" data-bus-routes><div class="wrap">
   ${jsonIsland(`${b.id}-data`, island)}
   <h2 id="${b.id}-h">${b.nextTitle}</h2>
-  <p class="bus-status" data-bus-status aria-live="polite">${ctx.t("explore.bus.loading")}</p>
+  <p class="bus-status" data-bus-status aria-live="polite">${ended || ctx.t("explore.bus.loading")}</p>
   <div class="bus-alerts" data-bus-alerts hidden></div>
   <div class="bus-panels">
     ${panels.map((p) => html`<div class="bus-panel">
       <h3>${p.label}</h3>
-      <div data-bus-panel-rows><p class="bus-loading">${ctx.t("explore.bus.loading")}</p></div>
+      <div data-bus-panel-rows>${waiting}</div>
       <p class="bus-panel-foot"><a href="${TRACKER_URL}">${ctx.t("explore.bus.tracker")}</a></p>
     </div>`)}
   </div>
@@ -91,7 +100,7 @@ export default {
       </div>
     </div>
     <p class="bus-from" data-bus-from></p>
-    <div data-bus-route-rows><p class="bus-loading">${ctx.t("explore.bus.loading")}</p></div>
+    <div data-bus-route-rows>${waiting}</div>
     <div class="bus-routegrid">
       <ol class="bus-strip bus-strip--r${routes[home]?.name || ""}" data-bus-strip>
         ${hv ? hvStops.map((si, i) => html`<li${i === 0 || i === hvStops.length - 1 ? ` class="key"` : ""}><button type="button" class="bus-stopbtn${i === 0 ? " is-here" : ""}" data-bus-stop="${si}" aria-pressed="${i === 0 ? "true" : "false"}">${data.stops[si]?.name || ""}</button></li>`) : ""}

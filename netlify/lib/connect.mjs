@@ -133,13 +133,25 @@ export function verifyAssertion(cfg, assertion, sig, { nonce, sub, now = Date.no
   if (!Array.isArray(assertion.scopes) || !assertion.scopes.every((x) => typeof x === "string")) bad();
   /* `method` (Connect GOOGLE-SIGNIN, 30 October 2026): how the Connect session behind the note was opened. Signed with
      the rest; a note from a Connect that does not send it is a password one. */
+  /* `auth_time`: when the person proved themselves to Connect, as opposed to `iat`, when this
+     note was minted — the two differ whenever a Connect session is reused for a later handoff.
+     The publish step-up (staff.mjs, H-P1) reads it. A note from a Connect that does not send it
+     (Connect's assertion carries only iat/exp until its H-C5 work lands) falls back to `iat`:
+     the moment of this handoff, the closest word available. A malformed claim is ignored the
+     same way, never a reason to refuse the note. */
+  const authTime = Number.isFinite(assertion.auth_time) && assertion.auth_time > 0 && assertion.auth_time <= assertion.exp
+    ? assertion.auth_time : assertion.iat;
   return { sub: assertion.sub.slice(0, 200), name: assertion.name.slice(0, 80), scopes: assertion.scopes.slice(0, 50), active: assertion.active,
-           method: assertion.method === "google" ? "google" : "password" };
+           method: assertion.method === "google" ? "google" : "password", authTime };
 }
 
-/* PROPOSED CHANGE: Connect has no publicSsoStatus yet. Asks whether the person behind a session is
-   still active here, and with what; the note is bound to this call by its nonce, so an old answer
-   cannot be sent again. Returns { active, name, scopes }; throws as call() does, or auth.invalid. */
+/* Asks whether the person behind a session is still active here, and with what; the note is
+   bound to this call by its nonce, so an old answer cannot be sent again. Returns { active,
+   name, scopes }; throws as call() does, or auth.invalid. Connect has this action
+   (publicSsoStatus, built there 25 October 2026 under SIGNIN-PARITY item 4 — this file's older
+   "proposed change" wording was stale, corrected in the PF-5 pass, 21 November 2026); whether
+   the standing check runs is the CONNECT_SESSION_STATUS switch (serviceConfig), and the
+   publish-time check (staff.mjs publishCheck) asks the same question regardless of it. */
 /* `method` (Connect GOOGLE-SIGNIN): the session's own, from its sign-in note. Connect holds a Google-opened session to
    its Google route — switched off there, the answer is `active: false` — and a password one to the password gates. */
 export async function sessionStatus(cfg, sub, method = "password") {

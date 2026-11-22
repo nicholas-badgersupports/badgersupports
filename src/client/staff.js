@@ -82,11 +82,15 @@ const signInAgain = () => el("p", {}, el("a", { className: "btn", href: "/api/au
 /* In place of the forms, or of one form's answers, once reading needs a fresh sign-in. */
 const readAgain = () => noteBox(t("staff.readAgain"), signInAgain());
 const isAgain = (r) => r.status === 403 && r.body.error === "auth.again";
+/* In place of a publish action, once publishing needs a fresher sign-in (H-P1). */
+const publishAgain = () => noteBox(t("staff.publishAgain"), signInAgain());
+const isFresh = (r) => r.status === 403 && r.body.error === "auth.fresh";
 
 /* What stands in place of something the server would not give, with its words for saying aloud:
    a fresh sign-in, the reason, or that it failed. */
 function refused(r) {
   if (isAgain(r)) return [readAgain(), t("staff.readAgain")];
+  if (isFresh(r)) return [publishAgain(), t("staff.publishAgain")];
   if (r.status === 401) return [noteBox(t("staff.ended"), signInAgain()), t("staff.ended")];
   if (r.status === 403) return [noteBox(t("staff.forbidden")), t("staff.forbidden")];
   return [noteBox(t("staff.loadError")), t("staff.loadError")];
@@ -127,7 +131,10 @@ function answersTable(r) {
   const box = el("div", { className: "staff-table", tabIndex: 0 }, el("table", {}, caption, el("thead", {}, head), el("tbody", {}, ...rows)));
   box.setAttribute("role", "region");
   box.setAttribute("aria-label", t("staff.answers.region", { title: r.title }));
-  return box;
+  /* An answer whose form definition could not be read stands in the table with its answers
+     withheld (PF-10); the note under the table says why its row is empty. */
+  if (!r.items.some((it) => it.withheld)) return box;
+  return el("div", {}, box, noteBox(t("staff.answers.withheld")));
 }
 
 /* Open or Close for one form (router.mjs, formSwitch). Open asks again, naming the form, before anything is
@@ -386,7 +393,7 @@ function editSection(me) {
   const update = el("p", { textContent: updateLine(me) });
   const refresh = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.edit.refresh") });
   const problem = el("div", { hidden: true });
-  const download = me.canPublish && el("a", { className: "btn", href: "/api/staff/edits?download=1", download: "edits.json", textContent: t("staff.edit.download") });
+  const download = me.canPublish && !me.publishAgain && el("a", { className: "btn", href: "/api/staff/edits?download=1", download: "edits.json", textContent: t("staff.edit.download") });
   refresh.addEventListener("click", async () => {
     if (isBusy(refresh)) return;
     const done = busy(refresh, t("staff.edit.refreshing"));
@@ -411,6 +418,7 @@ function editSection(me) {
     el("div", { className: "staff-actions" }, line, refresh),
     update,
     problem,
+    me.publishAgain && publishAgain(),
     download && el("p", {}, download),
     download && el("p", { className: "staff-note", textContent: t("staff.edit.publish") }));
   section.setAttribute("aria-labelledby", "staff-edit-h");

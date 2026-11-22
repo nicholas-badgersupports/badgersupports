@@ -602,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-971 keys. Keys are permanent. Required text cannot be published empty and must keep each
+974 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -914,7 +914,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (508)
+### Staff page and edit button (510)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -934,6 +934,7 @@ the site adds the markup.
 | `staff.forbidden` | Your Connect role does not include this form now. A super admin can change that in Connect, under Website Forms. | Staff page, in place of a form’s answers when the account may no longer read them. |  |
 | `staff.nothing` | Your Connect role does not include any of the tools on this page. A super admin can change that in Connect, under Website Forms. | Staff page, for someone signed in whose role reaches neither forms nor words. |  |
 | `staff.readAgain` | For the privacy of the people who wrote in, answers can be read for an hour after signing in. Sign in again to keep reading. | Staff page, in place of the forms, or of one form's answers, once reading needs a fresh sign-in. |  |
+| `staff.publishAgain` | To keep the public site safe, publishing needs a sign-in from the last ten minutes. Sign in again to publish. | Staff page, in place of a publish action, once publishing needs a fresher sign-in. |  |
 | `staff.signInAgain` | Sign In Again | Staff page, button under the note that reading answers needs a fresh sign-in. |  |
 | `staff.find.label` | Find a setting | Staff page, the find box above the tools: jumps to the named setting or section. |  |
 | `staff.find.none` | No setting matches that. | Staff page, under the find box when nothing matches. |  |
@@ -975,6 +976,7 @@ the site adds the markup.
 | `staff.answers.received` | Received | Staff page, column for when an answer came in. |  |
 | `staff.answers.delivery` | Connect | Staff page, column for whether an answer reached Connect. |  |
 | `staff.answers.none` | No answers yet. | Staff page, when a form's answers are opened and there are none. |  |
+| `staff.answers.withheld` | Some answers are not shown: the form's wording for the version they answered could not be read, so they are withheld rather than risk showing a private answer. | Staff page, under a form's answers table, when an answer's form definition could not be read and its answers are withheld (PF-10). |  |
 | `staff.answers.openConnect` | Work Through Answers in Connect | Staff page, link under the forms. |  |
 | `staff.answers.inConnect` | Work in Connect | Staff page, on a form's card: opens that form's queue in Connect. |  |
 | `staff.row.sent` | In Connect | Staff page, answers table: this answer reached Connect. |  |
@@ -1515,7 +1517,7 @@ the site adds the markup.
 | `search.none.resources` | Try Resource Search | On the search page: the link in the no-matches block to Resource Search on the Resources page, carrying the words that were typed. |  |
 | `search.scope` | This searches the words on this website's pages. Resources have their own search, Resource Search, on the Resources page. | On the search page: the note under the results. |  |
 
-### Explore Campus (78)
+### Explore Campus (79)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1570,6 +1572,7 @@ the site adds the markup.
 | `explore.bus.statusLive` | Live times from Madison Metro, with the published timetable underneath. | On the Bus Routes page: the status line when the live feed answered. |  |
 | `explore.bus.statusScheduled` | Scheduled times from Metro's published timetable. Live times are not answering right now. | On the Bus Routes page: the status line when the live feed did not answer and the timetable stands alone. |  |
 | `explore.bus.statusDown` | Bus times could not be loaded just now. | On the Bus Routes page: the status line when neither the live feed nor a first answer arrived. |  |
+| `explore.bus.ended` | The bus timetable on this page ended on {{end}}. It was last updated on {{updated}}, and a new timetable is being prepared. | On the Bus Routes page: the status line, the panels and the route box once the timetable's last service day has passed (PF-6). | `{{end}}` `{{updated}}` |
 | `explore.bus.retry` | Try Again | On the Bus Routes page: the button under a panel or the route departures when a load failed. |  |
 | `explore.bus.to` | To | On the Bus Routes page: before a bus's destination, in a departure row and in the route's direction menu. |  |
 | `explore.bus.then` | then | On the Bus Routes page: before the departures that follow the next one, in a departure row. |  |

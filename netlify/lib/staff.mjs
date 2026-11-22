@@ -24,12 +24,16 @@
  * Signing out here ends this site's session only. How long Connect's note holds (sessionFrom):
  *   - Until CONNECT_SESSION_STATUS=on turns on Connect's publicSsoStatus check, reading
  *     answers lasts an hour from signing in; after that the page asks for a fresh sign-in, while
- *     editing and publishing words last the working day. Someone switched off in Connect cannot sign
+ *     editing and publishing words last the session. Someone switched off in Connect cannot sign
  *     in again, and so loses the answers within the hour.
  *   - With it on, a session is checked again ten minutes after Connect last vouched for it. Fewer
  *     scopes take effect at once, more never do (sign in again for those), and switched off ends the
  *     session. Connect not answering, or answering with anything that does not check out, keeps the
  *     session as it was for half an hour from that last answer, then nothing works until it answers.
+ *   - Whatever the check says, a session ends twelve hours after it began and after thirty
+ *     minutes unused (H-P1, migration 012), and publishing asks more than the rest: a check
+ *     against Connect at publish time and an authentication no older than ten minutes
+ *     (publishCheck).
  * docs/ARCHITECTURE.md, "Staying signed in", has the Connect side.
  */
 
@@ -38,11 +42,13 @@ import { q, one } from "./db.mjs";
 import { HttpError } from "./http.mjs";
 import { connectConfig, tradeCode, sessionStatus, randomB64u, sha256Hex, sha256B64u, CLIENT_ID } from "./connect.mjs";
 
-const SESSION_HOURS = 8;
+const SESSION_HOURS = 12;
 const START_MINUTES = 10;
 const READ_MINUTES = 60;    // status check off: reading answers, from signing in
 const CHECK_MINUTES = 10;   // status check on: ask Connect again this long after its last answer
 const GRACE_MINUTES = 30;   // status check on: Connect silent this long after its last answer, and nothing works
+export const IDLE_MINUTES = 30;          // H-P1: a session unused this long is over, however much of it is left
+export const PUBLISH_FRESH_MINUTES = 10; // H-P1: publishing asks for an authentication this recent
 export const HINT = "bss_staff_hint";
 
 const secure = (req) => new URL(req.url).protocol === "https:";
@@ -126,10 +132,13 @@ export async function finishSignIn(req) {
   if (!who.scopes.length) throw new HttpError(403, "auth.refused");
   if (jar[n.session]) await q("DELETE FROM staff_sessions WHERE id_hash = $1", [sha256Hex(jar[n.session])]);
   const id = randomB64u(32);
-  /* `method` (Connect GOOGLE-SIGNIN): kept so the status check can ask about the route this session came by. */
-  await q(`INSERT INTO staff_sessions (id_hash, sub, name, scopes, expires_at, method)
-           VALUES ($1, $2, $3, $4::jsonb, now() + ($5::int * interval '1 hour'), $6)`,
-    [sha256Hex(id), who.sub, who.name, JSON.stringify(who.scopes), SESSION_HOURS, who.method === "google" ? "google" : "password"]);
+  /* `method` (Connect GOOGLE-SIGNIN): kept so the status check can ask about the route this session came by.
+     `auth_at` is when the person proved themselves to Connect (the note's authTime, connect.mjs),
+     kept apart from the session's own start: the publish step-up measures from it (publishCheck).
+     `seen_at` is the session's last use, for the idle limit. */
+  await q(`INSERT INTO staff_sessions (id_hash, sub, name, scopes, expires_at, method, auth_at, seen_at)
+           VALUES ($1, $2, $3, $4::jsonb, now() + ($5::int * interval '1 hour'), $6, to_timestamp($7), now())`,
+    [sha256Hex(id), who.sub, who.name, JSON.stringify(who.scopes), SESSION_HOURS, who.method === "google" ? "google" : "password", who.authTime]);
   const age = SESSION_HOURS * 3600;
   return redirect(start.return_to, [
     cookie(req, n.session, id, { maxAge: age }),
@@ -144,10 +153,20 @@ export async function sessionFrom(req) {
   const id = readCookies(req)[names(req).session];
   if (!id || !/^[A-Za-z0-9_-]{43}$/.test(id)) return null;
   const hash = sha256Hex(id);
-  const row = await one(`SELECT sub, name, scopes, method, extract(epoch FROM now() - coalesce(checked_at, created_at))::float8 / 60 AS minutes
+  const row = await one(`SELECT sub, name, scopes, method, extract(epoch FROM now() - coalesce(checked_at, created_at))::float8 / 60 AS minutes,
+                           extract(epoch FROM now() - coalesce(seen_at, created_at))::float8 / 60 AS idle_age,
+                           extract(epoch FROM now() - coalesce(auth_at, created_at))::float8 / 60 AS auth_age
                          FROM staff_sessions WHERE id_hash = $1 AND expires_at > now()`, [hash]);
   if (!row) return null;
-  const who = { sub: row.sub, name: row.name, scopes: row.scopes };
+  /* Idle (H-P1): a session unused for IDLE_MINUTES is over, however much of its twelve hours
+     is left. Any staff call is a use, this one included; a use inside the last minute is not
+     written again, so reading a page does not become a write per request. */
+  if (row.idle_age > IDLE_MINUTES) {
+    await q("DELETE FROM staff_sessions WHERE id_hash = $1", [hash]);
+    return null;
+  }
+  if (row.idle_age >= 1) await q("UPDATE staff_sessions SET seen_at = now() WHERE id_hash = $1", [hash]).catch(() => {});
+  const who = { sub: row.sub, name: row.name, scopes: row.scopes, authAge: row.auth_age };
   const cfg = connectConfig();
   if (!cfg?.statusCheck) {
     if (row.minutes < READ_MINUTES) return who;
@@ -164,6 +183,51 @@ export async function sessionFrom(req) {
   }
   await q("UPDATE staff_sessions SET scopes = $2::jsonb, name = $3, checked_at = now() WHERE id_hash = $1", [hash, JSON.stringify(scopes), note.name]);
   return { ...who, name: note.name, scopes };
+}
+
+/* The gate on publish-level actions — the ones the site.publish scope names (router.mjs):
+   putting a page on or retiring one, moving one, the menu, the site's settings, a room's
+   words, bringing a version back, and downloading the edits file a publish is made from. Two
+   questions, in order (workflow audit PF-5; hardening item H-P1):
+     1. Is this person still a publisher, by Connect's word now? The standing status check asks
+        every ten minutes for everything, when its switch is on; this asks at publish time
+        regardless of the switch, once the last answer is ten minutes old — the audit's interim
+        measure for the switch being off, and no extra ask when it is on. A verified note
+        governs: no longer active ends the session here, and scopes narrow as sessionFrom
+        narrows them. When Connect cannot answer, its silence decides nothing: the second
+        question is the backstop.
+     2. Did they prove themselves to Connect within PUBLISH_FRESH_MINUTES? Publishing is the
+        act that changes what the public reads, so it asks for a recent authentication — the
+        note's auth_time, or the handoff's own moment while Connect sends none (connect.mjs).
+   Throws HttpError: 401 auth.again (the session is over), 403 staff.forbidden (no longer a
+   publisher), 403 auth.fresh (sign in again to publish). Returns the person, narrowed if
+   Connect narrowed them. */
+export async function publishCheck(req, who) {
+  const id = readCookies(req)[names(req).session];
+  const hash = id ? sha256Hex(id) : "";
+  const row = hash ? await one(`SELECT sub, scopes, method,
+                                   extract(epoch FROM now() - coalesce(checked_at, created_at))::float8 / 60 AS minutes,
+                                   extract(epoch FROM now() - coalesce(auth_at, created_at))::float8 / 60 AS auth_age
+                              FROM staff_sessions WHERE id_hash = $1 AND expires_at > now()`, [hash]) : null;
+  if (!row) throw new HttpError(401, "auth.again");
+  let out = { ...who, authAge: row.auth_age };
+  const cfg = connectConfig();
+  if (cfg && row.minutes >= CHECK_MINUTES) {
+    let note = null;
+    try { note = await sessionStatus(cfg, row.sub, row.method); } catch { note = null; }
+    if (note) {
+      const scopes = note.active ? narrower(who.scopes, note.scopes) : [];
+      if (!scopes.length) {
+        await q("DELETE FROM staff_sessions WHERE id_hash = $1", [hash]);
+        throw new HttpError(401, "auth.again");
+      }
+      await q("UPDATE staff_sessions SET scopes = $2::jsonb, name = $3, checked_at = now() WHERE id_hash = $1", [hash, JSON.stringify(scopes), note.name]);
+      out = { ...out, name: note.name, scopes };
+      if (!can(out, "site.publish")) throw new HttpError(403, "staff.forbidden");
+    }
+  }
+  if (out.authAge > PUBLISH_FRESH_MINUTES) throw new HttpError(403, "auth.fresh");
+  return out;
 }
 
 /* What both notes allow, so a check can take scopes away but never add one. */

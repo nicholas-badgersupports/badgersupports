@@ -122,6 +122,16 @@ if (process.argv.includes("--version-history")) {
   gate("WORK.md under 180 lines", !fs.existsSync(f) ? ["WORK.md is missing"] : n >= 180 ? [`${n} lines`] : [], `${n} lines`);
 }
 
+/* 5b. Publish safety: the two faults Netlify refuses before it builds anything — a
+   netlify.toml that does not parse, and two migrations sharing a number. Both are
+   SPILL's lost day, 21–22 Nov 2026; the owner's ruling of 22 Nov 2026 made the checks
+   permanent on all three sites. ops/publish-safety.mjs reads both the way Netlify
+   reads them, so the refusal happens here, where it costs nothing. */
+{
+  const { publishSafetyProblems } = await import("./publish-safety.mjs");
+  gate("publish safety: netlify.toml parses, migration numbers unique", publishSafetyProblems(ROOT), "netlify.toml parsed whole; netlify/database/migrations scanned by number");
+}
+
 /* 6. The build: content checked, pages written. */
 let report = null;
 {

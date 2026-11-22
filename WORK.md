@@ -86,7 +86,7 @@ Continuation candidate of 3 Nov and the cloud runs of 2 Nov 2026: full text of b
    included (Nicholas; `docs/DESIGN.md`, Photos). Still yours: the 10 live images and the SAC ribbon heap (`docs/research/LIVE-IMAGES-2026-10-20.md`).
 7. Say how a mailing-list request reaches the Google Group today.
 8. Reauthenticate the Analytics connector to read the GA4 property's figures. (The property itself was verified by the owner's direct supply of its id, 12 Nov 2026, and enhanced measurement is ruled **on**, 12 Nov 2026 — the earlier “confirm it is off” step is superseded.)
-9. **Publish**: open `../PUBLISH-WEBSITE-2026-10-23.command`, type `publish`. Who may see it is yours: team-only now.
+9. **Publish**: open `../PUBLISH-WEBSITE-2026-10-23.command`, type `publish`. Who may see it is yours: team-only now. The publish counts as live only when the deploy it made is the one answering — the command proves the new deploy is serving, never the site answering alone (owner's ruling, 22 Nov 2026; `docs/ACTIVE-RULES.md`).
    It builds the live site. First: in Connect, Admin › Resources › Public Website List, tick the event types and
    weekly groups to show. The file gives the build Connect's key itself. Its log names events left out (run log 13.9).
 11. Point `feedback.badgersupports.org` at `/forms/programming-feedback/` (DNS) only once that form opens here; until then, its Google Form.

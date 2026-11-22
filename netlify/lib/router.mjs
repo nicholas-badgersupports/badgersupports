@@ -24,18 +24,20 @@ import { recordMood, moodCounts } from "./mood.mjs";
 import { serverContent } from "./content.mjs";
 import { connectConfig, signinQuotes } from "./connect.mjs";
 import { deliverDue } from "./deliver.mjs";
-import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath } from "./staff.mjs";
+import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath, publishCheck, PUBLISH_FRESH_MINUTES } from "./staff.mjs";
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { listNotes, saveNote, removeNote, clearNotes } from "./notes.mjs";
 import { forgetSharedEverywhere, teamPhotoResponse } from "./live-content.mjs";
 import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
 import { campusEventsNow } from "./campus-events.mjs";
+import { resourcesDataNow } from "./resources-data.mjs";
+import { refreshSearchIndex } from "./search-index.mjs";
 import { geocodeAddress } from "./transit.mjs";
 import { transitDepartures, transitVehicles } from "./transit-live.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
-import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList } from "./structure.mjs";
+import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList, scopeFor } from "./structure.mjs";
 import { revisionEdits } from "./edits.mjs";
 import { SECTION_ACTIONS, laySettings, layMood } from "../../src/shared/structure.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
@@ -153,7 +155,7 @@ async function formSubmit(req, [key], context) {
     if (e.code !== "rate.limited" || asJson) throw e;
     const f = await currentForm(key);
     if (!f) throw new HttpError(404, "form.unknown");
-    const reply = await formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "", submissionContext: hiringContext(key, body) }));
+    const reply = await formReply(429, f.def, (ctx) => renderForm(f.def, { t: ctx.t, ctx, values: readRaw(f.def, body), notice: { title: ctx.t("form.errors.title"), text: ctx.t("form.status.rateLimited") }, idemKey: body.get("_key") || "", nonce: body.get("_nonce") || "", submissionContext: hiringContext(key, body) }));
     for (const [k, v] of Object.entries(e.headers || {})) reply.headers.set(k, v);
     return reply;
   }
@@ -164,6 +166,7 @@ async function formSubmit(req, [key], context) {
     t: ctx.t, ctx, values: r.raw, errors: r.errors, submissionContext: r.context,
     notice: changed ? { title: ctx.t("form.updated.title"), text: ctx.t("form.updated.body"), kept: r.gone, keptText: ctx.t("form.updated.gone") } : null,
     idemKey: typeof body.get === "function" ? body.get("_key") || "" : body._key || "",
+    nonce: typeof body.get === "function" ? body.get("_nonce") || "" : body._nonce || "",
   });
   if (asJson) {
     if (r.ok) return json(200, { ok: true, ref: r.ref });
@@ -262,6 +265,10 @@ async function staffMe(req, _m, _c, who) {
   const canPublish = can(who, "site.publish");
   return json(200, {
     ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who), canSwitch: switchesForms(who), readAgain: !!who.lapsed?.length,
+    /* A publisher whose authentication is older than the step-up allows (staff.mjs, H-P1): the
+       staff page says so by the publish actions, as it does for readAgain, rather than letting
+       the first publish fail. */
+    publishAgain: canPublish && (who.authAge ?? 0) > PUBLISH_FRESH_MINUTES,
     connectUrl: connectConfig()?.url || null,
     waiting: canEdit || canPublish ? await waitingCount() : 0,
     ...(canEdit || canPublish ? await publishedNow() : {}),
@@ -381,6 +388,7 @@ async function editSave(req, _m, context, who) {
   if (r.changed) {
     try {
       published = await publishRevision(who);
+      await refreshSearchIndex();
       await clearTags(context, tagsFor(body.target)).catch((e) => console.error("purge:", e.code || e.message));
     } catch (e) {
       publishError = e.code || "publish.unavailable";
@@ -404,7 +412,7 @@ async function refreshRoute(req, _m, context, who) {
   await rateLimit(`refresh:${who.sub}`, REFRESH_PER_PERSON, 3600);
   await rateLimit("refresh:site", 1, REFRESH_SITE_SECONDS);
   let publishError = null, purgeError = null;
-  try { await publishRevision(who); } catch (e) { publishError = e.code || "publish.unavailable"; }
+  try { await publishRevision(who); await refreshSearchIndex(); } catch (e) { publishError = e.code || "publish.unavailable"; }
   // The note lives in the revision's store: when that store is down, publishError says so; a failure here alone is logged.
   await forgetSharedEverywhere().catch((e) => console.error("public content: refresh note unavailable", e.code || "error"));
   await forgetEventsEverywhere().catch((e) => console.error("events: the refresh note could not be written:", e.message));
@@ -420,6 +428,7 @@ async function publishAll(who, context) {
   let published = null, publishError = null;
   try {
     published = await publishRevision(who);
+    await refreshSearchIndex();
     await clearTags(context, ["page", "events"]).catch((e) => console.error("purge:", e.code || e.message));
   } catch (e) {
     publishError = e.code || "publish.unavailable";
@@ -443,6 +452,10 @@ async function pagesChangeRoute(req, _m, context, who) {
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   if (!PAGE_ACTIONS.has(body.action)) throw new HttpError(400, "pages.action");
+  /* A change the structure itself calls publish-level (structure.mjs scopeFor) passes the
+     publish gate first (staff.mjs publishCheck): Connect's word now, and a recent
+     authentication. Word-level changes do not. */
+  if (scopeFor(body, (await structureNow()).doc) === "site.publish") who = await publishCheck(req, who);
   const r = await changeStructure(who, body, (scope) => need(who, scope));
   return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(await publishAll(who, context)) });
 }
@@ -480,6 +493,7 @@ async function versionsRoute(req, _m, _c, who) {
    was read. */
 async function restoreRoute(req, [n], context, who) {
   need(who, "site.publish");
+  who = await publishCheck(req, who);
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   const revision = await readRevision(n);
@@ -523,6 +537,9 @@ async function editsFileRoute(req, _m, _c, who) {
   need(who, "site.publish");
   const file = await editsFile();
   if (new URL(req.url).searchParams.get("download") !== "1") return json(200, { ok: true, ...file, waiting: await waitingCount() });
+  /* The download is the publish-level act: the file is what a publish is made from, so it
+     passes the publish gate (staff.mjs publishCheck). Reading the waiting count above does not. */
+  await publishCheck(req, who);
   return new Response(`${JSON.stringify(file, null, 2)}\n`, { status: 200, headers: {
     "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff",
     "content-disposition": 'attachment; filename="edits.json"',
@@ -564,8 +581,22 @@ async function campusEventsRoute(req) {
   return json(200, { ok: true, today: r.today, updated: r.updated, stale: r.stale, events: r.events, interests: r.interests, report: r.report || null }, { ...(r.stale ? STALE_CACHE : LIVE_CACHE), "netlify-cache-tag": "campus-events" });
 }
 
+/* The Resources page's whole list as it stands now (resources-data.mjs; workflow audit PF-4):
+   the same held-back data the build writes beside the page, drawn at request time from the
+   current catalogue, so the full list and the page's first screen cannot disagree. The
+   client's fallback is the build's file, as before. */
+async function resourcesDataRoute() {
+  const r = await resourcesDataNow();
+  if (!r) return json(404, { ok: false, error: "not.found" });
+  return json(200, r, { ...LIVE_CACHE, "netlify-cache-tag": "resources-data" });
+}
 
-async function geocodeRoute(req) {
+
+async function geocodeRoute(req, _m, context) {
+  /* Per-connection, like every other public route (workflow audit PF-7): the Census geocoder
+     behind this is a shared public service, and an unthrottled door let one connection spend it
+     — and this site's function budget — without limit. Thirty an hour fits an address lookup. */
+  await rateLimit(`geocode:${connectionHash(req, context)}`, 30, 3600);
   const q = new URL(req.url).searchParams.get("q") || "";
   const results = await geocodeAddress(q);
   return json(200, { ok: true, results }, { "cache-control": "no-store" });
@@ -594,6 +625,7 @@ export const ROUTES = [
   { name: "eventsPage", method: "GET", pattern: /^\/api\/events\/(pg-[a-z0-9-]{2,80})$/, tier: "public", run: eventsPage },
   { name: "eventCalendar", method: "GET", pattern: /^\/api\/calendar\/([A-Za-z0-9_-]{1,120})\.ics$/, tier: "public", run: eventCalendar },
   { name: "campusEvents", method: "GET", pattern: /^\/api\/campus-events$/, tier: "public", run: campusEventsRoute },
+  { name: "resourcesData", method: "GET", pattern: /^\/api\/resources$/, tier: "public", run: resourcesDataRoute },
   { name: "geocode", method: "GET", pattern: /^\/api\/geocode$/, tier: "public", run: geocodeRoute },
   { name: "transitDepartures", method: "GET", pattern: /^\/api\/transit\/departures$/, tier: "public", run: transitDeparturesRoute },
   { name: "transitVehicles", method: "GET", pattern: /^\/api\/transit\/vehicles$/, tier: "public", run: transitVehiclesRoute },

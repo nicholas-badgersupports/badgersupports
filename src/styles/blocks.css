@@ -588,8 +588,8 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    card, as the site's other grouped panels sit (owner, 12 Nov 2026: nothing floating on the
    page background). The card edge and lift are the design system's own (--hairline edges a card;
    --lift is a card's shadow; --r-panel is the panel radius). */
-.cards--days .days-panel { background: var(--paper); border: var(--hairline); border-radius: var(--r-panel); box-shadow: var(--lift); padding: var(--s5); }
-@media (max-width: 760px) { .cards--days .days-panel { padding: var(--s3); } }
+.cards--days .days-panel, .cards.is-boxed .cards-panel { background: var(--paper); border: var(--hairline); border-radius: var(--r-panel); box-shadow: var(--lift); padding: var(--s5); }
+@media (max-width: 760px) { .cards--days .days-panel, .cards.is-boxed .cards-panel { padding: var(--s3); } }
 .card-list { list-style: none; display: grid; gap: var(--s5) var(--s4); padding: 0; }
 .cards--days .card-list { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
 .cards--activities .card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -641,6 +641,13 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .card:not(.has-photo) { flex-direction: row; align-items: flex-start; gap: var(--s3); padding-top: var(--s4); border-top: var(--rule-line); }
 .card-mark { flex: none; display: grid; place-items: center; width: 4.5rem; height: 4.5rem; border-radius: 50%; background: var(--accent); color: var(--cream); }
 .card-mark .ic { width: 2.4rem; height: 2.4rem; }
+/* In a boxed block a card that gains a photo keeps its icon, as a badge in the photo's top
+   corner: the program's mark and colour stay on the card, and the words below keep the room
+   they had. The badge sits inside the photo's own box, so the photo's clipped corners and the
+   panel's edge never cut it. */
+.cards.is-boxed .card .photo { position: relative; }
+.card-mark--badge { position: absolute; top: var(--s2); left: var(--s2); width: 3.25rem; height: 3.25rem; box-shadow: 0 0 0 3px var(--paper); }
+.card-mark--badge .ic { width: 1.7rem; height: 1.7rem; }
 [data-brand="spill"] .card-mark { background: var(--spill); color: var(--spill-ink); }
 .card:not(.has-photo) h3 { font-size: var(--fs-h3); }
 .card:not(.has-photo) .card-line { font-size: var(--fs-body); font-weight: 600; }
@@ -1526,6 +1533,18 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-words { grid-area: words; }
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-actions { grid-area: actions; align-self: start; }
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-photos { grid-area: photos; }
+}
+[data-page="pg-request-a-program"] [data-block="b-rp-head"] .pagehead-actions { margin-top: var(--s4); }
+/* the request opening's words and its one button are one short stack at the top of the left
+   column, as the team and resources openings keep theirs: the general pagehead puts its actions
+   on a row of their own under both columns, which pinned this page's button to the band's foot,
+   a tall empty stretch under the words. Here the button sits under the words at the usual
+   spacing and the photographs keep the band's height on the right. */
+@media (min-width: 861px) {
+  [data-page="pg-request-a-program"] [data-block="b-rp-head"] .wrap { grid-template-areas: "words photos" "actions photos"; grid-template-rows: auto 1fr; }
+  [data-page="pg-request-a-program"] [data-block="b-rp-head"] .pagehead-words { grid-area: words; }
+  [data-page="pg-request-a-program"] [data-block="b-rp-head"] .pagehead-actions { grid-area: actions; align-self: start; }
+  [data-page="pg-request-a-program"] [data-block="b-rp-head"] .pagehead-photos { grid-area: photos; }
 }
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */

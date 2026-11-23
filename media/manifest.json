@@ -3098,6 +3098,44 @@
       "provenance": "From the Badger Supports shared Drive (Craft night: Bracelets, 2026-08-25). Downloaded 2026-11-12, rotated, resized to 2400 px and stripped of metadata; added under the owner's one-photo-one-place rule.",
       "compliance": "No people pictured; every photograph in the Badger Supports Google Drive is approved for the website (Nicholas, 10 Nov 2026).",
       "localFile": "people-bracelet-making.jpg"
+    },
+    {
+      "id": "m-workshop-selfcare-panel",
+      "program": "workshops",
+      "alt": "Four Badger Supports facilitators at a table with laptops, in front of a slide reading “SELF-CARE” at a workshop.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 508128,
+      "sha256": "b0e827856d0b6c80583872dc5b68279cd6d028fc8542557f3c2b8a28355b636c",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2026-27/2026-11-12 Psi Chi Self-Care/IMG_3652.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Psi Chi self-care workshop, 2026-11-12). Downloaded 2026-11-23, rotated, resized to 2400 px and stripped of metadata; added under the owner’s one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-selfcare-panel.jpg"
+    },
+    {
+      "id": "m-workshop-housing-podium",
+      "program": "workshops",
+      "alt": "A presenter smiling at a podium during a Navigating Housing workshop.",
+      "focal": [
+        50,
+        50
+      ],
+      "width": 1800,
+      "height": 2400,
+      "format": "jpg",
+      "bytes": 647063,
+      "sha256": "a5f5ad72cd4de2e7c8e297cddd93bfc81fba0f48f8da13326cc1a5616abae7ed",
+      "source": "drive:🧵 Programs Photos/Workshops Photos/2025-26/2025-09-19 Housing Workshop/2025-09-19_Housing-Workshop_007.jpg",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Navigating Housing workshop, 2025-09-19). Downloaded 2026-11-23, rotated, resized to 2400 px and stripped of metadata; added under the owner’s one-photo-one-place rule.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "workshop-housing-podium.jpg"
     }
   ]
 }

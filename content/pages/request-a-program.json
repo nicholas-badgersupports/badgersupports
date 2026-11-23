@@ -59,7 +59,8 @@
             "href": "#b-rp-workshops",
             "icon": "down"
           },
-          "program": "workshops"
+          "program": "workshops",
+          "photo": "m-workshop-selfcare-panel"
         },
         {
           "id": "groups",
@@ -74,7 +75,8 @@
             "href": "#b-rp-groups",
             "icon": "down"
           },
-          "program": "peer"
+          "program": "peer",
+          "photo": "m-peer-group-cards"
         },
         {
           "id": "training",
@@ -88,7 +90,8 @@
             "label": "About Training",
             "href": "#b-rp-training",
             "icon": "down"
-          }
+          },
+          "photo": "m-workshop-directors-roundtable"
         },
         {
           "id": "housing",
@@ -103,9 +106,11 @@
             "href": "#b-rp-housing",
             "icon": "down"
           },
-          "program": "workshops"
+          "program": "workshops",
+          "photo": "m-workshop-housing-podium"
         }
-      ]
+      ],
+      "boxed": true
     },
     {
       "id": "b-rp-workshops",

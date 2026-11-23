@@ -201,9 +201,14 @@
    sign-in block (.staff-signin in blocks.css) must not reach it. */
 .footer-bottom .staff-in { gap: .45rem; }
 .footer-bottom .staff-ic { width: 1.05rem; height: 1.05rem; flex: none; }
-.footer-bottom { border-top: var(--hairline-on-red); padding-block: var(--s4) var(--s5); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); justify-content: space-between; align-items: center; }
-.footer-bottom p { margin: 0; max-width: none; }
-.footer-bottom ul { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); }
+/* The strip is one centred stack (owner's pick, 23 Nov 2026): the social icons on top, the
+   legal row under them, the feedback line as the closing line. The source order stays as it
+   stands — feedback, social, legal — and the stack's order is set here. */
+.footer-bottom { border-top: var(--hairline-on-red); padding-block: var(--s4) var(--s5); display: flex; flex-direction: column; align-items: center; gap: var(--s3); text-align: center; }
+.footer-bottom .social { order: 1; }
+.footer-bottom ul:not(.social) { order: 2; }
+.footer-bottom p { order: 3; margin: 0; max-width: none; }
+.footer-bottom ul { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s1) var(--s4); }
 .social { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); list-style: none; }
 .staff-link { opacity: .9; }
 

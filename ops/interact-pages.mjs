@@ -84,7 +84,7 @@ await part("first visit: current-room refresh waits for focus and exact end", as
     }, width));
   }
   check(endedRows.every(r => r.width <= 860 ? r.dot === "none" && r.lineStart : r.dot === '\"·\"'), `first visit: Ended starts its own phone line with sign-up text, with the desktop separator retained (${JSON.stringify(endedRows)})`);
-  for (const [name, html, phrase] of [["empty", markup("hub", at("17:59"), false, true), words("program.groupNone")], ["unavailable", markup("hub", at("17:59"), true), words("program.groupUnavailable")]]) {
+  for (const [name, html, phrase] of [["empty", markup("hub", at("17:59"), false, true), words("events.comingSoon.groups")], ["unavailable", markup("hub", at("17:59"), true), words("program.groupUnavailable")]]) {
     await page.locator('[data-block="b-pg-intro"]').evaluate((n, html) => { n.outerHTML = html; }, html);
     check(await page.locator(".visit-notice").textContent() === phrase && await page.locator(".visit-action").count() === 0, `first visit: ${name} state offers an honest next step without directions`);
   }

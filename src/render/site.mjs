@@ -14,7 +14,8 @@ import { personPages } from "./team.mjs";
 import { formPreviewPages } from "./blocks/form.mjs";
 import { resolveText, makeT } from "../shared/text.mjs";
 import { applyEdits } from "../shared/edits.mjs";
-import { layStructure, addMadeSections, laySettings, layRooms, layMood } from "../shared/structure.mjs";
+import { layStructure, addMadeSections, laySettings, layRooms, layMood, trimSlash } from "../shared/structure.mjs";
+import { programForPage } from "../shared/programs.mjs";
 
 /* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
 export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
@@ -77,6 +78,40 @@ export const formsOn = (page) => [...new Set((page.blocks || []).flatMap((b) => 
   b.type === "form" && !b.preview ? b.form : null,
   ...(b.type === "involve" ? (b.items || []).map((it) => it.form) : []),
 ]).filter(Boolean))];
+
+/* A composed site with the switched-off programs' own pages taken out of it (owner, 23 Nov 2026;
+   shared/programs.mjs names the pages). A hidden page is treated the way a retired page is: it
+   leaves the list visitors get, its address answers through `moves` with nowhere to go — which
+   the pages function answers with the site's 404 page — it leaves the menu and the built paths,
+   so links to it elsewhere on the site render as not yet live, the way links to a retired page
+   do. The composed site it is given is the pages function's cached one and is never changed:
+   the answer is a new object sharing everything but the parts that differ. */
+export function hidePrograms(composed, off) {
+  if (!off?.size) return composed;
+  const hidden = composed.pages.filter((p) => { const prog = programForPage(p.id); return prog && off.has(prog.key); });
+  if (!hidden.length) return composed;
+  const gone = new Set(hidden.map((p) => trimSlash(p.path || "")));
+  const pages = composed.pages.filter((p) => !gone.has(trimSlash(p.path || "")));
+  const moves = new Map(composed.moves);
+  for (const p of hidden) moves.set(trimSlash(p.path || ""), { to: null, page: p.id });
+  const drop = (items) => (items || []).map((item) => {
+    if (item.href && gone.has(trimSlash(item.href))) return null;
+    if (item.children) {
+      const children = drop(item.children).filter(Boolean);
+      return children.length || item.href ? { ...item, children } : null;
+    }
+    return item;
+  }).filter(Boolean);
+  return {
+    ...composed,
+    site: { ...composed.site, nav: drop(composed.site.nav) },
+    pages,
+    all: composed.all.filter((p) => !gone.has(trimSlash(p.path || ""))),
+    moves,
+    builtPaths: (composed.builtPaths || []).filter((x) => !gone.has(trimSlash(x))),
+    programs: pagePrograms(pages),
+  };
+}
 
 /* One page as HTML. `forms`, when given, replaces those forms' definitions in the snapshot: the forms as
    they stand now, switch included (netlify/lib/pages.mjs). */

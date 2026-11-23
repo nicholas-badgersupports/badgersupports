@@ -83,10 +83,10 @@ test('operations invoked through symbolic links actually run',()=>{
 });
 
 
-test("a program hero with no upcoming event offers updates rather than a dead end", () => {
+test("a program hero with no upcoming event offers the coming-soon line, a way to ask and updates rather than a dead end", () => {
   const block = { id: "no-events", type: "eventhero", source: "events", title: "Craft Nights", program: "craft" };
-  const out = String(BLOCKS.eventhero.render(block, makeContext({site:{},data:{events:{dated:[],recurring:[]}},text:t,today:"2026-11-03",builtPaths:["/join/email-list/"]})));
-  assert.match(out, /Nothing is scheduled yet/); assert.match(out, /href="\/join\/email-list\/"/);
+  const out = String(BLOCKS.eventhero.render(block, makeContext({site:{},data:{events:{dated:[],recurring:[]}},text:t,today:"2026-11-03",builtPaths:["/join/email-list/","/forms/programming-feedback/"]})));
+  assert.match(out, /More Craft Nights Coming Soon!/); assert.match(out, /Suggest a Craft Night/); assert.match(out, /href="\/join\/email-list\/"/);
 });
 
 

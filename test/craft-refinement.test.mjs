@@ -63,7 +63,7 @@ test('Craft exact end promotes the next night and captions the ended event witho
 });
 
 test('Craft empty, unresolved-time and missing-room states offer honest alternatives',()=>{
- const empty=render('b-cn-hero');assert.ok(empty.includes(text['events.none']));assert.match(empty,/href="\/join\/email-list\/"/);assert.doesNotMatch(empty,/class="btn btn--big"|calendar\//);
+ const empty=render('b-cn-hero');assert.ok(empty.includes(text['events.comingSoon.craft']));assert.match(empty,/href="\/forms\/programming-feedback\/"/);assert.match(empty,/href="\/join\/email-list\/"/);assert.doesNotMatch(empty,/class="btn btn--big"|calendar\//);
  const missing=render('b-cn-hero',source([{...visit('Example Missing'),place:'absent'}]));assert.match(missing,/Ask About the Location/);assert.doesNotMatch(missing,/class="btn btn--big"/);
  const unknown=render('b-cn-hero',source([{...visit('Example Unresolved'),end:'16:00'}]));assert.match(unknown,/Confirm the Time/);assert.doesNotMatch(unknown,/calendar\/|class="btn btn--big"/);
 });

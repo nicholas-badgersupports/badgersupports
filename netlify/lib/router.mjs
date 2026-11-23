@@ -8,7 +8,8 @@
  *             button (a save publishes them), site.edit or
  *             site.publish for Refresh now, site.publish to download the edits file. Pages (structure.mjs): site.edit
  *             to add or copy a draft page, preview, and change a page's title, search description or a draft's
- *             address; site.publish to put a page on, retire a live page, move a live page, change the menu,
+ *             address; site.publish to put a page on, retire a live page, move a live page, switch a
+ *             program's requesting on or off (which hides or restores that program's pages), change the menu,
  *             change the site's name, search description and accessibility email, change a room's words and
  *             step photos, and bring back an earlier version. Which roles hold which is a super admin's setting in Connect
  *             (Website Forms), not this site's.
@@ -47,6 +48,8 @@ import { readRaw, allQuestions, QUESTION_TYPES, hiringContext } from "../../src/
 import { clientTable } from "../../src/shared/text.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 import { saveFormSettings, COPY_FIELDS } from "./form-settings.mjs";
+import { programsForStaff, setProgramState } from "./programs.mjs";
+import { programByKey } from "../../src/shared/programs.mjs";
 import { saveFormSetup } from "./form-setup.mjs";
 
 export const TIERS = new Set(["public", "director"]);
@@ -261,7 +264,7 @@ async function staffMe(req, _m, _c, who) {
   const canEdit = can(who, "site.edit");
   const canPublish = can(who, "site.publish");
   return json(200, {
-    ok: true, name: who.name, canEdit, canPublish, canRead: readsForms(who), canSwitch: switchesForms(who), readAgain: !!who.lapsed?.length,
+    ok: true, name: who.name, canEdit, canPublish, canPrograms: canPublish, canRead: readsForms(who), canSwitch: switchesForms(who), readAgain: !!who.lapsed?.length,
     connectUrl: connectConfig()?.url || null,
     waiting: canEdit || canPublish ? await waitingCount() : 0,
     ...(canEdit || canPublish ? await publishedNow() : {}),
@@ -312,6 +315,37 @@ async function formSwitch(req, [key], _c, who) {
   try { await purgeTags(await formTags(key)); } catch (e) { purgeError = e.code || "purge.unavailable"; console.error("purge:", e.code || e.message); }
   const updated = await currentForm(key);
   return json(200, { ok: true, key, state: updated.state, ...(["scheduled", "ended"].includes(updated.stateReason) ? { manualState: updated.manualState, stateReason: updated.stateReason } : {}), ...(purgeError ? { purgeError } : {}) });
+}
+
+/* The programs and their requesting switches, for the staff page's Programs view. Reading the
+   list takes a staff session; switching takes site.publish, the scope that retires a page, since
+   switching a program off hides its pages. */
+async function staffPrograms(req, _m, _c, who) {
+  return json(200, { ok: true, canSwitch: can(who, "site.publish"), programs: await programsForStaff() });
+}
+
+/* On or Off on the staff page: the switch row programs.mjs reads at every draw, so a program's
+   pages hide or come back with no deploy. Turning requesting off needs the program's key sent
+   back as `confirm`, the staff page's second yes, as opening a form does. The site's pages are
+   then cleared from the CDN; if that fails the switch still holds, the server goes by it at
+   once, and the reply says the pages may lag (up to 30 minutes). */
+async function programSwitch(req, [key], _c, who) {
+  need(who, "site.publish");
+  const body = await readBody(req);
+  if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
+  const state = body.state;
+  if (state !== "on" && state !== "off") throw new HttpError(400, "switch.state");
+  const program = programByKey(key);
+  if (!program) throw new HttpError(404, "program.unknown");
+  if (state === "off" && body.confirm !== key) throw new HttpError(409, "switch.confirm");
+  await setProgramState(key, state, who.sub);
+  let purgeError = null;
+  try {
+    const forms = [...new Set(program.formOptions.map((fo) => fo.form))];
+    const tags = ["page", ...(await Promise.all(forms.map((f) => formTags(f)))).flat()];
+    await purgeTags([...new Set(tags)]);
+  } catch (e) { purgeError = e.code || "purge.unavailable"; console.error("purge:", e.code || e.message); }
+  return json(200, { ok: true, canSwitch: true, programs: await programsForStaff(), ...(purgeError ? { purgeError } : {}) });
 }
 
 async function formSettings(req, [key], _c, who) {
@@ -610,6 +644,8 @@ export const ROUTES = [
   { name: "formSwitch", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/switch$/, tier: "director", run: formSwitch },
   { name: "formSetup", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/setup$/, tier: "director", run: formSetup },
   { name: "formSettings", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/settings$/, tier: "director", run: formSettings },
+  { name: "staffPrograms", method: "GET", pattern: /^\/api\/staff\/programs$/, tier: "director", run: staffPrograms },
+  { name: "programSwitch", method: "POST", pattern: /^\/api\/staff\/programs\/([a-z0-9-]{2,40})\/switch$/, tier: "director", run: programSwitch },
   { name: "staffRetry", method: "POST", pattern: /^\/api\/staff\/outbox\/retry$/, tier: "director", run: staffRetry },
   { name: "editSource", method: "GET", pattern: /^\/api\/staff\/edit\/source$/, tier: "director", run: editSourceRoute },
   { name: "editHistory", method: "GET", pattern: /^\/api\/staff\/edit\/history$/, tier: "director", run: editHistoryRoute },

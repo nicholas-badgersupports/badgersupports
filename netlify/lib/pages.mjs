@@ -5,9 +5,10 @@
  * Bounded: Netlify's CDN holds a page at most 30 minutes (25, then 5 while it draws it again), the browser
  * not at all. The revision is read from the store at every draw and never held (published.mjs), so a page drawn
  * after a save's clearing carries the save, whichever running copy draws it. The cache key ignores every query string but
- * the two the pages read, and no cookie or header, so nobody can ask past it. Only a page that shows a form's
- * state reads the database: each such form as it stands (intake.mjs currentForm), so a switch set on the staff
- * page is on the page once the switch clears its tags (formTags). Nothing is held between draws. If those forms
+ * the two the pages read, and no cookie or header, so nobody can ask past it. A page that shows a form's
+ * state reads the database for it: each such form as it stands (intake.mjs currentForm), so a switch set on the staff
+ * page is on the page once the switch clears its tags (formTags). Every draw also reads the programs'
+ * requesting switches (programs.mjs), so a program switched off is hidden from that draw on. Nothing is held between draws. If those forms
  * cannot be read, the page draws them as built and is held a minute, keeping its published words.
  *
  * If the revision cannot be read or the page cannot be drawn, the answer is the build's own file, held a
@@ -21,8 +22,10 @@ import { sharedNow, combineShared } from "./live-content.mjs";
 import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
 import { currentForm } from "./intake.mjs";
-import { composeSite, renderSitePage, formsOn } from "../../src/render/site.mjs";
+import { composeSite, renderSitePage, formsOn, hidePrograms } from "../../src/render/site.mjs";
 import { trimSlash as dropSlash } from "../../src/shared/structure.mjs";
+import { programsOff } from "./programs.mjs";
+import { programForPage, programForTopic, withoutProgramOptions } from "../../src/shared/programs.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 import { formTopicFromAddress as topicFromAddress } from "../../src/shared/program-topic.mjs";
 import { refreshes } from "../../src/render/registry.mjs";
@@ -169,6 +172,26 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
       }
     }
   } catch (e) { fault = e; }
+  /* The programs whose requesting is switched off (programs.mjs): their pages leave the site for
+     this draw, the way a retired page leaves it, and their choices leave the request forms the
+     draw carries. Read at every draw, as a form's switch is, so a switch is in force as soon as
+     its pages clear the CDN. When the rows cannot be read, every program draws as on. */
+  let offPrograms = new Set();
+  try { offPrograms = await programsOff(); } catch (e) { console.error(`pages: program switches read as all on (${e.code || e.message})`); }
+  let hiddenPaths = new Set();
+  if (site && offPrograms.size) {
+    hiddenPaths = new Set(site.pages.filter((p) => { const prog = programForPage(p.id); return prog && offPrograms.has(prog.key); }).map((p) => dropSlash(p.path || "")));
+    site = hidePrograms(site, offPrograms);
+  }
+  /* The search index is a file the build wrote, so a switched-off program's pages are taken out
+     of the answer here, at the one moment the file passes through this function. */
+  if (pathname === "/search-index.json" && hiddenPaths.size) {
+    try {
+      const index = JSON.parse(fs.readFileSync(path.join(dist, "search-index.json"), "utf8"));
+      const kept = (index.pages || []).filter((e) => !hiddenPaths.has(dropSlash(String(e.path || "").split("?")[0])));
+      return new Response(JSON.stringify({ ...index, pages: kept }), { headers: { "content-type": "application/json; charset=utf-8", ...base, "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } });
+    } catch { /* no readable index: fall through to the answer the path gets today */ }
+  }
   // A page moved or retired on the staff page: its old address moves in one step, with or without its final "/", and
   // is tagged like a page, so the next structure change clears it. Retired with nowhere to go, it is the 404 page.
   const shifted = site && !malformed ? site.moves.get(dropSlash(pathname)) : null;
@@ -185,11 +208,17 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
     }
     const page = shifted ? null : site.pages.find((p) => (p.file ? `/${p.file}` : p.path) === pathname);
     if (!page && moved) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
-    const notFound = !page;
-    const shown = page || site.pages.find((p) => p.id === "pg-not-found");
+    /* A form address that names a switched-off program (?topic=…, the address the program's own
+       pages and links carry) gets the same answer as the program's hidden page. */
+    const formTopic = topicFromAddress(u.searchParams);
+    const topicProgram = formTopic ? programForTopic(formTopic) : null;
+    const topicOff = !!(page && topicProgram && offPrograms.has(topicProgram.key) && (page.blocks || []).some((b) => b.type === "form"));
+    const notFound = !page || topicOff;
+    const shown = page && !topicOff ? page : site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
     const { forms, failed, scheduled } = await formsNow(shown, now);
-    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, forms, { formTopic: topicFromAddress(u.searchParams), now }), { ...(scheduled || fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+    const shownForms = forms && offPrograms.size ? Object.fromEntries(Object.entries(forms).map(([k, f]) => [k, withoutProgramOptions(f, offPrograms)])) : forms;
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, shownForms, { formTopic, now }), { ...(scheduled || fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
     if (snap?.shared?.exports?.team && (teamPath(pathname) || wantsTeam)) {

@@ -15,6 +15,7 @@ import { picture } from "../media.mjs";
 import { nextDated, rowsBetween, dateParts, timeRange, dayRange } from "../events.mjs";
 import { reel } from "./embed.mjs";
 import { eventState } from "../../shared/event-state.mjs";
+import { programForEvents } from "../../shared/programs.mjs";
 import { timeUnconfirmed } from "../ics.mjs";
 
 const ARROW_L = html`<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -29,7 +30,11 @@ function firstVisit(b, ctx) {
   if (!b.upcoming) return "";
   if (ctx.data.eventsState?.stale) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupUnavailable")}</p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askSchedule"), "mail")}</div>`;
   const [next] = rowsBetween(ctx.data.events || {}, ctx.today, 7).filter(r => r.program === b.upcoming.program && eventState(r, ctx.now) !== "ended");
-  if (!next) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupNone")}</p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"), "mail")}</div>`;
+  if (!next) {
+    const prog = programForEvents(b.upcoming.program, null);
+    if (prog?.comingSoon) return html`<div data-live="visit"><p class="visit-notice">${ctx.t(prog.comingSoon)}</p>${prog.requestHref ? html`<p>${go(ctx, prog.requestHref, ctx.t(prog.requestLabel))}</p>` : ""}<p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"), "mail")}</p></div>`;
+    return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupNone")}</p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"), "mail")}</div>`;
+  }
   const p = dateParts(next.date, ctx.t), days = dayRange(next, ctx.t);
   return html`<div data-live="visit"><article${attrs({ class: eventClass("visit-event ev", next, ctx.now), "data-starts": next.startsAt, "data-ends": next.endsAt, "data-date": next.date })}>
     <p class="visit-label">${b.upcoming.label || ctx.t("program.nextGroup")}<span class="visit-tags">${next.date === ctx.today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</span></p>

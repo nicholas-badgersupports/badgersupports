@@ -2218,13 +2218,13 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    lift — so a run of sections reads as one container each instead of one loose flow. The
    closing call to action is not a band, so a boxed one takes the band's spacing on its
    section instead, and its card stands in place of the wrap's own tall padding. */
-.expect.is-boxed .wrap, .program.is-boxed .wrap, .cta.is-boxed .wrap {
+.expect.is-boxed .wrap, .program.is-boxed .wrap, .cta.is-boxed .wrap, .questions.is-boxed .wrap, .text-block.is-boxed .wrap {
   background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card);
   box-shadow: var(--lift); padding: var(--s5);
 }
 .cta.is-boxed { padding-block: var(--s7); }
 @media (max-width: 860px) {
-  .expect.is-boxed .wrap, .program.is-boxed .wrap, .cta.is-boxed .wrap { padding: var(--s4); }
+  .expect.is-boxed .wrap, .program.is-boxed .wrap, .cta.is-boxed .wrap, .questions.is-boxed .wrap, .text-block.is-boxed .wrap { padding: var(--s4); }
 }
 /* The ribbons page's two boxed sections stand together at the foot of the page, and
    there their section padding drops one step — --s6 in place of the band's --s7 — so

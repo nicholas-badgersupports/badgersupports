@@ -136,6 +136,7 @@
     {
       "id": "b-gi-faq",
       "type": "questions",
+      "boxed": true,
       "title": "Questions",
       "items": [
         {
@@ -183,6 +184,7 @@
     {
       "id": "b-gi-explore",
       "type": "text",
+      "boxed": true,
       "title": "Find your people",
       "body": [
         "Looking for a club, a community or something to go to? The Campus Events Explorer gathers UW-Madison and Wisconsin Union events with Badger Supports programs, and Find Your People collects the gatherings."

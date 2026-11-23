@@ -634,6 +634,12 @@ export async function build({ production = false, launch = production, today = n
 
   // Scripts: every browser module plus the shared form rules, in one directory named by the
   // content of them all, so their relative imports keep working and one change renames them all.
+  // The staff console's modules are the exception (source-exposure audit, F-1, 15 November 2026):
+  // the sign-in shell (staff-signin.js) ships with the pages, but the console behind it — staff.js,
+  // its form-setup wizard, and the edit button — is written beside server.json instead, where the
+  // functions carry it (netlify.toml, included_files) and the API serves it only to a signed-in
+  // staff session (netlify/lib/router.mjs, staffClient). text.js, which both halves import, is
+  // written to both places.
   const jsFiles = fs.readdirSync(path.join(ROOT, "src/client")).filter((f) => f.endsWith(".js")).sort()
     .map((f) => ({ name: f, text: fs.readFileSync(path.join(ROOT, "src/client", f), "utf8") }));
   jsFiles.push({ name: "forms.mjs", text: fs.readFileSync(path.join(ROOT, "src/shared/forms.mjs"), "utf8") });
@@ -641,10 +647,15 @@ export async function build({ production = false, launch = production, today = n
   for (const f of jsFiles) f.text = await min.js(f.text, f.name);
   const jsDir = hash(jsFiles.map((f) => f.name + "\0" + f.text).join("\0"));
   fs.mkdirSync(path.join(out, "assets/js", jsDir), { recursive: true });
+  const GATED = new Set(["staff.js", "form-setup.js", "edit.js"]);
+  const gatedDir = path.join(serverDir, "staff-client");
+  fs.mkdirSync(gatedDir, { recursive: true });
   const js = {};
   for (const f of jsFiles) {
+    if (GATED.has(f.name)) { fs.writeFileSync(path.join(gatedDir, f.name), f.text); continue; }
     fs.writeFileSync(path.join(out, "assets/js", jsDir, f.name), f.text);
     js[f.name] = `/assets/js/${jsDir}/${f.name}`;
+    if (f.name === "text.js") fs.writeFileSync(path.join(gatedDir, f.name), f.text);
   }
   for (const b of Object.values(BLOCKS)) for (const c of [].concat(b.client || [])) if (!js[c]) throw new Error(`block ${b.type} names client ${c}, which is not in src/client/`);
 

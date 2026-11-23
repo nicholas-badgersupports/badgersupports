@@ -1,14 +1,16 @@
 /* The staff page: a sign-in button for directors and admins, which sends them to Connect and back
-   (netlify/lib/staff.mjs), and the tools staff.js draws once they are signed in — the forms their
-   role lets them read, and the words they have changed with the edit button. Without a script the
-   button still signs in; the tools need it. Nothing here is counted, and the page is never cached
-   or indexed (content/pages/staff.json).
+   (netlify/lib/staff.mjs), and the tools the console (src/client/staff.js) draws once they are
+   signed in — the forms their role lets them read, and the words they have changed with the edit
+   button. Without a script the button still signs in; the tools need it. Nothing here is counted,
+   and the page is never cached or indexed (content/pages/staff.json).
+   The page ships only the sign-in shell (src/client/staff-signin.js): the console's code and words
+   are served by the API to a signed-in session alone (source-exposure audit, F-1).
    Before sign-in the page holds one short line, the button, and an optional quote under it, from
-   Connect's one shared list (Connect GOOGLE-SIGNIN: /api/signin-quotes, filled by staff.js, empty
+   Connect's one shared list (Connect GOOGLE-SIGNIN: /api/signin-quotes, filled by the shell, empty
    and hidden until then and whenever Connect has none to show). The help that was folded under the
    button is gone with the same change: Connect's own sign-in page says what is needed. A browser that was signed in before
    carries the staff_hint class from the inline script (src/render/layout.mjs): the checking line
-   shows in place of the button until staff.js knows, so a signed-in director never sees Sign in
+   shows in place of the button until the shell knows, so a signed-in director never sees Sign in
    flash up. */
 
 import { html, attrs } from "../html.mjs";
@@ -18,7 +20,7 @@ export default {
   label: "Staff sign-in and tools",
   fields: { title: "text!", body: "paragraphs!", signIn: "text!" },
   data: [],
-  client: "staff.js",
+  client: "staff-signin.js",
   analytics: "none",
   loading: "eager",
   render(b, ctx) {

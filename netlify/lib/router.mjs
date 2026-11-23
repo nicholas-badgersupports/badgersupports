@@ -45,7 +45,9 @@ import { renderPage } from "../../src/render/layout.mjs";
 import { renderForm, renderDone, renderClosed } from "../../src/render/form.mjs";
 import { formSection } from "../../src/render/blocks/form.mjs";
 import { html } from "../../src/render/html.mjs";
-import { readRaw, allQuestions, QUESTION_TYPES, hiringContext } from "../../src/shared/forms.mjs";
+import { readRaw, allQuestions, QUESTION_TYPES } from "../../src/shared/forms.mjs";
+import { hiringContext } from "../../src/shared/identifiers.mjs";
+import { staffClientFile } from "./staff-client.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 import { saveFormSettings, COPY_FIELDS } from "./form-settings.mjs";
@@ -273,7 +275,19 @@ async function staffMe(req, _m, _c, who) {
     waiting: canEdit || canPublish ? await waitingCount() : 0,
     ...(canEdit || canPublish ? await publishedNow() : {}),
     text: clientTable(serverContent().text, ["edit.js"]),
+    /* The console's words ride this answer, not the page (source-exposure audit, F-1): the shell
+       lays them into the page's words island before it loads the console (staff-signin.js). */
+    staffText: clientTable(serverContent().text, ["staff.js"]),
   });
+}
+
+/* The console's own code, served only behind this tier (source-exposure audit, F-1): the build
+   holds these modules back from the published site (ops/build.mjs), and a browser with no staff
+   session is refused by the tier before this runs. Never cached: a session's copy is its own. */
+async function staffClient(_req, [name]) {
+  const code = staffClientFile(`${name}.js`);
+  if (code == null) throw new HttpError(404, "not.found");
+  return new Response(code, { status: 200, headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" } });
 }
 
 /* Opening the staff page only reads. A new submission wakes delivery, and Try again sends the
@@ -637,6 +651,7 @@ export const ROUTES = [
   { name: "authStatus", method: "GET", pattern: /^\/api\/auth\/status$/, tier: "public", run: authStatus },
   { name: "signinQuotes", method: "GET", pattern: /^\/api\/signin-quotes$/, tier: "public", run: signinQuotesRoute },
   { name: "staffMe", method: "GET", pattern: /^\/api\/staff\/me$/, tier: "director", run: staffMe },
+  { name: "staffClient", method: "GET", pattern: /^\/api\/staff\/client\/([a-z-]+)\.js$/, tier: "director", run: staffClient },
   { name: "staffForms", method: "GET", pattern: /^\/api\/staff\/forms$/, tier: "director", run: staffForms },
   { name: "staffSubmissions", method: "GET", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/submissions$/, tier: "director", run: staffSubmissions },
   { name: "formSwitch", method: "POST", pattern: /^\/api\/staff\/forms\/([a-z0-9-]{2,40})\/switch$/, tier: "director", run: formSwitch },

@@ -58,7 +58,10 @@ test("an agreement question names one document, is always asked, travels as an a
   assert.ok(!answerColumns(def).some((c) => c.id === "agree_terms"));
   const r = validateAnswers(def, { agree_terms: "2:" + "a".repeat(64) });
   assert.equal(r.errors.agree_terms, undefined);
-  assert.equal(validateAnswers(def, { agree_terms: "yes" }).errors.agree_terms, "confirm-needed");
+  /* Presence is all these shipped rules check (source-exposure audit, F-2): the value's shape is
+     an internal format and is no longer published with them. The server refuses a wrong-shaped
+     value with this same word — pinned in connect-paired-s8.test.mjs. */
+  assert.equal(validateAnswers(def, { agree_terms: "yes" }).errors.agree_terms, undefined);
   assert.equal(validateAnswers(def, {}).errors.agree_terms, "required");
 });
 

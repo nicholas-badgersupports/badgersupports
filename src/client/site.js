@@ -152,9 +152,11 @@ function openTarget() {
 window.addEventListener("hashchange", openTarget);
 openTarget();
 
-/* Someone signed in to the staff page on this browser: load the edit button. It asks the server
-   who that is, and draws nothing for anyone who may not change words (edit.js). */
-if (/(?:^|;\s*)bss_staff_hint=1(?:;|$)/.test(document.cookie)) import("./edit.js");
+/* Someone signed in to the staff page on this browser: load the edit button. It is not published
+   with the site's pages (source-exposure audit, F-1): the API serves it only to a signed-in staff
+   session, so a browser whose session has ended simply gets nothing. It asks the server who that
+   is, and draws nothing for anyone who may not change words (edit.js). */
+if (/(?:^|;\s*)bss_staff_hint=1(?:;|$)/.test(document.cookie)) import("/api/staff/client/edit.js").catch(() => {});
 
 /* The development notice (layout.mjs draws it; its words are text keys): Badger SPILL's
    announcement pop-up is the model — it opens a moment after the page arrives, and shows once

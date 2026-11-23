@@ -367,7 +367,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy · br
 
 ### Staff sign-in and tools — `staff`
 
-Reads: nothing but its own fields · analytics: `none` · photos load eager · browser module `staff.js`
+Reads: nothing but its own fields · analytics: `none` · photos load eager · browser module `staff-signin.js`
 
 | Field | Type | |
 |---|---|---|

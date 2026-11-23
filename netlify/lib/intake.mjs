@@ -13,7 +13,8 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { fileRecords, claimFiles } from "./files.mjs";
 import { definitionFor } from "./deliver.mjs";
-import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources, hiringContext, AGREE_VALUE_RE } from "../../src/shared/forms.mjs";
+import { definitionProblems, readRaw, validateAnswers, canonicalJSON, allQuestions, answerWords, KEY_RE, OTHER, withResources } from "../../src/shared/forms.mjs";
+import { hiringContext, AGREE_VALUE_RE } from "../../src/shared/identifiers.mjs";
 import { sharedNow } from "./live-content.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 import { readFormSettings, effectiveForm } from "./form-settings.mjs";
@@ -75,7 +76,10 @@ function agreementsOf(def, answers) {
     if (q.type !== "agree" || !Object.hasOwn(answers, q.id)) continue;
     const m = AGREE_VALUE_RE.exec(answers[q.id]);
     delete answers[q.id];
-    if (!m) continue;
+    /* A value present but not in the agreement's shape: the shipped rules no longer test the
+       shape (the format is internal, identifiers.mjs), so it is answered here with the same
+       word the browser's own check used before the split. */
+    if (!m) { errors[q.id] = "confirm-needed"; continue; }
     if (!q.current || Number(m[1]) !== q.current.version || m[2] !== q.current.sha256) errors[q.id] = "agreement-out-of-date";
     else agreements.push({ doc: q.doc, version: q.current.version, sha256: q.current.sha256 });
   }

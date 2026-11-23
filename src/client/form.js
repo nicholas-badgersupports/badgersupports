@@ -18,7 +18,7 @@
  * form key only. It never reads answers into them.
  */
 
-import { visibility, validateAnswers, readRaw, errorText, allQuestions, answerWords, OTHER, QUESTION_TYPES, hiringContext } from "./forms.mjs";
+import { visibility, validateAnswers, readRaw, errorText, allQuestions, answerWords, OTHER, QUESTION_TYPES } from "./forms.mjs";
 import { t } from "./text.js";
 
 const STALE_MS = 10 * 60 * 1000;
@@ -465,9 +465,11 @@ function enhance(form, { started = false } = {}) {
     const params = new URLSearchParams(location.search);
     if (params.has("cycle")) {
       const values = params.getAll("cycle");
-      const context = hiringContext(key, { _cycle: values.length === 1 ? values[0] : values });
+      /* The cycle is carried as an opaque string: its shape is an internal format, and the
+         server derives the filing context and tests the shape itself (identifiers.mjs). A
+         repeated ?cycle= is carried as nothing, as before. */
       const field = document.createElement("input");
-      field.type = "hidden"; field.name = "_cycle"; field.value = context.hiringCycleId;
+      field.type = "hidden"; field.name = "_cycle"; field.value = values.length === 1 ? values[0] : "";
       form.append(field);
     }
   }

@@ -176,6 +176,14 @@ test.describe("forms read their words from Connect and carry agreements", { skip
     assert.equal(stale.error, "answers.invalid");
     assert.equal(stale.errors.agree_terms, "agreement-out-of-date");
 
+    /* A value not in the agreement's shape at all: the shipped rules no longer test the shape
+       (source-exposure audit, F-2 — the format is internal, identifiers.mjs), so the refusal is
+       the server's, with the word the browser's own check used before the split. */
+    const malformed = await send("yes");
+    assert.equal(malformed.ok, false);
+    assert.equal(malformed.error, "answers.invalid");
+    assert.equal(malformed.errors.agree_terms, "confirm-needed");
+
     // Sent against version two, then version three is published before the outbox runs: Connect refuses, and the
     // row waits as failed with a reason a director can read, never stored as agreeing to words nobody saw.
     const sha2 = crypto.createHash("sha256").update("Fictional terms, two.").digest("hex");

@@ -15,7 +15,8 @@
 
 import { randomUUID } from "node:crypto";
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
-import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm, draftForm } from "../shared/forms.mjs";
+import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, steppedForm, draftForm } from "../shared/forms.mjs";
+import { hiringContext } from "../shared/identifiers.mjs";
 import { icon } from "./icons.mjs";
 import { go } from "./context.mjs";
 import { legalParagraphs } from "./blocks/legal.mjs";

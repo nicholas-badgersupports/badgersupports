@@ -25,6 +25,7 @@ import { build, loadContent } from "../ops/build.mjs";
 import { currentRevision, useStore, memoryStore, usePurger, noteGet } from "../netlify/lib/published.mjs";
 import { handlePage, useDist } from "../netlify/lib/pages.mjs";
 import { currentForm, setSwitch } from "../netlify/lib/intake.mjs";
+import { useStaffClientDir } from "../netlify/lib/staff-client.mjs";
 import { servedForms } from "../src/shared/form-window.mjs";
 import { layStructure, emptyStructure } from "../src/shared/structure.mjs";
 import * as structureModule from "../src/shared/structure.mjs";
@@ -263,6 +264,34 @@ test("on https the cookies are __Host- cookies, sent only over https", async () 
 
 /* The rig's redirects arrive as Netlify sends them: the request's query goes onto a function's redirect that has none of
    its own, so the callback's code and state reach the page after it (src/render/layout.mjs takes them off there). */
+/* The console's code is not public reading (source-exposure audit, F-1): the API serves it only
+   to a signed-in staff session, and the console's words ride the /api/staff/me answer. */
+test("the staff console's code is served only to a signed-in session, with its words", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const out = path.join(ROOT, "local", "test-staff-client");
+  await build({ out, serverDir: path.join(out, "_server"), media: false, today: "2026-10-20" });
+  useStaffClientDir(path.join(out, "_server", "staff-client"));
+
+  const anon = await handle(get("/api/staff/client/staff.js", { json: false }), ip());
+  assert.equal(anon.status, 401, "no session, no console");
+
+  const { cookie } = await signIn(fake);
+  const code = await handle(get("/api/staff/client/staff.js", { cookie, json: false }), ip());
+  assert.equal(code.status, 200);
+  assert.match(code.headers.get("content-type"), /^text\/javascript/);
+  assert.equal(code.headers.get("cache-control"), "no-store");
+  assert.match(await code.text(), /export/, "the console module itself");
+  for (const name of ["form-setup.js", "edit.js", "text.js"]) {
+    assert.equal((await handle(get(`/api/staff/client/${name}`, { cookie, json: false }), ip())).status, 200, name);
+  }
+  assert.equal((await handle(get("/api/staff/client/nope.js", { cookie, json: false }), ip())).status, 404, "nothing else is served");
+
+  const me = await (await handle(get("/api/staff/me", { cookie }), ip())).json();
+  assert.equal(typeof me.staffText?.["staff.signOut"], "string", "the console's words ride the sign-in answer");
+});
+
 test("the rig sends a function's redirect as Netlify does", () => {
   assert.equal(netlifyLocation("?probe=item15&x=1", 303, "/staff/"), "/staff/?probe=item15&x=1");
   assert.equal(netlifyLocation("?code=c&state=s", 302, "/staff/"), "/staff/?code=c&state=s");

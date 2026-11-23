@@ -14,18 +14,10 @@ export const FORM_SCHEMA = "bss.form/1";
 export const KEY_RE = /^[a-z][a-z0-9-]{1,39}$/;
 export const ID_RE = /^[a-z][a-z0-9_]{0,39}$/;
 export const OTHER = "__other";
-export const HIRING_CYCLE_ID_RE = /^hc-[0-9a-f]{12}$/;
-
-/* Cycle context is filing metadata, never an answer or permission. Explicit invalid context
-   remains present but empty so the receiver cannot silently file it by another intake period. */
-export function hiringContext(key, input) {
-  if (key !== "recommendation-letter") return {};
-  const multi = typeof input?.getAll === "function";
-  if (!(multi ? input.has("_cycle") : Object.hasOwn(input || {}, "_cycle"))) return {};
-  const values = multi ? input.getAll("_cycle") : Array.isArray(input._cycle) ? input._cycle : [input._cycle];
-  const value = values.length === 1 && typeof values[0] === "string" ? values[0] : "";
-  return { hiringCycleId: HIRING_CYCLE_ID_RE.test(value) ? value : "" };
-}
+/* The shapes of the identifiers a form value can carry — a hiring cycle's id, an agreement's
+   version-and-hash value — are internal, and live in identifiers.mjs, which the build never
+   ships (source-exposure audit, F-2). Nothing here tests a value against either shape: the
+   browser carries them as opaque strings, and the server checks them where it files. */
 
 export const QUESTION_TYPES = {
   short:      { input: "text",           max: 200 },
@@ -57,7 +49,6 @@ export const QUESTION_TYPES = {
   agree:      { input: "checkbox" },
 };
 export const LEGAL_DOC_RE = /^[a-z0-9][a-z0-9-]{0,59}$/;
-export const AGREE_VALUE_RE = /^([1-9][0-9]{0,8}):([0-9a-f]{64})$/;
 
 /* What Connect keeps as a suggestion's resource id (its suggestionFields()), so no id Connect
    exports is refused here and none it would cut short is sent. */
@@ -446,7 +437,10 @@ function typeProblem(q, v) {
     case "confirm":
       return v === "yes" ? null : "confirm-needed";
     case "agree":
-      return AGREE_VALUE_RE.test(v) ? null : "confirm-needed";
+      /* Presence only, in these shipped rules: the value's exact shape is an internal format
+         (identifiers.mjs), and the server checks the value itself against the document's
+         current version and hash before anything is filed (netlify/lib/intake.mjs). */
+      return v ? null : "confirm-needed";
     case "links":
       if (v.length > (q.maxLinks || t.maxItems)) return "links-too-many";
       if (v.some((s) => s.length > LINK_MAX)) return "link-too-long";

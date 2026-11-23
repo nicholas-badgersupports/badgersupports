@@ -74,6 +74,7 @@ export const CLIENT_TEXT = {
   "carousel.js": ["carousel.count"],
   "schedule.js": ["schedule.today", "schedule.happening", "schedule.nextUp"],
   "hero.js": ["hero.pause", "hero.play", "hero.youFace", "hero.youWord"],
+  "staff-signin.js": ["staff.checking", "staff.tryAgain", "staff.ended", "staff.notConfigured", "staff.loadError"],
   "staff.js": ["staff.*"],
   "form-setup.js": ["staff.*"],
   "edit.js": ["edit.*"],

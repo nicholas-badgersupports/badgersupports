@@ -134,7 +134,15 @@ test("delivered files: no notes and no maps, only what is on the list; a planted
   const js = fs.readdirSync(path.join(OUT, "assets/js"))[0];
   const forms = fs.readFileSync(path.join(OUT, "assets/js", js, "forms.mjs"), "utf8");
   assert.match(forms, /export /, "a module keeps its exports");
-  assert.match(fs.readFileSync(path.join(OUT, "assets/js", js, "staff.js"), "utf8"), /from"\.\/text\.js"|from "\.\/text\.js"/, "and its relative imports");
+  assert.ok(!/hc-\[0-9a-f\]|\(\[0-9a-f\]\{64\}\)/.test(forms), "the shipped form rules carry neither internal identifier format (F-2)");
+  assert.ok(fs.existsSync(path.join(OUT, "assets/js", js, "staff-signin.js")), "the staff page ships its sign-in shell");
+  for (const gated of ["staff.js", "form-setup.js", "edit.js"]) assert.ok(!fs.existsSync(path.join(OUT, "assets/js", js, gated)), `${gated} is not published (F-1)`);
+  assert.match(fs.readFileSync(path.join(OUT, "_server", "staff-client", "staff.js"), "utf8"), /from"\.\/text\.js"|from "\.\/text\.js"/, "the held-back console keeps its relative imports");
+  const staffPage = read(path.join("staff", "index.html"));
+  const island = JSON.parse(staffPage.match(/<script type="application\/json" id="bss-text">(.+?)<\/script>/s)[1]);
+  const SHELL_WORDS = new Set(["staff.checking", "staff.tryAgain", "staff.ended", "staff.notConfigured", "staff.loadError"]);
+  assert.ok(Object.keys(island).some((k) => SHELL_WORDS.has(k)), "the staff page carries the shell's words");
+  assert.deepEqual(Object.keys(island).filter((k) => k.startsWith("staff.") && !SHELL_WORDS.has(k)), [], "and none of the console's (F-1)");
   assert.ok(!fs.readFileSync(path.join(ROOT, "src/shared/forms.mjs"), "utf8").startsWith(forms.slice(0, 40)), "(the source still has its notes)");
 
   const seed = async (name, plant) => {

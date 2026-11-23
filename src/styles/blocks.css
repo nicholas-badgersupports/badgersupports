@@ -544,6 +544,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .involve.is-page h1 { color: var(--cream); font-size: var(--fs-page); }
 .involve.has-photos .involve-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: var(--s4) var(--s6); align-items: end; margin-bottom: var(--s5); }
 .involve.has-photos .involve-head h1, .involve.has-photos .involve-head h2 { margin: 0; }
+/* Get Involved's own page: the heading rises to the top of the left column, level with the
+   top of the photos, instead of sitting at their foot (hero audit Proposal 6, 23 Nov 2026). */
+@media (min-width: 861px) {
+  [data-page="pg-get-involved"] .involve.has-photos .involve-head { align-items: start; }
+}
 .involve-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
 .involve-photos .photo { aspect-ratio: 3 / 4; border-radius: var(--r-card); }
 .involve-photos .photo:nth-child(2) { translate: 0 calc(-1 * var(--s4)); }

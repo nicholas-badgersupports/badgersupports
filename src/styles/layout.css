@@ -92,6 +92,21 @@
 .dev-notice p { margin: var(--s3) 0 0; }
 .dev-notice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
 
+/* The Alumni pop-up (layout.mjs draws it, site.js opens it when an Alumni link is pressed):
+   the development notice's card and placement — centred, the site's paper and card radius,
+   never a modal, and z-index 30 under the Safety Exit pill's 40, so the pill stays
+   pressable — and paints above the card — while the invite is up. */
+.alumni-pop {
+  position: fixed; inset: 0; margin: auto; z-index: 30;
+  width: min(32rem, calc(100vw - 2 * var(--s4))); height: fit-content; max-height: calc(100dvh - 2 * var(--s4));
+  padding: var(--s5); border: 1px solid var(--line); border-radius: var(--r-card);
+  background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow);
+}
+.alumni-pop-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
+.alumni-pop-head h2 { margin: 0; font-size: var(--fs-h3); line-height: 1.2; }
+.alumni-pop p { margin: var(--s3) 0 0; }
+.alumni-pop-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
+
 /* The Get Involved button leaves the header where the row cannot carry it. The full row
    at the original spacing — brand, five word items, the Search magnifier and the button —
    fits the page column only from 1116 up (measured on the built home page at every width

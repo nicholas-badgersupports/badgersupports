@@ -170,6 +170,17 @@ function signinPop(ctx) {
   return html`<dialog class="signin-pop" data-signin-pop data-analytics="off" aria-labelledby="signin-pop-h"><div class="signin-pop-band"><span class="signin-pop-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><img class="signin-pop-lockup" src="/assets/brand/bss-lockup-white-redheart.png" width="700" height="415" alt=""><button type="button" class="signin-pop-close" data-signin-close aria-label="${ctx.t("staff.popClose")}">${icon("close", "signin-pop-close-ic")}</button><svg class="signin-pop-wave" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="signin-pop-wave-back" d="M0 17C33 17 67 8 100 8C133 8 167 22 200 22C233 22 267 9 300 9C333 9 367 16 400 16L400 40L0 40Z"/><path class="signin-pop-wave-fill" d="M0 22C33 22 67 13 100 13C133 13 167 27 200 27C233 27 267 14 300 14C333 14 367 21 400 21L400 40L0 40Z"/></svg></div><div class="signin-pop-body"><h2 id="signin-pop-h">${ctx.t("staff.popTitle")}</h2><p class="signin-pop-line">${ctx.t("staff.popLine")}</p><p class="signin-pop-status" role="status"><svg class="signin-pop-spin" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="signin-pop-spin-track" cx="12" cy="12" r="9"></circle><path class="signin-pop-spin-arc" d="M21 12a9 9 0 0 0-9-9"></path></svg>${ctx.t("staff.checking")}</p><p class="signin-pop-retry"><a href="/staff/">${ctx.t("staff.popGo")}</a></p></div></dialog>`;
 }
 
+/* The Alumni pop-up: pressing an Alumni link anywhere on the site opens this invite over
+   the page the visitor is on (site.js), and closing it completes the press — the visitor
+   lands on the Alumni page they pressed for. Its words are the Email List page's own: its
+   title, its opening line and its button, which goes straight to the email list form. It is
+   never a modal (the development notice is the model): nothing traps focus, and the Safety
+   Exit pill stays pressable while it is up. Without JavaScript the Alumni links go to the
+   Alumni page as they always have. */
+function alumniPop(ctx) {
+  return html`<dialog class="alumni-pop" data-alumni-pop data-analytics="off" aria-labelledby="alumni-pop-h"><div class="alumni-pop-head"><h2 id="alumni-pop-h">${ctx.t("alumniPop.title")}</h2><button type="button" class="btn btn--quiet" data-alumni-close>${ctx.t("alumniPop.close")}</button></div><p>${ctx.t("alumniPop.line")}</p><div class="alumni-pop-actions">${link(ctx, "/forms/email-list/", ctx.t("alumniPop.cta"), { class: "btn btn--big", icon: "mail", attrs: { "data-alumni-cta": "" } })}</div></dialog>`;
+}
+
 function protoNotice(ctx) {
   if (!ctx.prototype) return "";
   return html`<div class="proto" role="note"><strong>${ctx.t("proto.title")}</strong> ${ctx.t("proto.body")}</div>`;
@@ -268,6 +279,7 @@ ${body ?? main.map((b) => renderBlock(b, ctx))}
 ${supportLine(ctx)}
 ${footer(ctx)}
 ${signinPop(ctx)}
+${alumniPop(ctx)}
 ${safetyExit(ctx)}
 ${devNotice(ctx, page)}
 </body>

@@ -1,6 +1,8 @@
 .alumni-history h2 { margin-bottom: var(--s3); }
 .alumni-history .lead { max-width: 50rem; margin-bottom: var(--s5); }
-.alumni-cohorts { display: grid; gap: var(--s3); }
+.alumni-cohorts { display: grid; gap: var(--s6); }
+.alumni-group { display: grid; gap: var(--s3); align-content: start; }
+.alumni-group-title { font: 800 var(--fs-h3)/1.2 var(--font-display); text-transform: uppercase; letter-spacing: .01em; color: var(--ink); margin: 0; padding-bottom: var(--s2); border-bottom: var(--rule-line); }
 .alumni-cohorts details { border: var(--rule-line); border-radius: var(--r-card); background: var(--paper); padding: var(--s3) var(--s4); }
 .alumni-cohorts summary { display: list-item; list-style-position: inside; min-height: 44px; cursor: pointer; font-weight: 800; }
 .alumni-cohorts summary::marker { color: var(--accent); }

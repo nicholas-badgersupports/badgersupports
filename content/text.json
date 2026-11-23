@@ -4616,6 +4616,26 @@
       "text": "Alumni history could not be loaded. Please try again later or email us.",
       "where": "History source is temporarily unavailable; never a claim that no alumni exist."
     },
+    "alumniPop.title": {
+      "group": "alumni",
+      "text": "Join Our Email List",
+      "where": "Alumni pop-up: its heading. The Email List page's title, word for word."
+    },
+    "alumniPop.line": {
+      "group": "alumni",
+      "text": "Students, community members and former Badger Supports, Badger Support Network and SPILL supporters, staff, volunteers and leaders are welcome to request updates.",
+      "where": "Alumni pop-up: the line under its heading. The Email List page's opening line, word for word."
+    },
+    "alumniPop.cta": {
+      "group": "alumni",
+      "text": "Request Email Updates",
+      "where": "Alumni pop-up: its button, to the email list form. The Email List page's button, word for word."
+    },
+    "alumniPop.close": {
+      "group": "alumni",
+      "text": "Close",
+      "where": "Alumni pop-up: the button that closes it and goes on to the Alumni page."
+    },
     "legal.version": {
       "group": "page",
       "text": "Version {{n}}.",

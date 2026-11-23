@@ -212,3 +212,47 @@ if (signinLink && signinPop && typeof signinPop.showModal === "function") {
   signinPop.addEventListener("click", (e) => { if (e.target === signinPop) signinPop.close(); });
   window.addEventListener("pageshow", (e) => { if (e.persisted && signinPop.open) signinPop.close(); });
 }
+
+/* The Alumni pop-up (layout.mjs draws it; its words are the Email List page's): pressing an
+   Alumni link — in the navigation, the footer, or a page — opens the invite over the page
+   the visitor is on, once per visit: this tab remembers in sessionStorage, so pressing
+   Alumni again, or going back and forth, goes straight to the page. Closing the invite —
+   its Close button or Escape — completes the press and lands on the Alumni page; pressing
+   it while already there just closes. Its own button goes straight to the email list form
+   and is left to navigate on its own. It is shown without showModal (the development notice
+   is the model): nothing traps focus, and the Safety Exit pill stays pressable while it is
+   up. Not inside a frame (the staff page's previews frame pages). Without a working dialog
+   the links are left alone: they go to the Alumni page as they always have. */
+const alumniPop = document.querySelector("[data-alumni-pop]");
+if (alumniPop && window.self === window.top && typeof alumniPop.show === "function") {
+  const KEY = "bss-alumni-pop";
+  const seen = () => { try { return sessionStorage.getItem(KEY) === "1"; } catch { return false; } };
+  const mark = () => { try { sessionStorage.setItem(KEY, "1"); } catch { /* storage off: it may show again */ } };
+  const isAlumni = (url) => url.pathname.replace(/\/$/, "") === "/join/alumni";
+  let dest = null, viaCta = false;
+  for (const a of document.querySelectorAll("a[href]")) {
+    if (a.target && a.target !== "_self") continue;
+    let url;
+    try { url = new URL(a.href); } catch { continue; }
+    if (url.origin !== location.origin || !isAlumni(url)) continue;
+    a.addEventListener("click", (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || seen() || alumniPop.open) return;
+      e.preventDefault();
+      mark();
+      dest = a.href;
+      alumniPop.show();
+      alumniPop.querySelector("[data-alumni-close]")?.focus();
+    });
+  }
+  alumniPop.querySelector("[data-alumni-cta]")?.addEventListener("click", () => { viaCta = true; });
+  alumniPop.querySelector("[data-alumni-close]")?.addEventListener("click", () => alumniPop.close());
+  alumniPop.addEventListener("keydown", (e) => { if (e.key === "Escape") alumniPop.close(); });
+  alumniPop.addEventListener("close", () => {
+    const go = dest;
+    dest = null;
+    const here = location.pathname.replace(/\/$/, "");
+    if (!viaCta && go && new URL(go).pathname.replace(/\/$/, "") !== here) location.assign(go);
+    viaCta = false;
+  });
+  window.addEventListener("pageshow", (e) => { if (e.persisted && alumniPop.open) { viaCta = true; alumniPop.close(); } });
+}

@@ -602,7 +602,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-971 keys. Keys are permanent. Required text cannot be published empty and must keep each
+975 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1598,7 +1598,7 @@ the site adds the markup.
 | `explore.events.window.all` | All Dates | On the Campus Events Explorer: the window button, group heading and count line for every listed date. |  |
 | `explore.events.countOurs` | {{n}} from Badger Supports | On the Campus Events Explorer: in the count line, how many of the events shown are Badger Supports' own programs. | `{{n}}` |
 
-### Alumni History (6)
+### Alumni History (10)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1608,6 +1608,10 @@ the site adds the markup.
 | `alumni.disabled` | For alumni history or corrections, please email us. | History source not activated; do not imply a public roster exists. |  |
 | `alumni.empty` | No alumni history is published here yet. | Approved source with no public records. |  |
 | `alumni.unavailable` | Alumni history could not be loaded. Please try again later or email us. | History source is temporarily unavailable; never a claim that no alumni exist. |  |
+| `alumniPop.title` | Join Our Email List | Alumni pop-up: its heading. The Email List page's title, word for word. |  |
+| `alumniPop.line` | Students, community members and former Badger Supports, Badger Support Network and SPILL supporters, staff, volunteers and leaders are welcome to request updates. | Alumni pop-up: the line under its heading. The Email List page's opening line, word for word. |  |
+| `alumniPop.cta` | Request Email Updates | Alumni pop-up: its button, to the email list form. The Email List page's button, word for word. |  |
+| `alumniPop.close` | Close | Alumni pop-up: the button that closes it and goes on to the Alumni page. |  |
 
 ### Discover Classes by Interest (27)
 

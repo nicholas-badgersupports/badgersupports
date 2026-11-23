@@ -110,7 +110,8 @@
       ],
       "photos": [
         "m-peer-group-circle"
-      ]
+      ],
+      "boxed": true
     },
     {
       "id": "b-pg-talk",

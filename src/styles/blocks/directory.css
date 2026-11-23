@@ -9,7 +9,7 @@
 .dy-items { list-style: none; display: grid; gap: var(--s2); padding: 0; margin: 0; }
 .dy-items li { display: grid; gap: .1rem; }
 /* the mark follows the last word, so a name on two lines does not push it to the far edge */
-.dy-items a { justify-self: start; min-height: 24px; font-weight: 600; }
+.dy-items a { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; font-weight: 600; }
 .dy-items .go-ic { display: inline-block; width: 1.1em; height: 1.1em; margin-left: .35em; vertical-align: -.15em; color: var(--accent); stroke-width: 2.3; }
 .dy-name { font-weight: 600; }
 .dy-addr { font-size: var(--fs-small); color: var(--muted); }

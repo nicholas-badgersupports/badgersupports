@@ -16,7 +16,7 @@
   border-bottom: var(--rule-line);
 }
 .site-header .wrap { display: flex; align-items: center; gap: var(--s4); min-height: var(--header-h); }
-.brand { flex: none; display: inline-flex; align-items: center; gap: .55rem; color: var(--red); text-decoration: none; margin-right: auto; }
+.brand { flex: none; display: inline-flex; align-items: center; gap: .55rem; color: var(--red); text-decoration: none; margin-right: auto; min-height: 44px; }
 .brand:hover { color: var(--red); text-decoration: none; }
 .brand img { width: 30px; height: auto; }
 .brand span { font: 800 1.6rem/1 var(--font-display); letter-spacing: -.01em; padding-top: .2rem; white-space: nowrap; }

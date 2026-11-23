@@ -11,12 +11,13 @@
 import { html } from "../html.mjs";
 import { link } from "../context.mjs";
 import { picture } from "../media.mjs";
+import { resourceCard, resourceVisible } from "./resources.mjs";
 
 export default {
   type: "pagehead",
   label: "Page opening",
-  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean" },
-  data: [],
+  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", floatCards: "resource[]" },
+  data: ["resources"],
   analytics: "page",
   loading: "eager",
   render(b, ctx) {
@@ -26,6 +27,16 @@ export default {
     const primary = b.primary || (b.firstLinkPrimary ? b.links?.[0] : null);
     const links = b.firstLinkPrimary && !b.primary ? b.links?.slice(1) : b.links;
     const actions = primary || links?.length;
+    /* An opening may float real resource cards in its open space: `floatCards` names records
+       by id, each with the topic label the page's own list gives it, and the resource list's
+       own resourceCard draws them, so a floating card is the card itself. A record the page's
+       list would not show does not float. Only the Resources opening sets the field. */
+    const floaters = (b.floatCards || []).map((f) => {
+      const r = (ctx.data.resources || []).find((x) => x && x.id === f.id && resourceVisible(x));
+      return r ? { r, topic: f.topic } : null;
+    }).filter(Boolean);
+    const floatTopicOf = new Map(floaters.map(({ r, topic }) => [r.primaryCategory, topic]));
+    const floatHtml = floaters.length ? html`<ul class="res-float">${floaters.map(({ r }) => resourceCard(r, ctx, floatTopicOf))}</ul>` : "";
     return html`<section class="${["pagehead band", photos.length ? `has-photos has-${photos.length}` : null, b.whole ? "is-whole" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="pagehead-words">
     <h1 id="${b.id}-h">${b.title}</h1>
@@ -38,6 +49,7 @@ export default {
       ${(links || []).map((l) => link(ctx, l.href, l.label, { class: "go", icon: l.icon || "arrow" }))}
     </div>` : ""}
   ${photos.length ? html`<div class="pagehead-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: true, priority: i === 0 ? "high" : null })}</div>`)}</div>` : ""}
+  ${floatHtml}
 </div></section>`;
   },
 };

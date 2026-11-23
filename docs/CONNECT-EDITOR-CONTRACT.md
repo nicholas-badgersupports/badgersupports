@@ -298,7 +298,7 @@ Reads: `team`, `teamSample` · analytics: `page` · photos load eager
 
 ### Page opening — `pagehead`
 
-Reads: nothing but its own fields · analytics: `page` · photos load eager
+Reads: `resources` · analytics: `page` · photos load eager
 
 | Field | Type | |
 |---|---|---|
@@ -311,6 +311,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `firstLinkPrimary` | on or off |  |
 | `whole` | on or off |  |
+| `floatCards` | resource cards to show, in order: each a resource's `id` and the `topic` label the page's list gives it |  |
 
 ### Photo cards — `cards`
 

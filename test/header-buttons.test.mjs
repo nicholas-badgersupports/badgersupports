@@ -2,8 +2,10 @@
    treatment and every other pill goes quieter in the header's own colour — never grey, never the
    old white — and on a desktop the pagehead row never wraps. The event hero's two rows are the
    exception (owner, 13 Nov 2026): in the hero's narrower column the strip cut the last button,
-   so they wrap on a desktop too. These tests pin the rules in blocks.css and re-measure the
-   shipped colour pairs from tokens.css. */
+   so they wrap on a desktop too. Amended 23 Nov 2026: the pagehead row wraps on a desktop too —
+   its scrolling strip cut the workshops hero's last pill in half at the edge, the same fault.
+   These tests pin the rules in blocks.css and re-measure the shipped colour pairs from
+   tokens.css. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -38,16 +40,16 @@ test("event-hero pills are a cream wash over the hero's own colour, cream words"
   assert.doesNotMatch(r, /--field|#fff/i);
 });
 
-test("on a desktop the pagehead row never wraps; it scrolls in its own strip instead", () => {
-  for (const sel of [".pagehead-actions"]) {
-    const j = css.indexOf(sel + " { flex-wrap: nowrap");
-    assert.ok(j >= 0, `${sel} nowrap rule`);
-    const media = css.lastIndexOf("@media", j);
-    assert.match(css.slice(media, css.indexOf("{", media)), /min-width: 861px/, `${sel} is in the desktop block`);
-    const r = css.slice(j, css.indexOf("}", j));
-    assert.match(r, /overflow-x: auto/, sel);
-    assert.match(r, /scrollbar-width: none/, sel);
-  }
+test("on a desktop the pagehead row wraps too, so no pill is cut at the edge", () => {
+  /* The strip's turn (23 Nov 2026): as a sideways-scrolling strip the Request a Workshop
+     hero's six buttons ran wider than the band and the last pill sat cut in half at the edge
+     with no cue the strip scrolled — the same fault the event hero's rows were unwrapped for
+     on 13 Nov 2026. The base rule wraps; this pins that the desktop block no longer overrides
+     that with a strip. (This test replaces the one that pinned the strip, which the owner's
+     fix ruling of 23 Nov 2026 superseded.) */
+  assert.equal(css.indexOf(".pagehead-actions { flex-wrap: nowrap"), -1);
+  assert.equal(css.indexOf(".pagehead-actions::-webkit-scrollbar"), -1);
+  assert.match(rule(".pagehead-actions"), /flex-wrap: wrap/);
 });
 
 test("the event hero's rows wrap on a desktop too, so every button stays in the frame", () => {

@@ -65,6 +65,12 @@
 .bus-stopbtn:hover { background: var(--cream-soft); }
 .bus-stopbtn.is-here { font-weight: 800; }
 .bus-map { height: 26rem; border: var(--hairline); border-radius: var(--r-card); background: var(--cream-soft); }
+/* Leaflet's own sheet, which the page loads after this one, gives the map's zoom buttons a
+   30px box — the smallest tap target on the site. The site's buttons never go under 44px, so
+   the zoom pair is brought up to that size. The longer selector is deliberate: Leaflet's touch
+   rule for the same buttons carries two classes of its own, so a plainer selector would only
+   tie it and lose on load order. */
+.busroutes .bus-map .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; }
 .bus-mapnote { color: var(--muted); font-size: var(--fs-small); }
 .bus-vehwrap { background: none; border: 0; }
 .bus-veh { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--red); border: 3px solid var(--paper); box-shadow: 0 0 0 1px var(--line); }

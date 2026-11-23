@@ -10,7 +10,10 @@
 .ribbon-card > summary::-webkit-details-marker { display: none; }
 .ribbon-card > summary:hover, .ribbon-card > summary:focus-visible { background: var(--paper); }
 .ribbon-card-art { display: grid; place-items: center; }
-.ribbon-caption { display: flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 2.3em; }
+/* The caption box is two lines tall, the longest a name needs (23 Nov 2026): at one line and a
+   bit, a name that wrapped to two lines ("Two-Tone Blue", "Parkinson's UK") made its tile 4px
+   taller than its neighbour's in the row. */
+.ribbon-caption { display: flex; align-items: center; justify-content: center; gap: var(--s2); min-height: 2.7em; }
 .ribbon-name { min-width: 0; font: 800 1rem/1.35 var(--font-body); color: var(--ink); text-align: center; }
 .ribbon-open { display: inline-flex; flex-shrink: 0; color: var(--accent); }
 .ribbon-open .ic { width: 1rem; height: 1rem; }

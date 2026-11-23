@@ -1152,6 +1152,311 @@ function roomsSection() {
   return section;
 }
 
+/* ---------- hub events ---------- */
+
+/* A refused event save, said in the event's own words: [the code, the field's label key, its limit]. */
+const EVENT_WORD_ERRORS = { "event.description": ["staff.events.field.description", "description"],
+  "event.label": ["staff.events.field.label", "label"], "event.lead": ["staff.events.field.lead", "lead"],
+  "event.body": ["staff.events.field.body", "paragraph"], "event.details": ["staff.events.field.details", "detail"],
+  "event.peopleTitle": ["staff.events.field.peopleTitle", "sectionTitle"], "event.directionsTitle": ["staff.events.field.directionsTitle", "directionsTitle"],
+  "event.highlights": ["staff.events.field.highlightsTitle", "sectionTitle"], "event.programme": ["staff.events.field.programmeTitle", "sectionTitle"] };
+
+/* The Hub Events part: every Student Mental Health Hub event and its own page, made and changed here.
+   An event is saved whole, as one change that publishes, the way a room's words are; the form is
+   built once per event, so what was typed stands through a refusal or a stale tab, and a second save
+   then goes over what was saved since, knowingly. A new event's id and address are the server's to
+   give (its title's words, under /initiatives/), unless an address is typed for it. */
+function eventsSection() {
+  const body = el("div", {}, el("p", { textContent: t("staff.pages.loading") }));
+  const section = el("section", { className: "staff-part" },
+    el("h2", { id: "staff-events-h", textContent: t("staff.events.title") }), el("p", { textContent: t("staff.events.how") }), body);
+  section.setAttribute("aria-labelledby", "staff-events-h");
+  let list = null, open = null;
+
+  const lines = (ta) => ta.value.split("\n").map((x) => x.trim()).filter(Boolean);
+  const photoOption = (p) => el("option", { value: p.id, textContent: p.alt.length > 90 ? `${p.alt.slice(0, 89)}…` : p.alt || p.id });
+  /* A library photo choice with the photo itself beside it, as a room step's is. Returns [field, select]. */
+  const photoField = (label, value) => {
+    const select = el("select", {}, el("option", { value: "", textContent: t("staff.events.photo.none") }), ...list.photos.map(photoOption));
+    select.value = value || "";
+    const thumb = el("img", { className: "staff-thumb", alt: "", width: 96, height: 72, hidden: true });
+    const look = () => { const p = list.photos.find((x) => x.id === select.value); thumb.hidden = !p; if (p) thumb.src = p.src; };
+    select.addEventListener("change", look);
+    look();
+    const f = field(label, select);
+    f.append(thumb);
+    return [f, select];
+  };
+  const iconSelect = (value) => {
+    const s = el("select", {}, el("option", { value: "", textContent: t("staff.events.icon.none") }),
+      ...list.icons.map((n) => el("option", { value: n, textContent: n })));
+    s.value = value || "";
+    return s;
+  };
+  /* A repeatable set of rows (buttons, people, points, items): each row is built by `make`, read by
+     its own read(); rows are live elements, so adding or taking one away keeps what the others hold. */
+  const rowSet = (make, addKey) => {
+    const holder = el("div", {});
+    const rows = [];
+    const renumber = () => rows.forEach((r) => r.draw?.());
+    const add = (value) => { const row = make(value, () => { row.el.remove(); rows.splice(rows.indexOf(row), 1); renumber(); }); rows.push(row); holder.append(row.el); renumber(); };
+    const addBtn = el("button", { type: "button", className: "btn btn--quiet", textContent: t(addKey) });
+    addBtn.addEventListener("click", () => add(null));
+    return { el: el("div", {}, holder, el("div", { className: "staff-actions" }, addBtn)), add,
+      read: () => rows.map((r) => r.read()).filter(Boolean) };
+  };
+  const linkRow = (headingKey) => (value, remove) => {
+    const label = textInput(value?.label || "");
+    const href = textInput(value?.href || "");
+    const icon = iconSelect(value?.icon);
+    const away = el("button", { type: "button", className: "btn btn--quiet" });
+    const box = el("fieldset", { className: "staff-step" }, el("legend", {}),
+      field(t("staff.events.field.linkLabel"), label), field(t("staff.events.field.linkHref"), href),
+      field(t("staff.events.field.linkIcon"), icon), el("div", { className: "staff-actions" }, away));
+    const legend = box.querySelector("legend");
+    const n = () => [...box.parentElement.children].indexOf(box) + 1;
+    away.addEventListener("click", remove);
+    const draw = () => { legend.textContent = t(headingKey, { n: n() }); away.textContent = t("staff.events.removeLink", { n: n() }); };
+    return { el: box, draw, read: () => {
+      const l = label.value.trim(), h = href.value.trim();
+      if (!l && !h) return null;
+      return { label: l, href: h, ...(icon.value ? { icon: icon.value } : {}) };
+    } };
+  };
+
+  function eventForm(ev) {
+    const isNew = !ev;
+    const box = el("div", { hidden: true });
+    const say2 = (words) => { box.replaceChildren(noteBox(words)); box.hidden = false; say(words); };
+    const title = textInput(ev?.title || "");
+    const path = textInput(ev?.path || "");
+    const label = textInput(ev?.label || "");
+    const lead = textInput(ev?.lead || "");
+    const description = el("textarea", { rows: 2, value: ev?.description || "" });
+    const bodyTa = el("textarea", { rows: 5, value: (ev?.body || []).join("\n") });
+    const detailsTa = el("textarea", { rows: 3, value: (ev?.details || []).join("\n") });
+    const [hp1, hs1] = photoField(t("staff.events.photo", { n: 1 }), ev?.photos?.[0]);
+    const [hp2, hs2] = photoField(t("staff.events.photo", { n: 2 }), ev?.photos?.[1]);
+    const [hp3, hs3] = photoField(t("staff.events.photo", { n: 3 }), ev?.photos?.[2]);
+    const primaryLabel = textInput(ev?.primary?.label || "");
+    const primaryHref = textInput(ev?.primary?.href || "");
+    const moreLinks = rowSet(linkRow("staff.events.link"), "staff.events.addLink");
+    (ev?.links || []).forEach((l) => moreLinks.add(l));
+    const peopleTitle = textInput(ev?.peopleTitle || "");
+    const people = rowSet((value, remove) => {
+      const [pf, ps] = photoField(t("staff.events.field.personPhoto"), value?.photo);
+      const name = textInput(value?.name || "");
+      const role = textInput(value?.role || "");
+      const line = textInput(value?.line || "");
+      const away = el("button", { type: "button", className: "btn btn--quiet" });
+      const box2 = el("fieldset", { className: "staff-step" }, el("legend", {}), pf,
+        field(t("staff.events.field.personName"), name), field(t("staff.events.field.personRole"), role),
+        field(t("staff.events.field.personLine"), line), el("div", { className: "staff-actions" }, away));
+      const legend = box2.querySelector("legend");
+      const n = () => [...box2.parentElement.children].indexOf(box2) + 1;
+      away.addEventListener("click", remove);
+      return { el: box2, draw: () => { legend.textContent = t("staff.events.person", { n: n() }); away.textContent = t("staff.events.removePerson", { n: n() }); },
+        read: () => { const nm = name.value.trim();
+          if (!nm && !role.value.trim() && !line.value.trim() && !ps.value) return null;
+          return { photo: ps.value || null, name: nm, role: role.value.trim(), line: line.value.trim() }; } };
+    }, "staff.events.addPerson");
+    (ev?.people || []).forEach((p) => people.add(p));
+    const hiTitle = textInput(ev?.highlights?.title || "");
+    const hiBody = el("textarea", { rows: 3, value: (ev?.highlights?.body || []).join("\n") });
+    const hiItems = rowSet((value, remove) => {
+      const icon = iconSelect(value?.icon);
+      const text = textInput(value?.text || "");
+      const away = el("button", { type: "button", className: "btn btn--quiet" });
+      const box2 = el("fieldset", { className: "staff-step" }, el("legend", {}),
+        field(t("staff.events.field.itemIcon"), icon), field(t("staff.events.field.itemText"), text),
+        el("div", { className: "staff-actions" }, away));
+      const legend = box2.querySelector("legend");
+      const n = () => [...box2.parentElement.children].indexOf(box2) + 1;
+      away.addEventListener("click", remove);
+      return { el: box2, draw: () => { legend.textContent = t("staff.events.item", { n: n() }); away.textContent = t("staff.events.removeItem", { n: n() }); },
+        read: () => { const tx = text.value.trim(); if (!tx && !icon.value) return null;
+          return { ...(icon.value ? { icon: icon.value } : {}), text: tx }; } };
+    }, "staff.events.addItem");
+    (ev?.highlights?.items || []).forEach((it) => hiItems.add(it));
+    const [hip1, his1] = photoField(t("staff.events.photo", { n: 1 }), ev?.highlights?.photos?.[0]);
+    const [hip2, his2] = photoField(t("staff.events.photo", { n: 2 }), ev?.highlights?.photos?.[1]);
+    const prTitle = textInput(ev?.programme?.title || "");
+    const program = choice([["peer", t("staff.events.program.peer")], ["craft", t("staff.events.program.craft")], ["workshops", t("staff.events.program.workshops")]], ev?.programme?.program || "peer");
+    const topics = rowSet((value, remove) => {
+      const term = textInput(value?.term || "");
+      const text = textInput(value?.text || "");
+      const href = textInput(value?.href || "");
+      const away = el("button", { type: "button", className: "btn btn--quiet" });
+      const box2 = el("fieldset", { className: "staff-step" }, el("legend", {}),
+        field(t("staff.events.field.topicTerm"), term), field(t("staff.events.field.topicText"), text),
+        field(t("staff.events.field.topicHref"), href), el("div", { className: "staff-actions" }, away));
+      const legend = box2.querySelector("legend");
+      const n = () => [...box2.parentElement.children].indexOf(box2) + 1;
+      away.addEventListener("click", remove);
+      return { el: box2, draw: () => { legend.textContent = t("staff.events.topic", { n: n() }); away.textContent = t("staff.events.removeTopic", { n: n() }); },
+        read: () => { const tm = term.value.trim();
+          if (!tm && !text.value.trim() && !href.value.trim()) return null;
+          return { term: tm, text: text.value.trim(), ...(href.value.trim() ? { href: href.value.trim() } : {}) }; } };
+    }, "staff.events.addTopic");
+    (ev?.programme?.topics || []).forEach((tp) => topics.add(tp));
+    const [pp1, ps1] = photoField(t("staff.events.photo", { n: 1 }), ev?.programme?.photos?.[0]);
+    const [pp2, ps2] = photoField(t("staff.events.photo", { n: 2 }), ev?.programme?.photos?.[1]);
+    const prLinks = rowSet(linkRow("staff.events.link"), "staff.events.addLink");
+    (ev?.programme?.links || []).forEach((l) => prLinks.add(l));
+    const galleryFields = [];
+    const gallerySelects = [];
+    for (let i = 0; i < 4; i++) { const [f, s] = photoField(t("staff.events.photo", { n: i + 1 }), ev?.gallery?.[i]); galleryFields.push(f); gallerySelects.push(s); }
+    const place = el("select", {}, el("option", { value: "", textContent: t("staff.events.place.none") }),
+      ...list.places.map((p) => el("option", { value: p.id, textContent: p.name })));
+    place.value = ev?.place || "";
+    const directionsTitle = textInput(ev?.directionsTitle || "");
+    const shown = el("input", { type: "checkbox" });
+    shown.checked = !ev?.hidden;
+    const save = el("button", { type: "submit", className: "btn", textContent: t("staff.events.save") });
+    const cancel = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.pages.cancel") });
+    const form = el("form", { className: "staff-room", noValidate: true }, box,
+      field(t("staff.events.field.title"), title),
+      field(t("staff.events.field.path"), path, t("staff.events.help.path")),
+      field(t("staff.events.field.label"), label, t("staff.events.help.label")),
+      field(t("staff.events.field.lead"), lead),
+      field(t("staff.events.field.description"), description),
+      field(t("staff.events.field.body"), bodyTa, t("staff.events.help.body")),
+      field(t("staff.events.field.details"), detailsTa, t("staff.events.help.details")),
+      el("h3", { textContent: t("staff.events.field.photos") }), el("p", { className: "field-help", textContent: t("staff.events.help.photos") }), hp1, hp2, hp3,
+      field(t("staff.events.field.primaryLabel"), primaryLabel),
+      field(t("staff.events.field.primaryHref"), primaryHref),
+      el("h3", { textContent: t("staff.events.field.links") }), moreLinks.el,
+      field(t("staff.events.field.peopleTitle"), peopleTitle, t("staff.events.help.peopleTitle")),
+      el("h3", { textContent: t("staff.events.field.people") }), people.el,
+      field(t("staff.events.field.highlightsTitle"), hiTitle, t("staff.events.help.highlightsTitle")),
+      field(t("staff.events.field.highlightsBody"), hiBody),
+      el("h3", { textContent: t("staff.events.field.items") }), hiItems.el,
+      el("h3", { textContent: t("staff.events.field.highlightsPhotos") }), hip1, hip2,
+      field(t("staff.events.field.programmeTitle"), prTitle, t("staff.events.help.programmeTitle")),
+      field(t("staff.events.field.program"), program),
+      el("h3", { textContent: t("staff.events.field.topics") }), topics.el,
+      el("h3", { textContent: t("staff.events.field.programmePhotos") }), pp1, pp2,
+      el("h3", { textContent: t("staff.events.field.programmeLinks") }), prLinks.el,
+      el("h3", { textContent: t("staff.events.field.gallery") }), el("p", { className: "field-help", textContent: t("staff.events.help.gallery") }), ...galleryFields,
+      field(t("staff.events.field.place"), place),
+      field(t("staff.events.field.directionsTitle"), directionsTitle),
+      field(t("staff.events.field.shown"), shown),
+      el("div", { className: "staff-actions" }, save, cancel));
+    const read = () => ({ schema: "bss.hubevent/1", ...(ev?.id ? { id: ev.id } : {}),
+      ...(path.value.trim() ? { path: path.value.trim() } : {}),
+      hidden: !shown.checked, order: ev?.order ?? nextOrder(), title: title.value.trim(),
+      description: description.value.trim(), label: label.value.trim(), lead: lead.value.trim(),
+      body: lines(bodyTa), details: lines(detailsTa),
+      photos: [hs1.value, hs2.value, hs3.value].filter(Boolean),
+      primary: primaryLabel.value.trim() || primaryHref.value.trim() ? { label: primaryLabel.value.trim(), href: primaryHref.value.trim() } : null,
+      links: moreLinks.read(), peopleTitle: peopleTitle.value.trim(), people: people.read(),
+      highlights: hiTitle.value.trim() ? { title: hiTitle.value.trim(), body: lines(hiBody), items: hiItems.read(), photos: [his1.value, his2.value].filter(Boolean) } : null,
+      programme: prTitle.value.trim() ? { program: program.value, title: prTitle.value.trim(), topics: topics.read(), photos: [ps1.value, ps2.value].filter(Boolean), links: prLinks.read() } : null,
+      gallery: gallerySelects.map((s) => s.value).filter(Boolean),
+      place: place.value || null, directionsTitle: directionsTitle.value.trim() });
+    let started = null, seenVersion = list.version, startedRecord = ev ? JSON.stringify(ev) : null;
+    const sameAs = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    started = read();
+    async function send() {
+      if (isBusy(save)) return;
+      const rec = read();
+      if (sameAs(rec, started)) return say2(t("staff.events.unchanged"));
+      const undo = busy(save, t("staff.pages.saving"));
+      const r = await call("/api/staff/pages", { method: "POST", body: { action: "event", events: [rec], expected: seenVersion } }).catch(offline);
+      undo();
+      if (!section.isConnected) return;
+      if (r.status === 409 && r.body.current) {
+        seenVersion = r.body.current;
+        if (Array.isArray(r.body.events)) { list = { ...list, version: r.body.current, events: r.body.events }; }
+        say2(t("staff.events.conflict"));
+        draw();
+        return;
+      }
+      if (r.status === 422 || r.status === 400) {
+        const code = r.body.error || "";
+        if (code === "event.title") return say2(t("staff.events.error.title", { max: list.limits.title }));
+        if (code === "event.photo") return say2(t("staff.events.error.photo"));
+        if (code === "event.link") return say2(t("staff.events.error.link"));
+        if (code === "event.path" || code === "event.id" || code === "event.unknown") return say2(t("staff.events.error.path"));
+        if (code === "event.place") return say2(t("staff.events.error.place"));
+        if (code === "event.people") return say2(t("staff.events.error.people"));
+        if (code === "event.icon") return say2(t("staff.events.error.icon"));
+        const w = EVENT_WORD_ERRORS[code];
+        if (w) return say2(t("staff.events.error.words", { field: t(w[0]), max: list.limits[w[1]] }));
+        return say2(t("staff.pages.error.failed"));
+      }
+      if (r.status !== 200) { const [, words] = r.status === 0 ? [null, t("staff.pages.error.failed")] : refused(r); return say2(words); }
+      say(r.body.publishError ? t("staff.edit.updateFailed") : t("staff.events.done"));
+      published();
+      pagesChanged();
+      const id = r.body.event || ev?.id;
+      await load();
+      const fresh = list.events.find((x) => x.id === id);
+      if (fresh) { open = eventForm(fresh); draw(); }
+    }
+    form.addEventListener("submit", async (e) => { e.preventDefault(); await send(); if (form.isConnected && (!document.activeElement || document.activeElement === document.body)) save.focus(); });
+    cancel.addEventListener("click", () => { open = null; draw(); });
+    return { id: ev?.id || null, isNew, form, first: title,
+      syncTo: (fresh) => { if (fresh && startedRecord === JSON.stringify(fresh)) seenVersion = list.version; } };
+  }
+  const nextOrder = () => (list.events.reduce((m, e) => Math.max(m, e.order || 0), 0) + 1);
+
+  async function move(ev, dir) {
+    const i = list.events.indexOf(ev);
+    const other = list.events[i + dir];
+    if (!other) return;
+    const a = { ...ev, order: other.order }, b = { ...other, order: ev.order };
+    const r = await call("/api/staff/pages", { method: "POST", body: { action: "event", events: [a, b], expected: list.version } }).catch(offline);
+    if (!section.isConnected) return;
+    if (r.status !== 200) { const [, words] = r.status === 0 ? [null, t("staff.pages.error.failed")] : refused(r); say(words); await load(); return; }
+    say(t("staff.events.done"));
+    published();
+    pagesChanged();
+    await load();
+  }
+
+  function draw() {
+    const items = list.events.map((ev, i) => {
+      const change = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.events.open") });
+      change.setAttribute("aria-label", t("staff.events.openName", { name: ev.title }));
+      change.dataset.event = ev.id;
+      change.setAttribute("aria-expanded", String(open?.id === ev.id));
+      change.addEventListener("click", () => {
+        if (open?.id === ev.id) return open.first.focus();
+        open = eventForm(ev);
+        draw();
+        open.first.focus();
+      });
+      const up = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.events.up"), disabled: i === 0 });
+      up.addEventListener("click", () => move(ev, -1));
+      const down = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.events.down"), disabled: i === list.events.length - 1 });
+      down.addEventListener("click", () => move(ev, 1));
+      const look = el("a", { className: "btn btn--quiet", target: "_blank", rel: "noopener", href: `/api/staff/preview/pg-${ev.id}`, textContent: t("staff.events.look") });
+      return el("li", { className: "staff-form" },
+        el("h3", { textContent: ev.title }),
+        el("p", { textContent: [ev.label, ev.path].filter(Boolean).join(" · ") }),
+        ...(ev.hidden ? [el("p", {}, el("span", { className: "staff-chip is-closed", textContent: t("staff.events.hidden") }))] : []),
+        el("div", { className: "staff-actions" }, change, up, down, look),
+        open?.id === ev.id && open.form);
+    });
+    const fresh = el("button", { type: "button", className: "btn", textContent: t("staff.events.new") });
+    fresh.addEventListener("click", () => { open = eventForm(null); draw(); open.first.focus(); });
+    body.replaceChildren(el("ul", { className: "staff-forms" }, ...items),
+      ...(open?.isNew ? [open.form] : []),
+      el("div", { className: "staff-actions" }, fresh));
+  }
+  async function load() {
+    const r = await call("/api/staff/events").catch(offline);
+    if (!section.isConnected) return;
+    if (r.status !== 200) { const [box] = refused(r); body.replaceChildren(box); return; }
+    list = r.body;
+    if (open && !open.isNew) { const mine = list.events.find((x) => x.id === open.id); if (mine) open.syncTo(mine); }
+    draw();
+  }
+  load();
+  return section;
+}
+
 /* ---------- earlier versions ---------- */
 
 function versionsSection(me) {
@@ -1248,9 +1553,9 @@ function before(mode) {
    at all gets the standing note instead, where it stood before. */
 function overviewSection(me, go, offered, bare) {
   const TITLES = { forms: "staff.forms.title", words: "staff.edit.title", pages: "staff.pages.title",
-    rooms: "staff.rooms.title", versions: "staff.versions.title", settings: "staff.settings.title" };
+    rooms: "staff.rooms.title", events: "staff.events.title", versions: "staff.versions.title", settings: "staff.settings.title" };
   const LINES = { forms: t("staff.overview.tool.forms"), words: t("staff.overview.tool.words"), pages: t("staff.overview.tool.pages"),
-    rooms: t("staff.overview.tool.rooms"), versions: t("staff.overview.tool.versions"), settings: t("staff.overview.tool.settings") };
+    rooms: t("staff.overview.tool.rooms"), events: t("staff.overview.tool.events"), versions: t("staff.overview.tool.versions"), settings: t("staff.overview.tool.settings") };
   const found = { deliveries: null, drafts: null };
   const needs = el("div", { className: "staff-needs" });
   const draw = () => {
@@ -1322,6 +1627,7 @@ function showTools(me) {
   add("words", pages && editSection(me), "staff.edit.title");
   add("pages", pages && pagesSection(me, (d) => overview?.notePages(d)), "staff.pages.title");
   add("rooms", me.canPublish && roomsSection(), "staff.rooms.title");
+  add("events", me.canPublish && eventsSection(), "staff.events.title");
   add("versions", pages && versionsSection(me), "staff.versions.title");
   add("settings", me.canPublish && settingsSection(me), "staff.settings.title");
   /* Find a setting: one box over every view's own words — the labels of its fields, its folds

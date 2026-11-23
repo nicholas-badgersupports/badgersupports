@@ -46,12 +46,19 @@
  *   - Of a room, only its words (name, short, building, where, address, note, each step's text) and each step's photo
  *     change here; adding or taking down a room, its id, aliases, links, published flag and its steps' number and order
  *     stay a change in the files. A step's photo is a library photo or none, drawn at its own shape.
+ *   - The document may also hold the Hub events a publisher saved: events: { "<event id>": <a whole hub event
+ *     record, src/render/hubevents.mjs> }, the record as the Hub Events part sent it, checked whole. An event
+ *     saved here wins over the build's record with its id; one the build does not hold stands on its own. An
+ *     event's id is never given twice, as a page's is not: a hidden event keeps its record, so its id and its
+ *     address stay its own. layHubEvents lays the saved records over the build's.
  *
  * Pure: no files, no database, no clock.
  */
 
 import { BLOCKS } from "../render/registry.mjs";
 import { editProblem, valueProblem } from "./edits.mjs";
+import { ICONS } from "../render/icons.mjs";
+import { EVENT_LIMITS, EVENT_PROGRAMS, HUB_EVENT_SCHEMA, sortHubEvents } from "../render/hubevents.mjs";
 
 export const STRUCTURE_SCHEMA = "bss.structure/1";
 export const emptyStructure = () => ({ schema: STRUCTURE_SCHEMA, pages: {}, menu: null, removed: [], entries: {} });
@@ -321,6 +328,203 @@ export function layRooms(places, rooms, { media = null } = {}) {
 /* What the staff page shows of a room: its words and its steps' words and photos. */
 export const roomFields = (p) => ({ id: p.id, published: !!p.published, name: p.name || "", short: p.short || "", building: p.building || "",
   where: p.where || "", address: p.address || "", note: p.note || "", steps: (p.steps || []).map((s) => ({ id: s.id, text: s.text || "", photo: typeof s.photo === "string" ? s.photo : null })) });
+
+/* ---------- hub events: whole records, made and kept here ---------- */
+
+const EVENT_FIELDS = new Set(["schema", "id", "path", "hidden", "order", "title", "description", "label", "lead", "body", "details",
+  "photos", "primary", "links", "peopleTitle", "people", "highlights", "programme", "gallery", "place", "directionsTitle"]);
+const EVENT_ID_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/* A word of an event, checked as a saved page word is (not empty, no markup, not a link), and at most
+   `max` characters. An optional word may be empty, and cleans to "". */
+function eventWord(value, code, max, { optional = false } = {}) {
+  if (value === undefined || value === null) { if (optional) return ""; fail(code); }
+  if (typeof value !== "string") fail(code);
+  const v = clean(value);
+  if (!v) { if (optional) return ""; fail(code); }
+  if (editProblem("page:pg-hub-event:b-hub-event-head/title", value, "")) fail(code);
+  if (v.length > max) fail(code);
+  return v;
+}
+const eventWords = (value, code, max, each) => {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value) || value.length > max) fail(code);
+  return value.map((v) => eventWord(v, code, each));
+};
+/* A photo of an event: a library photo's id, as a room step's is, or null for none. */
+function eventPhoto(value, media, code = "event.photo") {
+  if (value === null || value === undefined || value === "") return null;
+  if (valueProblem("media", value, { media })) fail(code);
+  return value.trim();
+}
+const eventPhotos = (value, media, max) => {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value) || value.length > max) fail("event.photo");
+  return value.map((v) => eventPhoto(v, media));
+};
+function eventLink(raw, code = "event.link") {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) fail(code);
+  if (Object.keys(raw).some((k) => !["label", "href", "icon"].includes(k))) fail(code);
+  const label = eventWord(raw.label, code, EVENT_LIMITS.linkLabel);
+  if (typeof raw.href !== "string" || valueProblem("link", raw.href)) fail(code);
+  const out = { label, href: raw.href.trim() };
+  if (raw.icon !== undefined && raw.icon !== null && raw.icon !== "") {
+    if (valueProblem("icon", raw.icon, { options: ICONS })) fail("event.icon");
+    out.icon = raw.icon;
+  }
+  return out;
+}
+const eventLinks = (value, max) => {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value) || value.length > max) fail("event.link");
+  return value.map((l) => eventLink(l));
+};
+
+/* One event record, checked whole and returned in its full shape with its defaults filled in. `id`
+   and `path` are the record's own as given; eventChange settles a new record's. A section a record
+   does not carry (highlights, programme) stays null, and its page is drawn without it. */
+export function cleanHubEvent(raw, ctx = {}) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) fail("event.field");
+  if (Object.keys(raw).some((k) => !EVENT_FIELDS.has(k))) fail("event.field");
+  if (raw.schema !== undefined && raw.schema !== HUB_EVENT_SCHEMA) fail("event.field");
+  const media = ctx.media || null;
+  const ev = { schema: HUB_EVENT_SCHEMA, id: raw.id, path: raw.path, hidden: raw.hidden === true,
+    order: Number.isFinite(Number(raw.order)) ? Math.trunc(Number(raw.order)) : 0,
+    title: eventWord(raw.title, "event.title", EVENT_LIMITS.title),
+    description: eventWord(raw.description, "event.description", EVENT_LIMITS.description, { optional: true }),
+    label: eventWord(raw.label, "event.label", EVENT_LIMITS.label, { optional: true }),
+    lead: eventWord(raw.lead, "event.lead", EVENT_LIMITS.lead, { optional: true }),
+    body: eventWords(raw.body, "event.body", EVENT_LIMITS.paragraphs, EVENT_LIMITS.paragraph),
+    details: eventWords(raw.details, "event.details", EVENT_LIMITS.details, EVENT_LIMITS.detail),
+    photos: eventPhotos(raw.photos, media, EVENT_LIMITS.photos),
+    primary: raw.primary === undefined || raw.primary === null ? null : eventLink(raw.primary),
+    links: eventLinks(raw.links, EVENT_LIMITS.links),
+    peopleTitle: eventWord(raw.peopleTitle, "event.peopleTitle", EVENT_LIMITS.sectionTitle, { optional: true }),
+    people: [], highlights: null, programme: null,
+    gallery: eventPhotos(raw.gallery, media, EVENT_LIMITS.gallery),
+    place: null,
+    directionsTitle: eventWord(raw.directionsTitle, "event.directionsTitle", EVENT_LIMITS.directionsTitle, { optional: true }) };
+  if (raw.people !== undefined && raw.people !== null) {
+    if (!Array.isArray(raw.people) || raw.people.length > EVENT_LIMITS.people) fail("event.people");
+    ev.people = raw.people.map((p) => {
+      if (!p || typeof p !== "object" || Array.isArray(p) || Object.keys(p).some((k) => !["photo", "name", "role", "line"].includes(k))) fail("event.people");
+      return { photo: eventPhoto(p.photo, media), name: eventWord(p.name, "event.people", EVENT_LIMITS.personName),
+        role: eventWord(p.role, "event.people", EVENT_LIMITS.personRole, { optional: true }),
+        line: eventWord(p.line, "event.people", EVENT_LIMITS.personLine, { optional: true }) };
+    });
+  }
+  const sectionIn = (raw2, code) => {
+    if (raw2 === undefined || raw2 === null) return null;
+    if (typeof raw2 !== "object" || Array.isArray(raw2)) fail(code);
+    return raw2;
+  };
+  const hi = sectionIn(raw.highlights, "event.highlights");
+  if (hi) {
+    if (Object.keys(hi).some((k) => !["title", "body", "items", "photos"].includes(k))) fail("event.highlights");
+    const items = hi.items === undefined || hi.items === null ? [] : hi.items;
+    if (!Array.isArray(items) || items.length > EVENT_LIMITS.items) fail("event.highlights");
+    ev.highlights = { title: eventWord(hi.title, "event.highlights", EVENT_LIMITS.sectionTitle),
+      body: eventWords(hi.body, "event.highlights", 4, EVENT_LIMITS.paragraph),
+      items: items.map((it) => {
+        if (!it || typeof it !== "object" || Array.isArray(it) || Object.keys(it).some((k) => !["icon", "text"].includes(k))) fail("event.highlights");
+        const out = { text: eventWord(it.text, "event.highlights", EVENT_LIMITS.itemText) };
+        if (it.icon !== undefined && it.icon !== null && it.icon !== "") {
+          if (valueProblem("icon", it.icon, { options: ICONS })) fail("event.icon");
+          out.icon = it.icon;
+        }
+        return out;
+      }),
+      photos: eventPhotos(hi.photos, media, 3) };
+  }
+  const pr = sectionIn(raw.programme, "event.programme");
+  if (pr) {
+    if (Object.keys(pr).some((k) => !["program", "title", "topics", "photos", "links"].includes(k))) fail("event.programme");
+    if (pr.program !== undefined && !EVENT_PROGRAMS.includes(pr.program)) fail("event.programme");
+    const topics = pr.topics === undefined || pr.topics === null ? [] : pr.topics;
+    if (!Array.isArray(topics) || topics.length > EVENT_LIMITS.items) fail("event.programme");
+    ev.programme = { program: pr.program || "peer", title: eventWord(pr.title, "event.programme", EVENT_LIMITS.sectionTitle),
+      topics: topics.map((tp) => {
+        if (!tp || typeof tp !== "object" || Array.isArray(tp) || Object.keys(tp).some((k) => !["term", "text", "href"].includes(k))) fail("event.programme");
+        const out = { term: eventWord(tp.term, "event.programme", EVENT_LIMITS.topicTerm),
+          text: eventWord(tp.text, "event.programme", EVENT_LIMITS.topicText, { optional: true }) };
+        if (tp.href !== undefined && tp.href !== null && tp.href !== "") {
+          if (typeof tp.href !== "string" || valueProblem("link", tp.href)) fail("event.link");
+          out.href = tp.href.trim();
+        }
+        return out;
+      }),
+      photos: eventPhotos(pr.photos, media, 3), links: eventLinks(pr.links, EVENT_LIMITS.links) };
+  }
+  if (raw.place !== undefined && raw.place !== null && raw.place !== "") {
+    if (typeof raw.place !== "string" || (ctx.places && !ctx.places[raw.place]?.published)) fail("event.place");
+    ev.place = raw.place;
+  }
+  return ev;
+}
+
+/* A new event's id, from its title: the title's own words, hyphenated, skipping every id the build
+   or a saved event already holds, so an id is never given twice. */
+function newEventId(title, known) {
+  const base = String(title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40).replace(/-+$/, "") || "event";
+  let id = base;
+  for (let n = 2; known.has(id); n++) id = `${base.slice(0, 36)}-${n}`;
+  return id;
+}
+
+/* Save one or more whole event records (the Hub Events part sends one, or two whose order numbers
+   were swapped). A record with no id is a new event: its id comes from its title and its address
+   from its id, under /initiatives/, unless it brings its own. An address must be free: no page,
+   no other event, and not a reserved word may hold it; the event's own addresses as they stand are
+   its own. The whole change is refused if any record in it is refused. */
+function eventChange(doc, change, ctx) {
+  const list = change.events;
+  if (!Array.isArray(list) || !list.length || list.length > 50) fail("event.field");
+  const seed = ctx.hubEvents || [];
+  const known = new Set([...seed.map((e) => e.id), ...Object.keys(doc.events || {})]);
+  const taken = new Map();
+  for (const p of ctx.pages || []) if (p.path) taken.set(linkKey(p.path), p.id);
+  for (const e of [...seed, ...Object.values(doc.events || {})]) if (e?.path) taken.set(linkKey(e.path), `pg-${e.id}`);
+  const out = { ...(doc.events || {}) };
+  let first = null;
+  for (const raw of list) {
+    if (raw?.id !== undefined && raw?.id !== null && raw?.id !== "") {
+      if (typeof raw.id !== "string" || !EVENT_ID_RE.test(raw.id) || raw.id.length > 40) fail("event.id");
+      if (!known.has(raw.id)) fail("event.unknown");
+    }
+    const ev = cleanHubEvent(raw, ctx);
+    if (!ev.id) { ev.id = newEventId(ev.title, known); known.add(ev.id); }
+    if (!ev.path) ev.path = seed.find((e) => e.id === ev.id)?.path || out[ev.id]?.path || `/initiatives/${ev.id}/`;
+    if (typeof ev.path !== "string" || !PATH_RE.test(ev.path) || RESERVED.has(ev.path.split("/")[1])) fail("event.path");
+    const holder = taken.get(linkKey(ev.path));
+    if (holder && holder !== `pg-${ev.id}`) fail("event.path");
+    taken.set(linkKey(ev.path), `pg-${ev.id}`);
+    out[ev.id] = ev;
+    if (!first) first = ev.id;
+  }
+  doc.events = out;
+  return { doc, event: first };
+}
+
+/* The event records with the saved ones laid over the build's: a saved record replaces the
+   build's with its id whole, as the Hub Events part saved it whole; one that no longer passes its
+   check keeps the build's record, and one the build does not hold that fails is left out. With
+   nothing saved, the build's records as they are. In the order they are shown. */
+export function layHubEvents(seed, saved, { media = null, places = null } = {}) {
+  const base = (seed || []).map((ev) => structuredClone(ev));
+  if (!saved || !Object.keys(saved).length) return sortHubEvents(base);
+  const byId = new Map(base.map((ev) => [ev.id, ev]));
+  for (const [id, rec] of Object.entries(saved)) {
+    if (!rec || typeof rec !== "object") continue;
+    let cleaned = null;
+    try { cleaned = cleanHubEvent(rec, { media, places }); } catch { cleaned = null; }
+    if (cleaned) byId.set(id, cleaned);
+    else if (!byId.has(id)) byId.delete(id);
+  }
+  return sortHubEvents([...byId.values()]);
+}
+
+/* What the staff page shows of an event: the record itself, as the Hub Events part edits it whole. */
+export const hubEventFields = (ev) => structuredClone(ev);
 
 /* A title without the site's name: one trailing " — <name>" taken off, or, on the home page (`first`), one leading
    "<name> — ", for each name in `names` (the build's and the current one). A title stored before titles were kept
@@ -621,6 +825,7 @@ export function applyChange(current, change, ctx) {
   if (SECTION_ACTIONS.has(change.action)) return sectionChange(doc, change, ctx, { find, authored });
   if (change.action === "settings") return settingsChange(doc, change);
   if (change.action === "room") return roomChange(doc, change, ctx);
+  if (change.action === "event") return eventChange(doc, change, ctx);
 
   switch (change.action) {
     case "add":

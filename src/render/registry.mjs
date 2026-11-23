@@ -47,6 +47,9 @@ import team from "./blocks/team.mjs";
 import staff from "./blocks/staff.mjs";
 import person from "./blocks/person.mjs";
 import pagehead from "./blocks/pagehead.mjs";
+import eventhead from "./blocks/eventhead.mjs";
+import featuring from "./blocks/featuring.mjs";
+import gallery from "./blocks/gallery.mjs";
 import cards from "./blocks/cards.mjs";
 import words from "./blocks/words.mjs";
 import ribbons from "./blocks/ribbons.mjs";
@@ -62,7 +65,7 @@ import alumni from "./blocks/alumni.mjs";
 import legal from "./blocks/legal.mjs";
 import statement from "./blocks/statement.mjs";
 
-export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, ribbons, spill, staff, resources, navigator, courses, sitesearch, exploreevents, busroutes, directory, alumni, legal, statement].map((b) => [b.type, b]));
+export const BLOCKS = Object.fromEntries([announcement, hero, schedule, program, wall, involve, mood, form, text, directions, places, questions, workshops, embed, events, eventhero, expect, cta, team, person, pagehead, cards, words, ribbons, spill, staff, resources, navigator, courses, sitesearch, exploreevents, busroutes, directory, alumni, legal, statement, eventhead, featuring, gallery].map((b) => [b.type, b]));
 
 /* What every block may carry besides its declared fields. */
 export const COMMON_FIELDS = ["id", "type", "enabled", "anchor", "startsOn", "endsOn"];

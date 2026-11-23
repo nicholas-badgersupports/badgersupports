@@ -1,0 +1,28 @@
+/* The Hub event opening (src/render/blocks/eventhead.mjs): the words in one column, the photos
+   in the other as one even block, and the buttons in one row under both. The photos' rows are
+   halves of the block's own height, not fixed lengths, and each photo fills its cell outright
+   (its picture is laid over the cell), so the block is exactly as tall as the words beside it
+   and no photo's own shape can stretch it: the tall photo and the two stacked ones share their
+   top and bottom edges. Every button wears the big button's height, so the row is one line. */
+.eventhead { padding-block: var(--s6); background: var(--tex-wash); background-blend-mode: normal, multiply; }
+.eventhead .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s5); align-items: stretch; }
+.eventhead.has-photos .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+.eventhead-label { font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s2); }
+.eventhead h1 { font-size: var(--fs-page); color: var(--accent); margin-bottom: var(--s3); }
+.eventhead-words > .lead { font-weight: 600; }
+.eventhead-details { list-style: none; padding: 0; margin: var(--s3) 0 0; display: grid; gap: var(--s1); font-weight: 600; }
+.eventhead-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--s3); }
+.eventhead-photos { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: var(--s2); min-height: 22rem; }
+.eventhead-photos .photo { position: relative; overflow: hidden; border-radius: var(--r-card); min-height: 0; }
+.eventhead-photos .photo picture { position: absolute; inset: 0; }
+.eventhead-photos .photo img { width: 100%; height: 100%; object-fit: cover; }
+.eventhead-photos .photo:first-child { grid-row: 1 / -1; }
+.eventhead.has-1 .eventhead-photos { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+.eventhead.has-2 .eventhead-photos .photo { grid-row: 1 / -1; }
+@media (max-width: 860px) {
+  .eventhead { padding-block: var(--s5); }
+  .eventhead.has-photos .wrap { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+  .eventhead-photos { grid-template-rows: repeat(2, 8rem); min-height: 0; }
+  .eventhead.has-1 .eventhead-photos { grid-template-rows: 13rem; }
+  .eventhead-actions .btn { width: 100%; justify-content: center; }
+}

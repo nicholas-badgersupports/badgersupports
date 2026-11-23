@@ -10,11 +10,12 @@
 import { makeContext, PROGRAMS } from "./context.mjs";
 import { renderPage } from "./layout.mjs";
 import { placePages, withRoomPlaces } from "./places.mjs";
+import { hubEventPages } from "./hubevents.mjs";
 import { personPages } from "./team.mjs";
 import { formPreviewPages } from "./blocks/form.mjs";
 import { resolveText, makeT } from "../shared/text.mjs";
 import { applyEdits } from "../shared/edits.mjs";
-import { layStructure, addMadeSections, laySettings, layRooms, layMood } from "../shared/structure.mjs";
+import { layStructure, addMadeSections, laySettings, layRooms, layMood, layHubEvents } from "../shared/structure.mjs";
 
 /* The colour each page wears, so a link to it (a circle in the hero, a door) can wear it too ... */
 export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && p.path).map((p) => [p.path, p.program]));
@@ -22,8 +23,8 @@ export const pagePrograms = (pages) => new Map(pages.filter((p) => p.program && 
 export const sectionPrograms = (page) => (page.blocks || []).filter((b) => PROGRAMS.includes(b.program)).map((b) => [`#${b.anchor || b.id}`, b.program]);
 
 /* What a snapshot holds: the files before any saved word (floor), and everything else the pages read. */
-export function siteSnapshot({ floor, builtEdits = {}, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null, alumniSource = null }) {
-  return { shared, alumniSource, schema: "bss.render/1", floor, builtEdits, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths };
+export function siteSnapshot({ floor, builtEdits = {}, textRegistry, textEdits = {}, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, shared = null, alumniSource = null, hubEvents = [] }) {
+  return { shared, alumniSource, schema: "bss.render/1", floor, builtEdits, textRegistry, textEdits, places, team, forms, production, prototype, media, routes, data, assets, liveEvents, builtPaths, hubEvents };
 }
 
 /* Every page with the edits laid over the floor, as loadContent() does, then the page structure (src/shared/structure.mjs):
@@ -32,6 +33,8 @@ export function siteSnapshot({ floor, builtEdits = {}, textRegistry, textEdits =
    settings (name, search description, accessibility email) are laid over its own, the build's kept as site.built.
    Rooms' saved words and photos are laid over the room records before anything draws a room: the room pages, the
    blocks that read `places`, and the room names the event lists carry (`places`, `data`, `roomIds`).
+   The Hub events saved on the staff page are laid over the build's records the same way, and every
+   event that is shown joins the pages as its own page (src/render/hubevents.mjs).
    Without a revision, use the words the build applied. A supplied map is authoritative, including an empty
    map after Restore, so the source floor remains available. */
 /* A page holding a legal block whose document Connect has published shows its head's title and that document only:
@@ -60,7 +63,8 @@ export function composeSite(snap, edits = snap.builtEdits || {}, structure = nul
   const roomIds = Object.keys(structure?.rooms || {});
   const places = layRooms(snap.places, structure?.rooms, { media: new Set((snap.media?.items || []).map((m) => m.id)) });
   const data = places === snap.places ? liveData : { ...liveData, places, events: withRoomPlaces(liveData.events, places, roomIds) };
-  const every = [...authored, ...placePages(places, t), ...personPages(team, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
+  const hubEvents = layHubEvents(snap.hubEvents, structure?.events, { media: new Set((snap.media?.items || []).map((m) => m.id)), places });
+  const every = [...authored, ...placePages(places, t), ...personPages(team, t), ...hubEventPages(hubEvents, t), ...(snap.production ? [] : formPreviewPages(snap.forms, t))];
   const laid = layStructure(structure, { site, pages: every });
   const pages = withLegal(laid.pages, liveData.legal);
   const builtPaths = structure || shared?.team ? [...new Set([...(snap.builtPaths || []).filter(p => !shared?.team || !p.startsWith("/about/our-team/") || p === "/about/our-team/"), ...pages.map((p) => p.path).filter(Boolean)])] : snap.builtPaths;

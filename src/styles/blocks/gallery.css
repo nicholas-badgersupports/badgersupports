@@ -1,0 +1,7 @@
+/* An event's extra photos (src/render/blocks/gallery.mjs): one row that scrolls sideways, each
+   photo the same height, as the program gallery's strip draws them. */
+.gallery h2 { color: var(--accent); margin-bottom: var(--s4); }
+.gallery-track { list-style: none; padding: 0; margin: 0; display: flex; gap: var(--s3); overflow-x: auto; scrollbar-width: thin; }
+.gallery-track li { flex: none; }
+.gallery-track .photo { height: 16rem; aspect-ratio: 4 / 3; border-radius: var(--r-card); }
+@media (max-width: 860px) { .gallery-track .photo { height: 11rem; } }

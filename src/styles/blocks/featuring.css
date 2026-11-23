@@ -1,0 +1,10 @@
+/* The people an event features (src/render/blocks/featuring.mjs): one card a person, leading
+   with their photo, as the team's cards lead with theirs. */
+.featuring h2 { color: var(--accent); margin-bottom: var(--s4); }
+.featuring-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: var(--s4); }
+.featuring-card { background: var(--paper); border: var(--hairline); border-radius: var(--r-card); overflow: hidden; }
+.featuring-card .photo { aspect-ratio: 1; }
+.featuring-words { padding: var(--s3); }
+.featuring-words h3 { margin-bottom: var(--s1); }
+.featuring-role { color: var(--accent); font-weight: 700; margin-bottom: var(--s1); }
+.featuring-words p { margin-bottom: 0; }

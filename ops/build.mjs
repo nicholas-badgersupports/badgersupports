@@ -769,6 +769,18 @@ export async function build({ production = false, launch = production, today = n
     fs.writeFileSync(path.join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`);
   }
 
+  // Each form's own page: the page the API serves for the form and the switch opens and closes.
+  // A content page can also carry a form (the Alumni page carries its updates form, the email
+  // list page its request form); the form's own page is written last so it wins either way.
+  const formPages = {};
+  for (const own of [false, true]) for (const p of content.pages) {
+    if (p.generated === "form-preview") continue;
+    for (const b of p.blocks || []) {
+      if (b.type !== "form" || (p.path === `/forms/${b.form}/`) !== own) continue;
+      formPages[b.form] = { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null, closedIntro: b.closedIntro || null };
+    }
+  }
+
   // What the API needs to render a page, and a page's event blocks, the same way the build did.
   const server = {
     schema: "bss.server/1", prototype, assets, site: content.site, routes: content.routes, builtPaths,
@@ -784,7 +796,7 @@ export async function build({ production = false, launch = production, today = n
       forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths, hubEvents: content.hubEvents,
       shared: feed ? { source: "connect", exports: { team: !!feed.team, wall: !!feed.wall }, builtAt: new Date().toISOString() } : null,
     }),
-    formPages: Object.fromEntries(content.pages.filter(p => p.generated !== "form-preview").flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null, closedIntro: b.closedIntro || null }]))),
+    formPages,
   };
   fs.mkdirSync(serverDir, { recursive: true });
   fs.writeFileSync(path.join(serverDir, "server.json"), JSON.stringify(server));

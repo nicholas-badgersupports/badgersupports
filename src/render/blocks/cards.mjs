@@ -63,7 +63,7 @@ export default {
                 ${r.place?.href ? go(ctx, r.place.href, ctx.t("schedule.directions"), "pin") : ""}
               </div>`)}
             </div></li>`;
-        })}</ul>` : html`<p class="evlist-none">${ctx.t("schedule.weekEmpty")}</p><p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"))}</p>`}
+        })}</ul>` : html`<p class="evlist-none">${ctx.t("schedule.weekEmpty")}</p><p>${go(ctx, "/join/email-list/#b-form-email-list", ctx.t("schedule.updates"))}</p>`}
         ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
       </div></div></section>`;
     }

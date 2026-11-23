@@ -725,6 +725,25 @@
       "localFile": "team-openhouse.jpg"
     },
     {
+      "id": "m-team-openhouse-students",
+      "program": "other",
+      "alt": "Three Badger Supports students smiling together in front of the craft shelves at the Student Mental Health Hub open house.",
+      "focal": [
+        50,
+        45
+      ],
+      "width": 2400,
+      "height": 1600,
+      "format": "jpg",
+      "bytes": 661905,
+      "sha256": "d05dccc4a957da72ad2184a22e998dbcc5fa89adc9ff173b128a9fb65a6aa956",
+      "source": "drive:🎥 Engagement Photos/Mental Health Hub Photos/2026-27/2026-09-25 SMHH Open House/Copy of DSC04037.JPG",
+      "sourcePage": "Badger Supports shared Drive › 📸 Engagement › 🎥 Photos",
+      "provenance": "From the Badger Supports shared Drive (Student Mental Health Hub open house, 2026-09-25). Copied from the Drive library, resized and stripped of metadata 2026-11-23.",
+      "compliance": "People pictured; every photograph in the Badger Supports Google Drive is approved for the website, faces included (Nicholas, 10 Nov 2026).",
+      "localFile": "team-openhouse-students.jpg"
+    },
+    {
       "id": "m-training-team-2026",
       "program": "peer",
       "alt": "About forty Badger Supports students posing together in rows at the September 2026 peer support training.",

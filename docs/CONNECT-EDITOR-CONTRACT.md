@@ -311,6 +311,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `firstLinkPrimary` | on or off |  |
 | `whole` | on or off |  |
+| `side` | one of `none`, `directory` |  |
 
 ### Photo cards — `cards`
 

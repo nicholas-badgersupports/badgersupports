@@ -174,10 +174,23 @@ function protoNotice(ctx) {
   return html`<div class="proto" role="note"><strong>${ctx.t("proto.title")}</strong> ${ctx.t("proto.body")}</div>`;
 }
 
+/* An opening that asks for its directory's card (pagehead `side: "directory"`) is handed the
+   directory's own title and its first group's places, read from the page's directory block as
+   it stands in this render — the build's content, or the saved words laid over it — so the card
+   in the band always matches the directory below it and is never a second copy to keep. An
+   opening whose page has no directory with places keeps no card. */
+function withDirectoryCards(blocks) {
+  if (!blocks.some((b) => b.type === "pagehead" && b.side === "directory")) return blocks;
+  const dir = blocks.find((b) => b.type === "directory");
+  const items = (dir?.groups?.[0]?.items || []).map((it) => ({ name: it.name, href: it.href, address: it.address }));
+  if (!items.length) return blocks;
+  return blocks.map((b) => (b.type === "pagehead" && b.side === "directory" ? { ...b, sideTitle: dir.title, sideItems: items } : b));
+}
+
 /* page: the page JSON. body: optional pre-rendered main content (API pages), with the browser
    modules it needs in `clients`. */
 export function renderPage(ctx, page, { body = null, status = null, clients: extra = [] } = {}) {
-  const blocks = body ? [] : liveBlocks(page, ctx.today);
+  const blocks = body ? [] : withDirectoryCards(liveBlocks(page, ctx.today));
   const top = blocks.filter((b) => BLOCKS[b.type].placement === "top");
   const main = blocks.filter((b) => BLOCKS[b.type].placement !== "top");
   // A page built from Connect's events with a block that can show them again asks for them between

@@ -59,10 +59,6 @@
       "label": "Discover Classes by Interest"
     },
     {
-      "id": "navigator",
-      "label": "Academic Support Navigator"
-    },
-    {
       "id": "hubevent",
       "label": "Hub event pages"
     }
@@ -4187,26 +4183,6 @@
       "text": "Start Over",
       "where": "On the classes page: the button that clears the search and the interest."
     },
-    "navigator.back": {
-      "group": "navigator",
-      "text": "Back",
-      "where": "On the Academic Support Navigator: the button that returns to the question before."
-    },
-    "navigator.startOver": {
-      "group": "navigator",
-      "text": "Start Over",
-      "where": "On the Academic Support Navigator: the button that returns to the first question."
-    },
-    "navigator.all": {
-      "group": "navigator",
-      "text": "See All Resources",
-      "where": "On the Academic Support Navigator: the link to the full Resource Finder, present at every step."
-    },
-    "navigator.results": {
-      "group": "navigator",
-      "text": "Resources That Fit",
-      "where": "On the Academic Support Navigator: the heading over the resources a finished path leads to."
-    },
     "team.unnamed": {
       "group": "team",
       "text": "Team Member",
@@ -5414,11 +5390,6 @@
       "group": "explore",
       "text": "{{n}} from Badger Supports",
       "where": "On the Campus Events Explorer: in the count line, how many of the events shown are Badger Supports' own programs."
-    },
-    "navigator.start": {
-      "group": "navigator",
-      "text": "Start the two questions",
-      "where": "On the Academic Support Navigator: the button on the opening panel that begins the questions."
     },
     "classes.browse": {
       "group": "classes",

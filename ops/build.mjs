@@ -46,8 +46,7 @@ import { embedProblems } from "../src/render/blocks/embed.mjs";
 import { cardProblems } from "../src/render/blocks/cards.mjs";
 import { wordProblems } from "../src/render/blocks/words.mjs";
 import { ribbonProblems } from "../src/render/blocks/ribbons.mjs";
-import { resourceProblems } from "../src/render/blocks/resources.mjs";
-import { navigatorProblems, navigatorResourceProblems } from "../src/render/blocks/navigator.mjs";
+import { resourceProblems, resourceVisible } from "../src/render/blocks/resources.mjs";
 import { directoryProblems } from "../src/render/blocks/directory.mjs";
 import { pageheadProblems } from "../src/render/blocks/pagehead.mjs";
 import { questionProblems } from "../src/render/blocks/questions.mjs";
@@ -205,12 +204,6 @@ export function loadContent({ production = false, launch = production, textEdits
   const resources = feed?.resources ? structuredClone(feed.resources) : readJson("content/fixtures/resources.json");
   if (!Array.isArray(resources.resources)) problems.push(`${resourcesAt}: resources is a list`);
   else for (const [i, r] of resources.resources.entries()) if (!r?.id || !r?.name) problems.push(`${resourcesAt}: resources[${i}] needs an id and a name`);
-  // The navigator's tree is content, so the resources it names are checked against the fixture
-  // library the tree was authored against — never against Connect's export: an export that
-  // succeeds with fewer records (or none) is a data state the pages render explicitly, and it
-  // must not break a production build. The render already leaves out a card it cannot find.
-  const navLibraryRaw = feed?.resources ? readJson("content/fixtures/resources.json") : resources;
-  const navLibrary = Array.isArray(navLibraryRaw?.resources) ? navLibraryRaw.resources : [];
 
   // Courses: UW Course Search offerings pulled by ops/courses.mjs and mapped to interests by
   // content/courses.json (EXPLORE-F-CLASSES). The data file is a cache of a public feed, and
@@ -295,7 +288,6 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "directory") for (const p of directoryProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "pagehead") for (const p of pageheadProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "resources") for (const p of resourceProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
-    if (b.type === "navigator") { for (const p of navigatorProblems(b)) problems.push(`content/pages: ${page.id}.${p}`); for (const p of navigatorResourceProblems(b, navLibrary)) problems.push(`content/pages: ${page.id}.${p}`); }
     if (b.type === "embed") for (const p of embedProblems(b)) problems.push(`content/pages: ${page.id}.${b.id}: ${p}`);
     if (b.type === "program" && b.embed) for (const p of embedProblems(b.embed)) problems.push(`content/pages: ${page.id}.${b.id}: video ${p}`);
     if (b.type === "program" && !b.photos?.length && !(b.variant === "feature" && b.embed) && b.variant !== "topics") problems.push(`content/pages: ${page.id}.${b.id}: a ${b.variant} section needs photos${b.variant === "feature" ? " or a video" : ""}`);
@@ -530,9 +522,9 @@ export function redirectsFile(routes, pages, built) {
     }
   }
   for (const p of pages) for (const a of p.aliases || []) if (!lines.some((l) => l.startsWith(`${a} `))) lines.push(`${a}  ${p.path}  301`);
-  /* The Academic Support Navigator folded into the Resource Finder (Explore redesign,
-   * 15 Nov 2026): its old address lands on the questions at the head of /resources/. */
-  if (built.has("/resources/")) lines.push("/explore/academic-support  /resources/#b-res-nav  301");
+  /* The Academic Support Navigator was removed (23 Nov 2026): its old address lands
+   * on the Resources page itself, which still stands. */
+  if (built.has("/resources/")) lines.push("/explore/academic-support  /resources/  301");
   // Last, so a person's own old address (an alias above) wins over the catch-all for their group.
   if (built.has(TEAM_PATH)) lines.push(...teamRedirects());
   return { text: lines.join("\n") + "\n", waiting };

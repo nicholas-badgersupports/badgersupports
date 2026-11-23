@@ -1294,9 +1294,10 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .statement-paws .ic:nth-child(5) { left: 38%; top: 3%; width: 1.8rem; height: 1.8rem; transform: rotate(30deg); }
 .statement-paws .ic:nth-child(6) { right: 36%; bottom: 3%; width: 2rem; height: 2rem; transform: rotate(-26deg) scaleX(-1); }
 .statement-line { margin: 0; font: 800 clamp(1.6rem, 1.2rem + 2vw, 2.6rem)/1.25 var(--font-display); color: var(--accent-deep); text-wrap: balance; }
+/* the points are facts, not actions: outline tags in the card corner, never the filled button pill */
 .statement-points { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin: var(--s5) 0 0; padding: 0; }
-.statement-points li { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-radius: var(--r-chip); background: var(--accent); color: var(--cream); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-.statement-ic { width: 1.2rem; height: 1.2rem; }
+.statement-points li { display: inline-flex; align-items: center; gap: var(--s2); padding: .45rem .95rem; border: 1.5px solid var(--accent-light); border-radius: var(--r-card); background: transparent; color: var(--accent-deep); font-size: .875rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; cursor: default; }
+.statement-ic { width: 1rem; height: 1rem; }
 .statement .wrap > p { max-width: var(--measure); margin-inline: auto; }
 .statement .wrap > p:not(.statement-line) { margin-top: var(--s5); }
 .statement-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s3) var(--s4); margin-top: var(--s5); }

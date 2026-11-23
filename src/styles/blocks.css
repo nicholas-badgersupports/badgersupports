@@ -1293,6 +1293,26 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .statement-paws .ic:nth-child(4) { right: 18%; bottom: 6%; width: 4rem; height: 4rem; transform: rotate(-8deg); }
 .statement-paws .ic:nth-child(5) { left: 38%; top: 3%; width: 1.8rem; height: 1.8rem; transform: rotate(30deg); }
 .statement-paws .ic:nth-child(6) { right: 36%; bottom: 3%; width: 2rem; height: 2rem; transform: rotate(-26deg) scaleX(-1); }
+
+/* The badger prints (only the Dogs on Call band asks for them, with paws: "prints"):
+   the detailed track in a loose scatter, the way prints actually land — two small
+   clusters, one pair, and single prints standing off on their own. No line or path
+   through them, no even spacing: uneven gaps, every print at its own angle, and the
+   sizes and strengths vary print to print with no rhythm to the variation. */
+.statement-paws--prints .ic:nth-child(1) { left: 3%; top: 11%; right: auto; bottom: auto; width: 3.3rem; height: 3.3rem; transform: rotate(-21deg); opacity: .14; }
+.statement-paws--prints .ic:nth-child(2) { left: 9%; top: 27%; right: auto; bottom: auto; width: 2.6rem; height: 2.6rem; transform: rotate(17deg) scaleX(-1); opacity: .10; }
+.statement-paws--prints .ic:nth-child(3) { left: 5.5%; top: 44%; right: auto; bottom: auto; width: 2.9rem; height: 2.9rem; transform: rotate(38deg); opacity: .12; }
+.statement-paws--prints .ic:nth-child(4) { right: 3%; bottom: 9%; left: auto; top: auto; width: 3.4rem; height: 3.4rem; transform: rotate(12deg) scaleX(-1); opacity: .13; }
+.statement-paws--prints .ic:nth-child(5) { right: 10%; bottom: 27%; left: auto; top: auto; width: 2.5rem; height: 2.5rem; transform: rotate(-33deg); opacity: .09; }
+.statement-paws--prints .ic:nth-child(6) { right: 6%; bottom: 46%; left: auto; top: auto; width: 2.8rem; height: 2.8rem; transform: rotate(-7deg); opacity: .11; }
+.statement-paws--prints .ic:nth-child(7) { right: 17%; top: 6%; width: 3rem; height: 3rem; transform: rotate(27deg); opacity: .12; }
+.statement-paws--prints .ic:nth-child(8) { right: 24%; top: 21%; width: 2.4rem; height: 2.4rem; transform: rotate(-14deg) scaleX(-1); opacity: .085; }
+.statement-paws--prints .ic:nth-child(9) { left: 16%; bottom: 5%; width: 3.6rem; height: 3.6rem; transform: rotate(-41deg); opacity: .15; }
+.statement-paws--prints .ic:nth-child(10) { left: 31%; top: 3%; width: 2.3rem; height: 2.3rem; transform: rotate(9deg) scaleX(-1); opacity: .08; }
+.statement-paws--prints .ic:nth-child(11) { right: 29%; bottom: 2%; width: 2.7rem; height: 2.7rem; transform: rotate(44deg); opacity: .10; }
+.statement-paws--prints .ic:nth-child(12) { left: 46%; top: 1%; width: 2.5rem; height: 2.5rem; transform: rotate(-52deg); opacity: .09; }
+.statement-paws--prints .ic:nth-child(13) { right: 37%; top: 6%; width: 2.1rem; height: 2.1rem; transform: rotate(23deg); opacity: .07; }
+.statement-paws--prints .ic:nth-child(14) { left: 21%; top: 60%; width: 2.6rem; height: 2.6rem; transform: rotate(63deg) scaleX(-1); opacity: .085; }
 .statement-line { margin: 0; font: 800 clamp(1.6rem, 1.2rem + 2vw, 2.6rem)/1.25 var(--font-display); color: var(--accent-deep); text-wrap: balance; }
 .statement-points { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin: var(--s5) 0 0; padding: 0; }
 .statement-points li { display: inline-flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); border-radius: var(--r-chip); background: var(--accent); color: var(--cream); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }

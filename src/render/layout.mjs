@@ -12,6 +12,7 @@ import { BLOCKS, liveBlocks, refreshes, renderBlock } from "./registry.mjs";
 import { spillLogo, SPILL_CLIENT } from "./spill.mjs";
 import { icon } from "./icons.mjs";
 import { openingPortraits } from "./team.mjs";
+import { pressFan } from "./blocks/pagehead.mjs";
 import { link } from "./context.mjs";
 import { clientTable } from "../shared/text.mjs";
 import { bareTitle, TITLE_JOIN, safetyExitHref } from "../shared/structure.mjs";
@@ -177,7 +178,10 @@ function protoNotice(ctx) {
 /* page: the page JSON. body: optional pre-rendered main content (API pages), with the browser
    modules it needs in `clients`. */
 export function renderPage(ctx, page, { body = null, status = null, clients: extra = [] } = {}) {
-  const blocks = body ? [] : liveBlocks(page, ctx.today);
+  const live = body ? [] : liveBlocks(page, ctx.today);
+  // A pagehead that fans its page's press cards is handed them here, drawn from the page's own
+  // card lists: the layout is the one place that sees the whole page at once.
+  const blocks = live.map((b) => (b.type === "pagehead" && b.side === "press" ? { ...b, sideItems: pressFan(live) } : b));
   const top = blocks.filter((b) => BLOCKS[b.type].placement === "top");
   const main = blocks.filter((b) => BLOCKS[b.type].placement !== "top");
   // A page built from Connect's events with a block that can show them again asks for them between

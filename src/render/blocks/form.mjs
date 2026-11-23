@@ -19,14 +19,16 @@ const LONG_INTRO = 700;
    whose headings sit under the form's title. A form shown only to say it has moved (`elsewhere`)
    keeps its intro: it says what the form is for. `level` is the form title's heading level: 1
    when the form is the page, 2 when the block sits on a page that carries its own h1, so the
-   page keeps exactly one h1 and the form's headings step down under it (src/render/form.mjs). */
-export function formSection(def, inner, { id = `b-form-${def.key}`, title = null, ctx = null, level = 1 } = {}) {
+   page keeps exactly one h1 and the form's headings step down under it (src/render/form.mjs).
+   The section carries the block's id (or its `anchor`) as its own id, so a link elsewhere can
+   land a visitor on the form itself instead of at the top of a page above it. */
+export function formSection(def, inner, { id = `b-form-${def.key}`, title = null, ctx = null, level = 1, anchor = null } = {}) {
   const dates = ctx && def.intakeWindow ? Object.entries(def.intakeWindow).filter(([,v]) => v).map(([k,v]) => {
     const instant = chicagoInstant(...v.split("T"));
     const when = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" }).format(new Date(instant));
     return html`<p><strong>${ctx.t(k === "deadline" && def.key === "staff-application" ? "form.window.priority" : `form.window.${k}`)}</strong> ${when} (${ctx.t("form.window.zone")})</p>`;
   }) : [];
-  return html`<section class="form-page" aria-labelledby="${id}-h" data-block="${id}"><div class="wrap">
+  return html`<section class="form-page" id="${anchor || id}" aria-labelledby="${id}-h" data-block="${id}"><div class="wrap">
   <header class="${proseText(def.intro).join(" ").length > LONG_INTRO ? "form-head is-long" : "form-head"}">${level === 2 ? html`<h2 class="form-title" id="${id}-h">${def.settingsTitle ? def.title : title || def.title}</h2>` : html`<h1 id="${id}-h">${def.settingsTitle ? def.title : title || def.title}</h1>`}${prose(def.intro, { level: level === 2 ? 3 : 2, ctx })}${dates}</header>
   ${inner}
 </div></section>`;
@@ -73,6 +75,6 @@ export default {
     const level = b.heading === "h2" ? 2 : 1;
     const inner = html`${selection}${active ? renderForm(def, { t: ctx.t, ctx, preview, level, values: topic ? { [def.key === "program-request" ? "request_type" : "topics"]: [topic.id] } : {} }) : renderClosed(def, ctx.t, { elsewhere, note, level })}`;
     const introduction = !active && b.closedIntro && !def.settingsIntroduction ? { ...def, intro: [b.closedIntro] } : def;
-    return formSection(introduction, inner, { id: b.id, title: b.title, ctx, level });
+    return formSection(introduction, inner, { id: b.id, title: b.title, ctx, level, anchor: b.anchor || null });
   },
 };

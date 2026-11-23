@@ -94,7 +94,7 @@
           "title": "Email List",
           "link": {
             "label": "Join Our Email List",
-            "href": "/join/email-list"
+            "href": "/join/email-list/#b-form-email-list"
           },
           "icon": "mail"
         }

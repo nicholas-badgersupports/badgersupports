@@ -29,7 +29,7 @@ function firstVisit(b, ctx) {
   if (!b.upcoming) return "";
   if (ctx.data.eventsState?.stale) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupUnavailable")}</p>${go(ctx, "mailto:directors@badgersupports.org", ctx.t("program.askSchedule"), "mail")}</div>`;
   const [next] = rowsBetween(ctx.data.events || {}, ctx.today, 7).filter(r => r.program === b.upcoming.program && eventState(r, ctx.now) !== "ended");
-  if (!next) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupNone")}</p>${go(ctx, "/join/email-list/", ctx.t("schedule.updates"), "mail")}</div>`;
+  if (!next) return html`<div data-live="visit"><p class="visit-notice">${ctx.t("program.groupNone")}</p>${go(ctx, "/join/email-list/#b-form-email-list", ctx.t("schedule.updates"), "mail")}</div>`;
   const p = dateParts(next.date, ctx.t), days = dayRange(next, ctx.t);
   return html`<div data-live="visit"><article${attrs({ class: eventClass("visit-event ev", next, ctx.now), "data-starts": next.startsAt, "data-ends": next.endsAt, "data-date": next.date })}>
     <p class="visit-label">${b.upcoming.label || ctx.t("program.nextGroup")}<span class="visit-tags">${next.date === ctx.today ? html`<span class="today-tag">${ctx.t("schedule.today")}</span>` : ""}</span></p>

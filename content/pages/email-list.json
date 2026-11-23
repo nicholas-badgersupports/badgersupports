@@ -16,7 +16,7 @@
       ],
       "primary": {
         "label": "Request Email Updates",
-        "href": "/forms/email-list/",
+        "href": "#b-form-email-list",
         "icon": "mail"
       },
       "photos": [
@@ -24,6 +24,13 @@
         "m-people-visionboards-duo",
         "m-craft-stickers"
       ]
+    },
+    {
+      "id": "b-form-email-list",
+      "type": "form",
+      "form": "email-list",
+      "heading": "h2",
+      "title": "Request Email Updates"
     },
     {
       "id": "b-el-add",

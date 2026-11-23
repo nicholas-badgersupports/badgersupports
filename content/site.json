@@ -115,7 +115,7 @@
         {
           "id": "nav-email",
           "label": "Email List",
-          "href": "/join/email-list"
+          "href": "/join/email-list/#b-form-email-list"
         },
         {
           "id": "nav-alumni",
@@ -204,7 +204,7 @@
           },
           {
             "label": "Email List",
-            "href": "/join/email-list"
+            "href": "/join/email-list/#b-form-email-list"
           }
         ]
       }

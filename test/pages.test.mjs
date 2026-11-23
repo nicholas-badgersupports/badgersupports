@@ -87,7 +87,7 @@ test("the peer support groups page leads with how to join: drop in, the week wit
   assert.doesNotMatch(block(page, "b-pg-intro"), /Your First Visit/, "the visit steps live with the week, not in the header");
   assert.match(page, /<section class="directions band is-section" id="get-directions"[^>]*data-block="b-pg-hub">/);
   assert.equal([...page.matchAll(/<h1[ >]/g)].length, 1);
-  assert.match(block(page, "b-pg-intro"), /href="[^"]*\/join\/email-list\/?"[^>]*><span class="go-label">Join Our Email List</, "the email list, as the live hero has it (the live page until ours is built)");
+  assert.match(block(page, "b-pg-intro"), /href="\/join\/email-list\/#b-form-email-list"[^>]*><span class="go-label">Join Our Email List</, "the email list hero link lands on the form itself, not the top of its page");
 
   const days = block(page, "b-pg-days");
   assert.equal([...days.matchAll(/<ol class="card-steps">[\s\S]*?<\/ol>/g)].length, 1, "how to join, as numbered steps above the week");

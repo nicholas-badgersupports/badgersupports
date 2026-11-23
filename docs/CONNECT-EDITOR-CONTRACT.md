@@ -255,6 +255,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `audience` | one line of text |  |
 | `disclosure` | one line of text |  |
 | `preview` | one or more paragraphs |  |
+| `open` | on or off |  |
 | `whole` | on or off |  |
 | `boxed` | on or off |  |
 | `icon` | one line of text |  |

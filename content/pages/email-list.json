@@ -29,6 +29,8 @@
       "id": "b-el-add",
       "type": "expect",
       "title": "Join or Leave in Google Groups",
+      "boxed": true,
+      "open": true,
       "disclosure": "Help Joining or Leaving",
       "preview": [
         "Send an email to badgersupports+subscribe@g-groups.wisc.edu.",

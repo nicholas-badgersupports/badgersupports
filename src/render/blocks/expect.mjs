@@ -4,7 +4,9 @@
    row of identical cards. A photo of people at one of the nights stands beside it.
 
    `links` ends it with the ways on, as pills. `flip` puts the photos on the right, so a page that
-   sets several of these one after another reads as a zigzag rather than a column of twins. */
+   sets several of these one after another reads as a zigzag rather than a column of twins.
+   `boxed` draws the section as the site's card; `open` starts its disclosure fold open, for
+   help a reader came to the page to find rather than a preview they may skip. */
 
 import { html, attrs } from "../html.mjs";
 import { icon } from "../icons.mjs";
@@ -14,7 +16,7 @@ import { go } from "../context.mjs";
 export default {
   type: "expect",
   label: "What to expect",
-  fields: { title: "text!", body: "paragraphs", items: "points", links: "link[]", photos: "media[]", flip: "boolean", audience: "text", disclosure: "text", preview: "paragraphs", whole: "boolean", boxed: "boolean", icon: "text", program: "choice:peer|craft|workshops|other" },
+  fields: { title: "text!", body: "paragraphs", items: "points", links: "link[]", photos: "media[]", flip: "boolean", audience: "text", disclosure: "text", preview: "paragraphs", open: "boolean", whole: "boolean", boxed: "boolean", icon: "text", program: "choice:peer|craft|workshops|other" },
   data: [],
   analytics: "page",
   loading: "lazy",
@@ -31,7 +33,7 @@ export default {
     ${b.audience ? html`<p class="expect-audience">${b.audience}</p>` : ""}
     ${body.map((p) => html`<p>${p}</p>`)}
     ${b.items?.length ? html`<ul class="expect-points">${b.items.map((it) => html`<li>${icon(it.icon || "check", "expect-ic")}<span>${it.text}</span></li>`)}</ul>` : ""}
-    ${b.disclosure && preview.length ? html`<details class="expect-preview" id="${b.anchor || b.id}-preview"><summary><span>${b.disclosure}</span>${icon("plus")}</summary>${preview.map(p => html`<p>${p}</p>`)}</details>` : ""}
+    ${b.disclosure && preview.length ? html`<details class="expect-preview" id="${b.anchor || b.id}-preview"${attrs({ open: b.open })}><summary><span>${b.disclosure}</span>${icon("plus")}</summary>${preview.map(p => html`<p>${p}</p>`)}</details>` : ""}
     ${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
   </div>
 </div></section>`;

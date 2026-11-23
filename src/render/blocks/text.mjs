@@ -2,11 +2,16 @@
    smallest block, and the model for a new one.
    variant "era" draws the same words as one stop on a timeline: a title written "When — What" shows its
    when on the line and its what as the card's heading (both stay one heading, one edit target), an
-   optional photo sits in the card, and consecutive era sections join into one line (styles/blocks/text.css). */
+   optional photo sits in the card, and consecutive era sections join into one line (styles/blocks/text.css).
+   An era card opens with its first sentence as a lead, so the whole story can be scanned from the
+   leads alone; what follows folds away (the site's native details pattern, as on the resource
+   cards) once the rest passes FOLD_AFTER words — a short stop, like the closing one, stays whole.
+   Every word stays on the page either way; the fold only decides what shows first. */
 
 import { html, attrs } from "../html.mjs";
 import { go } from "../context.mjs";
 import { picture } from "../media.mjs";
+import { icon } from "../icons.mjs";
 
 export default {
   type: "text",
@@ -24,12 +29,27 @@ export default {
 };
 
 const ERA_SPLIT = /^(.+?)\s+[—–-]\s+(.+)$/;
+/* The first sentence of an era's first paragraph, and what follows it. */
+const FIRST_SENTENCE = /^([\s\S]*?[.!?])\s+(?=[A-Z"“])([\s\S]*)$/;
+/* An era folds when the words past its lead pass this count. */
+const FOLD_AFTER = 50;
+const words = (paras) => paras.join(" ").split(/\s+/).filter(Boolean).length;
 
 function era(b, body, ctx) {
   const m = String(b.title).match(ERA_SPLIT);
   const photo = b.photos?.[0];
+  const [first, ...others] = body;
+  const sm = typeof first === "string" ? first.match(FIRST_SENTENCE) : null;
+  const lead = sm ? sm[1] : null;
+  const rest = sm ? [sm[2], ...others] : body;
+  const fold = lead && words(rest) > FOLD_AFTER;
+  const shown = lead
+    ? html`<p class="era-lead">${lead}</p>${fold
+      ? html`<details class="era-more"><summary><span>${ctx.t("history.more")}</span>${icon("plus")}</summary><div class="era-more-body">${rest.map((p) => html`<p>${p}</p>`)}</div></details>`
+      : rest.map((p) => html`<p>${p}</p>`)}`
+    : body.map((p) => html`<p>${p}</p>`);
   return html`<section${attrs({ class: photo ? "text-block band is-era has-photo" : "text-block band is-era", id: b.anchor || null, "aria-labelledby": `${b.id}-h`, "data-block": b.id })}><div class="wrap">
   <h2 id="${b.id}-h" class="era-head">${m ? html`<span class="era-when">${m[1]}</span><span class="era-title">${m[2]}</span>` : html`<span class="era-title">${b.title}</span>`}</h2>
-  <div class="era-card">${photo ? html`<div class="photo">${picture(ctx, photo, { sizes: "(max-width: 760px) calc(100vw - 4rem), 34rem" })}</div>` : ""}<div class="text-body">${body.map((p) => html`<p>${p}</p>`)}${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}</div></div>
+  <div class="era-card">${photo ? html`<div class="photo">${picture(ctx, photo, { sizes: "(max-width: 760px) calc(100vw - 4rem), 34rem" })}</div>` : ""}<div class="text-body">${shown}${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}</div></div>
 </div></section>`;
 }

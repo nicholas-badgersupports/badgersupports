@@ -148,6 +148,16 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 
+### Timeline chapter — `chapter`
+
+Reads: nothing but its own fields · analytics: `page` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `items` | several links, in order |  |
+| `jump` | several links, in order |  |
+
 ### Directions to a room — `directions`
 
 Reads: `places`, `events`, `eventsState` · analytics: `page` · photos load eager
@@ -636,10 +646,10 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-1071 keys. Keys are permanent. Required text cannot be published empty and must keep each
+1072 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
-### Every page (29)
+### Every page (30)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -670,6 +680,7 @@ the site adds the markup.
 | `embed.notice` | Playing it loads Instagram, which may set its own cookies. | Under the Play button on an Instagram video. |  |
 | `embed.open` | Watch on Instagram | Link under an Instagram video. |  |
 | `media.linkAlt` | A photo from a Badger Supports event. | Read aloud for a pasted photo link that has no description of its own |  |
+| `history.more` | Read more | On the History page: the words on an era card that open the rest of its text. |  |
 | `legal.version` | Version {{n}}. | Under a legal document published in Connect, when its publish date is unknown. | `{{n}}` |
 | `legal.versionDated` | Version {{n}}, published {{date}}. | Under a legal document published in Connect (the privacy policy). | `{{n}}` `{{date}}` |
 

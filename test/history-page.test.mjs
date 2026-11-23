@@ -10,14 +10,17 @@ const page = () => read("content/pages/about-history.json");
 const context = () => makeContext({site:read("content/site.json"),media:read("media/manifest.json"),text:Object.fromEntries(Object.entries(read("content/text.json").text).map(([k,v])=>[k,v.text])),builtPaths:["/about/history/","/about/what-we-do/","/join/get-involved/","/join/request-a-workshop/"]});
 const markup = p => p.blocks.map(b=>String(renderBlock(b,context()))).join("");
 
-test("History preserves the approved training passage and tells all eras as ordinary readable sections, drawn as one timeline",()=>{
- const p=page();assert.deepEqual(blockProblems(p),[]);assert.equal(p.blocks.length,9);assert.equal(p.blocks[0].type,"pagehead");
- assert.ok(p.blocks.slice(1).every(b=>b.type==="text"&&b.variant==="era"&&b.title&&b.body.length));
+test("History preserves the approved training passage and tells all eras as readable sections in three chapters, drawn as one timeline",()=>{
+ const p=page();assert.deepEqual(blockProblems(p),[]);assert.equal(p.blocks.length,12);assert.equal(p.blocks[0].type,"pagehead");
+ const eras=p.blocks.filter(b=>b.type==="text");assert.equal(eras.length,8);assert.ok(eras.every(b=>b.variant==="era"&&b.title&&b.body.length));
+ const chapters=p.blocks.filter(b=>b.type==="chapter");assert.equal(chapters.length,3);assert.deepEqual(chapters.map(b=>b.title),["2019\u20132021","2025","2026"]);
+ assert.ok(chapters.every(b=>b.items.length&&b.items.every(l=>l.href.startsWith("#"))));
  assert.equal((markup(p).match(/<span class="era-when">/g)||[]).length,8,"each era shows its when on the line");
  const training=p.blocks.flatMap(b=>b.body||[]).find(s=>s.startsWith("As Badger Supports grew"));
  assert.ok(training);assert.equal(createHash("sha256").update(training).digest("hex"),"891ae5839df43c9053ec8e437c97999021b66989ce064193a9d89181eea596ee");
- const html=markup(p);assert.equal((html.match(/<h1\b/g)||[]).length,1);assert.equal((html.match(/<h2\b/g)||[]).length,8);
- assert.doesNotMatch(html,/<details|<input|<textarea|<form|<script|<[^>]+\shidden(?:=|\s|>)/);
+ const html=markup(p);assert.equal((html.match(/<h1\b/g)||[]).length,1);assert.equal((html.match(/<h2\b/g)||[]).length,11);
+ assert.equal((html.match(/<details class="era-more">/g)||[]).length,7,"each long era folds behind Read more; the closing era stays whole");
+ assert.doesNotMatch(html,/<input|<textarea|<form|<script|<[^>]+\shidden(?:=|\s|>)/);
  assert.equal((html.match(/The Support Network/g)||[]).length,1);assert.doesNotMatch(p.blocks[0].lead,/2009/);
  assert.doesNotMatch(html,/docs\.google|mail\.google|HISTORY-EVIDENCE|GSSF|copyright|registration renewal|Recognize, Respond, Refer/);
 });

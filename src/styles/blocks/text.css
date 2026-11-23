@@ -4,15 +4,20 @@
 .text-block.is-era { padding-block: var(--s3); }
 .text-block:not(.is-era) + .is-era { padding-top: var(--s6); }
 .is-era:not(:has(+ .is-era)) { padding-bottom: var(--s7); }
-.is-era .wrap { position: relative; display: grid; grid-template-columns: 15rem minmax(0, 1fr); column-gap: var(--s6); row-gap: var(--s2); }
+.is-era .wrap { position: relative; display: grid; grid-template-columns: 15rem minmax(0, 1fr); column-gap: var(--s6); row-gap: var(--s3); }
 .is-era .wrap::before { content: ""; position: absolute; left: calc(var(--gutter) + 15rem + var(--s6) / 2 - 1.5px); top: calc(-1 * var(--s3)); bottom: calc(-1 * var(--s3)); width: 3px; background: var(--rule-strong); }
 .text-block:not(.is-era) + .is-era .wrap::before { top: .7rem; }
 .is-era:not(:has(+ .is-era)) .wrap::before { bottom: auto; height: .7rem; }
-.era-head { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; margin: 0; position: relative; }
-.era-head::before { content: ""; position: absolute; left: calc(15rem + var(--s6) / 2 - .8rem); top: .55rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--cream); }
-/* The year range is the timeline's headline: oversized, so the shape of the org's life reads
-   before any of its words do. */
-.era-when { grid-column: 1; text-align: right; font: 800 clamp(1.9rem, 1.35rem + 1.8vw, 2.8rem)/1.05 var(--font-display); letter-spacing: .01em; color: var(--accent); }
+.era-head { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; margin: 0; position: relative; }
+/* The head-to-card distance is the wrap's row-gap alone: the history page's general h2 rule
+   (styles/blocks.css) would otherwise stack its margin under the head on top of the gap. */
+.text-block.is-era .era-head { margin-bottom: 0; }
+.era-head::before { content: ""; position: absolute; left: calc(15rem + var(--s6) / 2 - .8rem); top: 50%; transform: translateY(-50%); width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--cream); }
+/* One system for the years (readability pass, years revision): the chapter's year is the only
+   large one — once per part, beside the same mark every stop carries. Every stop's year is a label in
+   the same column, at one size, on one line, ending at the same right edge, so the column
+   reads as one even run and no year is printed large twice. */
+.era-when { grid-column: 1; text-align: right; font: 800 1.5rem/1.05 var(--font-display); letter-spacing: .01em; white-space: nowrap; color: var(--accent); }
 .era-title { grid-column: 2; font: 800 min(var(--fs-h3), 1.6rem)/1.15 var(--font-display); color: var(--ink); }
 .era-card { grid-column: 2; display: grid; gap: var(--s4); padding: var(--s4) var(--s5); background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-panel); max-width: 48rem; }
 .is-era.has-photo .era-card .photo { border-radius: var(--r-card); aspect-ratio: 16 / 9; }
@@ -22,9 +27,57 @@
   .is-era .wrap { grid-template-columns: minmax(0, 1fr); padding-left: calc(var(--gutter) + 1.9rem); }
   .is-era .wrap::before { left: calc(var(--gutter) + .6rem - 1px); }
   .era-head { grid-template-columns: minmax(0, 1fr); row-gap: .15rem; }
-  .era-head::before { left: -1.9rem; top: .1rem; }
+  .era-head::before { left: calc(-2.1rem + .5px); top: calc((1.05 * 1.5rem - 1.6rem) / 2); transform: none; }
   .era-when, .era-title, .era-card { grid-column: 1; text-align: left; }
   .era-card { padding: var(--s3) var(--s4); }
   .is-era.has-photo .era-card .photo { aspect-ratio: 3 / 2; }
 }
 @media (max-width: 420px) { .era-card { padding: var(--s3); } }
+
+/* Chapters and leads (the history page's readability pass). A chapter (src/render/blocks/chapter.mjs)
+   breaks the timeline into parts: its span is set larger than any stop's years, its mark on the line
+   is the same circle every stop carries, and the part's stops are named beside it as links. The line itself ends at the last stop
+   before a chapter — the :has(+ .is-era) rules above already stop it there — and the stop after a
+   chapter starts a fresh line, like the first stop on the page. */
+.text-block.era-chapter { padding-top: var(--s7); padding-bottom: var(--s2); }
+.era-chapter .wrap { position: relative; display: grid; grid-template-columns: 15rem minmax(0, 1fr); column-gap: var(--s6); }
+.era-chapter .wrap::before { content: ""; position: absolute; left: calc(var(--gutter) + 15rem + var(--s6) / 2 - 1.5px); top: 0; bottom: 0; width: 3px; background: var(--rule-strong); }
+.era-chapter + .is-era .wrap::before { top: .7rem; }
+.era-chapter-head { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; margin: 0; position: relative; }
+.text-block.era-chapter .era-chapter-head { margin-bottom: 0; }
+.era-chapter-head::before { content: ""; position: absolute; left: calc(15rem + var(--s6) / 2 - .8rem); top: 50%; transform: translateY(-50%); width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--cream); }
+.era-chapter-when { grid-column: 1; text-align: right; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 2.9rem)/1.02 var(--font-display); letter-spacing: .01em; white-space: nowrap; color: var(--accent); }
+.era-chapter-items { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s2); font-size: 1.05rem; font-weight: 700; line-height: 1.35; letter-spacing: normal; text-transform: none; }
+.era-chapter-items a { color: var(--accent-deep); text-decoration: none; }
+.era-chapter-items a:hover { text-decoration: underline; }
+.era-chapter-sep { color: var(--muted); font-weight: 400; }
+
+/* The part row (chapter.mjs's "jump"): the site's section navigation, held at the top of the
+   screen while the story scrolls under it, in the sticky-bar shape the filter bars use. */
+.era-jump { position: sticky; top: calc(var(--header-h) + var(--s2)); z-index: 15; margin-top: var(--s4); }
+.era-jump .wrap { max-width: 52rem; }
+.era-jump .secnav { margin-top: 0; }
+.era-jump .secnav ul { background: var(--paper); border: 2px solid var(--line); box-shadow: var(--lift); }
+
+/* An era's lead: its first sentence, set to be scanned. The rest of a long stop folds under it. */
+.era-lead { font-size: 1.1rem; line-height: 1.5; font-weight: 600; color: var(--ink); }
+.era-more { margin-top: var(--s3); border-top: var(--hairline); }
+.era-more summary { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); min-height: 44px; padding-top: var(--s2); font-weight: 700; color: var(--accent-deep); cursor: pointer; list-style: none; }
+.era-more summary::-webkit-details-marker { display: none; }
+.era-more summary svg { width: 2rem; height: 2rem; padding: .42rem; border-radius: 50%; border: 2px solid currentColor; flex: none; transition: transform .3s ease; }
+.era-more[open ] summary svg { transform: rotate(45deg); }
+.era-more-body { padding-top: var(--s2); }
+
+@media (max-width: 760px) {
+  .era-chapter .wrap { grid-template-columns: minmax(0, 1fr); padding-left: calc(var(--gutter) + 1.9rem); }
+  .era-chapter .wrap::before { left: calc(var(--gutter) + .6rem - 1px); }
+  .era-chapter-head { grid-template-columns: minmax(0, 1fr); row-gap: .15rem; }
+  .era-chapter-head::before { left: calc(-2.1rem + .5px); top: calc((1.02 * clamp(2.2rem, 1.8rem + 1.6vw, 2.9rem) - 1.6rem) / 2); transform: none; }
+  .era-chapter-when, .era-chapter-items { grid-column: 1; text-align: left; }
+  .era-jump { top: calc(var(--header-h) + var(--s1)); }
+}
+
+/* Stops and chapters are jump targets (the part row, a chapter's contents line): they stop
+   below the stuck part row, not under it. The page's own scroll padding clears the header;
+   this margin clears the row — its offset and height together come to about --s7. */
+.era-chapter, .is-era { scroll-margin-top: var(--s7); }

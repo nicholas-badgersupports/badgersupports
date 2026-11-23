@@ -81,17 +81,6 @@ export function pressFan(blocks) {
   return dated.sort((a, b) => b.when - a.when).slice(0, 3).map(({ title, line }) => ({ title, line }));
 }
 
-function sidePanel(b) {
-  if (b.side === "press") {
-    const items = b.sideItems || [];
-    if (!items.length) return "";
-    return html`<div class="pagehead-side is-press">${items.map((it) => html`<article class="ph-card">
-        <p class="ph-card-title">${it.title}</p>
-        ${it.line ? html`<p class="ph-card-line">${it.line}</p>` : ""}
-      </article>`)}</div>`;
-  }
-  return "";
-}
 
 export default {
   type: "pagehead",

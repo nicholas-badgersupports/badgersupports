@@ -19,6 +19,10 @@ for (const gallery of document.querySelectorAll("[data-ribbon-gallery]")) {
         const fill=node.getAttribute("fill"), key=fill?.match(/^url\(#(.+)\)$/)?.[1];
         if(ids.has(key))node.setAttribute("fill",`url(#${ids.get(key)})`);
       }
+      for(const node of copy.querySelectorAll("[filter]")){
+        const filter=node.getAttribute("filter"), key=filter?.match(/^url\(#(.+)\)$/)?.[1];
+        if(ids.has(key))node.setAttribute("filter",`url(#${ids.get(key)})`);
+      }
       body.replaceChildren(copy); dialog.showModal(); document.documentElement.classList.add("ribbon-pinned");
     });
   }

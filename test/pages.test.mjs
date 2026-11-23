@@ -101,8 +101,8 @@ test("the peer support groups page leads with how to join: drop in, the week wit
   assert.equal([...cards.at(-1)[2].matchAll(/<p class="card-line ev-time">/g)].length, 2, "Monday has two groups");
 
   const talk = block(page, "b-pg-talk");
-  assert.equal([...talk.matchAll(/<li class="w-[123] tone-[123]">/g)].length, 15);
-  assert.match(talk, /<li class="w-3 tone-[123]">Housing<\/li>/, "the largest word, as on the live graphic");
+  assert.equal([...talk.matchAll(/class="word-pill w-[123] tone-[123]"/g)].length, 15);
+  assert.match(talk, /class="word-pill w-3 tone-[123]"[^>]*>Housing<\/button>/, "the largest word, as on the live graphic");
 
   const acts = block(page, "b-pg-activities");
   assert.deepEqual([...acts.matchAll(/<li class="card[^"]*" id="([a-z-]+)">/g)].map((m) => m[1]), ["question-jar", "coloring", "ribbon-making"]);

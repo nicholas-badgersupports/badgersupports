@@ -99,3 +99,14 @@
   .note-parts { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
   .note-part + .note-part { border-top: var(--hairline); padding-top: var(--s4); }
 }
+/* ---------- a long link row as cards (Find a Service and Find a Place, 23 November 2026;
+   chosen by the text block's linksStyle field, the pill row staying the default) ---------- */
+/* One card per link — the site's card surface (white, the card radius, the --lift shadow,
+   the style guide's card line), the name as the card's heading words, and the arrow as a
+   small plain mark with no badge. The whole card is the link. */
+.svc-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); margin-top: var(--s4); list-style: none; padding: 0; }
+.svc-cards li { display: flex; }
+.svc-card { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); flex: 1; min-height: 44px; padding: var(--s3) var(--s4); background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--lift); color: var(--ink); font: 700 1.05rem/1.25 var(--font-display); text-decoration: none; transition: background-color var(--t) var(--ease-out); }
+.svc-card:hover { background: var(--accent-tint); color: var(--ink); text-decoration: none; }
+.svc-card .go-ic { width: 1.35rem; height: 1.35rem; flex: none; padding: 0; background: none; border-radius: 0; color: var(--accent); stroke-width: 2.3; }
+@media (max-width: 640px) { .svc-cards { grid-template-columns: minmax(0, 1fr); } }

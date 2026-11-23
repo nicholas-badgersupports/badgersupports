@@ -33,6 +33,7 @@
       "body": [
         "Find selected campus offices, shops and places to eat around University Square. Choose a street below. Each place’s website has current hours and visiting information."
       ],
+      "linksStyle": "cards",
       "links": [
         {
           "label": "Campus Offices — West Johnson Street",

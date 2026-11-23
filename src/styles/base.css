@@ -49,6 +49,34 @@ a:hover { color: var(--link-deep); text-decoration-thickness: 2px; }
 
 .wrap { width: 100%; max-width: var(--page); margin-inline: auto; padding-inline: var(--gutter); }
 .band { padding-block: var(--s7); }
+
+/* Two plain sections in a row share one section space between them (spacing audit,
+   23 Nov 2026): every band carries a full --s7 above and below itself, so two plain
+   bands in a row stacked 144px of empty ground. The second band gives up its top
+   padding and the pair keeps one --s7. Pairs that already sit at the rhythm keep
+   their padding: where either section carries its own ground to the meeting edge --
+   a heading band, a tinted or boxed section, a full-bleed band -- that padding sits
+   inside a ground, not between the sections. A hidden section between two bands
+   (a switched-off next-step block) does not break the pairing. */
+.band + .band, .band + [hidden] + .band { padding-top: 0; }
+.pagehead + .band, .wall + .band, .words + .band, .events-block + .band,
+.directions.is-section + .band, .ribbon-gallery + .band, .program.is-page + .band,
+.expect.is-boxed + .band, .expect + .expect + .band { padding-top: var(--s7); }
+.band + .wall, .band + .team, .band + .words, .band + .events-block,
+.band + [hidden] + .events-block, .band + .directions.is-section,
+.expect + .expect { padding-top: var(--s7); }
+.band + .ribbon-gallery { padding-top: var(--s5); }
+
+/* The two one-off pairs the audit named, each off the rhythm for its own reason.
+   Alumni: the email updates section keeps its own form-page top padding where it
+   follows the history section, so the pair totals 120px; it gives that padding up
+   and the pair keeps the history section's --s7. Housing Hub: the note after the
+   call-to-action band carries the compact note padding on both sides; where another
+   band follows it, the note gives up its bottom padding and the pair keeps that
+   band's --s7. */
+.alumni-history + .form-page { padding-top: 0; }
+.cta + .text-block:has(+ .band) { padding-bottom: 0; }
+.cta + .text-block + .band { padding-top: var(--s7); }
 .lead { font-size: var(--fs-lead); line-height: 1.5; }
 .small { font-size: var(--fs-small); }
 

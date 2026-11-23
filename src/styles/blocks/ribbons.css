@@ -69,12 +69,14 @@
 .ribbon-plain { padding: var(--s4); display: grid; place-items: center; }
 .ribbon-dialog { width: min(46rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--note-shadow); margin: auto; overscroll-behavior: contain; }
 .ribbon-dialog::backdrop { background: var(--ribbon-shadow); backdrop-filter: blur(4px); }
-.ribbon-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); padding: var(--s4); background: var(--tex-ground); background-blend-mode: normal, multiply; border-bottom: var(--hairline); }
+.ribbon-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); padding: var(--s4); border-bottom: var(--hairline); }
 .ribbon-dialog-head p { font-size: var(--fs-small); font-weight: 700; color: var(--muted); }
 .ribbon-dialog-head h2 { font: 800 var(--fs-h2)/1.2 var(--font-body); color: var(--accent); margin-top: var(--s1); }
 .ribbon-close { flex-shrink: 0; min-height: 44px; }
 .ribbon-close .ic { width: 1rem; height: 1rem; transform: rotate(45deg); }
 .ribbon-dialog .ribbon-details { border: 0; display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--s4); align-items: start; padding: var(--s4); }
+/* Inside the dialog the local box sits on the paper alone: no ground fill, a hairline edge instead. */
+.ribbon-dialog .ribbon-local { background: transparent; border: var(--hairline); }
 .ribbon-dialog .ribbon-popup-art { position: sticky; top: 0; }
 @media (max-width: 1100px) { .ribbon-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .ribbon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s2); row-gap: var(--s3); } .ribbon-art { width: 7rem; max-width: 100%; } .ribbon-caption { gap: var(--s1); } }

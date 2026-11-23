@@ -60,3 +60,20 @@
 .cls-tag { font-weight: 700; color: var(--ink); }
 .cls-go { margin: var(--s3) 0 0; }
 .cls-scope { margin: var(--s5) 0 0; max-width: var(--measure); color: var(--muted); font-size: var(--fs-small); }
+
+/* Liquid glass: the classes filter bar sticks under the header while the course list scrolls
+   under it, the same chrome-over-content case as the resources tools bar (blocks.css), so it
+   wears the same bar fill and blur (tokens.css) over its solid paper rule above; the
+   preference blocks turn it solid again. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) and (background: color-mix(in srgb, currentColor 50%, transparent)) {
+  .cls-filterbar { background: var(--glass-bar); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .cls-filterbar { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .cls-filterbar { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  .cls-filterbar { background: Canvas; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

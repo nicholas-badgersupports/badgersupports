@@ -299,3 +299,26 @@
   position: absolute; top: var(--s1); right: var(--s1); width: 44px; height: 44px; padding: 0;
   border: 0; background: none; color: var(--muted); font: 400 1.4rem/1 var(--font-body); cursor: pointer;
 }
+
+/* ---------- liquid glass: the header and this file's dialog panels ---------- */
+/* The header is chrome floating over pages that scroll under it — photos, coloured bands, white
+   cards — so it wears the bar fill and the blur (tokens.css) where the engine can do both; the
+   solid paper rules above are the fallback. The development notice and the email popup are this
+   file's dialog panels: the shared dialog pattern (blocks.css carries the resource and edit
+   dialogs, ribbons.css its own) — a near-opaque frosted panel, so the page stays visible,
+   softened, behind the words the visitor came for. The two preference blocks turn every one of
+   these surfaces solid again, and name every surface the glass names: a preference override
+   that covers some of a treatment and not the rest is worse than none. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) and (background: color-mix(in srgb, currentColor 50%, transparent)) {
+  .site-header { background: var(--glass-bar); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+  .dev-notice, .email-pop { background: var(--glass-panel); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .site-header, .dev-notice, .email-pop { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .site-header, .dev-notice, .email-pop { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  .site-header, .dev-notice, .email-pop { background: Canvas; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

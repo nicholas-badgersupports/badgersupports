@@ -284,6 +284,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `whole` | on or off |  |
 | `quiet` | on or off |  |
+| `boxed` | on or off |  |
 
 ### Team — `team`
 

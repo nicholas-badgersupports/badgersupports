@@ -669,7 +669,8 @@
       "body": [
         "Ribbon making is one of the activities our peer-support groups have shared. Visit the group page for the current schedule and what to expect."
       ],
-      "whole": true
+      "whole": true,
+      "boxed": true
     },
     {
       "id": "b-rb-pickup",
@@ -692,7 +693,8 @@
         }
       ],
       "whole": true,
-      "quiet": true
+      "quiet": true,
+      "boxed": true
     }
   ]
 }

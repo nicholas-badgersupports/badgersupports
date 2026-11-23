@@ -2029,11 +2029,22 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 
 /* Boxed sections (the owner's containers, 12 Nov 2026): a block marked boxed in its page's
    content draws its wrap as the site's card — paper, a line, the card radius and the soft
-   lift — so a run of sections reads as one container each instead of one loose flow. */
-.expect.is-boxed .wrap, .program.is-boxed .wrap {
+   lift — so a run of sections reads as one container each instead of one loose flow. The
+   closing call to action is not a band, so a boxed one takes the band's spacing on its
+   section instead, and its card stands in place of the wrap's own tall padding. */
+.expect.is-boxed .wrap, .program.is-boxed .wrap, .cta.is-boxed .wrap {
   background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-card);
   box-shadow: var(--lift); padding: var(--s5);
 }
+.cta.is-boxed { padding-block: var(--s7); }
 @media (max-width: 860px) {
-  .expect.is-boxed .wrap, .program.is-boxed .wrap { padding: var(--s4); }
+  .expect.is-boxed .wrap, .program.is-boxed .wrap, .cta.is-boxed .wrap { padding: var(--s4); }
 }
+/* The ribbons page's two boxed sections stand together at the foot of the page, and
+   there their section padding drops one step — --s6 in place of the band's --s7 — so
+   the pair sits at the page's own tighter rhythm (the page head pads at --s6, the
+   gallery above them at --s5): two full band paddings back to back put 144px of open
+   page between the cards, more than any other junction on the page uses. The cards'
+   own padding, and everything inside them, stays as the boxed rule above leaves it. */
+body[data-page="pg-ribbons"] #b-rb-making,
+body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }

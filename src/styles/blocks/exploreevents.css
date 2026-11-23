@@ -23,7 +23,7 @@
 .ce-when { border: 0; margin: 0; padding: 0; min-width: 0; }
 .ce-seg { display: inline-flex; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); overflow: hidden; }
 .ce-seg .ce-chip { border: 0; border-radius: 0; min-height: 42px; padding: .4rem .85rem; background: transparent; }
-.ce-seg .ce-chip + .ce-chip { border-left: 2px solid var(--line); }
+.ce-seg .ce-chip + .ce-chip { border-left: var(--rule-line); }
 .ce-seg .ce-chip:hover { background: var(--accent-tint); }
 .ce-seg .ce-chip[aria-pressed="true"] { background: var(--accent); color: var(--paper); }
 .ce-seg .ce-chip[aria-pressed="true"]:hover { background: var(--accent); }

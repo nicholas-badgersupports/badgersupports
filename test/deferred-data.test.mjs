@@ -6,7 +6,16 @@
    loads (the Campus Events Explorer, live 13 November 2026: the file was in the deploy, the
    function answered 404, and the explorer kept its build-time first screen forever). These
    tests read the build's own list of held-back files and the function's own config, so a
-   fourth deferred file cannot ship silently broken. */
+   fourth deferred file cannot ship silently broken.
+
+   The same trap caught site Search (workflow audit PF-1): /search-index.json is written by the
+   build at a fixed address, not held back by a block, and stood in neither list, so the function
+   answered its 404 page and Search never worked live. The widened guard below therefore checks
+   every data file the build writes for a browser to fetch — the held-back files and the search
+   index — against the exclusion list or the function's own named list of addresses it serves
+   itself (FUNCTION_SERVED, netlify/lib/pages.mjs), where the index now stands deliberately:
+   the function serves it, rebuilt at every publish (PF-3), which an excluded static file could
+   never do. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -14,6 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { build, ROOT } from "../ops/build.mjs";
 import { config as pageConfig } from "../netlify/functions/pages.mjs";
+import { FUNCTION_SERVED } from "../netlify/lib/pages.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build-deferred");
 let report;
@@ -33,9 +43,13 @@ test("the build holds back the three explorers' data files, written beside their
   }
 });
 
-test("every held-back file stands outside the page function's claim", () => {
+test("every data file the build writes for a browser stands outside the page function's claim, or is one it serves itself", () => {
   assert.ok(report.dataFiles.length > 0, "the build held something back");
-  for (const f of report.dataFiles) {
-    assert.ok(covered(f), `${f} is claimed by the page function (path ${JSON.stringify(pageConfig.path)}) and missing from excludedPath — its first fetch would answer the 404 page`);
+  assert.ok(fs.existsSync(path.join(OUT, "search-index.json")), "the build writes the search index at its fixed address");
+  for (const f of [...report.dataFiles, "/search-index.json"]) {
+    assert.ok(covered(f) || FUNCTION_SERVED.includes(f), `${f} is claimed by the page function (path ${JSON.stringify(pageConfig.path)}) and stands in neither excludedPath nor FUNCTION_SERVED — its first fetch would answer the 404 page`);
+  }
+  for (const f of FUNCTION_SERVED) {
+    assert.ok(!covered(f), `${f} is named function-served but also excluded — the exclusion would shadow the function's own answer with the build's file`);
   }
 });

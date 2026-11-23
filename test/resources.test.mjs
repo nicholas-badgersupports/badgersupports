@@ -37,7 +37,10 @@ test("every record in the source is a card, on campus first, and the list works 
   const onPage = [...page.matchAll(/<li class="res-card" data-res="([^"]+)"/g)].map((m) => m[1]);
   assert.ok(onPage.length < ids.length, "the page itself carries a first set, not the whole list");
   assert.deepEqual(onPage, ids.filter((id) => onPage.includes(id)), "the page's cards are the file's first set, in the list's order");
-  assert.match(page, /data-res-src="\/resources\/resources-data\.json"/, "the page names the data file beside it");
+  /* PF-4: the full list is fetched from the site's own answer, drawn from the catalogue as it
+     stands now, and the build's file beside the page is named as the fallback. */
+  assert.match(page, /data-res-src="\/api\/resources"/, "the page names the current-list answer");
+  assert.match(page, /data-res-file="\/resources\/resources-data\.json"/, "and the data file beside it, as the fallback");
   const campus = ids.map((id) => fixture.resources.find((r) => r.id === id).location.campus);
   assert.ok(campus.lastIndexOf("on_campus") < campus.indexOf("madison_community"), "on campus before Madison");
   assert.ok(campus.lastIndexOf("madison_community") < campus.indexOf("national"), "Madison before national");

@@ -54,13 +54,14 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
     active: true,     // switched off in Connect when false
     sso: "ok",        // ok | refuse | badsig | wrongnonce | down
     ingest: "ok",     // ok | refuse | down
-    status: "ok",     // ok | refuse | badsig | replay | down: publicSsoStatus, the proposed action
+    status: "ok",     // ok | refuse | badsig | replay | down: publicSsoStatus, Connect's status action
     statusCalls: 0,
     firstStatus: null,
     received: [],
     stored: new Map(),
     verifiers: [],
     method: null,     // "google" or "password" on the sign-in note; null sends none, as Connect did before GOOGLE-SIGNIN
+    authTime: null,   // seconds from now for the note's auth_time; null sends none, as Connect does until its H-C5 work lands
     googleOn: true,   // Connect's Google route: switched off, a status check about a Google-opened session says inactive
     statusMethods: [],
     quotes: [],       // publicSigninQuotes: Connect's one shared list, [] when its Show switch is off
@@ -113,6 +114,7 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
         nonce: fake.sso === "wrongnonce" ? "someone-elses-nonce" : c.nonce,
         sub: "u-test-0001", name: fake.name, active: true, scopes: fake.scopes,
         ...(fake.method ? { method: fake.method } : {}),
+        ...(fake.authTime != null ? { auth_time: now + fake.authTime } : {}),
       };
       const sig = fake.sso === "badsig" ? hmac("not-the-shared-secret", sortedJson(assertion)) : hmac(ssoSecret, sortedJson(assertion));
       return reply({ ok: true, assertion, sig });
@@ -126,7 +128,7 @@ function fakeConnect({ scopes = ["forms.read:*", "site.edit", "site.publish"], n
       return reply({ ok: true, ref: body.ref, stored });
     }
 
-    /* The proposed status action (docs/ARCHITECTURE.md, "Staying signed in"): a fresh note for one
+    /* Connect's status action (docs/ARCHITECTURE.md, "Staying signed in"): a fresh note for one
        person, signed like a sign-in note, with active false and no scopes once they are switched off. */
     if (body.action === "publicSsoStatus") {
       fake.statusCalls += 1;
@@ -209,7 +211,7 @@ test("a director signs in through Connect, and the staff page knows who they are
   assert.equal(back.status, 302);
   assert.equal(back.headers.get("location"), "/staff/");
   const jar = setCookies(back);
-  assert.match(jar.find((c) => c.startsWith("bss_staff=")), /HttpOnly.*Max-Age=28800/);
+  assert.match(jar.find((c) => c.startsWith("bss_staff=")), /HttpOnly.*Max-Age=43200/, "the cookie lasts the session's twelve hours (H-P1)");
   const hint = jar.find((c) => c.startsWith("bss_staff_hint="));
   assert.ok(hint.startsWith("bss_staff_hint=1;") && !/HttpOnly/.test(hint), "the hint is readable by the page and says only 1");
   assert.match(jar.find((c) => c.startsWith("bss_auth=")), /Max-Age=0/, "the start cookie is spent");
@@ -471,8 +473,9 @@ test("with no status check from Connect, reading answers needs a sign-in within 
   const wordingOnly = (await (await handle(get("/api/staff/forms", { cookie }), ip())).json()).forms;
   assert.ok(wordingOnly.length === 14 && wordingOnly.every(f => !f.canRead && f.canEdit && f.total === 0 && f.latest === null), "wording settings remain available without answer access");
   assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 200, "changing words still works");
+  assert.equal(fake.statusCalls, 0, "nothing asked Connect — reading and changing words never do");
   assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200, "and so does the publish file");
-  assert.equal(fake.statusCalls, 0, "nothing asked Connect");
+  assert.equal(fake.statusCalls, 1, "a publish-level act asks Connect once, even with the standing check off (PF-5)");
 
   const again = await signIn(fake);
   assert.equal((await meFor(again.cookie)).canRead, true, "signing in again gives reading back");
@@ -647,6 +650,79 @@ test("with the status check on, Connect not answering keeps a session as it was 
     const back = await meFor(cookie);
     assert.deepEqual([back.canRead, back.canEdit, back.canPublish], [false, true, false], `${mode}: Connect answering again brings the session back, as Connect now says`);
   }
+});
+
+test("a session ends after thirty minutes unused, and use starts the count again (H-P1)", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  const idle = (minutes) => q("UPDATE staff_sessions SET seen_at = seen_at - $1::int * interval '1 minute'", [minutes]);
+  await idle(29);
+  assert.equal((await meFor(cookie)).canEdit, true, "twenty-nine minutes unused: still signed in");
+  await idle(29);
+  assert.equal((await meFor(cookie)).canEdit, true, "the call between was itself a use, so the count started again");
+  await idle(31);
+  assert.equal(await meFor(cookie), 401, "thirty-one minutes unused: the session is over, however much of its twelve hours is left");
+  assert.equal((await one("SELECT count(*)::int AS n FROM staff_sessions")).n, 0, "the row is gone, not merely refused");
+});
+
+test("publishing asks for an authentication within ten minutes, and the staff page says so (H-P1)", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  assert.equal((await meFor(cookie)).publishAgain, false);
+  assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200, "just signed in: the publish file downloads");
+  await q("UPDATE staff_sessions SET auth_at = auth_at - interval '11 minutes'");
+  assert.equal((await meFor(cookie)).publishAgain, true, "the page says a fresh sign-in is needed to publish");
+  assert.deepEqual(await refusal(await handle(get("/api/staff/edits?download=1", { cookie }), ip())), [403, "auth.fresh"]);
+  assert.equal((await handle(staffPost("/api/staff/edit/save", SKIP, cookie), ip())).status, 200, "changing words is not publishing: it still works");
+});
+
+test("the ten minutes are measured from the note's auth_time when Connect sends it (H-P1)", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  fake.authTime = -11 * 60; // the person proved themselves to Connect eleven minutes before the handoff
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  assert.deepEqual(await refusal(await handle(get("/api/staff/edits?download=1", { cookie }), ip())), [403, "auth.fresh"],
+    "signed in here a moment ago, but the authentication behind it is eleven minutes old");
+});
+
+test("a publish-level act asks Connect even with the standing check off (PF-5)", async () => {
+  await freshServer();
+  const fake = fakeConnect(); // statusCheck off: nothing else in this test asks Connect
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200);
+  assert.equal(fake.statusCalls, 0, "a new note is not checked again at once");
+
+  fake.scopes = ["site.edit"]; // Connect takes publishing away
+  await age(11);
+  assert.deepEqual(await refusal(await handle(get("/api/staff/edits?download=1", { cookie }), ip())), [403, "staff.forbidden"], "the publish-time word governs, not the hours-old note");
+  assert.equal(fake.statusCalls, 1);
+
+  // Switched off in Connect entirely: a fresh session (the one above no longer holds
+  // publishing at all, and is refused on that ground alone) ends at its first publish.
+  fake.scopes = ["forms.read:*", "site.edit", "site.publish"];
+  const fresh = await signIn(fake);
+  fake.active = false; // and switched off in Connect after signing in
+  await age(11);
+  assert.deepEqual(await refusal(await handle(get("/api/staff/edits?download=1", { cookie: fresh.cookie }), ip())), [401, "auth.again"], "switched off: the session ends at the publish, not at the end of its twelve hours");
+  assert.equal(await meFor(fresh.cookie), 401);
+});
+
+test("when Connect cannot answer at publish time, a recent authentication carries the publish and an old one does not (PF-5, H-P1)", async () => {
+  await freshServer();
+  const fake = fakeConnect();
+  useConnect(fake.cfg);
+  const { cookie } = await signIn(fake);
+  fake.status = "down";
+  await age(11); // Connect's last word is eleven minutes old, so the publish asks — and hears nothing
+  assert.equal((await handle(get("/api/staff/edits?download=1", { cookie }), ip())).status, 200, "the authentication behind the session is still fresh, so the publish goes ahead");
+  await q("UPDATE staff_sessions SET auth_at = auth_at - interval '11 minutes'");
+  assert.deepEqual(await refusal(await handle(get("/api/staff/edits?download=1", { cookie }), ip())), [403, "auth.fresh"], "with the authentication old too, the publish waits for a fresh sign-in");
 });
 
 /* ------------------------------------------------------------------ forms into Connect */
@@ -1194,7 +1270,10 @@ test("item 17: the switch opens and closes a form with no deploy, Open needs a s
     const visitor = async (p) => (await handlePage(new Request(`${ORIGIN}${p}`), { today: "2026-10-20", now: Date.parse("2026-10-20T12:00:00Z") })).text();
     const FORM = "resource-problem", PAGE = "/forms/resource-problem/";
     const built = await visitor(PAGE);
-    assert.equal(built, fs.readFileSync(path.join(out, "forms/resource-problem/index.html"), "utf8"), "no switch row: the build's page byte for byte");
+    /* Each render mints its own form nonce (PF-8), so the nonce is set aside before the
+       byte-for-byte comparison; everything else must match the build exactly. */
+    const noNonce = (html) => html.replace(/name="_nonce" value="[^"]*"/g, 'name="_nonce" value="per-render"');
+    assert.equal(noNonce(built), noNonce(fs.readFileSync(path.join(out, "forms/resource-problem/index.html"), "utf8")), "no switch row: the build's page byte for byte");
     assert.doesNotMatch(built, /data-form-closed/, "shipped open");
     await setSwitch(FORM, "closed", "fixture");
     assert.match(await visitor(PAGE), /data-form-closed="resource-problem"/, "a director closed it");

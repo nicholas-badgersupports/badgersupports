@@ -13,6 +13,12 @@ import { legalNow } from "./legal.mjs";
 
 export const SHARED_FRESH_MS = 60_000;
 export const WALL_FALLBACK_MS = 30 * 60_000;
+/* The resources fallback's own, longer expiry (workflow audit PF-11): the catalogue changes
+   slowly and an outage emptying it would be worse than a stale list, so it is held for days,
+   not the wall's minutes — but it does end, so a resource Connect withdrew during a long
+   outage does not stay on the public site indefinitely. Past it the catalogue reports
+   unavailable and the Resources page says the list could not be refreshed. */
+export const RESOURCES_FALLBACK_MS = 3 * 24 * 60 * 60_000;
 const held = new Map();
 const FORGET = 'public-content-forgotten';
 const hash = v => crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
@@ -67,12 +73,14 @@ async function oneCatalogue(snap, kind, now, token) {
       const record = previous?.source === source && previous.value && Number.isFinite(previous.at)
         ? previous : { at, value: built(snap, kind) };
       // Personal recognition and moderated notes are not held indefinitely after withdrawal could have occurred.
-      const expired = kind !== 'resources' && (!Number.isFinite(record.at) || now - record.at > WALL_FALLBACK_MS);
+      // Resources are held far longer — days, not minutes (PF-11) — but they expire too.
+      const span = kind === 'resources' ? RESOURCES_FALLBACK_MS : WALL_FALLBACK_MS;
+      const expired = !Number.isFinite(record.at) || now - record.at > span;
       /* The fallback value is settled through the same floor; the expiry above still stands, so a
          record outside its window reports unavailable with no notes rather than holding even the
          defaults indefinitely. */
       const fallback = record.value || empty(kind);
-      return { value: expired ? empty(kind) : kind === 'wall' ? wallWithDefaults(fallback) : fallback, stale: true, unavailable: expired || !record.value, ...(kind !== "resources" ? { expiresAt: record.at + WALL_FALLBACK_MS } : {}) };
+      return { value: expired ? empty(kind) : kind === 'wall' ? wallWithDefaults(fallback) : fallback, stale: true, unavailable: expired || !record.value, expiresAt: record.at + span };
     }
   })();
   held.set(key, { until: now + SHARED_FRESH_MS, promise, token });

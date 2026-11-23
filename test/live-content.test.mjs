@@ -9,7 +9,7 @@ import { useContent } from '../netlify/lib/content.mjs';
 import { useConnect } from '../netlify/lib/connect.mjs';
 import { useStore, memoryStore } from '../netlify/lib/published.mjs';
 import { handlePage, useDist } from '../netlify/lib/pages.mjs';
-import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
+import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS, RESOURCES_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
 import { WALL_DEFAULT_NOTES } from '../ops/wall-defaults.mjs';
 import { publicUpload } from '../netlify/lib/live-team.mjs';
 
@@ -204,4 +204,35 @@ test('untrusted or repeated photo parameters and mismatched profile photos canno
   assert.equal(calls.length, before);
   reply.publicTeam.people = [{ ...PERSON, photo: { url: PHOTO.replace(ID, 'p' + '2'.repeat(24)) } }];
   const page = await (await get('/about/our-team/')).text(); assert.doesNotMatch(page, /api\/team-photo/);
+});
+
+test('the resources fallback ends after days, not minutes (PF-11): past it the catalogue reports unavailable', async () => {
+  await sharedNow(SERVER.render);
+  offline = true; clock += SHARED_FRESH_MS + 1; forgetShared();
+  const held = await quietly(() => sharedNow(SERVER.render));
+  assert.equal(held.resources.value.resources.length, baseResources.resources.length, 'inside its days, the last good list still stands');
+  assert.equal(held.resources.unavailable, false);
+  clock += RESOURCES_FALLBACK_MS; forgetShared();
+  const gone = await quietly(() => sharedNow(SERVER.render));
+  assert.equal(gone.resources.unavailable, true, 'past three days of outage the catalogue no longer presents itself as current');
+  assert.equal(gone.resources.value.resources.length, 0);
+  assert.equal(gone.resources.stale, true);
+});
+
+test('the whole resources list is answered from the catalogue as it stands, not the build\u2019s file (PF-4)', async () => {
+  const { handle } = await import('../netlify/lib/router.mjs');
+  const api = () => handle(new Request('https://site.test/api/resources', { headers: { accept: 'application/json' } }), { ip: '198.51.100.20' });
+  const first = await (await api()).json();
+  assert.equal(first.schema, 'bss.resources-data/1');
+  assert.ok(first.cards.some((c) => c.includes('988 Suicide')), 'the first answer carries the catalogue the build used');
+  reply.publicResourceExport.resources = [{ ...baseResources.resources[0], name: 'A Later Approved Resource' }];
+  clock += SHARED_FRESH_MS + 1; forgetShared();
+  const second = await (await api()).json();
+  assert.ok(second.cards.some((c) => c.includes('A Later Approved Resource')), 'after Connect\u2019s catalogue changes, the full list follows it between publishes');
+  assert.ok(!second.cards.some((c) => c.includes(baseResources.resources[1].name)), 'and the build\u2019s longer list no longer stands in for it');
+  const filed = JSON.parse(fs.readFileSync(path.join(OUT, 'resources/resources-data.json'), 'utf8'));
+  assert.ok(!filed.cards.some((c) => c.includes('A Later Approved Resource')), 'the build\u2019s file is unchanged: it is the fallback, not the source');
+  const page = await (await get('/resources/')).text();
+  assert.match(page, /data-res-src="\/api\/resources"/, 'the page names the API as the list\u2019s first source');
+  assert.match(page, /data-res-file="\/resources\/resources-data.json"/, 'and the build\u2019s file as its fallback');
 });

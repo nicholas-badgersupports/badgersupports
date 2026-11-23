@@ -189,10 +189,15 @@ async function rtFeed(kind, fetchImpl) {
 
 const stopList = (param) => [...new Set(String(param || "").split(",").map((s) => s.trim()).filter(Boolean))].slice(0, 48);
 
+/* The timetable's last service day: the feed's own end where it names one, and every service's
+   end — the latest of them is the last day a bus runs on this timetable. */
+export const timetableEnd = (schedule) => [schedule?.feed?.end, schedule?.feed?.to, ...(schedule?.services || []).map((s) => s.end)]
+  .filter((d) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().at(-1) || null;
+
 /* GET /api/transit/departures?stops=<gtfs ids>&route=<name> */
 export async function transitDepartures(searchParams, { fetchImpl = fetch, now = Date.now() } = {}) {
   const schedule = serverContent().transit?.schedule;
-  if (!schedule) return { ok: true, live: false, generatedAt: new Date(now).toISOString(), feed: null, stops: {}, alerts: [] };
+  if (!schedule) return { ok: true, live: false, generatedAt: new Date(now).toISOString(), feed: null, lapsed: false, feedEnd: null, updated: null, stops: {}, alerts: [] };
   const index = scheduleIndex(schedule);
   const wanted = stopList(searchParams.get("stops"));
   const idxs = wanted.map((id) => index.stopIdToIdx.get(id)).filter((i) => i != null);
@@ -205,8 +210,14 @@ export async function transitDepartures(searchParams, { fetchImpl = fetch, now =
     stops[schedule.stops[si]] = list;
     for (const d of list) routeSet.add(d.route);
   }
+  /* Past the timetable's last service day the answer says so (workflow audit PF-6): the lists
+     below are empty then because the timetable has ended, and the page says that — with the day
+     it ended and when the timetable was last updated — instead of leaving an empty list to be
+     read as a fault. The rebuild at the next service change is then a refresh, not a rescue. */
+  const feedEnd = timetableEnd(schedule);
   return {
     ok: true, live: !!tu, generatedAt: new Date(now).toISOString(), feed: schedule.feed,
+    lapsed: !!feedEnd && chicagoDayOf(now) > feedEnd, feedEnd, updated: schedule.downloaded || null,
     stops,
     alerts: alertsFor(al?.alerts, { routes: routeSet, stops: new Set(wanted) }),
   };

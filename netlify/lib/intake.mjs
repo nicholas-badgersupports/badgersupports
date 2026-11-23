@@ -162,11 +162,16 @@ export async function submit(key, input, { now = new Date() } = {}) {
   if (!check.ok) return { ok: false, error: "answers.invalid", errors: check.errors, version: def.version, versionSeen, def, raw, context, gone: await leftBehind(def, versionSeen, input) };
 
   // The browser sends one key per filled-in form. Without JavaScript there is none, so the key
-  // is the answers themselves for the day: pressing Send twice, or reloading the reply, is one
-  // submission either way.
+  // is derived: the answers themselves, the form's render nonce, and the day. The nonce is the
+  // mark the server minted when it drew the form (render/form.mjs), so pressing Send twice on
+  // one drawing, or reloading the reply, is one submission — while two people's identical
+  // answers on separately drawn forms are two submissions (workflow audit PF-8: the derived key
+  // used to be the answers alone, so identical answers from different people on the same day
+  // collapsed into one). A drawing from before the nonce existed carries none, and derives as
+  // it always did.
   let idem = String(field(input, "_key") || "").trim();
   const contextKey = Object.keys(context).length ? `|${canonicalJSON(context)}` : "";
-  if (!IDEM_RE.test(idem)) idem = `d-${sha256(`${def.key}|${def.version}|${canonicalJSON(check.answers)}${contextKey}|${chicagoDate(now)}`).slice(0, 40)}`;
+  if (!IDEM_RE.test(idem)) idem = `d-${sha256(`${def.key}|${def.version}|${canonicalJSON(check.answers)}${contextKey}|${String(field(input, "_nonce") || "")}|${chicagoDate(now)}`).slice(0, 40)}`;
 
   const out = await tx(async (t) => {
     const existing = await t.one("SELECT ref FROM submissions WHERE form_key = $1 AND idem_key = $2", [def.key, idem]);

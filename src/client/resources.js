@@ -13,8 +13,9 @@
    are in use; the page's inline script reserves it for an address that carries a filter, so the list does not move.
 
    The page arrives with the first set of cards — the set the reveal below shows first. The whole list
-   rides in a data file beside the page (resources-data.json, named by the section's data-res-src),
-   fetched the first time the visitor opens, scrolls to, searches or filters the list, or at once when
+   is fetched from /api/resources (the section's data-res-src), which draws it from the catalogue as
+   it stands, with the build's data file beside the page (resources-data.json, data-res-file) as the
+   fallback — fetched the first time the visitor opens, scrolls to, searches or filters the list, or at once when
    the address itself carries list state — the site search's way of working (src/client/search.js).
    While it is on its way the count line says so; if it does not arrive the count line says that instead
    and offers Try Again, with the first set still standing and its details still opening in place.
@@ -262,17 +263,24 @@ for (const box of document.querySelectorAll("[data-resources]")) {
      every card, the index and the dialog are built over them (buildItems), and whatever
      state the tools already hold is applied. */
   let asking = null;
+  /* One source of the whole list: the cards are the renderer's own markup, every word from
+     text.json; parsed in a document of its own, where nothing loads or runs until placed. */
+  const fetchList = async (url) => {
+    const r = await fetch(url, { headers: { accept: "application/json" } });
+    if (!r.ok) throw new Error(String(r.status));
+    const got = await r.json();
+    const doc = new DOMParser().parseFromString((got.cards || []).join(""), "text/html");
+    if (!doc.body.querySelector("[data-res]")) throw new Error("empty");
+    return doc;
+  };
   const load = async () => {
     if (again) again.hidden = true;
     count.textContent = t("resources.loading");
     try {
-      const r = await fetch(box.dataset.resSrc, { headers: { accept: "application/json" } });
-      if (!r.ok) throw new Error(String(r.status));
-      const got = await r.json();
-      /* The cards are the build's renderer's own markup, every word from text.json;
-         parsed in a document of its own, where nothing loads or runs until placed. */
-      const doc = new DOMParser().parseFromString((got.cards || []).join(""), "text/html");
-      if (!doc.body.querySelector("[data-res]")) throw new Error("empty");
+      /* The list as it stands now, from /api/resources (PF-4); the build's file beside the
+         page (data-res-file) is the fallback, as it was the only source before. */
+      let doc;
+      try { doc = await fetchList(box.dataset.resSrc); } catch { doc = await fetchList(box.dataset.resFile); }
       list.replaceChildren(...doc.body.children);
       buildItems();
       apply();

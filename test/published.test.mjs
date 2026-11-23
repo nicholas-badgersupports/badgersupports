@@ -98,11 +98,14 @@ test("with nothing published, every page is the build's file, byte for byte", as
   await given();
   const report = JSON.parse(fs.readFileSync(path.join(OUT, "_server", "report.json"), "utf8"));
   assert.ok(report.pages.length > 50);
+  /* Each render of a form mints its own nonce (PF-8), so a form page's nonce is set aside
+     before the comparison; every other byte must be the build's. */
+  const noNonce = (html) => html.replace(/name="_nonce" value="[^"]*"/g, 'name="_nonce" value="per-render"');
   for (const p of report.pages) {
     const res = await get(p.path);
     assert.equal(res.status, 200, p.path);
     const file = p.path.endsWith(".html") ? p.path.slice(1) : path.join(p.path, "index.html");
-    assert.equal(await res.text(), read(file), p.path);
+    assert.equal(noNonce(await res.text()), noNonce(read(file)), p.path);
   }
 });
 

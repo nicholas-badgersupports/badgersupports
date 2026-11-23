@@ -13,6 +13,7 @@
  * title (render/blocks/form.mjs) is an h2 and every heading in here steps down one, to h3.
  */
 
+import { randomUUID } from "node:crypto";
 import { html, attrs, jsonIsland, breakAtSign } from "./html.mjs";
 import { QUESTION_TYPES, OTHER, LINK_MAX, errorText, allQuestions, hiringContext, steppedForm, draftForm } from "../shared/forms.mjs";
 import { icon } from "./icons.mjs";
@@ -168,9 +169,14 @@ function section(def, s, values, errors, t, ctx, inner = 2) {
 /* errors: { questionId: code }. notice: { title, text } shown above the form (stale tab, closed
    while open, version changed), with `kept` label/value rows under `keptText` when answers are
    given back rather than sent. idemKey: carried through a no-JS correction so a resend is the
-   same submission. ctx: the render context, for links inside the form's words. preview: the form
+   same submission. nonce: this render's own mark, minted here when one is not carried through;
+   the server folds it into the derived idempotency key of a no-JavaScript submission
+   (netlify/lib/intake.mjs), so one person's double-press on one drawing of the form dedupes
+   while another drawing's identical answers are a second submission (workflow audit PF-8).
+   ctx: the render context, for links inside the form's words. preview: the form
    shown for review while it is closed (prototype builds only); the browser sends nothing. */
-export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", ctx = null, preview = false, submissionContext = {}, level = 1 }) {
+export function renderForm(def, { t, values = {}, errors = {}, notice = null, idemKey = "", nonce = null, ctx = null, preview = false, submissionContext = {}, level = 1 }) {
+  const formNonce = nonce ?? randomUUID();
   const stepped = steppedForm(def);
   const inner = level + 1;
   const anyErrors = Object.keys(errors).length > 0;
@@ -189,7 +195,7 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
   const review = stepped ? html`<div class="form-review" data-review hidden>${inner === 3 ? html`<h3>${t("form.review.title")}</h3>` : html`<h2>${t("form.review.title")}</h2>`}<p>${t("form.review.intro")}</p><div data-review-list></div></div>` : "";
   // Server validation chooses applicable conditional questions with and without client scripting.
   return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-level": level > 1 ? String(level) : null, "data-preview": preview ? "" : null, "data-stepped": stepped ? "" : null })}>
-  <input type="hidden" name="_form" value="${def.key}"><input type="hidden" name="_version" value="${def.version}"><input type="hidden" name="_key" value="${idemKey}" data-idem>
+  <input type="hidden" name="_form" value="${def.key}"><input type="hidden" name="_version" value="${def.version}"><input type="hidden" name="_key" value="${idemKey}" data-idem><input type="hidden" name="_nonce" value="${formNonce}">
   ${def.key === "recommendation-letter" && Object.hasOwn(submissionContext, "hiringCycleId") ? html`<input type="hidden" name="_cycle" value="${hiringContext(def.key, { _cycle: submissionContext.hiringCycleId }).hiringCycleId}">` : ""}
   <div class="hp" aria-hidden="true"><label>${t("form.trap")} <input type="text" name="_website" tabindex="-1" autocomplete="off" value=""></label></div>
   <div${attrs({ class: "error-summary", tabindex: "-1", "data-error-summary": "", hidden: !anyErrors, role: anyErrors ? "alert" : null })}>

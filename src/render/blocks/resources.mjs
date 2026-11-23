@@ -22,7 +22,10 @@
    ctx.defer), and the script fetches it when the visitor first opens, scrolls to, searches or
    filters the list — the site search's pattern (src/render/blocks/sitesearch.mjs); the cards in
    the file are drawn by the same resourceCard as the ones on the page, so a card is written
-   once. The search and the topic row under it (Connect's order) appear only when
+   once. Since PF-4 the script asks /api/resources first: the same held-back data drawn at
+   request time from the catalogue as it stands (netlify/lib/resources-data.mjs), so the full
+   list cannot lag the page's first screen until the next deploy; the build's file is the
+   fallback when that answer cannot be had. The search and the topic row under it (Connect's order) appear only when
    src/client/resources.js runs; it also turns Additional Details into a dialog. The tools
    card sticks under the site header while the list scrolls (the stylesheet holds the
    sticking; the script marks it stuck so it can travel compact), because the list runs
@@ -226,7 +229,7 @@ export default {
     const updated = ctx.data.resourcesUpdated;
     const carried = Object.fromEntries(FILTERS.map((g) => [g.id, new Set(list.flatMap((r) => valuesOf(r)[g.id]))]));
     const groups = FILTERS.map((g) => ({ ...g, options: g.options.filter((o) => carried[g.id].has(o)) })).filter((g) => g.options.length);
-    return html`<section class="resources band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources data-res-src="${ctx.path || ""}resources-data.json"><div class="wrap">
+    return html`<section class="resources band" id="${b.anchor || b.id}" aria-labelledby="${b.id}-h" data-block="${b.id}" data-resources data-res-src="/api/resources" data-res-file="${ctx.path || ""}resources-data.json"><div class="wrap">
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${ctx.data.resourcesState?.stale ? html`<p class="sample-note">${ctx.t("resources.stale")}</p>` : ""}

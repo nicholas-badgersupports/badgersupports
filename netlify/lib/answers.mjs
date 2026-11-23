@@ -48,7 +48,8 @@ export async function formsFor(who) {
 /* The newest answers to one form, each as the words the person chose, with whether it has reached
    Connect. Columns follow the form as it is now; an answer to a question since retired keeps a
    column of its own at the end. A confidential answer (an applicant's work study, their other
-   commitments) is not shown here at all: it goes to Connect, whose permissions decide who reads it. */
+   commitments) is not shown here at all: it goes to Connect, whose permissions decide who reads it.
+   An answer whose form definition cannot be read at all is withheld whole (withheld: true). */
 export async function latestAnswers(key) {
   const f = await formOrNull(key);
   const rows = await many(
@@ -65,15 +66,24 @@ export async function latestAnswers(key) {
   for (const r of rows) {
     if (!defs.has(r.form_version)) defs.set(r.form_version, (await definitionFor(key, r.form_version)) || f?.def || null);
     const def = defs.get(r.form_version);
-    if (def) for (const c of answerColumns(def)) if (c.confidential) secret.add(c.id);
-    const answers = def ? ingestPayload(r, def).answers : r.answers;
+    /* No definition for this answer — neither its own version's nor the form's current one —
+       means nothing can say which of its answers are confidential, so every answer is withheld
+       (workflow audit PF-10: this fallback used to render the raw answers unfiltered, failing
+       open on the one path where failing closed costs nothing). The row still stands, marked,
+       so the reader sees an answer arrived and why it is not shown. */
+    if (!def) {
+      items.push({ ref: r.ref, receivedAt: new Date(r.received_at).toISOString(), anonymous: !!r.anonymous, delivery: r.delivery || "pending", answers: {}, withheld: true });
+      continue;
+    }
+    for (const c of answerColumns(def)) if (c.confidential) secret.add(c.id);
+    const answers = ingestPayload(r, def).answers;
     const words = {};
     for (const [id, v] of Object.entries(answers || {})) {
       if (secret.has(id)) continue;
       words[id] = Array.isArray(v) ? v.join(", ") : String(v);
       if (!known.has(id)) {
         known.add(id);
-        columns.push({ id, label: def ? answerColumns(def).find((c) => c.id === id)?.label || id : id });
+        columns.push({ id, label: answerColumns(def).find((c) => c.id === id)?.label || id });
       }
     }
     items.push({ ref: r.ref, receivedAt: new Date(r.received_at).toISOString(), anonymous: !!r.anonymous, delivery: r.delivery || "pending", answers: words });

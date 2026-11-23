@@ -1288,6 +1288,11 @@
       "text": "For the privacy of the people who wrote in, answers can be read for an hour after signing in. Sign in again to keep reading.",
       "where": "Staff page, in place of the forms, or of one form's answers, once reading needs a fresh sign-in."
     },
+    "staff.publishAgain": {
+      "group": "staff",
+      "text": "To keep the public site safe, publishing needs a sign-in from the last ten minutes. Sign in again to publish.",
+      "where": "Staff page, in place of a publish action, once publishing needs a fresher sign-in."
+    },
     "staff.signInAgain": {
       "group": "staff",
       "text": "Sign In Again",
@@ -1492,6 +1497,11 @@
       "group": "staff",
       "text": "No answers yet.",
       "where": "Staff page, when a form's answers are opened and there are none."
+    },
+    "staff.answers.withheld": {
+      "group": "staff",
+      "text": "Some answers are not shown: the form's wording for the version they answered could not be read, so they are withheld rather than risk showing a private answer.",
+      "where": "Staff page, under a form's answers table, when an answer's form definition could not be read and its answers are withheld (PF-10)."
     },
     "staff.answers.openConnect": {
       "group": "staff",
@@ -4770,6 +4780,11 @@
       "group": "explore",
       "text": "Bus times could not be loaded just now.",
       "where": "On the Bus Routes page: the status line when neither the live feed nor a first answer arrived."
+    },
+    "explore.bus.ended": {
+      "group": "explore",
+      "text": "The bus timetable on this page ended on {{end}}. It was last updated on {{updated}}, and a new timetable is being prepared.",
+      "where": "On the Bus Routes page: the status line, the panels and the route box once the timetable's last service day has passed (PF-6)."
     },
     "explore.bus.retry": {
       "group": "explore",

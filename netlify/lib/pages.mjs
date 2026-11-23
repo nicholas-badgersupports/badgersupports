@@ -20,6 +20,7 @@ import url from "node:url";
 import { sharedNow, combineShared } from "./live-content.mjs";
 import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
+import { searchIndexAnswer } from "./search-index.mjs";
 import { currentForm } from "./intake.mjs";
 import { composeSite, renderSitePage, formsOn } from "../../src/render/site.mjs";
 import { trimSlash as dropSlash } from "../../src/shared/structure.mjs";
@@ -27,6 +28,12 @@ import { chicagoDate } from "../../src/render/context.mjs";
 import { formTopicFromAddress as topicFromAddress } from "../../src/shared/program-topic.mjs";
 import { refreshes } from "../../src/render/registry.mjs";
 import { eventsNow } from "./live-events.mjs";
+
+/* Data files the build writes for a browser to fetch that this function answers itself rather
+   than leaving to dist: the search index, rebuilt at every publish (search-index.mjs), so the
+   address is deliberately absent from the pages function's excludedPath. The guard test
+   (test/deferred-data.test.mjs) holds every held-back file to the exclusion list or this one. */
+export const FUNCTION_SERVED = ["/search-index.json"];
 
 const HERE = path.dirname(url.fileURLToPath(import.meta.url));
 let dist = path.resolve(HERE, "..", "..", "dist");
@@ -132,6 +139,18 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
 
   let moved = redirectFor(c, pathname);
   if (moved && !(c.render?.shared?.exports?.team && teamPath(pathname))) return new Response(null, { status: moved.status, headers: { location: moved.to + (u.search && !moved.to.includes("?") ? u.search : ""), ...base, ...PAGE_CACHE } });
+
+  /* The search index is this function's own answer, never a page and never dist's file: the
+     publish-time rebuild when one is stored, else the build's (search-index.mjs). Before this,
+     the address fell through to the page lookup and answered the 404 page, so Search — which
+     reads only this address — never worked live (PF-1). */
+  if (FUNCTION_SERVED.includes(pathname)) {
+    const doc = await searchIndexAnswer();
+    if (doc) return new Response(req.method === "HEAD" ? null : JSON.stringify(doc) + "\n", {
+      status: 200,
+      headers: { "content-type": "application/json; charset=utf-8", ...base, "cache-control": "public, max-age=300", "netlify-cdn-cache-control": "public, durable, s-maxage=300, stale-while-revalidate=60", "netlify-cache-tag": "search-index" },
+    });
+  }
 
   const snap = c.render;
   let revision = null, site = null, fault = null, shared = null;

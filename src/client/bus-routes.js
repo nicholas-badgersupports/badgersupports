@@ -36,6 +36,11 @@ if (root) {
     return n;
   };
   const fmtTime = (iso) => timeFmt.format(new Date(iso));
+  const dayFmt = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const dayWords = (iso) => (iso ? dayFmt.format(new Date(`${iso}T12:00:00Z`)) : "");
+  /* The timetable has ended (the answer's lapsed state, PF-6): the words the panels and the
+     route rows stand in place of their lists, matching the ones the page was drawn with. */
+  const endedText = (body) => t("explore.bus.ended", { end: dayWords(body.feedEnd), updated: dayWords(body.updated || body.feedEnd) });
   const badgeEl = (name) => el("span", `bus-badge bus-badge--r${name}`, name);
   const freeEl = () => el("span", "bus-free", t("explore.bus.free"));
 
@@ -129,6 +134,14 @@ if (root) {
   }
   function renderPanels() {
     if (!panelBody) return;
+    if (panelBody.lapsed) {
+      data.panels.forEach((panel, i) => {
+        const box = panelRows[i];
+        if (box) box.replaceChildren(el("p", "bus-none", endedText(panelBody)));
+      });
+      renderAlerts([]);
+      return;
+    }
     data.panels.forEach((panel, i) => {
       const box = panelRows[i];
       if (!box) return;
@@ -143,7 +156,7 @@ if (root) {
     const stopIds = [...new Set(data.panels.flatMap((p) => p.stops))];
     try {
       panelBody = await fetchDeps(stopIds);
-      statusLine.textContent = panelBody.live ? t("explore.bus.statusLive") : t("explore.bus.statusScheduled");
+      statusLine.textContent = panelBody.lapsed ? endedText(panelBody) : panelBody.live ? t("explore.bus.statusLive") : t("explore.bus.statusScheduled");
       renderPanels();
     } catch {
       if (panelBody) { renderPanels(); return; }
@@ -211,6 +224,7 @@ if (root) {
   function renderRouteRows() {
     routeRows.replaceChildren();
     if (!routeBody) { routeRows.append(el("p", "bus-loading", t("explore.bus.loading"))); return; }
+    if (routeBody.lapsed) { routeRows.append(el("p", "bus-none", endedText(routeBody))); return; }
     const s = data.stops[state.stop];
     const groups = s ? groupsFor(routeBody, [s.id]) : [];
     if (!groups.length) { routeRows.append(el("p", "bus-none", t("explore.bus.noneToday"))); return; }

@@ -1396,6 +1396,44 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .pagehead.has-1 .pagehead-photos { grid-template-columns: minmax(0, 1fr); grid-template-rows: 22rem; }
 .pagehead.has-2 .pagehead-photos .photo { grid-row: 1 / -1; }
 
+/* a page opening may carry a row of ribbons as decoration (pagehead's heroRibbons: the tones,
+   in the order they stand). The layer lies over the band only: the words, the buttons and the
+   photos keep their stacking places above it, the row takes no clicks, and it is hidden from
+   screen readers. The ribbons rise in once as the page opens, then stand still; a reader who
+   asks for stillness gets them standing in place. Where the row stands is the wearing page's
+   own business, since the empty room it stands in is that opening's own shape. */
+.pagehead.has-hero-ribbons { position: relative; overflow: clip; }
+.pagehead.has-hero-ribbons .pagehead-words,
+.pagehead.has-hero-ribbons .pagehead-actions { position: relative; z-index: 2; }
+.pagehead.has-hero-ribbons .pagehead-photos { position: relative; z-index: 1; }
+.pagehead-ribbons { position: absolute; inset: 0; pointer-events: none; }
+.ph-ribbon { position: absolute; display: block; z-index: 0; transform: rotate(var(--r, 0deg)); animation: ph-rise .7s cubic-bezier(.22, .7, .3, 1) both; }
+/* the rise is staggered 70ms a ribbon; the row holds at most five (pageheadProblems), so the
+   delays are written out rather than counted by a custom property the page would carry inline */
+.ph-ribbon:nth-child(2) { animation-delay: 70ms; }
+.ph-ribbon:nth-child(3) { animation-delay: 140ms; }
+.ph-ribbon:nth-child(4) { animation-delay: 210ms; }
+.ph-ribbon:nth-child(5) { animation-delay: 280ms; }
+.ph-ribbon .ribbon-art { display: block; width: 100%; height: auto; }
+@keyframes ph-rise { from { opacity: 0; transform: rotate(var(--r, 0deg)) translateY(18px) scale(.92); } to { opacity: 1; transform: rotate(var(--r, 0deg)) translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .ph-ribbon { animation: none; }
+}
+/* the ribbons opening's row: five ribbons in the one piece of empty room the opening has,
+   under the words and above the button row — one size, one baseline, even gaps, near-upright,
+   in the spectrum order the content names them, and nothing else in the band decorated. On a
+   phone the opening stacks words, buttons, poster with no empty room anywhere, so the row
+   steps aside entirely and the opening is the ordinary one (owner, 23 Nov 2026). */
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .ph-ribbon { top: 68.5%; width: 54px; }
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .ph-ribbon:nth-child(1) { left: 5.4%; --r: -3deg; }
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .ph-ribbon:nth-child(2) { left: 12.6%; --r: 2deg; }
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .ph-ribbon:nth-child(3) { left: 19.8%; --r: 0deg; }
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .ph-ribbon:nth-child(4) { left: 27%; --r: -2deg; }
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .ph-ribbon:nth-child(5) { left: 34.2%; --r: 3deg; }
+@media (max-width: 860px) {
+  [data-page="pg-ribbons"] [data-block="b-rb-head"] .pagehead-ribbons { display: none; }
+}
+
 /* ============ header button rows: one loud button, the rest quiet (owner, 12 Nov 2026) ============
    A page opening's row carries one full-strength button; every other way on in the same row is a
    quieter pill drawn from that header's own colour, never grey and never the old white: on a

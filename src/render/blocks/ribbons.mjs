@@ -6,7 +6,11 @@ import { linkProblem } from "../../shared/links.mjs";
 
 const ORDER = ["red","maroon","orange","gold","yellow","bright-green","lime","green","jade","teal","teal-purple","turquoise","light-blue","blue","dark-blue","two-tone-blue","denim","periwinkle","lavender","purple","pink","pink-blue","silver","gray","white","black","parkinsons"];
 const ALIASES = new Map(ORDER.map(t => [t.replaceAll("-", " "), t]));
+
 for (const [name,tone] of [["lime green","lime"],["dark green","green"],["teal & purple","teal-purple"],["black / gray","black"],["pink & blue","pink-blue"],["two-tone blue","two-tone-blue"],["blue denim","denim"],["parkinson’s uk","parkinsons"],["parkinson's uk","parkinsons"]]) ALIASES.set(name,tone);
+
+/* Whether a name is one of the tones the artwork can draw. */
+export function isRibbonTone(tone) { return ORDER.includes(tone); }
 
 export function ribbonItem(item, meanings) {
   const text = typeof item === "string" ? item : item.text;

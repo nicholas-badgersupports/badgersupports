@@ -24,6 +24,13 @@ export const WALK_RADIUS_M = 500;
  * the 80, 81, 82 and 84 cost nothing to ride. */
 export const FREE_ROUTES = ["80", "81", "82", "84"];
 
+/* Routes the explorer leaves out, named by their public route names
+ * (Nicholas's direction, 23 Nov 2026): W, G, P, S and 55 are dropped here, at
+ * the build, so neither artifact carries them and a feed refresh never brings
+ * them back. Their trips, times and shapes go with them; the street stops
+ * they share with the routes that stay are the feed's stops and remain. */
+export const EXCLUDED_ROUTES = ["W", "G", "P", "S", "55"];
+
 /* The box the campus routes are read off: a route is a campus route when one of
  * its stops stands inside it. Measured on the current feed it names exactly the
  * nineteen routes the Explore redesign counted. */
@@ -121,6 +128,9 @@ export function buildTransitData({ stopsTxt, routesTxt, tripsTxt, stopTimesTxt, 
   const routes = new Map();
   for (const r of parseCsv(routesTxt)) {
     if (!r.route_id) continue;
+    /* An excluded route never enters the map: the trip pass below reads only
+     * routes the map holds, so its trips, patterns and shapes are never built. */
+    if (EXCLUDED_ROUTES.includes(r.route_short_name || r.route_id)) continue;
     routes.set(r.route_id, {
       id: r.route_id, name: r.route_short_name || r.route_id, long: r.route_long_name || "",
       color: (r.route_color || "").toLowerCase(), textColor: (r.route_text_color || "").toLowerCase(),

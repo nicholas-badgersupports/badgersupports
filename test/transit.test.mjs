@@ -99,6 +99,35 @@ test("the browser's routes carry colours, headsigns in title case, stop order an
   assert.equal(client.panels[0].stops, "1", "a panel's stops resolve to indices, slash-joined");
 });
 
+test("the routes Nicholas named (W, G, P, S, 55) are left out of both artifacts", () => {
+  const goneRoutesTxt = [
+    "route_id,route_short_name,route_long_name,route_color,route_text_color,route_sort_order",
+    "RA,A,Alpha Line,FF0000,FFFFFF,1",
+    "RW,W,West Line,0000FF,FFFFFF,2",
+    "R55,55,Fifty Five Line,00FFFF,000000,3",
+  ].join("\n");
+  const goneTripsTxt = [
+    "trip_id,route_id,service_id,trip_headsign,direction_id,shape_id",
+    "g1,RA,wd,ALPHA EAST,0,shp-a",
+    "g2,RW,wd,ALPHA EAST,0,shp-a",
+    "g3,R55,wd,ALPHA EAST,0,shp-a",
+  ].join("\n");
+  const goneStopTimesTxt = [
+    "trip_id,arrival_time,departure_time,stop_id,stop_sequence",
+    "g1,08:00:00,08:00:00,a1,1", "g1,08:05:00,08:05:00,a2,2", "g1,08:09:00,08:09:00,a3,3",
+    "g2,09:00:00,09:00:00,a1,1", "g2,09:05:00,09:05:00,a2,2", "g2,09:09:00,09:09:00,a3,3",
+    "g3,10:00:00,10:00:00,a1,1", "g3,10:05:00,10:05:00,a2,2", "g3,10:09:00,10:09:00,a3,3",
+  ].join("\n");
+  const out = buildTransitData({
+    stopsTxt, routesTxt: goneRoutesTxt, tripsTxt: goneTripsTxt, stopTimesTxt: goneStopTimesTxt,
+    shapesTxt, calendarTxt, calendarDatesTxt, feedInfoTxt, panels: [],
+  });
+  assert.deepEqual(out.client.routes.map((r) => r.name), ["A"], "only the kept route reaches the browser");
+  assert.deepEqual(out.schedule.routes.map((r) => r.name), ["A"], "only the kept route reaches the timetable");
+  assert.ok(out.schedule.patterns.every((p) => p.route === "RA"), "no pattern rides an excluded route");
+  assert.equal(out.schedule.trips.length, 1, "the excluded routes' trips are not carried");
+});
+
 test("a panel naming a stop the feed does not hold is refused", () => {
   assert.throws(() => buildTransitData({
     stopsTxt, routesTxt, tripsTxt, stopTimesTxt, shapesTxt, calendarTxt, calendarDatesTxt, feedInfoTxt,

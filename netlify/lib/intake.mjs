@@ -18,6 +18,8 @@ import { hiringContext, AGREE_VALUE_RE } from "../../src/shared/identifiers.mjs"
 import { sharedNow } from "./live-content.mjs";
 import { chicagoDate } from "../../src/render/context.mjs";
 import { readFormSettings, effectiveForm } from "./form-settings.mjs";
+import { programsOff } from "./programs.mjs";
+import { withoutProgramOptions } from "../../src/shared/programs.mjs";
 import { wordedForm } from "./form-wording.mjs";
 import { legalNow } from "./legal.mjs";
 
@@ -150,7 +152,12 @@ async function leftBehind(def, versionSeen, input) {
 export async function submit(key, input, { now = new Date() } = {}) {
   const form = await currentForm(key, { now });
   if (!form) throw new HttpError(404, "form.unknown");
-  const { def } = form;
+  /* A program whose requesting is switched off has no choice on the form (programs.mjs), so an
+     answer naming one is refused by the form's own checks, as an answer naming a choice the form
+     does not offer is. The saved definition itself is untouched. */
+  let off = new Set();
+  try { off = await programsOff(); } catch { /* every program counts as on */ }
+  const def = withoutProgramOptions(form.def, off);
   const raw = readRaw(def, input);
   const context = hiringContext(key, input);
   if (form.state !== "open") return { ok: false, error: "form.closed", closedMessage: form.closedMessage, def, raw, context };

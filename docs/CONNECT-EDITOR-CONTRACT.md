@@ -647,7 +647,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-1071 keys. Keys are permanent. Required text cannot be published empty and must keep each
+1091 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (30)
@@ -731,7 +731,7 @@ the site adds the markup.
 | `mood.back` | Back to the Homepage | Link on that page. |  |
 | `schedule.happening` | Happening Now | Shown on an event once it has finished. |  |
 
-### Event cards (21)
+### Event cards (29)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -739,6 +739,14 @@ the site adds the markup.
 | `events.next` | Next Up | Small label over the next event's name at the top of a program's page, when the block gives none. |  |
 | `events.recentTitle` | Recent Events | Heading over events that have happened, when the event-card block gives none. |  |
 | `events.none` | Nothing is scheduled yet. | Shown in place of event cards when none are coming up. |  |
+| `events.comingSoon.workshops` | More Workshops Coming Soon! | Shown in place of a workshop program's next event when none is scheduled, with a link to request the workshop under it. |  |
+| `events.comingSoon.groups` | More Groups Coming Soon! | Shown in place of the peer support groups' next group when none is listed in the next seven days, with a link to request a group under it. |  |
+| `events.comingSoon.craft` | More Craft Nights Coming Soon! | Shown in place of the craft nights' next event when none is scheduled, with a link to suggest a craft night under it. |  |
+| `events.comingSoon.visits` | More Visits Coming Soon! | Shown in place of the dogs on call next visit when none is scheduled. |  |
+| `events.request.housing` | Request This Workshop | Link under the Navigating Housing coming-soon line, to the workshop request form with Navigating Housing chosen. |  |
+| `events.request.workshops` | Request a Workshop | Link under a workshop list's coming-soon line, to the workshop request form. |  |
+| `events.request.peer` | Request a Peer Support Group | Link under the peer support groups' coming-soon line, to the program request form with Peer Support Group chosen. |  |
+| `events.request.craft` | Suggest a Craft Night | Link under the craft nights' coming-soon line, to the programming feedback form. |  |
 | `events.days` | {{from}} – {{to}} | The first and last day of an event that runs over several days, on its card and in the timetable. {{from}} and {{to}} are each a short day, month and date. | `{{from}}` `{{to}}` |
 | `events.daysLong` | {{from}} to {{to}} | The same days in full, read by screen readers. {{from}} and {{to}} are each a weekday, month and date. | `{{from}}` `{{to}}` |
 | `calendar.gone.title` | That event is not coming up any more | Heading on the page an Add to Calendar button opens when the event has happened, moved or been taken off since the page was loaded. |  |
@@ -960,7 +968,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (598)
+### Staff page and edit button (610)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -985,6 +993,18 @@ the site adds the markup.
 | `staff.find.label` | Find a setting | Staff page, the find box above the tools: jumps to the named setting or section. |  |
 | `staff.find.none` | No setting matches that. | Staff page, under the find box when nothing matches. |  |
 | `staff.forms.title` | Website Forms | Staff page, heading above the list of forms. |  |
+| `staff.programs.title` | Program Requesting | Staff page, heading above the list of programs and their requesting switches. |  |
+| `staff.programs.state.on` | Requesting On | Staff page, label beside a program that takes requests. |  |
+| `staff.programs.state.off` | Requesting Off | Staff page, label beside a program whose requesting is turned off. |  |
+| `staff.programs.switch.off` | Turn Requesting Off | Staff page, button under a program that takes requests. |  |
+| `staff.programs.switch.on` | Turn Requesting On | Staff page, button under a program whose requesting is off. |  |
+| `staff.programs.confirm` | Turn off requesting for {{name}}? Its pages will be hidden, and its request forms will no longer offer it. | Staff page, the second question before a program's requesting turns off. | `{{name}}` |
+| `staff.programs.yes` | Yes, Turn It Off | Staff page, button that turns a program's requesting off, under that question. |  |
+| `staff.programs.cancel` | Keep It On | Staff page, button beside it that leaves the program's requesting on. |  |
+| `staff.programs.turningOff` | Turning Off… | Staff page, on the button while a program's requesting turns off. |  |
+| `staff.programs.turningOn` | Turning On… | Staff page, on the button while a program's requesting turns on. |  |
+| `staff.programs.turnedOff` | Requesting is off for {{name}}. Its pages are hidden. | Staff page, under a program once its requesting has turned off. | `{{name}}` |
+| `staff.programs.turnedOn` | Requesting is on for {{name}}. | Staff page, under a program once its requesting has turned on. | `{{name}}` |
 | `staff.forms.how` | Working through answers — replying, assigning, closing — happens in Connect, under Website Forms. | Staff page, under Website Forms, for someone who may read answers. |  |
 | `staff.forms.empty` | No forms to show. | Staff page, when there are no forms your role can read. |  |
 | `staff.forms.none` | No answers yet. | Staff page, under a form nobody has filled in. |  |

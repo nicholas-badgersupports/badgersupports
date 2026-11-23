@@ -1059,3 +1059,26 @@ as before: the homepage hero's drift, float and hand wave (owner, 20 Oct 2026), 
 moves, and the animations that mark something appearing or changing. The arrows and the close,
 sliders and pencil pops are no longer a judgement call awaiting a veto: under the corrected
 rule every kind with a move keeps it, and theirs are moves like any other.
+
+## 23 November 2026 · Program pages: real workshop photos, a coming-soon line, and a requesting switch per program (Owner)
+
+> "see if we can use actual workshop photos from navigating housing — it is okay if they are already being used on the site."
+> "More Workshops Coming Soon!" — in place of "Nothing is scheduled yet.", with an option to request the workshop.
+> "I also want a setting to be able to toggle all of this requesting — if requesting is off, all of the forms should be disabled and the page hidden; the requesting should be program specific as well."
+
+- The Navigating Housing hero shows photos of Navigating Housing workshops themselves
+  (`m-housing-audience`, `m-workshop-housing-team-standing`, `m-housing-handouts`). The once-only
+  photo rule is relaxed for this page, by the words above.
+- A program page with nothing scheduled shows its "more coming soon" line and, where the program
+  has one, a link to ask for it, above the standing email-list line: workshops "More Workshops
+  Coming Soon!", peer groups "More Groups Coming Soon!", craft nights "More Craft Nights Coming
+  Soon!", dogs on call "More Visits Coming Soon!" (the parallel lines are the build's adaptation
+  of the owner's line, flagged in the handoff). A program with something scheduled shows its
+  schedule as before.
+- Requesting is switchable per program on the staff page (Programs view; the switch takes
+  `site.publish`, the scope that retires a page). Off hides the program's pages the way a retired
+  page is hidden — not reachable, out of the menu and the search index — and takes the program's
+  choices off the shared request forms, so an answer naming one is refused; a form address naming
+  the program (`?topic=…`) answers as its hidden page does. On is the default and today's
+  behaviour. `src/shared/programs.mjs` names the programs; `program_state` (migration 012) holds
+  the switches.

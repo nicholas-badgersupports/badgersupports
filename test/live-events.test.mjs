@@ -393,7 +393,7 @@ test("peer empty and unavailable schedules remain distinct across API and no-JS 
   const now = Date.parse(`${TODAY}T12:00:00${chicagoOffset(TODAY)}`);
   given(fakeConnect({ ...reply([]), weekly: [] }));
   const empty = await get("/api/events/pg-peer-groups");
-  assert.match((await empty.json()).blocks["b-pg-intro"], /No upcoming peer support group/);
+  assert.match((await empty.json()).blocks["b-pg-intro"], /More Groups Coming Soon!/);
   given(fakeConnect(PUBLISHED, { fail: true }));
   const stale = await quietly(() => eventSections("pg-peer-groups", { today: TODAY, now }));
   assert.equal(stale.stale, true);

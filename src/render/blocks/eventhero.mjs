@@ -6,7 +6,9 @@
 
    The card is an event card (class `evcard`, the same data attributes), so schedule.js marks it
    Today, and Ended once it is over, exactly as it marks the cards in a list. With nothing coming up,
-   the card says so. Built for the craft nights page; any program's page can use it.
+   the card gives the program's "more coming soon" line (shared/programs.mjs) and, where the program
+   has one, a link to ask for it, above the standing line about the email list. Built for the craft
+   nights page; any program's page can use it.
 
    Between publishes schedule.js asks the API for this block again and swaps only the part marked
    data-live, the card or the line saying nothing is coming, so the photos beside it are not loaded twice. */
@@ -18,6 +20,7 @@ import { picture } from "../media.mjs";
 import { calendarHref, hasCalendarTimes, timeUnconfirmed } from "../ics.mjs";
 import { nextDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
 import { eventClass, eventTags, timeContact, unavailableEvents } from "../event-status.mjs";
+import { programForEvents } from "../../shared/programs.mjs";
 
 function feature(ctx, b, r) {
   const p = dateParts(r.date, ctx.t);
@@ -55,13 +58,14 @@ export default {
     const src = ctx.data.events;
     if (!src) throw new Error(`${b.id}: no event source "${b.source}"`);
     const [next] = nextDated(src, ctx.today, 1, { program: b.program, series: b.series }, ctx.now);
+    const prog = programForEvents(b.program, b.series);
     const photos = (b.photos || []).slice(0, 3);
     const sizes = ["(max-width: 860px) 46vw, 24rem", "(max-width: 860px) 23vw, 14rem", "(max-width: 860px) 23vw, 14rem"];
     return html`<section${attrs({ id: b.anchor || b.id, class: ["eventhero", photos.length ? "has-photos" : null].filter(Boolean).join(" "), "aria-labelledby": `${b.id}-h`, "data-block": b.id, "data-program": b.program })}><div class="wrap">
   <div class="eventhero-main">
     <h1 id="${b.id}-h">${b.title}</h1>
     ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
-    ${ctx.data.eventsState?.stale ? html`<div data-live="next">${unavailableEvents(ctx)}</div>` : next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t("events.none")}</p><p>${go(ctx, "/join/email-list/#b-form-email-list", ctx.t("schedule.updates"))}</p></div>`}
+    ${ctx.data.eventsState?.stale ? html`<div data-live="next">${unavailableEvents(ctx)}</div>` : next ? feature(ctx, b, next) : html`<div data-live="next"><p class="evlist-none">${ctx.t(prog?.comingSoon || "events.none")}</p>${prog?.requestHref ? html`<p>${go(ctx, prog.requestHref, ctx.t(prog.requestLabel))}</p>` : ""}<p>${go(ctx, "/join/email-list/#b-form-email-list", ctx.t("schedule.updates"))}</p></div>`}
     ${b.links?.length ? html`<ul class="more-links">${b.links.map(l => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
   </div>
   ${photos.length ? html`<div class="eventhero-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: true, priority: i === 0 ? "high" : null })}</div>`)}</div>` : ""}

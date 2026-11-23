@@ -1178,6 +1178,46 @@
       "text": "Nothing is scheduled yet.",
       "where": "Shown in place of event cards when none are coming up."
     },
+    "events.comingSoon.workshops": {
+      "group": "events",
+      "text": "More Workshops Coming Soon!",
+      "where": "Shown in place of a workshop program's next event when none is scheduled, with a link to request the workshop under it."
+    },
+    "events.comingSoon.groups": {
+      "group": "events",
+      "text": "More Groups Coming Soon!",
+      "where": "Shown in place of the peer support groups' next group when none is listed in the next seven days, with a link to request a group under it."
+    },
+    "events.comingSoon.craft": {
+      "group": "events",
+      "text": "More Craft Nights Coming Soon!",
+      "where": "Shown in place of the craft nights' next event when none is scheduled, with a link to suggest a craft night under it."
+    },
+    "events.comingSoon.visits": {
+      "group": "events",
+      "text": "More Visits Coming Soon!",
+      "where": "Shown in place of the dogs on call next visit when none is scheduled."
+    },
+    "events.request.housing": {
+      "group": "events",
+      "text": "Request This Workshop",
+      "where": "Link under the Navigating Housing coming-soon line, to the workshop request form with Navigating Housing chosen."
+    },
+    "events.request.workshops": {
+      "group": "events",
+      "text": "Request a Workshop",
+      "where": "Link under a workshop list's coming-soon line, to the workshop request form."
+    },
+    "events.request.peer": {
+      "group": "events",
+      "text": "Request a Peer Support Group",
+      "where": "Link under the peer support groups' coming-soon line, to the program request form with Peer Support Group chosen."
+    },
+    "events.request.craft": {
+      "group": "events",
+      "text": "Suggest a Craft Night",
+      "where": "Link under the craft nights' coming-soon line, to the programming feedback form."
+    },
     "events.days": {
       "group": "events",
       "text": "{{from}} – {{to}}",
@@ -1312,6 +1352,66 @@
       "group": "staff",
       "text": "Website Forms",
       "where": "Staff page, heading above the list of forms."
+    },
+    "staff.programs.title": {
+      "group": "staff",
+      "text": "Program Requesting",
+      "where": "Staff page, heading above the list of programs and their requesting switches."
+    },
+    "staff.programs.state.on": {
+      "group": "staff",
+      "text": "Requesting On",
+      "where": "Staff page, label beside a program that takes requests."
+    },
+    "staff.programs.state.off": {
+      "group": "staff",
+      "text": "Requesting Off",
+      "where": "Staff page, label beside a program whose requesting is turned off."
+    },
+    "staff.programs.switch.off": {
+      "group": "staff",
+      "text": "Turn Requesting Off",
+      "where": "Staff page, button under a program that takes requests."
+    },
+    "staff.programs.switch.on": {
+      "group": "staff",
+      "text": "Turn Requesting On",
+      "where": "Staff page, button under a program whose requesting is off."
+    },
+    "staff.programs.confirm": {
+      "group": "staff",
+      "text": "Turn off requesting for {{name}}? Its pages will be hidden, and its request forms will no longer offer it.",
+      "where": "Staff page, the second question before a program's requesting turns off."
+    },
+    "staff.programs.yes": {
+      "group": "staff",
+      "text": "Yes, Turn It Off",
+      "where": "Staff page, button that turns a program's requesting off, under that question."
+    },
+    "staff.programs.cancel": {
+      "group": "staff",
+      "text": "Keep It On",
+      "where": "Staff page, button beside it that leaves the program's requesting on."
+    },
+    "staff.programs.turningOff": {
+      "group": "staff",
+      "text": "Turning Off…",
+      "where": "Staff page, on the button while a program's requesting turns off."
+    },
+    "staff.programs.turningOn": {
+      "group": "staff",
+      "text": "Turning On…",
+      "where": "Staff page, on the button while a program's requesting turns on."
+    },
+    "staff.programs.turnedOff": {
+      "group": "staff",
+      "text": "Requesting is off for {{name}}. Its pages are hidden.",
+      "where": "Staff page, under a program once its requesting has turned off."
+    },
+    "staff.programs.turnedOn": {
+      "group": "staff",
+      "text": "Requesting is on for {{name}}.",
+      "where": "Staff page, under a program once its requesting has turned on."
     },
     "staff.forms.how": {
       "group": "staff",

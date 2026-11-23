@@ -23,6 +23,7 @@ import { picture } from "../media.mjs";
 import { calendarHref, hasCalendarTimes, timeUnconfirmed } from "../ics.mjs";
 import { nextDated, lastDated, dateParts, timeRange, dayRange, runsOn } from "../events.mjs";
 import { eventClass, eventTags, timeContact, unavailableEvents } from "../event-status.mjs";
+import { programForEvents } from "../../shared/programs.mjs";
 
 /* A night that has happened, as its photo: the date and name under it. One without a photo keeps
    the card. */
@@ -84,6 +85,7 @@ export default {
     const skip = b.skip || 0;
     const stale = !!ctx.data.eventsState?.stale;
     const next = show === "recent" || stale ? [] : nextDated(src, ctx.today, (b.count || 6) + skip, { program: b.program, series: b.series }, ctx.now).slice(skip);
+    const prog = show === "recent" ? null : programForEvents(b.program, b.series);
     const last = show === "upcoming" || b.recent === 0 ? [] : lastDated(src, ctx.today, b.recent || 4, { program: b.program, series: b.series }, ctx.now);
     if ((show === "recent" && !last.length) || (show === "upcoming" && !next.length && skip && !stale)) return html`<section data-block="${b.id}" hidden></section>`;
     const h = b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`;
@@ -101,7 +103,7 @@ export default {
     </div>
     ${photos.length ? mosaic(ctx, photos) : ""}
   </header>
-  ${show === "recent" ? "" : stale ? unavailableEvents(ctx) : next.length ? html`${sub(b.upcomingTitle || ctx.t("schedule.laterTitle"), `${b.id}-next`)}<ol class="evcards" aria-labelledby="${label(`${b.id}-next`)}">${next.map((r) => card(ctx, r))}</ol>` : html`<p class="evlist-none">${ctx.t("events.none")}</p>`}
+  ${show === "recent" ? "" : stale ? unavailableEvents(ctx) : next.length ? html`${sub(b.upcomingTitle || ctx.t("schedule.laterTitle"), `${b.id}-next`)}<ol class="evcards" aria-labelledby="${label(`${b.id}-next`)}">${next.map((r) => card(ctx, r))}</ol>` : html`<p class="evlist-none">${ctx.t(prog?.comingSoon || "events.none")}</p>${prog?.requestHref ? html`<p>${go(ctx, prog.requestHref, ctx.t(prog.requestLabel))}</p>` : ""}`}
   ${last.length ? html`${sub(b.recentTitle || ctx.t("events.recentTitle"), `${b.id}-last`)}<ol class="evcards evcards--recent" aria-labelledby="${label(`${b.id}-last`)}">${last.map((r) => shot(ctx, r))}</ol>` : ""}
   ${b.suggest ? html`<p class="evlist-foot">${go(ctx, b.suggest.href, b.suggest.label, b.suggest.icon || "bulb")}</p>` : ""}
 </div></section>`;

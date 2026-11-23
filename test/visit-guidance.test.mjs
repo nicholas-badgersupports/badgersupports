@@ -39,7 +39,7 @@ test("the first-visit action follows the current occurrence room and exact end",
 
 test("empty and unavailable first-visit schedules have distinct honest actions", () => {
   const empty = String(BLOCKS.program.render(intro(), ctx(events())));
-  assert.match(empty, /No upcoming peer support group/); assert.match(empty, /href="\/join\/email-list\/#b-form-email-list"/);
+  assert.match(empty, /More Groups Coming Soon!/); assert.match(empty, /href="\/join\/email-list\/#b-form-email-list"/);
   assert.doesNotMatch(empty, /class="btn visit-action"/);
   const stale = String(BLOCKS.program.render(intro(), ctx(events([visit("old")]), { stale: true })));
   assert.match(stale, /couldn’t confirm the current schedule/); assert.match(stale, /mailto:directors@badgersupports.org/);

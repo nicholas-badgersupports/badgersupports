@@ -359,6 +359,86 @@ function formsSection(me, onData) {
   return section;
 }
 
+/* ---------- programs ---------- */
+
+/* On or Off for one program's requesting (router.mjs, programSwitch). Off asks again, naming the
+   program, before anything is sent; On goes at once. The chip and the button follow the server's
+   answer, never the click. */
+function programSwitchControl(p, chip) {
+  const box = el("div", { className: "staff-switch" });
+  const shown = () => box.querySelector("button");
+  function draw() {
+    chip.className = `staff-chip is-${p.requesting ? "open" : "closed"}`;
+    chip.textContent = t(p.requesting ? "staff.programs.state.on" : "staff.programs.state.off");
+    const button = el("button", { type: "button", className: "btn btn--quiet", textContent: t(p.requesting ? "staff.programs.switch.off" : "staff.programs.switch.on") });
+    button.addEventListener("click", () => (p.requesting ? ask() : send(button, "on")));
+    box.replaceChildren(el("div", { className: "staff-actions" }, button));
+  }
+  function ask() {
+    const yes = el("button", { type: "button", className: "btn", textContent: t("staff.programs.yes") });
+    const no = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.programs.cancel") });
+    yes.addEventListener("click", () => send(yes, "off"));
+    no.addEventListener("click", () => { draw(); shown().focus(); });
+    box.replaceChildren(noteBox(t("staff.programs.confirm", { name: p.name }), el("div", { className: "staff-actions" }, yes, no)));
+    yes.focus();
+  }
+  async function send(button, state) {
+    if (isBusy(button)) return;
+    const done = busy(button, t(state === "off" ? "staff.programs.turningOff" : "staff.programs.turningOn"));
+    const r = await call(`/api/staff/programs/${encodeURIComponent(p.key)}/switch`, { method: "POST", body: state === "off" ? { state, confirm: p.key } : { state } }).catch(offline);
+    done();
+    if (!box.isConnected) return;
+    if (r.status !== 200) {
+      const [why, words] = refused(r);
+      draw();
+      box.append(why);
+      shown().focus();
+      say(words);
+      return;
+    }
+    const next = r.body.programs?.find((x) => x.key === p.key);
+    if (next) p.requesting = next.requesting;
+    draw();
+    const words = [t(p.requesting ? "staff.programs.turnedOn" : "staff.programs.turnedOff", { name: p.name }), r.body.purgeError ? t("staff.switch.slow") : ""].filter(Boolean).join(" ");
+    box.append(el("p", { textContent: words }));
+    shown().focus();
+    say(words);
+  }
+  draw();
+  return box;
+}
+
+function programsSection(me) {
+  const list = el("ul", { className: "staff-forms" });
+  const again = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.tryAgain") });
+  function draw(r) {
+    list.replaceChildren(...r.programs.map((p) => {
+      const chip = el("span", { className: `staff-chip is-${p.requesting ? "open" : "closed"}`, textContent: t(p.requesting ? "staff.programs.state.on" : "staff.programs.state.off") });
+      return el("li", { className: "staff-form" },
+        el("h3", {}, el("span", { textContent: p.name }), " ", chip),
+        r.canSwitch ? programSwitchControl(p, chip) : null);
+    }));
+  }
+  async function load() {
+    const had = document.activeElement === again;
+    const done = busy(again, t("staff.tryAgain"));
+    const r = await call("/api/staff/programs").catch(offline);
+    done();
+    if (!section.isConnected) return;
+    if (r.status === 200) { draw(r.body); return; }
+    const [box, words] = refused(r);
+    if (r.status !== 401 && r.status !== 403) box.append(el("p", {}, again));
+    list.replaceChildren(el("li", {}, box));
+    if (had) again.focus();
+    say(words);
+  }
+  again.addEventListener("click", () => { if (!isBusy(again)) load(); });
+  const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-programs-h", textContent: t("staff.programs.title") }), list);
+  section.setAttribute("aria-labelledby", "staff-programs-h");
+  load();
+  return section;
+}
+
 function readAgainSection() {
   const section = el("section", { className: "staff-part" }, el("h2", { id: "staff-forms-h", textContent: t("staff.forms.title") }), readAgain());
   section.setAttribute("aria-labelledby", "staff-forms-h");
@@ -1598,6 +1678,7 @@ function showTools(me) {
   const views = [];
   const add = (id, node, titleKey) => { if (node) views.push([id, node, titleKey]); };
   add("forms", forms, "staff.forms.title");
+  add("programs", me.canPrograms && programsSection(me), "staff.programs.title");
   add("words", pages && editSection(me), "staff.edit.title");
   add("pages", pages && pagesSection(me, (d) => overview?.notePages(d)), "staff.pages.title");
   add("rooms", me.canPublish && roomsSection(), "staff.rooms.title");

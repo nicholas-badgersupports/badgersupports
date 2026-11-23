@@ -315,8 +315,9 @@ export function loadContent({ production = false, launch = production, textEdits
   photos(events, eventsAt);
   events.places = { ...eventPlaces(places), ...rooms };
   // The wall and the team: Connect's exports when the build read them (ops/connect-feed.mjs). Without them a
-  // published site shows the team page its words without people; the wall stands in its approved defaults
-  // (ops/wall-defaults.mjs) whenever Connect's list comes back empty, so a published wall is never blank.
+  // published site shows the team page its words without people; the wall's approved defaults
+  // (ops/wall-defaults.mjs) fill the places Connect's list leaves under the display count, so a
+  // published wall always stands full.
   const wallRead = feed?.wall ? structuredClone(feed.wall) : production ? { schema: "bss.wall-fixture/1", fixture: false, notes: [] } : readJson("content/fixtures/wall-notes.json");
   const wall = production ? wallWithDefaults(wallRead) : wallRead;
   // The team: Connect's public profiles (src/render/team.mjs). Each published one gets a page.

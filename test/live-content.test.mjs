@@ -90,7 +90,7 @@ test('resources and Wall notes retain bounded last-good reads but team eligibili
   offline = true; clock += SHARED_FRESH_MS + 1; forgetShared();
   const old = await quietly(() => sharedNow(SERVER.render));
   assert.equal(old.team.unavailable, true); assert.equal(old.team.value.people.length, 0);
-  assert.equal(old.resources.value.resources.length, baseResources.resources.length); assert.equal(old.wall.value.notes.length, 1);
+  assert.equal(old.resources.value.resources.length, baseResources.resources.length); assert.equal(old.wall.value.notes.length, 7, "the one approved note as settled, with the six defaults filling behind it");
   clock += WALL_FALLBACK_MS + 1; forgetShared();
   const expired = await quietly(() => sharedNow(SERVER.render)); assert.equal(expired.wall.unavailable, true); assert.equal(expired.wall.value.notes.length, 0); assert.ok(expired.resources.value.resources.length);
 });
@@ -173,12 +173,12 @@ test('an empty approved Wall list settles to the approved defaults at runtime', 
   const home = await (await get('/')).text();
   assert.match(home, /You belong here/); assert.equal((home.match(/<li class="note">/g) || []).length, WALL_DEFAULT_NOTES.length);
 });
-test('a non-empty approved Wall list passes through untouched, with no defaults mixed in', async () => {
+test('a short approved Wall list stands first, with the defaults filling the places left', async () => {
   reply.publicWallNotes.notes = [{ id: 'w9', text: 'One real approved note.' }];
   const shared = await sharedNow(SERVER.render);
-  assert.deepEqual(shared.wall.value.notes, ['One real approved note.']); assert.equal(shared.wall.value.source, 'connect');
+  assert.deepEqual(shared.wall.value.notes, ['One real approved note.', ...WALL_DEFAULT_NOTES]); assert.equal(shared.wall.value.source, 'connect');
   const home = await (await get('/')).text();
-  assert.match(home, /One real approved note\./); assert.doesNotMatch(home, /You belong here/);
+  assert.match(home, /One real approved note\./); assert.match(home, /You belong here/);
 });
 test('a failed Wall read falls back to the settled defaults, then still expires', async () => {
   reply.publicWallNotes.notes = [];

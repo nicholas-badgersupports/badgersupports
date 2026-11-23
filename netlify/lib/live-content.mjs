@@ -51,8 +51,8 @@ async function oneCatalogue(snap, kind, now, token) {
       if (!cfg) throw Object.assign(new Error('Connect is not configured'), { code: 'connect.missing' });
       const reply = await call(cfg, { action: spec.action });
       if (reply.schema !== spec.schema || !Array.isArray(reply[spec.field])) throw Object.assign(new Error('Unexpected public catalogue'), { code: 'connect.bad-reply' });
-      /* The wall is settled through the same defaults floor the build applies: an empty approved
-         list is a successful read of no notes, not a reason to serve a blank wall. */
+      /* The wall is settled through the same defaults fill the build applies: a short approved
+         list is a successful read, filled out with the defaults rather than served sparse. */
       const mapped = spec.map(reply);
       const value = kind === 'wall' ? wallWithDefaults(mapped) : mapped;
       const record = { source, at: now, value };
@@ -68,7 +68,7 @@ async function oneCatalogue(snap, kind, now, token) {
         ? previous : { at, value: built(snap, kind) };
       // Personal recognition and moderated notes are not held indefinitely after withdrawal could have occurred.
       const expired = kind !== 'resources' && (!Number.isFinite(record.at) || now - record.at > WALL_FALLBACK_MS);
-      /* The fallback value is settled through the same floor; the expiry above still stands, so a
+      /* The fallback value is settled through the same fill; the expiry above still stands, so a
          record outside its window reports unavailable with no notes rather than holding even the
          defaults indefinitely. */
       const fallback = record.value || empty(kind);

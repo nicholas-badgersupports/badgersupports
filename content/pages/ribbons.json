@@ -35,7 +35,14 @@
         "href": "mailto:hello@badgersupports.org",
         "icon": "mail"
       },
-      "whole": true
+      "whole": true,
+      "heroRibbons": [
+        "red",
+        "gold",
+        "lime",
+        "blue",
+        "purple"
+      ]
     },
     {
       "id": "b-rb-causes",

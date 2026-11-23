@@ -49,6 +49,7 @@ import { ribbonProblems } from "../src/render/blocks/ribbons.mjs";
 import { resourceProblems, resourceVisible } from "../src/render/blocks/resources.mjs";
 import { navigatorProblems, navigatorResourceProblems } from "../src/render/blocks/navigator.mjs";
 import { directoryProblems } from "../src/render/blocks/directory.mjs";
+import { pageheadProblems } from "../src/render/blocks/pagehead.mjs";
 import { questionProblems } from "../src/render/blocks/questions.mjs";
 import { ICONS } from "../src/render/icons.mjs";
 import { makeContext, chicagoDate, PROGRAMS } from "../src/render/context.mjs";
@@ -291,6 +292,7 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "words") for (const p of wordProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "ribbons") for (const p of ribbonProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "directory") for (const p of directoryProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
+    if (b.type === "pagehead") for (const p of pageheadProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "resources") for (const p of resourceProblems(b)) problems.push(`content/pages: ${page.id}.${p}`);
     if (b.type === "navigator") { for (const p of navigatorProblems(b)) problems.push(`content/pages: ${page.id}.${p}`); for (const p of navigatorResourceProblems(b, navLibrary)) problems.push(`content/pages: ${page.id}.${p}`); }
     if (b.type === "embed") for (const p of embedProblems(b)) problems.push(`content/pages: ${page.id}.${b.id}: ${p}`);

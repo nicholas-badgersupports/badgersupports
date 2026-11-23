@@ -2312,3 +2312,32 @@ body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }
   .res-float, .res-float .res-card { animation: none; }
 }
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
+
+/* ---------- liquid glass: the resources filter bar and this file's dialog panels ---------- */
+/* The resources tools bar sticks under the header for the length of the list, so the cards pass
+   under it as they pass under the header: it wears the same bar fill and blur (tokens.css),
+   over its solid paper rule above. The resource dialog and the staff edit dialog take the
+   shared dialog pattern (layout.css carries the notice and the email popup, ribbons.css its
+   own dialog): a near-opaque frosted panel over a dimmed page the backdrop now also blurs, so
+   the visitor keeps their place. The dialog's sticky head wears the panel fill too, or it would
+   stand as a solid stripe across the frosted panel. Nothing inside the panels changes — the
+   fields and their ground stay solid, as a form's ground should. The preference blocks turn
+   every surface named here solid again. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) and (background: color-mix(in srgb, currentColor 50%, transparent)) {
+  .resources .res-tools { background: var(--glass-bar); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+  .res-dialog, .edit-dialog { background: var(--glass-panel); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+  .res-dialog-head { background: var(--glass-panel); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+  .res-dialog::backdrop, .edit-dialog::backdrop { -webkit-backdrop-filter: var(--glass-blur-backdrop); backdrop-filter: var(--glass-blur-backdrop); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .resources .res-tools, .res-dialog, .edit-dialog, .res-dialog-head { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .res-dialog::backdrop, .edit-dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .resources .res-tools, .res-dialog, .edit-dialog, .res-dialog-head { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .res-dialog::backdrop, .edit-dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  .resources .res-tools, .res-dialog, .edit-dialog, .res-dialog-head { background: Canvas; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .res-dialog::backdrop, .edit-dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

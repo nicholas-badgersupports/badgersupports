@@ -70,8 +70,28 @@
 .ribbon-source .ic { width: 1em; height: 1em; margin-left: var(--s1); }
 .ribbon-plain { padding: var(--s4); display: grid; place-items: center; }
 .ribbon-dialog { width: min(46rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: var(--hairline); border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--note-shadow); margin: auto; overscroll-behavior: contain; }
-.ribbon-dialog::backdrop { background: var(--ribbon-shadow); backdrop-filter: blur(4px); }
-.ribbon-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); padding: var(--s4); border-bottom: var(--hairline); }
+.ribbon-dialog::backdrop { background: var(--ribbon-shadow); -webkit-backdrop-filter: var(--glass-blur-backdrop); backdrop-filter: var(--glass-blur-backdrop); }
+/* Liquid glass: this dialog began the site's dialog pattern (its backdrop blurred the page
+   first); the pattern is now shared (blocks.css, layout.css), so the panel takes the same
+   near-opaque frosted fill (tokens.css) over its solid paper rule above, and the backdrop blur
+   rises to the shared token. The preference blocks turn the panel solid again; the backdrop
+   keeps its dim and loses its blur with them. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) and (background: color-mix(in srgb, currentColor 50%, transparent)) {
+  .ribbon-dialog { background: var(--glass-panel); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .ribbon-dialog { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ribbon-dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .ribbon-dialog { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ribbon-dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  .ribbon-dialog { background: Canvas; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ribbon-dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+.ribbon-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); padding: var(--s4); background: var(--tex-ground); background-blend-mode: normal, multiply; border-bottom: var(--hairline); }
 .ribbon-dialog-head p { font-size: var(--fs-small); font-weight: 700; color: var(--muted); }
 .ribbon-dialog-head h2 { font: 800 var(--fs-h2)/1.2 var(--font-body); color: var(--accent); margin-top: var(--s1); }
 .ribbon-close { flex-shrink: 0; min-height: 44px; }

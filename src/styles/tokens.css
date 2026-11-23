@@ -149,6 +149,22 @@
   --focus-on-red: #F2EBE1;
   --scrim: #39373799;          /* behind the edit dialog: ink at sixty per cent */
 
+  /* Liquid glass, for the chrome layer only (owner's approval, 23 Nov 2026): the sticky header,
+     the sticky filter bars and the dialog panels. Never content cards, reading, forms, the footer
+     or the announcement strip. Two fills, both of the surface's own white: the bar fill at 90%,
+     measured for the words it carries — the brand red, its hardest reader, clears 4.5:1 over a
+     pure-black photograph (5.6:1) and on the rendered page over the Resources photo hero, where
+     the darkest frosted backdrop measured 5.7:1 against the brand red and 9.6:1 against the ink; the panel fill at 92% over the
+     dimmed page, the dialog pattern Connect measured. The blur stays at 14px, the research's
+     ceiling for a phone's graphics processor. Every glass rule stands behind an @supports test for
+     both backdrop-filter and color-mix, over the solid paper rule, so an engine missing either
+     keeps the solid surface; reduced transparency and more-contrast turn every glass surface
+     solid again in the same files that frost it. */
+  --glass-bar: color-mix(in srgb, var(--paper) 90%, transparent);
+  --glass-panel: color-mix(in srgb, var(--paper) 92%, transparent);
+  --glass-blur: blur(14px) saturate(1.4);
+  --glass-blur-backdrop: blur(8px) saturate(1.3);
+
   /* type: Montserrat only. A headline is Montserrat at its heaviest, uppercase and tight (the design
      system's DisplayHeading); 800 is the heaviest cut shipped here */
   --font-body: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;

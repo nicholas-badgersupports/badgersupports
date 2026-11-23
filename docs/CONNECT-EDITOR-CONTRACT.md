@@ -490,6 +490,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 | `links` | several links, in order |  |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
+| `paws` | one of `none`, `prints` |  |
 
 ### Event opening — `eventhead`
 
@@ -527,7 +528,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
-pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `copy`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `info`, `face`, `face2`, `face3`, `face4`, `face5`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
+pressed: `arrow`, `back`, `down`, `out`, `pin`, `mail`, `copy`, `calendar`, `chat`, `scissors`, `bulb`, `house`, `badge`, `question`, `info`, `face`, `face2`, `face3`, `face4`, `face5`, `plus`, `star`, `check`, `play`, `pause`, `jar`, `pencil`, `ribbon`, `search`, `account`, `paw`, `pawprint`, `instagram`, `tiktok`, `linkedin`, `win`, `sliders`, `close`, `hand`, `hand-cream`. The build refuses any other name.
 
 ## Photos
 

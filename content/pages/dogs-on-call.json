@@ -42,6 +42,7 @@
       "id": "b-dc-about",
       "type": "statement",
       "program": "other",
+      "paws": "prints",
       "text": "Every session is free and drop-in. All are welcome!",
       "points": [
         {

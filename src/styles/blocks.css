@@ -2169,3 +2169,28 @@ body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }
   [data-page="pg-btw-stress-management-self-care"] [data-block="b-btw-sc-head"] .pagehead-photos,
   [data-page="pg-btw-support-networks"] [data-block="b-btw-sn-head"] .pagehead-photos { grid-area: photos; }
 }
+
+/* A page opening with a side panel (pagehead `side`): a page with no photos stands its own
+   material in the band's right side; the words and buttons stack in the left column, as on
+   the team and resources openings. */
+@media (min-width: 861px) {
+  .pagehead.has-side .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-areas: "words side" "actions side"; grid-template-rows: auto 1fr; }
+  .pagehead.has-side .pagehead-words { grid-area: words; }
+  .pagehead.has-side .pagehead-actions { grid-area: actions; align-self: start; margin-top: var(--s4); flex-wrap: wrap; overflow-x: visible; }
+  .pagehead.has-side .pagehead-side { grid-area: side; align-self: center; }
+}
+/* a page whose opening has no buttons: the words take the left column on their own */
+.pagehead.has-side:not(:has(.pagehead-actions)) .wrap { grid-template-areas: "words side"; grid-template-rows: auto; }
+
+/* The directory card (pagehead `side: "directory"`): the directory's own title, its first
+   places as quiet rows — the name, and the room or address line the directory itself shows. */
+.pagehead-side.is-directory { background: var(--paper); border: var(--rule-line); border-radius: var(--r-card); padding: var(--s4) var(--s5); box-shadow: var(--lift); }
+.ph-side-title { font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s3); }
+.ph-dir { list-style: none; display: grid; gap: var(--s3); }
+.ph-dir li { display: grid; gap: .15rem; }
+.ph-dir a, .ph-dir-name { font-weight: 700; color: var(--ink); }
+.ph-dir-addr { font-size: var(--fs-small); color: var(--muted); }
+
+@media (max-width: 860px) {
+  .pagehead-side { margin-top: var(--s4); }
+}

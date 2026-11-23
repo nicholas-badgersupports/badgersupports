@@ -24,7 +24,8 @@
           "label": "Rooms and Directions",
           "href": "/directions/"
         }
-      ]
+      ],
+      "side": "directory"
     },
     {
       "id": "b-sac-find",

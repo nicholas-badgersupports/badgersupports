@@ -11,17 +11,38 @@
    `heroRibbons` names ribbon tones (the ribbons block's colours) to stand as a row of
    decoration in the opening, placed by that page's own rules in blocks.css. The row is
    ornament only: it takes no clicks and is hidden from screen readers, and no page is
-   required to carry it. */
+   required to carry it.
+
+   `side: "directory"` stands a card in the band's right side where a page has no photos: the
+   page's own directory's title and its first group's places, each with the room or address line
+   the directory itself shows. The entries are not the opening's to store — the page render
+   (src/render/layout.mjs) reads them from the page's directory block as it stands in that
+   render and hands them over as `sideTitle`/`sideItems`, so the card can never drift from the
+   directory below it. No new words: the card is the directory's own, begun in the band. */
 
 import { html } from "../html.mjs";
 import { link } from "../context.mjs";
 import { picture } from "../media.mjs";
 import { ribbonArt, isRibbonTone } from "./ribbons.mjs";
 
+function sidePanel(b) {
+  const items = b.sideItems || [];
+  if (b.side === "directory" && items.length) {
+    return html`<div class="pagehead-side is-directory">
+      ${b.sideTitle ? html`<p class="ph-side-title">${b.sideTitle}</p>` : ""}
+      <ul class="ph-dir">${items.map((it) => html`<li>
+        ${it.href ? html`<a href="${it.href}">${it.name}</a>` : html`<span class="ph-dir-name">${it.name}</span>`}
+        ${it.address ? html`<span class="ph-dir-addr">${it.address}</span>` : ""}
+      </li>`)}</ul>
+    </div>`;
+  }
+  return "";
+}
+
 export default {
   type: "pagehead",
   label: "Page opening",
-  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list" },
+  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory" },
   data: [],
   analytics: "page",
   loading: "eager",
@@ -33,7 +54,8 @@ export default {
     const primary = b.primary || (b.firstLinkPrimary ? b.links?.[0] : null);
     const links = b.firstLinkPrimary && !b.primary ? b.links?.slice(1) : b.links;
     const actions = primary || links?.length;
-    return html`<section class="${["pagehead band", photos.length ? `has-photos has-${photos.length}` : null, b.whole ? "is-whole" : null, heroTones.length ? "has-hero-ribbons" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    const side = sidePanel(b);
+    return html`<section class="${["pagehead band", photos.length ? `has-photos has-${photos.length}` : null, b.whole ? "is-whole" : null, heroTones.length ? "has-hero-ribbons" : null, side ? "has-side" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
   <div class="pagehead-words">
     <h1 id="${b.id}-h">${b.title}</h1>
     ${b.label ? html`<p class="pagehead-label">${b.label}</p>` : ""}
@@ -45,6 +67,7 @@ export default {
       ${(links || []).map((l) => link(ctx, l.href, l.label, { class: "go", icon: l.icon || "arrow" }))}
     </div>` : ""}
   ${photos.length ? html`<div class="pagehead-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: true, priority: i === 0 ? "high" : null })}</div>`)}</div>` : ""}
+  ${side}
 </div>${heroTones.length ? html`<div class="pagehead-ribbons" aria-hidden="true">${heroTones.map((t, i) => html`<span class="ph-ribbon">${ribbonArt(t, `${b.id}-hero-${i}`)}</span>`)}</div>` : ""}</section>`;
   },
 };

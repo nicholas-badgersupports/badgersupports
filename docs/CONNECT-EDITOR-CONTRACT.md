@@ -324,6 +324,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `firstLinkPrimary` | on or off |  |
 | `whole` | on or off |  |
 | `heroRibbons` | a short list of words |  |
+| `side` | one of `none`, `directory` |  |
 
 ### Photo cards — `cards`
 

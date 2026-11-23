@@ -83,3 +83,8 @@
 .bus-addrcard { margin-bottom: var(--s3); }
 .bus-door { margin-top: var(--s3); }
 .bus-credit { color: var(--muted); font-size: var(--fs-small); margin-top: var(--s4); }
+
+/* The map library's zoom buttons ship at 30px square; every other target on
+   the site is at least 44px, so the zoom pair is grown to match (tap targets,
+   23 Nov 2026). The vendored stylesheet itself is left as shipped. */
+.busroutes .leaflet-bar > a, .busroutes .leaflet-touch .leaflet-bar > a { width: 44px; height: 44px; line-height: 44px; font-size: 1.3rem; }

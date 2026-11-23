@@ -359,13 +359,13 @@
 .carousel-controls { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); }
 .js .carousel-controls { display: flex; }
 .carousel-controls > button {
-  width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); background: var(--paper); color: var(--accent);
+  width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); background: var(--paper); color: var(--accent);
   cursor: pointer; display: grid; place-items: center; flex: none;
 }
 .carousel-controls > button svg { width: 16px; height: 16px; }
 .carousel-dots { display: flex; gap: var(--s1); margin-inline: auto; }
 .carousel-dots button {
-  width: 32px; height: 32px; border: 0; background: none; padding: 0;
+  width: 44px; height: 44px; border: 0; background: none; padding: 0;
   cursor: pointer; display: grid; place-items: center;
 }
 .carousel-dots button span {
@@ -379,7 +379,7 @@
   .carousel-controls { flex-wrap: wrap; }
   .carousel-controls > [data-carousel-next] { margin-left: auto; }
   .carousel-dots { order: 3; flex-basis: 100%; justify-content: center; margin-top: var(--s1); }
-  .carousel-dots button { width: 40px; height: 40px; }
+  .carousel-dots button { width: 44px; height: 44px; }
 }
 
 @media (max-width: 860px) {
@@ -1811,7 +1811,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-field input { width: 100%; min-height: 48px; padding: .5rem 2.9rem .5rem 2.75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; appearance: none; }
 .res-field input::-webkit-search-cancel-button { display: none; }
 .res-field input:hover { border-color: var(--accent); }
-.res-qclear { position: absolute; right: .35rem; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.res-qclear { position: absolute; right: .35rem; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
 .res-qclear .ic { width: 1.2rem; height: 1.2rem; }
 .res-qclear:hover { background: var(--cream); color: var(--ink); }
 .res-topics { display: flex; flex-wrap: wrap; gap: var(--s2); }

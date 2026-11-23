@@ -28,7 +28,7 @@ import { startSignIn, finishSignIn, sessionFrom, signOut, can, returnPath, publi
 import { formsFor, latestAnswers } from "./answers.mjs";
 import { editSource, editEntry, editHistory, saveEdit, editsFile, waitingCount } from "./edits.mjs";
 import { listNotes, saveNote, removeNote, clearNotes } from "./notes.mjs";
-import { forgetSharedEverywhere, teamPhotoResponse } from "./live-content.mjs";
+import { forgetSharedEverywhere, teamPhotoResponse, teamPhotoRefreshResponse } from "./live-content.mjs";
 import { eventSections, calendarFile, forgetEventsEverywhere } from "./live-events.mjs";
 import { campusEventsNow } from "./campus-events.mjs";
 import { resourcesDataNow } from "./resources-data.mjs";
@@ -638,6 +638,7 @@ async function transitVehiclesRoute(req) {
 
 export const ROUTES = [
   ...["GET", "HEAD"].map(method => ({ name: "teamPhoto", method, pattern: /^\/api\/team-photo\/([A-Za-z0-9_-]{1,100})$/, tier: "public", run: (req, [id]) => teamPhotoResponse(req, id) })),
+  { name: "teamPhotoRefresh", method: "POST", pattern: /^\/api\/team-photo-refresh$/, tier: "public", run: (req) => teamPhotoRefreshResponse(req) },
   { name: "health", method: "GET", pattern: /^\/api\/health$/, tier: "public", run: async () => json(200, { ok: true }) },
   { name: "formState", method: "GET", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/state$/, tier: "public", run: formState },
   { name: "formSubmit", method: "POST", pattern: /^\/api\/forms\/([a-z0-9-]{2,40})\/submit$/, tier: "public", run: formSubmit },

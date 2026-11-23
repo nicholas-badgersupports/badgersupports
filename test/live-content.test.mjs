@@ -6,10 +6,15 @@ import { build, ROOT } from '../ops/build.mjs';
 import { mapTeam, readFeedRules } from '../ops/connect-feed.mjs';
 import { teamProblems } from '../src/render/team.mjs';
 import { useContent } from '../netlify/lib/content.mjs';
-import { useConnect } from '../netlify/lib/connect.mjs';
-import { useStore, memoryStore } from '../netlify/lib/published.mjs';
+import { useConnect, hmacB64u, signatureBase } from '../netlify/lib/connect.mjs';
+import { useStore, memoryStore, usePurger } from '../netlify/lib/published.mjs';
+import { usePhotoStore, memoryPhotoStore, PHOTO_CACHE_FRESH_MS } from '../netlify/lib/team-photo-cache.mjs';
 import { handlePage, useDist } from '../netlify/lib/pages.mjs';
+<<<<<<< HEAD
 import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS, RESOURCES_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
+=======
+import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, teamPhotoRefreshResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
+>>>>>>> public-team-image-speed-2026-11-23
 import { WALL_DEFAULT_NOTES } from '../ops/wall-defaults.mjs';
 import { publicUpload } from '../netlify/lib/live-team.mjs';
 
@@ -46,7 +51,7 @@ test.before(async () => {
 test.beforeEach(() => {
   realNow = Date.now; clock = realNow(); Date.now = () => clock; resetReply(); writes = [];
   const store = memoryStore();
-  useContent(SERVER); useDist(OUT); useStore({ ...store, set: async (key, value) => { writes.push({ key, value: structuredClone(value) }); await store.set(key, value); } }); useConnect(cfg); forgetShared();
+  useContent(SERVER); useDist(OUT); useStore({ ...store, set: async (key, value) => { writes.push({ key, value: structuredClone(value) }); await store.set(key, value); } }); useConnect(cfg); usePhotoStore(memoryPhotoStore()); usePurger(async () => {}); forgetShared();
 });
 test.afterEach(() => { Date.now = realNow; useConnect(null); forgetShared(); });
 const get = p => handlePage(new Request('https://site.test' + p), { today: '2026-11-03' });
@@ -109,15 +114,46 @@ test('Refresh Now reaches another warm catalogue reader without weakening fresh 
   assert.ok((await other.sharedNow(SERVER.render)).resources.value.resources.length);
   await forgetSharedEverywhere(); const after = await other.sharedNow(SERVER.render); assert.equal(after.resources.value.resources.length, 0);
 });
-test('photo proxy preserves version syntax and current producer eligibility without exporting the team per image', async () => {
+/* A refresh call signed the way Connect signs, with this rig's clock (Date.now is mocked). */
+const signedRefresh = (body, { keyId = cfg.keyId, secret = cfg.secret, ts = String(Math.floor(clock / 1000)), nonce = 'r'.repeat(24) } = {}) => {
+  const raw = JSON.stringify(body);
+  const sig = hmacB64u(secret, signatureBase(ts, nonce, 'POST', '/api/team-photo-refresh', raw));
+  return new Request('https://site.test/api/team-photo-refresh', { method: 'POST', headers: { 'content-type': 'application/json', 'x-public-key-id': keyId, 'x-public-timestamp': ts, 'x-public-nonce': nonce, 'x-public-signature': sig }, body: raw });
+};
+test('photo proxy preserves version syntax and serves the copy it keeps, without exporting the team per image', async () => {
   const url = `https://site.test/api/team-photo/${ID}?v=${VERSION}`, before = calls.length;
   let res = await teamPhotoResponse(new Request(url), ID); assert.equal(res.status, 200); assert.deepEqual(Buffer.from(await res.arrayBuffer()), PNG);
   assert.equal(calls.length, before + 1); const sent = calls.at(-1); assert.equal(sent.method, 'GET'); assert.equal(sent.redirect, 'manual');
   assert.equal(new URL(sent.url).searchParams.get('v'), VERSION); assert.ok(!Object.keys(sent.headers).some(k => /cookie|x-public/i.test(k)));
-  photoBytes = Buffer.concat([PNG, Buffer.from([1])]);
-  res = await teamPhotoResponse(new Request(url), ID); assert.deepEqual(Buffer.from(await res.arrayBuffer()), photoBytes, 'producer returns its current eligible upload, not semantic old-hash rejection');
   const head = await teamPhotoResponse(new Request(url, { method: 'HEAD' }), ID); assert.equal(head.status, 200); assert.equal((await head.arrayBuffer()).byteLength, 0);
-  reply.publicTeam.people = []; res = await teamPhotoResponse(new Request(url), ID); assert.equal(res.status, 404); assert.equal(res.headers.get('netlify-cdn-cache-control'), 'no-store');
+  /* The validated copy is kept on this site: asking again does not ask Connect, even when the
+     producer's bytes have changed — a change arrives under a new version, or through the
+     refresh door below. */
+  photoBytes = Buffer.concat([PNG, Buffer.from([1])]);
+  const keptCalls = calls.length;
+  res = await teamPhotoResponse(new Request(url), ID); assert.deepEqual(Buffer.from(await res.arrayBuffer()), PNG, 'the kept copy is served, not a fresh read');
+  assert.equal(calls.length, keptCalls, 'a kept copy is answered without asking Connect');
+  /* The refresh door refuses anything not signed as Connect signs: a wrong key, a wrong secret,
+     and a stale timestamp all get the one refusal, and none of them reads a photo. */
+  for (const bad of [signedRefresh({ id: ID, v: VERSION }, { keyId: 'another-key' }), signedRefresh({ id: ID, v: VERSION }, { secret: 'y'.repeat(40) }), signedRefresh({ id: ID, v: VERSION }, { ts: String(Math.floor(clock / 1000) - 3600) })]) {
+    const refused = await teamPhotoRefreshResponse(bad); assert.equal(refused.status, 403); assert.deepEqual(await refused.json(), { ok: false, error: 'refresh.refused' });
+  }
+  assert.equal(calls.length, keptCalls, 'a refused refresh reads nothing');
+  /* Signed, the refresh replaces the kept copy with the producer's current bytes at once. */
+  const refreshed = await teamPhotoRefreshResponse(signedRefresh({ id: ID, v: VERSION }));
+  assert.equal(refreshed.status, 200); assert.deepEqual(await refreshed.json(), { ok: true });
+  res = await teamPhotoResponse(new Request(url), ID); assert.deepEqual(Buffer.from(await res.arrayBuffer()), photoBytes, 'the refreshed copy is served');
+  /* When the profile is gone, a refresh drops the copy and the address answers 404. */
+  reply.publicTeam.people = [];
+  const dropped = await teamPhotoRefreshResponse(signedRefresh({ id: ID, v: VERSION }));
+  assert.equal(dropped.status, 200);
+  res = await teamPhotoResponse(new Request(url), ID); assert.equal(res.status, 404); assert.equal(res.headers.get('netlify-cdn-cache-control'), 'no-store');
+  /* And a kept copy whose freshness window has passed is read again before it is served: the
+     removal takes effect without any refresh at all. */
+  reply.publicTeam.people = [structuredClone(PERSON)];
+  res = await teamPhotoResponse(new Request(url), ID); assert.equal(res.status, 200);
+  reply.publicTeam.people = []; clock += PHOTO_CACHE_FRESH_MS + 1;
+  res = await teamPhotoResponse(new Request(url), ID); assert.equal(res.status, 404, 'past its window, a kept copy is re-read and a removal answers 404');
 });
 test('a sized photo request stays bounded and falls back to the original bytes when no resized copy can be had', async () => {
   const plain = await teamPhotoResponse(new Request(`https://site.test/api/team-photo/${ID}?v=${VERSION}`), ID);

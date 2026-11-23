@@ -31,13 +31,15 @@ for (const image of teamPortraits) {
   image.addEventListener("error", () => revealPortrait(image));
   if (image.complete) revealPortrait(image);
 }
-/* Visible portraits load together without speculative rows competing for their bandwidth. */
+/* Portraits start loading a little before they scroll into view, so a row is ready as it
+   arrives rather than blank at first sight; rows further down still wait, so speculative rows
+   never compete with the ones being read. */
 const deferredPortraits = teamPortraits.filter(image => image.hasAttribute("data-src"));
 if (deferredPortraits.length) {
   if (typeof IntersectionObserver === "function") {
     portraitObserver = new IntersectionObserver(entries => {
       for (const entry of entries) if (entry.isIntersecting) activatePortrait(entry.target);
-    }, { rootMargin: "0px" });
+    }, { rootMargin: "600px 0px" });
     for (const image of deferredPortraits) portraitObserver.observe(image);
   } else for (const image of deferredPortraits) activatePortrait(image, false);
   document.addEventListener("focusin", event => {

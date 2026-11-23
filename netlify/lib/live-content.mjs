@@ -1,13 +1,15 @@
 /* Approved public catalogues between publishes. Resources and Wall notes use bounded last-good
    records in the existing publication store; current profile eligibility is read without a roster cache; one failed catalogue never replaces another with an empty
-   success. Only mapped public data is persisted. Prototype pages never contact Connect. */
+   success. Only mapped public data is persisted — and, since 23 November 2026, the team photos
+   themselves, as validated copies under each upload's current version (team-photo-cache.mjs).
+   Prototype pages never contact Connect. */
 import crypto from 'node:crypto';
-import { call, serviceConfigNow } from './connect.mjs';
-import { noteGet, noteSet } from './published.mjs';
+import { call, serviceConfigNow, hmacB64u, signatureBase } from './connect.mjs';
+import { noteGet, noteSet, purgeTags } from './published.mjs';
 import { mapResources, mapWall, WALL_EXPORT } from '../../ops/connect-feed.mjs';
 import { wallWithDefaults } from '../../ops/wall-defaults.mjs';
 import { serverContent } from './content.mjs';
-import { teamNow, teamPhoto } from "./live-team.mjs";
+import { teamNow, teamPhoto, refreshTeamPhoto, dropTeamPhoto, PHOTO_ID } from "./live-team.mjs";
 import { alumniNow } from "./alumni-history.mjs";
 import { legalNow } from "./legal.mjs";
 
@@ -111,9 +113,80 @@ export async function sharedNow(snap, { now = Date.now(), kinds = ['team', 'reso
 }
 
 /* The reader is production-only; the image handler accepts only the fixed upload identity/version.
-   Connect checks present eligibility on every photo fetch. No roster is needed to answer an image. */
+   Eligibility is settled by Connect on every read that fills or refreshes a kept copy, and the
+   roster that links a photo is read live on every page draw. No roster is needed to answer an image. */
 export async function teamPhotoResponse(req, id) {
   const snap = serverContent().render;
   if (snap?.prototype || !snap?.shared?.exports?.team) return new Response(null, { status: 404, headers: { 'cache-control': 'no-store', 'netlify-cdn-cache-control': 'no-store' } });
   return teamPhoto(req, id);
+}
+
+/* ------------------------------------------------------------------ the refresh door */
+
+/* The one door Connect opens on this site (owner's direction, 23 November 2026): when a team
+   photo is added, changed or removed in Connect, Connect says so here and this site replaces or
+   drops the copy it keeps, so the public page is current at once — no publish, and no waiting
+   for a kept copy's freshness window.
+ *
+ *   POST /api/team-photo-refresh   { id, v?, gone? }   signed as every Connect call is signed.
+ *
+ * THE SIGNATURE IS THE SERVICE SIGNATURE, BYTE FOR BYTE (connect.mjs): the same secret the
+ * public site signs its own calls with — Connect holds it as the public site's key
+ * (PUBLIC_SITE_SERVICE_KEYS) and this site holds it as PUBLIC_SITE_SERVICE_SECRET — carried in
+ * the same four headers, over the same base string with this door's own path. A timestamp more
+ * than five minutes off (Connect's own SKEW_SECONDS), a wrong key id, or a wrong signature all
+ * fail the same way, and the failure is never described. No nonce is spent on this side: the
+ * call only ever re-reads from Connect or drops a copy, so a replay inside the window can do
+ * nothing a fresh call could not.
+ *
+ * What Connect must do to use it is Connect's half of the arrangement and lives in Connect's
+ * repository: after any change to a public profile's photo — an upload, a replacement, a
+ * removal, or the profile ceasing to be public — call this door signed as above, with the
+ * upload's id, its new version when there is one, and gone: true when the photo is gone. Until
+ * that half lands, kept copies still track Connect through the roster's live versions and the
+ * freshness window (team-photo-cache.mjs); this door is what makes a change instant. */
+export const TEAM_PHOTO_REFRESH_PATH = "/api/team-photo-refresh";
+const REFRESH_SKEW_SECONDS = 300;
+const REFRESH_MAX_BODY = 64 * 1024;
+const VERSION_RE = /^[0-9a-f]{32}$/;
+
+const refreshReply = (status, body) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "netlify-cdn-cache-control": "no-store", "x-content-type-options": "nosniff" } });
+const refreshRefused = () => refreshReply(403, { ok: false, error: "refresh.refused" });
+
+function refreshSigned(req, raw, cfg, now = Date.now()) {
+  const h = (k) => String(req.headers.get(k) || "");
+  const keyId = h("x-public-key-id"), ts = h("x-public-timestamp"), nonce = h("x-public-nonce"), sig = h("x-public-signature");
+  if (keyId !== cfg.keyId || !/^\d{9,11}$/.test(ts) || !/^[A-Za-z0-9_-]{16,64}$/.test(nonce) || !sig) return false;
+  if (Math.abs(now / 1000 - Number(ts)) > REFRESH_SKEW_SECONDS) return false;
+  const expected = hmacB64u(cfg.secret, signatureBase(ts, nonce, "POST", TEAM_PHOTO_REFRESH_PATH, raw));
+  const a = Buffer.from(expected), b = Buffer.from(sig);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+export async function teamPhotoRefreshResponse(req) {
+  const snap = serverContent().render;
+  if (snap?.prototype || !snap?.shared?.exports?.team) return new Response(null, { status: 404, headers: { 'cache-control': 'no-store', 'netlify-cdn-cache-control': 'no-store' } });
+  const cfg = serviceConfigNow();
+  if (!cfg) return refreshReply(503, { ok: false, error: "refresh.unavailable" });
+  const raw = await req.text();
+  if (Buffer.byteLength(raw) > REFRESH_MAX_BODY) return refreshReply(413, { ok: false, error: "refresh.too-large" });
+  if (!refreshSigned(req, raw, cfg)) return refreshRefused();
+  let body;
+  try { body = JSON.parse(raw || "{}"); } catch { return refreshReply(400, { ok: false, error: "refresh.invalid" }); }
+  if (!body || typeof body !== "object" || Array.isArray(body) || !PHOTO_ID.test(body.id || "")
+      || (body.v !== undefined && !VERSION_RE.test(body.v)) || (body.gone !== undefined && typeof body.gone !== "boolean")) {
+    return refreshReply(400, { ok: false, error: "refresh.invalid" });
+  }
+  if (body.gone) await dropTeamPhoto(body.id);
+  else {
+    const outcome = await refreshTeamPhoto(body.id, body.v ?? null);
+    if (outcome === "bad") return refreshReply(502, { ok: false, error: "refresh.failed" });
+    if (outcome === "unavailable") return refreshReply(503, { ok: false, error: "refresh.unavailable" });
+  }
+  /* The CDN holds photo answers under this tag; clear it so a replaced or dropped copy is not
+     what the next visitor is served. A failure here is logged, never hidden behind success:
+     the reply says the copy this site keeps is current, and names the purge separately. */
+  let purgeError = null;
+  await purgeTags(["team-photo"]).catch((e) => { purgeError = e.code || "purge.unavailable"; console.error("team photo refresh: the CDN tag could not be cleared:", e.message); });
+  return refreshReply(200, { ok: true, ...(purgeError ? { purgeError } : {}) });
 }

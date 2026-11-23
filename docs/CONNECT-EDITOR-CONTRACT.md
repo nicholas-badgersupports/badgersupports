@@ -310,7 +310,7 @@ Reads: `team`, `teamSample` · analytics: `page` · photos load eager
 
 ### Page opening — `pagehead`
 
-Reads: nothing but its own fields · analytics: `page` · photos load eager
+Reads: `alumni` · analytics: `page` · photos load eager
 
 | Field | Type | |
 |---|---|---|
@@ -327,6 +327,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `side` | one of `none`, `directory`, `press`, `routes` |  |
 | `sideTitle` | one line of text |  |
 | `sideItems` | doors, each with an id, a title, an icon, optional text, an optional form whose open/closed switch they show, and one link (one door may be marked primary); a door may carry more: a panel under the doors with an anchor, an optional photo, a title, a lead line, lists (each with a label, numbered or ticked, and its items), a closing line and one link |  |
+| `timeline` | on or off |  |
 
 ### Photo cards — `cards`
 

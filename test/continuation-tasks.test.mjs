@@ -50,5 +50,8 @@ test("program requests preserve Housing context and separate booking from writte
   }
   const spill = page.blocks.find(b => b.id === "b-rp-spill");
   assert.equal(spill.primary.href, "https://badgerspill.org/#spill-form");
-  assert.ok(spill.body.some(p => /For written peer support/.test(p)));
+  assert.deepEqual(spill.body, ["Badger SPILL offers confidential, written peer support. Share what’s on your mind anytime, and a trained UW–Madison Student Supporter will respond."], "the band says the one paragraph the owner set (23 Nov 2026)");
+  assert.match(spill.note, /not a crisis service/, "the crisis line folds into the band's info note");
+  assert.match(spill.note, /608-265-5600, option 9/, "the note names the UHS crisis line and its number");
+  assert.equal(spill.noteLabel, "Crisis help", "the info icon's name for screen readers sits beside the note");
 });

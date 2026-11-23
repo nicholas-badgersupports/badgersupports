@@ -207,6 +207,14 @@
 .spill-words p { font-size: var(--fs-lead); line-height: 1.5; }
 .spill-words p + p { margin-top: var(--s2); }
 .spill-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4); margin-top: var(--s5); }
+/* the band's folded note: an info icon on its own line under the words, its name in the sr-only
+   span; the fold is native <details>, so it opens by press or by keyboard with no script */
+.spill-note { margin-top: var(--s3); }
+.spill-note summary { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; margin-left: -.55rem; cursor: pointer; list-style: none; color: var(--spill-ink); }
+.spill-note summary::-webkit-details-marker { display: none; }
+.spill-note summary .ic { width: 1.75rem; height: 1.75rem; }
+.spill-note summary:hover .ic { color: var(--spill); }
+.spill-note > p { margin-top: var(--s2); }
 .spill-band .btn { background: var(--spill); border-color: var(--spill-ink); color: var(--spill-ink); border-radius: 999px; box-shadow: 0 4px 0 var(--spill-ink); }
 .spill-band .btn:hover { background: var(--spill-hover); color: var(--spill-ink); translate: 0 -2px; box-shadow: 0 6px 0 var(--spill-ink); }
 .spill-band .btn:active { translate: 0 2px; box-shadow: 0 1px 0 var(--spill-ink); }

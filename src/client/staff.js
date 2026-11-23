@@ -465,13 +465,15 @@ function previewBox() {
 const SECTION_ERRORS = { "section.head": "head", "section.kind": "kind", "section.linked": "linked", "section.words": "words", "section.title": "title" };
 function sectionsBox(me, changed) {
   const heading = el("h3", { id: "staff-sections-h", tabIndex: -1 });
+  const pageBar = el("div", { className: "staff-actions" });
+  const pageSlot = el("div");
   const problem = el("div", { hidden: true });
   const list = el("ol", { className: "staff-menu staff-sections" });
   const save = el("button", { type: "button", className: "btn", textContent: t("staff.sections.save") });
   const confirm = el("div", { className: "staff-drawer", hidden: true });
   const retired = el("div");
   const addWrap = el("div");
-  const box = el("div", { className: "staff-form staff-sections-box", hidden: true }, heading, problem, list, el("div", { className: "staff-actions" }, save), confirm, retired, addWrap);
+  const box = el("div", { className: "staff-form staff-sections-box", hidden: true }, heading, pageBar, pageSlot, problem, list, el("div", { className: "staff-actions" }, save), confirm, retired, addWrap);
   box.setAttribute("role", "region");
   box.setAttribute("aria-labelledby", "staff-sections-h");
   let page = null, now = null, order = [];
@@ -561,6 +563,7 @@ function sectionsBox(me, changed) {
   save.addEventListener("click", () => send(save, { action: "sectionOrder", order: order.map((x) => x.id) }, t("staff.sections.done.order")));
   return {
     box,
+    attach(nodes, drawer) { pageBar.replaceChildren(...nodes); pageSlot.replaceChildren(drawer); },
     async show(p) {
       page = p;
       problem.hidden = true;
@@ -639,15 +642,17 @@ function pagesSection(me, onData) {
     const live = now.pages.filter((x) => x.state === "live" && x.id !== p.id);
     const groups = [["", t("staff.pages.menu.top")], ...now.menu.filter((x) => x.children).map((x) => [x.id, x.label])];
     const actions = [];
+    const side = [];
     const button = (words, onclick) => actions.push(el("button", { type: "button", className: "btn btn--quiet", textContent: words, onclick }));
+    const sideButton = (words, onclick) => side.push(el("button", { type: "button", className: "btn btn--quiet", textContent: words, onclick }));
     if (p.state !== "retired") button(t("staff.pages.preview"), () => preview.show(p));
-    if (p.state !== "retired" && p.sections && me.canEdit) button(t("staff.sections.open"), () => sections.show(p));
-    if (!p.fixed && me.canEdit) button(t("staff.pages.copy"), () => {
+    if (p.state !== "retired" && p.sections && me.canEdit) button(t("staff.sections.open"), () => { sections.show(p); sections.attach(side, drawer); });
+    if (!p.fixed && me.canEdit) sideButton(t("staff.pages.copy"), () => {
       const title = textInput(p.title), where = textInput(p.path, { spellcheck: false });
       open(form([field(t("staff.pages.field.title"), title), field(t("staff.pages.field.path"), where)], t("staff.pages.copy.button"),
         () => ({ action: "copy", page: p.id, title: title.value, path: where.value }), t("staff.pages.done.copy")));
     });
-    if (!p.fixed && p.state !== "retired" && me.canEdit) button(t("staff.pages.details"), () => {
+    if (!p.fixed && p.state !== "retired" && me.canEdit) sideButton(t("staff.pages.details"), () => {
       const title = textInput(p.title), about = el("textarea", { value: p.description, rows: 3 });
       const mayMove = p.state === "draft" || me.canPublish;
       const where = textInput(p.path, { spellcheck: false, disabled: !mayMove });
@@ -655,19 +660,19 @@ function pagesSection(me, onData) {
         !mayMove && el("p", { className: "staff-note", textContent: t("staff.pages.details.liveAddress") })].filter(Boolean), t("staff.pages.details.button"),
       () => ({ action: "details", page: p.id, title: title.value, description: about.value, ...(mayMove && where.value !== p.path ? { path: where.value } : {}) }), t("staff.pages.done.details")));
     });
-    if (p.state === "draft" && me.canPublish) button(t("staff.pages.publish"), () => {
+    if (p.state === "draft" && me.canPublish) sideButton(t("staff.pages.publish"), () => {
       const group = choice([["-", t("staff.pages.menu.none")], ...groups], "-"), name = textInput(p.title);
       open(form([field(t("staff.pages.field.group"), group), field(t("staff.pages.field.label"), name)], t("staff.pages.publish.button"),
         () => ({ action: "publish", page: p.id, ...(group.value === "-" ? {} : { group: group.value, label: name.value }) }), t("staff.pages.done.publish")));
     });
-    if (!p.fixed && (p.state === "draft" ? me.canEdit : p.state === "live" && me.canPublish)) button(p.state === "draft" ? t("staff.pages.discard") : t("staff.pages.retire"), () => {
+    if (!p.fixed && (p.state === "draft" ? me.canEdit : p.state === "live" && me.canPublish)) sideButton(p.state === "draft" ? t("staff.pages.discard") : t("staff.pages.retire"), () => {
       const to = choice([["", t("staff.pages.retire.nowhere")], ...live.map((x) => [x.id, `${x.title} (${x.path})`])], "");
       open(form([el("p", { textContent: t("staff.pages.retire.confirm", { title: p.title }) }), p.state === "live" && field(t("staff.pages.field.to"), to)].filter(Boolean),
         t("staff.pages.retire.yes"), () => ({ action: "retire", page: p.id, ...(p.state === "live" && to.value ? { to: to.value } : {}) }), t("staff.pages.done.retire")));
     });
     /* A retired page goes back to where it was retired from (the list's `back`): on the site, a publisher's; as a draft, an
        editor's. Nothing else changes, unlike bringing back an earlier version. */
-    if (p.state === "retired" && !p.fixed && (p.back === "draft" ? me.canEdit : me.canPublish)) button(t("staff.pages.putBack"), () => {
+    if (p.state === "retired" && !p.fixed && (p.back === "draft" ? me.canEdit : me.canPublish)) sideButton(t("staff.pages.putBack"), () => {
       const ask = t(p.back === "draft" ? "staff.pages.putBack.confirmDraft" : "staff.pages.putBack.confirm", { title: p.title });
       open(form([el("p", { textContent: ask })], t("staff.pages.putBack.yes"), () => ({ action: "putBack", page: p.id }), t("staff.pages.done.putBack")));
     });
@@ -891,7 +896,7 @@ function settingsSection(me) {
     const color = el("input", { type: "color", value: /^#[0-9a-f]{6}$/i.test(m.color || "") ? m.color : "#b60000" });
     const messages = el("textarea", { rows: 3 });
     messages.value = (m.messages || []).join("\n");
-    const remove = el("button", { type: "button", className: "btn", textContent: t("staff.mood.remove") });
+    const remove = el("button", { type: "button", className: "btn btn--quiet", textContent: t("staff.mood.remove") });
     const row = el("div", { className: "staff-mood-row" },
       field(t("staff.mood.field.emoji"), emoji), field(t("staff.mood.field.label"), label),
       field(t("staff.mood.field.color"), color), field(t("staff.mood.field.messages"), messages),

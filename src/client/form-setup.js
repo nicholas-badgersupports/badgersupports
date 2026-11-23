@@ -18,7 +18,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
   const stepLine = el("p", { className: "staff-setup-step" }); stepLine.setAttribute("aria-live", "polite");
   const content = el("div"), error = el("p", { role: "alert", hidden: true }), actions = el("div", { className: "staff-actions" });
   box.append(title, stepLine, content, error, actions);
-  let index = 0, chosen = initialKey, form = null, draft = null, availability = "keep", pending = false;
+  let index = 0, chosen = initialKey, form = null, draft = null, availability = "keep", pending = false, step0Returning = false;
   let controls = {}, baseline = {}, touched = new Set(), conflict = false;
   const choose = key => {
     if (form?.key === key) return;
@@ -60,6 +60,8 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
       content.append(el("p", { textContent: t("staff.setup.intro") }));
       const select = el("select", { id: "setup-form" }, el("option", { value: "", textContent: t("staff.setup.choose") }), ...allowed.map(f => el("option", { value: f.key, textContent: f.title })));
       select.value = chosen; controls.choose = select;
+      step0Returning = !!chosen;
+      select.addEventListener("change", () => { if (select.value) next(); });
       content.append(el("div", { className: "field" }, el("label", { htmlFor: select.id, textContent: t("staff.setup.form") }), select));
     } else if (index === 1) {
       content.append(el("h4", { textContent: form.title }));
@@ -95,7 +97,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
     }
     actions.append(button("staff.setup.cancel", () => onClose(), true));
     if (index > 0) actions.append(button("staff.setup.back", () => { capture(); index--; render(); }, true));
-    actions.append(button(index === 3 ? availability === "open" ? "staff.setup.applyOpen" : availability === "closed" ? "staff.setup.applyClose" : "staff.setup.apply" : "staff.setup.next", (btn) => index === 3 ? save(btn) : next()));
+    if (index !== 0 || step0Returning) actions.append(button(index === 3 ? availability === "open" ? "staff.setup.applyOpen" : availability === "closed" ? "staff.setup.applyClose" : "staff.setup.apply" : "staff.setup.next", (btn) => index === 3 ? save(btn) : next()));
     if (focus) title.focus();
   }
   function next() {

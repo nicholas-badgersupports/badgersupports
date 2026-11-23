@@ -201,8 +201,8 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .form-status { margin: 0; font-weight: 600; }
 
 /* The applications' on-device draft (src/client/form.js builds this row): the note and its
-   Clear, on a row of the foot bar, shown only while a draft is held on the device. */
-.form-draft { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s3); margin: 0; }
+   Clear, on its own row above the foot bar, shown only while a draft is held on the device. */
+.form-draft { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s3); margin: 0 0 var(--s3); }
 .form-draft[hidden] { display: none; }
 .form-draft .btn { min-width: 0; }
 

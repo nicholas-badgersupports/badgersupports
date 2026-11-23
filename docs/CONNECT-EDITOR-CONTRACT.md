@@ -651,7 +651,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-1090 keys. Keys are permanent. Required text cannot be published empty and must keep each
+1093 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (30)
@@ -971,7 +971,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (610)
+### Staff page and edit button (613)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1017,6 +1017,7 @@ the site adds the markup.
 | `staff.forms.problemsOnly` | Failed or stuck only | Staff page, above the forms: a tick that shows only the forms with failed or stuck deliveries. |  |
 | `staff.forms.state.open` | Open | Staff page, label beside a form that takes answers. |  |
 | `staff.forms.state.closed` | Closed | Staff page, label beside a form that is closed. |  |
+| `staff.forms.state.elsewhere` | Google Form | Staff page, label beside a form that sends people to a Google Form. |  |
 | `staff.switch.open` | Open This Form | Staff page, button under a closed form, for someone Connect lets open and close it. |  |
 | `staff.switch.close` | Close This Form | Staff page, button under an open form, for someone Connect lets open and close it. |  |
 | `staff.switch.confirm` | Open {{title}}? Anyone can send it once it opens, and its page shows it within a minute. | Staff page, the second question before a form opens. | `{{title}}` |
@@ -1501,6 +1502,7 @@ the site adds the markup.
 | `staff.formSettings.opensAt` | Starts Accepting — Central Time | Editable form settings and intake window information. |  |
 | `staff.formSettings.closesAt` | Stops Accepting — Central Time | Editable form settings and intake window information. |  |
 | `staff.formSettings.deadline` | Displayed Deadline — Central Time | Editable form settings and intake window information. |  |
+| `staff.formSettings.googleFormUrl` | Google Form Link | Editable form settings and intake window information. |  |
 | `staff.formSettings.priority` | Priority Deadline — Central Time | Editable form settings and intake window information. |  |
 | `staff.formSettings.titleLabel` | Form Title | Editable form settings and intake window information. |  |
 | `staff.formSettings.introduction` | Introduction | Editable form settings and intake window information. |  |
@@ -1547,6 +1549,7 @@ the site adds the markup.
 | `staff.setup.destination.wall` | Wall of Support, Awaiting Moderation | Guided form setup on the staff page. |  |
 | `staff.setup.deliveryNote` | This setup changes wording, dates and intake availability. It does not grant access to answers or enable receipt emails and backup services. | Guided form setup on the staff page. |  |
 | `staff.setup.saved` | {{title}} has been saved. | Guided form setup on the staff page. | `{{title}}` |
+| `staff.setup.googleSaved` | {{title}} now sends people to the Google Form. | Guided form setup on the staff page. | `{{title}}` |
 | `staff.setup.viewForm` | View This Form | Guided form setup on the staff page. |  |
 | `staff.setup.another` | Set Up Another Form | Guided form setup on the staff page. |  |
 | `staff.setup.done` | View Form Settings | Guided form setup on the staff page. |  |

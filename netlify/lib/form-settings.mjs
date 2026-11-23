@@ -2,8 +2,11 @@ import { one, tx } from "./db.mjs";
 import { HttpError } from "./http.mjs";
 import { chicagoInstant } from "../../src/shared/chicago-time.mjs";
 
-export const emptyFormSettings = () => ({ opensAt: "", closesAt: "", deadline: "", title: null, introduction: null, closedMessage: null });
+export const emptyFormSettings = () => ({ opensAt: "", closesAt: "", deadline: "", googleFormUrl: "", title: null, introduction: null, closedMessage: null });
 export const COPY_FIELDS = ["title", "introduction", "closedMessage"];
+/* The settings a form's switch permission governs: its dates, and the Google Form link that
+   sends people to a Google Form instead of the built-in form while it is set. */
+export const SWITCH_FIELDS = ["opensAt", "closesAt", "deadline", "googleFormUrl"];
 export function formInstant(value) {
   if (!value) return null;
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) throw new HttpError(400, "settings.date");
@@ -19,22 +22,43 @@ export async function readFormSettings(key, def = null) {
   return { version: row?.version || 0, ...emptyFormSettings(), ...shipped, ...row?.settings };
 }
 export function effectiveForm(def, settings, manualState, now = Date.now()) {
+  const overlaid = { ...def, ...(settings.title !== null ? { title: settings.title, settingsTitle: true } : {}), ...(settings.introduction !== null ? { intro: settings.introduction.split(/\n\s*\n/).filter(Boolean), settingsIntroduction: true } : {}), ...(settings.closedMessage !== null ? { closedMessage: settings.closedMessage } : {}) };
+  /* A form with a Google Form link set sends people there instead: its own intake is closed and
+     its window blanked, and the link rides on the definition as `elsewhere` (the way onward
+     where a page still draws the form) and as `googleForm` (the mark the pages function and the
+     link policy send people straight to). The definition's questions and the form's other
+     settings are untouched, and clearing the link restores the form below exactly as it was. */
+  if (settings.googleFormUrl) return {
+    def: { ...overlaid, elsewhere: settings.googleFormUrl, googleForm: settings.googleFormUrl, intakeWindow: { opensAt: "", closesAt: "", deadline: "" } },
+    state: "closed", manualState, stateReason: "elsewhere", settings,
+  };
   const opens = formInstant(settings.opensAt), closes = formInstant(settings.closesAt), at = Number(now);
   const before = opens !== null && at < opens, after = closes !== null && at >= closes;
   const reason = manualState !== "open" ? "manual" : before ? "scheduled" : after ? "ended" : null;
   return {
-    def: { ...def, ...(settings.title !== null ? { title: settings.title, settingsTitle: true } : {}), ...(settings.introduction !== null ? { intro: settings.introduction.split(/\n\s*\n/).filter(Boolean), settingsIntroduction: true } : {}), ...(settings.closedMessage !== null ? { closedMessage: settings.closedMessage } : {}), intakeWindow: { opensAt: settings.opensAt, closesAt: settings.closesAt, deadline: settings.deadline } },
+    def: { ...overlaid, intakeWindow: { opensAt: settings.opensAt, closesAt: settings.closesAt, deadline: settings.deadline } },
     state: reason ? "closed" : "open", manualState, stateReason: reason, settings,
   };
 }
+/* One pasted Google Form address: a single https address with no credentials in it, at most
+   2,000 characters — the bound the settings field itself allows. */
+function googleFormUrlOk(url) {
+  if (url.length > 2000) return false;
+  let parsed;
+  try { parsed = new URL(url); } catch { return false; }
+  return parsed.protocol === "https:" && !parsed.username && !parsed.password;
+}
 export function validateFormSettings(input) {
-  const keys = ["version", "opensAt", "closesAt", "deadline", ...COPY_FIELDS];
+  const keys = ["version", ...SWITCH_FIELDS, ...COPY_FIELDS];
   if (!input || Object.keys(input).some(k => !keys.includes(k)) || !Number.isInteger(input.version) || input.version < 0) throw new HttpError(400, "settings.shape");
   const value = {};
   for (const k of ["opensAt", "closesAt", "deadline"]) {
     if (typeof input[k] !== "string") throw new HttpError(400, "settings.shape");
     formInstant(input[k]); value[k] = input[k];
   }
+  if (typeof input.googleFormUrl !== "string") throw new HttpError(400, "settings.shape");
+  value.googleFormUrl = input.googleFormUrl.trim();
+  if (value.googleFormUrl && !googleFormUrlOk(value.googleFormUrl)) throw new HttpError(400, "settings.url");
   const opens = formInstant(value.opensAt), closes = formInstant(value.closesAt);
   if (opens !== null && closes !== null && opens >= closes) throw new HttpError(400, "settings.order");
   for (const k of COPY_FIELDS) {

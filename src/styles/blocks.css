@@ -1878,6 +1878,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-chip { display: inline-block; padding: .15rem .65rem; border-radius: var(--r-chip); font: 600 var(--fs-small)/1.4 var(--font-body); }
 .staff-chip.is-open { background: var(--ok-tint); color: var(--ok); }
 .staff-chip.is-closed { background: var(--paused-tint); color: var(--paused); }
+.staff-chip.is-elsewhere { background: var(--workshops-tint); color: var(--workshops-deep); }
 .staff-delivery { color: var(--ok); font-weight: 600; }
 .staff-delivery.is-failing { color: var(--danger); }
 .staff-answers { margin-top: var(--s3); }

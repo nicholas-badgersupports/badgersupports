@@ -1611,6 +1611,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 @media (max-width: 860px) {
   [data-page="pg-ribbons"] [data-block="b-rb-head"] .pagehead-actions { margin-top: 0; }
   [data-page="pg-ribbons"] [data-block="b-rb-head"] .pagehead-actions .go { width: 100%; }
+/* the referral cards page closes with its suggestion ask in one card, on the week's own
+   recipe: the heading beside the words, as the text block lays them out, inside the paper
+   card. The wrap is the card: it gives up the gutter on each side, so the card's edges
+   stand where every other section's words stand. */
+[data-page="pg-referral-cards"] [data-block="b-rc-propose"] .wrap {
+  max-width: calc(var(--page) - 2 * var(--gutter));
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: var(--r-panel);
+  box-shadow: var(--lift);
+  padding: var(--s5);
+}
+@media (max-width: 860px) {
+  [data-page="pg-referral-cards"] [data-block="b-rc-propose"] .wrap { padding: var(--s4); }
 }
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */

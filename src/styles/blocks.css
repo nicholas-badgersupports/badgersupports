@@ -705,8 +705,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .secnav-ic { width: 1.25rem; height: 1.25rem; flex: none; }
 /* In a room's side column the bar stands upright (secnav.mjs, the "stack" variant): a list
    beside the content it navigates, every segment whole, where the sideways bar would be
-   wider than the column and cut its own words off. */
-.secnav--stack ul { flex-direction: column; overflow-x: visible; }
+   wider than the column and cut its own words off. Standing upright it is a card, not a
+   pill: it takes the card radius and a card's even padding, because the chip radius on a
+   box taller than one row clamps to half the height and draws an oval whose painted edge
+   recedes from the last segment, leaving it looking half outside its own container. */
+.secnav--stack ul { flex-direction: column; overflow-x: visible; border-radius: var(--r-card); padding: var(--s2); }
 .secnav--stack .secnav-item { display: flex; width: 100%; }
 .places-jumps { margin-block: var(--s3) var(--s4); }
 .dir-access { margin-top: var(--s6); padding-top: var(--s4); border-top: var(--rule-line); }

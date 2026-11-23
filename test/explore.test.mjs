@@ -1,6 +1,6 @@
 /* Explore Campus, writer B's items: the Resource Finder's source labels and approval gate
    (EXPLORE-C-RESOURCE-FINDER, public half) and Discover Classes by Interest (EXPLORE-F-CLASSES).
-   Each item's acceptance lines from docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md are the tests.
+   Each item's acceptance lines from docs/archive/EXPLORE-CAMPUS-QUEUE-2026-11-10.md are the tests.
    The Academic Support Navigator (EXPLORE-G) was removed on 23 Nov 2026; its tests went with it. */
 
 import test from "node:test";

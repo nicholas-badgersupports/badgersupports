@@ -45,18 +45,17 @@ test('Workshop comparison has equal native topic jumps and preserves original ta
  assert.doesNotMatch(out,/<form|<input|<textarea|Requests must be submitted 5 days|respond within|capacity of/);
 });
 
-test('Workshop activity previews use native disclosures with distinct editable audience and sample content',()=>{
+test('Workshop catalogue sections carry no activity previews, while the disclosure renderer still works when a block supplies one',()=>{
  const p=catalogue();
- const samples={'b-rw-networks':/emotional, academic, practical, and professional/,'b-rw-selfcare':/bingo/,'b-rw-advocacy':/copying the diagrams/,'b-rw-housing':/floor plan/};
  for(const id of Object.keys(TOPICS)){
-  const b=p.blocks.find(b=>b.id===id);assert.ok(b.audience);assert.ok(b.disclosure);assert.equal(b.preview.length,2);
+  const b=p.blocks.find(b=>b.id===id);assert.ok(b.audience);assert.equal(b.disclosure,undefined);assert.equal(b.preview,undefined);
   const out=String(renderBlock(b,ctx()));
-  assert.match(out,new RegExp(`<details class="expect-preview" id="${id}-preview"><summary>`));
-  assert.ok(out.includes(b.disclosure));assert.ok(out.includes(b.audience));assert.match(out,samples[id]);
-  assert.doesNotMatch(out,/<input|<textarea|<form|\bonclick=|<[^>]+\shidden(?:\s|=|>)/);
+  assert.doesNotMatch(out,/<details|expect-preview/);
+  assert.ok(out.includes(b.audience));
+  assert.doesNotMatch(out,/<input|<textarea|<form|\bonclick=/);
  }
  const b=p.blocks.find(b=>b.id==='b-rw-networks');
- const out=String(renderBlock({...b,anchor:'example-custom',preview:'One sample paragraph.'},ctx()));
+ const out=String(renderBlock({...b,anchor:'example-custom',disclosure:'Example activity',preview:'One sample paragraph.'},ctx()));
  assert.match(out,/id="example-custom-preview"/);assert.match(out,/<p>One sample paragraph\.<\/p>/);
  const plain=String(renderBlock({...b,preview:undefined},ctx()));assert.doesNotMatch(plain,/<details/);
 });
@@ -88,7 +87,7 @@ test('Workshop native closure, trusted Google fallback and manually closed reque
 
 test('Workshop old and new saved word paths render independently without changing selected topic actions',()=>{
  const p=catalogue(),target=path=>'page:'+p.id+':b-rw-networks/'+path;
- const edits={[target('body/0')]:'Saved original overview.',[target('audience')]:'Saved audience guidance.',[target('disclosure')]:'Saved activity heading.',[target('preview/0')]:'Saved activity sample.'};
+ const edits={[target('body/0')]:'Saved original overview.',[target('audience')]:'Saved audience guidance.',[target('items/0/text')]:'Saved first point.',[target('links/0/label')]:'Saved first link.'};
  const rows=new Set(pageStrings(p).map(r=>r.target));for(const key of Object.keys(edits))assert.ok(rows.has(key),key);
  const before=p.blocks.find(b=>b.id==='b-rw-networks').links.map(l=>l.href);
  const result=applyEdits(edits,{pages:[p],site:{},text:{}});assert.equal(result.problems.length,0);
@@ -98,14 +97,14 @@ test('Workshop old and new saved word paths render independently without changin
 
 test('Workshop comparison and disclosure fragments protect linked sections and copied sections get unique IDs',()=>{
  const p=catalogue(),site=read('content/site.json');
- for(const fragment of ['b-rw-networks','b-rw-networks-preview']){
+ for(const fragment of ['b-rw-networks']){
   const context={pages:[p],site,authored:new Set([p.id]),links:[{from:{page:p.id,block:'b-rw-head'},href:'#'+fragment}]};
   assert.throws(()=>applyChange(emptyStructure(),{action:'sectionRetire',page:p.id,section:'b-rw-networks'},context),e=>e.code==='section.linked',fragment);
  }
  const context={pages:[p],site,authored:new Set([p.id]),links:[]};
  const result=applyChange(emptyStructure(),{action:'sectionCopy',page:p.id,section:'b-rw-networks'},context);
  const copy=result.doc.pages[p.id].sections.made[result.section],out=String(renderBlock(copy,ctx()));
- assert.match(out,new RegExp(`id="${copy.id}-preview"`));assert.doesNotMatch(out,/id="b-rw-networks-preview"/);
+ assert.doesNotMatch(out,/-preview"/);assert.doesNotMatch(out,/id="b-rw-networks-preview"/);
  assert.ok(out.includes('/forms/workshop-request/?topic=support_network'));
 });
 

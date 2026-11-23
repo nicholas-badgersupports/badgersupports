@@ -31,6 +31,7 @@ const PARTS = {
   house: `<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5v10h13v-10"/><path d="M10 19.5v-5h4v5"/>`,
   badge: `<path d="M8 2.5l4 6 4-6"/><rect x="5.5" y="8.5" width="13" height="13" rx="1.5"/><circle cx="12" cy="13.5" r="2"/><path d="M9.3 18h5.4"/>`,
   question: `<circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.3-.9.8-.9 1.4v.5"/><path d="M12 16.9v.1"/>`,
+  info: `<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.3v.1"/>`,
   face: `<path d="M5.75 10.55A1.45 0.95 0 0 1 8.65 10.55"/><path d="M15.35 10.55A1.45 0.95 0 0 1 18.25 10.55"/><path d="M6.6 14.2c2 1.3 3.6 2.2 5.4 2.2s3.4-.9 5.4-2.2"/>`,
   /* Smile options 2-5: variants of "face" drawn for the owner to choose between (hero
    * experiment, 12 Nov 2026). Every variant spans the same 5.75-18.25 of the grid, stroke

@@ -223,10 +223,10 @@
       "type": "spill",
       "title": "Badger SPILL",
       "body": [
-        "Badger SPILL is written peer support from Badger Supports. Write what’s on your mind, whenever it’s on your mind, and a trained UW–Madison Student Supporter writes back. It’s confidential.",
-        "Badger SPILL does not provide crisis support. If you or a friend are in a crisis, please call 911 or the UHS 24/7 Mental Health Crisis Line: 608-265-5600, option 9.",
-        "For written peer support, go directly to Badger SPILL. You do not need to request a program for a group."
+        "Badger SPILL offers confidential, written peer support. Share what’s on your mind anytime, and a trained UW–Madison Student Supporter will respond."
       ],
+      "noteLabel": "Crisis help",
+      "note": "Badger SPILL is not a crisis service. For immediate help, call 911 or the UHS 24/7 Mental Health Crisis Line at 608-265-5600, option 9.",
       "primary": {
         "label": "Write Your SPILL",
         "href": "https://badgerspill.org/#spill-form"

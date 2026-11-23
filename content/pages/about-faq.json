@@ -231,8 +231,7 @@
       "type": "text",
       "title": "Report a Website Problem",
       "body": [
-        "Email the student directors about a broken page, link or control. Include the public page title and a short description of what went wrong. The student directors review website reports.",
-        "Leave out private links, form answers, personal details and support conversations. The button opens a draft in your email app: review it and send it there; opening a draft does not submit a report. If it does not open, email directors@badgersupports.org with the subject Website problem."
+        "Found a broken page, link, or button? Include the page title and a brief description of the issue."
       ],
       "links": [
         {

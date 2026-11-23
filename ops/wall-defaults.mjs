@@ -1,5 +1,5 @@
-/* The Wall of Support's floor: the notes a production build stands in when
- * Connect's approved list comes back empty, so a published wall is never blank.
+/* The Wall of Support's fill: the notes a production build stands in behind
+ * Connect's approved notes, so the wall always stands full.
  *
  * The six are the wall's own notes, from the "Notes" tab of "WEB Tech
  * Dashboard" (Google Sheets, Badger Supports shared drive — the sheet the wall
@@ -7,10 +7,18 @@
  * order, wording exactly as the sheet holds them. Nicholas approved all six as
  * the built-in defaults on 13 Nov 2026.
  *
- * A floor, not an addition: when Connect sends even one approved note, none of
- * these appear. They carry fixture: false and no label — real notes from the
- * wall's own sheet, not samples typed for review — so the wall renders them
- * exactly as it renders Connect's notes.
+ * A fill, not an all-or-nothing floor (his direction, 23 Nov 2026): Connect's
+ * approved notes always stand first and in full, and the defaults take only
+ * the places left under the wall's display count — one fewer default for each
+ * approved note, so the defaults move off one by one as the wall fills with
+ * real notes, and none stands once approved notes reach the display count.
+ * They carry fixture: false and no label — real notes from the wall's own
+ * sheet, not samples typed for review — so the wall renders them exactly as
+ * it renders Connect's notes.
+ *
+ * Only six defaults exist, so a wall with fewer than two approved notes
+ * stands short of the display count: it shows every approved note and all
+ * six defaults rather than repeat a note or invent one.
  */
 
 export const WALL_DEFAULT_NOTES = [
@@ -22,9 +30,21 @@ export const WALL_DEFAULT_NOTES = [
   "Your feelings are valid",
 ];
 
-/* The wall a production build publishes: the list it was given when that list
-   carries any note with words in it, otherwise the approved defaults. */
-export function wallWithDefaults(wall) {
-  if (wall && Array.isArray(wall.notes) && wall.notes.some((n) => typeof n === "string" && n.trim())) return wall;
-  return { schema: "bss.wall-fixture/1", fixture: false, source: "defaults", notes: [...WALL_DEFAULT_NOTES] };
+/* How many notes the wall displays at once: the wall block's own "show"
+   (content/pages/home.json). The fill tops a list up to this count. */
+export const WALL_DISPLAY_COUNT = 8;
+
+const real = (n) => typeof n === "string" && n.trim();
+
+/* The wall a production build publishes: Connect's approved notes first, in
+   full, with the defaults filling the places left under the display count.
+   A default whose words an approved note already carries never stands
+   twice, and a list already at the display count is returned untouched. */
+export function wallWithDefaults(wall, display = WALL_DISPLAY_COUNT) {
+  const approved = (wall && Array.isArray(wall.notes) ? wall.notes : []).filter(real);
+  if (!approved.length) return { schema: "bss.wall-fixture/1", fixture: false, source: "defaults", notes: [...WALL_DEFAULT_NOTES] };
+  if (approved.length >= display) return wall;
+  const fill = WALL_DEFAULT_NOTES.filter((d) => !approved.includes(d)).slice(0, display - approved.length);
+  if (!fill.length) return wall;
+  return { ...wall, notes: [...approved, ...fill] };
 }

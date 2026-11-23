@@ -1,7 +1,7 @@
-/* The Wall of Support's floor: the six approved defaults a production build
-   stands in when Connect's approved list comes back empty, so the wall is
-   never blank — and their complete absence when Connect sends any note
-   (ops/wall-defaults.mjs). */
+/* The Wall of Support's fill: the six approved defaults a production build
+   stands in behind Connect's approved notes — all six when the list comes
+   back empty, fewer as real notes take their places, and none once approved
+   notes fill the wall (ops/wall-defaults.mjs). */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -33,9 +33,28 @@ test("an empty or absent list falls back to the defaults, which are not samples"
   }
 });
 
-test("a list with any real note is returned untouched: the defaults never join it", () => {
-  const wall = { schema: "bss.wall-fixture/1", fixture: false, source: "connect", notes: ["A fictional approved note."] };
-  assert.equal(wallWithDefaults(wall), wall);
+test("a short list stands first and the defaults fill the places left", () => {
+  const one = { schema: "bss.wall-fixture/1", fixture: false, source: "connect", notes: ["A fictional approved note."] };
+  const filled = wallWithDefaults(one);
+  assert.deepEqual(filled.notes, ["A fictional approved note.", ...APPROVED], "one real note and all six defaults: the fullest the wall can stand");
+  assert.equal(filled.source, "connect", "the wall is still Connect's list, filled out");
+  assert.equal(filled.fixture, false);
+  const three = { ...one, notes: ["One.", "Two.", "Three."] };
+  assert.deepEqual(wallWithDefaults(three).notes, ["One.", "Two.", "Three.", ...APPROVED.slice(0, 5)], "three real notes leave five places, taken by the first five defaults");
+});
+
+test("a list at or over the display count is returned untouched: no default joins it", () => {
+  const eight = { schema: "bss.wall-fixture/1", fixture: false, source: "connect", notes: ["1.", "2.", "3.", "4.", "5.", "6.", "7.", "8."] };
+  assert.equal(wallWithDefaults(eight), eight);
+  const ten = { ...eight, notes: [...eight.notes, "9.", "10."] };
+  assert.equal(wallWithDefaults(ten), ten);
+});
+
+test("a real note carrying a default's words keeps that default off the wall", () => {
+  const wall = { schema: "bss.wall-fixture/1", fixture: false, source: "connect", notes: ["You belong here"] };
+  const out = wallWithDefaults(wall);
+  assert.equal(out.notes.filter((n) => n === "You belong here").length, 1, "the words stand once, as the real note");
+  assert.equal(out.notes.length, 6, "the other five defaults fill behind it");
 });
 
 /* A production build against a fictional Connect, in the shape the alumni
@@ -74,8 +93,16 @@ test("a production build whose Connect wall comes back empty publishes the six d
   assert.deepEqual([...shown].sort(), [...APPROVED].sort(), "every default is on the wall");
 });
 
-test("a production build with notes from Connect shows those and none of the defaults", async () => {
+test("a production build with two notes from Connect shows those and the defaults filling the wall", async () => {
   const html = await productionHome([{ id: "n1", text: "A fictional approved note." }, { id: "n2", text: "Another fictional approved note." }], "test-wall-feed");
-  assert.deepEqual(wallNotesOn(html).sort(), ["A fictional approved note.", "Another fictional approved note."]);
-  for (const d of APPROVED) assert.ok(!html.includes(d.replace(/'/g, "&#39;")), `the default "${d}" stays out when Connect sends notes`);
+  const shown = wallNotesOn(html);
+  assert.equal(shown.length, 8, "the wall stands full at its display count");
+  assert.deepEqual([...shown].sort(), ["A fictional approved note.", "Another fictional approved note.", ...APPROVED].sort(), "both real notes and all six defaults stand");
+});
+
+test("a production build whose Connect notes fill the wall shows none of the defaults", async () => {
+  const many = Array.from({ length: 10 }, (_, i) => ({ id: `n${i + 1}`, text: `Fictional approved note ${i + 1}.` }));
+  const html = await productionHome(many, "test-wall-full");
+  assert.equal(wallNotesOn(html).length, 8, "the wall shows its display count");
+  for (const d of APPROVED) assert.ok(!html.includes(d.replace(/'/g, "&#39;")), `the default "${d}" stays out once real notes fill the wall`);
 });

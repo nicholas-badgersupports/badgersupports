@@ -59,8 +59,8 @@ async function oneCatalogue(snap, kind, now, token) {
       if (!cfg) throw Object.assign(new Error('Connect is not configured'), { code: 'connect.missing' });
       const reply = await call(cfg, { action: spec.action });
       if (reply.schema !== spec.schema || !Array.isArray(reply[spec.field])) throw Object.assign(new Error('Unexpected public catalogue'), { code: 'connect.bad-reply' });
-      /* The wall is settled through the same defaults floor the build applies: an empty approved
-         list is a successful read of no notes, not a reason to serve a blank wall. */
+      /* The wall is settled through the same defaults fill the build applies: a short approved
+         list is a successful read, filled out with the defaults rather than served sparse. */
       const mapped = spec.map(reply);
       const value = kind === 'wall' ? wallWithDefaults(mapped) : mapped;
       const record = { source, at: now, value };

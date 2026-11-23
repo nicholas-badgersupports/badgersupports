@@ -282,6 +282,7 @@
     {
       "id": "b-rw-access",
       "type": "text",
+      "boxed": true,
       "title": "Accommodation Requests",
       "body": [
         "Badger Supports values inclusion and access for all participants and is pleased to provide reasonable accommodations for any Badger Supports workshop. Please contact accessibility@badgersupports.org to make a reasonable accommodation request."

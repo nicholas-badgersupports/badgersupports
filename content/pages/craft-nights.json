@@ -172,6 +172,7 @@
     {
       "id": "b-cn-access",
       "type": "text",
+      "boxed": true,
       "body": [
         "Please email accessibility@badgersupports.org with an accommodation request or an access question."
       ],

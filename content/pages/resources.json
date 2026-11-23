@@ -138,6 +138,7 @@
     {
       "id": "b-res-explore",
       "type": "text",
+      "boxed": true,
       "title": "Explore Campus",
       "body": [
         "Explore Campus gathers the campus tools in one place."

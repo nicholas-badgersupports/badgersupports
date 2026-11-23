@@ -16,15 +16,17 @@
 .ribbon-open .ic { width: 1rem; height: 1rem; }
 .ribbon-art { --ribbon-fill: var(--ribbon-red); --ribbon-second: var(--ribbon-fill); width: 9rem; height: auto; overflow: visible; filter: drop-shadow(0 .25rem .2rem var(--ribbon-shadow)); transition: transform .18s ease; }
 .ribbon-card > summary:hover .ribbon-art { transform: rotate(-2deg) translateY(-2px); }
-.ribbon-tail { stroke: color-mix(in srgb, var(--ribbon-fill) 75%, var(--ink)); stroke-width: .55; stroke-linejoin: round; }
-.ribbon-satin { stop-color: var(--ribbon-fill); }
-.ribbon-shine { stop-color: color-mix(in srgb, var(--ribbon-fill) 62%, var(--paper)); }
-.ribbon-shade { stop-color: color-mix(in srgb, var(--ribbon-fill) 73%, var(--ink)); }
-.ribbon-front-base { stop-color: var(--ribbon-second); }
-.ribbon-front-shine { stop-color: color-mix(in srgb, var(--ribbon-second) 60%, var(--paper)); }
-.ribbon-front-shade { stop-color: color-mix(in srgb, var(--ribbon-second) 73%, var(--ink)); }
-.ribbon-fold { fill: var(--ink); opacity: .13; }
-.ribbon-edge-light { fill: none; stroke: var(--paper); stroke-width: 1; opacity: .45; }
+.ribbon-a0, .ribbon-a1, .ribbon-a2, .ribbon-a3, .ribbon-a4, .ribbon-b0, .ribbon-b1, .ribbon-b2, .ribbon-b3, .ribbon-b4 { stroke-width: .7; stroke-linejoin: round; }
+.ribbon-a0 { fill: color-mix(in srgb, var(--ribbon-fill) 52%, var(--ink)); stroke: color-mix(in srgb, var(--ribbon-fill) 52%, var(--ink)); }
+.ribbon-a1 { fill: color-mix(in srgb, var(--ribbon-fill) 78%, var(--ink)); stroke: color-mix(in srgb, var(--ribbon-fill) 78%, var(--ink)); }
+.ribbon-a2 { fill: var(--ribbon-fill); stroke: var(--ribbon-fill); }
+.ribbon-a3 { fill: color-mix(in srgb, var(--ribbon-fill) 88%, var(--paper)); stroke: color-mix(in srgb, var(--ribbon-fill) 88%, var(--paper)); }
+.ribbon-a4 { fill: color-mix(in srgb, var(--ribbon-fill) 66%, var(--paper)); stroke: color-mix(in srgb, var(--ribbon-fill) 66%, var(--paper)); }
+.ribbon-b0 { fill: color-mix(in srgb, var(--ribbon-second) 52%, var(--ink)); stroke: color-mix(in srgb, var(--ribbon-second) 52%, var(--ink)); }
+.ribbon-b1 { fill: color-mix(in srgb, var(--ribbon-second) 78%, var(--ink)); stroke: color-mix(in srgb, var(--ribbon-second) 78%, var(--ink)); }
+.ribbon-b2 { fill: var(--ribbon-second); stroke: var(--ribbon-second); }
+.ribbon-b3 { fill: color-mix(in srgb, var(--ribbon-second) 88%, var(--paper)); stroke: color-mix(in srgb, var(--ribbon-second) 88%, var(--paper)); }
+.ribbon-b4 { fill: color-mix(in srgb, var(--ribbon-second) 66%, var(--paper)); stroke: color-mix(in srgb, var(--ribbon-second) 66%, var(--paper)); }
 .ribbon-red { --ribbon-fill: var(--ribbon-red); }
 .ribbon-maroon { --ribbon-fill: var(--ribbon-maroon); }
 .ribbon-orange { --ribbon-fill: var(--ribbon-orange); }
@@ -80,6 +82,6 @@
 @media (max-width: 600px) { .ribbon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s2); row-gap: var(--s3); } .ribbon-art { width: 7rem; max-width: 100%; } .ribbon-caption { gap: var(--s1); } }
 @media (max-width: 480px) { .ribbon-dialog .ribbon-details { grid-template-columns: minmax(0, 1fr); padding: var(--s4); } .ribbon-dialog .ribbon-popup-art { position: static; margin: 0; } .ribbon-dialog .ribbon-popup-art .ribbon-art { width: 6.5rem; height: auto; } .ribbon-dialog-head { gap: var(--s2); padding: var(--s3); } .ribbon-close .ic { display: none; } }
 @media (prefers-reduced-motion: reduce) { .ribbon-card > summary, .ribbon-art { transition: none; } .ribbon-card > summary:hover .ribbon-art { transform: none; } }
-@media (forced-colors: active) { .ribbon-local { background: Canvas; } .ribbon-art { filter: none; } .ribbon-tail { stroke: CanvasText; } }
+@media (forced-colors: active) { .ribbon-local { background: Canvas; } .ribbon-art { filter: none; } .ribbon-a0, .ribbon-b0 { fill: ButtonText; stroke: ButtonText; } .ribbon-a1, .ribbon-b1, .ribbon-a2, .ribbon-b2 { fill: CanvasText; stroke: CanvasText; } .ribbon-a3, .ribbon-b3, .ribbon-a4, .ribbon-b4 { fill: Canvas; stroke: Canvas; } }
 
 html.ribbon-pinned { overflow: hidden; }

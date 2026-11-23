@@ -87,7 +87,7 @@ export async function formTags(key) {
 
 const headerPairs = (lines) => Object.fromEntries(lines.map((l) => { const i = l.indexOf(":"); return [l.slice(0, i).toLowerCase(), l.slice(i + 1).trim()]; }));
 const showsTeam = page => page?.blocks?.some(b => b.type === "team" || b.type === "person");
-const showsAlumni = page => page?.blocks?.some(b => b.type === "alumni");
+const showsAlumni = page => page?.blocks?.some(b => b.type === "alumni" || (b.type === "pagehead" && b.timeline));
 const showsLegal = page => page?.blocks?.some(b => b.type === "legal");
 const showsEvents = page => page?.blocks?.some(refreshes);
 const teamPath = pathname => pathname === "/about/our-team" || pathname.startsWith("/about/our-team/");

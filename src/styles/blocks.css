@@ -1393,6 +1393,24 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .pagehead.has-1 .pagehead-photos { grid-template-columns: minmax(0, 1fr); grid-template-rows: 22rem; }
 .pagehead.has-2 .pagehead-photos .photo { grid-row: 1 / -1; }
 
+/* the alumni history as a line of year stops under the opening (pagehead's `timeline`): the
+   years stand above the line, a dot marks each stop, and the organisation's name stands
+   under the stop where it takes over. The stops rise in once on load, in order; base.css
+   stills the motion for anyone who asks for less of it. On a phone the line goes, and the
+   stops stand three to a row. */
+@keyframes pagehead-rise { from { opacity: 0; translate: 0 10px; } }
+.pagehead-timeline { grid-column: 1 / -1; list-style: none; display: flex; margin: var(--s2) 0 0; padding: 0; position: relative; }
+.pagehead-timeline::before { content: ""; position: absolute; left: 8.333%; right: 8.333%; top: calc(1.19rem + .45rem + 4px); height: 2px; background: color-mix(in srgb, var(--accent) 42%, transparent); }
+.pagehead-stop { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: .45rem; text-align: center; animation: pagehead-rise .7s ease-out both; animation-delay: var(--d, 0s); }
+.pagehead-stop-years { font-weight: 700; font-size: .95rem; line-height: 1.25; color: var(--ink); white-space: nowrap; }
+.pagehead-stop-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--cream); position: relative; z-index: 1; }
+.pagehead-stop-org { min-height: 2.63rem; font-size: .875rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--accent-deep); }
+@media (max-width: 860px) {
+  .pagehead-timeline { flex-wrap: wrap; row-gap: var(--s3); }
+  .pagehead-timeline::before { display: none; }
+  .pagehead-stop { flex: 0 0 33.333%; }
+}
+
 /* ============ header button rows: one loud button, the rest quiet (owner, 12 Nov 2026) ============
    A page opening's row carries one full-strength button; every other way on in the same row is a
    quieter pill drawn from that header's own colour, never grey and never the old white: on a

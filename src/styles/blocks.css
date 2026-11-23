@@ -2015,3 +2015,23 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 @media (max-width: 860px) {
   .expect.is-boxed .wrap, .program.is-boxed .wrap { padding: var(--s4); }
 }
+
+/* ============ pagehead side panels (hero audit, approved 23 Nov 2026) ============
+   A page with no photos stands its own material in the band's right side; the words
+   and buttons stack in the left column, as on the team and resources openings.
+   Proposal 5 (bus routes) is the first built: the explorer's own route badges. */
+@media (min-width: 861px) {
+  .pagehead.has-side .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-areas: "words side" "actions side"; grid-template-rows: auto 1fr; }
+  .pagehead.has-side .pagehead-words { grid-area: words; }
+  .pagehead.has-side .pagehead-actions { grid-area: actions; align-self: start; margin-top: var(--s4); flex-wrap: wrap; overflow-x: visible; }
+  .pagehead.has-side .pagehead-side { grid-area: side; align-self: center; }
+}
+/* a page whose opening has no buttons: the words take the left column on their own */
+.pagehead.has-side:not(:has(.pagehead-actions)) .wrap { grid-template-areas: "words side"; grid-template-rows: auto; }
+
+/* Proposal 5 — the route badges: a quiet cluster of the explorer's own badges. */
+.pagehead-side.is-routes { display: flex; flex-wrap: wrap; gap: var(--s3); align-content: center; }
+
+@media (max-width: 860px) {
+  .pagehead-side { margin-top: var(--s4); }
+}

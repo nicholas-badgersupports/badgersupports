@@ -1514,6 +1514,11 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-words { grid-area: words; }
   [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-actions { grid-area: actions; align-self: start; }
   [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-photos { grid-area: photos; }
+  /* this row wraps on a desktop too, as the event hero's rows do: the button and the
+     "Advisors & Campus Partners" pill together run wider than the left column at most
+     widths, so in the sideways strip the pill's words were cut at the column's edge with
+     no scrollbar to find them by. Wrapped, the pill drops under the button whole. */
+  [data-page="pg-about-team"] [data-block="b-team-head"] .pagehead-actions { flex-wrap: wrap; overflow-x: visible; }
 }
 [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-actions { margin-top: var(--s4); }
 /* the resources opening's words and its one button are one short stack at the top of the left

@@ -61,6 +61,9 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
   const moreRow = box.querySelector("[data-ce-more-row]");
   const moreBtn = box.querySelector("[data-ce-more]");
   const badgerBtn = box.querySelector("[data-ce-badger]");
+  const foldBtn = box.querySelector("[data-ce-foldbtn]");
+  const panel = box.querySelector("[data-ce-panel]");
+  const foldCount = box.querySelector("[data-ce-foldcount]");
   const PAGE = 12;
   const state = { interests: new Set(), view: "list", month: null, limit: PAGE, sig: null, window: "tonight" };
 
@@ -281,11 +284,29 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
     }
   }
 
+  /* The fold: one button opens the panel holding the interests and the rest of the filters.
+     The button carries the count of chosen interests, so a closed fold still says when it is
+     narrowing the list. Closing the fold never clears a choice. */
+  function syncFold() {
+    if (!foldCount) return;
+    const n = state.interests.size;
+    foldCount.textContent = n ? `(${n})` : "";
+    foldCount.hidden = !n;
+    foldBtn?.classList.toggle("has-sel", !!n);
+  }
+  foldBtn?.addEventListener("click", () => {
+    poke();
+    const open = foldBtn.getAttribute("aria-expanded") === "true";
+    foldBtn.setAttribute("aria-expanded", String(!open));
+    if (panel) panel.hidden = open;
+  });
+
   for (const chip of chips) chip.addEventListener("click", () => {
     poke();
     const id = chip.dataset.ceInterest;
     if (state.interests.has(id)) { state.interests.delete(id); chip.setAttribute("aria-pressed", "false"); }
     else { state.interests.add(id); chip.setAttribute("aria-pressed", "true"); }
+    syncFold();
     render();
   });
   for (const chip of winChips) chip.addEventListener("click", () => {
@@ -311,6 +332,7 @@ for (const box of document.querySelectorAll("[data-campus-events]")) {
     q.value = ""; cat.value = ""; src.value = ""; from.value = ""; to.value = "";
     state.interests.clear();
     for (const chip of chips) chip.setAttribute("aria-pressed", "false");
+    syncFold();
     setWindow("tonight");
     setView("list"); render();
   });

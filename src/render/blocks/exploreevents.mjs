@@ -19,11 +19,16 @@
  * while it is pressed.
  *
  * The redesign (approved 15 Nov 2026) opens the explorer on a window — Tonight, Today, This
- * Weekend, All Dates — with the interest chips under it, and groups the list: Badger Supports'
- * own programs in the window first, under their own heading, then the window's other events.
+ * Weekend, All Dates — and groups the list: Badger Supports' own programs in the window first,
+ * under their own heading, then the window's other events.
  * The build's first paint is the Tonight window read by date (the build knows the day, not the
  * hour); the script re-windows with the real clock the moment the data lands, and refines
- * Tonight to events not yet over. Picking a date range or the calendar sets the window aside. */
+ * Tonight to events not yet over. Picking a date range or the calendar sets the window aside.
+ *
+ * Layout (redesign approved 23 Nov 2026): the tools are one
+ * quiet row — the window as a segmented control, a compact search, an Interests fold button and
+ * the List/Calendar toggle — and everything else (interest chips, category, source, the Badger
+ * Supports toggle, the date range, Clear filters) sits in the fold's panel, closed on arrival. */
 
 import { html } from "../html.mjs";
 import { go, link } from "../context.mjs";
@@ -100,44 +105,49 @@ export default {
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   <div class="ce-tools" data-ce-tools hidden>
-    <fieldset class="ce-interests">
-      <legend>${ctx.t("explore.events.when")}</legend>
-      <div class="ce-chips">${WINDOWS.map((w) => html`<button type="button" class="ce-chip" aria-pressed="${w === "tonight" ? "true" : "false"}" data-ce-window="${w}">${ctx.t(`explore.events.window.${w}`)}</button>`)}</div>
-    </fieldset>
-    <div class="ce-field ce-field--search">
-      <label for="${b.id}-q">${ctx.t("explore.events.search")}</label>
-      <div class="ce-searchbox">${icon("search", "ce-searchbox-ic")}<input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" data-ce-q></div>
-    </div>
-    <fieldset class="ce-interests">
-      <legend>${ctx.t("explore.events.interests")}</legend>
-      <div class="ce-chips">${(interests.interests || []).map((i) => html`<button type="button" class="ce-chip" aria-pressed="false" data-ce-interest="${i.id}">${i.label}</button>`)}</div>
-    </fieldset>
-    <div class="ce-row">
-      <div class="ce-field">
-        <label for="${b.id}-cat">${ctx.t("explore.events.category")}</label>
-        <select id="${b.id}-cat" data-ce-cat><option value="">${ctx.t("explore.events.categoryAll")}</option>${categories.map((c) => html`<option value="${c}">${c}</option>`)}</select>
+    <div class="ce-bar">
+      <fieldset class="ce-when">
+        <legend class="sr-only">${ctx.t("explore.events.when")}</legend>
+        <div class="ce-seg">${WINDOWS.map((w) => html`<button type="button" class="ce-chip" aria-pressed="${w === "tonight" ? "true" : "false"}" data-ce-window="${w}">${ctx.t(`explore.events.window.${w}`)}</button>`)}</div>
+      </fieldset>
+      <div class="ce-field ce-field--search">
+        <label class="sr-only" for="${b.id}-q">${ctx.t("explore.events.search")}</label>
+        <div class="ce-searchbox">${icon("search", "ce-searchbox-ic")}<input id="${b.id}-q" type="search" autocomplete="off" spellcheck="false" data-ce-q></div>
       </div>
-      <div class="ce-field">
-        <label for="${b.id}-src">${ctx.t("explore.events.source")}</label>
-        <select id="${b.id}-src" data-ce-src><option value="">${ctx.t("explore.events.sourceAll")}</option><option value="uw">${ctx.t("explore.events.name.uw")}</option><option value="union">${ctx.t("explore.events.name.union")}</option><option value="badger">${ctx.t("explore.events.name.badger")}</option></select>
-      </div>
-      <button type="button" class="ce-badger-toggle" aria-pressed="false" data-ce-badger>${ctx.t("explore.events.onlyBadger")}</button>
-      <div class="ce-field">
-        <label for="${b.id}-from">${ctx.t("explore.events.from")}</label>
-        <input id="${b.id}-from" type="date" data-ce-from>
-      </div>
-      <div class="ce-field">
-        <label for="${b.id}-to">${ctx.t("explore.events.to")}</label>
-        <input id="${b.id}-to" type="date" data-ce-to>
-      </div>
+      <button type="button" class="ce-foldbtn" aria-expanded="false" aria-controls="${b.id}-filters" data-ce-foldbtn>${ctx.t("explore.events.interests")}<span class="ce-foldcount" data-ce-foldcount hidden></span></button>
       <div class="ce-field ce-field--view">
-        <span class="ce-viewlabel" id="${b.id}-viewlabel">${ctx.t("explore.events.view")}</span>
+        <span class="ce-viewlabel sr-only" id="${b.id}-viewlabel">${ctx.t("explore.events.view")}</span>
         <div class="ce-viewtoggle" role="group" aria-labelledby="${b.id}-viewlabel">
           <button type="button" aria-pressed="true" data-ce-view="list">${ctx.t("explore.events.viewList")}</button>
           <button type="button" aria-pressed="false" data-ce-view="calendar">${ctx.t("explore.events.viewCalendar")}</button>
         </div>
       </div>
-      <button type="button" class="btn btn--quiet" data-ce-reset>${ctx.t("explore.events.reset")}</button>
+    </div>
+    <div class="ce-panel" id="${b.id}-filters" data-ce-panel hidden>
+      <fieldset class="ce-interests">
+        <legend class="sr-only">${ctx.t("explore.events.interests")}</legend>
+        <div class="ce-chips">${(interests.interests || []).map((i) => html`<button type="button" class="ce-chip" aria-pressed="false" data-ce-interest="${i.id}">${i.label}</button>`)}</div>
+      </fieldset>
+      <div class="ce-row">
+        <div class="ce-field">
+          <label for="${b.id}-cat">${ctx.t("explore.events.category")}</label>
+          <select id="${b.id}-cat" data-ce-cat><option value="">${ctx.t("explore.events.categoryAll")}</option>${categories.map((c) => html`<option value="${c}">${c}</option>`)}</select>
+        </div>
+        <div class="ce-field">
+          <label for="${b.id}-src">${ctx.t("explore.events.source")}</label>
+          <select id="${b.id}-src" data-ce-src><option value="">${ctx.t("explore.events.sourceAll")}</option><option value="uw">${ctx.t("explore.events.name.uw")}</option><option value="union">${ctx.t("explore.events.name.union")}</option><option value="badger">${ctx.t("explore.events.name.badger")}</option></select>
+        </div>
+        <button type="button" class="ce-badger-toggle" aria-pressed="false" data-ce-badger>${ctx.t("explore.events.onlyBadger")}</button>
+        <div class="ce-field">
+          <label for="${b.id}-from">${ctx.t("explore.events.from")}</label>
+          <input id="${b.id}-from" type="date" data-ce-from>
+        </div>
+        <div class="ce-field">
+          <label for="${b.id}-to">${ctx.t("explore.events.to")}</label>
+          <input id="${b.id}-to" type="date" data-ce-to>
+        </div>
+        <button type="button" class="btn btn--quiet" data-ce-reset>${ctx.t("explore.events.reset")}</button>
+      </div>
     </div>
   </div>
   <div class="ce-status" aria-live="polite">

@@ -1,13 +1,44 @@
 /* Campus Events Explorer (src/render/blocks/exploreevents.mjs): filter tools, then event cards
    in the event-card family — a calendar-style date block at the left — or a month grid of the same set.
    A Badger Supports program is marked by its label line; no meaning rides on colour alone. */
+/* This page's hero, shortened (redesign approved 23 Nov 2026): the standard pagehead spends a
+   3rem band top and bottom and a 3rem grid gap plus a 2rem margin over the actions — most of
+   the screen before a single event. Here the band and the gaps close up, and the two outside
+   links (UW–Madison Events, the Wisconsin Union calendar) stand as quiet underlined text
+   links instead of pills; "Explore Campus" leaves the hero's links in the page content. */
+.pagehead[data-block="b-ce-head"] { padding-block: var(--s5); }
+.pagehead[data-block="b-ce-head"] .wrap { gap: var(--s3); }
+.pagehead[data-block="b-ce-head"] .pagehead-actions { margin-top: 0; gap: var(--s2) var(--s4); }
+.pagehead[data-block="b-ce-head"] .pagehead-actions .go { background: transparent; border: 0; border-radius: 0; padding: 0; gap: .35rem; color: var(--accent-deep); font-size: 1rem; font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
+.pagehead[data-block="b-ce-head"] .pagehead-actions .go .go-ic { width: 1.05rem; height: 1.05rem; padding: 0; background: transparent; color: inherit; border-radius: 0; }
+.pagehead[data-block="b-ce-head"] .pagehead-actions .go:hover { background: transparent; color: var(--accent); }
+.pagehead[data-block="b-ce-head"] .pagehead-actions .go:hover .go-ic { background: transparent; color: inherit; }
 .exploreevents h2 { color: var(--accent); margin-bottom: var(--s3); }
 .exploreevents .lead { margin: 0 0 var(--s4); font-size: var(--fs-lead); max-width: var(--measure); }
-.ce-tools { display: grid; gap: var(--s3); margin-bottom: var(--s4); padding: var(--s4); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+/* The tools are one quiet row on the band itself — no card — and the rest of the filters live
+   in the Interests fold's panel, closed on arrival: the window as a segmented control, a
+   compact search, the fold button, and the List/Calendar toggle (redesign, 23 Nov 2026). */
+.ce-tools { margin-bottom: var(--s3); }
+.ce-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.ce-when { border: 0; margin: 0; padding: 0; min-width: 0; }
+.ce-seg { display: inline-flex; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); overflow: hidden; }
+.ce-seg .ce-chip { border: 0; border-radius: 0; min-height: 42px; padding: .4rem .85rem; background: transparent; }
+.ce-seg .ce-chip + .ce-chip { border-left: var(--rule-line); }
+.ce-seg .ce-chip:hover { background: var(--accent-tint); }
+.ce-seg .ce-chip[aria-pressed="true"] { background: var(--accent); color: var(--paper); }
+.ce-seg .ce-chip[aria-pressed="true"]:hover { background: var(--accent); }
+.ce-field--search { flex: 1 1 14rem; max-width: 24rem; }
+.ce-foldbtn { min-height: 44px; padding: .45rem 2.3rem .45rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; background-image: url("/assets/icons/chevron-down.svg"); background-repeat: no-repeat; background-position: right .8rem center; background-size: 1rem auto; }
+.ce-foldbtn:hover { border-color: var(--accent); }
+.ce-foldbtn[aria-expanded="true"] { background-color: var(--accent-tint); border-color: var(--accent); }
+.ce-foldbtn.has-sel { border-color: var(--accent); }
+.ce-foldcount { display: inline-block; margin-left: .45rem; padding: 0 .5rem; background: var(--accent); color: var(--paper); border-radius: var(--r-chip); font-size: var(--fs-small); font-weight: 800; }
+.ce-panel { display: grid; gap: var(--s3); margin-top: var(--s3); padding: var(--s3); background: var(--paper); border: var(--hairline); border-radius: var(--r-card); }
+.ce-panel[hidden] { display: none; }
 .ce-tools label, .ce-interests legend, .ce-viewlabel { display: block; font-weight: 700; margin-bottom: var(--s1); }
 .ce-searchbox { position: relative; display: flex; align-items: center; }
 .ce-searchbox-ic { position: absolute; left: .9rem; width: 1.25rem; height: 1.25rem; color: var(--muted); pointer-events: none; }
-.ce-searchbox input { width: 100%; min-height: 48px; padding: .5rem 1rem .5rem 2.75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
+.ce-searchbox input { width: 100%; min-height: 44px; padding: .5rem 1rem .5rem 2.75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
 .ce-searchbox input:hover, .ce-row select:hover, .ce-row input:hover { border-color: var(--accent); }
 .ce-interests { border: 0; margin: 0; padding: 0; }
 .ce-chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
@@ -21,7 +52,7 @@
 .ce-row select, .ce-row input[type="date"] { min-height: 48px; padding: .5rem .75rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; }
 .ce-row select { appearance: none; -webkit-appearance: none; padding-right: 2.5rem; background-image: url("/assets/icons/chevron-down.svg"); background-repeat: no-repeat; background-position: right .9rem center; background-size: 1rem auto; }
 .ce-viewtoggle { display: flex; gap: var(--s1); }
-.ce-viewtoggle button { min-height: 48px; padding: .5rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
+.ce-viewtoggle button { min-height: 44px; padding: .5rem 1rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; }
 .ce-viewtoggle button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .ce-group { margin-bottom: var(--s4); }
 .ce-grouphead { font-size: var(--fs-h3); margin: 0 0 var(--s3); color: var(--accent); }
@@ -68,4 +99,11 @@
 @media (max-width: 560px) {
   .cecal-day { min-height: 3.5rem; padding: .2rem; }
   .cecard { flex-direction: column; }
+  /* The bar stacks: window first, the search on its own full row, then the fold and the view
+     toggle side by side. The fold starts closed, as it does at every width. */
+  .ce-field--search { flex: 1 1 100%; max-width: none; order: 2; }
+  .ce-when { order: 1; }
+  .ce-foldbtn { order: 3; }
+  .ce-field--view { order: 4; }
+  .ce-seg .ce-chip { padding: .4rem .6rem; }
 }

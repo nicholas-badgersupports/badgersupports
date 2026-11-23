@@ -14,7 +14,12 @@
       "primary": {
         "label": "Browse Resources",
         "href": "/resources/"
-      }
+      },
+      "photos": [
+        "m-referral-card-wish",
+        "m-referral-card-housing",
+        "m-referral-card-basic-needs"
+      ]
     },
     {
       "id": "b-rc-cards",

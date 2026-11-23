@@ -1527,6 +1527,36 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-actions { grid-area: actions; align-self: start; }
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-photos { grid-area: photos; }
 }
+/* the referral cards opening: the button follows the paragraph at the actions row's own
+   margin, as it does in a plain stack — the general pagehead put it on a row of its own under
+   both columns, and the grid's row gap landed on top of that margin, which left a long empty
+   drop under the paragraph and an empty right half. The right
+   half now holds the cards themselves: three of the page's own referral cards (the same artwork
+   the cards section below shows in full) fanned at a slight angle, white on the band's wash,
+   each with the soft shadow of a thing that floats over the page. They rise and fade in once
+   when the page opens, back cards first; nothing loops, nothing moves on scroll, and base.css
+   stills every animation for anyone who asks for less motion. On a phone the fan follows the
+   button instead of standing over the heading, so the button stays in reach. */
+[data-page="pg-referral-cards"] [data-block="b-rc-head"].pagehead .wrap { row-gap: 0; }
+[data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos { position: relative; display: block; aspect-ratio: 8 / 5; }
+[data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos .photo {
+  position: absolute; width: 74%; aspect-ratio: 1280 / 719;
+  border-radius: var(--r-card); box-shadow: var(--menu-shadow);
+  animation: rc-fan-in .7s var(--ease-out) both;
+}
+[data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos .photo:nth-child(1) { left: 13%; top: 31%; rotate: -1.5deg; z-index: 3; animation-delay: .3s; }
+[data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos .photo:nth-child(2) { left: 1%; top: 2%; rotate: -7deg; z-index: 1; animation-delay: .05s; }
+[data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos .photo:nth-child(3) { left: 25%; top: 4%; rotate: 6deg; z-index: 2; animation-delay: .15s; }
+@keyframes rc-fan-in { from { translate: 0 16px; opacity: 0; } }
+@media (min-width: 861px) {
+  [data-page="pg-referral-cards"] [data-block="b-rc-head"] .wrap { grid-template-areas: "words fan" "actions fan"; grid-template-rows: auto 1fr; }
+  [data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-words { grid-area: words; }
+  [data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-actions { grid-area: actions; align-self: start; }
+  [data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos { grid-area: fan; align-self: center; }
+}
+@media (max-width: 860px) {
+[data-page="pg-referral-cards"] [data-block="b-rc-head"] .pagehead-photos { grid-row: auto; margin-top: var(--s5); }
+}
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */
 @supports (grid-template-rows: subgrid) {

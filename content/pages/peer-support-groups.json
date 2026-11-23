@@ -116,38 +116,76 @@
       "id": "b-pg-talk",
       "type": "words",
       "title": "In peer support groups, Badgers talk about:",
+      "invite": "Tap a topic to hear how a student might put it.",
       "items": [
         {
           "text": "Stress",
-          "size": 2
+          "size": 2,
+          "quote": "I have three exams in two days and I cannot tell what to study first."
         },
-        "Homesickness",
-        "Food security",
-        "Family dynamics",
+        {
+          "text": "Homesickness",
+          "quote": "I love it here, but some nights I really miss my family and my dog."
+        },
+        {
+          "text": "Food security",
+          "quote": "My meal plan runs low before the end of the semester, and groceries add up fast."
+        },
+        {
+          "text": "Family dynamics",
+          "quote": "My parents mean well, but every call home turns into questions about my grades."
+        },
         {
           "text": "Relationships",
-          "size": 2
+          "size": 2,
+          "quote": "My partner and I are at different schools now, and the distance is harder than I thought."
         },
         {
           "text": "Identity",
-          "size": 2
+          "size": 2,
+          "quote": "I am still figuring out how all the parts of who I am fit together here."
         },
         {
           "text": "Housing",
-          "size": 3
+          "size": 3,
+          "quote": "Everyone is signing leases already and I do not even know who I want to live with."
         },
-        "Roommates",
-        "Sleep",
-        "Friendships",
+        {
+          "text": "Roommates",
+          "quote": "My roommate's alarm goes off at six every morning, and I do not know how to bring it up."
+        },
+        {
+          "text": "Sleep",
+          "quote": "I stay up way too late studying and then I can barely get up for my morning class."
+        },
+        {
+          "text": "Friendships",
+          "quote": "I know a lot of people here, but I am still looking for my people."
+        },
         {
           "text": "Academic challenges",
-          "size": 2
+          "size": 2,
+          "quote": "I did really well in high school, and my first midterm grade here really shook me."
         },
-        "Imposter syndrome",
-        "Winter blues",
-        "Drinking culture",
-        "Career pressure"
-      ]
+        {
+          "text": "Imposter syndrome",
+          "quote": "Everyone in my classes seems so sure of themselves. I keep wondering if I belong here."
+        },
+        {
+          "text": "Winter blues",
+          "quote": "By February it feels like it has been dark and cold forever, and my motivation is gone."
+        },
+        {
+          "text": "Drinking culture",
+          "quote": "It feels like everything social here involves drinking, and that is not really my thing."
+        },
+        {
+          "text": "Career pressure",
+          "quote": "Everyone around me already has an internship lined up, and I have not even started applying."
+        }
+      ],
+      "exampleLabel": "An example of how a student might put it:",
+      "closeLabel": "Close"
     },
     {
       "id": "b-pg-activities",

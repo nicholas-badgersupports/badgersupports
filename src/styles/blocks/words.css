@@ -1,7 +1,8 @@
 /* The word cloud (src/render/blocks/words.mjs): what Badgers bring to a group. */
-.words { background: var(--paper-deep); }
-.words h2 { color: var(--accent); text-align: center; margin-inline: auto; max-width: 22ch; margin-bottom: var(--s5); }
-.word-cloud { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--s2) var(--s3); padding: 0; max-width: 60rem; margin-inline: auto; }
+.words { background: var(--paper-deep); padding-block: calc(var(--s7) + var(--s4)); }
+.words h2 { color: var(--accent); text-align: center; margin-inline: auto; max-width: 22ch; margin-bottom: var(--s3); }
+.words-invite { text-align: center; font-weight: 700; color: var(--ink); margin: 0 auto var(--s5); }
+.word-cloud { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--s3); padding: 0; max-width: 64rem; margin-inline: auto; }
 .word-cloud li { font-family: var(--font-display); font-weight: 800; line-height: 1.1; text-transform: uppercase; letter-spacing: .02em; border-radius: var(--r-chip); padding: .35em .9em .25em; }
 .word-cloud .w-1 { font-size: var(--fs-body); }
 .word-cloud .w-2 { font-size: var(--fs-h3); }
@@ -10,3 +11,39 @@
 .word-cloud .tone-2 { border: 2px solid var(--accent); color: var(--accent); background: var(--paper); }
 .word-cloud .tone-3 { background: var(--accent-tint); color: var(--ink); }
 .words-note { margin: var(--s4) auto 0; text-align: center; color: var(--muted); }
+
+/* A word with an example quote is a button wearing the word's own chip: the chip's size,
+   colour and shape stay on the list item, and the button fills it, so a tappable word and a
+   plain one stand in the same row looking alike. Pointing lifts the chip a step; pressing
+   dips it. */
+.word-cloud li:has(> .word-pill) { padding: 0; transition: translate var(--t) var(--ease-out), box-shadow var(--t) var(--ease-out); }
+.word-cloud li:has(> .word-pill):hover { translate: 0 -2px; box-shadow: var(--lift); }
+.word-pill { display: block; width: 100%; padding: .35em .9em .25em; background: none; border: 0; border-radius: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; cursor: pointer; }
+.word-pill:active { scale: .96; }
+
+/* The entrance (words.js adds .words-anim as the section nears, .words-in as it arrives):
+   the words rise and fade in, one after another, once. The hidden start lives only inside
+   the no-preference query and is only ever applied by the script, which itself stands down
+   for reduced motion — so a visitor who asks for less motion, or whose browser runs no
+   script, always sees the words standing still. */
+@media (prefers-reduced-motion: no-preference) {
+  .words-anim .word-cloud li { opacity: 0; }
+  .words-anim.words-in .word-cloud li { animation: word-rise .55s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 45ms); }
+}
+@keyframes word-rise { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
+
+/* The example-quote pop-up: the resource list's dialog shape (blocks.css, .res-dialog)
+   in this section's own dress. */
+.words-dialog { width: min(32rem, calc(100vw - 2 * var(--s4))); max-height: min(40rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
+.words-dialog::backdrop { background: var(--scrim); }
+.words-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); padding: var(--s4) var(--s4) var(--s2) var(--s5); }
+.words-dialog-head h3 { margin: 0; padding-top: var(--s1); font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 800; line-height: 1.2; text-transform: uppercase; letter-spacing: .02em; color: var(--accent); }
+.words-close { flex: none; display: inline-flex; align-items: center; gap: .35rem; }
+.words-dialog-body { display: grid; gap: var(--s2); padding: 0 var(--s5) var(--s5); }
+.words-dialog-example { margin: 0; color: var(--muted); font-size: var(--fs-small); }
+.words-quote { margin: 0; font-size: var(--fs-h3); font-weight: 600; line-height: 1.4; }
+@media (max-width: 560px) {
+  .words-dialog { width: 100%; max-width: 100%; max-height: 85dvh; margin: auto 0 0; border-radius: var(--r-card) var(--r-card) 0 0; }
+  .words-dialog-head { padding-left: var(--s4); }
+  .words-dialog-body { padding: 0 var(--s4) var(--s5); }
+}

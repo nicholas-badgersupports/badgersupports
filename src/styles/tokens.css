@@ -79,6 +79,45 @@
   --workshops-tint: #DCEAF3;
   --workshops-wash: #DCEAF3;
 
+  /* resource topic colours (preview, 23 Nov 2026): each of Connect's sixteen resource
+     categories in a colour family the site already wears — the program colours and the
+     ribbon palette, deepened with color-mix where the ribbon shade is too light to read.
+     The plain name is the deep shade (text, edges); -tint is the light fill behind it.
+     A card or dialog names its primary category in data-cat; blocks.css turns that into
+     --topic and --topic-tint for everything inside. */
+  --topic-mental_emotional_health: var(--peer);
+  --topic-mental_emotional_health-tint: var(--peer-tint);
+  --topic-food_essential_needs: var(--danger);
+  --topic-food_essential_needs-tint: var(--danger-tint);
+  --topic-housing: var(--workshops);
+  --topic-housing-tint: var(--workshops-tint);
+  --topic-safety_survivor_support: var(--red);
+  --topic-safety_survivor_support-tint: var(--red-tint);
+  --topic-financial_support: color-mix(in srgb, var(--khaki) 55%, var(--ink-deep));
+  --topic-financial_support-tint: color-mix(in srgb, var(--khaki) 25%, #FFFFFF);
+  --topic-physical_health: color-mix(in srgb, var(--ribbon-teal) 78%, var(--ink-deep));
+  --topic-physical_health-tint: color-mix(in srgb, var(--ribbon-teal) 15%, #FFFFFF);
+  --topic-academic_learning: var(--ribbon-blue);
+  --topic-academic_learning-tint: color-mix(in srgb, var(--ribbon-blue) 12%, #FFFFFF);
+  --topic-identity_belonging: var(--craft);
+  --topic-identity_belonging-tint: var(--craft-tint);
+  --topic-navigation_general: var(--ink);
+  --topic-navigation_general-tint: var(--paper-deep);
+  --topic-career_employment: var(--ribbon-maroon);
+  --topic-career_employment-tint: color-mix(in srgb, var(--ribbon-maroon) 14%, #FFFFFF);
+  --topic-parenting_child_care: color-mix(in srgb, var(--ribbon-pink) 52%, var(--ink-deep));
+  --topic-parenting_child_care-tint: color-mix(in srgb, var(--ribbon-pink) 18%, #FFFFFF);
+  --topic-legal_rights: color-mix(in srgb, var(--ribbon-purple) 55%, var(--ink-deep));
+  --topic-legal_rights-tint: color-mix(in srgb, var(--ribbon-purple) 16%, #FFFFFF);
+  --topic-disability_access: color-mix(in srgb, var(--ribbon-jade) 85%, var(--ink-deep));
+  --topic-disability_access-tint: color-mix(in srgb, var(--ribbon-jade) 14%, #FFFFFF);
+  --topic-technology_access: color-mix(in srgb, var(--ribbon-light-blue) 55%, var(--ink-deep));
+  --topic-technology_access-tint: color-mix(in srgb, var(--ribbon-light-blue) 16%, #FFFFFF);
+  --topic-transportation: color-mix(in srgb, var(--ribbon-gold) 52%, var(--ink-deep));
+  --topic-transportation-tint: color-mix(in srgb, var(--ribbon-gold) 22%, #FFFFFF);
+  --topic-research_creation: color-mix(in srgb, var(--ribbon-periwinkle) 58%, var(--ink-deep));
+  --topic-research_creation-tint: color-mix(in srgb, var(--ribbon-periwinkle) 20%, #FFFFFF);
+
   /* the colour a section draws in: brand red unless a program says otherwise */
   --accent: var(--red);
   --accent-deep: var(--red-deep);

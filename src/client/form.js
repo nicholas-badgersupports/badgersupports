@@ -143,6 +143,15 @@ function makeStepper(form, def) {
   const submit = form.querySelector("[data-submit]");
   if (!nav || !reviewBox || !back || !next || !submit) return null;
   const sections = [...form.querySelectorAll("[data-section]")].map((el) => ({ id: el.dataset.section, el }));
+  /* A step whose only required answer is one tick, or one choice, moves on when that
+     answer is given, so the step shows no Continue button. */
+  const lone = new Map();
+  for (const s of sections) {
+    const qs = allQuestions(def).filter(({ section }) => section.id === s.id).map(({ q }) => q);
+    if (qs.length === 1 && (qs[0].type === "confirm" || qs[0].type === "agree")) lone.set(s.id, qs[0].id);
+    else { const req = qs.filter((q) => q.required); if (req.length === 1 && req[0].type === "choice") lone.set(s.id, req[0].id); }
+  }
+  const loneAnswered = () => !validateAnswers(def, rawFrom(form, def)).errors[lone.get(current)];
   const eyebrow = (parent, before) => {
     const eb = Object.assign(document.createElement("span"), { className: "step-eyebrow" });
     parent.insertBefore(eb, before);
@@ -177,7 +186,7 @@ function makeStepper(form, def) {
       else link.removeAttribute("aria-current");
     }
     back.hidden = at <= 0;
-    next.hidden = id === REVIEW;
+    next.hidden = id === REVIEW || (lone.has(id) && !loneAnswered());
     submit.hidden = id !== REVIEW;
     submit.className = "btn";
     if (focus) {
@@ -230,7 +239,7 @@ function makeStepper(form, def) {
     if (link) show(link.dataset.stepLink, { focus: true });
   });
   back.addEventListener("click", () => { const ids = steps(); show(ids[Math.max(0, ids.indexOf(current) - 1)], { focus: true }); });
-  next.addEventListener("click", () => {
+  const goNext = () => {
     const check = validateAnswers(def, rawFrom(form, def));
     const mine = {};
     for (const { section, q } of allQuestions(def)) if (section.id === current && check.errors[q.id]) mine[q.id] = check.errors[q.id];
@@ -238,6 +247,11 @@ function makeStepper(form, def) {
     clearErrors(form);
     const ids = steps();
     show(ids[Math.min(ids.length - 1, ids.indexOf(current) + 1)], { focus: true });
+  };
+  next.addEventListener("click", goNext);
+  form.addEventListener("change", (e) => {
+    if (!lone.has(current)) return;
+    if (e.target.closest(`.field[data-q="${lone.get(current)}"]`)) setTimeout(goNext, 0);
   });
   form.classList.add("is-stepped");
   nav.hidden = false;
@@ -391,7 +405,7 @@ function formDraft(form, def) {
   row.dataset.formDraft = "";
   const clear = Object.assign(document.createElement("button"), { type: "button", className: "btn btn--quiet", textContent: t("form.draft.clear") });
   row.append(Object.assign(document.createElement("span"), { textContent: t("form.draft.note") }), clear);
-  form.querySelector(".form-actions")?.append(row);
+  form.querySelector(".form-actions")?.before(row);
   let held = false;
   const show = () => { row.hidden = !held; };
 

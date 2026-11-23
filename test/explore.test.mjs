@@ -1,7 +1,7 @@
 /* Explore Campus, writer B's items: the Resource Finder's source labels and approval gate
-   (EXPLORE-C-RESOURCE-FINDER, public half), the Academic Support Navigator's tree
-   (EXPLORE-G-ACADEMIC-NAV) and Discover Classes by Interest (EXPLORE-F-CLASSES).
-   Each item's acceptance lines from docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md are the tests. */
+   (EXPLORE-C-RESOURCE-FINDER, public half) and Discover Classes by Interest (EXPLORE-F-CLASSES).
+   Each item's acceptance lines from docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md are the tests.
+   The Academic Support Navigator (EXPLORE-G) was removed on 23 Nov 2026; its tests went with it. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -11,7 +11,6 @@ import { build, loadContent, ROOT } from "../ops/build.mjs";
 import { makeContext } from "../src/render/context.mjs";
 import { renderBlock } from "../src/render/registry.mjs";
 import { resourceVisible } from "../src/render/blocks/resources.mjs";
-import { navigatorProblems, navigatorResourceProblems } from "../src/render/blocks/navigator.mjs";
 import { normalizeCourses, prevTermCode, termWalk } from "../ops/courses.mjs";
 
 const OUT = path.join(ROOT, "local", "test-build-explore");
@@ -81,54 +80,6 @@ test("EXPLORE-C: a fixture export shows the own record and the approved KB artic
   assert.equal(card("kb-unapproved"), "", "the unapproved KB record is not rendered");
   assert.match(card("own-marked"), /Source:<\/span> Badger Supports/, "the list's own records are labelled too when the export marks them");
   assert.match(page, /3 Resources/, "the count announced is the count shown");
-});
-
-/* ---------- EXPLORE-G: the Academic Support Navigator ---------- */
-
-/* The redesign folded the navigator into the Resource Finder page (15 Nov 2026): the
- * block lives at the head of /resources/ now, and its old page is gone. */
-const navBlock = read("content/pages/resources.json").blocks.find((b) => b.type === "navigator");
-const clone = (x) => structuredClone(x);
-
-test("EXPLORE-G: the shipped tree joins up, and every leaf names a resource the library holds", () => {
-  assert.deepEqual(navigatorProblems(navBlock), []);
-  assert.deepEqual(navigatorResourceProblems(navBlock, fixtureResources), []);
-  const leaves = navBlock.steps.flatMap((s) => s.options.filter((o) => o.results));
-  assert.ok(leaves.length >= 5, "the tree has real leaves");
-  for (const leaf of leaves) assert.ok(leaf.results.length >= 1, "every leaf resolves to at least one approved resource");
-});
-
-test("EXPLORE-G: a tree that does not join up, or names an unknown resource, is refused", () => {
-  const both = clone(navBlock); both.steps[0].options[0].next = "course";
-  assert.match(navigatorProblems(both).join(), /goes to one place/, "a choice cannot go to a step and a set of resources");
-  const missing = clone(navBlock); missing.steps[0].options[2].next = "nowhere";
-  assert.match(navigatorProblems(missing).join(), /which is not a step/);
-  const orphan = clone(navBlock); orphan.steps.push({ id: "lost", prompt: "Lost?", options: [{ id: "xx", label: "X", results: ["greater-university-tutoring-service"] }] });
-  assert.match(navigatorProblems(orphan).join(), /not reachable from the first step/);
-  const dead = clone(navBlock); dead.steps[1].options = [{ id: "loop", label: "Loop", next: "course" }];
-  assert.match(navigatorProblems(dead).join(), /can never reach a set of resources/);
-  const unknown = clone(navBlock); unknown.steps[0].options[0].results = ["no-such-resource"];
-  assert.match(navigatorResourceProblems(unknown, fixtureResources).join(), /which the resource library does not hold/, "a test fails on an unknown id");
-});
-
-test("EXPLORE-G: the built page walks to real cards, and the full finder is linked at every step", () => {
-  assert.ok(built);
-  /* The walk stands on /resources/ now, over the list it points to; its old page is not
-   * built, and its old address redirects to the questions (redesign, 15 Nov 2026). */
-  assert.ok(!fs.existsSync(path.join(OUT, "explore/academic-support/index.html")), "the navigator's old page is not built");
-  const redirects = fs.readFileSync(path.join(OUT, "_redirects"), "utf8");
-  assert.match(redirects, /^\/explore\/academic-support {2}\/resources\/#b-res-nav {2}301$/m, "the old address lands on the questions");
-  const page = builtPage("resources");
-  const section = page.slice(page.indexOf("data-navigator"), page.indexOf("</section>", page.indexOf("data-navigator")));
-  const panels = [...section.matchAll(/data-nav-panel/g)].length;
-  assert.equal(panels, 11, "the opening panel, two questions and eight sets of results");
-  assert.match(section, /data-nav-intro/, "the walk opens on its introduction");
-  assert.match(section, /This tool points you to resources and their official contacts; it is not academic advising\./, "the not-advising note rides on the opening panel, word for word");
-  assert.equal([...section.matchAll(/href="#b-res-list"/g)].length, panels, "See All Resources is present at every step, and on this page it scrolls to the list");
-  assert.equal([...section.matchAll(/data-nav-res="greater-university-tutoring-service"/g)].length, 3, "tutoring ends on the tutoring service from three paths");
-  assert.match(section, /data-nav-res="mcburney-disability-resource-center"/, "accommodations end on McBurney");
-  assert.match(section, /data-nav-go="b-res-nav-step-course"/, "the course choice goes to the second question");
-  assert.doesNotMatch(section, /<input|<textarea|<select/, "no free-text personal data is asked for");
 });
 
 /* ---------- EXPLORE-F: Discover Classes by Interest ---------- */

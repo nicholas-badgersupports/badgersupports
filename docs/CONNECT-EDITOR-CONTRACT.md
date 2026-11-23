@@ -388,17 +388,6 @@ Reads: `resources`, `resourcesSample`, `resourcesUpdated`, `resourcesState` · a
 | `feedback` | one or more paragraphs |  |
 | `feedbackLink` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 
-### Academic Support Navigator — `navigator`
-
-Reads: `resources` · analytics: `none` · photos load lazy · browser module `navigator.js`
-
-| Field | Type | |
-|---|---|---|
-| `title` | one line of text | **required** |
-| `lead` | one line of text |  |
-| `note` | one line of text |  |
-| `steps` | the navigator's steps, in order; the first is where the walk starts. Each step has an `id`, its question (`prompt`) and its choices (`options`); each choice has an `id`, its words (`label`), and goes to one place: a next step (`next`, another step's id) or a set of resources (`results`, ids from the resource library). Every step must be reachable from the first and able to reach a set of resources | **required** |
-
 ### Discover Classes by Interest — `courses`
 
 Reads: `courses`, `courseInterests`, `coursesSample`, `coursesUpdated` · analytics: `none` · photos load lazy · browser module `courses.js`
@@ -602,7 +591,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-971 keys. Keys are permanent. Required text cannot be published empty and must keep each
+966 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -1640,16 +1629,6 @@ the site adds the markup.
 | `classes.browse` | Browse {{label}} | On the classes page: on an interest tile, the way into that interest's courses. | `{{label}}` |
 | `classes.group.all` | All | On the classes page: the availability button that shows an interest's courses whether or not they are offered now. |  |
 | `classes.availability` | Availability | On the classes page: the spoken name of the availability buttons. |  |
-
-### Academic Support Navigator (5)
-
-| Key | Default | Where it shows | |
-|---|---|---|---|
-| `navigator.back` | Back | On the Academic Support Navigator: the button that returns to the question before. |  |
-| `navigator.startOver` | Start Over | On the Academic Support Navigator: the button that returns to the first question. |  |
-| `navigator.all` | See All Resources | On the Academic Support Navigator: the link to the full Resource Finder, present at every step. |  |
-| `navigator.results` | Resources That Fit | On the Academic Support Navigator: the heading over the resources a finished path leads to. |  |
-| `navigator.start` | Start the two questions | On the Academic Support Navigator: the button on the opening panel that begins the questions. |  |
 
 ## Also edited in Connect
 

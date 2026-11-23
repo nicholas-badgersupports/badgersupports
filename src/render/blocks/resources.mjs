@@ -73,7 +73,7 @@ const PAGE = 12;
 const KEYPAD = { A: 2, B: 2, C: 2, D: 3, E: 3, F: 3, G: 4, H: 4, I: 4, J: 5, K: 5, L: 5, M: 6, N: 6, O: 6, P: 7, Q: 7, R: 7, S: 7, T: 8, U: 8, V: 8, W: 9, X: 9, Y: 9, Z: 9 };
 
 /* A number spelt in letters ("414-939-HOPE") dials each letter as its key; Connect's digits-only
-   rule would dial six digits. The navigator's short cards dial by the same rule. */
+   rule would dial six digits. */
 export const tel = (phone) => "tel:" + String(phone).toUpperCase().replace(/[A-Z]/g, (c) => KEYPAD[c]).replace(/[^0-9+]/g, "");
 
 function buttonLabel(action, ctx) {

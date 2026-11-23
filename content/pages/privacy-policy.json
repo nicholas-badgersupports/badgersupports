@@ -10,7 +10,11 @@
       "id": "b-pp-head",
       "type": "pagehead",
       "title": "Privacy Policy",
-      "lead": "Effective date / last updated: July 18, 2026",
+      "lead": "Effective date / last updated: July 18, 2026"
+    },
+    {
+      "id": "b-pp-intro",
+      "type": "text",
       "body": [
         "Thank you for visiting badgersupports.org. Badger Supports (“we,” “us,” or “our”) is a registered student organization (RSO) at the University of Wisconsin–Madison. We are committed to protecting your privacy and, for that reason, have adopted this Privacy Policy to explain our data collection, use, and disclosure practices for badgersupports.org and the programs, events, and services we operate (collectively, the “Services”).",
         "As used in this Privacy Policy, “Personal Information” means information that can identify, or reasonably be linked to, an individual — for example, your name, email address, or the contents of a form you submit. “Non-Personal Information” means information that does not, on its own, identify an individual, such as aggregated usage statistics."

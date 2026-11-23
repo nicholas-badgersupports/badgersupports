@@ -1776,6 +1776,14 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   [data-page="pg-request-a-program"] [data-block="b-rp-head"] .pagehead-actions { grid-area: actions; align-self: start; }
   [data-page="pg-request-a-program"] [data-block="b-rp-head"] .pagehead-photos { grid-area: photos; }
 }
+/* the FAQ hero heading sits centred in its column (approved 23 November 2026): the heading is
+   the only words in the hero, and standing at the top of its column it pooled 238px of dead
+   room under itself against the photographs; centred, the same room splits evenly above and
+   below it and reads as breathing room. Nothing is added and nothing else moves. Desktop
+   only - on a phone the heading already leads the stack with no side column. */
+@media (min-width: 861px) {
+  [data-page="pg-about-faq"] [data-block="b-faq-head"] .pagehead-words { align-self: center; }
+}
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */
 @supports (grid-template-rows: subgrid) {

@@ -2433,7 +2433,7 @@ test("Workshop comparison saves, restores and previews new and old fields throug
   const { as } = await pagesSite(t), editor = await as(["site.edit"]);
   const id = "pg-request-a-workshop", address = "/join/request-a-workshop/";
   const source = await sourceOf(editor, id);
-  const targets = ["b-rw-networks/body/0", "b-rw-networks/audience", "b-rw-networks/disclosure", "b-rw-networks/preview/0", "b-rw-head/links/0/label"];
+  const targets = ["b-rw-networks/body/0", "b-rw-networks/audience", "b-rw-networks/items/0/text", "b-rw-networks/links/0/label", "b-rw-head/links/0/label"];
   for (const [i, path] of targets.entries()) {
     const target = `page:${id}:${path}`, row = source.find(e => e.target === target);
     assert.ok(row, target);
@@ -2464,7 +2464,7 @@ test("Workshop comparison saves, restores and previews new and old fields throug
   for (const part of ["networks", "selfcare", "advocacy", "housing"]) {
     assert.match(html, new RegExp(`href="#b-rw-${part}"`));
     assert.match(html, new RegExp(`id="b-rw-${part}"`));
-    assert.match(html, new RegExp(`id="b-rw-${part}-preview"`));
+    assert.doesNotMatch(html, new RegExp(`id="b-rw-${part}-preview"`));
   }
   assert.equal((await visit("/example-workshop-comparison/")).status, 404);
   assert.match(html, /topic=support_network/);

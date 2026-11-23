@@ -533,7 +533,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 /* its own page: the doors stand on the red */
 /* the band is drawn by the heading's own box, so it grows with the photos beside the heading and
    always ends a little way into the doors */
-.involve.is-page { position: relative; padding-top: var(--s6); overflow-x: clip; --band-below: 7.5rem; }
+.involve.is-page { position: relative; padding-top: var(--s6); overflow-x: clip; --band-below: 6rem; }
 .involve.is-page .involve-head { position: relative; isolation: isolate; }
 .involve.is-page .involve-head::before {
   content: ""; position: absolute; z-index: -1;

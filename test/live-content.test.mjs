@@ -10,11 +10,7 @@ import { useConnect, hmacB64u, signatureBase } from '../netlify/lib/connect.mjs'
 import { useStore, memoryStore, usePurger } from '../netlify/lib/published.mjs';
 import { usePhotoStore, memoryPhotoStore, PHOTO_CACHE_FRESH_MS } from '../netlify/lib/team-photo-cache.mjs';
 import { handlePage, useDist } from '../netlify/lib/pages.mjs';
-<<<<<<< HEAD
-import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS, RESOURCES_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
-=======
-import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, teamPhotoRefreshResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
->>>>>>> public-team-image-speed-2026-11-23
+import { sharedNow, forgetShared, forgetSharedEverywhere, teamPhotoResponse, teamPhotoRefreshResponse, SHARED_FRESH_MS, WALL_FALLBACK_MS, RESOURCES_FALLBACK_MS } from '../netlify/lib/live-content.mjs';
 import { WALL_DEFAULT_NOTES } from '../ops/wall-defaults.mjs';
 import { publicUpload } from '../netlify/lib/live-team.mjs';
 

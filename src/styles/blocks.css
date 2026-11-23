@@ -1675,6 +1675,24 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 }
 @media (max-width: 860px) {
   [data-page="pg-referral-cards"] [data-block="b-rc-propose"] .wrap { padding: var(--s4); }
+/* the FAQ opening's words are the heading alone, with no lead or body under it: centred against
+   the photographs, the general pagehead left the heading floating in the middle of its column,
+   dead room above and below it, and the button row sat far under both columns on the grid gap
+   and its own top margin together. Here the heading stands at the top of its column, level with
+   the photographs' top edge; the button row follows at the one grid gap, with its own margin
+   off; and the quiet pills take the big button's height, so the four buttons share one height
+   and one line instead of three short pills centred against a taller button. On a phone the
+   general order puts the photographs first; here the heading leads, then the photographs, then
+   the buttons, each one grid gap apart like the rest. */
+[data-page="pg-about-faq"] [data-block="b-faq-head"] .pagehead-actions { margin-top: 0; }
+[data-page="pg-about-faq"] [data-block="b-faq-head"] .pagehead-actions .go { min-height: 60px; }
+@media (min-width: 861px) {
+  [data-page="pg-about-faq"] [data-block="b-faq-head"] .wrap { align-items: start; gap: var(--s5) var(--s6); }
+}
+@media (max-width: 860px) {
+  [data-page="pg-about-faq"] [data-block="b-faq-head"] .pagehead-words { grid-row: 1; }
+  [data-page="pg-about-faq"] [data-block="b-faq-head"] .pagehead-photos { grid-row: 2; }
+  [data-page="pg-about-faq"] [data-block="b-faq-head"] .pagehead-actions { grid-row: 3; }
 }
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */

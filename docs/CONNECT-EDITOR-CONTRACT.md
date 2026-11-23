@@ -651,7 +651,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-1091 keys. Keys are permanent. Required text cannot be published empty and must keep each
+1090 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (30)
@@ -836,11 +836,10 @@ the site adds the markup.
 | `time.am` | AM | After a morning time. |  |
 | `time.pm` | PM | After an afternoon or evening time. |  |
 
-### Forms (98)
+### Forms (97)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
-| `form.rule` | Every question is required unless it says optional. | Line above the questions of a form that has required questions. | optional |
 | `form.optional` | (optional) | After the label of a question that can be left empty. |  |
 | `form.other` | Other | The write-in answer on a question that allows one. |  |
 | `form.otherLabel` | {{label}}: other | The write-in box's name, read by screen readers. | `{{label}}` |

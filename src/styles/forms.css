@@ -186,8 +186,6 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .form-notice h2, .form-notice h3 { font: 700 1.25rem/1.3 var(--font-body); margin-bottom: var(--s2); }
 .form-notice[hidden] { display: none; }
 
-.bss-form > .form-rule { margin-top: var(--s4); }
-
 /* The review: every answer the form will send, each with its way back to its question. */
 .form-review { padding: var(--s5) 0 var(--s2); }
 .form-review[hidden] { display: none; }

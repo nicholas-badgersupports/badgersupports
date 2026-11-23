@@ -16,9 +16,9 @@ test("an edit cannot blank required text or drop a placeholder", () => {
   assert.ok(textProblems(registry, { "form.send": "  " }).some((p) => p.includes("cannot be published empty")));
   assert.ok(textProblems(registry, { "strip.count": "{{n}}" }).some((p) => p.includes("must keep {{total}}")));
   assert.ok(textProblems(registry, { "form.sendd": "x" }).some((p) => p.includes("not a text key")));
-  const table = resolveText(registry, { "form.send": "", "form.rule": "", "header.menu": "Browse" });
+  const table = resolveText(registry, { "form.send": "", "form.closedNow.body": "", "header.menu": "Browse" });
   assert.equal(table["form.send"], "Send", "a blanked required text falls back to its default");
-  assert.equal(table["form.rule"], "", "optional text may be published empty");
+  assert.equal(table["form.closedNow.body"], "", "optional text may be published empty");
   assert.equal(table["header.menu"], "Browse");
 });
 

@@ -595,12 +595,6 @@
       "text": "PM",
       "where": "After an afternoon or evening time."
     },
-    "form.rule": {
-      "group": "forms",
-      "text": "Every question is required unless it says optional.",
-      "where": "Line above the questions of a form that has required questions.",
-      "optional": true
-    },
     "form.optional": {
       "group": "forms",
       "text": "(optional)",

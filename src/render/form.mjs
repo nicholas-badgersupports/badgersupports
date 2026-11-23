@@ -181,7 +181,6 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
   const stepped = steppedForm(def);
   const inner = level + 1;
   const anyErrors = Object.keys(errors).length > 0;
-  const anyRequired = allQuestions(def).some(({ q }) => q.required);
   const needsUpload = !preview && allQuestions(def).some(({ q }) => q.type === "file");
   const ordered = allQuestions(def).filter(({ q }) => errors[q.id]);
   const shown = notice || (preview ? { title: t("form.preview.title"), text: t("form.preview.body") } : null);
@@ -208,7 +207,6 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
     <ul data-error-list>${ordered.map(({ q }) => html`<li><a href="#${fid(q)}">${errorText(errors[q.id], q, t)}</a></li>`)}</ul>
   </div>
   <div${attrs({ class: "form-notice", "data-form-notice": "", hidden: !shown })}>${shown ? html`${inner === 3 ? html`<h3>${shown.title}</h3>` : html`<h2>${shown.title}</h2>`}<p>${shown.text}</p>${shown.kept?.length ? html`<p>${shown.keptText}</p><dl class="kept-answers">${shown.kept.map((a) => html`<dt>${a.label}</dt><dd>${a.value}</dd>`)}</dl>` : ""}` : ""}</div>
-  ${anyRequired && t("form.rule") ? html`<p class="form-rule">${t("form.rule")}</p>` : ""}
   ${stepNav}
   ${def.sections.map((s) => section(def, s, values, errors, t, ctx, inner))}
   ${review}

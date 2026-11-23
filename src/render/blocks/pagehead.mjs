@@ -18,7 +18,12 @@
    the directory itself shows. The entries are not the opening's to store — the page render
    (src/render/layout.mjs) reads them from the page's directory block as it stands in that
    render and hands them over as `sideTitle`/`sideItems`, so the card can never drift from the
-   directory below it. No new words: the card is the directory's own, begun in the band. */
+   directory below it. No new words: the card is the directory's own, begun in the band.
+
+   `side: "press"` fans the page's three newest article cards in the same place. The fan's
+   cards are drawn from the page's own card lists when the page is laid out (pressFan below,
+   called from the layout), never written into the page's JSON, so an article added below
+   moves the fan with it. */
 
 import { html } from "../html.mjs";
 import { link } from "../context.mjs";
@@ -36,13 +41,62 @@ function sidePanel(b) {
       </li>`)}</ul>
     </div>`;
   }
+  if (b.side === "press") {
+    const items = b.sideItems || [];
+    if (!items.length) return "";
+    return html`<div class="pagehead-side is-press">${items.map((it) => html`<article class="ph-card">
+        <p class="ph-card-title">${it.title}</p>
+        ${it.line ? html`<p class="ph-card-line">${it.line}</p>` : ""}
+      </article>`)}</div>`;
+  }
+  return "";
+}
+
+const MONTHS = { january: 0, february: 1, march: 2, april: 3, may: 4, june: 5, july: 6, august: 7, september: 8, october: 9, november: 10, december: 11 };
+
+/* A card item's date, from the first of its lines that reads as one ("October 10, 2026", or
+   "September 2024" with no day): the line as written, and when it falls. No such line, no date —
+   the item is not an article and never fans. */
+function articleDate(item) {
+  for (const line of item.lines || []) {
+    const m = /^([A-Za-z]+) (?:(\d{1,2}), )?(\d{4})$/.exec(String(line).trim());
+    if (!m || !(m[1].toLowerCase() in MONTHS)) continue;
+    return { line: String(line), when: Date.UTC(+m[3], MONTHS[m[1].toLowerCase()], m[2] ? +m[2] : 1) };
+  }
+  return null;
+}
+
+/* The press fan's cards: the newest three dated items among the page's own card lists, newest
+   first, each as it appears below — its title and its date line. */
+export function pressFan(blocks) {
+  const dated = [];
+  for (const b of blocks || []) {
+    if (b.type !== "cards") continue;
+    for (const item of b.items || []) {
+      if (!item.title) continue;
+      const d = articleDate(item);
+      if (d) dated.push({ title: item.title, line: d.line, when: d.when });
+    }
+  }
+  return dated.sort((a, b) => b.when - a.when).slice(0, 3).map(({ title, line }) => ({ title, line }));
+}
+
+function sidePanel(b) {
+  if (b.side === "press") {
+    const items = b.sideItems || [];
+    if (!items.length) return "";
+    return html`<div class="pagehead-side is-press">${items.map((it) => html`<article class="ph-card">
+        <p class="ph-card-title">${it.title}</p>
+        ${it.line ? html`<p class="ph-card-line">${it.line}</p>` : ""}
+      </article>`)}</div>`;
+  }
   return "";
 }
 
 export default {
   type: "pagehead",
   label: "Page opening",
-  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory" },
+  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory|press" },
   data: [],
   analytics: "page",
   loading: "eager",

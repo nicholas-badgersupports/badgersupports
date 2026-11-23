@@ -323,8 +323,12 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `firstLinkPrimary` | on or off |  |
 | `whole` | on or off |  |
+<<<<<<< HEAD
 | `heroRibbons` | a short list of words |  |
 | `side` | one of `none`, `directory` |  |
+=======
+| `side` | one of `none`, `press` |  |
+>>>>>>> public-press-hero-2026-11-23
 
 ### Photo cards — `cards`
 

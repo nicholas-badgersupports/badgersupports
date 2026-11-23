@@ -18,7 +18,8 @@
         }
       ],
       "lead": "News coverage of Badger Supports and Badger Support Network. For media inquiries, contact us below.",
-      "firstLinkPrimary": true
+      "firstLinkPrimary": true,
+      "side": "press"
     },
     {
       "id": "b-pr-herald",

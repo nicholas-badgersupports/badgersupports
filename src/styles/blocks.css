@@ -2194,3 +2194,41 @@ body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }
 @media (max-width: 860px) {
   .pagehead-side { margin-top: var(--s4); }
 }
+
+/* A page opening with no photos can stand a panel of the page's own material in the band's
+   right side (pagehead `side`); the words and buttons stack in the left column, as on the team
+   and resources openings. */
+@media (min-width: 861px) {
+  .pagehead.has-side .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-areas: "words side" "actions side"; grid-template-rows: auto 1fr; }
+  .pagehead.has-side .pagehead-words { grid-area: words; }
+  .pagehead.has-side .pagehead-actions { grid-area: actions; align-self: start; margin-top: var(--s4); flex-wrap: wrap; overflow-x: visible; }
+  .pagehead.has-side .pagehead-side { grid-area: side; align-self: center; }
+}
+/* a page whose opening has no buttons: the words take the left column on their own */
+.pagehead.has-side:not(:has(.pagehead-actions)) .wrap { grid-template-areas: "words side"; grid-template-rows: auto; }
+
+@media (max-width: 860px) {
+  .pagehead-side { margin-top: var(--s4); }
+}
+
+/* The press fan: the page's three newest article cards, fanned like the referral cards, rising
+   in once on load (back cards first); nothing loops, nothing moves on scroll. The two back
+   cards are partly covered by the front one — they are decoration, not reading. */
+.pagehead-side.is-press { position: relative; display: block; aspect-ratio: 8 / 5; }
+.ph-card { position: absolute; width: 62%; background: var(--paper); border: var(--rule-line); border-radius: var(--r-card); padding: var(--s4); box-shadow: var(--lift); animation: ph-fan-in .7s var(--ease-out, ease-out) both; }
+.ph-card-title { font-weight: 700; line-height: 1.35; }
+.ph-card-line { margin-top: var(--s2); font-size: var(--fs-small); color: var(--muted); }
+.ph-card:nth-child(1) { left: 19%; top: 26%; rotate: -1.5deg; z-index: 3; animation-delay: .3s; }
+.ph-card:nth-child(2) { left: 2%; top: 2%; rotate: -7deg; z-index: 1; animation-delay: .05s; }
+.ph-card:nth-child(3) { left: 38%; top: 0; rotate: 6deg; z-index: 2; animation-delay: .15s; }
+@keyframes ph-fan-in { from { translate: 0 16px; opacity: 0; } }
+
+/* On a phone the fan's cards stack flat: no fan, no motion. */
+@media (max-width: 860px) {
+  .pagehead-side.is-press { aspect-ratio: auto; display: grid; gap: var(--s3); }
+  .pagehead-side.is-press .ph-card { position: static; width: 100%; rotate: none; animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-card { animation: none; }
+}

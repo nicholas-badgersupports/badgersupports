@@ -142,6 +142,11 @@ function makeStepper(form, def) {
   const next = form.querySelector("[data-step-next]");
   const submit = form.querySelector("[data-submit]");
   if (!nav || !reviewBox || !back || !next || !submit) return null;
+  const nowCount = nav.querySelector("[data-step-now-count]");
+  const nowName = nav.querySelector("[data-step-now-name]");
+  const progress = nav.querySelector("[data-step-progress]");
+  if (!nowCount || !nowName || !progress) return null;
+  const names = new Map([...nav.querySelectorAll("[data-step-item]")].map((li) => [li.dataset.stepItem, li.querySelector(".step-name")?.textContent || ""]));
   const sections = [...form.querySelectorAll("[data-section]")].map((el) => ({ id: el.dataset.section, el }));
   /* A step whose only required answer is one tick, or one choice, moves on when that
      answer is given, so the step shows no Continue button. */
@@ -177,14 +182,25 @@ function makeStepper(form, def) {
     reviewBox.hidden = id !== REVIEW;
     reviewEyebrow.textContent = t("form.step.of", { n: ids.length, m: ids.length });
     if (id === REVIEW) buildReview();
+    /* A step is finished when Continue's own test finds nothing wanting in it, and the chips
+       wear that: a finished step's chip fills with the tint, the step being read wears the
+       full colour, and a step not yet finished is drawn as a plain marker, not a control.
+       Every chip still jumps — Send, on the last step, checks the whole form. */
+    const { errors } = validateAnswers(def, rawFrom(form, def));
+    const open = new Set(allQuestions(def).filter(({ q }) => errors[q.id]).map(({ section }) => section.id));
     for (const li of nav.querySelectorAll("[data-step-item]")) {
       const mine = li.dataset.stepItem;
       li.hidden = !ids.includes(mine);
       const link = li.querySelector("[data-step-link]");
-      link.classList.toggle("is-done", ids.indexOf(mine) >= 0 && ids.indexOf(mine) < at);
+      const done = mine === REVIEW ? open.size === 0 : !open.has(mine);
+      link.classList.toggle("is-done", done && mine !== id);
+      link.classList.toggle("is-todo", !done && mine !== id);
       if (mine === id) link.setAttribute("aria-current", "step");
       else link.removeAttribute("aria-current");
     }
+    nowCount.textContent = t("form.step.of", { n: at + 1, m: ids.length });
+    nowName.textContent = names.get(id) || "";
+    progress.style.width = `${Math.round(((at + 1) / ids.length) * 100)}%`;
     back.hidden = at <= 0;
     next.hidden = id === REVIEW || (lone.has(id) && !loneAnswered());
     submit.hidden = id !== REVIEW;

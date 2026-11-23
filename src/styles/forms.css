@@ -80,24 +80,31 @@ html:not(.js) .bss-form.has-uploads { display: none; }
 .prose-more > summary:hover { color: var(--accent-deep); }
 .prose-more-body { padding-top: var(--s1); }
 
-/* The steps of a long form, across the top of the body: a numbered circle and the section's own
-   name. A finished step's circle fills with the tint; the step being read wears the full colour.
-   JavaScript shows and hides them (render/form.mjs renders them hidden); without it the form is
-   one scroll and there is nothing to name. */
+/* The place of a long form, across the top of the body: one line naming the step being read,
+   a thin bar showing how far through the form stands, and a row of numbered chips. A finished
+   step's circle fills with the tint; the step being read wears the full colour; a step not yet
+   finished is a plain marker, so it does not read as a control. JavaScript shows and hides
+   them (render/form.mjs renders them hidden); without it the form is one scroll and there is
+   nothing to name. */
 .form-steps { margin-top: var(--s4); }
-.form-steps ol { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); list-style: none; margin: 0; padding: 0; }
+.step-now { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 var(--s2); }
+.step-now-count { font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.step-now-name { font: 700 var(--fs-body)/1.3 var(--font-body); color: var(--ink); }
+.step-progress { height: .25rem; margin-bottom: var(--s2); background: var(--line); border-radius: 999px; overflow: hidden; }
+.step-progress > span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: inherit; transition: width var(--t) var(--ease-out); }
+.form-steps ol { display: flex; flex-wrap: wrap; gap: var(--s1); list-style: none; margin: 0; padding: 0; }
 .form-steps li[hidden] { display: none; }
 .step-link {
-  display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .3rem .7rem .3rem .3rem;
-  background: none; border: 0; border-radius: var(--r-chip); cursor: pointer;
-  font: 700 var(--fs-small)/1.25 var(--font-body); color: var(--muted); text-align: left;
+  display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  background: none; border: 0; border-radius: 50%; cursor: pointer;
 }
 .step-dot {
   display: inline-grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: 50%;
   border: 2px solid var(--rule-strong); background: var(--paper); color: var(--ink); font-size: var(--fs-small);
 }
 .step-link.is-done .step-dot { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-deep); }
-.step-link[aria-current="step"] { color: var(--ink); }
+.step-link.is-todo { cursor: default; }
+.step-link.is-todo .step-dot { background: none; border-color: var(--line); color: var(--muted); }
 .step-link[aria-current="step"] .step-dot { background: var(--accent); border-color: var(--accent); color: var(--cream); }
 /* "Step 2 of 5" above a step's own title, and above the review's. */
 .step-eyebrow { display: block; font: 800 .875rem/1.3 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s1); }

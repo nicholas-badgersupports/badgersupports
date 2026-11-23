@@ -189,10 +189,13 @@ export function renderForm(def, { t, values = {}, errors = {}, notice = null, id
     ${inner === 3 ? html`<h3>${t("form.upload.alternativeTitle")}</h3>` : html`<h2>${t("form.upload.alternativeTitle")}</h2>`}<p>${t("form.upload.alternativeBody")}</p>
     ${ctx ? go(ctx, def.workflow?.connectQueue?.startsWith("hiring.") ? "mailto:hiring@badgersupports.org" : "mailto:directors@badgersupports.org", t("form.upload.alternativeContact"), "mail") : html`<a href="mailto:directors@badgersupports.org">${t("form.upload.alternativeContact")}</a>`}
   </div></noscript>` : "";
-  /* A long form's steps, named across the top, and its last step, which lists the answers before
-     they are sent. Both are hidden until the browser walks them (src/client/form.js); without
-     JavaScript the form is the one scroll it has always been, and neither is shown. */
-  const stepNav = stepped ? html`<nav class="form-steps" data-step-nav hidden aria-label="${t("form.steps.label")}"><ol>${def.sections.map((s, i) => html`<li data-step-item="${s.id}"><button type="button" class="step-link" data-step-link="${s.id}"><span class="step-dot" aria-hidden="true">${i + 1}</span><span class="step-name">${s.title}</span></button></li>`)}<li data-step-item="__review"><button type="button" class="step-link" data-step-link="__review"><span class="step-dot" aria-hidden="true">${def.sections.length + 1}</span><span class="step-name">${t("form.review.title")}</span></button></li></ol></nav>` : "";
+  /* A long form's place, across the top of its body: one line naming the step being read, a
+     thin bar showing how far through the form stands, and a row of numbered chips — a step's
+     name rides inside its chip for screen readers, and the chips jump back to a step already
+     reached. Its last step lists the answers before they are sent. Both are hidden until the
+     browser walks them (src/client/form.js); without JavaScript the form is the one scroll
+     it has always been, and neither is shown. */
+  const stepNav = stepped ? html`<nav class="form-steps" data-step-nav hidden aria-label="${t("form.steps.label")}"><p class="step-now"><span class="step-now-count" data-step-now-count></span><span class="step-now-name" data-step-now-name></span></p><div class="step-progress" aria-hidden="true"><span data-step-progress></span></div><ol>${def.sections.map((s, i) => html`<li data-step-item="${s.id}"><button type="button" class="step-link" data-step-link="${s.id}"><span class="step-dot" aria-hidden="true">${i + 1}</span><span class="step-name sr-only">${s.title}</span></button></li>`)}<li data-step-item="__review"><button type="button" class="step-link" data-step-link="__review"><span class="step-dot" aria-hidden="true">${def.sections.length + 1}</span><span class="step-name sr-only">${t("form.review.title")}</span></button></li></ol></nav>` : "";
   const review = stepped ? html`<div class="form-review" data-review hidden>${inner === 3 ? html`<h3>${t("form.review.title")}</h3>` : html`<h2>${t("form.review.title")}</h2>`}<p>${t("form.review.intro")}</p><div data-review-list></div></div>` : "";
   // Server validation chooses applicable conditional questions with and without client scripting.
   return html`${alternate}<form${attrs({ class: needsUpload ? "bss-form has-uploads" : "bss-form", method: "post", novalidate: true, action: `/api/forms/${def.key}/submit`, "data-form": def.key, "data-version": def.version, "data-level": level > 1 ? String(level) : null, "data-preview": preview ? "" : null, "data-stepped": stepped ? "" : null })}>

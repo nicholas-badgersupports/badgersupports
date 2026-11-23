@@ -76,7 +76,7 @@
             "icon": "down"
           },
           "program": "peer",
-          "photo": "m-peer-group-cards"
+          "photo": "m-peer-group-talking"
         },
         {
           "id": "training",
@@ -91,7 +91,7 @@
             "href": "#b-rp-training",
             "icon": "down"
           },
-          "photo": "m-workshop-directors-roundtable"
+          "photo": "m-training-volunteers"
         },
         {
           "id": "housing",

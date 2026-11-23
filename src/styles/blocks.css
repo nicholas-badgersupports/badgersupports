@@ -2015,3 +2015,34 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 @media (max-width: 860px) {
   .expect.is-boxed .wrap, .program.is-boxed .wrap { padding: var(--s4); }
 }
+
+/* ============ stranded hero buttons (23 Nov 2026) ============
+   Six pages take the team/resources treatment: words and buttons stacked in the left column,
+   photos keeping the band's height on the right. In the narrower left column the button row
+   wraps, so a button and every pill stay visible instead of running off a scrolling strip. */
+@media (min-width: 861px) {
+  [data-page="pg-request-a-workshop"] [data-block="b-rw-head"] .wrap,
+  [data-page="pg-email-list"] [data-block="b-el-head"] .wrap,
+  [data-page="pg-alumni"] [data-block="b-al-head"] .wrap,
+  [data-page="pg-btw-navigating-housing"] [data-block="b-btw-nh-head"] .wrap,
+  [data-page="pg-btw-stress-management-self-care"] [data-block="b-btw-sc-head"] .wrap,
+  [data-page="pg-btw-support-networks"] [data-block="b-btw-sn-head"] .wrap { grid-template-areas: "words photos" "actions photos"; grid-template-rows: auto 1fr; }
+  [data-page="pg-request-a-workshop"] [data-block="b-rw-head"] .pagehead-words,
+  [data-page="pg-email-list"] [data-block="b-el-head"] .pagehead-words,
+  [data-page="pg-alumni"] [data-block="b-al-head"] .pagehead-words,
+  [data-page="pg-btw-navigating-housing"] [data-block="b-btw-nh-head"] .pagehead-words,
+  [data-page="pg-btw-stress-management-self-care"] [data-block="b-btw-sc-head"] .pagehead-words,
+  [data-page="pg-btw-support-networks"] [data-block="b-btw-sn-head"] .pagehead-words { grid-area: words; }
+  [data-page="pg-request-a-workshop"] [data-block="b-rw-head"] .pagehead-actions,
+  [data-page="pg-email-list"] [data-block="b-el-head"] .pagehead-actions,
+  [data-page="pg-alumni"] [data-block="b-al-head"] .pagehead-actions,
+  [data-page="pg-btw-navigating-housing"] [data-block="b-btw-nh-head"] .pagehead-actions,
+  [data-page="pg-btw-stress-management-self-care"] [data-block="b-btw-sc-head"] .pagehead-actions,
+  [data-page="pg-btw-support-networks"] [data-block="b-btw-sn-head"] .pagehead-actions { grid-area: actions; align-self: start; margin-top: var(--s4); flex-wrap: wrap; overflow-x: visible; }
+  [data-page="pg-request-a-workshop"] [data-block="b-rw-head"] .pagehead-photos,
+  [data-page="pg-email-list"] [data-block="b-el-head"] .pagehead-photos,
+  [data-page="pg-alumni"] [data-block="b-al-head"] .pagehead-photos,
+  [data-page="pg-btw-navigating-housing"] [data-block="b-btw-nh-head"] .pagehead-photos,
+  [data-page="pg-btw-stress-management-self-care"] [data-block="b-btw-sc-head"] .pagehead-photos,
+  [data-page="pg-btw-support-networks"] [data-block="b-btw-sn-head"] .pagehead-photos { grid-area: photos; }
+}

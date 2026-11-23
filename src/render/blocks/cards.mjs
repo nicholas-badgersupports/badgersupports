@@ -8,6 +8,10 @@
                    whose words must stay whole
    A card without a photo shows its icon, when it names one, large on the red tint; no other photo
    stands in for a missing one.
+   `boxed` sets the whole block in one panel, as the week sits in its panel: the heading, the
+   steps and the cards inside a single card on the band, so a page that asks a visitor to do
+   something in order reads as one thing. In a boxed block a card with both a photo and an icon
+   keeps the icon, as a badge on the photo, so a program keeps its mark when a photo joins it.
    One "whole" row is the Craft Nights gallery (craftGallery): it answers to Site Settings — how many
    of its photos show, and whether they stand in one row of smaller pictures or in the grid. */
 
@@ -35,7 +39,7 @@ const fillCounts = (line, ctx) => {
 export default {
   type: "cards",
   label: "Photo cards",
-  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", steps: "termlist", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other", craftGallery: "boolean" },
+  fields: { variant: "choice:days|activities|whole!", title: "text!", lead: "text", steps: "termlist", items: "cards!", links: "link[]", source: "source", program: "choice:peer|craft|workshops|other", craftGallery: "boolean", boxed: "boolean" },
   data: ["events", "resources"],
   refresh: b => b.variant === "days" && b.source === "events",
   analytics: "page",
@@ -74,12 +78,12 @@ export default {
     const craft = b.craftGallery ? craftGallery(ctx.site) : null;
     const items = craft ? b.items.slice(0, craft.count) : b.items;
     const sizes = craft?.layout === "row" ? `(max-width: 560px) 62vw, 13rem` : `(max-width: 560px) calc(100vw - 2rem), (max-width: 960px) calc(50vw - 2rem), ${{ days: "17rem", whole: "36rem" }[b.variant] || "23rem"}`;
-    return html`<section id="${b.anchor || b.id}" class="${["cards", `cards--${b.variant}`, "band", craft ? "cards--craft" : "", craft ? `cards--craft-${craft.layout}` : ""].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
+    return html`<section id="${b.anchor || b.id}" class="${["cards", `cards--${b.variant}`, "band", craft ? "cards--craft" : "", craft ? `cards--craft-${craft.layout}` : "", b.boxed ? "is-boxed" : ""].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">${b.boxed ? html`<div class="cards-panel">` : ""}
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.lead ? html`<p class="lead">${b.lead}</p>` : ""}
   ${steps(b)}
   <ul class="card-list"${craft?.layout === "row" ? html` tabindex="0"` : ""}>${items.map((it) => html`<li${attrs({ class: it.photo ? "card has-photo" : "card", id: it.id, "data-program": it.program || null, "data-brand": /^https:\/\/(?:www\.)?badgerspill\.org(?:\/|$)/.test(it.link?.href || "") ? "spill" : null })}>
-    ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
+    ${it.photo ? html`<div class="photo">${picture(ctx, it.photo, { sizes })}${b.boxed && it.icon ? html`<div class="card-mark card-mark--badge">${icon(it.icon)}</div>` : ""}</div>` : it.icon ? html`<div class="card-mark">${icon(it.icon)}</div>` : ""}
     <div class="card-words">
       <h3>${it.title}</h3>
       ${(it.lines || []).map((l) => html`<p class="card-line">${fillCounts(l, ctx)}</p>`)}
@@ -88,7 +92,7 @@ export default {
     </div>
   </li>`)}</ul>
   ${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}
-</div></section>`;
+${b.boxed ? html`</div>` : ""}</div></section>`;
   },
 };
 

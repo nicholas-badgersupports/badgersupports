@@ -348,6 +348,7 @@ Reads: `events`, `resources` · analytics: `page` · photos load lazy
 | `source` | a named data source (events, wall notes, team, resources) |  |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 | `craftGallery` | on or off |  |
+| `boxed` | on or off |  |
 
 ### Word cloud — `words`
 

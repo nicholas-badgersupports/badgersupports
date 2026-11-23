@@ -81,3 +81,21 @@
    below the stuck part row, not under it. The page's own scroll padding clears the header;
    this margin clears the row — its offset and height together come to about --s7. */
 .era-chapter, .is-era { scroll-margin-top: var(--s7); }
+/* The text block's panel variant (src/render/blocks/text.mjs): a page's closing notes set in a
+   card — the style guide's white card on the cream, a 1px line and the soft lift. The heading
+   sits over the same rule the plain block draws, then the paragraphs stand side by side as
+   parts, each under its icon in a circle of the program's tint. On a phone the parts stack,
+   parted by a hairline. */
+.text-block.is-panel .note-panel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--lift); padding: var(--s5) var(--s6); }
+.note-panel > h2 { margin: 0 0 var(--s4); }
+.note-parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5) var(--s6); padding-top: var(--s4); border-top: var(--rule-line); }
+.note-part { display: grid; gap: var(--s3); align-content: start; }
+.note-part p { margin: 0; }
+.note-ic { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--accent-tint); color: var(--accent); }
+.note-ic .ic { width: 1.5rem; height: 1.5rem; }
+.note-panel .more-links { margin-top: var(--s4); }
+@media (max-width: 760px) {
+  .text-block.is-panel .note-panel { padding: var(--s4); }
+  .note-parts { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
+  .note-part + .note-part { border-top: var(--hairline); padding-top: var(--s4); }
+}

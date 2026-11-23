@@ -267,6 +267,11 @@
     {
       "id": "b-pg-note",
       "type": "text",
+      "variant": "panel",
+      "icons": [
+        "chat",
+        "account"
+      ],
       "title": "Good to Know",
       "body": [
         "Peer support groups are not a substitute for ongoing counseling and do not provide mental health treatment. Facilitators listen to shared concerns, support reflection and problem solving, and help participants experience what peer support can feel like in a supportive, student led setting.",

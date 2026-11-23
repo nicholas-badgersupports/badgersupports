@@ -143,10 +143,11 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 |---|---|---|
 | `title` | one line of text |  |
 | `heading` | one of `h1`, `h2` |  |
-| `variant` | one of `plain`, `era` |  |
+| `variant` | one of `plain`, `era`, `panel` |  |
 | `body` | one or more paragraphs | **required** |
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
+| `icons` | a short list of words |  |
 
 ### Timeline chapter — `chapter`
 

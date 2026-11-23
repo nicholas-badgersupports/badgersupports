@@ -3483,6 +3483,11 @@
       "text": "Additional Details",
       "where": "On the resource list: the button on a card that opens the rest of its record."
     },
+    "history.more": {
+      "group": "page",
+      "text": "Read more",
+      "where": "On the History page: the words on an era card that open the rest of its text."
+    },
     "resources.view": {
       "group": "resources",
       "text": "View Details",

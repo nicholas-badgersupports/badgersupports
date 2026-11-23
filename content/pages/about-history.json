@@ -20,8 +20,39 @@
       ]
     },
     {
+      "id": "b-history-chapter-1",
+      "type": "chapter",
+      "anchor": "chapter-2019",
+      "title": "2019–2021",
+      "jump": [
+        {
+          "label": "2019–2021",
+          "href": "#chapter-2019"
+        },
+        {
+          "label": "2025",
+          "href": "#chapter-2025"
+        },
+        {
+          "label": "2026",
+          "href": "#chapter-2026"
+        }
+      ],
+      "items": [
+        {
+          "label": "Student-led beginnings",
+          "href": "#student-led-beginnings"
+        },
+        {
+          "label": "Building a peer-support community",
+          "href": "#peer-support-community"
+        }
+      ]
+    },
+    {
       "id": "b-history-era-1",
       "type": "text",
+      "anchor": "student-led-beginnings",
       "title": "2019–2021 — Student-led beginnings",
       "body": [
         "Badger Support Network brought students together to share everyday experiences and find understanding among peers. Its founders wanted students to have a community that could make a large campus feel more familiar and connected.",
@@ -38,6 +69,7 @@
     {
       "id": "b-history-era-2",
       "type": "text",
+      "anchor": "peer-support-community",
       "title": "Early 2020s — Building a peer-support community",
       "body": [
         "Successive student teams carried the work forward through weekly groups, social events, and preparation for peer leaders. Students made time to listen to one another and created opportunities to connect beyond the classroom.",
@@ -46,8 +78,29 @@
       "variant": "era"
     },
     {
+      "id": "b-history-chapter-2",
+      "type": "chapter",
+      "anchor": "chapter-2025",
+      "title": "2025",
+      "items": [
+        {
+          "label": "Becoming Badger Supports",
+          "href": "#becoming-badger-supports"
+        },
+        {
+          "label": "A closer partnership with UHS",
+          "href": "#uhs-partnership"
+        },
+        {
+          "label": "More ways to connect on campus",
+          "href": "#more-ways-to-connect"
+        }
+      ]
+    },
+    {
       "id": "b-history-era-3",
       "type": "text",
+      "anchor": "becoming-badger-supports",
       "title": "2025 — Becoming Badger Supports",
       "body": [
         "In 2025, student leaders adopted the name Badger Supports and began a new chapter as an independent organization, ending their affiliation with The Support Network. The new name reflected a growing range of student-created programs shaped around life at UW–Madison.",
@@ -58,6 +111,7 @@
     {
       "id": "b-history-era-4",
       "type": "text",
+      "anchor": "uhs-partnership",
       "title": "2025 — A closer partnership with UHS",
       "body": [
         "Badger Supports deepened its relationship with University Health Services, building on years of support from UHS staff. Students found more opportunities to learn from people working in campus mental health, share ideas, and bring other student organizations into their work.",
@@ -68,6 +122,7 @@
     {
       "id": "b-history-era-5",
       "type": "text",
+      "anchor": "more-ways-to-connect",
       "title": "2025–2026 — More ways to connect on campus",
       "body": [
         "Student teams developed workshops on stress management, self-advocacy, building support networks, and navigating housing in Madison. Resources such as the Navigating Housing toolkit, pocket-sized referral cards, and solidarity ribbons gave students things they could use and share beyond an event.",
@@ -80,8 +135,29 @@
       ]
     },
     {
+      "id": "b-history-chapter-3",
+      "type": "chapter",
+      "anchor": "chapter-2026",
+      "title": "2026",
+      "items": [
+        {
+          "label": "Growing the student team",
+          "href": "#growing-the-team"
+        },
+        {
+          "label": "Welcoming Badger SPILL",
+          "href": "#welcoming-badger-spill"
+        },
+        {
+          "label": "Supporting fellow Badgers",
+          "href": "#today"
+        }
+      ]
+    },
+    {
       "id": "b-history-era-6",
       "type": "text",
+      "anchor": "growing-the-team",
       "title": "2026 — Growing the student team",
       "body": [
         "Support from UW–Madison’s student government helped create paid student roles alongside volunteer opportunities. Students gained more ways to contribute their time and skills to peer support, events, and the work behind the programs.",
@@ -95,6 +171,7 @@
     {
       "id": "b-history-era-7",
       "type": "text",
+      "anchor": "welcoming-badger-spill",
       "title": "Summer 2026 — Welcoming Badger SPILL",
       "body": [
         "Badger Supports welcomed Badger SPILL as a program, bringing an established tradition of written peer support into its wider student community. SPILL’s own story began at UW–Madison in 2009. Joining Badger Supports gave it a shared organizational home while preserving its name and student-to-student focus.",
@@ -105,6 +182,7 @@
     {
       "id": "b-history-era-8",
       "type": "text",
+      "anchor": "today",
       "title": "Today — Supporting fellow Badgers",
       "body": [
         "Today, Badger Supports brings students together through conversation, creativity, and learning. Its programs continue to grow through student ideas, feedback, and relationships across campus.",

@@ -1125,6 +1125,36 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   .text-block.has-side .wrap { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* The What We Do page's last two text blocks are one section in two parts (owner, 23 Nov 2026:
+   side by side, the arrangement read as a mess): "More Ways We Show Up" and the dual-registration
+   note under it. Here they stack. The heading takes the size of the page's other section headings
+   with its own line under it; the four initiative pills sit in an even two-column grid, one gap
+   (--s3) on both axes, each pill filling its cell with its badge at the end. Each pill wears its
+   own colour of the site's accent families, laid on the way a program's colour is laid on: the
+   pill's --accent, --accent-deep and --accent-tint are reset, and the pill, its badge and its
+   hover follow. Navigating Housing is a workshop series, so it wears the workshops blue;
+   Resource Referral Cards keeps the brand red the section already wore; Colors on Campus
+   Ribbons wears the craft lilac; Dogs on Call wears the peer green. The note closes the section
+   in a card — the site's own card, white with the card line and the soft lift, held to the text
+   measure — with its words and its button inside it. The two bands' facing paddings collapse to
+   a single --s6 step, so no dead field opens between the parts. On a phone the grid goes to one
+   column, the same --s3 gap throughout, and the card follows under it. */
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] { padding-bottom: var(--s6); }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .wrap { display: block; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .wrap > h2 { font-size: var(--fs-h2); }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .text-body { padding-top: 0; border-top: 0; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links > li { display: flex; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links .go { flex: 1; justify-content: space-between; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links > li:nth-child(1) .go { --accent: var(--workshops); --accent-deep: var(--workshops-deep); --accent-tint: var(--workshops-tint); }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links > li:nth-child(3) .go { --accent: var(--craft); --accent-deep: var(--craft-deep); --accent-tint: var(--craft-tint); }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links > li:nth-child(4) .go { --accent: var(--peer); --accent-deep: var(--peer-deep); --accent-tint: var(--peer-tint); }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-uhs"] { padding-top: 0; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-uhs"] .text-body { max-width: var(--measure); background: var(--paper); border: 2px solid var(--line); border-radius: var(--r-panel); box-shadow: var(--lift); padding: var(--s4) var(--s5); }
+@media (max-width: 700px) {
+  [data-page="pg-about-what-we-do"] [data-block="b-wwd-more"] .more-links { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* ============ event cards: Connect's event card, so the two read as one family ============
    The filled date block on the left in the same place on every card, so a column of cards scans as
    a column of dates; the photo, when there is one, in its own column; then the body, with one row of

@@ -12,7 +12,8 @@ import { mapTeam, readConnectFeed, readFeedRules } from "../ops/connect-feed.mjs
 import { useConnect, sha256Hex } from "../netlify/lib/connect.mjs";
 import { useContent } from "../netlify/lib/content.mjs";
 import { useDist, handlePage, previewResponse, PAGE_CACHE } from "../netlify/lib/pages.mjs";
-import { teamPhoto, publicUpload } from "../netlify/lib/live-team.mjs";
+import { teamPhoto, publicUpload, refreshTeamPhoto } from "../netlify/lib/live-team.mjs";
+import { usePhotoStore, memoryPhotoStore } from "../netlify/lib/team-photo-cache.mjs";
 import { handle } from "../netlify/lib/router.mjs";
 import { freshPglite, useAdapter, q } from "../netlify/lib/db.mjs";
 import { memoryStore, useStore, usePurger } from "../netlify/lib/published.mjs";
@@ -70,7 +71,7 @@ useAdapter(db);
 after(async () => { useConnect(null); usePurger(null); await db.end(); });
 function reset() {
   reply = structuredClone(BASE); down = false; photoKind = "ok"; photoBytes = PNG; calls = []; photoCalls = [];
-  useConnect(cfg); useContent(SERVER); useDist(OUT); useStore(memoryStore());
+  useConnect(cfg); useContent(SERVER); useDist(OUT); useStore(memoryStore()); usePhotoStore(memoryPhotoStore());
 }
 const visit = (p) => handlePage(new Request(`http://site.test${p}`), { today: "2026-11-03" });
 
@@ -198,6 +199,17 @@ test("uploaded photos added or replaced after build use only the fixed same-orig
   const newer = "c".repeat(32); p.photo.url = `${cfg.url}/p/${ID}?v=${newer}`;
   body = await (await visit(`/about/our-team/${p.slug}/`)).text();
   assert.ok(body.includes(`?v=${newer}`));
+  /* The changed photo is read from Connect on its first view under the new version — no
+     rebuild, no publish — and afterwards is served from the copy this site keeps. */
+  photoBytes = Buffer.concat([PNG, Buffer.from([7])]);
+  const fresh = await teamPhoto(new Request(`http://site.test/api/team-photo/${ID}?v=${newer}`), ID);
+  assert.equal(fresh.status, 200);
+  assert.deepEqual(Buffer.from(await fresh.arrayBuffer()), photoBytes, "the new version is read from Connect on first view, with no rebuild");
+  const fetchCount = photoCalls.length;
+  const again = await teamPhoto(new Request(`http://site.test/api/team-photo/${ID}?v=${newer}`), ID);
+  assert.deepEqual(Buffer.from(await again.arrayBuffer()), photoBytes);
+  assert.equal(photoCalls.length, fetchCount, "and then served from the copy this site keeps");
+  photoBytes = PNG;
   assert.equal((await teamPhoto(new Request(`http://site.test/api/team-photo/${ID}?v=${VERSION}`), ID)).status, 200, "the producer returns its current eligible upload for older version queries");
   p.photo.url = `${cfg.url}/p/${ID}`;
   assert.equal((await teamPhoto(new Request(`http://site.test/api/team-photo/${ID}`), ID)).status, 200, "older unversioned uploaded URLs remain bounded");
@@ -363,7 +375,7 @@ test("a slow opening portrait never blocks another visible row", async () => {
   } finally { await browser.close(); }
 });
 
-test("photo revalidation checks current bytes and eligibility before returning a bodyless match", async () => {
+test("a kept photo answers revalidation itself; a change arrives by a new version or Connect's refresh", async () => {
   reset();
   reply.people = [{ id: ID, slug: "conditional-fictional", name: "Conditional Fictional", group: "staff", published: true, bio: [], photo: { url: `${cfg.url}/p/${ID}?v=${VERSION}` } }];
   const request = (tag, method = "GET") => teamPhoto(new Request(`http://site.test/api/team-photo/${ID}?v=${VERSION}`, { method, headers: tag ? { "if-none-match": tag } : {} }), ID);
@@ -372,10 +384,12 @@ test("photo revalidation checks current bytes and eligibility before returning a
   const etag = initial.headers.get("etag");
   assert.match(etag, /^"[0-9a-f]{64}"$/);
   assert.deepEqual(Buffer.from(await initial.arrayBuffer()), PNG);
+  /* The validated copy is kept on this site now, so a matching validator is answered from it:
+     Connect is not asked again, and the answer's headers are the first answer's. */
   for (const method of ["GET", "HEAD"]) for (const tag of [etag, `W/${etag}`, `"other,tag", W/${etag}`, "*"]) {
     const count = photoCalls.length, response = await request(tag, method);
     assert.equal(response.status, 304, `${method} ${tag}`);
-    assert.equal(photoCalls.length, count + 1, "matching validators still consult the current source");
+    assert.equal(photoCalls.length, count, "a kept copy answers its own revalidation");
     assert.equal((await response.arrayBuffer()).byteLength, 0);
     for (const key of ["etag", "cache-control", "netlify-cdn-cache-control", "netlify-vary", "netlify-cache-tag"]) assert.equal(response.headers.get(key), initial.headers.get(key), key);
     assert.equal(response.headers.get("content-length"), null);
@@ -385,24 +399,32 @@ test("photo revalidation checks current bytes and eligibility before returning a
     assert.equal(response.status, 200);
     assert.deepEqual(Buffer.from(await response.arrayBuffer()), PNG);
   }
-  photoBytes = Buffer.concat([PNG, Buffer.from([0x80])]);
-  const binary = await request(etag), firstBinaryTag = binary.headers.get("etag");
-  assert.equal(binary.status, 200);
-  photoBytes = Buffer.concat([PNG, Buffer.from([0x81])]);
-  const changed = await request(firstBinaryTag);
-  assert.equal(changed.status, 200, "changed bytes at the same source URL are sent again");
-  assert.notEqual(changed.headers.get("etag"), firstBinaryTag, "binary bytes cannot be decoded as text before hashing");
-  assert.deepEqual(Buffer.from(await changed.arrayBuffer()), photoBytes);
   const head = await request('"different"', "HEAD");
   assert.equal(head.status, 200); assert.equal((await head.arrayBuffer()).byteLength, 0);
+  /* Changed bytes under the same version are not picked up by asking: the roster names a
+     photo's current version, so a change arrives under a new version — or through the refresh
+     Connect sends, which is what replaces the kept copy here. */
+  photoBytes = Buffer.concat([PNG, Buffer.from([0x80])]);
+  const stillKept = await request(etag);
+  assert.equal(stillKept.status, 304, "the kept copy stands until Connect says the photo changed");
+  assert.equal(await refreshTeamPhoto(ID, VERSION), "ok");
+  const refreshed = await request();
+  assert.equal(refreshed.status, 200);
+  assert.notEqual(refreshed.headers.get("etag"), etag, "binary bytes cannot be decoded as text before hashing");
+  assert.deepEqual(Buffer.from(await refreshed.arrayBuffer()), photoBytes);
+  /* An unversioned ask is never answered from a kept copy: it is read live, with every check
+     the proxy has always made. */
   for (const kind of ["redirect", "svg", "large", "false-raster", "stream-large", "unavailable"]) {
     photoKind = kind;
-    const response = await request("*");
+    const response = await teamPhoto(new Request(`http://site.test/api/team-photo/${ID}`), ID);
     assert.equal(response.status, 502, kind);
     assert.equal(response.headers.get("cache-control"), "no-store");
     assert.equal(response.headers.get("etag"), null);
   }
+  /* A refresh that finds the photo gone — the profile unpublished — drops the kept copy, and
+     the versioned address then answers 404 like any other. */
   photoKind = "ok"; reply.people[0].published = false;
+  assert.equal(await refreshTeamPhoto(ID, VERSION), "gone");
   const revoked = await request(etag);
   assert.equal(revoked.status, 404); assert.equal(revoked.headers.get("cache-control"), "no-store");
   assert.equal(revoked.headers.get("etag"), null);

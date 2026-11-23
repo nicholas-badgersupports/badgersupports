@@ -38,14 +38,13 @@
    of different lengths swap without moving anything below. The swap itself is a short fade
    of the panel's words, restarted by each pick and never in the way of the next one; with
    reduced motion there is no fade at all. */
-.words-panel { max-width: 42rem; margin: var(--s5) auto 0; background: var(--paper); border-radius: var(--r-card); padding: var(--s4) var(--s5); text-align: center; min-height: 11.75rem; }
+.words-panel { max-width: 42rem; margin: var(--s5) auto 0; background: var(--paper); border-radius: var(--r-card); padding: var(--s4) var(--s5); text-align: center; min-height: 9.75rem; }
 .words-panel-topic { margin: 0; font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 800; line-height: 1.2; text-transform: uppercase; letter-spacing: .02em; color: var(--accent); }
-.words-panel-example { margin: var(--s1) 0 0; color: var(--muted); font-size: var(--fs-small); }
 .words-quote { margin: var(--s2) 0 0; font-size: var(--fs-h3); font-weight: 600; line-height: 1.4; }
 @media (prefers-reduced-motion: no-preference) {
   .words-panel.words-swap > * { animation: word-quote-in .15s var(--ease-out) both; }
 }
 @keyframes word-quote-in { from { opacity: 0; translate: 0 6px; } to { opacity: 1; translate: 0 0; } }
 @media (max-width: 560px) {
-  .words-panel { padding: var(--s4); min-height: 16rem; }
+  .words-panel { padding: var(--s4); min-height: 12.5rem; }
 }

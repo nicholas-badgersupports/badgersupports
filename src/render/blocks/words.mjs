@@ -7,7 +7,7 @@
    one panel under the cloud shows the picked word's quote, in place — nothing opens over the page,
    and picking another word swaps the quote at once (words.js). The first quoted word stands picked,
    so the panel is never empty. The quotes are examples written for the page, never a real student's
-   words, and the panel says so. Without JavaScript the words stand as before and the panel shows
+   words. Without JavaScript the words stand as before and the panel shows
    the first word's quote. A words block with no quotes is a plain list, read in order. */
 
 import { html } from "../html.mjs";
@@ -18,7 +18,7 @@ const chip = (w, i) => `w-${Math.min(3, Math.max(1, w.size))} tone-${(i % 3) + 1
 export default {
   type: "words",
   label: "Word cloud",
-  fields: { title: "text!", invite: "text", items: "words!", note: "text", exampleLabel: "text" },
+  fields: { title: "text!", invite: "text", items: "words!", note: "text" },
   data: [],
   styles: "words.css",
   client: "words.js",
@@ -36,7 +36,7 @@ export default {
   <h2 id="${b.id}-h">${b.title}</h2>
   ${b.invite ? html`<p class="words-invite">${b.invite}</p>` : ""}
   ${cloud}
-  ${first >= 0 ? html`<div class="words-panel" role="tabpanel" id="${b.id}-panel" tabindex="0" aria-labelledby="${b.id}-tab-${first}" data-words-panel><p class="words-panel-topic" data-words-ptopic>${items[first].text}</p><p class="words-panel-example">${b.exampleLabel}</p><blockquote class="words-quote" data-words-pquote>${items[first].quote}</blockquote></div>` : ""}
+  ${first >= 0 ? html`<div class="words-panel" role="tabpanel" id="${b.id}-panel" tabindex="0" aria-labelledby="${b.id}-tab-${first}" data-words-panel><p class="words-panel-topic" data-words-ptopic>${items[first].text}</p><blockquote class="words-quote" data-words-pquote>${items[first].quote}</blockquote></div>` : ""}
   ${b.note ? html`<p class="words-note">${b.note}</p>` : ""}
 </div></section>`;
   },
@@ -53,6 +53,5 @@ export function wordProblems(b) {
     if (w && typeof w === "object" && w.quote != null && (typeof w.quote !== "string" || !w.quote.trim())) out.push(`${at}: a quote is words a student might say, or left out`);
   }
   if (!(b.items || []).length) out.push(`${b.id}: a words block needs at least one word`);
-  if ((b.items || []).some((w) => w && typeof w === "object" && w.quote) && !b.exampleLabel) out.push(`${b.id}: a word with a quote needs the panel's exampleLabel`);
   return out;
 }

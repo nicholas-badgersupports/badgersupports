@@ -1530,6 +1530,20 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-actions { grid-area: actions; align-self: start; }
   [data-page="pg-resources"] [data-block="b-res-head"] .pagehead-photos { grid-area: photos; }
 }
+/* the ribbons opening's buttons keep their own row under both columns — its three ways on
+   need the band's whole width — but the row's distance from the poster was charged twice:
+   the wrap's row gap and the row's own margin stacked to 5rem of empty band, and the big
+   button stood 60px tall beside two 44px pills. Here the row follows at its own margin
+   alone, and the pills stand at the big button's height, so the three read as one row; on a
+   phone the stacked pills take the big button's full width and height too (owner, 23 Nov 2026). */
+[data-page="pg-ribbons"] [data-block="b-rb-head"] .pagehead-actions .go { min-height: 60px; }
+@media (min-width: 861px) {
+  [data-page="pg-ribbons"] [data-block="b-rb-head"] .wrap { row-gap: 0; }
+}
+@media (max-width: 860px) {
+  [data-page="pg-ribbons"] [data-block="b-rb-head"] .pagehead-actions { margin-top: 0; }
+  [data-page="pg-ribbons"] [data-block="b-rb-head"] .pagehead-actions .go { width: 100%; }
+}
 /* cards in one row share their three lines, so a role that wraps to two lines (common two to a row
    on a phone) moves its neighbours' photos down with it instead of leaving them out of step */
 @supports (grid-template-rows: subgrid) {

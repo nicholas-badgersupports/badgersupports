@@ -34,6 +34,7 @@
       "body": [
         "The Student Activity Center occupies floors 3–4 of 333 East Campus Mall. Other student services are on the upper floors. Choose a service below, then open its website for current hours, appointments and arrival information."
       ],
+      "linksStyle": "cards",
       "links": [
         {
           "label": "The Hub, Food Pantry and Printing",

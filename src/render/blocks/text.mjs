@@ -5,13 +5,13 @@
    optional photo sits in the card, and consecutive era sections join into one line (styles/blocks/text.css). */
 
 import { html, attrs } from "../html.mjs";
-import { go } from "../context.mjs";
+import { go, link } from "../context.mjs";
 import { picture } from "../media.mjs";
 
 export default {
   type: "text",
   label: "Text",
-  fields: { title: "text", heading: "choice:h1|h2", variant: "choice:plain|era", body: "paragraphs!", links: "link[]", photos: "media[]" },
+  fields: { title: "text", heading: "choice:h1|h2", variant: "choice:plain|era", body: "paragraphs!", links: "link[]", linksStyle: "choice:pills|cards", photos: "media[]" },
   data: [],
   styles: "text.css",
   analytics: "page",
@@ -19,9 +19,18 @@ export default {
   render(b, ctx) {
     const body = Array.isArray(b.body) ? b.body : [b.body];
     if (b.variant === "era" && b.title) return era(b, body, ctx);
-    return html`<section${attrs({ class: b.title && b.heading !== "h1" ? "text-block band has-side" : "text-block band", id: b.anchor || null, "aria-labelledby": b.title ? `${b.id}-h` : null, "data-block": b.id })}><div class="wrap">${b.title ? (b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`) : ""}<div class="text-body">${body.map((p) => html`<p>${p}</p>`)}${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}</div></div></section>`;
+    return html`<section${attrs({ class: b.title && b.heading !== "h1" ? "text-block band has-side" : "text-block band", id: b.anchor || null, "aria-labelledby": b.title ? `${b.id}-h` : null, "data-block": b.id })}><div class="wrap">${b.title ? (b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`) : ""}<div class="text-body">${body.map((p) => html`<p>${p}</p>`)}${linksRow(b, ctx)}</div></div></section>`;
   },
 };
+
+/* A text block's links, in the shape the block asks for: the pill row (the standing shape) or
+   a grid of cards (styles/blocks/text.css). The words and the links are the block's own in
+   every shape. */
+function linksRow(b, ctx) {
+  if (!b.links?.length) return "";
+  if (b.linksStyle === "cards") return html`<ul class="svc-cards">${b.links.map((l) => html`<li>${link(ctx, l.href, l.label, { class: "svc-card", icon: l.icon || "arrow" })}</li>`)}</ul>`;
+  return html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>`;
+}
 
 const ERA_SPLIT = /^(.+?)\s+[—–-]\s+(.+)$/;
 

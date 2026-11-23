@@ -146,6 +146,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `variant` | one of `plain`, `era` |  |
 | `body` | one or more paragraphs | **required** |
 | `links` | several links, in order |  |
+| `linksStyle` | one of `pills`, `cards` |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 
 ### Directions to a room — `directions`

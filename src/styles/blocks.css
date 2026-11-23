@@ -1869,6 +1869,31 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-more-row { display: flex; justify-content: center; margin-top: var(--s5); }
 .res-more-row[hidden] { display: none; }
 .res-count:focus { outline: none; }
+/* Topic colours (preview, 23 Nov 2026; colouring revised the same day): a card, the dialog
+   it opens, and its topic button name the same primary category, and the colour is carried
+   the same way in all three places — a dot in the topic's deep shade beside the topic's
+   name, the topic pill filled with the topic's tint, and a soft wash of the tint behind the
+   dialog's title. No stripe stands on top of anything. The shades are the --topic-* tokens;
+   a card with no category keeps the red it has always had. */
+.res-card[data-cat="mental_emotional_health"], .res-dialog[data-cat="mental_emotional_health"], .res-topic-btn[data-category="mental_emotional_health"] { --topic: var(--topic-mental_emotional_health); --topic-tint: var(--topic-mental_emotional_health-tint); }
+.res-card[data-cat="food_essential_needs"], .res-dialog[data-cat="food_essential_needs"], .res-topic-btn[data-category="food_essential_needs"] { --topic: var(--topic-food_essential_needs); --topic-tint: var(--topic-food_essential_needs-tint); }
+.res-card[data-cat="housing"], .res-dialog[data-cat="housing"], .res-topic-btn[data-category="housing"] { --topic: var(--topic-housing); --topic-tint: var(--topic-housing-tint); }
+.res-card[data-cat="safety_survivor_support"], .res-dialog[data-cat="safety_survivor_support"], .res-topic-btn[data-category="safety_survivor_support"] { --topic: var(--topic-safety_survivor_support); --topic-tint: var(--topic-safety_survivor_support-tint); }
+.res-card[data-cat="financial_support"], .res-dialog[data-cat="financial_support"], .res-topic-btn[data-category="financial_support"] { --topic: var(--topic-financial_support); --topic-tint: var(--topic-financial_support-tint); }
+.res-card[data-cat="physical_health"], .res-dialog[data-cat="physical_health"], .res-topic-btn[data-category="physical_health"] { --topic: var(--topic-physical_health); --topic-tint: var(--topic-physical_health-tint); }
+.res-card[data-cat="academic_learning"], .res-dialog[data-cat="academic_learning"], .res-topic-btn[data-category="academic_learning"] { --topic: var(--topic-academic_learning); --topic-tint: var(--topic-academic_learning-tint); }
+.res-card[data-cat="identity_belonging"], .res-dialog[data-cat="identity_belonging"], .res-topic-btn[data-category="identity_belonging"] { --topic: var(--topic-identity_belonging); --topic-tint: var(--topic-identity_belonging-tint); }
+.res-card[data-cat="navigation_general"], .res-dialog[data-cat="navigation_general"], .res-topic-btn[data-category="navigation_general"] { --topic: var(--topic-navigation_general); --topic-tint: var(--topic-navigation_general-tint); }
+.res-card[data-cat="career_employment"], .res-dialog[data-cat="career_employment"], .res-topic-btn[data-category="career_employment"] { --topic: var(--topic-career_employment); --topic-tint: var(--topic-career_employment-tint); }
+.res-card[data-cat="parenting_child_care"], .res-dialog[data-cat="parenting_child_care"], .res-topic-btn[data-category="parenting_child_care"] { --topic: var(--topic-parenting_child_care); --topic-tint: var(--topic-parenting_child_care-tint); }
+.res-card[data-cat="legal_rights"], .res-dialog[data-cat="legal_rights"], .res-topic-btn[data-category="legal_rights"] { --topic: var(--topic-legal_rights); --topic-tint: var(--topic-legal_rights-tint); }
+.res-card[data-cat="disability_access"], .res-dialog[data-cat="disability_access"], .res-topic-btn[data-category="disability_access"] { --topic: var(--topic-disability_access); --topic-tint: var(--topic-disability_access-tint); }
+.res-card[data-cat="technology_access"], .res-dialog[data-cat="technology_access"], .res-topic-btn[data-category="technology_access"] { --topic: var(--topic-technology_access); --topic-tint: var(--topic-technology_access-tint); }
+.res-card[data-cat="transportation"], .res-dialog[data-cat="transportation"], .res-topic-btn[data-category="transportation"] { --topic: var(--topic-transportation); --topic-tint: var(--topic-transportation-tint); }
+.res-card[data-cat="research_creation"], .res-dialog[data-cat="research_creation"], .res-topic-btn[data-category="research_creation"] { --topic: var(--topic-research_creation); --topic-tint: var(--topic-research_creation-tint); }
+.res-topic-btn[data-category] { display: inline-flex; align-items: center; gap: .5rem; }
+.res-topic-btn[data-category]::before { content: ""; flex: none; width: .65rem; height: .65rem; border-radius: 50%; background: var(--topic, var(--line)); }
+.res-topic-btn[data-category][aria-pressed="true"] { background: var(--topic-tint, var(--accent)); border-color: var(--topic); color: var(--ink); }
 .res-card { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); border: var(--hairline); border-radius: var(--r-card); background: var(--paper); }
 .res-card h3 { font-size: var(--fs-h3); line-height: 1.2; color: var(--accent); margin: 0; }
 .res-what, .res-fit { margin: 0; }
@@ -1877,22 +1902,30 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-lead { font-weight: 700; color: var(--ink); }
 .res-tags { display: flex; flex-wrap: wrap; gap: var(--s1); margin: 0; }
 .res-tag { display: inline-flex; align-items: center; padding: .1rem .6rem; border-radius: var(--r-chip); background: var(--paper-deep); color: var(--muted); font-size: var(--fs-small); font-weight: 700; line-height: 1.6; }
-.res-tag.res-topic { background: var(--accent-tint); color: var(--accent-deep); }
+.res-tag.res-topic { gap: .45rem; background: var(--topic-tint, var(--accent-tint)); color: var(--topic, var(--accent-deep)); }
+.res-tag.res-topic::before { content: ""; flex: none; width: .55rem; height: .55rem; border-radius: 50%; background: var(--topic, var(--accent-deep)); }
+.res-tag--quiet { background: transparent; outline: 1px solid var(--line); outline-offset: -1px; color: var(--muted); font-weight: 600; }
 .res-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin-top: auto; padding-top: var(--s2); }
 .res-go { white-space: nowrap; }
 .res-tel { margin: 0; font-weight: 700; }
-.res-more { flex-basis: 100%; }
+/* The details share their line with the report icons: the element grows along the line,
+   so the pair stands at its end on the same line, and an in-place opening (no JavaScript)
+   keeps the card's measure. */
+.res-more { flex: 1 1 12rem; }
 .res-more > summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; cursor: pointer; }
 .res-more > summary:hover { color: var(--accent-deep); }
 .res-more-body { display: grid; gap: var(--s1); padding-top: var(--s2); font-size: var(--fs-small); }
 .res-more-body p, .res-dialog-body p { margin: 0; overflow-wrap: anywhere; }
-.res-report { display: flex; flex-wrap: wrap; gap: 0 var(--s4); }
-/* The report row stands at the foot of the card, below the details and under a rule, outside
-   the collapsed Additional Details it used to hide in — reporting a wrong fact on a card
-   takes no opening first. */
-.res-card > .res-report { margin: 0; padding-top: var(--s2); border-top: var(--hairline); }
-.res-report a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; }
-.res-report a:hover { color: var(--accent-deep); }
+.res-report { display: flex; flex-wrap: wrap; gap: var(--s2); margin: 0; }
+/* The report pair stands in the card's foot, on the Additional Details line and outside the
+   collapsed details it used to hide in — reporting a wrong fact on a card takes no opening
+   first. Each link is an icon button in the chips' own dress (a flag for a problem, a pencil
+   for an update): the icon alone shows, and the words ride as the link's label and tooltip,
+   so the pair reads as two quiet actions beside the details, not as two more lines of the
+   card's text (preview, 23 Nov 2026; icons only, the same day). */
+.res-report a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: .3rem; border: 2px solid var(--line); border-radius: var(--r-chip); background: var(--paper); color: var(--accent); text-decoration: none; }
+.res-report a:hover { border-color: var(--accent); color: var(--accent-deep); }
+.res-report-ic { flex: none; width: 1.25rem; height: 1.25rem; }
 .res-none { padding: var(--s4); background: var(--accent-tint); border-radius: var(--r-card); max-width: var(--measure); }
 .res-none h3 { font-size: var(--fs-h3); margin: 0 0 var(--s1); }
 .res-none p { margin: 0 0 var(--s2); }
@@ -1904,19 +1937,39 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .res-closing p { margin: 0; }
 .res-closing .btn { white-space: normal; overflow-wrap: anywhere; }
 .res-suggest { margin: 0; }
-.res-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); max-height: min(40rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
+.res-dialog { width: min(36rem, calc(100vw - 2 * var(--s4))); max-height: min(44rem, calc(100dvh - 2 * var(--s4))); padding: 0; border: 0; border-radius: var(--r-card); background: var(--paper); color: var(--ink); box-shadow: var(--menu-shadow); }
 .res-dialog::backdrop { background: var(--scrim); }
-.res-dialog-head { position: sticky; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); padding: var(--s4) var(--s4) var(--s2) var(--s5); background: var(--paper); }
+.res-dialog-head { position: sticky; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); padding: var(--s3) var(--s4) var(--s2) var(--s5); background: var(--paper); }
 .res-dialog-head h2 { margin: 0; padding-top: var(--s1); font-size: var(--fs-h3); line-height: 1.2; }
 .res-close { flex: none; }
-.res-dialog-body { display: grid; gap: var(--s2); padding: 0 var(--s5) var(--s5); }
+.res-dialog-body { display: grid; gap: var(--s2); padding: 0 var(--s5) var(--s4); }
 .res-dialog-body .res-more-body { padding-top: 0; font-size: var(--fs-body); }
 .res-dialog-foot { margin: var(--s2) 0 0; }
+/* The dialog in its topic's colour, and its foot in one row (preview, 23 Nov 2026; revised
+   the same day): a soft wash of the topic's tint stands behind the title — no edge on top
+   and the title keeps its ink — the topic line below carries the same filled pill and dot
+   as the card, and the button stands at the left of the foot with the two report icons
+   beside it on the same row, under one rule. The spacing is tight enough, and the height
+   cap high enough, that a full pop-up stands whole without scrolling. */
+.res-dialog[data-cat] .res-dialog-head { background: var(--topic-tint); }
+.res-dialog-body { gap: var(--s1); }
+.res-dialog-body .res-tel { margin: 0; }
+.res-dialog-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); padding-top: var(--s2); border-top: var(--hairline); }
+.res-dialog-report { margin: 0; }
+/* Room at the top (v4, 23 Nov 2026): the head stands a step taller — one step more above
+   the title, one step more below it — and the body opens a step lower, so the topic line
+   with its dot is not crowded against the head; the tag row also gains a step beneath it,
+   parting it from the summary. The title area now reads as a settled header instead of a
+   squished band. Nothing below the tag row moves, and the added height comes out of the
+   cap's headroom — a full pop-up still stands whole without scrolling. */
+.res-dialog-head { padding-top: var(--s4); padding-bottom: var(--s3); }
+.res-dialog-body { padding-top: var(--s2); }
+.res-dialog-body .res-tags { margin-bottom: var(--s1); }
 .res-pinned { overflow: hidden; }
 @media (max-width: 560px) {
   .res-dialog { width: 100%; max-width: 100%; max-height: 85dvh; margin: auto 0 0; border-radius: var(--r-card) var(--r-card) 0 0; }
   .res-dialog-head { padding-left: var(--s4); }
-  .res-dialog-body { padding: 0 var(--s4) var(--s5); }
+  .res-dialog-body { padding: var(--s2) var(--s4) var(--s4); }
 }
 
 /* Each day can contain groups in different rooms; their time and route stay together. */

@@ -445,16 +445,18 @@ await part("resources: the tools travel with the list, and a card's foot carries
   const seen = [];
   for (let i = 0; i < 4; i++) {
     await page.keyboard.press("Tab");
-    seen.push(await page.evaluate(() => { const a = document.activeElement; return `${a.tagName}:${(a.textContent || "").trim().slice(0, 18)}`; }));
+    seen.push(await page.evaluate(() => { const a = document.activeElement; return `${a.tagName}:${(a.getAttribute("aria-label") || a.textContent || "").trim().slice(0, 18)}`; }));
   }
   const foot = await first.evaluate((card) => {
     const report = card.querySelector(".res-report");
     const summary = card.querySelector(".res-more > summary");
-    return { inDetails: !!report.closest("details"), below: summary ? report.getBoundingClientRect().top > summary.getBoundingClientRect().top : null,
-      links: [...report.querySelectorAll("a")].map((a) => a.textContent.trim().slice(0, 18)) };
+    const rr = report.getBoundingClientRect();
+    const sr = summary ? summary.getBoundingClientRect() : null;
+    return { inDetails: !!report.closest("details"), sameLine: sr ? Math.abs(rr.top - sr.top) < sr.height : null,
+      links: [...report.querySelectorAll("a")].map((a) => (a.getAttribute("aria-label") || a.textContent).trim().slice(0, 18)) };
   });
-  check(seen[0].startsWith("A:") && seen[1].startsWith("SUMMARY:") && seen[2].includes("Report a Problem") && seen[3].includes("Suggest an Update") && !foot.inDetails && foot.below,
-    `resources: a card's keyboard walk goes button, phone, Additional Details, Report a Problem, Suggest an Update — its visual order, the report row at its foot (${JSON.stringify({ seen, foot })})`);
+  check(seen[0].startsWith("A:") && seen[1].startsWith("SUMMARY:") && seen[2].includes("Report a Problem") && seen[3].includes("Suggest an Update") && !foot.inDetails && foot.sameLine,
+    `resources: a card's keyboard walk goes button, phone, Additional Details, Report a Problem, Suggest an Update — its visual order, the report pair on the Additional Details line (${JSON.stringify({ seen, foot })})`);
   check(!errors.length, `resources: no script errors${errors.length ? ` (${errors[0]})` : ""}`);
   await ctx.close();
 });

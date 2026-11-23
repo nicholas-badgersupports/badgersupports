@@ -116,7 +116,7 @@ test("each resource's card foot reports a problem with it or suggests an update,
     if (c.includes("res-more")) assert.ok(at("res-go") < at("res-more") && at("res-more") < at('<p class="res-report">'), `${r.id}: button, details, report row, in that order`);
     const q = encodeURIComponent(r.id).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const name = r.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    assert.match(links[0][1], new RegExp(`^<a href="/forms/resource-problem/\\?resource=${q}">Report a Problem<span class="sr-only">: ${name}</span></a><a href="/forms/resource-update/\\?resource=${q}">Suggest an Update<span class="sr-only">: ${name}</span></a>$`), r.id);
+    assert.match(links[0][1], new RegExp(`^<a href="/forms/resource-problem/\\?resource=${q}" aria-label="Report a Problem: ${name}" title="Report a Problem: ${name}">[\\s\\S]*?</a><a href="/forms/resource-update/\\?resource=${q}" aria-label="Suggest an Update: ${name}" title="Suggest an Update: ${name}">[\\s\\S]*?</a>$`), r.id);
   }
   assert.equal([...page.matchAll(/href="\/forms\/resource-suggestion\/"/g)].length, 1, "one Suggest a Resource, under the list");
   assert.match(page, /<p class="res-suggest"><a href="\/forms\/resource-suggestion\/" class="btn">Suggest a Resource<\/a>/);

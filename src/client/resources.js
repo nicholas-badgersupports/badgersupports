@@ -23,8 +23,9 @@
    The tools card sticks under the site header for the length of the list, so the search,
    the Filters button and the topics stay reachable mid-list (UX placement audit Finding 2,
    16 Nov 2026); a sentinel below marks it stuck so it can travel compact. Each card's
-   report links stand at its foot, outside Additional Details, in the same order they are
-   seen — they are part of no card's searchable words, as before. */
+   report links stand at its foot, outside Additional Details, on the details' own line
+   as icon buttons, in the same order they are seen — they are part of no card's
+   searchable words, as before. */
 
 import { t } from "./text.js";
 
@@ -155,9 +156,27 @@ for (const box of document.querySelectorAll("[data-resources]")) {
         e.preventDefault();
         opener = summary;
         head.textContent = it.li.querySelector("h3")?.textContent || "";
-        const parts = [".res-what", ".res-fit", ".res-more-body"].map((s) => it.li.querySelector(s)).filter(Boolean).map((el) => el.cloneNode(true));
+        if (it.li.dataset.cat) dialog.dataset.cat = it.li.dataset.cat; else delete dialog.dataset.cat;
+        /* The pop-up in one tidy order: the topic line first (the primary topic in its
+           colour, the card's other topics quiet, cost and where beside them), what it is,
+           who it suits, then the facts — the phone, and the detail rows (hours, where,
+           email) — and at the foot the button with the two report actions standing
+           beside it as icon buttons on its own row, not as two more lines of text. */
+        const parts = [];
+        const tags = it.li.querySelector(".res-tags");
+        if (tags) parts.push(tags.cloneNode(true));
+        for (const s of [".res-what", ".res-fit"]) { const el = it.li.querySelector(s); if (el) parts.push(el.cloneNode(true)); }
+        const tel = it.li.querySelector(".res-tel");
+        if (tel) parts.push(tel.cloneNode(true));
+        const moreBody = it.li.querySelector(".res-more-body");
+        if (moreBody) parts.push(moreBody.cloneNode(true));
+        const foot = document.createElement("div");
+        foot.className = "res-dialog-foot";
         const go = it.li.querySelector(".res-go");
-        if (go) { const foot = document.createElement("p"); foot.className = "res-dialog-foot"; foot.append(go.cloneNode(true)); parts.push(foot); }
+        if (go) foot.append(go.cloneNode(true));
+        const rep = it.li.querySelector(".res-report");
+        if (rep) { const rc = rep.cloneNode(true); rc.classList.add("res-dialog-report"); foot.append(rc); }
+        if (foot.childNodes.length) parts.push(foot);
         body.replaceChildren(...parts);
         y = window.scrollY;
         document.documentElement.classList.add("res-pinned");

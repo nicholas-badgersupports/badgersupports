@@ -3,9 +3,10 @@
    and findMoreHTML) drawn in this site's colours, so a student who has used one can use the other:
    the name, what it is, who it is for, a topic and two plain chips, one button, the phone number
    as a footnote, and Additional Details. At the foot of every card, outside the collapsed
-   details, stand its two report links (Report a Problem, Suggest an Update), so a wrong
-   fact on a card can be reported without opening anything first (UX placement audit
-   Finding 2, 16 Nov 2026). The card's controls stand in the order they are seen — the
+   details, stand its two report links (Report a Problem, Suggest an Update) as icon
+   buttons on the Additional Details line, so a wrong fact on a card can be reported
+   without opening anything first (UX placement audit Finding 2, 16 Nov 2026; the pair
+   set beside the details as icons, 23 Nov 2026). The card's controls stand in the order they are seen — the
    button, the phone number, Additional Details, then the report links — so keyboard
    focus walks them in that same order.
 
@@ -119,11 +120,16 @@ function button(r, ctx) {
 }
 
 /* A report about one resource opens its form's page with the resource chosen by the address
-   (?resource=, src/client/form.js). A screen reader hears which resource, as with View Details. */
-function reportLink(ctx, form, r, label) {
+   (?resource=, src/client/form.js). Each link is its icon on its own — a flag for a problem,
+   a pencil for an update — and the words ride as the link's label and its tooltip, so a
+   screen reader hears which resource, as with View Details, a pointer resting on the icon
+   reads the same words, and the pair stands as two small actions, not two more lines of
+   the card's text. */
+function reportLink(ctx, form, r, label, ic) {
   const to = ctx.link(`/forms/${form}/`);
   const href = to.pending ? to.href : `${to.href}?resource=${encodeURIComponent(r.id)}`;
-  return html`<a${attrs({ href, "data-pending": to.pending ? "" : null })}>${label}<span class="sr-only">: ${r.name}</span></a>`;
+  const name = `${label}: ${r.name}`;
+  return html`<a${attrs({ href, "aria-label": name, title: name, "data-pending": to.pending ? "" : null })}>${icon(ic, "res-report-ic")}</a>`;
 }
 
 /* Whether a record shows at all: one naming a source shows only under Connect's approval
@@ -173,19 +179,22 @@ export function resourceCard(r, ctx, topicOf) {
   const where = WHERE[r.location?.campus];
   const detailRows = details(r, ctx);
   const v = valuesOf(r);
-  return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null, "data-cost": v.cost.join(" ") || null, "data-where": v.where.join(" ") || null, "data-how": v.how.join(" ") || null })}>
+  /* The card's other topics, after its primary one: quiet tags, so a card that sits in
+     several topics says so without shouting in several colours. */
+  const extraTopics = (r.categories || []).filter((c) => c !== r.primaryCategory && topicOf.get(c));
+  return html`<li${attrs({ class: "res-card", "data-res": r.id, "data-cat": r.primaryCategory || null, "data-cats": (r.categories || []).join(" "), "data-aka": r.aka || null, "data-cost": v.cost.join(" ") || null, "data-where": v.where.join(" ") || null, "data-how": v.how.join(" ") || null })}>
     ${r.photo && ctx.media.has(r.photo) ? html`<div class="photo res-photo">${picture(ctx, r.photo, { sizes: "(max-width: 560px) calc(100vw - 2rem), 23rem" })}</div>` : ""}
     <h3>${r.name}</h3>
     ${r.summary ? html`<p class="res-what">${r.summary}</p>` : ""}
     ${r.bestFor ? html`<p class="res-fit"><span class="res-lead">${ctx.t("resources.fit")}</span> ${r.bestFor}</p>` : ""}
     ${sourceLine(r, ctx)}
-    <p class="res-tags">${topic ? html`<span class="res-tag res-topic">${topic}</span>` : ""}${COST[r.cost?.code] && COST[r.cost.code] !== "unknown" ? html`<span class="res-tag">${ctx.t(`resources.cost.${COST[r.cost.code]}`)}</span>` : ""}${where ? html`<span class="res-tag">${ctx.t(`resources.where.${where}`)}</span>` : ""}</p>
+    <p class="res-tags">${topic ? html`<span class="res-tag res-topic">${topic}</span>` : ""}${extraTopics.map((c) => html`<span class="res-tag res-tag--quiet">${topicOf.get(c)}</span>`)}${COST[r.cost?.code] && COST[r.cost.code] !== "unknown" ? html`<span class="res-tag">${ctx.t(`resources.cost.${COST[r.cost.code]}`)}</span>` : ""}${where ? html`<span class="res-tag">${ctx.t(`resources.where.${where}`)}</span>` : ""}</p>
     <div class="res-foot">
       ${href ? link(ctx, href, button(r, ctx), { class: "btn res-go", icon: "out" }) : ""}
       ${phone ? html`<p class="res-tel"><a href="${tel(phone)}">${phone}</a></p>` : ""}
       ${detailRows.length ? html`<details class="res-more"><summary>${ctx.t("resources.more")}</summary><div class="res-more-body">${detailRows}</div></details>` : ""}
+      <p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"), "flag")}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"), "pencil")}</p>
     </div>
-    <p class="res-report">${reportLink(ctx, "resource-problem", r, ctx.t("resources.report.problem"))}${reportLink(ctx, "resource-update", r, ctx.t("resources.report.update"))}</p>
   </li>`;
 }
 

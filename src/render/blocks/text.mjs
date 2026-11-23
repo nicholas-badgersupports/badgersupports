@@ -1,5 +1,6 @@
 /* Plain text: a heading and paragraphs, and any links on from them as pills under the words. The
-   smallest block, and the model for a new one.
+   smallest block, and the model for a new one. `boxed` draws a plain section's wrap as the
+   site's card; an era section already draws its own card, so the mark is plain sections only.
    variant "era" draws the same words as one stop on a timeline: a title written "When — What" shows its
    when on the line and its what as the card's heading (both stay one heading, one edit target), an
    optional photo sits in the card, and consecutive era sections join into one line (styles/blocks/text.css). */
@@ -11,7 +12,7 @@ import { picture } from "../media.mjs";
 export default {
   type: "text",
   label: "Text",
-  fields: { title: "text", heading: "choice:h1|h2", variant: "choice:plain|era", body: "paragraphs!", links: "link[]", photos: "media[]" },
+  fields: { title: "text", heading: "choice:h1|h2", variant: "choice:plain|era", body: "paragraphs!", links: "link[]", photos: "media[]", boxed: "boolean" },
   data: [],
   styles: "text.css",
   analytics: "page",
@@ -19,7 +20,7 @@ export default {
   render(b, ctx) {
     const body = Array.isArray(b.body) ? b.body : [b.body];
     if (b.variant === "era" && b.title) return era(b, body, ctx);
-    return html`<section${attrs({ class: b.title && b.heading !== "h1" ? "text-block band has-side" : "text-block band", id: b.anchor || null, "aria-labelledby": b.title ? `${b.id}-h` : null, "data-block": b.id })}><div class="wrap">${b.title ? (b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`) : ""}<div class="text-body">${body.map((p) => html`<p>${p}</p>`)}${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}</div></div></section>`;
+    return html`<section${attrs({ class: (b.title && b.heading !== "h1" ? "text-block band has-side" : "text-block band") + (b.boxed ? " is-boxed" : ""), id: b.anchor || null, "aria-labelledby": b.title ? `${b.id}-h` : null, "data-block": b.id })}><div class="wrap">${b.title ? (b.heading === "h1" ? html`<h1 id="${b.id}-h">${b.title}</h1>` : html`<h2 id="${b.id}-h">${b.title}</h2>`) : ""}<div class="text-body">${body.map((p) => html`<p>${p}</p>`)}${b.links?.length ? html`<ul class="more-links">${b.links.map((l) => html`<li>${go(ctx, l.href, l.label, l.icon || "arrow")}</li>`)}</ul>` : ""}</div></div></section>`;
   },
 };
 

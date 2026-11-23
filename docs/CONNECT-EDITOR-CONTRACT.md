@@ -147,6 +147,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `body` | one or more paragraphs | **required** |
 | `links` | several links, in order |  |
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
+| `boxed` | on or off |  |
 
 ### Directions to a room — `directions`
 
@@ -180,6 +181,7 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `groups` | optional display groups (id, title, questionIds); each existing question appears exactly once without moving its source or edit paths |  |
 | `ask` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
 | `note` | one line of text |  |
+| `boxed` | on or off |  |
 
 ### Workshop previews — `workshops`
 

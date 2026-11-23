@@ -23,7 +23,10 @@
    `side: "press"` fans the page's three newest article cards in the same place. The fan's
    cards are drawn from the page's own card lists when the page is laid out (pressFan below,
    called from the layout), never written into the page's JSON, so an article added below
-   moves the fan with it. */
+   moves the fan with it.
+
+   `side: "routes"` stands the bus explorer's route badges in the same place, copied from
+   the page's own route list. */
 
 import { html } from "../html.mjs";
 import { link } from "../context.mjs";
@@ -48,6 +51,10 @@ function sidePanel(b) {
         <p class="ph-card-title">${it.title}</p>
         ${it.line ? html`<p class="ph-card-line">${it.line}</p>` : ""}
       </article>`)}</div>`;
+  }
+  if (b.side === "routes") {
+    if (!items.length) return "";
+    return html`<div class="pagehead-side is-routes">${items.map((it) => html`<span class="bus-badge bus-badge--big bus-badge--r${it.name}">${it.name}</span>`)}</div>`;
   }
   return "";
 }
@@ -85,7 +92,7 @@ export function pressFan(blocks) {
 export default {
   type: "pagehead",
   label: "Page opening",
-  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory|press" },
+  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory|press|routes", sideTitle: "text", sideItems: "rows" },
   data: [],
   analytics: "page",
   loading: "eager",

@@ -323,12 +323,10 @@ Reads: nothing but its own fields · analytics: `page` · photos load eager
 | `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
 | `firstLinkPrimary` | on or off |  |
 | `whole` | on or off |  |
-<<<<<<< HEAD
 | `heroRibbons` | a short list of words |  |
-| `side` | one of `none`, `directory` |  |
-=======
-| `side` | one of `none`, `press` |  |
->>>>>>> public-press-hero-2026-11-23
+| `side` | one of `none`, `directory`, `press`, `routes` |  |
+| `sideTitle` | one line of text |  |
+| `sideItems` | doors, each with an id, a title, an icon, optional text, an optional form whose open/closed switch they show, and one link (one door may be marked primary); a door may carry more: a panel under the doors with an anchor, an optional photo, a title, a lead line, lists (each with a label, numbered or ticked, and its items), a closing line and one link |  |
 
 ### Photo cards — `cards`
 

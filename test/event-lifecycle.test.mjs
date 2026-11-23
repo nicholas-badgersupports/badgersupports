@@ -32,5 +32,5 @@ test('before during exact-end next-day and no-upcoming states give an honest nex
  const events=source([event('Example Night','2026-11-03')]);
  assert.doesNotMatch(hero(events,'2026-11-03T16:59:59-06:00'),/class="evcard is-feature is-happening/);
  assert.match(hero(events,'2026-11-03T17:00:00-06:00'),/class="evcard is-feature is-happening/);
- for(const [at,today] of [['2026-11-03T18:00:00-06:00','2026-11-03'],['2026-11-04T00:00:00-06:00','2026-11-04']]){const out=hero(events,at,today);assert.match(out,/Nothing is scheduled yet/);assert.match(out,/href="\/join\/email-list\/"/);assert.doesNotMatch(out,/class="feature-actions"/);}
+ for(const [at,today] of [['2026-11-03T18:00:00-06:00','2026-11-03'],['2026-11-04T00:00:00-06:00','2026-11-04']]){const out=hero(events,at,today);assert.match(out,/Nothing is scheduled yet/);assert.match(out,/href="\/join\/email-list\/#b-form-email-list"/);assert.doesNotMatch(out,/class="feature-actions"/);}
 });

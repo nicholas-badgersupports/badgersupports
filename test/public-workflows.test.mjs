@@ -86,7 +86,7 @@ test('operations invoked through symbolic links actually run',()=>{
 test("a program hero with no upcoming event offers updates rather than a dead end", () => {
   const block = { id: "no-events", type: "eventhero", source: "events", title: "Craft Nights", program: "craft" };
   const out = String(BLOCKS.eventhero.render(block, makeContext({site:{},data:{events:{dated:[],recurring:[]}},text:t,today:"2026-11-03",builtPaths:["/join/email-list/"]})));
-  assert.match(out, /Nothing is scheduled yet/); assert.match(out, /href="\/join\/email-list\/"/);
+  assert.match(out, /Nothing is scheduled yet/); assert.match(out, /href="\/join\/email-list\/#b-form-email-list"/);
 });
 
 

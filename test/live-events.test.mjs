@@ -138,7 +138,7 @@ test("peer day cards follow changed weekly times and rooms, then removal, withou
   forgetEvents();
   const empty = await cards();
   assert.ok(empty.includes(TEXT["schedule.weekEmpty"]));
-  assert.match(empty, /href="\/join\/email-list\/"/);
+  assert.match(empty, /href="\/join\/email-list\/#b-form-email-list"/);
   assert.doesNotMatch(empty, /class="card-list"|class="ev"/);
   assert.deepEqual(connect.calls, ["publicEvents", "publicEvents", "publicEvents"]);
 });

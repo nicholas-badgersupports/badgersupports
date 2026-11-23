@@ -37,7 +37,7 @@ import { geocodeAddress } from "./transit.mjs";
 import { transitDepartures, transitVehicles } from "./transit-live.mjs";
 import { publishRevision, currentRevision, purgeTags, listRevisions, readRevision } from "./published.mjs";
 import { formTags, previewResponse } from "./pages.mjs";
-import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList, scopeFor } from "./structure.mjs";
+import { structureNow, pagesList, sectionsList, changeStructure, restoreRevision, restoreToken, roomsList, scopeFor, eventsList } from "./structure.mjs";
 import { revisionEdits } from "./edits.mjs";
 import { SECTION_ACTIONS, laySettings, layMood } from "../../src/shared/structure.mjs";
 import { makeContext, chicagoDate } from "../../src/render/context.mjs";
@@ -456,7 +456,7 @@ async function pagesRoute(req, _m, _c, who) {
   return json(200, { ok: true, ...(await pagesList()) });
 }
 
-export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "putBack", "menu", "settings", "room", ...SECTION_ACTIONS]);
+export const PAGE_ACTIONS = new Set(["add", "copy", "details", "publish", "retire", "putBack", "menu", "settings", "room", "event", ...SECTION_ACTIONS]);
 
 /* One change to the pages, the menu or the site's settings. JSON from this site only; `expected` is the version the
    tab started from. Every change publishes and clears every page and feed (publishAll): the menu, the titles and the
@@ -471,10 +471,16 @@ async function pagesChangeRoute(req, _m, context, who) {
      authentication. Word-level changes do not. */
   if (scopeFor(body, (await structureNow()).doc) === "site.publish") who = await publishCheck(req, who);
   const r = await changeStructure(who, body, (scope) => need(who, scope));
-  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(await publishAll(who, context)) });
+  return json(200, { ok: true, version: r.version, ...(r.page ? { page: r.page } : {}), ...(r.section ? { section: r.section } : {}), ...(r.event ? { event: r.event } : {}), ...(await publishAll(who, context)) });
 }
 
 /* Every room's words and step photos, for the Rooms part: a publisher's, as changing them is. */
+/* Every Hub event as drawn now, for the Hub Events part: a publisher's, as changing them is. */
+async function eventsRoute(req, _m, _c, who) {
+  need(who, "site.publish");
+  return json(200, { ok: true, ...(await eventsList()) });
+}
+
 async function roomsRoute(req, _m, _c, who) {
   need(who, "site.publish");
   return json(200, { ok: true, ...(await roomsList()) });
@@ -672,6 +678,7 @@ export const ROUTES = [
   { name: "preview", method: "GET", pattern: /^\/api\/staff\/preview\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: previewRoute },
   { name: "sections", method: "GET", pattern: /^\/api\/staff\/sections\/(pg-[a-z0-9-]{1,60})$/, tier: "director", run: sectionsRoute },
   { name: "rooms", method: "GET", pattern: /^\/api\/staff\/rooms$/, tier: "director", run: roomsRoute },
+  { name: "staffEvents", method: "GET", pattern: /^\/api\/staff\/events$/, tier: "director", run: eventsRoute },
   { name: "versions", method: "GET", pattern: /^\/api\/staff\/versions$/, tier: "director", run: versionsRoute },
   { name: "restore", method: "POST", pattern: /^\/api\/staff\/versions\/([1-9][0-9]{0,8})\/restore$/, tier: "director", run: restoreRoute },
   { name: "staffAny", method: "*", pattern: /^\/api\/staff(\/.*)?$/, tier: "director", run: async () => { throw new HttpError(404, "not.found"); } },

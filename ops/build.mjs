@@ -62,6 +62,7 @@ import { finish } from "./finish.mjs";
 import { textProblems, resolveText, makeT } from "../src/shared/text.mjs";
 import { applyEdits, readEditsFile, pageStrings, siteStrings, textStrings, pageValues, siteValues } from "../src/shared/edits.mjs";
 import { placeProblems, placePages, eventPlaces, eventPlaceProblems } from "../src/render/places.mjs";
+import { hubEventProblems, hubEventPages, sortHubEvents } from "../src/render/hubevents.mjs";
 import { formPreviewPages } from "../src/render/blocks/form.mjs";
 import { teamProblems, personPages, publicPeople, teamRedirects, GROUPS, TEAM_PATH } from "../src/render/team.mjs";
 import { buildMedia, buildLinks, linkPlaceholders, loadManifest } from "./media.mjs";
@@ -300,6 +301,18 @@ export function loadContent({ production = false, launch = production, textEdits
     if (b.type === "hero") for (const c of b.circles || []) if (!c.media || !c.label || !c.href) problems.push(`content/pages: ${page.id}.${b.id}: each circle needs a photo, a label and an address`);
   }
 
+  // Hub events: the site's own event records (content/hub-events.json), one each; every record shown
+  // becomes a page at its address (src/render/hubevents.mjs). The Hub Events part of the staff page
+  // saves whole records that lay over these at draw time (src/shared/structure.mjs).
+  const hubEventsFile = readJson("content/hub-events.json");
+  if (hubEventsFile.schema !== "bss.hubevents/1") problems.push("content/hub-events.json: schema must be bss.hubevents/1");
+  const hubEvents = sortHubEvents(hubEventsFile.events || []);
+  for (const ev of hubEvents) {
+    for (const p of hubEventProblems(ev, { media: mediaIds, places, production })) problems.push(`content/hub-events.json: ${p}`);
+    photos(ev, `content/hub-events.json: ${ev.id || "an event"}`);
+    photos({ photos: ev.gallery || [] }, `content/hub-events.json: ${ev.id || "an event"} gallery`);
+  }
+
   // Events: Connect's public list when the build read it, else the fixture. A room Connect names in
   // words that match no room here comes with the list as a place of its own, shown unlinked.
   const feedRules = readJson("content/connect-feed.json");
@@ -353,8 +366,10 @@ export function loadContent({ production = false, launch = production, textEdits
   // A closed form's review page, on the prototype only (src/render/blocks/form.mjs).
   const previewPages = production ? [] : formPreviewPages(forms, makeT(text));
   for (const p of previewPages) if (paths.has(p.path)) throw new Error(`content/forms: ${p.path} is also a page in content/pages`);
+  const eventPages = hubEventPages(hubEvents, makeT(text));
+  for (const p of eventPages) if (paths.has(p.path) || roomPages.some((r) => r.path === p.path) || peoplePages.some((r) => r.path === p.path)) throw new Error(`content/hub-events.json: ${p.path} is also a page in content/pages or a made page`);
   return {
-    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...previewPages], places, events, wall, team, alumni, alumniState, alumniSource, resources, courses, textRegistry, text,
+    site, routes, media, links: [...links.values()], mood, forms: served, pages: [...pages, ...roomPages, ...peoplePages, ...eventPages, ...previewPages], places, events, hubEvents, wall, team, alumni, alumniState, alumniSource, resources, courses, textRegistry, text,
     editable: editableWords({ site, pages, text }, { ...floor, text: floorText }, textRegistry),
     edits: { applied: overlay.applied, skipped: overlay.problems },
     builtEdits: Object.fromEntries(overlay.applied.map(target => [target, edits[target].trim()])),
@@ -771,7 +786,7 @@ export async function build({ production = false, launch = production, today = n
     render: siteSnapshot({
       alumniSource: content.alumniSource,
       floor: content.floor, builtEdits: content.builtEdits, textRegistry: content.textRegistry, textEdits: content.givenTextEdits, places: content.places, team: content.team, teamState: null, resourcesState: null,
-      forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths,
+      forms: content.forms, production, prototype, media: allMedia, routes: content.routes, data, assets, liveEvents: !!feed, builtPaths, hubEvents: content.hubEvents,
       shared: feed ? { source: "connect", exports: { team: !!feed.team, wall: !!feed.wall }, builtAt: new Date().toISOString() } : null,
     }),
     formPages: Object.fromEntries(content.pages.filter(p => p.generated !== "form-preview").flatMap((p) => (p.blocks || []).filter((b) => b.type === "form").map((b) => [b.form, { id: p.id, path: p.path, title: p.title, blockId: b.id, blockTitle: b.title || null, closedIntro: b.closedIntro || null }]))),

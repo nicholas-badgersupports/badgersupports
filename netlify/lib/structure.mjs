@@ -13,8 +13,10 @@ import { serverContent } from "./content.mjs";
 import { HttpError } from "./http.mjs";
 import { editableFor, revisionEdits, original, problemFor } from "./edits.mjs";
 import { redirectFor } from "./pages.mjs";
-import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, backTo, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layMood, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
+import { emptyStructure, applyChange, isProblem, menuOutline, stateOf, backTo, siteLinks, sectionName, isOpening, copyable, bareTitle, laySettings, layMood, layRooms, roomFields, ROOM_LIMITS, STEP_TEXT_MAX, layHubEvents, hubEventFields, FIXED_PAGES, SECTION_FIXED } from "../../src/shared/structure.mjs";
 import { variantName, variantWidths } from "../../src/render/media.mjs";
+import { EVENT_LIMITS } from "../../src/render/hubevents.mjs";
+import { ICONS } from "../../src/render/icons.mjs";
 import { composeSite } from "../../src/render/site.mjs";
 
 const parse = (d) => (typeof d === "string" ? JSON.parse(d) : d);
@@ -72,6 +74,27 @@ export async function roomsList() {
   return { version, rooms, photos, limits: { ...ROOM_LIMITS, text: STEP_TEXT_MAX } };
 }
 
+/* The Hub events as drawn at structure `doc`: the build's records (content/hub-events.json), with
+   that version's saved records laid over them. */
+function eventsAt(doc) {
+  const c = serverContent();
+  return layHubEvents(c.render?.hubEvents || [], doc.events, { media: libraryIds(c), places: c.render?.places || {} });
+}
+
+/* The Hub Events part of the staff page: every event as drawn now, the version the list belongs to,
+   the library photos an event may show (each with a small picture to know it by), the published
+   rooms an event's directions may name, the icons a highlight may carry, and each word's limit. */
+export async function eventsList() {
+  const { version, doc } = await structureNow();
+  const c = serverContent();
+  if (!c.render) throw new HttpError(503, "pages.unavailable");
+  const events = eventsAt(doc).map(hubEventFields);
+  const photos = (c.media?.items || []).filter((m) => /^m-/.test(m.id) && m.sha256 && m.width)
+    .map((m) => ({ id: m.id, alt: m.alt || "", src: `/media/${variantName(m, variantWidths(m)[0], "jpg")}` }));
+  const places = Object.values(c.render.places || {}).filter((p) => p.published).map((p) => ({ id: p.id, name: p.name || p.id }));
+  return { version, events, photos, places, icons: ICONS, limits: EVENT_LIMITS };
+}
+
 /* A page's title as the staff page lists it: without the site's name, the build's or the current one. */
 const listedTitle = (p, site) => bareTitle(p.title, [site.built?.name, site.name], { first: p.id === "pg-home" });
 
@@ -122,6 +145,7 @@ export function scopeFor(change, doc) {
     case "putBack": return backTo(doc.pages[change.page]) === "draft" ? "site.edit" : "site.publish";
     case "settings": return "site.publish";
     case "room": return "site.publish";
+    case "event": return "site.publish";
     default: return "site.publish";
   }
 }
@@ -134,7 +158,8 @@ export async function changeStructure(who, change, allow) {
   const before = await structureNow();
   allow(scopeFor(change, before.doc));
   const roomNow = (doc) => { const p = change.action === "room" && typeof change.room === "string" ? roomsAt(doc)[change.room] : null; return p ? { room: roomFields(p) } : {}; };
-  const stale = (now) => new HttpError(409, "pages.conflict", { current: now.version, ...(change.action === "settings" ? { site: settingsAt(now.doc) } : {}), ...roomNow(now.doc) });
+  const eventsNow = (doc) => (change.action === "event" ? { events: eventsAt(doc).map(hubEventFields) } : {});
+  const stale = (now) => new HttpError(409, "pages.conflict", { current: now.version, ...(change.action === "settings" ? { site: settingsAt(now.doc) } : {}), ...roomNow(now.doc), ...eventsNow(now.doc) });
   if (String(change.expected) !== before.version) throw stale(before);
   const c = serverContent();
   const site = await siteAsSaved(before.doc);
@@ -144,6 +169,7 @@ export async function changeStructure(who, change, allow) {
       pages: site.all, authored: site.authored, menu: menuOutline(site.site.nav), offMenu: site.offMenu,
       site: { name: site.site.name, description: site.site.description, built: site.site.built?.name }, redirected: (p) => !!redirectFor(c, p),
       links: siteLinks(site.site, site.pages.concat(site.drafts)), places: c.render?.places || {}, media: libraryIds(c),
+      hubEvents: c.render?.hubEvents || [],
     });
   } catch (e) {
     if (isProblem(e)) throw new HttpError(e.status, e.code);
@@ -158,7 +184,7 @@ export async function changeStructure(who, change, allow) {
       [JSON.stringify(out.doc), change.action, out.page || null, who.sub, who.name]);
     return String(row.id);
   });
-  return { version, page: out.page, section: out.section };
+  return { version, page: out.page, section: out.section, event: out.event };
 }
 
 /* The structure a restore writes: the revision's, with every page and section made since it retired rather than

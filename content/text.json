@@ -61,6 +61,10 @@
     {
       "id": "navigator",
       "label": "Academic Support Navigator"
+    },
+    {
+      "id": "hubevent",
+      "label": "Hub event pages"
     }
   ],
   "text": {
@@ -2233,6 +2237,51 @@
       "text": "Feelings saved.",
       "where": "Read out once the Feeling Check-In feelings are saved and published."
     },
+    "hubevent.accessTitle": {
+      "group": "hubevent",
+      "text": "Accommodation Requests",
+      "where": "Heading of the last-but-one section of every Hub event page, over the line about asking for an accommodation."
+    },
+    "hubevent.accessBody": {
+      "group": "hubevent",
+      "text": "To request a disability-related accommodation, email accessibility@badgersupports.org.",
+      "where": "The line under Accommodation Requests on every Hub event page; the email address in it is the link."
+    },
+    "hubevent.ctaTitle": {
+      "group": "hubevent",
+      "text": "Find What's Happening Now",
+      "where": "Heading of the last section of every Hub event page."
+    },
+    "hubevent.ctaBody": {
+      "group": "hubevent",
+      "text": "Explore the current peer support group schedule, find ways to get involved, or request email updates.",
+      "where": "The line under Find What's Happening Now on every Hub event page."
+    },
+    "hubevent.ctaPrimary": {
+      "group": "hubevent",
+      "text": "Current Peer Support Groups",
+      "where": "The main button of the last section of every Hub event page; it goes to the peer support groups page."
+    },
+    "hubevent.ctaGroups": {
+      "group": "hubevent",
+      "text": "Get Involved",
+      "where": "A button of the last section of every Hub event page; it goes to the get involved page."
+    },
+    "hubevent.ctaUpdates": {
+      "group": "hubevent",
+      "text": "Request Email Updates",
+      "where": "A button of the last section of every Hub event page; it goes to the email updates form."
+    },
+    "hubevent.peopleTitle": {
+      "group": "hubevent",
+      "text": "Featuring",
+      "where": "Heading over the people an event features, on a Hub event page whose event does not name its own heading for them."
+    },
+    "hubevent.galleryLabel": {
+      "group": "hubevent",
+      "text": "More photos from this event",
+      "where": "The name screen readers give the row of extra photos on a Hub event page, when the event gives the row no heading of its own."
+    },
     "staff.rooms.title": {
       "group": "staff",
       "text": "Rooms",
@@ -2347,6 +2396,441 @@
       "group": "staff",
       "text": "Choose a photo from the library, or No Photo.",
       "where": "Under an open room when a step's photo is refused."
+    },
+    "staff.events.title": {
+      "group": "staff",
+      "text": "Hub Events",
+      "where": "Heading of the Hub Events part of the staff page, for someone who may publish: each Student Mental Health Hub event's own page."
+    },
+    "staff.events.how": {
+      "group": "staff",
+      "text": "Each event shown here has its own page at its address, under the event header. Saving an event publishes it, as saving a room does. An event that is not shown has no page, and its address stays its own.",
+      "where": "Under the Hub Events heading on the staff page: where a saved event shows, and what hiding one does."
+    },
+    "staff.events.open": {
+      "group": "staff",
+      "text": "Change Event",
+      "where": "Button on each event under Hub Events: opens its words, photos, people and programme."
+    },
+    "staff.events.openName": {
+      "group": "staff",
+      "text": "Change Event: {{name}}",
+      "where": "The Change Event button's name for screen readers, naming the event."
+    },
+    "staff.events.new": {
+      "group": "staff",
+      "text": "New Event",
+      "where": "Button under Hub Events: starts an event that is not on the site yet."
+    },
+    "staff.events.hidden": {
+      "group": "staff",
+      "text": "Hidden",
+      "where": "Beside an event under Hub Events that is not shown on the site."
+    },
+    "staff.events.look": {
+      "group": "staff",
+      "text": "Look at the page",
+      "where": "Link on a saved event under Hub Events: opens the event's page as the site draws it now."
+    },
+    "staff.events.up": {
+      "group": "staff",
+      "text": "Move up",
+      "where": "Button on an event under Hub Events: shows it before the event above it."
+    },
+    "staff.events.down": {
+      "group": "staff",
+      "text": "Move down",
+      "where": "Button on an event under Hub Events: shows it after the event below it."
+    },
+    "staff.events.field.title": {
+      "group": "staff",
+      "text": "Title",
+      "where": "Label of an event's title under Hub Events: the page's heading."
+    },
+    "staff.events.field.path": {
+      "group": "staff",
+      "text": "Address",
+      "where": "Label of an event's address under Hub Events."
+    },
+    "staff.events.help.path": {
+      "group": "staff",
+      "text": "The page's address on the site. A new event's address comes from its title; leave it as it is unless the event needs another.",
+      "where": "Under the Address label under Hub Events."
+    },
+    "staff.events.field.label": {
+      "group": "staff",
+      "text": "Status Line",
+      "where": "Label of an event's status line under Hub Events."
+    },
+    "staff.events.help.label": {
+      "group": "staff",
+      "text": "Over the title: the event's date, and whether it is coming or a look back.",
+      "where": "Under the Status Line label under Hub Events."
+    },
+    "staff.events.field.lead": {
+      "group": "staff",
+      "text": "Tagline",
+      "where": "Label of an event's tagline under Hub Events, under its title."
+    },
+    "staff.events.field.description": {
+      "group": "staff",
+      "text": "Search Description",
+      "where": "Label of an event's search description under Hub Events: the line search engines show for the page."
+    },
+    "staff.events.field.body": {
+      "group": "staff",
+      "text": "Words",
+      "where": "Label of an event's paragraphs under Hub Events, under its tagline."
+    },
+    "staff.events.help.body": {
+      "group": "staff",
+      "text": "One paragraph on each line.",
+      "where": "Under the Words label under Hub Events."
+    },
+    "staff.events.field.details": {
+      "group": "staff",
+      "text": "Detail Lines",
+      "where": "Label of an event's detail lines under Hub Events: its hours and where it is held."
+    },
+    "staff.events.help.details": {
+      "group": "staff",
+      "text": "One line each: the event's hours, then where it is held.",
+      "where": "Under the Detail Lines label under Hub Events."
+    },
+    "staff.events.field.photos": {
+      "group": "staff",
+      "text": "Header Photos",
+      "where": "Label of an event's header photos under Hub Events."
+    },
+    "staff.events.help.photos": {
+      "group": "staff",
+      "text": "Up to three. The first stands tall; the next two stack beside it, in one block.",
+      "where": "Under the Header Photos label under Hub Events."
+    },
+    "staff.events.photo": {
+      "group": "staff",
+      "text": "Photo {{n}}",
+      "where": "Label of one photo choice under Hub Events."
+    },
+    "staff.events.photo.none": {
+      "group": "staff",
+      "text": "No Photo",
+      "where": "The choice for a photo slot with no photo under Hub Events."
+    },
+    "staff.events.field.primaryLabel": {
+      "group": "staff",
+      "text": "Main Button Words",
+      "where": "Label of the words on an event's main button under Hub Events, in its header."
+    },
+    "staff.events.field.primaryHref": {
+      "group": "staff",
+      "text": "Main Button Address",
+      "where": "Label of where an event's main button goes, under Hub Events."
+    },
+    "staff.events.field.links": {
+      "group": "staff",
+      "text": "More Buttons",
+      "where": "Names an event's other header buttons under Hub Events, beside the main one."
+    },
+    "staff.events.link": {
+      "group": "staff",
+      "text": "Button {{n}}",
+      "where": "Heading of one of an event's buttons under Hub Events."
+    },
+    "staff.events.field.linkLabel": {
+      "group": "staff",
+      "text": "Button Words",
+      "where": "Label of the words on one of an event's buttons under Hub Events."
+    },
+    "staff.events.field.linkHref": {
+      "group": "staff",
+      "text": "Button Address",
+      "where": "Label of where one of an event's buttons goes, under Hub Events."
+    },
+    "staff.events.field.linkIcon": {
+      "group": "staff",
+      "text": "Button Picture",
+      "where": "Label of the picture on one of an event's buttons under Hub Events: a choice of the site's pictures."
+    },
+    "staff.events.addLink": {
+      "group": "staff",
+      "text": "Add a Button",
+      "where": "Button under an event's buttons under Hub Events: adds one more."
+    },
+    "staff.events.removeLink": {
+      "group": "staff",
+      "text": "Take Away Button {{n}}",
+      "where": "Button on one of an event's buttons under Hub Events: takes it away."
+    },
+    "staff.events.field.peopleTitle": {
+      "group": "staff",
+      "text": "People Heading",
+      "where": "Label of the heading over the people an event features, under Hub Events."
+    },
+    "staff.events.help.peopleTitle": {
+      "group": "staff",
+      "text": "Over the people this event features. Left empty, the heading reads Featuring.",
+      "where": "Under the People Heading label under Hub Events."
+    },
+    "staff.events.field.people": {
+      "group": "staff",
+      "text": "People Featured",
+      "where": "Names the people an event features under Hub Events: visiting professionals and speakers."
+    },
+    "staff.events.person": {
+      "group": "staff",
+      "text": "Person {{n}}",
+      "where": "Heading of one person an event features, under Hub Events."
+    },
+    "staff.events.field.personName": {
+      "group": "staff",
+      "text": "Name",
+      "where": "Label of a featured person's name under Hub Events."
+    },
+    "staff.events.field.personRole": {
+      "group": "staff",
+      "text": "Role or Organisation",
+      "where": "Label of a featured person's role or organisation under Hub Events."
+    },
+    "staff.events.field.personLine": {
+      "group": "staff",
+      "text": "Short Line",
+      "where": "Label of the short line under a featured person's name under Hub Events."
+    },
+    "staff.events.field.personPhoto": {
+      "group": "staff",
+      "text": "Photo",
+      "where": "Label of a featured person's photo under Hub Events: a choice of library photos."
+    },
+    "staff.events.addPerson": {
+      "group": "staff",
+      "text": "Add a Person",
+      "where": "Button under an event's people under Hub Events: adds one more."
+    },
+    "staff.events.removePerson": {
+      "group": "staff",
+      "text": "Take Away Person {{n}}",
+      "where": "Button on one person under Hub Events: takes them away."
+    },
+    "staff.events.field.highlightsTitle": {
+      "group": "staff",
+      "text": "Highlights Heading",
+      "where": "Label of the heading of an event's highlights section under Hub Events."
+    },
+    "staff.events.help.highlightsTitle": {
+      "group": "staff",
+      "text": "A section of short points under the header, with its own photos. Leave the heading empty for no section.",
+      "where": "Under the Highlights Heading label under Hub Events."
+    },
+    "staff.events.field.highlightsBody": {
+      "group": "staff",
+      "text": "Highlights Words",
+      "where": "Label of the paragraphs of an event's highlights section under Hub Events."
+    },
+    "staff.events.field.items": {
+      "group": "staff",
+      "text": "Highlight Points",
+      "where": "Names an event's highlight points under Hub Events."
+    },
+    "staff.events.item": {
+      "group": "staff",
+      "text": "Point {{n}}",
+      "where": "Heading of one highlight point under Hub Events."
+    },
+    "staff.events.field.itemText": {
+      "group": "staff",
+      "text": "Point",
+      "where": "Label of one highlight point's words under Hub Events."
+    },
+    "staff.events.field.itemIcon": {
+      "group": "staff",
+      "text": "Picture",
+      "where": "Label of one highlight point's picture under Hub Events: a choice of the site's pictures."
+    },
+    "staff.events.icon.none": {
+      "group": "staff",
+      "text": "No Picture",
+      "where": "The choice for a highlight point with no picture under Hub Events."
+    },
+    "staff.events.addItem": {
+      "group": "staff",
+      "text": "Add a Point",
+      "where": "Button under an event's highlight points under Hub Events: adds one more."
+    },
+    "staff.events.removeItem": {
+      "group": "staff",
+      "text": "Take Away Point {{n}}",
+      "where": "Button on one highlight point under Hub Events: takes it away."
+    },
+    "staff.events.field.highlightsPhotos": {
+      "group": "staff",
+      "text": "Highlights Photos",
+      "where": "Label of an event's highlights photos under Hub Events, beside the points."
+    },
+    "staff.events.field.programmeTitle": {
+      "group": "staff",
+      "text": "Programme Heading",
+      "where": "Label of the heading of an event's programme section under Hub Events."
+    },
+    "staff.events.help.programmeTitle": {
+      "group": "staff",
+      "text": "A section listing what is on at the event. Leave the heading empty for no section.",
+      "where": "Under the Programme Heading label under Hub Events."
+    },
+    "staff.events.field.program": {
+      "group": "staff",
+      "text": "Programme Colours",
+      "where": "Label of which programme's colours an event's programme section wears, under Hub Events."
+    },
+    "staff.events.program.peer": {
+      "group": "staff",
+      "text": "Peer Support Groups",
+      "where": "A choice under Programme Colours under Hub Events."
+    },
+    "staff.events.program.craft": {
+      "group": "staff",
+      "text": "Craft Nights",
+      "where": "A choice under Programme Colours under Hub Events."
+    },
+    "staff.events.program.workshops": {
+      "group": "staff",
+      "text": "Workshops",
+      "where": "A choice under Programme Colours under Hub Events."
+    },
+    "staff.events.field.topics": {
+      "group": "staff",
+      "text": "What Is On",
+      "where": "Names an event's programme items under Hub Events."
+    },
+    "staff.events.topic": {
+      "group": "staff",
+      "text": "Item {{n}}",
+      "where": "Heading of one programme item under Hub Events."
+    },
+    "staff.events.field.topicTerm": {
+      "group": "staff",
+      "text": "Item Title",
+      "where": "Label of one programme item's title under Hub Events."
+    },
+    "staff.events.field.topicText": {
+      "group": "staff",
+      "text": "Item Line",
+      "where": "Label of the line under one programme item's title under Hub Events."
+    },
+    "staff.events.field.topicHref": {
+      "group": "staff",
+      "text": "Item Address",
+      "where": "Label of where one programme item's title goes, under Hub Events; empty for no link."
+    },
+    "staff.events.addTopic": {
+      "group": "staff",
+      "text": "Add an Item",
+      "where": "Button under an event's programme items under Hub Events: adds one more."
+    },
+    "staff.events.removeTopic": {
+      "group": "staff",
+      "text": "Take Away Item {{n}}",
+      "where": "Button on one programme item under Hub Events: takes it away."
+    },
+    "staff.events.field.programmePhotos": {
+      "group": "staff",
+      "text": "Programme Photos",
+      "where": "Label of an event's programme photos under Hub Events."
+    },
+    "staff.events.field.programmeLinks": {
+      "group": "staff",
+      "text": "Programme Buttons",
+      "where": "Names the buttons under an event's programme section, under Hub Events."
+    },
+    "staff.events.field.gallery": {
+      "group": "staff",
+      "text": "More Photos",
+      "where": "Label of an event's extra photos under Hub Events."
+    },
+    "staff.events.help.gallery": {
+      "group": "staff",
+      "text": "Shown low on the page, in a row that scrolls sideways.",
+      "where": "Under the More Photos label under Hub Events."
+    },
+    "staff.events.field.place": {
+      "group": "staff",
+      "text": "Room for Directions",
+      "where": "Label of the room an event's directions section leads to, under Hub Events."
+    },
+    "staff.events.place.none": {
+      "group": "staff",
+      "text": "No Directions Section",
+      "where": "The choice for an event with no directions section under Hub Events."
+    },
+    "staff.events.field.directionsTitle": {
+      "group": "staff",
+      "text": "Directions Heading",
+      "where": "Label of an event's directions heading under Hub Events."
+    },
+    "staff.events.field.shown": {
+      "group": "staff",
+      "text": "Show this event on the site",
+      "where": "The tick on an event under Hub Events: ticked, the event has its page; unticked, it has none."
+    },
+    "staff.events.save": {
+      "group": "staff",
+      "text": "Save Event",
+      "where": "Button under an open event: saves it as one change, which publishes."
+    },
+    "staff.events.done": {
+      "group": "staff",
+      "text": "Event saved.",
+      "where": "Read out once an event is saved and published."
+    },
+    "staff.events.unchanged": {
+      "group": "staff",
+      "text": "Nothing has changed since you opened this event.",
+      "where": "Under an open event when Save Event is pressed with nothing changed."
+    },
+    "staff.events.conflict": {
+      "group": "staff",
+      "text": "Someone saved an event since you opened this one, so the events above are as they now stand. What you typed is still here; Save Event again to save it over them.",
+      "where": "Under an open event, when someone else saved an event after this page was opened."
+    },
+    "staff.events.error.title": {
+      "group": "staff",
+      "text": "The title takes up to {{max}} characters, with no markup or web address, and cannot be left empty.",
+      "where": "Under an open event when its title is refused."
+    },
+    "staff.events.error.words": {
+      "group": "staff",
+      "text": "{{field}} takes up to {{max}} characters, with no markup or web address.",
+      "where": "Under an open event when one of its words is refused, naming the field and its limit."
+    },
+    "staff.events.error.photo": {
+      "group": "staff",
+      "text": "Choose a photo from the library, or No Photo.",
+      "where": "Under an open event when a photo is refused."
+    },
+    "staff.events.error.link": {
+      "group": "staff",
+      "text": "A button needs its words and an address: a page on this site, a full web address, an email or a phone number.",
+      "where": "Under an open event when a button is refused."
+    },
+    "staff.events.error.path": {
+      "group": "staff",
+      "text": "That address is taken, or cannot be a page address. Choose another.",
+      "where": "Under an open event when its address is refused."
+    },
+    "staff.events.error.place": {
+      "group": "staff",
+      "text": "Choose a room from the list, or No Directions Section.",
+      "where": "Under an open event when its room is refused."
+    },
+    "staff.events.error.people": {
+      "group": "staff",
+      "text": "Each person featured needs a name.",
+      "where": "Under an open event when a person is refused."
+    },
+    "staff.events.error.icon": {
+      "group": "staff",
+      "text": "Choose a picture from the list, or No Picture.",
+      "where": "Under an open event when a highlight point's picture is refused."
     },
     "staff.sections.open": {
       "group": "staff",
@@ -4750,6 +5234,11 @@
       "group": "staff",
       "text": "Each room's words, its steps and their photos.",
       "where": "Staff page, the Overview: the Rooms card."
+    },
+    "staff.overview.tool.events": {
+      "group": "staff",
+      "text": "Hub Events — each event's own page: its words, photos, people and programme.",
+      "where": "Staff page, the Overview: the Hub Events card."
     },
     "staff.overview.tool.versions": {
       "group": "staff",

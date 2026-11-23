@@ -481,6 +481,39 @@ Reads: nothing but its own fields · analytics: `page` · photos load lazy
 | `links` | several links, in order |  |
 | `program` | one of `peer`, `craft`, `workshops`, `other` |  |
 
+### Event opening — `eventhead`
+
+Reads: nothing but its own fields · analytics: `page` · photos load eager
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text | **required** |
+| `label` | one line of text |  |
+| `lead` | one line of text |  |
+| `body` | one or more paragraphs |  |
+| `details` | one or more paragraphs |  |
+| `primary` | a label and an address (a page on this site, Connect, or another site), and an optional icon |  |
+| `links` | several links, in order |  |
+| `photos` | photos, in order: each a library photo or a pasted link (see Photos) |  |
+
+### People featured — `featuring`
+
+Reads: nothing but its own fields · analytics: `page` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text |  |
+| `people` | people |  |
+
+### Photo strip — `gallery`
+
+Reads: nothing but its own fields · analytics: `page` · photos load lazy
+
+| Field | Type | |
+|---|---|---|
+| `title` | one line of text |  |
+| `photos` | photos, in order: each a library photo or a pasted link (see Photos) | **required** |
+
 ## Icons
 
 Wherever a field takes an icon, it is one of these, each with its own small move when its link is pointed at or
@@ -602,7 +635,7 @@ the site adds the markup.
 
 ## Every other word (`content/text.json`)
 
-974 keys. Keys are permanent. Required text cannot be published empty and must keep each
+1071 keys. Keys are permanent. Required text cannot be published empty and must keep each
 `{{placeholder}}` its default has; optional text disappears from the page when published empty.
 
 ### Every page (29)
@@ -914,7 +947,7 @@ the site adds the markup.
 | `errors.server.title` | Something went wrong | Heading when the site fails while answering. |  |
 | `errors.server.body` | Nothing was saved. Try again in a minute. If it keeps happening, email hello@badgersupports.org. | Under that heading. |  |
 
-### Staff page and edit button (510)
+### Staff page and edit button (598)
 
 | Key | Default | Where it shows | |
 |---|---|---|---|
@@ -1146,6 +1179,93 @@ the site adds the markup.
 | `staff.rooms.conflict` | Someone saved this room since you opened it. Their words and photos are under each field. Save Room again to replace them with yours. | Under an open room, when someone else saved it after this page was opened; the fields keep what was typed. |  |
 | `staff.rooms.error.words` | {{field}} takes up to {{max}} characters, with no markup or web address, and cannot be left empty. | Under an open room when a word is refused, naming the field and its limit. | `{{field}}` `{{max}}` |
 | `staff.rooms.error.photo` | Choose a photo from the library, or No Photo. | Under an open room when a step's photo is refused. |  |
+| `staff.events.title` | Hub Events | Heading of the Hub Events part of the staff page, for someone who may publish: each Student Mental Health Hub event's own page. |  |
+| `staff.events.how` | Each event shown here has its own page at its address, under the event header. Saving an event publishes it, as saving a room does. An event that is not shown has no page, and its address stays its own. | Under the Hub Events heading on the staff page: where a saved event shows, and what hiding one does. |  |
+| `staff.events.open` | Change Event | Button on each event under Hub Events: opens its words, photos, people and programme. |  |
+| `staff.events.openName` | Change Event: {{name}} | The Change Event button's name for screen readers, naming the event. | `{{name}}` |
+| `staff.events.new` | New Event | Button under Hub Events: starts an event that is not on the site yet. |  |
+| `staff.events.hidden` | Hidden | Beside an event under Hub Events that is not shown on the site. |  |
+| `staff.events.look` | Look at the page | Link on a saved event under Hub Events: opens the event's page as the site draws it now. |  |
+| `staff.events.up` | Move up | Button on an event under Hub Events: shows it before the event above it. |  |
+| `staff.events.down` | Move down | Button on an event under Hub Events: shows it after the event below it. |  |
+| `staff.events.field.title` | Title | Label of an event's title under Hub Events: the page's heading. |  |
+| `staff.events.field.path` | Address | Label of an event's address under Hub Events. |  |
+| `staff.events.help.path` | The page's address on the site. A new event's address comes from its title; leave it as it is unless the event needs another. | Under the Address label under Hub Events. |  |
+| `staff.events.field.label` | Status Line | Label of an event's status line under Hub Events. |  |
+| `staff.events.help.label` | Over the title: the event's date, and whether it is coming or a look back. | Under the Status Line label under Hub Events. |  |
+| `staff.events.field.lead` | Tagline | Label of an event's tagline under Hub Events, under its title. |  |
+| `staff.events.field.description` | Search Description | Label of an event's search description under Hub Events: the line search engines show for the page. |  |
+| `staff.events.field.body` | Words | Label of an event's paragraphs under Hub Events, under its tagline. |  |
+| `staff.events.help.body` | One paragraph on each line. | Under the Words label under Hub Events. |  |
+| `staff.events.field.details` | Detail Lines | Label of an event's detail lines under Hub Events: its hours and where it is held. |  |
+| `staff.events.help.details` | One line each: the event's hours, then where it is held. | Under the Detail Lines label under Hub Events. |  |
+| `staff.events.field.photos` | Header Photos | Label of an event's header photos under Hub Events. |  |
+| `staff.events.help.photos` | Up to three. The first stands tall; the next two stack beside it, in one block. | Under the Header Photos label under Hub Events. |  |
+| `staff.events.photo` | Photo {{n}} | Label of one photo choice under Hub Events. | `{{n}}` |
+| `staff.events.photo.none` | No Photo | The choice for a photo slot with no photo under Hub Events. |  |
+| `staff.events.field.primaryLabel` | Main Button Words | Label of the words on an event's main button under Hub Events, in its header. |  |
+| `staff.events.field.primaryHref` | Main Button Address | Label of where an event's main button goes, under Hub Events. |  |
+| `staff.events.field.links` | More Buttons | Names an event's other header buttons under Hub Events, beside the main one. |  |
+| `staff.events.link` | Button {{n}} | Heading of one of an event's buttons under Hub Events. | `{{n}}` |
+| `staff.events.field.linkLabel` | Button Words | Label of the words on one of an event's buttons under Hub Events. |  |
+| `staff.events.field.linkHref` | Button Address | Label of where one of an event's buttons goes, under Hub Events. |  |
+| `staff.events.field.linkIcon` | Button Picture | Label of the picture on one of an event's buttons under Hub Events: a choice of the site's pictures. |  |
+| `staff.events.addLink` | Add a Button | Button under an event's buttons under Hub Events: adds one more. |  |
+| `staff.events.removeLink` | Take Away Button {{n}} | Button on one of an event's buttons under Hub Events: takes it away. | `{{n}}` |
+| `staff.events.field.peopleTitle` | People Heading | Label of the heading over the people an event features, under Hub Events. |  |
+| `staff.events.help.peopleTitle` | Over the people this event features. Left empty, the heading reads Featuring. | Under the People Heading label under Hub Events. |  |
+| `staff.events.field.people` | People Featured | Names the people an event features under Hub Events: visiting professionals and speakers. |  |
+| `staff.events.person` | Person {{n}} | Heading of one person an event features, under Hub Events. | `{{n}}` |
+| `staff.events.field.personName` | Name | Label of a featured person's name under Hub Events. |  |
+| `staff.events.field.personRole` | Role or Organisation | Label of a featured person's role or organisation under Hub Events. |  |
+| `staff.events.field.personLine` | Short Line | Label of the short line under a featured person's name under Hub Events. |  |
+| `staff.events.field.personPhoto` | Photo | Label of a featured person's photo under Hub Events: a choice of library photos. |  |
+| `staff.events.addPerson` | Add a Person | Button under an event's people under Hub Events: adds one more. |  |
+| `staff.events.removePerson` | Take Away Person {{n}} | Button on one person under Hub Events: takes them away. | `{{n}}` |
+| `staff.events.field.highlightsTitle` | Highlights Heading | Label of the heading of an event's highlights section under Hub Events. |  |
+| `staff.events.help.highlightsTitle` | A section of short points under the header, with its own photos. Leave the heading empty for no section. | Under the Highlights Heading label under Hub Events. |  |
+| `staff.events.field.highlightsBody` | Highlights Words | Label of the paragraphs of an event's highlights section under Hub Events. |  |
+| `staff.events.field.items` | Highlight Points | Names an event's highlight points under Hub Events. |  |
+| `staff.events.item` | Point {{n}} | Heading of one highlight point under Hub Events. | `{{n}}` |
+| `staff.events.field.itemText` | Point | Label of one highlight point's words under Hub Events. |  |
+| `staff.events.field.itemIcon` | Picture | Label of one highlight point's picture under Hub Events: a choice of the site's pictures. |  |
+| `staff.events.icon.none` | No Picture | The choice for a highlight point with no picture under Hub Events. |  |
+| `staff.events.addItem` | Add a Point | Button under an event's highlight points under Hub Events: adds one more. |  |
+| `staff.events.removeItem` | Take Away Point {{n}} | Button on one highlight point under Hub Events: takes it away. | `{{n}}` |
+| `staff.events.field.highlightsPhotos` | Highlights Photos | Label of an event's highlights photos under Hub Events, beside the points. |  |
+| `staff.events.field.programmeTitle` | Programme Heading | Label of the heading of an event's programme section under Hub Events. |  |
+| `staff.events.help.programmeTitle` | A section listing what is on at the event. Leave the heading empty for no section. | Under the Programme Heading label under Hub Events. |  |
+| `staff.events.field.program` | Programme Colours | Label of which programme's colours an event's programme section wears, under Hub Events. |  |
+| `staff.events.program.peer` | Peer Support Groups | A choice under Programme Colours under Hub Events. |  |
+| `staff.events.program.craft` | Craft Nights | A choice under Programme Colours under Hub Events. |  |
+| `staff.events.program.workshops` | Workshops | A choice under Programme Colours under Hub Events. |  |
+| `staff.events.field.topics` | What Is On | Names an event's programme items under Hub Events. |  |
+| `staff.events.topic` | Item {{n}} | Heading of one programme item under Hub Events. | `{{n}}` |
+| `staff.events.field.topicTerm` | Item Title | Label of one programme item's title under Hub Events. |  |
+| `staff.events.field.topicText` | Item Line | Label of the line under one programme item's title under Hub Events. |  |
+| `staff.events.field.topicHref` | Item Address | Label of where one programme item's title goes, under Hub Events; empty for no link. |  |
+| `staff.events.addTopic` | Add an Item | Button under an event's programme items under Hub Events: adds one more. |  |
+| `staff.events.removeTopic` | Take Away Item {{n}} | Button on one programme item under Hub Events: takes it away. | `{{n}}` |
+| `staff.events.field.programmePhotos` | Programme Photos | Label of an event's programme photos under Hub Events. |  |
+| `staff.events.field.programmeLinks` | Programme Buttons | Names the buttons under an event's programme section, under Hub Events. |  |
+| `staff.events.field.gallery` | More Photos | Label of an event's extra photos under Hub Events. |  |
+| `staff.events.help.gallery` | Shown low on the page, in a row that scrolls sideways. | Under the More Photos label under Hub Events. |  |
+| `staff.events.field.place` | Room for Directions | Label of the room an event's directions section leads to, under Hub Events. |  |
+| `staff.events.place.none` | No Directions Section | The choice for an event with no directions section under Hub Events. |  |
+| `staff.events.field.directionsTitle` | Directions Heading | Label of an event's directions heading under Hub Events. |  |
+| `staff.events.field.shown` | Show this event on the site | The tick on an event under Hub Events: ticked, the event has its page; unticked, it has none. |  |
+| `staff.events.save` | Save Event | Button under an open event: saves it as one change, which publishes. |  |
+| `staff.events.done` | Event saved. | Read out once an event is saved and published. |  |
+| `staff.events.unchanged` | Nothing has changed since you opened this event. | Under an open event when Save Event is pressed with nothing changed. |  |
+| `staff.events.conflict` | Someone saved an event since you opened this one, so the events above are as they now stand. What you typed is still here; Save Event again to save it over them. | Under an open event, when someone else saved an event after this page was opened. |  |
+| `staff.events.error.title` | The title takes up to {{max}} characters, with no markup or web address, and cannot be left empty. | Under an open event when its title is refused. | `{{max}}` |
+| `staff.events.error.words` | {{field}} takes up to {{max}} characters, with no markup or web address. | Under an open event when one of its words is refused, naming the field and its limit. | `{{field}}` `{{max}}` |
+| `staff.events.error.photo` | Choose a photo from the library, or No Photo. | Under an open event when a photo is refused. |  |
+| `staff.events.error.link` | A button needs its words and an address: a page on this site, a full web address, an email or a phone number. | Under an open event when a button is refused. |  |
+| `staff.events.error.path` | That address is taken, or cannot be a page address. Choose another. | Under an open event when its address is refused. |  |
+| `staff.events.error.place` | Choose a room from the list, or No Directions Section. | Under an open event when its room is refused. |  |
+| `staff.events.error.people` | Each person featured needs a name. | Under an open event when a person is refused. |  |
+| `staff.events.error.icon` | Choose a picture from the list, or No Picture. | Under an open event when a highlight point's picture is refused. |  |
 | `staff.sections.open` | Sections | Staff page, button that opens a page's sections. |  |
 | `staff.sections.title` | Sections of {{title}} | Staff page, heading of one page's sections. | `{{title}}` |
 | `staff.sections.up` | Move {{name}} up | Staff page, button name for screen readers. | `{{name}}` |
@@ -1426,6 +1546,7 @@ the site adds the markup.
 | `staff.overview.tool.words` | Saved word changes, when the site last updated, and the edits file. | Staff page, the Overview: the Words on the Site card. |  |
 | `staff.overview.tool.pages` | The site's pages and drafts, their sections, and the menu. | Staff page, the Overview: the Pages on the Site card. |  |
 | `staff.overview.tool.rooms` | Each room's words, its steps and their photos. | Staff page, the Overview: the Rooms card. |  |
+| `staff.overview.tool.events` | Hub Events — each event's own page: its words, photos, people and programme. | Staff page, the Overview: the Hub Events card. |  |
 | `staff.overview.tool.versions` | The versions the site has published, and bringing one back. | Staff page, the Overview: the Earlier Versions card. |  |
 | `staff.overview.tool.settings` | The site's name, its search description and its accessibility email. | Staff page, the Overview: the Site Settings card. |  |
 
@@ -1653,6 +1774,20 @@ the site adds the markup.
 | `navigator.all` | See All Resources | On the Academic Support Navigator: the link to the full Resource Finder, present at every step. |  |
 | `navigator.results` | Resources That Fit | On the Academic Support Navigator: the heading over the resources a finished path leads to. |  |
 | `navigator.start` | Start the two questions | On the Academic Support Navigator: the button on the opening panel that begins the questions. |  |
+
+### Hub event pages (9)
+
+| Key | Default | Where it shows | |
+|---|---|---|---|
+| `hubevent.accessTitle` | Accommodation Requests | Heading of the last-but-one section of every Hub event page, over the line about asking for an accommodation. |  |
+| `hubevent.accessBody` | To request a disability-related accommodation, email accessibility@badgersupports.org. | The line under Accommodation Requests on every Hub event page; the email address in it is the link. |  |
+| `hubevent.ctaTitle` | Find What's Happening Now | Heading of the last section of every Hub event page. |  |
+| `hubevent.ctaBody` | Explore the current peer support group schedule, find ways to get involved, or request email updates. | The line under Find What's Happening Now on every Hub event page. |  |
+| `hubevent.ctaPrimary` | Current Peer Support Groups | The main button of the last section of every Hub event page; it goes to the peer support groups page. |  |
+| `hubevent.ctaGroups` | Get Involved | A button of the last section of every Hub event page; it goes to the get involved page. |  |
+| `hubevent.ctaUpdates` | Request Email Updates | A button of the last section of every Hub event page; it goes to the email updates form. |  |
+| `hubevent.peopleTitle` | Featuring | Heading over the people an event features, on a Hub event page whose event does not name its own heading for them. |  |
+| `hubevent.galleryLabel` | More photos from this event | The name screen readers give the row of extra photos on a Hub event page, when the event gives the row no heading of its own. |  |
 
 ## Also edited in Connect
 

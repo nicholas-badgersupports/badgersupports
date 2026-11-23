@@ -29,6 +29,7 @@ const FIELD_TYPES = {
   link: "a label and an address (a page on this site, Connect, or another site), and an optional icon",
   "link[]": "several links, in order",
   "media[]": "photos, in order: each a library photo or a pasted link (see Photos)",
+  "resource[]": "resource cards to show, in order: each a resource's `id` and the `topic` label the page's list gives it",
   termlist: "rows of a term and its text (and, for topics, an optional link)",
   rows: "doors, each with an id, a title, an icon, optional text, an optional form whose open/closed switch they show, and one link (one door may be marked primary); a door may carry more: a panel under the doors with an anchor, an optional photo, a title, a lead line, lists (each with a label, numbered or ticked, and its items), a closing line and one link",
   circles: "up to three photo circles, each with a photo (a library photo or a pasted link), a label, an address and an icon",

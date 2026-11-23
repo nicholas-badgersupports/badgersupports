@@ -17,8 +17,21 @@
         "href": "tel:+16082655600"
       },
       "photos": [
-        "m-take-ribbon",
-        "m-window-hand-heart"
+        "m-peer-group-cards"
+      ],
+      "floatCards": [
+        {
+          "id": "greater-university-tutoring-service",
+          "topic": "Academic Support"
+        },
+        {
+          "id": "the-open-seat",
+          "topic": "Basic Needs"
+        },
+        {
+          "id": "mental-health-services",
+          "topic": "Mental Health & Wellbeing"
+        }
       ]
     },
     {

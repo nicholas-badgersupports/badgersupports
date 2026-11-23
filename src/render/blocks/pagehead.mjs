@@ -36,6 +36,7 @@ import { html } from "../html.mjs";
 import { link } from "../context.mjs";
 import { picture } from "../media.mjs";
 import { ribbonArt, isRibbonTone } from "./ribbons.mjs";
+import { resourceCard, resourceVisible } from "./resources.mjs";
 
 function sidePanel(b) {
   const items = b.sideItems || [];
@@ -116,8 +117,8 @@ function yearStops(ctx) {
 export default {
   type: "pagehead",
   label: "Page opening",
-  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory|press|routes", sideTitle: "text", sideItems: "rows", timeline: "boolean" },
-  data: ["alumni"],
+  fields: { title: "text!", label: "text", lead: "text", body: "paragraphs", primary: "link", links: "link[]", photos: "media[]", firstLinkPrimary: "boolean", whole: "boolean", heroRibbons: "list", side: "choice:none|directory|press|routes", sideTitle: "text", sideItems: "rows", timeline: "boolean", floatCards: "resource[]" },
+  data: ["alumni", "resources"],
   analytics: "page",
   loading: "eager",
   render(b, ctx) {
@@ -128,6 +129,16 @@ export default {
     const primary = b.primary || (b.firstLinkPrimary ? b.links?.[0] : null);
     const links = b.firstLinkPrimary && !b.primary ? b.links?.slice(1) : b.links;
     const actions = primary || links?.length;
+    /* An opening may float real resource cards in its open space: `floatCards` names records
+       by id, each with the topic label the page's own list gives it, and the resource list's
+       own resourceCard draws them, so a floating card is the card itself. A record the page's
+       list would not show does not float. Only the Resources opening sets the field. */
+    const floaters = (b.floatCards || []).map((f) => {
+      const r = (ctx.data.resources || []).find((x) => x && x.id === f.id && resourceVisible(x));
+      return r ? { r, topic: f.topic } : null;
+    }).filter(Boolean);
+    const floatTopicOf = new Map(floaters.map(({ r, topic }) => [r.primaryCategory, topic]));
+    const floatHtml = floaters.length ? html`<ul class="res-float">${floaters.map(({ r }) => resourceCard(r, ctx, floatTopicOf))}</ul>` : "";
     const side = sidePanel(b);
     const stops = b.timeline ? yearStops(ctx) : [];
     return html`<section class="${["pagehead band", photos.length ? `has-photos has-${photos.length}` : null, b.whole ? "is-whole" : null, heroTones.length ? "has-hero-ribbons" : null, side ? "has-side" : null].filter(Boolean).join(" ")}" aria-labelledby="${b.id}-h" data-block="${b.id}"><div class="wrap">
@@ -142,6 +153,7 @@ export default {
       ${(links || []).map((l) => link(ctx, l.href, l.label, { class: "go", icon: l.icon || "arrow" }))}
     </div>` : ""}
   ${photos.length ? html`<div class="pagehead-photos">${photos.map((m, i) => html`<div class="photo">${picture(ctx, m, { sizes: sizes[i], eager: true, priority: i === 0 ? "high" : null })}</div>`)}</div>` : ""}
+  ${floatHtml}
   ${side}
   ${stops.length > 1 ? html`<ol class="pagehead-timeline">${stops.map((s, i) => html`<li class="pagehead-stop" style="--d:${(i * 0.07).toFixed(2)}s"><span class="pagehead-stop-years">${s.years}</span><span class="pagehead-stop-dot" aria-hidden="true"></span><span class="pagehead-stop-org">${s.lead ? s.org : ""}</span></li>`)}</ol>` : ""}
 </div>${heroTones.length ? html`<div class="pagehead-ribbons" aria-hidden="true">${heroTones.map((t, i) => html`<span class="ph-ribbon">${ribbonArt(t, `${b.id}-hero-${i}`)}</span>`)}</div>` : ""}</section>`;

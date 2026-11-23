@@ -2273,3 +2273,42 @@ body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }
 @media (max-width: 860px) {
   .pagehead-side { margin-top: var(--s4); }
 }
+
+/* the resources opening floats three of the page's own resource cards in a row along a
+   shallow curve at the foot of the band: the side cards sit a little higher and lean
+   outward (-4.5deg / +4.5deg), the centre card (Mental Health Services) stands upright,
+   lowest, and in front, so their bottoms trace the curve, dipping at the centre. The arc
+   rises in once on load, the side cards first and the front card last, then rests. A
+   floating card shows the card's face in compact form: its Recommended For line, phone
+   number, place chip, report links and Additional Details stay with the full card in the
+   list below, and every floating card shows the same parts, its summary clipped at the
+   same two lines. The heading, the crisis lines and the phone button are never covered.
+   On a phone the cards stack in a grid under everything; reduced motion rests the arc. */
+[data-page="pg-resources"] [data-block="b-res-head"] .wrap { position: relative; }
+.res-float { position: absolute; inset: 0; list-style: none; margin: 0; padding: 0; pointer-events: none; }
+.res-float .res-card { position: absolute; width: 16.5rem; padding: var(--s3); box-shadow: var(--lift); pointer-events: auto; transform: rotate(var(--tilt, 0deg)); animation: res-arc-in .7s ease-out both; }
+.res-float .res-card h3 { font-size: 1.125rem; }
+.res-float .res-report, .res-float .res-more, .res-float .res-fit, .res-float .res-tel { display: none; }
+.res-float .res-foot { min-height: 0; }
+.res-float .res-tags .res-tag:last-child { display: none; }
+.res-float .res-what { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+@keyframes res-arc-in { from { opacity: 0; transform: translateY(20px) rotate(var(--tilt, 0deg)); } to { opacity: 1; transform: translateY(0) rotate(var(--tilt, 0deg)); } }
+@media (min-width: 861px) {
+  [data-page="pg-resources"] [data-block="b-res-head"] { padding-bottom: 15.5rem; }
+  /* DOM order is GUTS, The Open Seat, Mental Health Services; on the arc they stand
+     GUTS left, Mental Health Services centre-front, The Open Seat right */
+  .res-float .res-card:nth-child(1) { left: .75rem; top: 18.5rem; --tilt: -4.5deg; z-index: 3; animation-delay: 0s; }
+  .res-float .res-card:nth-child(2) { left: 20.25rem; top: 19.5rem; --tilt: 4.5deg; z-index: 4; animation-delay: .12s; }
+  .res-float .res-card:nth-child(3) { left: 10.5rem; top: 19.5rem; --tilt: 0deg; z-index: 5; animation-delay: .24s; }
+}
+@media (max-width: 860px) {
+  .res-float { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); margin-top: var(--s5); pointer-events: auto; animation: none; }
+  .res-float .res-card { position: static; width: auto; transform: none; animation: none; }
+}
+@media (max-width: 560px) {
+  .res-float { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .res-float, .res-float .res-card { animation: none; }
+}
+/* cards in one row share their three lines, so a role that wraps to two lines (common two to a row

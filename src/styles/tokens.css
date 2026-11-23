@@ -165,16 +165,20 @@
   --lh-body: 1.6;
   --lh-display: .95;
 
-  /* space */
+  /* space. The top of the scale tightened 23 Nov 2026 (owner: the spacing between elements
+     across the site was too large): --s5 to --s8 each step down, so section padding (the
+     --s7 band), page heads, card padding and the gaps between cards and columns all sit
+     closer, while --s0 to --s4 — the steps inside text and inside small cards — stay where
+     they were, so reading and tap spacing do not change. */
   --s0: .25rem;
   --s1: .5rem;
   --s2: .75rem;
   --s3: 1rem;
   --s4: 1.5rem;
-  --s5: 2rem;
-  --s6: 3rem;
-  --s7: 4.5rem;
-  --s8: 6.5rem;
+  --s5: 1.75rem;
+  --s6: 2.25rem;
+  --s7: 3rem;
+  --s8: 4.5rem;
   --gutter: clamp(1rem, .55rem + 2vw, 2.5rem);
   --page: 76rem;
   --measure: 62ch;

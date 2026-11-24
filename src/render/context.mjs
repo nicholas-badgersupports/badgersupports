@@ -24,7 +24,7 @@ export const PROGRAMS = ["peer", "craft", "workshops"];
 /* liveEvents: the events came from Connect, so between publishes the page asks Connect's current list
    again (src/render/layout.mjs, netlify/lib/live-events.mjs) and a calendar button opens the file the
    API writes from it (src/render/ics.mjs calendarHref), not the one written at the last publish. */
-export function makeContext({ site, media, builtPaths, programs = new Map(), routes = [], data = {}, text, today, prototype = false, assets = {}, liveEvents = false, path = null, formTopic = null, now = null }) {
+export function makeContext({ site, media, builtPaths, programs = new Map(), routes = [], data = {}, text, today, prototype = false, assets = {}, liveEvents = false, path = null, formTopic = null, now = null, googleForms = {} }) {
   const mediaById = new Map((media?.items || []).map((m) => [m.id, m]));
   return {
     site,
@@ -33,6 +33,7 @@ export function makeContext({ site, media, builtPaths, programs = new Map(), rou
     data,
     formTopic,
     now,
+    googleForms,
     today: today || chicagoDate(),
     prototype,
     assets,
@@ -86,6 +87,12 @@ export function resolveLink(ctx, href) {
   const query = queryAt < 0 ? "" : beforeHash.slice(queryAt);
   const path = (queryAt < 0 ? beforeHash : beforeHash.slice(0, queryAt)).replace(/index\.html$/, "");
   const norm = path === "/" ? "/" : path.replace(/\/?$/, "/");
+  /* A form switched to a Google Form (its link is in the form's settings, read at every draw by
+     the pages function; a build carries none): a link to its page goes straight to the Google
+     address, dropping the page's own query — a topic it names is the built-in form's, not the
+     Google Form's. */
+  const switched = /^\/forms\/([a-z0-9-]+)$/.exec(norm.replace(/\/$/, ""))?.[1];
+  if (switched && ctx.googleForms?.[switched]) return { href: ctx.googleForms[switched], external: true };
   if (ctx.builtPaths.has(norm)) return { href: norm + query + fragment };
   ctx.pendingLinks.add(norm);
   const live = ctx.liveFor.get(norm) ?? path.replace(/\/$/, "");

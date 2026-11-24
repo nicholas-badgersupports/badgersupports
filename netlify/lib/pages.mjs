@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
+import { many } from "./db.mjs";
 import { sharedNow, combineShared } from "./live-content.mjs";
 import { serverContent } from "./content.mjs";
 import { currentRevision } from "./published.mjs";
@@ -82,6 +83,24 @@ async function formsNow(page, now) {
     return { forms: null, failed: true };
   }
   return { forms, scheduled: Object.values(forms).some(f => f.intakeWindow?.opensAt || f.intakeWindow?.closesAt) };
+}
+
+/* Every form switched to a Google Form, as { key: address }: read at every draw, as a form's
+   switch is, so a save is in force as soon as its pages clear the CDN. Links to a switched
+   form's page go straight to the address (src/render/context.mjs), and the form's own page
+   answers with a redirect to it. When the rows cannot be read, no form counts as switched. */
+async function googleFormsNow() {
+  try {
+    const map = {};
+    for (const r of await many("SELECT form_key, settings FROM form_settings")) {
+      const url = r.settings?.googleFormUrl;
+      if (typeof url === "string" && url) map[r.form_key] = url;
+    }
+    return map;
+  } catch (e) {
+    console.error(`pages: Google Form switches read as none (${e.code || e.message})`);
+    return {};
+  }
 }
 
 /* The cache tags a form's switch touches: its state answer (router.mjs) and every page that shows it. When the
@@ -236,8 +255,14 @@ export async function handlePage(req, { today = chicagoDate(), now = Date.now() 
     const shown = page && !topicOff ? page : site.pages.find((p) => p.id === "pg-not-found");
     const tags = `page,page:${shown.id}`;
     const { forms, failed, scheduled } = await formsNow(shown, now);
+    const googleForms = await googleFormsNow();
+    /* A switched form's own page is not drawn: the visit goes straight to its Google Form. The
+       redirect is held like a page and tagged with the form, so the save that sets or clears
+       the link clears this answer with the form's other pages. */
+    const away = page && !topicOff && forms ? Object.entries(forms).find(([k, f]) => f.googleForm && trimSlash(pathname) === `/forms/${k}`) : null;
+    if (away) return new Response(null, { status: 302, headers: { location: away[1].googleForm, ...base, ...PAGE_CACHE, "netlify-cache-tag": `form:${away[0]},page:${page.id}` } });
     const shownForms = forms && offPrograms.size ? Object.fromEntries(Object.entries(forms).map(([k, f]) => [k, withoutProgramOptions(f, offPrograms)])) : forms;
-    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, shownForms, { formTopic, now }), { ...(scheduled || fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
+    return html(notFound ? 404 : 200, renderSitePage(snap, site, shown, today, shownForms, { formTopic, now, googleForms }), { ...(scheduled || fault || Object.values(shared || {}).some(r => r?.stale) ? { "cache-control": "no-store", "netlify-cdn-cache-control": "no-store" } : failed ? FALLBACK_CACHE : snap.shared ? { ...PAGE_CACHE, "netlify-cdn-cache-control": "public, durable, s-maxage=1200, stale-while-revalidate=300" } : PAGE_CACHE), "netlify-cache-tag": tags, "x-bss-revision": revision ? String(revision.n) : "0" });
   } catch (e) {
     console.error(`pages: drawn from the build's file instead (${e.code || e.message})`);
     if (snap?.shared?.exports?.team && (teamPath(pathname) || wantsTeam)) {
@@ -291,7 +316,8 @@ export async function previewResponse(pageId, { edits, structure, today = chicag
     const page = [...site.pages, ...site.drafts].find((p) => p.id === pageId) || (failedTeam ? site.pages.find(p => p.id === "pg-about-team") : null);
     if (!page) return null;
     const { forms } = await formsNow(page, now);
-    return new Response(renderSitePage(c.render, site, page, today, forms, { now }), { status: failedTeam ? 503 : 200, headers });
+    const googleForms = await googleFormsNow();
+    return new Response(renderSitePage(c.render, site, page, today, forms, { now, googleForms }), { status: failedTeam ? 503 : 200, headers });
   } catch (e) {
     if (!wantsTeam) throw e;
     return new Response(c.text["team.unavailable"], { status: 503, headers: { ...headers, "content-type": "text/plain; charset=utf-8" } });

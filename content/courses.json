@@ -1,5 +1,5 @@
 {
-  "about": "The interest mapping for Discover Classes by Interest (EXPLORE-F-CLASSES), read by ops/courses.mjs. Each interest names UW Course Search subjects by their subject codes (the aggregate at public.enroll.wisc.edu names them) and may also name breadth codes (breadths: B, H, L, N, P or S); the shipped mapping uses subjects only. Edit the mapping here; the course data in content/fixtures/courses.json is pulled from it. The mapping is reviewed by student staff before release (docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md).",
+  "about": "The interest mapping for Discover Classes by Interest (EXPLORE-F-CLASSES), read by ops/courses.mjs. Each interest names UW Course Search subjects by their subject codes (the aggregate at public.enroll.wisc.edu names them) and may also name breadth codes (breadths: B, H, L, N, P or S); the shipped mapping uses subjects only. Edit the mapping here; the course data in content/fixtures/courses.json is pulled from it. The mapping is reviewed by student staff before release (docs/archive/EXPLORE-CAMPUS-QUEUE-2026-11-10.md).",
   "interests": [
     {
       "id": "creativity",

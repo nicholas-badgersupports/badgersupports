@@ -12,4 +12,4 @@ The Public repository is [nicholas-badgersupports/badgersupports](https://github
 
 ## Historical starting points
 
-The first reachable main commit is `ed4ac3a` (20 October 2026). The [owner brief](../docs/DECISIONS.md) and [predecessor route inventory](../docs/research/ROUTES.md) date to 19 October. The [23 October](../docs/OVERNIGHT-RUN-2026-10-23.md) and [24–25 October](../docs/OVERNIGHT-RUN-2026-10-24.md) records describe several changes inside broad commits. Check dated records against newer deploys and current code, especially before carrying forward a blocker or saying a form is open.
+The first reachable main commit is `ed4ac3a` (20 October 2026). The [owner brief](../docs/DECISIONS.md) and [predecessor route inventory](../docs/research/ROUTES.md) date to 19 October. The [23 October](../docs/archive/OVERNIGHT-RUN-2026-10-23.md) and [24–25 October](../docs/archive/OVERNIGHT-RUN-2026-10-24.md) records describe several changes inside broad commits. Check dated records against newer deploys and current code, especially before carrying forward a blocker or saying a form is open.

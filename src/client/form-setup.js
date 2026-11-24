@@ -5,7 +5,7 @@ const el = (tag, props = {}, ...children) => {
   node.append(...children.filter(x => x !== null && x !== false && x !== undefined));
   return node;
 };
-const fields = ["title", "introduction", "closedMessage", "opensAt", "deadline", "closesAt"];
+const fields = ["title", "introduction", "closedMessage", "opensAt", "deadline", "closesAt", "googleFormUrl"];
 const dates = new Set(["opensAt", "deadline", "closesAt"]);
 const labelKey = (key, form) => key === "deadline" && form.key === "staff-application" ? "priority" : key === "title" ? "titleLabel" : key;
 
@@ -40,8 +40,8 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
     b.addEventListener("click", () => { if (!pending) run(b); }); return b;
   };
   const addField = key => {
-    const date = dates.has(key), input = el(date || key === "title" ? "input" : "textarea", {
-      ...(date ? { type: "datetime-local" } : key === "title" ? { type: "text", maxLength: 200, required: true } : { rows: 4, maxLength: 8000, required: key === "closedMessage" }),
+    const date = dates.has(key), input = el(date || key === "title" || key === "googleFormUrl" ? "input" : "textarea", {
+      ...(date ? { type: "datetime-local" } : key === "title" ? { type: "text", maxLength: 200, required: true } : key === "googleFormUrl" ? { type: "text", maxLength: 2000 } : { rows: 4, maxLength: 8000, required: key === "closedMessage" }),
       value: (date ? draft[key] : draft[key] ?? form.defaults[key]) || "",
       id: `setup-${form.key}-${key}`,
     });
@@ -72,7 +72,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
       if (form.canSwitch) {
         const select = el("select", { id: "setup-state" }, ...["keep", "open", "closed"].map(value => el("option", { value, textContent: t(`staff.setup.state.${value}`) })));
         select.value = availability; controls.state = select;
-        content.append(el("div", { className: "field" }, el("label", { htmlFor: select.id, textContent: t("staff.setup.availability") }), select), ...["opensAt", "deadline", "closesAt"].map(addField));
+        content.append(el("div", { className: "field" }, el("label", { htmlFor: select.id, textContent: t("staff.setup.availability") }), select), ...["opensAt", "deadline", "closesAt"].map(addField), addField("googleFormUrl"));
       } else content.append(el("p", { textContent: t("staff.setup.datesReadOnly") }));
       const warning = form.key === "email-list" ? "membership" : ["staff-application", "volunteer-application", "recommendation-letter"].includes(form.key) ? "recruitment" : form.key === "resource-request" ? "materials" : "delivery";
       content.append(el("p", { className: "staff-note", textContent: t(`staff.setup.warning.${warning}`) }));
@@ -90,7 +90,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
       content.append(el("p", { className: "staff-note", textContent: t("staff.setup.deliveryNote") }));
       if (connectUrl) content.append(el("p", {}, el("a", { href: `${connectUrl}/`, target: "_blank", rel: "noopener", textContent: t("staff.answers.openConnect") })));
     } else {
-      content.append(el("p", { textContent: t("staff.setup.saved", { title: form.title }) }), el("p", { textContent: t(form.stateReason === "scheduled" ? "staff.formSettings.enabledLater" : form.stateReason === "ended" ? "staff.formSettings.ended" : form.state === "open" ? "staff.switch.opened" : "staff.switch.closed", { title: form.title }) }),
+      content.append(el("p", { textContent: t("staff.setup.saved", { title: form.title }) }), el("p", { textContent: t(form.settings?.googleFormUrl ? "staff.setup.googleSaved" : form.stateReason === "scheduled" ? "staff.formSettings.enabledLater" : form.stateReason === "ended" ? "staff.formSettings.ended" : form.state === "open" ? "staff.switch.opened" : "staff.switch.closed", { title: form.title }) }),
         el("p", {}, el("a", { href: `/forms/${encodeURIComponent(form.key)}/`, target: "_blank", rel: "noopener", textContent: t("staff.setup.viewForm") })));
       actions.append(button("staff.setup.another", () => { index = 0; chosen = ""; form = null; draft = null; render(); }), button("staff.setup.done", () => onClose(form.key), true));
       if (focus) title.focus(); return;
@@ -111,7 +111,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
     const response = await call("/api/staff/forms").catch(() => ({ status: 0, body: {} })); pending = false;
     const latest = response.body.forms?.find(f => f.key === form.key);
     if (response.status !== 200 || !latest?.settings || (!latest.canEdit && !latest.canSwitch)) { showError(response); return; }
-    if ([...touched].some(key => dates.has(key) ? !latest.canSwitch : !latest.canEdit) || (availability !== "keep" && !latest.canSwitch)) { showError({ status: 403, body: {} }); return; }
+    if ([...touched].some(key => dates.has(key) || key === "googleFormUrl" ? !latest.canSwitch : !latest.canEdit) || (availability !== "keep" && !latest.canSwitch)) { showError({ status: 403, body: {} }); return; }
     const edits = Object.fromEntries([...touched].map(key => [key, draft[key]]));
     form = latest; baseline = { ...latest.settings }; draft = { ...latest.settings, ...edits };
     index = 3; render(); error.hidden = false; error.textContent = t("staff.setup.reloaded"); say(error.textContent);
@@ -129,7 +129,7 @@ export function formSetupWizard({ forms, connectUrl, call, say, busy, onSaved, o
     const response = await call(`/api/staff/forms/${encodeURIComponent(form.key)}/setup`, { method: "POST", body: { settings: draft, state: availability, expectedState: form.manualState || form.state, formVersion: form.definitionVersion, ...(availability === "open" ? { confirm: form.key } : {}) } }).catch(() => ({ status: 0, body: {} }));
     done(); pending = false; box.removeAttribute("aria-busy");
     if (!box.isConnected) return;
-    if (response.status !== 200) { if (["settings.date", "settings.order"].includes(response.body.error)) index = 2; else if (response.body.error === "settings.words") index = 1; render(false); showError(response); return; }
+    if (response.status !== 200) { if (["settings.date", "settings.order", "settings.url"].includes(response.body.error)) index = 2; else if (response.body.error === "settings.words") index = 1; render(false); showError(response); return; }
     form = response.body.forms.find(f => f.key === form.key); allowed[allowed.findIndex(f => f.key === form.key)] = form; onSaved(form); index = 4; render();
     if (response.body.purgeError) content.append(el("p", { textContent: t("staff.switch.slow") }));
     say(t("staff.setup.saved", { title: form.title }));

@@ -267,7 +267,7 @@
    one 2px line (the house card's edge) runs around the pair, rounded at the very
    top and the very bottom only. At the seam both halves are square and neither
    carries a border, so the pale card flows into the photo with no bump. The
-   controls stay below the frame, as they were. */
+   controls lie on the photo itself (owner, 23 Nov 2026). */
 .place:has(+ .week-photos) {
   border: 2px solid var(--line); border-bottom: 0;
   border-radius: var(--r-card) var(--r-card) 0 0;
@@ -354,8 +354,10 @@
    column's width (20rem on desktop, the full card width on a phone) and the 3:2 crop, so
    the faces in each photo stay readable at that size. One photo at a time; the track
    scrolls sideways by touch, and the controls (shown with the script) walk it a photo
-   at a time. */
-.week-photos { margin-top: 0; min-width: 0; }
+   at a time. The controls sit on the photo — the arrows at its left and right edges,
+   centred on its height, the dots along its foot, centred — not in a row under the
+   frame, where they read as out of place (owner, 23 Nov 2026). */
+.week-photos { margin-top: 0; min-width: 0; position: relative; }
 .carousel-track {
   display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
   overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
@@ -364,14 +366,17 @@
 .carousel-track::-webkit-scrollbar { display: none; }
 .carousel-slide { scroll-snap-align: start; }
 .carousel-slide .photo { aspect-ratio: 3 / 2; border-radius: var(--r-card); }
-.carousel-controls { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); }
-.js .carousel-controls { display: flex; }
+.carousel-controls { display: none; position: absolute; inset: 0; pointer-events: none; }
+.js .carousel-controls { display: block; }
 .carousel-controls > button {
+  position: absolute; top: 50%; transform: translateY(-50%); pointer-events: auto;
   width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); background: var(--paper); color: var(--accent);
   cursor: pointer; display: grid; place-items: center; flex: none;
 }
+.carousel-controls > [data-carousel-prev] { left: var(--s2); }
+.carousel-controls > [data-carousel-next] { right: var(--s2); }
 .carousel-controls > button svg { width: 16px; height: 16px; }
-.carousel-dots { display: flex; gap: var(--s1); margin-inline: auto; }
+.carousel-dots { position: absolute; left: 50%; bottom: var(--s1); transform: translateX(-50%); display: flex; gap: var(--s1); pointer-events: auto; }
 .carousel-dots button {
   width: 44px; height: 44px; border: 0; background: none; padding: 0;
   cursor: pointer; display: grid; place-items: center;
@@ -381,15 +386,6 @@
   background: var(--accent); opacity: .35;
 }
 .carousel-dots button[aria-current="true"] span { opacity: 1; }
-/* A phone is too narrow for the arrows and five dots in one row: the dots take their own
-   centred line under the arrows instead of pushing the next button out of the card. */
-@media (max-width: 560px) {
-  .carousel-controls { flex-wrap: wrap; }
-  .carousel-controls > [data-carousel-next] { margin-left: auto; }
-  .carousel-dots { order: 3; flex-basis: 100%; justify-content: center; margin-top: var(--s1); }
-  .carousel-dots button { width: 44px; height: 44px; }
-}
-
 @media (max-width: 860px) {
   .week-card { grid-template-columns: 1fr; gap: var(--s4); padding: var(--s4); }
   .week-head { position: static; }
@@ -1447,6 +1443,15 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .expect.has-photos.is-flip .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, .95fr); }
 .expect.is-flip .expect-photos { order: 2; }
 .expect + .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+
+/* Separation P9 (23 November 2026): on the two request pages the same kind of card
+   stood on two grounds — on Request a Workshop the first card on the bare cream while
+   its four siblings stood on the deep ground, on Request a Program the ground flipping
+   halfway down the list. Each page now gives its whole card run the one deep ground;
+   the cards themselves do not change. */
+[data-page="pg-request-a-workshop"] .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+[data-page="pg-request-a-program"] .program--topics,
+[data-page="pg-request-a-program"] .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
 .expect .more-links { margin-top: var(--s5); }
 .expect-words > .expect-audience { font-size: var(--fs-body); font-weight: 600; }
 .expect-preview { border-block: var(--rule-line); margin-top: var(--s4); }
@@ -1878,6 +1883,7 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .staff-chip { display: inline-block; padding: .15rem .65rem; border-radius: var(--r-chip); font: 600 var(--fs-small)/1.4 var(--font-body); }
 .staff-chip.is-open { background: var(--ok-tint); color: var(--ok); }
 .staff-chip.is-closed { background: var(--paused-tint); color: var(--paused); }
+.staff-chip.is-elsewhere { background: var(--workshops-tint); color: var(--workshops-deep); }
 .staff-delivery { color: var(--ok); font-weight: 600; }
 .staff-delivery.is-failing { color: var(--danger); }
 .staff-answers { margin-top: var(--s3); }
@@ -2348,6 +2354,33 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
    own padding, and everything inside them, stays as the boxed rule above leaves it. */
 body[data-page="pg-ribbons"] #b-rb-making,
 body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }
+
+/* ============ separation: band grounds alternate by assignment (23 November 2026) ============
+   On the three pages where long runs of sections shared the bare cream ground, the deep
+   ground the site already owns (--tex-deep) is assigned band by band, so no two
+   neighbouring bands share a ground. Only the section ground changes: a section that
+   takes the ground keeps its inner cards exactly as they are, and no new colour or
+   component is added. */
+/* Resources: the topic list takes the deep ground between the tinted head and the
+   closing note. */
+[data-page="pg-resources"] [data-block="b-res-list"] { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+/* What We Do: the Peer Support Groups band, the Craft Nights gallery and the closing
+   pair (More Ways We Show Up with the dual-registration note under it, one section in
+   two parts) take the deep ground; the Craft Nights band between them gives the deep
+   ground back, so the pair of expect bands in a row reads deep-then-cream the other
+   way round from the shared .expect + .expect rule. */
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-groups"],
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-craft-gallery"],
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"],
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-uhs"] { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-craft"].expect { background: none; }
+/* Home: the Peer Support Groups feature, the Wellness Workshops band and the Get
+   Involved band take the deep ground, parting the cream runs on either side of the
+   SPILL band and the wall. The feeling band keeps the page ground: its own ground is
+   separate work, and the deep Get Involved band now parts it from the wall. */
+[data-page="pg-home"] [data-block="b-home-groups"],
+[data-page="pg-home"] [data-block="b-home-workshops"],
+[data-page="pg-home"] [data-block="b-home-involved"] { background: var(--tex-deep); background-blend-mode: normal, multiply; }
 
 /* ============ stranded hero buttons (23 Nov 2026) ============
    Six pages take the team/resources treatment: words and buttons stacked in the left column,

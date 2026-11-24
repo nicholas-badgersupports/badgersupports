@@ -119,12 +119,13 @@ export function hidePrograms(composed, off) {
 
 /* One page as HTML. `forms`, when given, replaces those forms' definitions in the snapshot: the forms as
    they stand now, switch included (netlify/lib/pages.mjs). */
-export function renderSitePage(snap, composed, page, today, forms = null, { formTopic = null, now = null } = {}) {
+export function renderSitePage(snap, composed, page, today, forms = null, { formTopic = null, now = null, googleForms = null } = {}) {
   const base = composed.data || snap.data;
   const data = forms ? { ...base, forms: { ...base.forms, ...forms } } : base;
   const ctx = makeContext({
     site: composed.site, media: snap.media, builtPaths: composed.builtPaths || snap.builtPaths, programs: new Map([...composed.programs, ...sectionPrograms(page)]),
     routes: snap.routes, data, text: composed.text, today, prototype: snap.prototype, assets: snap.assets, liveEvents: snap.liveEvents, path: page.path || null, formTopic, now,
+    googleForms: googleForms || {},
   });
   const ownForm = (page.blocks || []).find(b => b.type === "form" && forms?.[b.form]?.settingsTitle);
   return String(renderPage(ctx, ownForm ? { ...page, title: forms[ownForm.form].title } : page));

@@ -267,7 +267,7 @@
    one 2px line (the house card's edge) runs around the pair, rounded at the very
    top and the very bottom only. At the seam both halves are square and neither
    carries a border, so the pale card flows into the photo with no bump. The
-   controls stay below the frame, as they were. */
+   controls lie on the photo itself (owner, 23 Nov 2026). */
 .place:has(+ .week-photos) {
   border: 2px solid var(--line); border-bottom: 0;
   border-radius: var(--r-card) var(--r-card) 0 0;
@@ -354,8 +354,10 @@
    column's width (20rem on desktop, the full card width on a phone) and the 3:2 crop, so
    the faces in each photo stay readable at that size. One photo at a time; the track
    scrolls sideways by touch, and the controls (shown with the script) walk it a photo
-   at a time. */
-.week-photos { margin-top: 0; min-width: 0; }
+   at a time. The controls sit on the photo — the arrows at its left and right edges,
+   centred on its height, the dots along its foot, centred — not in a row under the
+   frame, where they read as out of place (owner, 23 Nov 2026). */
+.week-photos { margin-top: 0; min-width: 0; position: relative; }
 .carousel-track {
   display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
   overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
@@ -364,14 +366,17 @@
 .carousel-track::-webkit-scrollbar { display: none; }
 .carousel-slide { scroll-snap-align: start; }
 .carousel-slide .photo { aspect-ratio: 3 / 2; border-radius: var(--r-card); }
-.carousel-controls { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); }
-.js .carousel-controls { display: flex; }
+.carousel-controls { display: none; position: absolute; inset: 0; pointer-events: none; }
+.js .carousel-controls { display: block; }
 .carousel-controls > button {
+  position: absolute; top: 50%; transform: translateY(-50%); pointer-events: auto;
   width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent); background: var(--paper); color: var(--accent);
   cursor: pointer; display: grid; place-items: center; flex: none;
 }
+.carousel-controls > [data-carousel-prev] { left: var(--s2); }
+.carousel-controls > [data-carousel-next] { right: var(--s2); }
 .carousel-controls > button svg { width: 16px; height: 16px; }
-.carousel-dots { display: flex; gap: var(--s1); margin-inline: auto; }
+.carousel-dots { position: absolute; left: 50%; bottom: var(--s1); transform: translateX(-50%); display: flex; gap: var(--s1); pointer-events: auto; }
 .carousel-dots button {
   width: 44px; height: 44px; border: 0; background: none; padding: 0;
   cursor: pointer; display: grid; place-items: center;
@@ -381,15 +386,6 @@
   background: var(--accent); opacity: .35;
 }
 .carousel-dots button[aria-current="true"] span { opacity: 1; }
-/* A phone is too narrow for the arrows and five dots in one row: the dots take their own
-   centred line under the arrows instead of pushing the next button out of the card. */
-@media (max-width: 560px) {
-  .carousel-controls { flex-wrap: wrap; }
-  .carousel-controls > [data-carousel-next] { margin-left: auto; }
-  .carousel-dots { order: 3; flex-basis: 100%; justify-content: center; margin-top: var(--s1); }
-  .carousel-dots button { width: 44px; height: 44px; }
-}
-
 @media (max-width: 860px) {
   .week-card { grid-template-columns: 1fr; gap: var(--s4); padding: var(--s4); }
   .week-head { position: static; }

@@ -52,18 +52,6 @@
       ]
     },
     {
-      "id": "b-team-cta",
-      "type": "cta",
-      "title": "Interested in Badger Supports Leadership?",
-      "primary": {
-        "label": "Get Involved",
-        "href": "/join/get-involved/"
-      },
-      "photos": [
-        "m-workshop-housing-group"
-      ]
-    },
-    {
       "id": "b-team-advisors",
       "type": "team",
       "anchor": "b-team-advisors",
@@ -75,6 +63,18 @@
         }
       ],
       "card": "title"
+    },
+    {
+      "id": "b-team-cta",
+      "type": "cta",
+      "title": "Interested in Badger Supports Leadership?",
+      "primary": {
+        "label": "Get Involved",
+        "href": "/join/get-involved/"
+      },
+      "photos": [
+        "m-workshop-housing-group"
+      ]
     }
   ]
 }

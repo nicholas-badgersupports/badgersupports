@@ -81,7 +81,7 @@ first. The switch changes one record.
    Netlify's matcher does, so the answer no longer depends on whether Netlify applies `_redirects` before the page
    function (still not documented). Tests: `test/published.test.mjs`.
 5. **The privacy policy** describes Google Sites, Analytics and Forms. A draft of what the site does now is
-   `docs/PRIVACY-POLICY-DRAFT-2026-10-30.md` (queue item 4); after the owner's and a legal review it replaces
+   `docs/archive/PRIVACY-POLICY-DRAFT-2026-10-30.md` (queue item 4); after the owner's and a legal review it replaces
    `content/pages/privacy-policy.json`.
 6. **Publish** the commit the switch will serve, with `../PUBLISH-WEBSITE-2026-10-23.command` (setup folder, parts 2 and 3).
    `2bab970`, with the item 3a fix, was published 30 Oct (deploy `6ae54b99`); publish again if the site changes first.

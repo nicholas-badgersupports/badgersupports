@@ -1,7 +1,7 @@
 # UW Course Search API — verification note (EXPLORE-F-CLASSES)
 
 Checked 11 November 2026, from Nicholas's Mac, against the live service. This is the
-verification the queue entry (`docs/EXPLORE-CAMPUS-QUEUE-2026-11-10.md`, EXPLORE-F) requires
+verification the queue entry (`docs/archive/EXPLORE-CAMPUS-QUEUE-2026-11-10.md`, EXPLORE-F) requires
 before any production use. **Conclusion first: the API is real and readable, but it is
 undocumented and no terms for it are published, so the production switch waits for Nicholas to
 accept this note and for permission to be sought from the Office of the Registrar, exactly as

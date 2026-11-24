@@ -144,7 +144,7 @@ The rules this keeps:
 
 ## Built locally, 25 Oct 2026: delivery, receipts and the backup workbook
 
-Built in the cloud run (`docs/OVERNIGHT-RUN-2026-10-24.md`, "Cloud run" §5), tested against a fake Connect and a
+Built in the cloud run (`docs/archive/OVERNIGHT-RUN-2026-10-24.md`, "Cloud run" §5), tested against a fake Connect and a
 fake Sheets API only. **Nothing is switched on**: no schedule is registered, no sender is set, no workbook exists.
 
 - **Delivery** (`netlify/lib/deliver.mjs`): claims, so two instances never send one row; waits of 2, 4, 8, then 15

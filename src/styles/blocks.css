@@ -1447,6 +1447,15 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 .expect.has-photos.is-flip .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, .95fr); }
 .expect.is-flip .expect-photos { order: 2; }
 .expect + .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+
+/* Separation P9 (23 November 2026): on the two request pages the same kind of card
+   stood on two grounds — on Request a Workshop the first card on the bare cream while
+   its four siblings stood on the deep ground, on Request a Program the ground flipping
+   halfway down the list. Each page now gives its whole card run the one deep ground;
+   the cards themselves do not change. */
+[data-page="pg-request-a-workshop"] .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+[data-page="pg-request-a-program"] .program--topics,
+[data-page="pg-request-a-program"] .expect { background: var(--tex-deep); background-blend-mode: normal, multiply; }
 .expect .more-links { margin-top: var(--s5); }
 .expect-words > .expect-audience { font-size: var(--fs-body); font-weight: 600; }
 .expect-preview { border-block: var(--rule-line); margin-top: var(--s4); }

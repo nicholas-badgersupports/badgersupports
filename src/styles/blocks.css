@@ -2349,6 +2349,33 @@ a.door-link:hover { color: var(--ink); text-decoration: none; border-color: var(
 body[data-page="pg-ribbons"] #b-rb-making,
 body[data-page="pg-ribbons"] #b-rb-pickup { padding-block: var(--s6); }
 
+/* ============ separation: band grounds alternate by assignment (23 November 2026) ============
+   On the three pages where long runs of sections shared the bare cream ground, the deep
+   ground the site already owns (--tex-deep) is assigned band by band, so no two
+   neighbouring bands share a ground. Only the section ground changes: a section that
+   takes the ground keeps its inner cards exactly as they are, and no new colour or
+   component is added. */
+/* Resources: the topic list takes the deep ground between the tinted head and the
+   closing note. */
+[data-page="pg-resources"] [data-block="b-res-list"] { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+/* What We Do: the Peer Support Groups band, the Craft Nights gallery and the closing
+   pair (More Ways We Show Up with the dual-registration note under it, one section in
+   two parts) take the deep ground; the Craft Nights band between them gives the deep
+   ground back, so the pair of expect bands in a row reads deep-then-cream the other
+   way round from the shared .expect + .expect rule. */
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-groups"],
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-craft-gallery"],
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-more"],
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-uhs"] { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+[data-page="pg-about-what-we-do"] [data-block="b-wwd-craft"].expect { background: none; }
+/* Home: the Peer Support Groups feature, the Wellness Workshops band and the Get
+   Involved band take the deep ground, parting the cream runs on either side of the
+   SPILL band and the wall. The feeling band keeps the page ground: its own ground is
+   separate work, and the deep Get Involved band now parts it from the wall. */
+[data-page="pg-home"] [data-block="b-home-groups"],
+[data-page="pg-home"] [data-block="b-home-workshops"],
+[data-page="pg-home"] [data-block="b-home-involved"] { background: var(--tex-deep); background-blend-mode: normal, multiply; }
+
 /* ============ stranded hero buttons (23 Nov 2026) ============
    Six pages take the team/resources treatment: words and buttons stacked in the left column,
    photos keeping the band's height on the right. In the narrower left column the button row

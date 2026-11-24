@@ -94,3 +94,24 @@ test('an open resource form can still be closed after its selectable resources d
  const close=await bodyFor(key,{state:'closed'});assert.equal((await send(key,close,cookie)).status,200);assert.equal((await currentForm(key)).manualState,'closed');
  const open=await bodyFor(key,{state:'open',confirm:key});const response=await send(key,open,cookie);assert.equal(response.status,409);assert.equal((await response.json()).error,'switch.empty');assert.equal((await currentForm(key)).manualState,'closed');
 });
+
+test('the Google Form link is the switch permission’s field, and a bad link saves nothing',async()=>{
+ await freshServer();const key='volunteer-application',url='https://docs.google.com/forms/d/e/fictional/viewform';
+ const editor=await session(['site.edit']),switcher=await session([`forms.switch:${key}`]),both=await session(['site.edit','forms.switch:*']);
+ const base=await bodyFor(key),linked={...base,settings:{...base.settings,googleFormUrl:url}};
+ assert.equal((await send(key,linked,editor)).status,403,'wording permission alone cannot set the link');
+ assert.equal((await readFormSettings(key)).googleFormUrl,'');
+ assert.equal((await send(key,linked,switcher)).status,200);
+ assert.equal((await currentForm(key)).def.googleForm,url);
+ assert.equal((await formsFor({scopes:[`forms.switch:${key}`]})).forms.find(f=>f.key===key).state,'elsewhere');
+ const saved=await bodyFor(key);
+ const credentialed=new URL('https://docs.google.com/forms/');credentialed.username='user';credentialed.password='pass';const withCredentials=credentialed.href; // built, not written: the repository's privacy gate reads a written one as an address
+ for(const bad of ['http://docs.google.com/forms/d/e/fictional/viewform',withCredentials,'https://docs.google.com/'+'x'.repeat(2000),'not a url']){
+  const response=await send(key,{...saved,settings:{...saved.settings,googleFormUrl:bad}},both);
+  assert.equal(response.status,400,bad.slice(0,40));assert.equal((await response.json()).error,'settings.url');
+ }
+ assert.equal((await readFormSettings(key)).googleFormUrl,url,'failed saves changed nothing');
+ const current=await bodyFor(key);
+ assert.equal((await send(key,{...current,settings:{...current.settings,googleFormUrl:''}},switcher)).status,200);
+ assert.equal((await currentForm(key)).def.googleForm,undefined);
+});

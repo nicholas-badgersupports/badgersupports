@@ -10,6 +10,7 @@ import {setSwitch,currentForm,submit} from '../netlify/lib/intake.mjs';
 import {emptyFormSettings,saveFormSettings,readFormSettings,formInstant} from '../netlify/lib/form-settings.mjs';
 import {formsFor} from '../netlify/lib/answers.mjs';
 import {programElsewhere,programTopic,formTopicFromAddress} from '../src/shared/program-topic.mjs';
+import {allQuestions} from '../src/shared/forms.mjs';
 import {useConnect} from '../netlify/lib/connect.mjs';
 import {handlePage,useDist} from '../netlify/lib/pages.mjs';
 import {handle} from '../netlify/lib/router.mjs';
@@ -129,4 +130,48 @@ test('settings save preserves grants, detects stale versions, and records only s
  const html=await(await get('/forms/staff-application/')).text();assert.match(html,/<h1[^>]*>Fictional Title<\/h1>/);assert.match(html,/<title>Fictional Title/);assert.match(html,/Fictional introduction/);assert.match(html,/Fictional closed message/);assert.match(html,/Priority Deadline/);assert.doesNotMatch(html,/April 3|April 26/);
  const posted=await handle(post(`/api/forms/${key}/submit`,{_version:'3'},{json:false}),{ip:'192.0.2.46'});assert.match(await posted.text(),/<h1[^>]*>Fictional Title/);
  const cards=(await formsFor({scopes:['site.edit']})).forms;assert.equal(cards.length,14);assert.ok(cards.every(f=>!f.canRead&&f.total===0&&f.latest===null));
+});
+
+test('a form with a Google Form link sends people straight there, refuses its own intake, and comes back when the link is cleared',async()=>{
+ await fresh();const key='volunteer-application',url='https://docs.google.com/forms/d/e/fictional-example/viewform';
+ await setSwitch(key,'open','fixture');
+ const base=await currentForm(key);assert.equal(base.state,'open');
+ await saveFormSettings(key,{...base.settings,googleFormUrl:`  ${url}  `},'fixture');
+ const switched=await currentForm(key);
+ assert.equal(switched.state,'closed');assert.equal(switched.stateReason,'elsewhere');
+ assert.equal(switched.def.googleForm,url);assert.equal(switched.def.elsewhere,url);
+ assert.deepEqual(switched.def.intakeWindow,{opensAt:'',closesAt:'',deadline:''});
+ assert.equal(switched.settings.googleFormUrl,url,'the saved link is trimmed');
+ assert.deepEqual(allQuestions(switched.def).map(({q})=>q.id),allQuestions(base.def).map(({q})=>q.id),'the questions are untouched');
+ const visit=await get(`/forms/${key}/`);assert.equal(visit.status,302);assert.equal(visit.headers.get('location'),url);
+ assert.match(visit.headers.get('netlify-cache-tag')||'',new RegExp(`form:${key}`));
+ const doors=await(await get('/join/get-involved/')).text();
+ assert.ok(doors.includes(`href="${url}"`),'the volunteer door goes straight to the Google Form');
+ assert.ok(!doors.includes('href="/forms/volunteer-application/"'),'no link on the page still names the form page');
+ const doorAt=doors.indexOf(`href="${url}"`),door=doors.slice(doors.lastIndexOf('<li',doorAt),doors.indexOf('</li>',doorAt));
+ assert.doesNotMatch(door,/chip--closed/,'the door carries no closed chip');
+ await saveFormSettings('wall-note',{...(await currentForm('wall-note')).settings,googleFormUrl:url},'fixture');
+ const home=await(await get('/')).text();
+ assert.ok(home.includes(`href="${url}"`),'a link on a page that only links to the form goes straight there too');
+ assert.ok(!home.includes('href="/forms/wall-note/"'));
+ const state=await handle(new Request(`http://site.test/api/forms/${key}/state`));assert.equal((await state.json()).state,'closed');
+ assert.equal((await submit(key,{name:'Fictional Example'})).error,'form.closed');
+ assert.equal((await many('SELECT count(*)::int AS n FROM submissions'))[0].n,0);
+ const card=(await formsFor({scopes:['forms.switch:*']})).forms.find(f=>f.key===key);assert.equal(card.state,'elsewhere');
+ await saveFormSettings(key,{...(await readFormSettings(key)),googleFormUrl:''},'fixture');
+ const restored=await currentForm(key);assert.equal(restored.state,'open');assert.equal(restored.def.googleForm,undefined);
+ const page=await get(`/forms/${key}/`);assert.equal(page.status,200);assert.match(await page.text(),new RegExp(`data-form="${key}"`));
+ const doorsBack=await(await get('/join/get-involved/')).text();
+ assert.ok(doorsBack.includes('href="/forms/volunteer-application/"'));assert.ok(!doorsBack.includes(`href="${url}"`));
+});
+
+test('the settings route treats the Google Form link as the switch’s field',async()=>{
+ await fresh();const key='staff-application';
+ const editor=await session(['site.edit']),switcher=await session([`forms.switch:${key}`]);
+ const save=(body,cookie)=>handle(post(`/api/staff/forms/${key}/settings`,body,{headers:{cookie}}),{ip:'192.0.2.47'});
+ const base=await readFormSettings(key),linked={...base,googleFormUrl:'https://docs.google.com/forms/d/e/fictional/viewform'};
+ assert.equal((await save(linked,editor)).status,403);
+ assert.equal((await readFormSettings(key)).version,base.version);
+ assert.equal((await save(linked,switcher)).status,200);
+ assert.equal((await currentForm(key)).def.googleForm,'https://docs.google.com/forms/d/e/fictional/viewform');
 });

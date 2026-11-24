@@ -173,11 +173,13 @@ function formSettingsControl(f, saved) {
   const summary = el("summary", { textContent: t("staff.formSettings.title") });
   const box = el("details", { className: "staff-form-settings" }, summary);
   const inputs = {}, initial = {}, fields = [];
-  for (const k of ["opensAt", "deadline", "closesAt", "title", "introduction", "closedMessage"]) {
+  for (const k of ["opensAt", "deadline", "closesAt", "googleFormUrl", "title", "introduction", "closedMessage"]) {
     const date = ["opensAt", "closesAt", "deadline"].includes(k);
-    if (date ? !f.canSwitch : !f.canEdit) continue;
-    const value = date ? f.settings[k] : f.settings[k] ?? f.defaults[k];
-    const input = el(date || k === "title" ? "input" : "textarea", { ...(date ? { type: "datetime-local" } : k === "title" ? { type: "text", maxLength: 200 } : { rows: 4, maxLength: 8000 }), value: value || "" });
+    /* The Google Form link is the switch's field, not the wording's: gated and read like the dates. */
+    const switched = date || k === "googleFormUrl";
+    if (switched ? !f.canSwitch : !f.canEdit) continue;
+    const value = switched ? f.settings[k] : f.settings[k] ?? f.defaults[k];
+    const input = el(date || k === "title" || k === "googleFormUrl" ? "input" : "textarea", { ...(date ? { type: "datetime-local" } : k === "title" ? { type: "text", maxLength: 200 } : k === "googleFormUrl" ? { type: "text", maxLength: 2000 } : { rows: 4, maxLength: 8000 }), value: value || "" });
     input.id = `settings-${f.key}-${k}`; inputs[k] = input; initial[k] = input.value;
     const label = k === "deadline" && f.key === "staff-application" ? "priority" : k === "title" ? "titleLabel" : k;
     fields.push(el("div", { className: "field" }, el("label", { htmlFor: input.id, textContent: t(`staff.formSettings.${label}`) }), input));
@@ -261,7 +263,8 @@ function formCard(f, connect, connectUrl) {
     read && (f.total || inConnect) ? el("div", { className: "staff-actions" }, f.total ? toggle : null, inConnect) : null,
     read ? panel : null,
     dates,
-    f.canSwitch ? switchControl(f, state) : null,
+    /* A form sending people to a Google Form has no Open or Close: the link in its settings is its switch. */
+    f.canSwitch && f.state !== "elsewhere" ? switchControl(f, state) : null,
     formSettingsControl(f, updated => { const next = formCard(updated, connect, connectUrl); card.replaceWith(next); next.querySelector("summary")?.focus(); }));
   card.dataset.formCard = f.key;
   return card;

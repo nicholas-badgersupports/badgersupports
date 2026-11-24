@@ -1452,6 +1452,11 @@
       "text": "Closed",
       "where": "Staff page, label beside a form that is closed."
     },
+    "staff.forms.state.elsewhere": {
+      "group": "staff",
+      "text": "Google Form",
+      "where": "Staff page, label beside a form that sends people to a Google Form."
+    },
     "staff.switch.open": {
       "group": "staff",
       "text": "Open This Form",
@@ -4880,6 +4885,11 @@
       "text": "Displayed Deadline — Central Time",
       "where": "Editable form settings and intake window information."
     },
+    "staff.formSettings.googleFormUrl": {
+      "group": "staff",
+      "text": "Google Form Link",
+      "where": "Editable form settings and intake window information."
+    },
     "staff.formSettings.priority": {
       "group": "staff",
       "text": "Priority Deadline — Central Time",
@@ -5153,6 +5163,11 @@
     "staff.setup.saved": {
       "group": "staff",
       "text": "{{title}} has been saved.",
+      "where": "Guided form setup on the staff page."
+    },
+    "staff.setup.googleSaved": {
+      "group": "staff",
+      "text": "{{title}} now sends people to the Google Form.",
       "where": "Guided form setup on the staff page."
     },
     "staff.setup.viewForm": {

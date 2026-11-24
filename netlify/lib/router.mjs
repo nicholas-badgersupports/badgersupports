@@ -51,7 +51,7 @@ import { hiringContext } from "../../src/shared/identifiers.mjs";
 import { staffClientFile } from "./staff-client.mjs";
 import { clientTable } from "../../src/shared/text.mjs";
 import { composeSite } from "../../src/render/site.mjs";
-import { saveFormSettings, COPY_FIELDS } from "./form-settings.mjs";
+import { saveFormSettings, COPY_FIELDS, SWITCH_FIELDS } from "./form-settings.mjs";
 import { programsForStaff, setProgramState } from "./programs.mjs";
 import { programByKey } from "../../src/shared/programs.mjs";
 import { saveFormSetup } from "./form-setup.mjs";
@@ -374,7 +374,7 @@ async function formSettings(req, [key], _c, who) {
   if (!f) throw new HttpError(404, "form.unknown");
   const body = await readBody(req);
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
-  const datesChanged = ["opensAt", "closesAt", "deadline"].some(k => body[k] !== f.settings[k]);
+  const datesChanged = SWITCH_FIELDS.some(k => body[k] !== f.settings[k]);
   const wordsChanged = COPY_FIELDS.some(k => body[k] !== f.settings[k]);
   if (datesChanged) need(who, `forms.switch:${key}`);
   if (wordsChanged) need(who, "site.edit");
@@ -392,7 +392,7 @@ async function formSetup(req, [key], _c, who) {
   if (body instanceof URLSearchParams) throw new HttpError(415, "body.type");
   if (!body?.settings) throw new HttpError(400, "settings.shape");
   if (body.state !== "keep" && (body.formVersion !== f.def.version || body.expectedState !== f.manualState)) throw new HttpError(409, "settings.conflict");
-  const datesChanged = ["opensAt", "closesAt", "deadline"].some(k => body.settings[k] !== f.settings[k]);
+  const datesChanged = SWITCH_FIELDS.some(k => body.settings[k] !== f.settings[k]);
   const wordsChanged = COPY_FIELDS.some(k => body.settings[k] !== f.settings[k]);
   if (datesChanged || body.state !== "keep") need(who, `forms.switch:${key}`);
   if (wordsChanged) need(who, "site.edit");
